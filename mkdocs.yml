@@ -63,4 +63,4 @@ markdown_extensions:
       toc_depth: 3      # only show 2 levels (H1 + H2)#
 
 extra_css:
-  - stylesheets/extra.css
+  - style/extra.css
