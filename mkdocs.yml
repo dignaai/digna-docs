@@ -13,6 +13,7 @@ theme:
     - navigation.indexes
 nav:
   - Home:
+      - Overview: home/overview.md
       - digna Data Anomalies:
           - Introduction: 'home/data_anomalies/Introduction.md'
       - digna Data Analytics:
@@ -24,7 +25,9 @@ nav:
       - digna Data Schema Tracker:
           - Introduction: 'home/schema_tracker/Introduction.md'
   - Gettings Started: 
-          - Introduction: getting_started/introduction.md
+          - How to create a data project: getting_started/how_to_create_project.md
+          - How to connect a database to data project: getting_started/how_to_connect_database_to_data_project.md
+          - How to add a datasource to project: getting_started/how_to_add_a_datasource_to_project.md
   - Integration: 
       - Databases:
           - Azure Synaps: databases/azure_synapse_connector_guide.md
