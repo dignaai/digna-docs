@@ -1,50 +1,63 @@
-site_name: digna Docs
-site_url: https://digna.ai
-#repo_url: https://github.com/digna-ai/digna-docs
-
+site_name: digna Guides & Docs
+site_url: https://docs.digna.ai
 theme:
+  logo: assets/digna.png
   name: material
   features:
-    - content.code.copy
-    - navigation.footer
-    - navigation.indexes
     - navigation.tabs
-    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path         # breadcrumbs (Insiders gives extra options, but not required)
+    - content.code.copy
+    - search.highlight
+    - search.share
+    - navigation.indexes
+nav:
+  - Home:
+      - digna Data Anomalies:
+          - Introduction: 'home/data_anomalies/Introduction.md'
+      - digna Data Analytics:
+          - Introduction: home/data_analytics/Introduction.md
+      - digna Data Timeliness:
+          - Introduction: home/data_timeliness/Introduction.md
+      - digna Data Validation:
+          - Introduction: home/data_validation/Introduction.md
+      - digna Data Schema Tracker:
+          - Introduction: 'home/schema_tracker/Introduction.md'
+  - Gettings Started: 
+          - Introduction: getting_started/introduction.md
+  - Integration: 
+      - Databases:
+          - Azure Synaps: databases/azure_synapse_connector_guide.md
+          - Databricks: databases/databricks_connector_guide.md          
+          - Databricks Legacy: databases/databricks_legacy_connector_guide.md          
+          - Hive: databases/hive_connector_guide.md    
+          - Netezza: databases/netezza_connector_guide.md
+          - Oracle: databases/oracle_connector_guide.md
+          - PostgreSQL: databases/postgres_connector_guide
+          - Snowflake: databases/snowflake_connector_guide.md
+          - MS SQL Server: databases/sqlserver_connector_guide.md
+          - Teradata: databases/teradata_connector_guide.md
+  - CLI Reference:
+          - Introduction: cli/Introduction.md
+          - Release 2025.09: cli/Command_Line_Interface_202509.md
+          - Release 2025.04: cli/Command_Line_Interface_202504.md
+          - Release 2024.12: cli/Command_Line_Interface_202412.md
+          - Release 2024.11: cli/Command_Line_Interface_202411.md
+          - Release 2024.09: cli/Command_Line_Interface_202409.md
 
-  palette:
-
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-
-    - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+  - Changelog: 
+          - Release 2025.09: changelog/Release_202509.md
+          - Release 2025.04: changelog/Release_202504.md
+          
 
 markdown_extensions:
-  - footnotes
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
+  - attr_list             # lets us add .md-button, .cards, .grid in Markdown
+  - toc:
+      permalink: true   # adds link icons to headings
+      toc_depth: 3      # only show 2 levels (H1 + H2)#
 
-nav:
-  - digna: index.md
-
-  - Getting Started:
-    - Getting Started: getting-started/index.md
-    - Second Step: getting-started/first-step.md
-    - First Step: getting-started/second-step.md
-
-  - Advanced:
-    - Advanced: advanced/index.md
-    - Secrets: advanced/secrets.md
-    - More Secrets: advanced/more-secrets.md
+extra_css:
+  - stylesheets/extra.css

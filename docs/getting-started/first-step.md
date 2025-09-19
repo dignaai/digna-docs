@@ -1,4 +1,0 @@
-
-# First step
-
-Some text
