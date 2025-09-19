@@ -1,8 +1,8 @@
-# digna Modules — Technical Overview
+# *digna* Modules — Technical Overview
 
 
 
-digna is an AI-powered **Data Quality & Observability Platform**.  
+*digna* is an AI-powered **Data Quality & Observability Platform**.  
 
 It runs directly in your data environment and ensures trust in your data without requiring custom rule coding.
 

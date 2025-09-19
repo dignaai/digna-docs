@@ -1,6 +1,6 @@
 ---
 title: Connect a Database
-description: Minimal walkthrough + interactive demo showing how to connect a database to an existing project in digna.
+description: Minimal walkthrough + interactive demo showing how to connect a database to an existing project in *digna*.
 ---
 
 # Add Datasource (Table) to a Project
@@ -28,7 +28,7 @@ This guide shows the minimal steps to add a datasource to your project.
    Select your Datasource from the list.
 
 5. **Define Snapshot Query**  
-   Define Snapshot Query. Snapshot query defines how digna will access one day of your data.
+   Define Snapshot Query. Snapshot query defines how *digna* will access one day of your data.
 
 6. **Preview**
    CLick preview to verify if the snapshot query was defined correctly.

@@ -1,6 +1,6 @@
 # Source Connector for Snowflake
 
-This guide describes how to configure Digna to connect to Snowflake using either the native Python connector or the ODBC driver.
+This guide describes how to configure *digna* to connect to Snowflake using either the native Python connector or the ODBC driver.
 
 It refers to the screen **"Create a Database Connection"**.
 
@@ -15,7 +15,7 @@ It refers to the screen **"Create a Database Connection"**.
 
 > ⚠️ For other authentication methods, please use the ODBC driver.
 
-### Digna Configuration (Native Driver)
+### *digna* Configuration (Native Driver)
 
 Provide the following information in the **"Create a Database Connection"** screen:
 
@@ -48,7 +48,7 @@ Follow these steps to configure a new ODBC data source using password-based auth
 ![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
 Notes: 
-- If you do not provide values for Database, Schema and Warehouse, then you will need to provide them as ODBC properties during the digna data source configuration.
+- If you do not provide values for Database, Schema and Warehouse, then you will need to provide them as ODBC properties during the *digna* data source configuration.
 - The value for "Server" consists of your snowflake account name followed by ".snowflakecomputing.com"
 
 #### Step 2 – Test the connection
@@ -59,13 +59,13 @@ Click the **TEST** button. A successful connection should look like this:
 
 ---
 
-Now you can configure Digna to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
+Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
 
 ---
 
 ### A. DSN-Based Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 
@@ -94,7 +94,7 @@ name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 
 ### B. DSN-less Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 

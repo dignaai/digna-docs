@@ -1,6 +1,6 @@
 ---
 title: Connect a Database
-description: Minimal walkthrough + interactive demo showing how to connect a database to an existing project in digna.
+description: Minimal walkthrough + interactive demo showing how to connect a database to an existing project in *digna*.
 ---
 
 # Connect a Database

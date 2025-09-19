@@ -1,6 +1,6 @@
 # Source Connector for MS SQL Server
 
-This guide describes how to configure Digna to connect to SQLServer using either the native Python connector or the ODBC driver.
+This guide describes how to configure *digna* to connect to SQLServer using either the native Python connector or the ODBC driver.
 
 It refers to the screen **"Create a Database Connection"**.
 
@@ -15,7 +15,7 @@ It refers to the screen **"Create a Database Connection"**.
 
 > ⚠️ For other authentication methods, please use the ODBC driver.
 
-### Digna Configuration (Native Driver)
+### *digna* Configuration (Native Driver)
 
 Provide the following information in the **"Create a Database Connection"** screen:
 
@@ -80,13 +80,13 @@ When you receive the success screen, ODBC is configured properly.
 
 ---
 
-Now you can configure Digna to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
+Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
 
 ---
 
 ### A. DSN-Based Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 
@@ -113,7 +113,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ### B. DSN-less Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 

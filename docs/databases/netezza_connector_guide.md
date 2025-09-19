@@ -1,6 +1,6 @@
 # Source Connector for Netezza
 
-This guide describes how to configure Digna to connect to Netezza using the ODBC driver.
+This guide describes how to configure *digna* to connect to Netezza using the ODBC driver.
 
 It refers to the screen **"Create a Database Connection"**.
 
@@ -34,13 +34,13 @@ When you receive the success screen, ODBC is configured properly.
 
 ---
 
-Now you can configure Digna to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
+Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
 
 ---
 
 ### A. DSN-Based Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 
@@ -65,7 +65,7 @@ name: "PWD",        value: "your database password"
 
 ### B. DSN-less Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 

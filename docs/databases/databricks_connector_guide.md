@@ -1,6 +1,6 @@
 # Source Connector for Databricks - with Unity Catalog
 
-This guide describes how to configure Digna to connect to Databricks using either the native Python connector or the ODBC driver.
+This guide describes how to configure *digna* to connect to Databricks using either the native Python connector or the ODBC driver.
 
 It refers to the screen **"Create a Database Connection"**.
 
@@ -20,7 +20,7 @@ It refers to the screen **"Create a Database Connection"**.
 To authenticate using a personal access token, refer to the official Databricks documentation:  
 👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
-### Digna Configuration (Native Driver)
+### *digna* Configuration (Native Driver)
 
 Provide the following information in the **"Create a Database Connection"** screen:
 
@@ -69,13 +69,13 @@ Click the **TEST** button. A successful connection should look like this:
 
 ---
 
-Now you can configure Digna to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
+Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
 
 ---
 
 ### A. DSN-Based Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 
@@ -89,7 +89,7 @@ Use ODBC:        Enabled
 #### ODBC Properties
 
 ```
-name: "DSN",    value: "dignadata_databricks"
+name: "DSN",    value: "*digna*data_databricks"
 ```
 
 > 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
@@ -98,7 +98,7 @@ name: "DSN",    value: "dignadata_databricks"
 
 ### B. DSN-less Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 

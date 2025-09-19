@@ -1,6 +1,6 @@
 # Source Connector for Oracle
 
-This guide describes how to configure Digna to connect to Oracle DB using either the native Python connector or the ODBC driver.
+This guide describes how to configure *digna* to connect to Oracle DB using either the native Python connector or the ODBC driver.
 
 It refers to the screen **"Create a Database Connection"**.
 
@@ -15,7 +15,7 @@ It refers to the screen **"Create a Database Connection"**.
 
 > ⚠️ For other authentication methods, please use the ODBC driver.
 
-### Digna Configuration (Native Driver)
+### *digna* Configuration (Native Driver)
 
 Provide the following information in the **"Create a Database Connection"** screen:
 
@@ -62,13 +62,13 @@ Provide the password and click **OK** button.
 
 ---
 
-Now you can configure Digna to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
+Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
 
 ---
 
 ### A. DSN-Based Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 
@@ -82,7 +82,7 @@ Use ODBC:        Enabled
 #### ODBC Properties
 
 ```
-name: "DSN",            value: "dignadata_oracle"
+name: "DSN",            value: "*digna*data_oracle"
 name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
@@ -93,7 +93,7 @@ name: "PWD",            value: "{your password in curly braces}"
 
 ### B. DSN-less Configuration
 
-#### Digna Configuration
+#### *digna* Configuration
 
 In the **"Create a Database Connection"** screen, provide the following:
 

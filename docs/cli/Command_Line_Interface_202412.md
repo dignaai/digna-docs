@@ -15,14 +15,14 @@ The `--help` option provides information about available commands and their usag
    
     Use –help immediate after the keyword ***digna***cl  
    ```bash
-   dignacli --help
+   *digna*cli --help
 
 3.  **Getting Help for Specific Commands:**  
   
     For detailed information about a specific command, append `--help` to that command.
     For example, to obtain help with the `add-user` command, run:
      ```bash
-     dignacli add-user --help
+     *digna*cli add-user --help
      ```
 
      ### output:
@@ -39,7 +39,7 @@ The check-repo-connection command is a utility within the ***digna*** CLI tool d
       
 ### Command Usage
 ```bash
-dignacli check-repo-connection
+*digna*cli check-repo-connection
 ```
 
 Upon successful execution, the command outputs a confirmation of the connection, along with details about the repository: Repository version, Host, Database and Schema.  
@@ -48,16 +48,16 @@ If the repository connection is not successful, check the config.toml file for c
 
 ## Using ‘version’ command
 
-To check the installed version of *dignacli*, use the --version option.  
+To check the installed version of **digna*cli*, use the --version option.  
   
 ### Command Usage
 ```bash
-dignacli --version
+*digna*cli --version
 ```
   
 ### Example Output
 ```bash
-dignacli version 2024.12
+*digna*cli version 2024.12
 ```
 
 ## Using logging options
@@ -78,7 +78,7 @@ The add-user command in the ***digna*** CLI is used to add a new user to the ***
   
 ### Command Usage
 ```bash
-dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
+*digna*cli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 ```
   
 ### Arguments
@@ -97,12 +97,12 @@ dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 To add a new user with username `jdoe`, full name `John Doe`, and password `password123`:
 
 ```bash
-dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
+*digna*cli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 ```
   
 To add a new user and set an account expiration date:
 ```bash
-dignacli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59"
+*digna*cli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59"
 ```
 
 ## Using `delete-user` command
@@ -111,7 +111,7 @@ The `delete-user` command in the ***digna*** CLI is used to remove an existing u
   
 ### Command Usage
 ```bash
-dignacli delete-user USER_NAME
+*digna*cli delete-user USER_NAME
 ```
   
 ### Arguments
@@ -119,7 +119,7 @@ dignacli delete-user USER_NAME
 
 ### Example
 ```bash
-dignacli delete-user jdoe
+*digna*cli delete-user jdoe
 ```
   
 Executing this command will remove the user `jdoe` from the ***digna*** system, revoking their access and deleting their associated data and permissions from the repository.
@@ -131,7 +131,7 @@ The `modify-user` command in the ***digna*** CLI is used to update the details o
 ### Command Usage
   
 ```bash
-dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
+*digna*cli modify-user <USER_NAME> <USER_FULL_NAME> [options]
 ```
   
 ### Arguments
@@ -148,7 +148,7 @@ dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
   
 To modify the full name of the user `jdoe` to “Johnathan Doe” and set the user as a superuser:
 ```bash
-dignacli modify-user jdoe "Johnathan Doe" --is_superuser
+*digna*cli modify-user jdoe "Johnathan Doe" --is_superuser
 ```
 
 ## Using `modify-user-pwd` Command
@@ -157,7 +157,7 @@ The `modify-user-pwd` command in the ***digna*** CLI is used to change the passw
   
 ### Command Usage
 ```bash
-dignacli modify-user-pwd <USER_NAME> <USER_PWD>
+*digna*cli modify-user-pwd <USER_NAME> <USER_PWD>
 ```
   
 ### Arguments
@@ -169,7 +169,7 @@ dignacli modify-user-pwd <USER_NAME> <USER_PWD>
   
 To change the password for the user `jdoe` to `newpassword123`:
 ```bash
-dignacli modify-user-pwd jdoe newpassword123
+*digna*cli modify-user-pwd jdoe newpassword123
 ```
 
 ## Using `list-users` Command
@@ -179,7 +179,7 @@ The `list-users` command in the ***digna*** CLI displays a list of all users reg
 ### Command Usage
 
 ```bash
-dignacli list-users
+*digna*cli list-users
 ```
 
 Executing this command in the ***digna*** CLI will connect to the ***digna*** repository and list all users, showing their ID, username, full name, superuser status, and expiration timestamps.
@@ -193,7 +193,7 @@ The `upgrade-repo` command in the ***digna*** CLI is used to upgrade or initiali
 ### Command Usage
 
 ```bash
-dignacli upgrade-repo [options]
+*digna*cli upgrade-repo [options]
 ```
   
 ### Options
@@ -206,12 +206,12 @@ dignacli upgrade-repo [options]
 To upgrade the ***digna*** repository, you can run the command without any options:
   
 ```bash
-dignacli upgrade-repo
+*digna*cli upgrade-repo
 ```  
 To run the upgrade in simulation mode (to see the SQL statements without applying them):
   
 ```bash
-dignacli upgrade-repo --simulation-mode
+*digna*cli upgrade-repo --simulation-mode
 ```
   
 This command is crucial for maintaining the ***digna*** system, ensuring that the database schema and other repository components are up to date with the latest version of the software.
@@ -223,7 +223,7 @@ The `encrypt` command in the ***digna*** CLI is used to encrypt a password.
 ### Command Usage
   
 ```bash
-dignacli encrypt <PASSWORD>
+*digna*cli encrypt <PASSWORD>
 ```
     
 ### Arguments
@@ -234,7 +234,7 @@ dignacli encrypt <PASSWORD>
 To encrypt a password, you need to provide the password as an argument.   
 For instance, to encrypt the password `mypassword123`, you would use:
 ```bash
-dignacli encrypt mypassword123
+*digna*cli encrypt mypassword123
 ```
 This command outputs the encrypted version of the provided password, which can then be used in secure contexts. If the password argument is not provided, the CLI will display an error indicating the missing argument.
 
@@ -244,7 +244,7 @@ The `generate-key` command is used to generate a Fernet key, which is essential 
   
 ### Command Usage
 ```bash
-dignacli generate-key
+*digna*cli generate-key
 ```
   
 # Data Management
@@ -256,7 +256,7 @@ The `clean-up` command in the ***digna*** CLI is used to remove profiles, predic
 ### Command Usage
 
 ```bash
-dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
+*digna*cli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 ```
   
 ### Arguments
@@ -277,13 +277,13 @@ dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 To remove data from the project ProjectA between January 1, 2023, and June 30, 2023:
   
 ```bash
-dignacli clean-up ProjectA 2023-01-01 2023-06-30
+*digna*cli clean-up ProjectA 2023-01-01 2023-06-30
 ```
   
 To remove data only from a specific table named `Table1`:
   
 ```bash
-dignacli clean-up ProjectA 2023-01-01 2023-06-30 --table-name Table1
+*digna*cli clean-up ProjectA 2023-01-01 2023-06-30 --table-name Table1
 ```
   
 This command helps in managing data storage and ensuring that the repository only contains relevant information.
@@ -295,7 +295,7 @@ The `inspect` command in the ***digna*** CLI is used to create profiles, predict
 ### Command Usage
 
 ```bash
-dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
+*digna*cli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 ```
   
 ### Arguments
@@ -323,13 +323,13 @@ dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 To inspect data for the project `ProjectA` from January 1, 2024, to January 31, 2024:
   
 ```bash
-dignacli inspect ProjectA 2024-01-01 2024-01-31
+*digna*cli inspect ProjectA 2024-01-01 2024-01-31
 ```
   
 To inspect only a specific table and force recalculation of predictions:
   
 ```bash
-dignacli inspect ProjectA 2024-01-01 2024-01-31 --table-name Table1 --force-prediction
+*digna*cli inspect ProjectA 2024-01-01 2024-01-31 --table-name Table1 --force-prediction
 ```
 This command is useful for generating updated profiles and predictions, monitoring data integrity, and managing alert systems within a specified project timeframe.
 
@@ -340,7 +340,7 @@ The `tls-status` command in the ***digna*** CLI is used to query the status of t
 ### Command Usage
   
 ```bash
-dignacli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
+*digna*cli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
 ```
   
 ### Arguments
@@ -354,7 +354,7 @@ dignacli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
 To check the TLS status for a table named UserData in the project ProjectA on July 1, 2024:
 
 ```bash
-dignacli tls-status ProjectA UserData 2024-07-01
+*digna*cli tls-status ProjectA UserData 2024-07-01
 ```
 
 This command helps users monitor and maintain data quality by providing a clear and actionable status report based on predefined criteria.
@@ -366,7 +366,7 @@ The `list-projects` command in the ***digna*** CLI is used to display a list of 
 ### Command Usage
   
 ```bash
-dignacli list-projects
+*digna*cli list-projects
 ```
 
 This command is especially useful for administrators and users managing multiple projects, providing a quick overview of the available projects in the ***digna*** repository.
@@ -378,7 +378,7 @@ The `list-ds` command in the ***digna*** CLI is used to display a list of all av
 ### Command Usage
   
 ```bash
-dignacli list-ds <PROJECT_NAME>
+*digna*cli list-ds <PROJECT_NAME>
 ```
 
 ### Arguments
@@ -389,7 +389,7 @@ dignacli list-ds <PROJECT_NAME>
 To list all data sources in the project named `ProjectA`:
   
 ```bash
-dignacli list-ds ProjectA
+*digna*cli list-ds ProjectA
 ```
   
 This command provides users with an overview of the data sources available in a project, helping them to navigate and manage the data landscape more effectively.

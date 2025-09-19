@@ -1,4 +1,61 @@
-# The Digna Developer Hub
+# *digna* Platform
 
-Welcome to the Digna developer hub. You’ll find guides and references to get productive quickly—and where to get help if you get stuck.
+**digna** is a platform for **Data Quality** and **Data Observability**, designed to run entirely inside the customer’s environment.  
 
+It is never delivered as Software as a Service — the *digna* team has no access to customer data.  
+This ensures maximum privacy, security, and compliance.  
+
+---
+
+## Deployment Options
+
+- **On-Premises**  
+  *digna* can be installed directly in the customer’s own infrastructure, fully under their control.  
+
+- **Private Cloud**  
+  Runs in the customer’s private or hybrid cloud environments (VMs, containers, or Kubernetes).  
+  The platform adapts to the existing cloud strategy without requiring external services.  
+
+
+---
+
+## In-Database Execution
+
+*digna* executes checks and anomaly detection logic **directly inside the database engine**.  
+This approach reduces data movement, leverages native database performance, and ensures that monitoring happens as close to the data as possible.  
+
+---
+
+## Key Capabilities
+
+- Continuous monitoring of data volumes, distributions, and consistency  
+- Automated validation of business and technical rules  
+- Detection of late or missing data deliveries  
+- Alerts on structural changes in tables or views  
+- Analysis of historical trends in data quality and reliability  
+
+---
+
+## Benefits
+
+- **Full Data Control** – customer environment only, no external access  
+- **Compliance by Design** – suited for regulated industries with strict data policies  
+- **Performance** – in-database execution reduces overhead and scales efficiently  
+- **Flexibility** – same platform across on-prem and private cloud setups  
+- **Fast Deployment** – installation within hours, upgrades in less than one hour  
+
+---
+
+## Integrations
+
+*digna* connects to:  
+
+- **Databases & Warehouses**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lakes / Lakehouses**: Hadoop, Databricks 
+- **ETL & Processing**: Spark, Airflow, dbt, Informatica, Talend  
+
+---
+
+## Learn More
+
+🌐 [www.*digna*.ai](https://www.*digna*.ai)  

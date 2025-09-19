@@ -1,11 +1,11 @@
 ---
 title: Create a Project
-description: Minimal walkthrough + interactive demo showing how to create a new project in digna.
+description: Minimal walkthrough + interactive demo showing how to create a new project in *digna*.
 ---
 
 # Create a Project
 
-This guide shows the minimal steps required to create a new project in digna.  
+This guide shows the minimal steps required to create a new project in *digna*.  
 
 
 
