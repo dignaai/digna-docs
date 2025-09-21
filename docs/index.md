@@ -1,3 +1,10 @@
+---
+title: digna Platform – Data Quality & Data Observability | On-Prem & Private Cloud
+description: Discover digna, the AI-powered Data Quality and Data Observability platform built for on-premises and private cloud. Ensure compliance, performance, and full control with in-database execution and broad integrations.
+canonical_url: https://docs.digna.ai/platform/
+image: /assets/logo_square.png
+---
+
 # *digna* Platform
 
 **digna** is a platform for **Data Quality** and **Data Observability**, designed to run entirely inside the customer’s environment.  
