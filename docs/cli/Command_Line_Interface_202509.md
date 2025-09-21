@@ -11,9 +11,10 @@ The `--help` option provides information about available commands and their usag
 
 1. **Displaying General Help:**
    
-    Use –help immediate after the keyword ***digna***cl  
+    Use –help immediate after the keyword *dignacli*  
    ```bash
    dignacli --help
+    ```
 
 2. **Getting Help for Specific Commands:**  
   
