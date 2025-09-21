@@ -21,10 +21,10 @@ jobs:
           python-version: 3.12
 
       - name: Install mkdocs-material
-        run: pip install mkdocs-ultralytics-plugin
+        run: pip install mkdocs-material
 
       - name: Install mkdocs-material
-        run: pip install mkdocs-ultralytics
+        run: pip install mkdocs-ultralytics-plugin
 
       - name: Build and deploy
         run: mkdocs gh-deploy --force
