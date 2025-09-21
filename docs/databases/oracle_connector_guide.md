@@ -1,3 +1,11 @@
+---
+title: Oracle Connector – Database Integration | digna Documentation
+description: Configure digna to connect to Oracle using the python-oracledb driver or the Oracle ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
+canonical_url: https://docs.digna.ai/databases/oracle_connector_guide/
+image: /assets/logo_square.png
+---
+
+
 # Source Connector for Oracle
 
 This guide describes how to configure *digna* to connect to Oracle DB using either the native Python connector or the ODBC driver.

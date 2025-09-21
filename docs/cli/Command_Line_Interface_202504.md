@@ -1,4 +1,14 @@
-**2024-12-09**
+---
+title: digna CLI Reference 2025.04 – Commands & Examples | digna Documentation
+description: Complete reference for digna CLI release 2025.04. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, and more.
+canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
+image: /assets/logo_square.png
+---
+
+# digna CLI Reference 2025.04
+**2025-04-01**
+
+This page documents the full set of commands available in ***digna*** CLI release **2025.04**, including usage examples and options.
 
 ---
 
@@ -36,7 +46,7 @@ The `--help` option provides information about available commands and their usag
 
 The check-repo-connection command is a utility within the ***digna*** CLI tool designed to test the connectivity and access to a specified ***digna*** repository. This command ensures that the CLI can interact with the repository.
       
-### Command Usage
+#### Command Usage
 ```bash
 dignacli check-repo-connection
 ```
@@ -49,12 +59,12 @@ If the repository connection is not successful, check the config.toml file for c
 
 To check the installed version of *dignacli*, use the --version option.  
   
-### Command Usage
+#### Command Usage
 ```bash
 dignacli --version
 ```
   
-### Example Output
+#### Example Output
 ```bash
 dignacli version 2025.04
 ```
@@ -69,29 +79,29 @@ By default, the console output of the ***digna*** commands is designed to be min
  
 “verbose” and “debug” are defining the level of detail, whereas the “logfile” switch allows redirecting the output to be streamed to a file rather than the console window.
 
-# User Management
+## User Management
 
-## Using ‘add-user’ command
+### Using ‘add-user’ command
   
 The add-user command in the ***digna*** CLI is used to add a new user to the ***digna*** system
   
-### Command Usage
+#### Command Usage
 ```bash
 dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 ```
   
-### Arguments
+##### Arguments
 
 - **USER_NAME**: The username for the new user (required).
 - **USER_FULL_NAME**: The full name of the new user (required).
 - **USER_PASSWORD**: The password for the new user (required).
 
-### Options
+#### Options
 
 - `--is_superuser`, `-su`: Flag to designate the new user as an admin.
 - `--valid_until`, `-vu`: Sets an expiration date for the user account in the format `YYYY-MM-DD HH:MI:SS`. If not set, the account does not have an expiration date.
 
-### Example
+#### Example
 
 To add a new user with username `jdoe`, full name `John Doe`, and password `password123`:
 
@@ -104,78 +114,78 @@ To add a new user and set an account expiration date:
 dignacli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59"
 ```
 
-## Using `delete-user` command
+### Using `delete-user` command
   
 The `delete-user` command in the ***digna*** CLI is used to remove an existing user from the ***digna*** system.
   
-### Command Usage
+#### Command Usage
 ```bash
 dignacli delete-user USER_NAME
 ```
   
-### Arguments
+##### Arguments
 - **USER_NAME**: The username of the user to be deleted (required). This is the only argument required by the command.
 
-### Example
+#### Example
 ```bash
 dignacli delete-user jdoe
 ```
   
 Executing this command will remove the user `jdoe` from the ***digna*** system, revoking their access and deleting their associated data and permissions from the repository.
 
-## Using `modify-user` Command
+### Using `modify-user` Command
 
 The `modify-user` command in the ***digna*** CLI is used to update the details of an existing user in the ***digna*** system.
 
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
 ```
   
-### Arguments
+##### Arguments
   
 - **USER_NAME**: The username of the user to be modified (required).
 - **USER_FULL_NAME**: The new full name for the user (required).
   
-### Options  
+#### Options  
   
 - `--is_superuser`, `-su`: Sets the user as a superuser, granting elevated privileges. This flag does not require a value.  
 - `--valid_until`, `-vu`: Sets an expiration date for the user account in the format YYYY-MM-DD HH:MI:SS. If not provided, the account remains valid indefinitely.  
   
-### Example
+#### Example
   
 To modify the full name of the user `jdoe` to “Johnathan Doe” and set the user as a superuser:
 ```bash
 dignacli modify-user jdoe "Johnathan Doe" --is_superuser
 ```
 
-## Using `modify-user-pwd` Command
+### Using `modify-user-pwd` Command
   
 The `modify-user-pwd` command in the ***digna*** CLI is used to change the password for an existing user in the ***digna*** system.
   
-### Command Usage
+#### Command Usage
 ```bash
 dignacli modify-user-pwd <USER_NAME> <USER_PWD>
 ```
   
-### Arguments
+##### Arguments
   
 - **USER_NAME**: The username of the user whose password is to be changed (required).
 - **USER_PWD**: The new password for the user (required).
   
-### Example
+#### Example
   
 To change the password for the user `jdoe` to `newpassword123`:
 ```bash
 dignacli modify-user-pwd jdoe newpassword123
 ```
 
-## Using `list-users` Command
+### Using `list-users` Command
 
 The `list-users` command in the ***digna*** CLI displays a list of all users registered in the ***digna*** system.
 
-### Command Usage
+#### Command Usage
 
 ```bash
 dignacli list-users
@@ -183,24 +193,24 @@ dignacli list-users
 
 Executing this command in the ***digna*** CLI will connect to the ***digna*** repository and list all users, showing their ID, username, full name, superuser status, and expiration timestamps.
 
-# Repository Management
+## Repository Management
 
 ### Using `upgrade-repo` Command
   
 The `upgrade-repo` command in the ***digna*** CLI is used to upgrade or initialize the ***digna*** repository. This command is essential for applying updates or setting up the repository infrastructure for the first time.
   
-### Command Usage
+#### Command Usage
 
 ```bash
 dignacli upgrade-repo [options]
 ```
   
-### Options
+#### Options
   
 - `--simulation-mode`, `-s`: When enabled, this option runs the command in simulation mode, which prints the SQL statements that would be executed but does not actually execute them. This is useful for previewing changes without making any modifications to the repository.  
 
   
-### Example
+#### Example
   
 To upgrade the ***digna*** repository, you can run the command without any options:
   
@@ -215,20 +225,20 @@ dignacli upgrade-repo --simulation-mode
   
 This command is crucial for maintaining the ***digna*** system, ensuring that the database schema and other repository components are up to date with the latest version of the software.
 
-## Using `encrypt` Command
+### Using `encrypt` Command
   
 The `encrypt` command in the ***digna*** CLI is used to encrypt a password.
   
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli encrypt <PASSWORD>
 ```
     
-### Arguments
+#### Arguments
 - **PASSWORD**: The password that needs to be encrypted (required).
   
-### Example
+#### Example
   
 To encrypt a password, you need to provide the password as an argument.   
 For instance, to encrypt the password `mypassword123`, you would use:
@@ -241,37 +251,37 @@ This command outputs the encrypted version of the provided password, which can t
   
 The `generate-key` command is used to generate a Fernet key, which is essential for securing passwords stored in the ***digna*** repository.
   
-### Command Usage
+#### Command Usage
 ```bash
 dignacli generate-key
 ```
   
-# Data Management
+## Data Management
 
 ## Using `clean-up` Command
 
 The `clean-up` command in the ***digna*** CLI is used to remove profiles, predictions, and traffic light system data for one or more data sources within a specified project. This command is essential for data lifecycle management, helping maintain an organized and efficient data environment by clearing outdated or unnecessary data.
 
-### Command Usage
+#### Command Usage
 
 ```bash
 dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 ```
   
-### Arguments
+#### Arguments
   
 - **PROJECT_NAME**: The name of the project from which data is to be removed (required). Using the keyword all-projects in this argument instructs ***digna*** to iterate over all existing projects and apply this command.
 - **FROM_DATE**: The start date and time for the data removal. Acceptable formats include %Y-%m-%d, %Y-%m-%dT%H:%M:%S, or %Y-%m-%d %H:%M:%S (required).
 - **TO_DATE**: The end date and time for the data removal, following the same formats as FROM_DATE (required).
   
-### Options
+#### Options
   
 - `--table-name`, `-tn`: Limits the clean-up operation to a specific table within the project.
 - `--table-filter`, `-tf`: Filters to limit the clean-up to tables containing the specified substring in their names.
 - `--timing`, `-tm`: Displays the time duration of the clean-up process after completion.
 - `--help`: Displays help information for the clean-up command and exits.
   
-### Example
+#### Example
   
 To remove data from the project ProjectA between January 1, 2023, and June 30, 2023:
   
@@ -291,7 +301,7 @@ This command helps in managing data storage and ensuring that the repository onl
   
 The `list-projects` command in the ***digna*** CLI is used to display a list of all available projects within the ***digna*** system.
   
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli list-projects
@@ -303,16 +313,16 @@ This command is especially useful for administrators and users managing multiple
 
 The `list-ds` command in the ***digna*** CLI is used to display a list of all available data sources within a specified project. This command is useful for understanding the data assets available for analysis and management in the ***digna*** system.
 
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli list-ds <PROJECT_NAME>
 ```
 
-### Arguments
+#### Arguments
 - **PROJECT_NAME**: The name of the project for which the data sources are being listed (required).
   
-### Example
+#### Example
   
 To list all data sources in the project named `ProjectA`:
   
@@ -327,19 +337,19 @@ This command provides users with an overview of the data sources available in a 
 
 The `inspect` command in the ***digna*** CLI is used to create profiles, predictions, and traffic light system data for one or more data sources within a specified project. This command helps in analyzing and monitoring data over a defined period.
 
-### Command Usage
+#### Command Usage
 
 ```bash
 dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 ```
   
-### Arguments
+#### Arguments
   
 - **PROJECT_NAME**: The name of the project for which data is to be inspected (required). Using the keyword all-projects in this argument instructs ***digna*** to iterate over all existing projects and apply this command.
 - **FROM_DATE**: The starting date and time for the data inspection. Acceptable formats include %Y-%m-%d, %Y-%m-%dT%H:%M:%S, or %Y-%m-%d %H:%M:%S (required).
 - **TO_DATE**: The ending date and time for the data inspection, following the same formats as FROM_DATE (required).
   
-### Options
+#### Options
 
 - `--table-name`, `-tn`: Limits the inspection to a specific table within the project.
 - `--table-filter`, `-tf`: Filters to inspect only tables containing the specified substring in their names.
@@ -354,7 +364,7 @@ dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 - `--enable_notification`, `-en`: Enables the sending of notifications in case of alerts.
 - `--timing`, `-tm`: Displays the duration of the inspection process after completion.
   
-### Example
+#### Example
   
 To inspect data for the project `ProjectA` from January 1, 2024, to January 31, 2024:
   
@@ -373,19 +383,19 @@ This command is useful for generating updated profiles and predictions, monitori
 
 The `tls-status` command in the ***digna*** CLI is used to query the status of the Traffic Light System (TLS) for a specific table within a project on a given date. The Traffic Light System provides insights into the data's health and quality, indicating any issues or alerts that may need attention.
   
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
 ```
   
-### Arguments
+#### Arguments
   
 - **PROJECT_NAME**: The name of the project for which the TLS status is being queried (required).
 - **TABLE_NAME**: The specific table within the project for which the TLS status is needed (required).
 - **DATE**: The date for which the TLS status is being queried, typically in the format %Y-%m-%d (required).
   
-### Example
+#### Example
   
 To check the TLS status for a table named UserData in the project ProjectA on July 1, 2024:
 
@@ -399,25 +409,25 @@ This command helps users monitor and maintain data quality by providing a clear 
 
 The `inspect-async` command in the ***digna*** CLI is used to instruct the backend to asynchronously perform the inspection for one or more data sources for a given project. If project_name is set to all-projects, the inspection will iterate over all available projects and perform the inspection. It returns a request id that can be used to track the progress of the inspection.
 
-### Command Usage
+#### Command Usage
 
 ```bash
 dignacli inspect-async <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
 ```
   
-### Arguments
+#### Arguments
   
 - **PROJECT_NAME**: The name of the project for which data is to be inspected (required). Using the keyword all-projects in this argument instructs ***digna*** to iterate over all existing projects and apply this command.
 - **FROM_DATE**: The starting date and time for the data inspection. Acceptable formats include %Y-%m-%d, %Y-%m-%dT%H:%M:%S, or %Y-%m-%d %H:%M:%S (required).
 - **TO_DATE**: The ending date and time for the data inspection, following the same formats as FROM_DATE (required).
   
-### Options
+#### Options
 
 - `--table-name`, `-tn`: Limits the inspection to a specific table within the project.
 - `--table-filter`, `-tf`: Filters to inspect only tables containing the specified substring in their names.
 
   
-### Example
+#### Example
   
 To inspect data for the project `ProjectA` from January 1, 2024, to January 31, 2024:
   
@@ -429,21 +439,21 @@ dignacli inspect-async ProjectA 2024-01-01 2024-01-31
 
 The `inspect-status` command in the ***digna*** CLI is used to check the progress of an asynchronous inspection based on the request ID.
 
-### Command Usage
+#### Command Usage
 
 ```bash
 dignacli inspect-status <REQUEST ID> [options]
 ```
   
-### Arguments
+#### Arguments
   
 - **REQUEST_ID**: The request id returned by the `inspect-async` command 
   
-### Options
+#### Options
 
 - `--report_level`, `-rl`: Set report level: 'task' or 'step' [default: task]
   
-### Example
+#### Example
   
 To check the progress of an inspection with request ID 12345 on the detailed step level:
   
@@ -455,21 +465,21 @@ dignacli inspect-status 12345 --report-level step
 
 The `export-ds` command in the ***digna*** CLI is used to create an export of data sources from the ***digna*** repository. By default, all data sources from a given project will be exported.
 
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli export-ds <PROJECT_NAME> [options]
 ```
 
-### Arguments
+#### Arguments
 - **PROJECT_NAME**: The name of the project from which the data sources will be exported.
 
-### Options
+#### Options
 
 - `--table_name`, `-tn`: Export a particular data source from a project.
 - `--exportfile`, `-ef`: Specify the filename for the export.
     
-### Example
+#### Example
   
 To export all data sources from the project named `ProjectA`:
   
@@ -484,22 +494,22 @@ This command exports all data sources from `ProjectA` as a JSON document that ca
 
 The `import-ds` command in the ***digna*** CLI is used to import data sources into a target project and create an import report.
 
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli import-ds <PROJECT_NAME> <EXPORT_FILE> [options]
 ```
 
-### Arguments
+#### Arguments
 - **PROJECT_NAME**: The name of the project to which the data sources will be imported.
 - **EXPORT_FILE**: The filename of the data sources export to be imported.
 
-### Options
+#### Options
 
 - `--output-file`, `-o`: File to save the import report (if not specified, prints to terminal in tabular form).
 - `--output-format`, `-f`: Format to save the import report (json, csv).
     
-### Example
+#### Example
   
 To import all data sources from export file  `my_export.json` into `ProjectB`:
   
@@ -513,22 +523,22 @@ After the import, this command will also show a report of imported and skipped o
 
 The `plan-import-ds` command in the ***digna*** CLI is used to import data sources into a target project and create an import report.
 
-### Command Usage
+#### Command Usage
   
 ```bash
 dignacli plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [options]
 ```
 
-### Arguments
+#### Arguments
 - **PROJECT_NAME**: The name of the project to which the data sources would be imported.
 - **EXPORT_FILE**: The filename of the data sources export to be analyzed before the import.
 
-### Options
+#### Options
 
 - `--output-file`, `-o`: File to save the import report (if not specified, prints to terminal in tabular form).
 - `--output-format`, `-f`: Format to save the import report (json, csv).
     
-### Example
+#### Example
   
 To check which data sources would be imported and which would be skipped from export file `my_export.json` when imported into `ProjectB`:
   

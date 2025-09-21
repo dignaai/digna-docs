@@ -64,3 +64,12 @@ markdown_extensions:
 
 extra_css:
   - style/extra.css
+
+
+# --- SEO & Performance ---
+plugins:
+  - search
+  - ultralytics:
+      add_desc: true
+      add_image: true
+      add_keywords: true

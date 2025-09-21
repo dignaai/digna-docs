@@ -1,30 +1,31 @@
-**Purpose:**  
+---
+title: Data Analytics – Trends and Stability | digna Documentation
+Description: Learn how digna Data Analytics reveals long-term trends, volatility, and data stability across KPIs. Detect anomalies in missing values, compare stability periods, and turn statistics into actionable insights.
+canonical_url: https://docs.digna.ai/home/data_analytics/Introduction/
+---
 
+
+# Data Analytics – Trends and Stability
+
+## Purpose
 Reveal long-term trends and data stability.
 
+## Technical Features
+### Derived statistics
+- Computes **trend, volatility, seasonality**.
 
+### Supported metrics
+- Record counts  
+- Missing values  
+- Min/max, sums, averages  
 
-**Technical Features:**
+### Time-series analysis
+- Stability across weeks/months
 
-- Computes **derived statistics** (trend, volatility, seasonality).
+## Example Use Cases
+- Identify top-selling products over a rolling 3-month period.  
+- Detect volatility in missing values to catch intermittent pipeline issues.  
+- Compare periods of high vs. low stability in KPIs.  
 
-- Works across record counts, missing values, min/max, sums, averages.
-
-- Time-series analysis across weeks/months for stability.
-
-
-
-**Example Use Cases:**
-
-- Identify top-selling products over a rolling 3-month period.
-
-- Detect volatility in missing values to catch intermittent data pipeline issues.
-
-- Compare periods of high vs. low stability in KPIs.
-
-
-
-**Value:**  
-
+## Value
 Turns basic statistics into actionable insights for **business monitoring** and **data operations**.
-

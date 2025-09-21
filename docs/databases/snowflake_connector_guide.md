@@ -1,3 +1,11 @@
+---
+title: Snowflake Connector – Database Integration | digna Documentation
+description: Configure digna to connect to Snowflake using the Python connector or the Snowflake ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
+canonical_url: https://docs.digna.ai/databases/snowflake_connector_guide/
+image: /assets/logo_square.png
+---
+
+
 # Source Connector for Snowflake
 
 This guide describes how to configure *digna* to connect to Snowflake using either the native Python connector or the ODBC driver.

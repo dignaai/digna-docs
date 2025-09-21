@@ -1,4 +1,14 @@
-**2024-12-09**
+---
+title: digna CLI Reference 2025.09 – Commands & Examples | digna Documentation
+description: Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
+canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
+image: /assets/logo_square.png
+---
+
+# digna CLI Reference 2025.09
+**2025-09-29**
+
+This page documents the full set of commands available in ***digna*** CLI release **2025.09**, including usage examples and options.
 
 ---
 
@@ -11,10 +21,10 @@ The `--help` option provides information about available commands and their usag
 
 1. **Displaying General Help:**
    
-    Use –help immediate after the keyword *dignacli*  
+    Use –help immediate after the keyword ***digna***cl  
    ```bash
    dignacli --help
-    ```
+   ```
 
 2. **Getting Help for Specific Commands:**  
   
@@ -264,7 +274,7 @@ The `generate-key` command is used to generate a Fernet key, which is essential 
 dignacli generate-key
 ```
   
-# Data Management
+## Data Management
 
 ### clean-up
 

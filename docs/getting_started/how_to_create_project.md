@@ -1,7 +1,9 @@
 ---
-title: Create a Project
-description: Minimal walkthrough + interactive demo showing how to create a new project in *digna*.
+title: Create a Project | digna Documentation
+description: Step-by-step guide to creating a new project in digna. Learn how to open the project section, enter details, and save projects with an interactive demo.
+canonical_url: https://docs.digna.ai/getting_started/how_to_create_project/
 ---
+
 
 # Create a Project
 
@@ -17,7 +19,7 @@ This guide shows the minimal steps required to create a new project in *digna*.
 ---
 
 
-## Steps
+### Steps
 
 1. **Open the Project Section**
    - From the left navigation, click **Projects**.

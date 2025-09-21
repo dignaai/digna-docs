@@ -1,3 +1,11 @@
+---
+title: MS SQL Server Connector – Database Integration | digna Documentation
+description: Configure digna to connect to Microsoft SQL Server using the pymssql Python driver or the SQL Server ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
+canonical_url: https://docs.digna.ai/databases/sqlserver_connector_guide/
+image: /assets/logo_square.png
+---
+
+
 # Source Connector for MS SQL Server
 
 This guide describes how to configure *digna* to connect to SQLServer using either the native Python connector or the ODBC driver.
