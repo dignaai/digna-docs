@@ -23,5 +23,8 @@ jobs:
       - name: Install mkdocs-material
         run: pip install mkdocs-material
 
+      - name: Install mkdocs-material
+        run: pip install mkdocs-ultralytics-plugin
+
       - name: Build and deploy
         run: mkdocs gh-deploy --force
