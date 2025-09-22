@@ -34,6 +34,28 @@ files = [
 extras = ["regex"]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.13.5"
+description = "Screen-scraping library"
+optional = false
+python-versions = ">=3.7.0"
+files = [
+    {file = "beautifulsoup4-4.13.5-py3-none-any.whl", hash = "sha256:642085eaa22233aceadff9c69651bc51e8bf3f874fb6d7104ece2beb24b47c4a"},
+    {file = "beautifulsoup4-4.13.5.tar.gz", hash = "sha256:5e70131382930e7c3de33450a2f54a63d5e4b19386eab43a5b34d594268f3695"},
+]
+
+[package.dependencies]
+soupsieve = ">1.2"
+typing-extensions = ">=4.0.0"
+
+[package.extras]
+cchardet = ["cchardet"]
+chardet = ["chardet"]
+charset-normalizer = ["charset-normalizer"]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
+
+[[package]]
 name = "certifi"
 version = "2025.8.3"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -389,6 +411,26 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-ultralytics-plugin"
+version = "0.1.30"
+description = "An MkDocs plugin that provides Ultralytics Docs customizations at https://docs.ultralytics.com."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "mkdocs_ultralytics_plugin-0.1.30-py3-none-any.whl", hash = "sha256:ab43b24e8df4935e650f9c508c42c489ab12789aa5f1a6950c5281ffe01b9004"},
+    {file = "mkdocs_ultralytics_plugin-0.1.30.tar.gz", hash = "sha256:0bc1b74ae74420030ed4e3a62e85919b1ebd75e8bb59fe96f78a6315b981efce"},
+]
+
+[package.dependencies]
+beautifulsoup4 = ">=4.13.5"
+mkdocs = ">=1.0"
+pyyaml = "*"
+requests = ">=2.28.1"
+
+[package.extras]
+dev = ["pytest"]
+
+[[package]]
 name = "packaging"
 version = "25.0"
 description = "Core utilities for Python packages"
@@ -596,6 +638,28 @@ files = [
 ]
 
 [[package]]
+name = "soupsieve"
+version = "2.8"
+description = "A modern CSS selector implementation for Beautiful Soup."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "soupsieve-2.8-py3-none-any.whl", hash = "sha256:0cc76456a30e20f5d7f2e14a98a4ae2ee4e5abdc7c5ea0aafe795f344bc7984c"},
+    {file = "soupsieve-2.8.tar.gz", hash = "sha256:e2dd4a40a628cb5f28f6d4b0db8800b8f581b65bb380b97de22ba5ca8d72572f"},
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.15.0"
+description = "Backported and Experimental Type Hints for Python 3.9+"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
+    {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.5.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -657,4 +721,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "b5e2a15b74d9de40933519a415c5a0c17f2f8d51cff43e9c73401b7aa056f9e6"
+content-hash = "4c1d0e43bc1d4874fc969fb1eeb2d8d8f8bd2678f7973c14fb029a52f3c5931e"
