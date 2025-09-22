@@ -51,6 +51,7 @@ nav:
   - Changelog: 
           - Release 2025.09: changelog/Release_202509.md
           - Release 2025.04: changelog/Release_202504.md
+          - Release 2024.12: changelog/Release_202412.md
           
 
 markdown_extensions:
