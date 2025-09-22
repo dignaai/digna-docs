@@ -36,7 +36,7 @@ nav:
           - Hive: databases/hive_connector_guide.md    
           - Netezza: databases/netezza_connector_guide.md
           - Oracle: databases/oracle_connector_guide.md
-          - PostgreSQL: databases/postgres_connector_guide
+          - PostgreSQL: databases/postgres_connector_guide.md
           - Snowflake: databases/snowflake_connector_guide.md
           - MS SQL Server: databases/sqlserver_connector_guide.md
           - Teradata: databases/teradata_connector_guide.md
@@ -74,3 +74,87 @@ plugins:
       add_desc: true
       add_image: true
       add_keywords: true
+  - i18n:
+      languages:
+        - locale: "en"
+          name: English
+          default: true
+          build: true
+        - locale: "de"
+          name: German
+          build: true
+        - locale: "fr"
+          name: French
+          build: true
+        - locale: "es"
+          name: Spanish
+          build: true
+        - locale: "it"
+          name: Italian
+          build: true
+        - locale: "pl"
+          name: Polish
+          build: true
+        - locale: "ro"
+          name: Romanian
+          build: true
+        - locale: "nl"
+          name: Dutch
+          build: true
+        - locale: "cs"
+          name: Czech
+          build: true
+        - locale: "pt"
+          name: Portuguese
+          build: true
+        - locale: "ja"
+          name: Japanese
+          build: true
+        - locale: "ko"
+          name: Korean
+          build: true
+        - locale: "ar"
+          name: Arabic
+          build: true
+        - locale: "hi"
+          name: Hindi
+          build: true
+        - locale: "bn"
+          name: Bengali
+          build: true
+        - locale: "tr"
+          name: Turkish
+          build: true
+        - locale: "uk"
+          name: Ukrainian
+          build: true
+        - locale: "sv"
+          name: Swedish
+          build: true
+        - locale: "fi"
+          name: Finnish
+          build: true
+        - locale: "da"
+          name: Danish
+          build: true
+        - locale: "hu"
+          name: Hungarian
+          build: true
+        - locale: "el"
+          name: Greek
+          build: true
+        - locale: "bg"
+          name: Bulgarian
+          build: true
+        - locale: "sr"
+          name: Serbian
+          build: true
+        - locale: "hr"
+          name: Croatian
+          build: true
+        - locale: "sk"
+          name: Slovak
+          build: true
+        - locale: "sl"
+          name: Slovenian
+          build: true
