@@ -1,7 +1,6 @@
 ---
 title: Netezza Connector – Database Integration | digna Documentation
 description: Configure digna to connect to Netezza using the NetezzaSQL ODBC driver. Supports password-based authentication with DSN or DSN-less setups for flexible connectivity.
-canonical_url: https://docs.digna.ai/databases/netezza_connector_guide/
 image: /assets/logo_square.png
 ---
 
