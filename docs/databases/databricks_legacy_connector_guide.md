@@ -1,7 +1,6 @@
 ---
 title: Databricks Connector (Legacy, without Unity Catalog) | digna Documentation
 description: Configure digna to connect to Databricks without Unity Catalog using the native Python connector or the Simba Spark ODBC driver. Supports token-based authentication and flexible connectivity.
-canonical_url: https://docs.digna.ai/databases/databricks_legacy_connector_guide/
 image: /assets/logo_square.png
 ---
 
