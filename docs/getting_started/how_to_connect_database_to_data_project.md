@@ -1,7 +1,6 @@
 ---
 title: Connect a Database | digna Documentation
 description: Step-by-step guide to connecting a database to an existing project in digna. Learn how to configure connections, provide credentials, and enable secure access.
-canonical_url: https://docs.digna.ai/getting_started/how_to_connect_database_to_data_project/
 ---
 
 # Connect a Database
