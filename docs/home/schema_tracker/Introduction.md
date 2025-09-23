@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Monitor Schema Evolution | digna Documentation
 description: Learn how digna Data Schema Tracker monitors column changes, datatype updates, and schema drift. Get alerts for intentional and unintentional changes to prevent ETL failures and dashboard errors.
-canonical_url: https://docs.digna.ai/home/schema_tracker/Introduction/
 ---
 
 # Data Schema Tracker – Monitor Schema Evolution
