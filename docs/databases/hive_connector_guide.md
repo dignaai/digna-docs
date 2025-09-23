@@ -1,7 +1,6 @@
 ---
 title: Apache Hive Connector – Database Integration | digna Documentation
 description: Configure digna to connect to Apache Hive using the native PyHive driver or the Cloudera ODBC driver. Supports password-based authentication and DSN or DSN-less setups.
-canonical_url: https://docs.digna.ai/databases/hive_connector_guide/
 image: /assets/logo_square.png
 ---
 
