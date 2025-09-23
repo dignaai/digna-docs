@@ -1,7 +1,6 @@
 ---
 title: Data Anomalies – Automated Detection | digna Documentation
 description: Discover how digna Data Anomalies automatically detects volume drops, missing values, distribution shifts, and unexpected patterns without manual rules. Improve data quality with AI-driven anomaly detection.
-canonical_url: https://docs.digna.ai/home/data_anomalies/Introduction/
 ---
 
 # Data Anomalies – Automated Detection
