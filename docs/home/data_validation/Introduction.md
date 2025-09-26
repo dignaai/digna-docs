@@ -1,7 +1,6 @@
 ---
 title: Data Validation – Rule-Based Checks | digna Documentation
 description: Discover how digna Data Validation enforces deterministic, rule-based checks with thresholds, ranges, and reference lists. Ensure compliance, auditability, and regulatory reporting in finance, healthcare, and other industries.
-canonical_url: https://docs.digna.ai/home/data_validation/Introduction/
 ---
 
 # Data Validation – Rule-Based Checks

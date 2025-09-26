@@ -1,7 +1,6 @@
 ---
 title: Databricks Connector with Unity Catalog – Database Integration | digna Documentation
 description: Configure digna to connect to Databricks with Unity Catalog using the native Python connector or ODBC driver. Supports token-based authentication and flexible connectivity.
-canonical_url: https://docs.digna.ai/databases/databricks_connector_guide/
 image: /assets/logo_square.png
 ---
 
