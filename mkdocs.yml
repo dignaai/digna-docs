@@ -1,7 +1,9 @@
-site_name: Guides & Documentation
+site_name: Documentation | Data Quality & Data Observability Platform
+site_author: digna.ai
 site_url: https://docs.digna.ai
 theme:
   logo: assets/digna.png
+  favicon: assets/favicon.png
   name: material
   features:
     - navigation.tabs
