@@ -25,9 +25,13 @@ nav:
       - digna Data Schema Tracker:
           - Introduction: 'home/schema_tracker/Introduction.md'
   - Gettings Started: 
+      - First steps:
           - How to create a data project: getting_started/how_to_create_project.md
           - How to connect a database to data project: getting_started/how_to_connect_database_to_data_project.md
           - How to add a datasource to project: getting_started/how_to_add_a_datasource_to_project.md
+      - Scheduling:
+          - How to schedule a daily job: getting_started/how_to_schedule_a_daily_job.md
+          - How to use crontab definition: getting_started/advanced_scheduling_with_crontab.md
   - Integration: 
       - Databases:
           - Azure Synaps: databases/azure_synapse_connector_guide.md
@@ -65,7 +69,6 @@ markdown_extensions:
 
 extra_css:
   - style/extra.css
-
 
 # --- SEO & Performance ---
 plugins:
