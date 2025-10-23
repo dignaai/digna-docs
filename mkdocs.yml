@@ -227,7 +227,7 @@ plugins:
               Integration: Integration
               CLI Reference: CLI-referens
 
-        - locale: "no"
+        - locale: "nb"
           name: Norsk
           build: true
           nav_translations:
