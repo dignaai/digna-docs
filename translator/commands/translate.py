@@ -14,19 +14,13 @@ def translate(
         match: typing.Annotated[str | None, typer.Argument(help='Translates only matching files.')] = None,
 ) -> None:
 
-    main_folder = Path('docs')
-    lang_folder = Path(f'docs/{language}')
-
-    utils.cleanup_folder(lang_folder)
-
-    file_paths = utils.list_md_files(main_folder)
+    utils.cleanup_folder(language)
+    file_paths = utils.list_md_files(match=match)
     client = utils.get_openai_client()
 
     for file_path in file_paths:
-        if not match or match in str(file_path):
+        typer.echo(f'Translating {file_path}')
 
-            typer.echo(f'Translating {file_path}')
-
-            new_file_path = Path('docs', language, *file_path.parts[1:])
-            content = utils.translate_file(client, file_path, language)
-            utils.write_file(new_file_path, content)
+        new_file_path = Path('docs', language, *file_path.parts[1:])
+        content = utils.translate_file(client, file_path, language)
+        utils.write_file(new_file_path, content)

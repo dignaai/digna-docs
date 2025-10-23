@@ -7,6 +7,7 @@ app = typer.Typer()
 
 
 app.command(name='languages')(commands.languages)
+app.command(name='show-files')(commands.show_files)
 app.command(name='translate')(commands.translate)
 
 

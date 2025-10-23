@@ -22,10 +22,10 @@ __all__ = [
 
 
 def cleanup_folder(
-        path: pathlib.Path,
+        language: types.LanguageType
 ) -> None:
 
-    file_paths = list_md_files(path)
+    file_paths = list_md_files(language)
 
     for file_path in file_paths:
         main_file_path = pathlib.Path(file_path.parts[0], *file_path.parts[2:])
@@ -39,9 +39,33 @@ def delete_folder(path: str) -> None:
 
 
 def list_md_files(
-        path: pathlib.Path,
+        language: types.LanguageType | None = None,
+        match: str | None = None,
 ) -> list[pathlib.Path]:
-    return list(path.rglob('*.md'))
+
+    path = 'docs'
+
+    if language:
+        path = os.path.join(path, language)
+
+    folder = pathlib.Path(path)
+    file_paths = list(folder.rglob('*.md'))
+
+    file_paths_final = []
+
+    for file_path in file_paths:
+
+        if not language:
+            part = str(file_path.parts[1])
+            if part in constants.LANGUAGES:
+                continue
+
+        if match and match not in str(file_path):
+            continue
+
+        file_paths_final.append(file_path)
+
+    return file_paths_final
 
 
 def get_config() -> Config:
