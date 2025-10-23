@@ -377,7 +377,7 @@ plugins:
             Integration: Integrace
             CLI Reference: Referenční příručka CLI
 
-        - locale: hu
+        - locale: "hu"
           name: Magyar
           build: true
           nav_translations:
@@ -396,7 +396,7 @@ plugins:
               CLI Reference: CLI-referencia
 
 
-        - locale: tr
+        - locale: "tr"
           name: Türkçe
           build: true
           nav_translations:
@@ -433,7 +433,7 @@ plugins:
             Integration: Integrare
             CLI Reference: Referință CLI
 
-        - locale: sl
+        - locale: "sl"
           name: Slovenščina
           build: true
           nav_translations:
@@ -452,7 +452,7 @@ plugins:
             CLI Reference: Referenca CLI
 
 
-        - locale: el
+        - locale: "el"
           name: Ελληνικά
           build: true
           nav_translations:
@@ -471,7 +471,7 @@ plugins:
             CLI Reference: Αναφορά CLI
 
 
-        - locale: uk
+        - locale: "uk"
           name: Українська
           build: true
           nav_translations:
@@ -488,6 +488,25 @@ plugins:
             Scheduling: Планування
             Integration: Інтеграція
             CLI Reference: Довідник CLI
+
+        - locale: "ru"
+          name: Русский
+          build: true
+          nav_translations:
+            Platform: Платформа
+            Databases: Базы данных
+            Introduction: Введение
+            How to schedule a daily job: Как запланировать ежедневное задание
+            How to use crontab definition: Как использовать определение crontab
+            How to create a data project: Как создать проект данных
+            How to connect a database to data project: Как подключить базу данных к проекту данных
+            How to add a datasource to project: Как добавить источник данных в проект
+            Getting Started: Начало работы
+            First Steps: Первые шаги
+            Scheduling: Планирование
+            Integration: Интеграция
+            CLI Reference: Справочник CLI
+
 
 
         - locale: "ja"
