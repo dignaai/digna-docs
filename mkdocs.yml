@@ -2,6 +2,7 @@ site_name: Documentation | Data Quality & Data Observability Platform
 site_author: digna.ai
 site_url: https://docs.digna.ai
 theme:
+  language: en
   logo: assets/digna.png
   favicon: assets/favicon.png
   name: material
@@ -14,19 +15,20 @@ theme:
     - search.share
     - navigation.indexes
 nav:
-  - Home:
-      - Overview: home/overview.md
+  - "": index.md
+  - Platform:
+      - Overview: platform/overview.md
       - digna Data Anomalies:
-          - Introduction: 'home/data_anomalies/Introduction.md'
+          - Introduction: platform/data_anomalies/Introduction.md
       - digna Data Analytics:
-          - Introduction: home/data_analytics/Introduction.md
+          - Introduction: platform/data_analytics/Introduction.md
       - digna Data Timeliness:
-          - Introduction: home/data_timeliness/Introduction.md
+          - Introduction: platform/data_timeliness/Introduction.md
       - digna Data Validation:
-          - Introduction: home/data_validation/Introduction.md
+          - Introduction: platform/data_validation/Introduction.md
       - digna Data Schema Tracker:
-          - Introduction: 'home/schema_tracker/Introduction.md'
-  - Gettings Started: 
+          - Introduction: platform/schema_tracker/Introduction.md
+  - Getting Started:
       - First steps:
           - How to create a data project: getting_started/how_to_create_project.md
           - How to connect a database to data project: getting_started/how_to_connect_database_to_data_project.md
@@ -34,12 +36,12 @@ nav:
       - Scheduling:
           - How to schedule a daily job: getting_started/how_to_schedule_a_daily_job.md
           - How to use crontab definition: getting_started/advanced_scheduling_with_crontab.md
-  - Integration: 
+  - Integration:
       - Databases:
           - Azure Synaps: databases/azure_synapse_connector_guide.md
-          - Databricks: databases/databricks_connector_guide.md          
-          - Databricks Legacy: databases/databricks_legacy_connector_guide.md          
-          - Hive: databases/hive_connector_guide.md    
+          - Databricks: databases/databricks_connector_guide.md
+          - Databricks Legacy: databases/databricks_legacy_connector_guide.md
+          - Hive: databases/hive_connector_guide.md
           - Netezza: databases/netezza_connector_guide.md
           - Oracle: databases/oracle_connector_guide.md
           - PostgreSQL: databases/postgres_connector_guide.md
@@ -54,11 +56,19 @@ nav:
           - Release 2024.11: cli/Command_Line_Interface_202411.md
           - Release 2024.09: cli/Command_Line_Interface_202409.md
 
-  - Changelog: 
+  - Changelog:
           - Release 2025.09: changelog/Release_202509.md
           - Release 2025.04: changelog/Release_202504.md
           - Release 2024.12: changelog/Release_202412.md
-          
+
+#extra:
+#  alternate:
+#    - name: English
+#      link: /
+#      lang: en
+#    - name: Deutsch
+#      link: /de/
+#      lang: de
 
 markdown_extensions:
   - admonition
@@ -80,86 +90,22 @@ plugins:
       add_image: true
       add_keywords: true
   - i18n:
+      docs_structure: folder
       languages:
+
         - locale: "en"
           name: English
           default: true
           build: true
+
         - locale: "de"
-          name: German
+          name: Deutsch
           build: true
-        - locale: "fr"
-          name: French
-          build: true
-        - locale: "es"
-          name: Spanish
-          build: true
-        - locale: "it"
-          name: Italian
-          build: true
+          nav_translations:
+            Platform: Plattform
+
         - locale: "pl"
-          name: Polish
+          name: Polski
           build: true
-        - locale: "ro"
-          name: Romanian
-          build: true
-        - locale: "nl"
-          name: Dutch
-          build: true
-        - locale: "cs"
-          name: Czech
-          build: true
-        - locale: "pt"
-          name: Portuguese
-          build: true
-        - locale: "ja"
-          name: Japanese
-          build: true
-        - locale: "ko"
-          name: Korean
-          build: true
-        - locale: "ar"
-          name: Arabic
-          build: true
-        - locale: "hi"
-          name: Hindi
-          build: true
-        - locale: "bn"
-          name: Bengali
-          build: true
-        - locale: "tr"
-          name: Turkish
-          build: true
-        - locale: "uk"
-          name: Ukrainian
-          build: true
-        - locale: "sv"
-          name: Swedish
-          build: true
-        - locale: "fi"
-          name: Finnish
-          build: true
-        - locale: "da"
-          name: Danish
-          build: true
-        - locale: "hu"
-          name: Hungarian
-          build: true
-        - locale: "el"
-          name: Greek
-          build: true
-        - locale: "bg"
-          name: Bulgarian
-          build: true
-        - locale: "sr"
-          name: Serbian
-          build: true
-        - locale: "hr"
-          name: Croatian
-          build: true
-        - locale: "sk"
-          name: Slovak
-          build: true
-        - locale: "sl"
-          name: Slovenian
-          build: true
+          nav_translations:
+            Platform: Platforma
