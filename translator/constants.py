@@ -9,5 +9,14 @@ LANGUAGES = {
     'de': 'German',
     'pl': 'Polish',
     'fr': 'French',
-    'es': 'Spanish'
+    'es': 'Spanish',
+    'it': 'Italian',
+    'ro': 'Romanian',
+    'nl': 'Dutsch',
+    'cs': 'Czech',
+    'pt': 'Portuguese',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'ar': 'Arabic',
+    'hi': 'Hindi',
 }
