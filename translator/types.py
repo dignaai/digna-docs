@@ -6,4 +6,4 @@ __all__ = [
 ]
 
 
-LanguageType = typing.Literal['en', 'de']
+LanguageType = typing.Literal['en', 'de', 'pl']
