@@ -115,25 +115,6 @@ plugins:
             Scheduling: Scheduling
             Integration: Integration
             CLI Reference: CLI Doku
-
-        - locale: "pl"
-          build: true
-          name: Polski
-          nav_translations:
-            Platform: Platforma
-            Databases: Bazy danych
-            Introduction: Wprowadzenie
-            How to schedule a daily job: Jak zdefiniować codzienne zadanie w harmonogramie
-            How to use crontab definition: Jak używać definicji crontab
-            How to create a data project: Jak utworzyć projekt danych
-            How to connect a database to data project: Jak połączyć bazę danych z projektem danych
-            How to add a datasource to project: Jak dodać źródło danych do projektu
-            Getting Started: Pierwsze kroki
-            First Steps: Pierwsze kroki
-            Scheduling: Harmonogram
-            Integration: Integracja
-            CLI Reference: Dokumentacja CLI
-
         - locale: "fr"
           name: Français
           build: true
@@ -151,6 +132,7 @@ plugins:
             Scheduling: Planification
             Integration: Intégration
             CLI Reference: Référence CLI
+
 
 
         - locale: "es"
@@ -178,6 +160,9 @@ plugins:
           Databases: Basi di dati
           Introduction: Introduzione
           nav_translations:
+              Platform: Piattaforma
+              Databases: Basi di dati
+              Introduction: Introduzione
               How to schedule a daily job: Come pianificare un job giornaliero
               How to use crontab definition: Come utilizzare una definizione di crontab
               How to create a data project: Come creare un progetto di dati
@@ -189,10 +174,180 @@ plugins:
               Integration: Integrazione
               CLI Reference: Riferimento CLI
 
+        - locale: "pl"
+          build: true
+          name: Polski
+          nav_translations:
+            Platform: Platforma
+            Databases: Bazy danych
+            Introduction: Wprowadzenie
+            How to schedule a daily job: Jak zdefiniować codzienne zadanie w harmonogramie
+            How to use crontab definition: Jak używać definicji crontab
+            How to create a data project: Jak utworzyć projekt danych
+            How to connect a database to data project: Jak połączyć bazę danych z projektem danych
+            How to add a datasource to project: Jak dodać źródło danych do projektu
+            Getting Started: Pierwsze kroki
+            First Steps: Pierwsze kroki
+            Scheduling: Harmonogram
+            Integration: Integracja
+            CLI Reference: Dokumentacja CLI
+
+        - locale: "pt"
+          name: Português
+          build: true
+          nav_translations:
+            Platform: Plataforma
+            Databases: Bancos de dados
+            Introduction: Introdução
+            How to schedule a daily job: Como agendar uma tarefa diária
+            How to use crontab definition: Como usar uma definição de crontab
+            How to create a data project: Como criar um projeto de dados
+            How to connect a database to data project: Como conectar um banco de dados a um projeto de dados
+            How to add a datasource to project: Como adicionar uma fonte de dados a um projeto
+            Getting Started: Primeiros passos
+            First Steps: Primeiros passos
+            Scheduling: Agendamento
+            Integration: Integração
+
+        - locale: "sv"
+          name: Svenska
+          build: true
+          nav_translations:
+              Platform: Plattform
+              Databases: Databaser
+              Introduction: Introduktion
+              How to schedule a daily job: Hur man schemalägger ett dagligt jobb
+              How to use crontab definition: Hur man använder en crontab-definition
+              How to create a data project: Hur man skapar ett dataprojekt
+              How to connect a database to data project: Hur man ansluter en databas till ett dataprojekt
+              How to add a datasource to project: Hur man lägger till en datakälla i ett projekt
+              Getting Started: Kom igång
+              First Steps: Första stegen
+              Scheduling: Schemaläggning
+              Integration: Integration
+              CLI Reference: CLI-referens
+
+        - locale: "no"
+          name: Norsk
+          build: true
+          nav_translations:
+            Platform: Plattform
+            Databases: Databaser
+            Introduction: Introduksjon
+            How to schedule a daily job: Hvordan planlegge en daglig jobb
+            How to use crontab definition: Hvordan bruke en crontab-definisjon
+            How to create a data project: Hvordan opprette et dataprosjekt
+            How to connect a database to data project: Hvordan koble en database til et dataprosjekt
+            How to add a datasource to project: Hvordan legge til en datakilde i et prosjekt
+            Getting Started: Kom i gang
+            First Steps: Første steg
+            Scheduling: Planlegging
+            Integration: Integrasjon
+            CLI Reference: CLI-referanse
+
+
+        - locale: "da"
+          name: Dansk
+          build: true
+          nav_translations:
+            Platform: Platform
+            Databases: Databaser
+            Introduction: Introduktion
+            How to schedule a daily job: Sådan planlægges et dagligt job
+            How to use crontab definition: Sådan bruges en crontab-definition
+            How to create a data project: Sådan oprettes et dataprojekt
+            How to connect a database to data project: Sådan tilsluttes en database til et dataprojekt
+            How to add a datasource to project: Sådan tilføjes en datakilde til et projekt
+            Getting Started: Kom i gang
+            First Steps: Første trin
+            Scheduling: Planlægning
+            Integration: Integration
+            CLI Reference: CLI-reference
+
+
+        - locale: "fi"
+          name: Suomi
+          build: true
+          nav_translations:
+            Platform: Alusta
+            Databases: Tietokannat
+            Introduction: Johdanto
+            How to schedule a daily job: Kuinka ajoittaa päivittäinen tehtävä
+            How to use crontab definition: Kuinka käyttää crontab-määritelmää
+            How to create a data project: Kuinka luoda dataprojeki
+            How to connect a database to data project: Kuinka yhdistää tietokanta dataprojekiin
+            How to add a datasource to project: Kuinka lisätä tietolähde projektiin
+            Getting Started: Aloittaminen
+            First Steps: Ensiaskeleet
+            Scheduling: Ajoitus
+            Integration: Integraatio
+            CLI Reference: CLI-viite
+
+
+        - locale: "et"
+          name: Eesti
+          build: true
+          nav_translations:
+            Platform: Platvorm
+            Databases: Andmebaasid
+            Introduction: Sissejuhatus
+            How to schedule a daily job: Kuidas ajastada igapäevast tööülesannet
+            How to use crontab definition: Kuidas kasutada crontab määratlust
+            How to create a data project: Kuidas luua andmeprojekt
+            How to connect a database to data project: Kuidas ühendada andmebaas andmeprojektiga
+            How to add a datasource to project: Kuidas lisada andmeallikas projekti
+            Getting Started: Alustamine
+            First Steps: Esimesed sammud
+            Scheduling: Ajastamine
+            Integration: Integratsioon
+            CLI Reference: CLI viide
+
+
+        - locale: "lt"
+          name: Lietuvių
+          build: true
+          nav_translations:
+            Platform: Platforma
+            Databases: Duomenų bazės
+            Introduction: Įvadas
+            How to schedule a daily job: Kaip suplanuoti kasdienę užduotį
+            How to use crontab definition: Kaip naudoti crontab apibrėžimą
+            How to create a data project: Kaip sukurti duomenų projektą
+            How to connect a database to data project: Kaip prijungti duomenų bazę prie duomenų projekto
+            How to add a datasource to project: Kaip pridėti duomenų šaltinį prie projekto
+            Getting Started: Pradžia
+            First Steps: Pirmieji žingsniai
+            Scheduling: Planavimas
+            Integration: Integracija
+            CLI Reference: CLI nuoroda
+
+
+        - locale: "lv"
+          name: Latviešu
+          build: true
+          nav_translations:
+            Platform: Platforma
+            Databases: Datu bāzes
+            Introduction: Ievads
+            How to schedule a daily job: Kā ieplānot ikdienas uzdevumu
+            How to use crontab definition: Kā izmantot crontab definīciju
+            How to create a data project: Kā izveidot datu projektu
+            How to connect a database to data project: Kā savienot datu bāzi ar datu projektu
+            How to add a datasource to project: Kā pievienot datu avotu projektam
+            Getting Started: Sākums
+            First Steps: Pirmie soļi
+            Scheduling: Plānošana
+            Integration: Integrācija
+            CLI Reference: CLI atsauce
+
+
         - locale: "nl"
           name: Nederlands
           build: true
           nav_translations:
+            Platform: Platform
+            Databases: Databanken
+            Introduction: Inleiding
             How to schedule a daily job: Hoe je een dagelijkse taak inplant
             How to use crontab definition: Hoe je een crontab-definitie gebruikt
             How to create a data project: Hoe je een dataproject maakt
@@ -208,6 +363,9 @@ plugins:
           name: Čeština
           build: true
           nav_translations:
+            Platform: Platforma
+            Databases: Databáze
+            Introduction: Úvod
             How to schedule a daily job: Jak naplánovat denní úlohu
             How to use crontab definition: Jak použít definici crontabu
             How to create a data project: Jak vytvořit datový projekt
@@ -219,24 +377,126 @@ plugins:
             Integration: Integrace
             CLI Reference: Referenční příručka CLI
 
-        - locale: "pt"
-          name: Português
+        - locale: hu
+          name: Magyar
           build: true
           nav_translations:
-            How to schedule a daily job: Como agendar uma tarefa diária
-            How to use crontab definition: Como usar uma definição de crontab
-            How to create a data project: Como criar um projeto de dados
-            How to connect a database to data project: Como conectar um banco de dados a um projeto de dados
-            How to add a datasource to project: Como adicionar uma fonte de dados a um projeto
-            Getting Started: Primeiros passos
-            First Steps: Primeiros passos
-            Scheduling: Agendamento
-            Integration: Integração
+              Platform: Platforma
+              Databases: Adatbázisok
+              Introduction: Bevezetés
+              How to schedule a daily job: Napi feladat ütemezése
+              How to use crontab definition: A crontab definíció használata
+              How to create a data project: Adatprojekt létrehozása
+              How to connect a database to data project: Adatbázis csatlakoztatása az adatprojekthez
+              How to add a datasource to project: Adatforrás hozzáadása a projekthez
+              Getting Started: Első lépések
+              First Steps: Első lépések
+              Scheduling: Ütemezés
+              Integration: Integráció
+              CLI Reference: CLI-referencia
+
+
+        - locale: tr
+          name: Türkçe
+          build: true
+          nav_translations:
+            Platform: Platform
+            Databases: Veritabanları
+            Introduction: Giriş
+            How to schedule a daily job: Günlük bir işi zamanlama
+            How to use crontab definition: Bir crontab tanımını kullanma
+            How to create a data project: Bir veri projesi oluşturma
+            How to connect a database to data project: Bir veritabanını veri projesine bağlama
+            How to add a datasource to project: Bir projeye veri kaynağı ekleme
+            Getting Started: Başlarken
+            First Steps: İlk adımlar
+            Scheduling: Zamanlama
+            Integration: Entegrasyon
+            CLI Reference: CLI referansı
+
+
+        - locale: "ro"
+          name: Română
+          build: true
+          nav_translations:
+            Platform: Platformă
+            Databases: Baze de date
+            Introduction: Introducere
+            How to schedule a daily job: Cum să programezi o sarcină zilnică
+            How to use crontab definition: Cum să folosești o definiție crontab
+            How to create a data project: Cum să creezi un proiect de date
+            How to connect a database to data project: Cum să conectezi o bază de date la un proiect de date
+            How to add a datasource to project: Cum să adaugi o sursă de date la un proiect
+            Getting Started: Noțiuni de bază
+            First Steps: Primii pași
+            Scheduling: Programare
+            Integration: Integrare
+            CLI Reference: Referință CLI
+
+        - locale: sl
+          name: Slovenščina
+          build: true
+          nav_translations:
+            Platform: Platforma
+            Databases: Podatkovne baze
+            Introduction: Uvod
+            How to schedule a daily job: Kako razporediti dnevno opravilo
+            How to use crontab definition: Kako uporabiti definicijo crontab
+            How to create a data project: Kako ustvariti podatkovni projekt
+            How to connect a database to data project: Kako povezati podatkovno bazo s podatkovnim projektom
+            How to add a datasource to project: Kako dodati vir podatkov projektu
+            Getting Started: Začetek
+            First Steps: Prvi koraki
+            Scheduling: Razporejanje
+            Integration: Integracija
+            CLI Reference: Referenca CLI
+
+
+        - locale: el
+          name: Ελληνικά
+          build: true
+          nav_translations:
+            Platform: Πλατφόρμα
+            Databases: Βάσεις δεδομένων
+            Introduction: Εισαγωγή
+            How to schedule a daily job: Πώς να προγραμματίσετε μια ημερήσια εργασία
+            How to use crontab definition: Πώς να χρησιμοποιήσετε έναν ορισμό crontab
+            How to create a data project: Πώς να δημιουργήσετε ένα έργο δεδομένων
+            How to connect a database to data project: Πώς να συνδέσετε μια βάση δεδομένων με ένα έργο δεδομένων
+            How to add a datasource to project: Πώς να προσθέσετε μια πηγή δεδομένων σε ένα έργο
+            Getting Started: Ξεκινώντας
+            First Steps: Πρώτα βήματα
+            Scheduling: Προγραμματισμός
+            Integration: Ενσωμάτωση
+            CLI Reference: Αναφορά CLI
+
+
+        - locale: uk
+          name: Українська
+          build: true
+          nav_translations:
+            Platform: Платформа
+            Databases: Бази даних
+            Introduction: Вступ
+            How to schedule a daily job: Як запланувати щоденне завдання
+            How to use crontab definition: Як використовувати визначення crontab
+            How to create a data project: Як створити проєкт даних
+            How to connect a database to data project: Як підключити базу даних до проєкту даних
+            How to add a datasource to project: Як додати джерело даних до проєкту
+            Getting Started: Початок роботи
+            First Steps: Перші кроки
+            Scheduling: Планування
+            Integration: Інтеграція
+            CLI Reference: Довідник CLI
+
 
         - locale: "ja"
           name: 日本語
           build: true
           nav_translations:
+            Platform: プラットフォーム
+            Databases: データベース
+            Introduction: イントロダクション
             How to schedule a daily job: 毎日のジョブをスケジュールする方法
             How to use crontab definition: crontab 定義を使用する方法
             How to create a data project: データプロジェクトを作成する方法
@@ -252,6 +512,9 @@ plugins:
           name: 한국어
           build: true
           nav_translations:
+            Platform: 플랫폼
+            Databases: 데이터베이스
+            Introduction: 소개
             How to schedule a daily job: 일일 작업을 스케줄하는 방법
             How to use crontab definition: crontab 정의를 사용하는 방법
             How to create a data project: 데이터 프로젝트를 생성하는 방법
@@ -263,25 +526,13 @@ plugins:
             Integration: 통합
             CLI Reference: CLI 참고 문서
 
-        - locale: "ar"
-          name: العربية
-          build: true
-          nav_translations:
-            How to schedule a daily job: كيفية جدولة مهمة يومية
-            How to use crontab definition: كيفية استخدام تعريف crontab
-            How to create a data project: كيفية إنشاء مشروع بيانات
-            How to connect a database to data project: كيفية ربط قاعدة بيانات بمشروع بيانات
-            How to add a datasource to project: كيفية إضافة مصدر بيانات إلى مشروع
-            Getting Started: البدء
-            First Steps: الخطوات الأولى
-            Scheduling: الجدولة
-            Integration: التكامل
-            CLI Reference: مرجع CLI
-
         - locale: "hi"
           name: हिन्दी
           build: true
           nav_translations:
+            Platform: प्लेटफ़ॉर्म
+            Databases: डेटाबेस
+            Introduction: परिचय
             How to schedule a daily job: दैनिक कार्य को शेड्यूल करने का तरीका
             How to use crontab definition: crontab परिभाषा का उपयोग कैसे करें
             How to create a data project: डेटा प्रोजेक्ट कैसे बनाएं
@@ -293,17 +544,24 @@ plugins:
             Integration: एकीकरण
             CLI Reference: CLI संदर्भ
 
-        - locale: "ro"
-          name: Română
+
+        - locale: "ar"
+          name: العربية
           build: true
           nav_translations:
-            How to schedule a daily job: Cum să programezi o sarcină zilnică
-            How to use crontab definition: Cum să folosești o definiție crontab
-            How to create a data project: Cum să creezi un proiect de date
-            How to connect a database to data project: Cum să conectezi o bază de date la un proiect de date
-            How to add a datasource to project: Cum să adaugi o sursă de date la un proiect
-            Getting Started: Noțiuni de bază
-            First Steps: Primii pași
-            Scheduling: Programare
-            Integration: Integrare
-            CLI Reference: Referință CLI
+            Platform: المنصة
+            Databases: قواعد البيانات
+            Introduction: المقدمة
+            How to schedule a daily job: كيفية جدولة مهمة يومية
+            How to use crontab definition: كيفية استخدام تعريف crontab
+            How to create a data project: كيفية إنشاء مشروع بيانات
+            How to connect a database to data project: كيفية ربط قاعدة بيانات بمشروع بيانات
+            How to add a datasource to project: كيفية إضافة مصدر بيانات إلى مشروع
+            Getting Started: البدء
+            First Steps: الخطوات الأولى
+            Scheduling: الجدولة
+            Integration: التكامل
+            CLI Reference: مرجع CLI
+
+
+
