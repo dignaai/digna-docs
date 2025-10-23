@@ -35,7 +35,7 @@ nav:
           - How to add a datasource to project: getting_started/how_to_add_a_datasource_to_project.md
       - Scheduling:
           - How to schedule a daily job: getting_started/how_to_schedule_a_daily_job.md
-          - How to use crontab definition: getting_started/advanced_scheduling_with_crontab.md
+          - How to use crontab definition: getting_started/how_to_use_crontab.md
   - Integration:
       - Databases:
           - Azure Synaps: databases/azure_synapse_connector_guide.md
@@ -103,9 +103,71 @@ plugins:
           build: true
           nav_translations:
             Platform: Plattform
+            Databases: Datenbanken
+            Introduction: Einführung
+            How to schedule a daily job: Wie man einen täglichen Job schedult
+            How to use crontab definition: Wie man eine Crontab-Definition verwendet
+            How to create a data project: Wie man ein Datenprojekt erstellt
+            How to connect a database to data project: Wie man eine Datenbank mit einem Datenprojekt verbindet
+            How to add a datasource to project: Wie man eine Datenquelle zu einem Projekt hinzufügt
+            Getting Started: Erste Schritte
+            First Steps: Erste Schritte
+            Scheduling: Scheduling
+            Integration: Integration
+            CLI Reference: CLI Doku
 
         - locale: "pl"
           name: Polski
           build: true
           nav_translations:
             Platform: Platforma
+            Databases: Bazy danych
+            Introduction: Wprowadzenie
+            How to schedule a daily job: Jak zdefiniować codzienne zadanie w harmonogramie
+            How to use crontab definition: Jak używać definicji crontab
+            How to create a data project: Jak utworzyć projekt danych
+            How to connect a database to data project: Jak połączyć bazę danych z projektem danych
+            How to add a datasource to project: Jak dodać źródło danych do projektu
+            Getting Started: Pierwsze kroki
+            First Steps: Pierwsze kroki
+            Scheduling: Harmonogram
+            Integration: Integracja
+            CLI Reference: Dokumentacja CLI
+
+        - locale: "fr"
+          name: Français
+          build: true
+          nav_translations:
+            Platform: Plateforme
+            Databases: Bases de données
+            Introduction: Introduction
+            How to schedule a daily job: Comment programmer une tâche quotidienne
+            How to use crontab definition: Comment utiliser une définition crontab
+            How to create a data project: Comment créer un projet de données
+            How to connect a database to data project: Comment connecter une base de données à un projet de données
+            How to add a datasource to project: Comment ajouter une source de données à un projet
+            Getting Started: Premiers pas
+            First Steps: Premières étapes
+            Scheduling: Planification
+            Integration: Intégration
+            CLI Reference: Référence CLI
+
+
+        - locale: "es"
+          name: Español
+          build: true
+          nav_translations:
+             Platform: Plataforma
+             Databases: Bases de datos
+             Introduction: Introducción
+             How to schedule a daily job: Cómo programar una tarea diaria
+             How to use crontab definition: Cómo usar una definición de crontab
+             How to create a data project: Cómo crear un proyecto de datos
+             How to connect a database to data project: Cómo conectar una base de datos a un proyecto de datos
+             How to add a datasource to project: Cómo añadir una fuente de datos a un proyecto
+             Getting Started: Primeros pasos
+             First Steps: Primeros pasos
+             Scheduling: Programación
+             Integration: Integración
+             CLI Reference: Referencia CLI
+
