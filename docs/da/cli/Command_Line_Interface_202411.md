@@ -1,0 +1,403 @@
+---
+title: digna CLI Reference 2024.11 – Commands & Examples | digna Dokumentation
+description: Fuld reference for digna CLI-udgivelsen 2024.11. Lær, hvordan du administrerer brugere, repositories og data med kommandoer såsom add-user, check-repo-connection, upgrade-repo, inspect, tls-status og flere.
+canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
+image: /assets/logo_square.png
+---
+
+# digna CLI Reference 2024.11
+**2024-11-03**
+
+Denne side dokumenterer det fulde sæt af kommandoer tilgængelige i ***digna*** CLI-udgivelsen **2024.11**, inklusive eksempler på brug og muligheder.
+
+
+---
+## CLI Basics
+
+---
+
+## Brug af `help`-optionen
+
+`--help`-optionen giver information om tilgængelige kommandoer og deres brug. Der er to hovedmåder at bruge denne option på:
+
+1. **Visning af generel hjælp:**
+   
+    Brug --help umiddelbart efter nøgleordet ***dignacli***  
+   ```bash
+   dignacli --help
+   ```
+
+2. **Få hjælp til specifikke kommandoer:**  
+  
+    For detaljeret information om en specifik kommando, tilføj `--help` til den pågældende kommando.  
+    For eksempel, for at få hjælp til kommandoen `add-user`, kør:
+     ```bash
+     dignacli add-user --help
+     ```
+
+     ### output:
+      
+     - **Kommando-beskrivelse:** Giver en detaljeret beskrivelse af, hvad kommandoen gør.  
+     - **Syntax:** Viser den præcise syntaks, inklusiv obligatoriske og valgfrie argumenter.  
+     - **Options:** Lister eventuelle options specifikke for kommandoen sammen med forklaringer.  
+     - **Eksempler:** Indeholder eksempler på, hvordan kommandoen kan udføres effektivt.
+
+  
+## Brug af `check-repo-connection`-kommandoen
+
+check-repo-connection-kommandoen er et hjælpeværktøj i ***digna*** CLI, der er designet til at teste forbindelse og adgang til et angivet ***digna*** repository. Denne kommando sikrer, at CLI kan kommunikere med repositoryet.
+      
+### Kommando-brug
+```bash
+dignacli check-repo-connection
+```
+
+Ved vellykket udførelse viser kommandoen en bekræftelse af forbindelsen samt oplysninger om repositoryet: Repository version, Host, Database og Schema.  
+  
+Hvis repository-forbindelsen ikke lykkes, skal du tjekke filen config.toml for korrekte konfigurationsindstillinger.
+
+## Brug af `version`-kommandoen
+
+For at tjekke den installerede version af *dignacli*, brug --version-optionen.  
+  
+### Kommando-brug
+```bash
+dignacli --version
+```
+  
+### Eksempel-output
+```bash
+dignacli version 2024.11
+```
+
+## Brug af logningsoptions
+  
+Som standard er konsoloutputtet fra ***digna***-kommandoer designet til at være minimalistisk. De fleste kommandoer giver mulighed for at vise yderligere information ved hjælp af følgende options:  
+  
+-- verbose (-v)  
+-- debug (-d)  
+-- logfile (lf)  
+ 
+“verbose” og “debug” angiver detaljeringsgraden, mens “logfile”-skiftet tillader at omdirigere outputtet til en fil i stedet for konsolvinduet.
+
+# Brugerstyring
+
+## Brug af `add-user`-kommandoen
+  
+add-user-kommandoen i ***digna*** CLI bruges til at tilføje en ny bruger til ***digna***-systemet.
+  
+### Kommando-brug
+```bash
+dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
+```
+  
+### Argumenter
+
+- **USER_NAME**: Brugernavnet for den nye bruger (påkrævet).
+- **USER_FULL_NAME**: Den fulde navn på den nye bruger (påkrævet).
+- **USER_PASSWORD**: Adgangskoden for den nye bruger (påkrævet).
+
+### Options
+
+- `--is_superuser`, `-su`: Flag for at gøre den nye bruger til administrator.
+- `--valid_until`, `-vu`: Sætter en udløbsdato for brugerkontoen i formatet `YYYY-MM-DD HH:MI:SS`. Hvis ikke angivet, har kontoen ingen udløbsdato.
+
+### Eksempel
+
+For at tilføje en ny bruger med brugernavn `jdoe`, fulde navn `John Doe` og adgangskode `password123`:
+
+```bash
+dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
+```
+  
+For at tilføje en ny bruger og sætte en udløbsdato for kontoen:
+```bash
+dignacli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59"
+```
+
+## Brug af `delete-user`-kommandoen
+  
+`delete-user`-kommandoen i ***digna*** CLI bruges til at fjerne en eksisterende bruger fra ***digna***-systemet.
+  
+### Kommando-brug
+```bash
+dignacli delete-user USER_NAME
+```
+  
+### Argumenter
+- **USER_NAME**: Brugernavnet på den bruger, der skal slettes (påkrævet). Dette er det eneste argument, kommandoen kræver.
+
+### Eksempel
+```bash
+dignacli delete-user jdoe
+```
+  
+Når denne kommando udføres, fjernes brugeren `jdoe` fra ***digna***-systemet, hvilket ophæver deres adgang og sletter deres tilknyttede data og tilladelser i repositoryet.
+
+## Brug af `modify-user`-kommandoen
+
+`modify-user`-kommandoen i ***digna*** CLI bruges til at opdatere oplysninger om en eksisterende bruger i ***digna***-systemet.
+
+### Kommando-brug
+  
+```bash
+dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
+```
+  
+### Argumenter
+  
+- **USER_NAME**: Brugernavnet på den bruger, der skal ændres (påkrævet).
+- **USER_FULL_NAME**: Det nye fulde navn for brugeren (påkrævet).
+  
+### Options  
+  
+- `--is_superuser`, `-su`: Sætter brugeren som superuser og giver forhøjede privilegier. Dette flag kræver ikke en værdi.  
+- `--valid_until`, `-vu`: Sætter en udløbsdato for brugerkontoen i formatet YYYY-MM-DD HH:MI:SS. Hvis ikke angivet, forbliver kontoen gyldig på ubestemt tid.  
+  
+### Eksempel
+  
+For at ændre fulde navn for brugeren `jdoe` til “Johnathan Doe” og sætte brugeren som superuser:
+```bash
+dignacli modify-user jdoe "Johnathan Doe" --is_superuser
+```
+
+## Brug af `modify-user-pwd`-kommandoen
+  
+`modify-user-pwd`-kommandoen i ***digna*** CLI bruges til at ændre adgangskoden for en eksisterende bruger i ***digna***-systemet.
+  
+### Kommando-brug
+```bash
+dignacli modify-user-pwd <USER_NAME> <USER_PWD>
+```
+  
+### Argumenter
+  
+- **USER_NAME**: Brugernavnet for den bruger, hvis adgangskode skal ændres (påkrævet).
+- **USER_PWD**: Den nye adgangskode for brugeren (påkrævet).
+  
+### Eksempel
+  
+For at ændre adgangskoden for brugeren `jdoe` til `newpassword123`:
+```bash
+dignacli modify-user-pwd jdoe newpassword123
+```
+
+## Brug af `list-users`-kommandoen
+
+`list-users`-kommandoen i ***digna*** CLI viser en liste over alle brugere registreret i ***digna***-systemet.
+
+### Kommando-brug
+
+```bash
+dignacli list-users
+```
+
+Når denne kommando køres i ***digna*** CLI, opretter den forbindelse til ***digna***-repositoryet og viser alle brugere med deres ID, brugernavn, fulde navn, superuser-status og udløbstidsstempler.
+
+# Repository-administration
+
+### Brug af `upgrade-repo`-kommandoen
+  
+`upgrade-repo`-kommandoen i ***digna*** CLI bruges til at opgradere eller initialisere ***digna***-repositoryet. Denne kommando er vigtig for at anvende opdateringer eller sætte repository-infrastrukturen op for første gang.
+  
+### Kommando-brug
+
+```bash
+dignacli upgrade-repo [options]
+```
+  
+### Options
+  
+- `--simulation-mode`, `-s`: Når aktiveret kører denne option kommandoen i simulationsmode, som udskriver de SQL-sætninger, der ville blive eksekveret, men ikke udfører dem. Dette er nyttigt til at forhåndsvise ændringer uden at foretage modifikationer i repositoryet.  
+
+  
+### Eksempel
+  
+For at opgradere ***digna***-repositoryet kan du køre kommandoen uden options:
+  
+```bash
+dignacli upgrade-repo
+```  
+For at køre opgraderingen i simulationsmode (for at se SQL-sætningerne uden at anvende dem):
+  
+```bash
+dignacli upgrade-repo --simulation-mode
+```
+  
+Denne kommando er afgørende for at vedligeholde ***digna***-systemet og sikre, at databaseskemaet og andre repository-komponenter er opdaterede i forhold til den seneste softwareversion.
+
+## Brug af `encrypt`-kommandoen
+  
+`encrypt`-kommandoen i ***digna*** CLI bruges til at kryptere en adgangskode.
+  
+### Kommando-brug
+  
+```bash
+dignacli encrypt <PASSWORD>
+```
+    
+### Argumenter
+- **PASSWORD**: Adgangskoden, der skal krypteres (påkrævet).
+  
+### Eksempel
+  
+For at kryptere en adgangskode skal du angive adgangskoden som et argument.   
+For eksempel, for at kryptere adgangskoden `mypassword123`, bruger du:
+```bash
+dignacli encrypt mypassword123
+```
+Denne kommando udskriver den krypterede version af den angivne adgangskode, som derefter kan bruges i sikre sammenhænge. Hvis adgangskode-argumentet ikke gives, vil CLI vise en fejl, der angiver det manglende argument.
+
+## Brug af `generate-key`-kommandoen
+  
+`generate-key`-kommandoen bruges til at generere en Fernet-nøgle, som er nødvendig for at sikre adgangskoder lagret i ***digna***-repositoryet.
+  
+### Kommando-brug
+```bash
+dignacli generate-key
+```
+  
+# Datastyring
+
+## Brug af `clean-up`-kommandoen
+
+`clean-up`-kommandoen i ***digna*** CLI bruges til at fjerne profiler, forudsigelser og data fra Traffic Light System for en eller flere datakilder inden for et angivet projekt. Denne kommando er vigtig for datalivscyklusstyring og hjælper med at holde et organiseret og effektivt data-miljø ved at rydde forældede eller unødvendige data.
+
+### Kommando-brug
+
+```bash
+dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
+```
+  
+### Argumenter
+  
+- **PROJECT_NAME**: Navnet på det projekt, hvorfra data skal fjernes (påkrævet). Hvis du bruger nøgleordet all-projects i dette argument, instrueres ***digna*** om at iterere over alle eksisterende projekter og anvende kommandoen.
+- **FROM_DATE**: Startdato og -tidspunkt for datafjernelsen. Acceptable formater inkluderer %Y-%m-%d, %Y-%m-%dT%H:%M:%S eller %Y-%m-%d %H:%M:%S (påkrævet).
+- **TO_DATE**: Slutdato og -tidspunkt for datafjernelsen, med samme formater som FROM_DATE (påkrævet).
+  
+### Options
+  
+- `--table-name`, `-tn`: Begrænser clean-up-operationen til en specifik tabel inden for projektet.
+- `--table-filter`, `-tf`: Filtre for at begrænse clean-up til tabeller, der indeholder den angivne substring i deres navne.
+- `--timing`, `-tm`: Viser tidsforbruget for clean-up-processen efter færdiggørelse.
+- `--help`: Viser hjælpeinformation for clean-up-kommandoen og afslutter.
+  
+### Eksempel
+  
+For at fjerne data fra projektet ProjectA mellem 1. januar 2023 og 30. juni 2023:
+  
+```bash
+dignacli clean-up ProjectA 2023-01-01 2023-06-30
+```
+  
+For kun at fjerne data fra en specifik tabel kaldet `Table1`:
+  
+```bash
+dignacli clean-up ProjectA 2023-01-01 2023-06-30 --table-name Table1
+```
+  
+Denne kommando hjælper med at styre datalagring og sikrer, at repositoryet kun indeholder relevant information.
+
+## Brug af `inspect`-kommandoen
+
+`inspect`-kommandoen i ***digna*** CLI bruges til at oprette profiler, forudsigelser og data til Traffic Light System for en eller flere datakilder inden for et angivet projekt. Denne kommando hjælper med at analysere og overvåge data over en defineret periode.
+
+### Kommando-brug
+
+```bash
+dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
+```
+  
+### Argumenter
+  
+- **PROJECT_NAME**: Navnet på det projekt, der skal inspiceres (påkrævet). Hvis du bruger nøgleordet all-projects i dette argument, instrueres ***digna*** om at iterere over alle eksisterende projekter og anvende kommandoen.
+- **FROM_DATE**: Startdato og -tidspunkt for datainspektionen. Acceptable formater inkluderer %Y-%m-%d, %Y-%m-%dT%H:%M:%S eller %Y-%m-%d %H:%M:%S (påkrævet).
+- **TO_DATE**: Slutdato og -tidspunkt for datainspektionen, med samme formater som FROM_DATE (påkrævet).
+  
+### Options
+
+- `--table-name`, `-tn`: Begrænser inspektionen til en specifik tabel inden for projektet.
+- `--table-filter`, `-tf`: Filtrerer for kun at inspicere tabeller, der indeholder den angivne substring i deres navne.
+- `--do-profile`: Tvinger genindsamling af profiler. Standard er do-profile.
+- `--no-do-profile`: Forhindrer genindsamling af profiler.
+- `--do-prediction`: Tvinger genberegning af forudsigelser. Standard er do-prediction.
+- `--no-do-prediction`: Forhindrer genberegning af forudsigelser.
+- `--do-alert-status`: Tvinger genberegning af alarmstatusser. Standard er do-alert-status.
+- `--no-do-alert-status`: Forhindrer genberegning af alarmstatusser.
+- `--timing`, `-tm`: Viser varigheden af inspektionsprocessen efter færdiggørelse.
+  
+### Eksempel
+  
+For at inspicere data for projektet `ProjectA` fra 1. januar 2024 til 31. januar 2024:
+  
+```bash
+dignacli inspect ProjectA 2024-01-01 2024-01-31
+```
+  
+For kun at inspicere en bestemt tabel og tvinge genberegning af forudsigelser:
+  
+```bash
+dignacli inspect ProjectA 2024-01-01 2024-01-31 --table-name Table1 --force-prediction
+```
+Denne kommando er nyttig til at generere opdaterede profiler og forudsigelser, overvåge dataintegritet og administrere alarmsystemer inden for en angivet projekt-tidsramme.
+
+## Brug af `tls-status`-kommandoen
+
+`tls-status`-kommandoen i ***digna*** CLI bruges til at forespørge status for Traffic Light System (TLS) for en specifik tabel inden for et projekt på en given dato. Traffic Light System giver indblik i dataenes sundhed og kvalitet og indikerer eventuelle problemer eller advarsler, der kræver opmærksomhed.
+  
+### Kommando-brug
+  
+```bash
+dignacli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
+```
+  
+### Argumenter
+  
+- **PROJECT_NAME**: Navnet på det projekt, som TLS-status forespørges for (påkrævet).
+- **TABLE_NAME**: Den specifikke tabel i projektet, som TLS-status er nødvendig for (påkrævet).
+- **DATE**: Datoen, som TLS-status forespørges for, typisk i formatet %Y-%m-%d (påkrævet).
+  
+### Eksempel
+  
+For at tjekke TLS-status for en tabel kaldet UserData i projektet ProjectA den 1. juli 2024:
+
+```bash
+dignacli tls-status ProjectA UserData 2024-07-01
+```
+
+Denne kommando hjælper brugere med at overvåge og vedligeholde datakvaliteten ved at give en klar og handlingsorienteret statusrapport baseret på foruddefinerede kriterier.
+
+## Brug af `list-projects`-kommandoen
+  
+`list-projects`-kommandoen i ***digna*** CLI bruges til at vise en liste over alle tilgængelige projekter i ***digna***-systemet.
+  
+### Kommando-brug
+  
+```bash
+dignacli list-projects
+```
+
+Denne kommando er særligt nyttig for administratorer og brugere, der administrerer flere projekter, da den giver et hurtigt overblik over de projekter, der er tilgængelige i ***digna***-repositoryet.
+
+## Brug af `list-ds`-kommandoen
+
+`list-ds`-kommandoen i ***digna*** CLI bruges til at vise en liste over alle tilgængelige datakilder inden for et angivet projekt. Denne kommando er nyttig til at få overblik over de dataressourcer, der er tilgængelige til analyse og administration i ***digna***-systemet.
+
+### Kommando-brug
+  
+```bash
+dignacli list-ds <PROJECT_NAME>
+```
+
+### Argumenter
+- **PROJECT_NAME**: Navnet på det projekt, som datakilderne listes for (påkrævet).
+  
+### Eksempel
+  
+For at liste alle datakilder i projektet `ProjectA`:
+  
+```bash
+dignacli list-ds ProjectA
+```
+  
+Denne kommando giver brugerne et overblik over de datakilder, der er tilgængelige i et projekt, og hjælper dem med at navigere og administrere datalandskabet mere effektivt.
