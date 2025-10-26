@@ -4,7 +4,7 @@ site_url: https://docs.digna.ai
 theme:
   language: en
   logo: assets/digna.png
-  favicon: assets/favicon.png
+  favicon: assets/favicon.ico
   name: material
   font: false
   features:
