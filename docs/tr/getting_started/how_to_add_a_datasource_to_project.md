@@ -1,0 +1,37 @@
+---
+title: Veritabanı Bağlama | digna Belgeleri
+description: Mevcut bir projeye digna'da veritabanı bağlama adım adım rehberi. Bir bağlantı seçmeyi, ayarları yapılandırmayı ve güvenli erişimi etkinleştirmeyi öğrenin.
+---
+
+# Bir Projeye Datasource (Table) Ekle
+
+Bu rehber, projenize bir datasource eklemek için gereken en temel adımları gösterir.
+
+## Etkileşimli Demo
+
+<!--ARCADE EMBED START--><div style="position: relative; padding-bottom: calc(45.27777777777778% + 41px); height: 0; width: 100%;"><iframe src="https://demo.arcade.software/jvxy4tXv5xQlRAa1MsLI?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true" title="Add a Data Source to a Project" frameborder="0" loading="lazy" webkitallowfullscreen mozallowfullscreen allowfullscreen allow="clipboard-write" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; color-scheme: light;" ></iframe></div><!--ARCADE EMBED END-->
+
+---
+
+### Adımlar
+
+1. **Projenizi Açın**  
+   Sol menüden **Projects**'e tıklayın ve hedef projeyi seçin.
+
+2. **Datasource Ekle**  
+   **Datasources**'a gidin ve **Add Datasource**'a tıklayın.
+
+3. **Datasource Türünü Seçin**  
+   Veritabanı Türünü seçin: Table veya View.
+
+4. **Listede Datasource'unuzu Bulun**  
+   Listeden datasource'unuzu seçin.
+
+5. **Snapshot Query Tanımlayın**  
+   Snapshot Query'yi tanımlayın. Snapshot query, *digna*'nın verilerinizin bir günlük bölümüne nasıl erişeceğini tanımlar.
+
+6. **Önizleme**  
+   Önizleme'ye tıklayarak snapshot query'nin doğru tanımlanıp tanımlanmadığını doğrulayın.
+
+7. **Datasource Oluştur**  
+   Her şey doğru yapılandırıldıysa, yapılandırmanızı kaydedebilirsiniz.

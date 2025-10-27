@@ -1,6 +1,6 @@
 ---
-title: digna CLI Referansı 2024.12 – Komutlar & Örnekler | digna Dokümantasyonu
-description: digna CLI sürümü 2024.12 için tam referans. add-user, check-repo-connection, upgrade-repo, inspect ve diğer komutlarla kullanıcıları, depoları ve verileri nasıl yöneteceğinizi öğrenin.
+title: digna CLI Referansı 2024.12 – Komutlar ve Örnekler | digna Dokümantasyonu
+description: digna CLI sürümü 2024.12 için eksiksiz referans. add-user, check-repo-connection, upgrade-repo, inspect ve diğer komutlarla kullanıcıları, repository'leri ve veriyi nasıl yöneteceğinizi öğrenin.
 canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
@@ -9,7 +9,7 @@ image: /assets/logo_square.png
 # digna CLI Referansı 2024.12
 **2024-12-09**
 
-Bu sayfa, ***digna*** CLI sürümü **2024.12**'de kullanılabilen tüm komutları, kullanım örnekleri ve seçenekleriyle birlikte belgelemektedir.
+Bu sayfa, ***digna*** CLI sürümü **2024.12**'de kullanılabilir tüm komutları, kullanım örneklerini ve seçeneklerini belgelemektedir.
 
 ---
 
@@ -25,45 +25,44 @@ Bu sayfa, ***digna*** CLI sürümü **2024.12**'de kullanılabilen tüm komutlar
 
 ## `help` Seçeneğinin Kullanımı
 
-`--help` seçeneği, kullanılabilir komutlar ve bunların kullanımına ilişkin bilgi sağlar. Bu seçeneğin iki ana kullanım şekli vardır:
+`--help` seçeneği, kullanılabilir komutlar ve bunların kullanımı hakkında bilgi sağlar. Bu seçeneği kullanmanın iki ana yolu vardır:
 
 1. **Genel Yardımı Görüntüleme:**
    
-    `--help` seçeneğini ***digna*** komutundan hemen sonra kullanın.  
+    `--help` öğesini ***digna*** anahtar kelimesinden hemen sonra kullanın  
    ```bash
    dignacli --help
-   ```
 
-2. **Belirli Komut İçin Yardım Alma:**  
+3.  **Belirli Komutlar İçin Yardım Alma:**  
   
-    Belirli bir komut hakkında detaylı bilgi almak için o komuta `--help` ekleyin.  
-    Örneğin `add-user` komutu için yardım almak isterseniz:
+    Belirli bir komut hakkında ayrıntılı bilgi almak için o komuta `--help` ekleyin.  
+    Örneğin, `add-user` komutu için yardım almak amacıyla şu komutu çalıştırın:
      ```bash
      dignacli add-user --help
      ```
 
      ### çıktı:
       
-     - **Komut Açıklaması:** Komutun ne yaptığını ayrıntılı şekilde açıklar.  
-     - **Sözdizimi:** Gerekli ve isteğe bağlı argümanlar dahil olmak üzere kesin sözdizimini gösterir.  
-     - **Seçenekler:** Komuta özgü seçenekleri ve açıklamalarını listeler.  
-     - **Örnekler:** Komutun etkili şekilde nasıl çalıştırılacağını gösteren örnekler sunar.
+     - **Komut Açıklaması:** Komutun ne yaptığını detaylı şekilde açıklar.  
+     - **Sözdizimi:** Gerekli ve isteğe bağlı argümanlar dahil olmak üzere tam sözdizimini gösterir.  
+     - **Seçenekler:** Komuta özgü tüm seçenekleri ve açıklamalarını listeler.  
+     - **Örnekler:** Komutun etkili şekilde nasıl çalıştırılacağına dair örnekler sağlar.
 
   
 ## `check-repo-connection` Komutunun Kullanımı
 
-check-repo-connection komutu, ***digna*** CLI aracında belirtilen bir ***digna*** deposuna bağlantı ve erişimi test etmek için kullanılan bir yardımcıdır. Bu komut, CLI'nin depoyla etkileşime geçip geçemediğini doğrular.
+check-repo-connection komutu, ***digna*** CLI aracında belirlenen bir ***digna*** repository'sine erişim ve bağlantıyı test etmek için kullanılan bir yardımcı komuttur. Bu komut, CLI'nin repository ile etkileşime girebildiğini doğrular.
       
 ### Komut Kullanımı
 ```bash
 dignacli check-repo-connection
 ```
 
-Başarılı çalıştırma durumunda komut bağlantı onayını ve depo hakkında aşağıdaki bilgileri çıktılar: Depo sürümü, Host, Veritabanı ve Şema.  
+Başarılı yürütme halinde, komut bağlantı onayını ve repository ile ilgili bilgileri (Repository versiyonu, Host, Database ve Schema) çıktı olarak verir.  
   
-Eğer depo bağlantısı başarılı değilse, doğru yapılandırma ayarları için config.toml dosyasını kontrol edin.
+Eğer repository bağlantısı başarılı değilse, config.toml dosyasındaki yapılandırma ayarlarını kontrol edin.
 
-## `version` Komutunun Kullanımı
+## ‘version’ Komutunun Kullanımı
 
 Yüklü *dignacli* sürümünü kontrol etmek için `--version` seçeneğini kullanın.  
   
@@ -77,15 +76,15 @@ dignacli --version
 dignacli version 2024.12
 ```
 
-## Günlükleme (logging) Seçeneklerinin Kullanımı
+## Kayıt (logging) Seçeneklerinin Kullanımı
   
-Varsayılan olarak, ***digna*** komutlarının konsol çıktısı minimal düzeyde olacak şekilde tasarlanmıştır. Çoğu komut ek bilgi sağlamayı mümkün kılar; bunun için aşağıdaki seçenekler kullanılır:  
+Varsayılan olarak, ***digna*** komutlarının konsol çıktısı minimal tutulmuştur. Çoğu komut, aşağıdaki seçenekleri kullanarak ek bilgi sağlamaya olanak tanır:  
   
---verbose (-v)  
---debug (-d)  
---logfile (lf)  
+-- verbose (-v)  
+-- debug (-d)  
+-- logfile (lf)  
  
-“verbose” ve “debug” detay seviyesini belirlerken, “logfile” anahtarı çıktının konsol yerine bir dosyaya yönlendirilmesine olanak tanır.
+“verbose” ve “debug” ayrıntı düzeyini tanımlarken, “logfile” anahtarı çıktının konsol yerine bir dosyaya yönlendirilmesine olanak tanır.
 
 # Kullanıcı Yönetimi
 
@@ -100,14 +99,14 @@ dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
   
 ### Argümanlar
 
-- **USER_NAME**: Yeni kullanıcı için kullanıcı adı (gereklidir).
-- **USER_FULL_NAME**: Yeni kullanıcının tam adı (gereklidir).
-- **USER_PASSWORD**: Yeni kullanıcı için parola (gereklidir).
+- **USER_NAME**: Yeni kullanıcı için kullanıcı adı (zorunlu).
+- **USER_FULL_NAME**: Yeni kullanıcının tam adı (zorunlu).
+- **USER_PASSWORD**: Yeni kullanıcı için parola (zorunlu).
 
 ### Seçenekler
 
-- `--is_superuser`, `-su`: Yeni kullanıcıyı yönetici olarak atamak için bayrak.
-- `--valid_until`, `-vu`: Kullanıcı hesabı için `YYYY-MM-DD HH:MI:SS` formatında bir son geçerlilik tarihi belirler. Belirtilmezse hesapın son kullanma tarihi olmaz.
+- `--is_superuser`, `-su`: Yeni kullanıcıyı yönetici olarak tanımlamak için bayrak.
+- `--valid_until`, `-vu`: Kullanıcı hesabı için `YYYY-MM-DD HH:MI:SS` formatında bir son kullanma tarihi belirler. Belirtilmezse, hesabın bir son kullanma tarihi yoktur.
 
 ### Örnek
 
@@ -117,14 +116,14 @@ Kullanıcı adı `jdoe`, tam adı `John Doe` ve parolası `password123` olan yen
 dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 ```
   
-Hesap son geçerlilik tarihini de ayarlamak için:
+Bir kullanıcı ekleyip hesap son kullanma tarihi ayarlamak için:
 ```bash
 dignacli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59"
 ```
 
 ## `delete-user` Komutunun Kullanımı
   
-`delete-user` komutu, ***digna*** CLI'de mevcut bir kullanıcıyı ***digna*** sisteminden kaldırmak için kullanılır.
+`delete-user` komutu, ***digna*** CLI'de mevcut bir kullanıcıyı sistemden kaldırmak için kullanılır.
   
 ### Komut Kullanımı
 ```bash
@@ -132,14 +131,14 @@ dignacli delete-user USER_NAME
 ```
   
 ### Argümanlar
-- **USER_NAME**: Silinecek kullanıcının kullanıcı adı (gereklidir). Bu komutun gerektirdiği tek argümandır.
+- **USER_NAME**: Silinecek kullanıcının kullanıcı adı (zorunlu). Bu komutun gerektirdiği tek argümandır.
 
 ### Örnek
 ```bash
 dignacli delete-user jdoe
 ```
   
-Bu komut çalıştırıldığında `jdoe` kullanıcısı ***digna*** sisteminden kaldırılacak; erişimi iptal edilecek ve depo içindeki ilişkili verileri ile izinleri silinecektir.
+Bu komut çalıştırıldığında `jdoe` kullanıcısı ***digna*** sisteminden kaldırılacak, erişimi iptal edilecek ve repository'deki ilişkili veri ve izinleri silinecektir.
 
 ## `modify-user` Komutunun Kullanımı
 
@@ -153,17 +152,17 @@ dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
   
 ### Argümanlar
   
-- **USER_NAME**: Değiştirilecek kullanıcının kullanıcı adı (gereklidir).
-- **USER_FULL_NAME**: Kullanıcının yeni tam adı (gereklidir).
+- **USER_NAME**: Güncellenecek kullanıcının kullanıcı adı (zorunlu).
+- **USER_FULL_NAME**: Kullanıcı için yeni tam ad (zorunlu).
   
 ### Seçenekler  
   
-- `--is_superuser`, `-su`: Kullanıcıyı yetkili kullanıcı (superuser) olarak belirler; bu bayrak bir değer gerektirmez.  
-- `--valid_until`, `-vu`: Kullanıcı hesabı için `YYYY-MM-DD HH:MI:SS` formatında bir son geçerlilik tarihi belirler. Sağlanmazsa hesap süresiz olarak geçerli kalır.  
+- `--is_superuser`, `-su`: Kullanıcıyı süper kullanıcı olarak ayarlar; yükseltilmiş ayrıcalık tanır. Bu bayrak değer gerektirmez.  
+- `--valid_until`, `-vu`: Kullanıcı hesabı için `YYYY-MM-DD HH:MI:SS` formatında bir son kullanma tarihi belirler. Belirtilmezse, hesap süresiz geçerli kalır.  
   
 ### Örnek
   
-`jdoe` kullanıcısının tam adını “Johnathan Doe” olarak değiştirmek ve kullanıcıyı superuser yapmak için:
+`jdoe` kullanıcısının tam adını “Johnathan Doe” olarak değiştirmek ve kullanıcıyı süper kullanıcı yapmak için:
 ```bash
 dignacli modify-user jdoe "Johnathan Doe" --is_superuser
 ```
@@ -179,8 +178,8 @@ dignacli modify-user-pwd <USER_NAME> <USER_PWD>
   
 ### Argümanlar
   
-- **USER_NAME**: Parolası değiştirilecek kullanıcının kullanıcı adı (gereklidir).
-- **USER_PWD**: Kullanıcının yeni parolası (gereklidir).
+- **USER_NAME**: Parolası değiştirilecek kullanıcının kullanıcı adı (zorunlu).
+- **USER_PWD**: Kullanıcı için yeni parola (zorunlu).
   
 ### Örnek
   
@@ -199,13 +198,13 @@ dignacli modify-user-pwd jdoe newpassword123
 dignacli list-users
 ```
 
-Bu komutu çalıştırdığınızda ***digna*** deposuna bağlanılır ve kullanıcıların ID, kullanıcı adı, tam adı, superuser durumu ve son geçerlilik zaman damgalarını gösteren bir liste sunulur.
+Bu komut çalıştırıldığında, ***digna*** repository'sine bağlanır ve tüm kullanıcıları ID, kullanıcı adı, tam ad, süper kullanıcı durumu ve son geçerlilik zaman damgaları ile birlikte listeler.
 
-# Depo (Repository) Yönetimi
+# Repository Yönetimi
 
 ### `upgrade-repo` Komutunun Kullanımı
   
-`upgrade-repo` komutu, ***digna*** CLI'de ***digna*** deposunu yükseltmek veya başlatmak için kullanılır. Bu komut, güncellemeleri uygulamak veya depo altyapısını ilk kez kurmak için gereklidir.
+`upgrade-repo` komutu, ***digna*** CLI'de repository'yi yükseltmek veya başlatmak için kullanılır. Bu komut, güncellemeleri uygulamak veya repository altyapısını ilk kez kurmak için gereklidir.
   
 ### Komut Kullanımı
 
@@ -215,23 +214,23 @@ dignacli upgrade-repo [options]
   
 ### Seçenekler
   
-- `--simulation-mode`, `-s`: Etkinleştirildiğinde komut simülasyon modunda çalışır; yürütülecek SQL ifadelerini yazdırır ancak gerçek uygulama yapmaz. Değişiklikleri uygulamadan önce önizleme yapmak için faydalıdır.  
+- `--simulation-mode`, `-s`: Etkinleştirildiğinde komutu simülasyon modunda çalıştırır; yürütülecek SQL ifadelerini yazdırır ancak bunları gerçekten çalıştırmaz. Değişiklikleri uygulamadan önizleme yapmak için yararlıdır.  
 
   
 ### Örnek
   
-***digna*** deposunu yükseltmek için herhangi bir seçenek olmadan komutu çalıştırabilirsiniz:
+***digna*** repository'sini yükseltmek için komutu herhangi bir seçenek olmadan çalıştırabilirsiniz:
   
 ```bash
 dignacli upgrade-repo
 ```  
-Yükseltmeyi simülasyon modunda çalıştırmak (SQL ifadelerini görmek ancak uygulamamak) için:
+Yükseltmeyi simülasyon modunda çalıştırmak (SQL ifadelerini uygulamadan görmek) için:
   
 ```bash
 dignacli upgrade-repo --simulation-mode
 ```
   
-Bu komut, veritabanı şeması ve diğer depo bileşenlerinin yazılımın en son sürümüyle uyumlu olmasını sağlayarak ***digna*** sisteminin bakımında kritik öneme sahiptir.
+Bu komut, ***digna*** sisteminin bakımında kritik öneme sahiptir; veritabanı şemasının ve diğer repository bileşenlerinin yazılımın en son sürümüyle uyumlu olmasını sağlar.
 
 ## `encrypt` Komutunun Kullanımı
   
@@ -244,20 +243,20 @@ dignacli encrypt <PASSWORD>
 ```
     
 ### Argümanlar
-- **PASSWORD**: Şifrelenmesi gereken parola (gereklidir).
+- **PASSWORD**: Şifrelenmesi gereken parola (zorunlu).
   
 ### Örnek
   
-Bir parolayı şifrelemek için parolayı argüman olarak vermeniz gerekir.  
-Örneğin `mypassword123` parolasını şifrelemek için:
+Bir parolayı şifrelemek için parola argümanını sağlamanız gerekir.  
+Örneğin, `mypassword123` parolasını şifrelemek için:
 ```bash
 dignacli encrypt mypassword123
 ```
-Bu komut, verilen parolanın şifrelenmiş halini çıktılar; daha sonra güvenli bağlamlarda kullanılabilir. Parola argümanı sağlanmazsa CLI eksik argüman olduğunu belirten bir hata gösterir.
+Bu komut sağlanan parolanın şifrelenmiş halini çıktı olarak verir; bu çıktı daha sonra güvenli ortamlarda kullanılabilir. Parola argümanı sağlanmazsa, CLI eksik argüman hatası gösterecektir.
 
 ## `generate-key` Komutunun Kullanımı
   
-`generate-key` komutu, ***digna*** deposunda saklanan parolaları güvence altına almak için gerekli olan bir Fernet anahtarı oluşturmak için kullanılır.
+`generate-key` komutu, ***digna*** repository'sinde saklanan parolaları güvence altına almak için gerekli olan bir Fernet anahtarı oluşturmak için kullanılır.
   
 ### Komut Kullanımı
 ```bash
@@ -268,7 +267,7 @@ dignacli generate-key
 
 ## `clean-up` Komutunun Kullanımı
 
-`clean-up` komutu, ***digna*** CLI'de bir veya daha fazla veri kaynağı için bir projede profil, tahmin (prediction) ve Trafik Işık Sistemi (Traffic Light System) verilerini temizlemek için kullanılır. Bu komut, veri yaşam döngüsü yönetimi için önemlidir ve eski veya gereksiz verileri temizleyerek düzenli ve verimli bir veri ortamı sağlamaya yardımcı olur.
+`clean-up` komutu, ***digna*** CLI'de belirtilen bir projedeki bir veya daha fazla veri kaynağı için profilleri, tahminleri ve Trafik Işık Sistemi verilerini (Traffic Light System, TLS) silmek için kullanılır. Bu komut, veri yaşam döngüsü yönetimi açısından önemlidir; güncel olmayan veya gereksiz verileri temizleyerek düzenli ve verimli bir veri ortamı sağlar.
 
 ### Komut Kullanımı
 
@@ -278,16 +277,16 @@ dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 ### Argümanlar
   
-- **PROJECT_NAME**: Verilerin silineceği projenin adı (gereklidir). Bu argümana all-projects anahtar kelimesi verildiğinde ***digna*** tüm mevcut projelerde yineleme yaparak bu komutu uygular.
-- **FROM_DATE**: Veri temizliği için başlangıç tarih ve saati. Kabul edilen formatlar %Y-%m-%d, %Y-%m-%dT%H:%M:%S veya %Y-%m-%d %H:%M:%S şeklindedir (gereklidir).
-- **TO_DATE**: Veri temizliği için bitiş tarih ve saati, FROM_DATE ile aynı formatları takip eder (gereklidir).
+- **PROJECT_NAME**: Verinin silineceği projenin adı (zorunlu). Bu argümanda all-projects anahtar kelimesinin kullanılması, ***digna***'nın mevcut tüm projeler üzerinde yineleme yapmasını ve komutu uygulamasını sağlar.
+- **FROM_DATE**: Veri silme işlemine başlama tarihi ve saati. Kabul edilen formatlar %Y-%m-%d, %Y-%m-%dT%H:%M:%S veya %Y-%m-%d %H:%M:%S (zorunlu).
+- **TO_DATE**: Veri silme işlemine bitiş tarihi ve saati; FROM_DATE ile aynı formatları kullanır (zorunlu).
   
 ### Seçenekler
   
-- `--table-name`, `-tn`: Temizleme işlemini proje içindeki belirli bir tablo ile sınırlar.
-- `--table-filter`, `-tf`: Tablo adlarında belirtilen alt dizeyi içeren tablolara temizlemeyi sınırlar.
-- `--timing`, `-tm`: Temizleme işlemi tamamlandıktan sonra süre bilgisini gösterir.
-- `--help`: clean-up komutu için yardım bilgisini gösterir ve çıkar.
+- `--table-name`, `-tn`: Temizleme işlemini proje içindeki belirli bir tabloyla sınırlar.
+- `--table-filter`, `-tf`: Tablo adlarında belirtilen alt diziyi içeren tablolarla sınırlamak için filtre uygular.
+- `--timing`, `-tm`: İşlem tamamlandıktan sonra temizleme süresini gösterir.
+- `--help`: clean-up komutu için yardım bilgilerini görüntüler ve çıkış yapar.
   
 ### Örnek
   
@@ -303,11 +302,11 @@ Sadece `Table1` adlı belirli bir tablodan veri silmek için:
 dignacli clean-up ProjectA 2023-01-01 2023-06-30 --table-name Table1
 ```
   
-Bu komut, veri depolamayı yönetmeye ve deponun yalnızca ilgili bilgileri içermesini sağlamaya yardımcı olur.
+Bu komut, veri depolamayı yönetmeye ve repository'nin yalnızca ilgili bilgileri içermesini sağlamaya yardımcı olur.
 
 ## `inspect` Komutunun Kullanımı
 
-`inspect` komutu, ***digna*** CLI'de bir veya daha fazla veri kaynağı için bir projede profil, tahminler ve Trafik Işık Sistemi verilerini oluşturmak için kullanılır. Bu komut, belirli bir dönem içinde veriyi analiz etmeye ve izlemeye yardımcı olur.
+`inspect` komutu, ***digna*** CLI'de belirtilen bir proje içindeki bir veya daha fazla veri kaynağı için profiller, tahminler ve Trafik Işık Sistemi verileri oluşturmak için kullanılır. Bu komut, belirli bir dönem için veri analizine ve izlemeye yardımcı olur.
 
 ### Komut Kullanımı
 
@@ -317,27 +316,27 @@ dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 ### Argümanlar
   
-- **PROJECT_NAME**: İncelenecek verilerin ait olduğu proje adı (gereklidir). Bu argümana all-projects anahtar kelimesi verildiğinde ***digna*** tüm mevcut projelerde yineleme yaparak bu komutu uygular.
-- **FROM_DATE**: Veri incelemesi için başlangıç tarih ve saati. Kabul edilen formatlar %Y-%m-%d, %Y-%m-%dT%H:%M:%S veya %Y-%m-%d %H:%M:%S şeklindedir (gereklidir).
-- **TO_DATE**: Veri incelemesi için bitiş tarih ve saati, FROM_DATE ile aynı formatları takip eder (gereklidir).
+- **PROJECT_NAME**: İnceleme yapılacak projenin adı (zorunlu). Bu argümanda all-projects anahtar kelimesinin kullanılması, ***digna***'nın mevcut tüm projeler üzerinde yineleme yapmasını ve komutu uygulamasını sağlar.
+- **FROM_DATE**: Veri incelemesine başlama tarihi ve saati. Kabul edilen formatlar %Y-%m-%d, %Y-%m-%dT%H:%M:%S veya %Y-%m-%d %H:%M:%S (zorunlu).
+- **TO_DATE**: Veri incelemesinin bitiş tarihi ve saati; FROM_DATE ile aynı formatları kullanır (zorunlu).
   
 ### Seçenekler
 
-- `--table-name`, `-tn`: İncelemeyi proje içindeki belirli bir tablo ile sınırlar.
-- `--table-filter`, `-tf`: Adlarında belirtilen alt dizeyi içeren tablolara incelemeyi sınırlar.
-- `--do-profile`: Profillerin yeniden toplanmasını tetikler. Varsayılan do-profile'dır.
+- `--table-name`, `-tn`: İncelemeyi proje içindeki belirli bir tabloyla sınırlar.
+- `--table-filter`, `-tf`: Adında belirtilen alt diziyi içeren tabloları incelemek için filtre uygular.
+- `--do-profile`: Profillerin yeniden toplanmasını tetikler. Varsayılan olarak do-profile etkindir.
 - `--no-do-profile`: Profillerin yeniden toplanmasını engeller.
-- `--do-prediction`: Tahminlerin yeniden hesaplanmasını tetikler. Varsayılan do-prediction'dır.
+- `--do-prediction`: Tahminlerin yeniden hesaplanmasını tetikler. Varsayılan olarak do-prediction etkindir.
 - `--no-do-prediction`: Tahminlerin yeniden hesaplanmasını engeller.
-- `--do-alert-status`: Uyarı durumlarının yeniden hesaplanmasını tetikler. Varsayılan do-alert-status'tur.
+- `--do-alert-status`: Uyarı durumlarının yeniden hesaplanmasını tetikler. Varsayılan olarak do-alert-status etkindir.
 - `--no-do-alert-status`: Uyarı durumlarının yeniden hesaplanmasını engeller.
-- `--iterative`: Belirtilen dönemin günlük yinelemelerle incelenmesini tetikler. Varsayılan iterative'dir.
-- `--no-iterative`: Belirtilen dönemin tek seferde incelenmesini sağlar.
-- `--timing`, `-tm`: İnceleme işlemi tamamlandıktan sonra sürenin gösterilmesini sağlar.
+- `--iterative`: Belirtilen dönemin günlük yinelemelerle incelenmesini tetikler. Varsayılan olarak iterative etkindir.
+- `--no-iterative`: Tüm dönemin tek seferde incelenmesini tetikler.
+- `--timing`, `-tm`: İnceleme işlemi tamamlandıktan sonra süresini gösterir.
   
 ### Örnek
   
-ProjectA projesi için 1 Ocak 2024 ile 31 Ocak 2024 arasındaki verileri incelemek için:
+`ProjectA` projesinin 1 Ocak 2024 ile 31 Ocak 2024 arasındaki verilerini incelemek için:
   
 ```bash
 dignacli inspect ProjectA 2024-01-01 2024-01-31
@@ -348,11 +347,11 @@ Sadece belirli bir tabloyu incelemek ve tahminlerin yeniden hesaplanmasını zor
 ```bash
 dignacli inspect ProjectA 2024-01-01 2024-01-31 --table-name Table1 --force-prediction
 ```
-Bu komut, güncellenmiş profiller ve tahminler oluşturmak, veri bütünlüğünü izlemek ve belirli bir proje zaman aralığı içinde uyarı sistemlerini yönetmek için faydalıdır.
+Bu komut, güncellenmiş profiller ve tahminler oluşturmak, veri bütünlüğünü izlemek ve belirtilen proje zaman aralığında uyarı sistemlerini yönetmek için kullanışlıdır.
 
 ## `tls-status` Komutunun Kullanımı
 
-`tls-status` komutu, ***digna*** CLI'de belirli bir proje içindeki bir tablonun belirli bir tarihteki Trafik Işık Sistemi (TLS) durumunu sorgulamak için kullanılır. Trafik Işık Sistemi, verinin sağlık ve kalite durumu hakkında içgörü sağlar ve dikkat gerektiren sorunlar veya uyarılar hakkında bilgi verir.
+`tls-status` komutu, ***digna*** CLI'de belirli bir proje içindeki bir tablonun belirli bir tarihteki Traffic Light System (TLS) durumunu sorgulamak için kullanılır. Trafik Işık Sistemi, verinin sağlığı ve kalitesi hakkında içgörü sağlar; dikkat edilmesi gereken sorunlar veya uyarılar hakkında bilgi verir.
   
 ### Komut Kullanımı
   
@@ -362,23 +361,23 @@ dignacli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
   
 ### Argümanlar
   
-- **PROJECT_NAME**: TLS durumunun sorgulandığı proje adı (gereklidir).
-- **TABLE_NAME**: TLS durumunun gerektiği belirli tablo (gereklidir).
-- **DATE**: TLS durumunun sorgulandığı tarih, genellikle %Y-%m-%d formatındadır (gereklidir).
+- **PROJECT_NAME**: TLS durumu sorgulanan projenin adı (zorunlu).
+- **TABLE_NAME**: TLS durumu istenen proje içindeki belirli tablo (zorunlu).
+- **DATE**: TLS durumunun sorgulandığı tarih, genellikle %Y-%m-%d formatında (zorunlu).
   
 ### Örnek
   
-ProjectA projesinde UserData adlı tablonun 1 Temmuz 2024 tarihindeki TLS durumunu kontrol etmek için:
+`ProjectA` projesinde `UserData` adlı tablonun 1 Temmuz 2024 tarihindeki TLS durumunu kontrol etmek için:
 
 ```bash
 dignacli tls-status ProjectA UserData 2024-07-01
 ```
 
-Bu komut, önceden tanımlanmış kriterlere dayalı olarak açık ve uygulanabilir bir durum raporu sağlayarak kullanıcıların veri kalitesini izlemesine ve sürdürmesine yardımcı olur.
+Bu komut, önceden tanımlanmış kriterlere dayalı olarak açık ve uygulanabilir bir durum raporu sağlayarak kullanıcıların veri kalitesini izlemelerine ve sürdürmelerine yardımcı olur.
 
 ## `list-projects` Komutunun Kullanımı
   
-`list-projects` komutu, ***digna*** CLI'de sistemde mevcut tüm projelerin listesini görüntülemek için kullanılır.
+`list-projects` komutu, ***digna*** CLI'de mevcut tüm projelerin bir listesini görüntülemek için kullanılır.
   
 ### Komut Kullanımı
   
@@ -386,11 +385,11 @@ Bu komut, önceden tanımlanmış kriterlere dayalı olarak açık ve uygulanabi
 dignacli list-projects
 ```
 
-Bu komut, birden fazla projeyi yöneten yöneticiler ve kullanıcılar için özellikle faydalıdır; ***digna*** deposundaki mevcut projelerin hızlı bir özetini sunar.
+Bu komut, birden fazla projeyi yöneten yöneticiler ve kullanıcılar için özellikle faydalıdır; ***digna*** repository'sindeki kullanılabilir projelerin hızlı bir özetini sağlar.
 
 ## `list-ds` Komutunun Kullanımı
 
-`list-ds` komutu, ***digna*** CLI'de belirli bir proje içindeki tüm veri kaynaklarını listelemek için kullanılır. Bu komut, analiz ve yönetim için mevcut veri varlıklarını anlamaya yardımcı olur.
+`list-ds` komutu, ***digna*** CLI'de belirtilen bir proje içindeki mevcut tüm veri kaynaklarının bir listesini görüntülemek için kullanılır. Bu komut, ***digna*** sisteminde analiz ve yönetim için hangi veri varlıklarının mevcut olduğunu anlamaya yardımcı olur.
 
 ### Komut Kullanımı
   
@@ -399,14 +398,14 @@ dignacli list-ds <PROJECT_NAME>
 ```
 
 ### Argümanlar
-- **PROJECT_NAME**: Veri kaynaklarının listelendiği proje adı (gereklidir).
+- **PROJECT_NAME**: Veri kaynaklarının listelendiği projenin adı (zorunlu).
   
 ### Örnek
   
-ProjectA adlı projedeki tüm veri kaynaklarını listelemek için:
+`ProjectA` adlı projedeki tüm veri kaynaklarını listelemek için:
   
 ```bash
 dignacli list-ds ProjectA
 ```
   
-Bu komut, bir projenin sahip olduğu veri kaynaklarına genel bir bakış sağlayarak veri ortamını daha etkili yönetmelerine yardımcı olur.
+Bu komut, bir projede mevcut olan veri kaynakları hakkında kullanıcıya genel bir bakış sağlar ve veri ortamını daha etkili yönetmelerine yardımcı olur.
