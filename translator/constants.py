@@ -31,6 +31,7 @@ LANGUAGES = {
     'it': 'Italian',
     'pt': 'Portuguese',
     'ro': 'Romanian',
+    'tr': 'Turkey',
 
     # Middle East & Asia
     'ar': 'Arabic',
