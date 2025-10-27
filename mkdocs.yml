@@ -17,7 +17,7 @@ theme:
     - navigation.indexes
 
 extra_javascript:
-  - assets/javascripts/clarity.js
+  - https://www.clarity.ms/tag/twpirk0ect
 
 nav:
   - "": index.md
