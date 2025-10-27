@@ -17,7 +17,7 @@ theme:
     - navigation.indexes
 
 extra_javascript:
-  - js/clarity.js
+  - assets/javascripts/clarity.js
 
 nav:
   - "": index.md
