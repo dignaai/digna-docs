@@ -15,6 +15,10 @@ theme:
     - search.highlight
     - search.share
     - navigation.indexes
+
+extra_javascript:
+  - js/clarity.js
+
 nav:
   - "": index.md
   - Platform:
