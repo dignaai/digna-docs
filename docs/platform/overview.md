@@ -76,7 +76,7 @@ All modules work together to provide complete visibility into your data ecosyste
 ## Frequently Asked Questions
 
 **Do I need all modules to start?**  
-No — each module can be licensed and deployed independently. The *digna Core* component is required as the foundation.
+No — each module can be licensed and deployed independently. 
 
 **How does digna detect anomalies?**  
 Through AI models that learn from historical patterns in data volume, distribution, and value ranges.
