@@ -1,7 +1,6 @@
 ---
 title: digna Platform – AI-Driven Data Quality & Observability | On-Premises & Private Cloud
 description: Discover digna, the European AI platform for Data Quality and Observability. Built for on-premises and private cloud, digna monitors the quality of data directly inside your databases — ensuring compliance, performance, and sovereignty.
-canonical_url: https://docs.digna.ai/platform/
 image: /assets/logo_square.png
 keywords:
   - data quality
@@ -26,7 +25,7 @@ twitter_card: summary_large_image
 # *digna* Platform
 <h1 style="display:none;">AI-Driven Platform for Data Quality, Quality of Data, and Observability of Data – digna</h1>
 
-## European Platform for Data Quality and Observability of Data
+## European Platform for Data Quality and Data Observability
 
 **digna** is an **AI-driven platform for Data Quality and Observability**, designed to operate entirely inside your environment — on-premises or in your private cloud.  
 It ensures continuous control over the *quality of data*, data consistency, and timely delivery.  
