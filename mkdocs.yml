@@ -75,6 +75,24 @@ nav:
 #      link: /de/
 #      lang: de
 
+extra:
+  generator: false
+
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/dignaai/?viewAsMember=true
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/digna_ai
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@digna_ai
+    - icon: fontawesome/brands/facebook
+      link: https://facebook.com/digna.ai
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:office@digna.ai
+
+copyright: >
+    © 2025 digna GmbH — <a href="https://www.digna.ai" target="_blank" rel="noopener">www.digna.ai</a>
+
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -106,6 +124,7 @@ plugins:
           name: English
           default: true
           build: true
+
 
         - locale: "de"
           name: Deutsch
@@ -590,6 +609,3 @@ plugins:
             Scheduling: الجدولة
             Integration: التكامل
             CLI Reference: مرجع CLI
-
-
-

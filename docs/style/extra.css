@@ -3,3 +3,26 @@
   --md-primary-fg-color--light: #ff8a50; /* lighter shade */
   --md-primary-fg-color--dark:  #c41c00; /* darker shade */
 }
+
+
+/* --- Sticky footer setup for MkDocs Material --- */
+
+.md-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+}
+
+/* Add padding to prevent footer from overlapping content */
+.md-main {
+  padding-bottom: 1.5rem; /* Adjust based on footer height */
+}
+
+/* Optional: make it slightly translucent */
+.md-footer {
+  background-color: #016BFF;
+  backdrop-filter: blur(6px);
+}
+
