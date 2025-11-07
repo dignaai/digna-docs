@@ -125,7 +125,6 @@ plugins:
           default: true
           build: true
 
-
         - locale: "de"
           name: Deutsch
           build: true

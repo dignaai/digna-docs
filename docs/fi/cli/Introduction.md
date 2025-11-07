@@ -1,30 +1,30 @@
-## Komentoriviliittymän (CLI) tarkoitus
+## Komentorivikäyttöliittymän (CLI) tarkoitus
 
-***digna*** komentoriviliittymä (CLI) on tehokas työkalu, joka on suunniteltu sujuvoittamaan vuorovaikutusta ***digna***-alustan kanssa. Se tarjoaa tekstipohjaisen käyttöliittymän, jonka avulla käyttäjät voivat suorittaa laajan valikoiman tehtäviä tehokkaasti ilman graafista käyttöliittymää.
+The ***digna*** Command Line Interface (CLI) on tehokas työkalu, joka on suunniteltu sujuvoittamaan vuorovaikutusta ***digna***-alustan kanssa. Se tarjoaa tekstipohjaisen käyttöliittymän, jonka avulla käyttäjät voivat suorittaa laajan valikoiman tehtäviä tehokkaasti ilman graafista käyttöliittymää.
 
 ### Keskeiset ominaisuudet:
 
-- **Tehokkuus ja joustavuus:** CLI mahdollistaa komentojen nopean suorittamisen ja parantaa tuottavuutta.
-- **Automaatio:** Tukee skriptausta toistuvien tehtävien automatisoimiseksi.
-- **Etäkäyttö:** Hallitse ***digna***-resursseja mistä tahansa.
-- **Johdonmukaisuus ja luotettavuus:** Varmistaa luotettavat toiminnot dokumentoiduilla, versionhallituilla komennoilla.
-- **Skaalautuvuus:** Soveltuu laajamittaisiin yritystehtäviin.
-- **Oppiminen ja hallinta:** Tarjoaa syvemmän ymmärryksen ***digna***-alustan toiminnallisuuksista.
-- **Integraatio muiden työkalujen kanssa:** Integroituu saumattomasti automaatiotyökalujen kuten Control-M, UC4 ja AutomateNOW! kanssa.
+- **Efficiency and Flexibility:** CLI mahdollistaa komentojen nopean suorittamisen, mikä parantaa tuottavuutta.
+- **Automation:** Tukee skriptausta toistuvien tehtävien automatisointiin.
+- **Remote Access:** Hallitse ***digna***-resursseja mistä tahansa.
+- **Consistency and Reliability:** Varmistaa luotettavat toiminnot dokumentoiduilla, versionhallituilla komennoilla.
+- **Scalability:** Käsittelee suuria toimintoja yritystason tarpeisiin.
+- **Learning and Mastery:** Tarjoaa syvemmän ymmärryksen ***digna***-alustan toiminnallisuudesta.
+- **Integration with Other Tools:** Integroituu saumattomasti automaatiotyökaluihin kuten Control-M, UC4, AutomateNOW!
 
 ---
 
 ## Asennusohjeet Windowsille
 
-Aloittaaksesi suorita alla olevat vaiheet purkaaksesi tarvittavat tiedostot, sijoittaaksesi *dignacli*‑kansion ja määrittääksesi yhteytesi ***digna***-repositorioon. Varmista, että sinulla on repositorion käyttöoikeustiedot ja kaikki tarvittavat määritystiedot valmiina ennen aloittamista.
+Aloittaaksesi noudata alla olevia ohjeita purkaaksesi tarvittavat tiedostot, sijoittaaksesi *dignacli*-kansion ja konfiguroidaksesi yhteytesi ***digna***-repositorioon. Varmista, että sinulla on repositorion tunnukset ja kaikki tarvittavat konfiguraatiotiedot valmiina ennen aloittamista.
 
-1. **Extracting the ***digna*** CLI:**
-   - Hanki the `.zip`-tiedosto, joka sisältää ***digna*** CLI:n.
+1. **Pura ***digna*** CLI:**
+   - Hanki `.zip`-tiedosto, joka sisältää ***digna*** CLI:n.
    - Pura tiedosto haluamaasi hakemistoon.
 
-2. **Deploying the `dignacli` Folder:**
+2. **Siirrä `dignacli`-kansio:**
    - Kopioi `dignacli`-kansio haluamaasi asennussijaintiin (esim. `C:\Program Files\***digna***`).
 
-3. **Configuring `config.toml`:**
+3. **`config.toml`-tiedoston konfigurointi:**
    - Tarkista `dignacli`-kansion sisältä, löytyykö `config.toml`.
-   - Nimeä `config_template.toml` tarvittaessa `config.toml`-tiedostoksi ja konfiguroi se toimitetun dokumentaation mukaisesti.
+   - Nimeä tarvittaessa `config_template.toml` uudelleen `config.toml`-ksi ja konfiguroi se toimitetun dokumentaation mukaisesti.

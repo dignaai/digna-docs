@@ -1,30 +1,30 @@
 ## Komandinės eilutės sąsajos (CLI) paskirtis
 
-***digna*** Command Line Interface (CLI) yra galingas įrankis, sukurtas supaprastinti sąveiką su ***digna*** platforma. Tai teksto pagrindu veikianti sąsaja, leidžianti vartotojams efektyviai atlikti įvairias užduotis be grafinės sąsajos poreikio.
+***digna*** Komandinės eilutės sąsaja (CLI) yra galingas įrankis, skirtas supaprastinti sąveiką su ***digna*** platforma. Ji suteikia teksto pagrindu veikiančią sąsają, leidžiančią vartotojams efektyviai atlikti įvairias užduotis be grafinės vartotojo sąsajos.
 
 ### Pagrindinės savybės:
 
 - **Efektyvumas ir lankstumas:** CLI leidžia greitai vykdyti komandas, didinant produktyvumą.
-- **Automatizacija:** Palaiko skriptų naudojimą pasikartojančioms užduotims automatizuoti.
+- **Automatizavimas:** Palaiko skriptavimą pasikartojančioms užduotims automatizuoti.
 - **Nuotolinis valdymas:** Valdykite ***digna*** išteklius iš bet kurios vietos.
 - **Nuoseklumas ir patikimumas:** Užtikrina patikimą veikimą naudojant dokumentuotas, versijomis valdomas komandas.
-- **Mastelio pritaikomumas:** Apdoroja didelio masto operacijas įmonių užduotims.
-- **Mokymasis ir įvaldymas:** Suteikia gilų supratimą apie ***digna*** funkcionalumą.
-- **Integracija su kitomis priemonėmis:** Sklandžiai integruojasi su automatizavimo įrankiais, tokiais kaip Control-M, UC4, AutomateNOW!
+- **Mastelio keitimas:** Tvarko didelio masto operacijas įmonių užduotims.
+- **Mokymasis ir įsisavinimas:** Suteikia gilesnį supratimą apie ***digna*** funkcionalumą.
+- **Integracija su kitais įrankiais:** Sklandžiai integruojasi su automatizacijos įrankiais, tokiais kaip Control-M, UC4, AutomateNOW!
 
 ---
 
-## Windows diegimo instrukcija
+## Diegimo instrukcija Windows
 
-Norėdami pradėti, atlikite žemiau pateiktus veiksmus, kad išgautumėte reikiamus failus, diegtumėte *dignacli* aplanką ir sukonfigūruotumėte prisijungimą prie ***digna*** saugyklos. Įsitikinkite, kad prieš pradėdami turite saugyklos prisijungimo duomenis ir visus reikiamus konfigūracijos duomenis.
+Norėdami pradėti, atlikite toliau nurodytus veiksmus, kad ištrauktumėte reikiamus failus, įdiegtumėte *dignacli* aplanką ir sukonfigūruotumėte ryšį su ***digna*** saugykla. Prieš pradėdami įsitikinkite, kad turite paruoštus prisijungimo duomenis prie saugyklos ir visus reikiamus konfigūracijos parametrus.
 
-1. **Failų išpakavimas iš ***digna*** CLI:**
+1. **Ištraukimas: ***digna*** CLI:**
    - Gaukite `.zip` failą, kuriame yra ***digna*** CLI.
-   - Išarchyvuokite failą į norimą katalogą.
+   - Ištraukite failą į pageidaujamą katalogą.
 
 2. **`dignacli` aplanko diegimas:**
-   - Kopijuokite `dignacli` aplanką į pageidaujamą diegimo vietą (pvz., `C:\Program Files\***digna***`).
+   - Nukopijuokite `dignacli` aplanką į norimą diegimo vietą (pvz., `C:\Program Files\***digna***`).
 
 3. **`config.toml` konfigūravimas:**
-   - Patikrinkite, ar `dignacli` kataloge yra `config.toml`.
-   - Jei reikia, pervadinkite `config_template.toml` į `config.toml` ir sukonfigūruokite pagal pateiktą dokumentaciją.
+   - Patikrinkite, ar `config.toml` yra `dignacli` kataloge.
+   - Esant reikalui pervardykite `config_template.toml` į `config.toml` ir sukonfigūruokite jį pagal pateiktą dokumentaciją.

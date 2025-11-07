@@ -1,23 +1,92 @@
 ---
 title: Data Schema Tracker – Monitorování evoluce schématu | digna Dokumentace
-description: Zjistěte, jak digna Data Schema Tracker sleduje změny sloupců, aktualizace datových typů a drift schématu. Získejte upozornění na záměrné i nezáměrné změny, aby se předešlo selháním ETL a chybám v dashboardech.
+description: Zjistěte, jak digna Data Schema Tracker monitoruje změny sloupců, aktualizace datových typů a drift schématu. Detekujte a upozorněte na úmyslné i neúmyslné změny schématu, aby nedošlo k selhání ETL, rozbitým dashboardům nebo ztrátě observability dat.
+canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
+image: /assets/logo_square.png
+keywords:
+  - data schema tracker
+  - detekce driftu schématu
+  - monitorování evoluce schématu
+  - observabilita metadat
+  - observability dat
+  - kvalita dat
+  - monitorování struktury dat
+  - metadata databáze
+  - stabilita ETL pipeline
+  - digna data schema tracker
+lang: cs
+robots: index, follow
+og_title: Data Schema Tracker – Monitorování evoluce schématu | digna Dokumentace
+og_description: digna Data Schema Tracker monitoruje drift schématu, změny datových typů a aktualizace sloupců. Získejte upozornění dříve, než budou ETL pipeline nebo dashboardy selhávat kvůli neočekávaným změnám struktury.
+og_image: /assets/logo_square.png
+og_type: article
+twitter_card: summary_large_image
 ---
 
 # Data Schema Tracker – Monitorování evoluce schématu
+<h1 style="display:none;">Modul řízený AI pro observabilitu metadat a kvalitu dat – digna Data Schema Tracker</h1>
+
+---
 
 ## Účel
-Sledovat a upozorňovat na evoluci schématu.
 
-## Technické funkce
-- Sleduje:
-  - Přidané nebo odebrané sloupce
-  - Změny datových typů
-- Upozornění na záměrné i nezáměrné změny schématu  
-- Zabraňuje **tichému driftu schématu**, který může způsobit selhání ETL pipelines nebo chyby v dashboardech  
+The **Data Schema Tracker** vás informuje o tom, jak se vyvíjejí struktury vaší databáze.  
+Průběžně monitoruje **schémata tabulek, sloupce a datové typy** a detekuje **schema drift** — úmyslné i neúmyslné strukturální změny, které mohou narušit pipeline, ETL úlohy nebo BI dashboardy.
+
+Zajištěním přehlednosti evoluce schémat pomáhá digna organizacím udržet **důvěru v kvalitu dat**, zachovat **observability datových systémů** a předejít nákladným incidentům v produkci způsobeným nezaznamenanými změnami schématu.
+
+---
+
+## Technický přehled
+
+### Co monitoruje
+
+- **Přidané nebo odstraněné sloupce** – Detekuje nově zavedené, přejmenované nebo smazané sloupce.  
+- **Změny datových typů** – Identifikuje změny jako `INT → VARCHAR` nebo `DATE → TIMESTAMP`.  
+- **Úpravy tabulek a view** – Sleduje vytvoření, přejmenování nebo odstranění tabulek a view.  
+- **Rozdíly mezi prostředími** – Porovnává verze schémat mezi Dev, Test a Production prostředími.  
+
+### Detekce a upozornění
+
+- Prohledává **metadata databáze** nebo **systémové katalogy** přímo ve vaší datové platformě.  
+- Porovnává každý snímek schématu s předchozí známou verzí uloženou v digna observability schema.  
+- Generuje **okamžitá upozornění** na dashboardu, přes API nebo do externích notifikačních kanálů (email, Slack, webhook).  
+- Loguje každou verzi schématu pro **historické sledování a připravenost na audit**.
+
+---
+
+## Architektura a provádění
+
+- **Spuštění v databázi:** digna běží zcela ve vašem prostředí a dotazuje se na metadata views, aniž by extrahovalo jakákoliv uživatelská data.  
+- **Lehký scanning:** přistupuje pouze k strukturálním informacím — nikdy k uživatelským datům.  
+- **Centralizované úložiště:** metadata schémat a záznamy o driftech jsou uloženy v digna observability schema pro vizualizaci a analýzy.  
+- **Automatizace:** podporuje plánované i event-driven skeny přes digna Core nebo externí orchestrace.
+
+---
 
 ## Příklady použití
-- Identifikace změn datových typů (např. `INT` → `VARCHAR`), které mohou způsobit chyby v následných procesech  
-- Upozornění datových inženýrů před selháním pipelines kvůli neshodám ve schématu  
 
-## Hodnota
-Pomáhá týmům udržet kontrolu nad **rychle se měnícími, vyvíjejícími se datovými sadami**.
+| Use Case | Description |
+|-----------|--------------|
+| **ETL Stability Monitoring** | Detekujte změny struktury upstream před tím, než pipeline selžou kvůli neshodám schématu. |
+| **Business Intelligence Reliability** | Zabraňte rozbitým dashboardům způsobeným přejmenovanými nebo chybějícími sloupci. |
+| **Data Warehouse Governance** | Udržujte auditovatelnou historii evoluce schématu pro shodu a analýzu dopadů. |
+| **Integration Oversight** | Zajistěte, aby schémata datového jezera a datového skladu zůstala synchronizovaná po strukturálních aktualizacích. |
+
+---
+
+## Výhody
+
+| Area | Benefit |
+|------|----------|
+| **Data Quality** | Předejde nezaznamenanému driftu schématu, který může poškodit nebo zpřesnit validitu datových pipeline. |
+| **Observability** | Přidává strukturální monitoring do celkové observability datových ekosystémů. |
+| **Compliance** | Udržuje verzované historie schémat pro audit, dohledatelnost a řízení změn. |
+| **Prevention** | Detekuje strukturální problémy dříve, než se rozšíří do reportingu nebo produkčních chyb. |
+
+---
+
+## Jak to funguje
+
+1. **Sběr snapshotu** – digna zachytí aktuální metadata schématu.  
+2. **Porovnání** – nový snapshot je porovnán
