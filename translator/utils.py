@@ -54,10 +54,9 @@ def list_md_files(
     file_paths_final = []
 
     for file_path in file_paths:
-
         if not language:
             part = str(file_path.parts[1])
-            if part in constants.LANGUAGES:
+            if part not in constants.MAIN_FOLDERS and not part.endswith('.md'):
                 continue
 
         if match and match not in str(file_path):

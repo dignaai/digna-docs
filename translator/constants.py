@@ -1,6 +1,17 @@
 
 __all__ = [
+    'MAIN_FOLDERS',
     'LANGUAGES',
+]
+
+
+MAIN_FOLDERS = [
+    'assets',
+    'changelog',
+    'cli',
+    'databases',
+    'getting_started',
+    'platform',
 ]
 
 
