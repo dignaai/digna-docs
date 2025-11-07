@@ -26,7 +26,7 @@ LANGUAGES = {
     'sl': 'Slovenian',
     'el': 'Greek',
     'ru': 'Russian',
-    'uk': 'Ukrainian'
+    'uk': 'Ukrainian',
 
     # Southern Europe
     'es': 'Spanish',
