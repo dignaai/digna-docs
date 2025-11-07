@@ -1,68 +1,100 @@
 ---
-title: digna Platform – Data Quality & Data Observability | On-Prem & Private Cloud
-description: Ontdek digna, het AI-gestuurde Data Quality- en Data Observability-platform, gebouwd voor on-premises en private cloud. Zorg voor naleving, performance en volledige controle met in-database uitvoering en brede integraties.
-canonical_url: https://docs.digna.ai/platform/
+title: digna Platform – AI-gedreven Data Quality & Observability | On-Premises & Private Cloud
+description: Ontdek digna, het Europese AI-platform voor Data Quality en Observability. Ontworpen voor on-premises en private cloud, digna bewaakt de kwaliteit van data direct binnen uw databases — en zorgt voor compliance, prestaties en soevereiniteit.
 image: /assets/logo_square.png
+keywords:
+  - gegevenskwaliteit
+  - kwaliteit van gegevens
+  - data observability
+  - observability van gegevens
+  - AI anomaliedetectie
+  - in-database monitoring
+  - gegevenssoevereiniteit
+  - Europese gegevenskwaliteit
+  - on-premises observability
+  - private cloud dataplatform
+lang: nl
+robots: index, follow
+og_title: digna Platform – AI-gedreven Data Quality & Observability
+og_description: digna bewaakt de kwaliteit en observability van data direct in uw omgeving. AI-gedreven, volledig on-premises of in uw private cloud, en zorgt voor controle, compliance en prestaties.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
 # *digna* Platform
+<h1 style="display:none;">AI-gedreven platform voor Data Quality, kwaliteit van gegevens en observability van gegevens – digna</h1>
 
-**digna** is een platform voor **Data Quality** en **Data Observability**, ontworpen om volledig binnen de omgeving van de klant te draaien.  
+## Europees Platform voor Data Quality en Data Observability
 
-Het wordt nooit geleverd als Software as a Service — het *digna*-team heeft geen toegang tot klantgegevens.  
-Dit garandeert maximale privacy, beveiliging en naleving.  
+**digna** is een **AI-gedreven platform voor Data Quality en Observability**, ontworpen om volledig binnen uw omgeving te werken — on-premises of in uw private cloud.  
+Het waarborgt continue controle over de *kwaliteit van gegevens*, dataconsistentie en tijdige levering.  
+
+Het platform wordt **nooit als SaaS geleverd**. Het digna-team heeft **geen toegang tot klantdata**, wat maximale privacy, veiligheid en naleving van regelgeving garandeert.  
 
 ---
 
-## Implementatie-opties
+## Implementatie-opties: On-Premises & Private Cloud
 
 - **On-Premises**  
-  *digna* kan rechtstreeks in de eigen infrastructuur van de klant worden geïnstalleerd, volledig onder hun beheer.  
+  Installeer digna rechtstreeks in uw eigen infrastructuur — onder volledige klantcontrole en geïsoleerd van externe services.  
 
 - **Private Cloud**  
-  Draaien in de privé- of hybride cloudomgevingen van de klant (VM's, containers of Kubernetes).  
-  Het platform past zich aan de bestaande cloudstrategie aan zonder externe services te vereisen.  
-
+  Draai digna binnen uw private of hybride cloudomgevingen (VM's, containers of Kubernetes). Het past zich aan uw architectuur aan en behoudt volledige gegevenssoevereiniteit.  
 
 ---
 
-## In-Database-uitvoering
+## In-database uitvoering voor high-performance datamonitoring
 
-*digna* voert controles en anomaliedetectielogica **direct in de database-engine** uit.  
-Deze aanpak vermindert databeweging, benut de native databaseprestaties en zorgt dat monitoring zo dicht mogelijk bij de data plaatsvindt.  
-
----
-
-## Belangrijkste mogelijkheden
-
-- Continue monitoring van datavolumes, verdelingen en consistentie  
-- Geautomatiseerde validatie van zakelijke en technische regels  
-- Detectie van vertraagde of ontbrekende dataleveringen  
-- Meldingen bij structurele wijzigingen in tabellen of views  
-- Analyse van historische trends in datakwaliteit en betrouwbaarheid  
+*digna* voert alle **data quality checks en anomaliedetectie**-logica **binnen uw database-engine** uit.  
+Deze unieke aanpak minimaliseert datapoverdracht, benut native prestaties en zorgt voor observability van data zo dicht mogelijk bij de bron.  
 
 ---
 
-## Voordelen
+## Belangrijkste mogelijkheden voor continue monitoring en observability
 
-- **Volledige gegevenscontrole** – alleen klantomgeving, geen externe toegang  
-- **Compliance by Design** – geschikt voor gereguleerde sectoren met strikte regels voor data  
-- **Performance** – in-database uitvoering vermindert overhead en schaalt efficiënt  
-- **Flexibiliteit** – hetzelfde platform voor on-prem- en private-cloudomgevingen  
+- Continue monitoring van **datavolumes, distributies en consistentie**  
+- Geautomatiseerde validatie van **technische en zakelijke regels**  
+- Detectie van **ontbrekende of vertraagde dataleveringen**  
+- Meldingen bij **schema- of structurele wijzigingen**  
+- Historische trendanalyse voor langdurige **databetrouwbaarheid en -kwaliteit**  
+
+---
+
+## Voordelen van digna’s aanpak voor Data Quality en Observability
+
+- **Volledige gegevenscontrole** – data verlaat nooit uw omgeving  
+- **Compliance by design** – ideaal voor gereguleerde sectoren (financiële dienstverlening, gezondheidszorg, telecom)  
+- **Prestaties** – in-database uitvoering vermindert latency en schaalt efficiënt  
+- **Flexibiliteit** – hetzelfde platform voor on-premises en private cloudomgevingen  
 - **Snelle implementatie** – installatie binnen enkele uren, upgrades in minder dan een uur  
 
 ---
 
-## Integraties
+## Integraties met grote dataplatforms
 
-*digna* maakt verbinding met:  
+*digna* integreert naadloos met:  
 
-- **Databases & Warehouses**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Data Lakes / Lakehouses**: Hadoop, Databricks 
-- **ETL & Processing**: Spark, Airflow, dbt, Informatica, Talend  
+- **Databases & Warehouses:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lakes / Lakehouses:** Hadoop, Databricks  
+- **ETL & verwerkings-tools:** Spark, Airflow, dbt, Informatica, Talend  
 
 ---
 
-## Meer informatie
+## Veelgestelde vragen
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+**Wat is het digna platform?**  
+Een AI-gebaseerde oplossing om de kwaliteit van gegevens en de observability van data te verbeteren, die volledig binnen uw eigen omgeving opereert.
+
+**Is digna een SaaS-oplossing?**  
+Nee. digna wordt geïnstalleerd on-premises of in uw private cloud en wordt niet geleverd als Software as a Service.
+
+**Welke databases ondersteunt digna?**  
+digna integreert met Teradata, Snowflake, Databricks, Oracle, PostgreSQL en vele anderen.
+
+**Waarom kiezen voor digna boven cloudgebaseerde tools?**  
+Omdat het AI, volledige gegevenssoevereiniteit en in-database monitoring combineert — wat zorgt voor betrouwbare datapijplijnen en naleving van regelgeving.
+
+---
+
+Voor use cases en branchetoepassingen, bezoek [digna.ai](https://www.digna.ai).

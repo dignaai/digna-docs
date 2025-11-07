@@ -1,68 +1,100 @@
 ---
-title: digna platvorm – andmekvaliteet ja andmete jälgitavus | kohapealne & privaatpilv
-description: Tutvuge *digna*-ga — AI-toega andmekvaliteedi ja andmete jälgitavuse platvormiga, mis on ehitatud kohapealseks ja privaatpilve kasutamiseks. Tagage vastavus, jõudlus ja täielik kontroll andmebaasisisese käituse ja laia integratsioonitoega.
-canonical_url: https://docs.digna.ai/platform/
+title: digna platvorm – AI-põhine andmekvaliteet ja jälgitavus | kohapealne ja privaatpilv
+description: Tutvuge digna-ga, Euroopa AI-platvormiga andmekvaliteedi ja jälgitavuse jaoks. Mõeldud kohapealseks ja privaatpilve kasutuseks, digna jälgib andmete kvaliteeti otse teie andmebaasides — tagades vastavuse, jõudluse ja andmete suveräänsuse.
 image: /assets/logo_square.png
+keywords:
+  - andmekvaliteet
+  - andmete kvaliteet
+  - andmete jälgitavus
+  - andmete observability
+  - AI anomaaliate tuvastamine
+  - in-database monitooring
+  - andmete suveräänsus
+  - Euroopa andmekvaliteet
+  - kohapealne jälgitavus
+  - privaatpilve andmeplatvorm
+lang: et
+robots: index, follow
+og_title: digna platvorm – AI-põhine andmekvaliteet ja jälgitavus
+og_description: digna jälgib andmete kvaliteeti ja jälgitavust otse teie keskkonnas. AI-põhine, täielikult kohapealne või privaatpilves, tagades kontrolli, vastavuse ja jõudluse.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
 # *digna* platvorm
+<h1 style="display:none;">AI-põhine platvorm andmekvaliteedi, andmete kvaliteedi ja andmete jälgitavuse jaoks – digna</h1>
 
-**digna** on platvorm **andmekvaliteedi** ja **andmete jälgitavuse** jaoks, loodud töötama täielikult kliendi keskkonnas.  
+## Euroopa platvorm andmekvaliteedi ja andmete jälgitavuse jaoks
 
-See ei ole kunagi tarnitud teenusena (Software as a Service) — *digna* meeskonnal ei ole juurdepääsu kliendi andmetele.  
-See tagab maksimaalse privaatsuse, turvalisuse ja vastavuse.  
+**digna** on **AI-põhine platvorm andmekvaliteedi ja jälgitavuse jaoks**, disainitud tööks täielikult teie keskkonnas — kohapeal või teie privaatpilves.  
+See tagab pideva kontrolli *andmete kvaliteedi*, andmete järjepidevuse ja õigeaegse kohaletoimetamise üle.  
+
+Platvormi **ei tarnita kunagi SaaS-ina**. digna meeskonnal **pole juurdepääsu kliendi andmetele**, mis tagab maksimaalse privaatsuse, turvalisuse ja regulatiivse vastavuse.  
 
 ---
 
-## Paigaldusvõimalused
+## Paigaldusvõimalused: kohapealne ja privaatpilv
 
-- **Kohapealne (On-Premises)**  
-  *digna* saab installida otse kliendi enda infrastruktuuri, täielikult nende kontrolli all.  
+- **Kohapealne**  
+  Paigaldage digna otse oma infrastruktuuri — täieliku kliendikontrolli all ja isoleerituna väliste teenuste eest.  
 
 - **Privaatpilv**  
-  Töötab kliendi privaat- või hübriidpilve keskkondades (VM-id, konteinerid või Kubernetes).  
-  Platvorm kohandub olemasoleva pilvestrateegiaga ega nõua välisteenuseid.  
-
+  Käivitage digna oma privaat- või hübriidpilve keskkondades (VM-id, konteinerid või Kubernetes). See kohandub teie arhitektuuriga, säilitades samal ajal täieliku andmesuveräänsuse.  
 
 ---
 
-## Andmebaasisisene käitamine
+## Andmebaasis täidetavus kõrge jõudlusega andme jälgimiseks
 
-*digna* täidab kontrollid ja anomaaliate avastamise loogika **otse andmebaasimootoris**.  
-See lähenemine vähendab andmete liikumist, kasutab ära andmebaasi natiivset jõudlust ja tagab, et jälgimine toimub võimalikult lähedal andmetele.  
-
----
-
-## Peamised võimalused
-
-- Andmemahude, jaotuste ja järjepidevuse pidev jälgimine  
-- Äri- ja tehniliste reeglite automaatne valideerimine  
-- Hilinenud või puuduvate andmeedastuste tuvastamine  
-- Teavitused tabelite või vaadete struktuurimuudatustest  
-- Ajalooliste trendide analüüs andmekvaliteedi ja töökindluse osas  
+*digna* täidab kogu **andmekvaliteedi kontrolli ja anomaaliate tuvastamise** loogikat **otse teie andmebaasi mootoris**.  
+See unikaalne lähenemine vähendab andmete liikumist, kasutab natiivset jõudlust ja tagab andmete jälgitavuse võimalikult lähedal allikale.  
 
 ---
 
-## Eelised
+## Põhivõimekused pidevaks jälgimiseks ja jälgitavuseks
 
-- **Täielik andmekontroll** – ainult kliendi keskkond, välist juurdepääsu ei ole  
-- **Vastavus disainist lähtudes** – sobib reguleeritud tööstusharudele, millel on ranged andmepoliitikad  
-- **Jõudlus** – andmebaasisisene käitamine vähendab ülekoormust ja skaleerub tõhusalt  
-- **Paindlikkus** – sama platvorm nii kohapealsetes kui privaatpilve lahendustes  
-- **Kiire juurutus** – install tunnidega, uuendused vähem kui tunniga  
-
----
-
-## Integratsioonid
-
-*digna* ühendub:  
-
-- **Andmebaasid & andmelaod**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Andmejärved / Lakehouses**: Hadoop, Databricks  
-- **ETL & töötlemine**: Spark, Airflow, dbt, Informatica, Talend  
+- Andmemahtude, jaotuste ja järjepidevuse pidev jälgimine  
+- Tehniliste ja ärireeglite automaatne valideerimine  
+- Puuduvate või hilinenud andmekoormuste tuvastamine  
+- Teavitused skeemi või struktuurimuudatuste kohta  
+- Ajalooline trendianalüüs pikaajalise andmetõhususe ja kvaliteedi jaoks  
 
 ---
 
-## Lisateave
+## digna lähenemise eelised andmekvaliteedile ja jälgitavusele
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+- **Täielik andmekontroll** – andmed ei lahku kunagi teie keskkonnast  
+- **Vastavus disainist lähtudes** – ideaalne reguleeritud sektoritele (finants, tervishoid, telekom)  
+- **Jõudlus** – andmebaasis täidetavus vähendab latentsust ja skaleerub tõhusalt  
+- **Paindlikkus** – sama platvorm nii kohapealseks kui ka privaatpilve kasutamiseks  
+- **Kiire juurutus** – paigaldus tunnide jooksul, uuendused alla tunni  
+
+---
+
+## Integratsioonid suuremate andmeplatvormidega
+
+*digna* ühendub sujuvalt järgmistega:  
+
+- **Andmebaasid & andmelaod:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Andmejärved / lakehouse'id:** Hadoop, Databricks  
+- **ETL & töötlemise tööriistad:** Spark, Airflow, dbt, Informatica, Talend  
+
+---
+
+## Korduma kippuvad küsimused
+
+**Mis on digna platvorm?**  
+AI-põhine lahendus andmete kvaliteedi ja jälgitavuse parandamiseks, mis töötab täielikult teie enda keskkonnas.
+
+**Kas digna on SaaS-lahendus?**  
+Ei. digna paigaldatakse kohapeale või teie privaatpilve, seda ei tarnita tarkvarana teenusena (SaaS).
+
+**Milliseid andmebaase digna toetab?**  
+digna integreerub Teradata, Snowflake, Databricks, Oracle, PostgreSQL ja paljude teistega.
+
+**Miks valida digna pilvepõhiste tööriistade asemel?**  
+Sest see kombineerib AI-d, täielikku andmesuveräänsust ja andmebaasis monitoorimist — tagades usaldusväärsed andmepipedid ja regulatiivse vastavuse.
+
+---
+
+For use cases and industry applications, visit [digna.ai](https://www.digna.ai).

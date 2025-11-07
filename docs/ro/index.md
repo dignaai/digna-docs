@@ -1,68 +1,100 @@
 ---
-title: Platforma digna – Data Quality & Data Observability | On-Prem & Private Cloud
-description: Descoperiți digna, platforma pentru Data Quality și Data Observability alimentată de AI, concepută pentru mediile on-premises și private cloud. Asigurați conformitatea, performanța și controlul complet prin execuție în baza de date și integrări extinse.
-canonical_url: https://docs.digna.ai/platform/
+title: Platforma *digna* – Calitate și Observabilitate a Datelor bazate pe AI | On-Premises & Private Cloud
+description: Descoperiți *digna*, platforma europeană bazată pe AI pentru Calitatea Datelor și Observabilitate. Creată pentru on-premises și private cloud, *digna* monitorizează calitatea datelor direct în bazele dvs. de date — asigurând conformitate, performanță și suveranitate a datelor.
 image: /assets/logo_square.png
+keywords:
+  - calitatea datelor
+  - quality of data
+  - data observability
+  - observability of data
+  - ai anomaly detection
+  - in-database monitoring
+  - data sovereignty
+  - european data quality
+  - on-premises observability
+  - private cloud data platform
+lang: ro
+robots: index, follow
+og_title: Platforma *digna* – Calitate și Observabilitate a Datelor bazate pe AI
+og_description: *digna* monitorizează calitatea și observabilitatea datelor direct în mediul dvs. Alimentată de AI, complet on-premises sau în private cloud, asigurând control, conformitate și performanță.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
 # *digna* Platform
+<h1 style="display:none;">Platformă bazată pe AI pentru Calitatea Datelor, Quality of Data și Observabilitatea Datelor – digna</h1>
 
-**digna** este o platformă pentru **Data Quality** și **Data Observability**, proiectată să ruleze integral în mediul clientului.  
+## Platformă europeană pentru Calitatea Datelor și Observabilitate
 
-Nu este livrată niciodată ca Software as a Service — echipa *digna* nu are acces la datele clientului.  
-Astfel se asigură confidențialitate, securitate și conformitate maxime.  
+**digna** este o **platformă bazată pe AI pentru Calitatea Datelor și Observabilitate**, proiectată să funcționeze în întregime în mediul dvs. — on-premises sau în private cloud.  
+Asigură control continuu asupra *calității datelor*, consistenței datelor și livrării la timp.  
+
+Platforma **nu este furnizată niciodată ca SaaS**. Echipa digna **nu are acces la datele clienților**, garantând confidențialitate, securitate și conformitate maximă cu reglementările.  
 
 ---
 
-## Opțiuni de implementare
+## Opțiuni de implementare: On-Premises & Private Cloud
 
 - **On-Premises**  
-  *digna* poate fi instalată direct în infrastructura clientului, complet sub controlul acestuia.  
+  Instalați digna direct în infrastructura dvs. — sub controlul complet al clientului și izolat de serviciile externe.  
 
 - **Private Cloud**  
-  Rulează în mediile de cloud privat sau hibrid ale clientului (VM-uri, containere sau Kubernetes).  
-  Platforma se adaptează strategiei cloud existente fără a necesita servicii externe.  
-
+  Rulați digna în mediile dvs. private sau hibride de cloud (VMs, containers, sau Kubernetes). Se adaptează arhitecturii dvs. păstrând suveranitatea completă a datelor.  
 
 ---
 
-## Execuție în baza de date
+## Execuție in-database pentru monitorizare performantă a datelor
 
-*digna* execută verificări și logica de detectare a anomaliilor **direct în motorul bazei de date**.  
-Această abordare reduce transferul de date, valorifică performanța nativă a bazei de date și asigură că monitorizarea are loc cât mai aproape de date.  
-
----
-
-## Capabilități cheie
-
-- Monitorizare continuă a volumelor de date, distribuțiilor și consistenței  
-- Validare automată a regulilor de business și tehnice  
-- Detectarea livrărilor de date întârziate sau lipsă  
-- Alertări privind modificări structurale în tabele sau view-uri  
-- Analiza tendințelor istorice în calitatea și fiabilitatea datelor  
+*digna* execută toate verificările de **calitate a datelor și detecția de anomalii** direct **în motorul bazei de date**.  
+Această abordare unică minimizează transferul de date, valorifică performanța nativă și asigură observabilitatea datelor cât mai aproape de sursă.  
 
 ---
 
-## Beneficii
+## Capabilități cheie pentru monitorizare și observabilitate continuă
 
-- **Control complet asupra datelor** – numai mediul clientului, fără acces extern  
-- **Conformitate prin proiectare** – potrivit pentru industrii reglementate cu politici stricte privind datele  
-- **Performanță** – execuția în baza de date reduce suprasarcina și se scalează eficient  
-- **Flexibilitate** – aceeași platformă pentru implementări on-prem și private cloud  
+- Urmărire continuă a **volumele de date, distribuțiilor și consistenței**  
+- Validare automată a **regulilor tehnice și de business**  
+- Detectarea **livrărilor de date lipsă sau întârziate**  
+- Alertare la **schimbări de schemă sau structură**  
+- Analiză de trenduri istorice pentru **fiabilitate și calitate a datelor** pe termen lung  
+
+---
+
+## Beneficiile abordării digna pentru Calitatea Datelor și Observabilitate
+
+- **Control complet asupra datelor** – datele nu părăsesc niciodată mediul dvs.  
+- **Conformitate din proiectare** – ideal pentru sectoare reglementate (finanțe, sănătate, telecom)  
+- **Performanță** – execuția in-database reduce latența și scalează eficient  
+- **Flexibilitate** – aceeași platformă pentru medii on-premises și private cloud  
 - **Implementare rapidă** – instalare în câteva ore, upgrade-uri în mai puțin de o oră  
 
 ---
 
-## Integrări
+## Integrări cu principalele platforme de date
 
-*digna* se conectează la:  
+*digna* se conectează fără probleme cu:  
 
-- **Baze de date & Data Warehouses**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Data Lakes / Lakehouses**: Hadoop, Databricks 
-- **ETL & Procesare**: Spark, Airflow, dbt, Informatica, Talend  
+- **Databases & Warehouses:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lakes / Lakehouses:** Hadoop, Databricks  
+- **ETL & Processing Tools:** Spark, Airflow, dbt, Informatica, Talend  
 
 ---
 
-## Aflați mai multe
+## Întrebări frecvente
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+**Ce este platforma digna?**  
+O soluție bazată pe AI pentru îmbunătățirea calității datelor și observabilității acestora, care funcționează complet în mediul dvs.
+
+**Este digna o soluție SaaS?**  
+Nu. digna se instalează on-premises sau în private cloud, nu este livrată ca Software as a Service.
+
+**Cu ce baze de date se integrează digna?**  
+digna se integrează cu Teradata, Snowflake, Databricks, Oracle, PostgreSQL și multe altele.
+
+**De ce să alegi digna în locul instrumentelor bazate pe cloud?**  
+Pentru că combină AI, suveranitate completă a datelor și monitorizare in-database — asigurând conducte de date fiabile și conformitate reglementară.
+
+---
+
+Pentru cazuri de utilizare și aplicații pe industrii, vizitați [digna.ai](https://www.digna.ai).

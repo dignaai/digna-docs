@@ -1,68 +1,100 @@
 ---
-title: digna platforma – Data Quality & Data Observability | On-Prem & Private Cloud
-description: Atraskite digna — AI varomą Data Quality ir Data Observability platformą, sukurtą vietiniam (on-premises) ir privačiam debesų diegimui. Užtikrinkite atitiktį, našumą ir visišką kontrolę vykdant logiką duomenų bazėje bei naudojant plačias integracijas.
-canonical_url: https://docs.digna.ai/platform/
+title: digna platforma – dirbtiniu intelektu valdoma duomenų kokybė ir stebėsena | On-Premises & Private Cloud
+description: Sužinokite apie digna — europietišką dirbtiniu intelektu paremtą platformą duomenų kokybei ir stebėsenai. Diegiama lokaliai arba privačiame debesyje, digna stebi duomenų kokybę tiesiogiai jūsų duomenų bazėse — užtikrinant atitikimą reikalavimams, našumą ir duomenų suverenitetą.
 image: /assets/logo_square.png
+keywords:
+  - duomenų kokybė
+  - duomenų kokybė (quality of data)
+  - duomenų stebėsena
+  - duomenų stebėjimas (observability of data)
+  - AI anomalijų aptikimas
+  - stebėsena bazėje (in-database monitoring)
+  - duomenų suverenitetas
+  - europietiška duomenų kokybė
+  - lokali stebėsena (on-premises observability)
+  - privatus debesų duomenų platforma
+lang: lt
+robots: index, follow
+og_title: digna platforma – dirbtiniu intelektu valdoma duomenų kokybė ir stebėsena
+og_description: digna stebi duomenų kokybę ir stebėseną tiesiogiai jūsų aplinkoje. Paremtas AI, pilnai diegiamas lokaliai arba privačiame debesyje, užtikrinant kontrolę, atitiktį ir našumą.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
-# *digna* platforma
+# *digna* Platforma
+<h1 style="display:none;">Dirbtiniu intelektu valdoma platforma duomenų kokybei, duomenų kokybės užtikrinimui ir duomenų stebėsenai – digna</h1>
 
-**digna** yra platforma, skirta **Data Quality** ir **Data Observability**, sukurta veikti visiškai kliento aplinkoje.  
+## Europos platforma duomenų kokybei ir duomenų stebėsenai
 
-Ji niekada nėra tiekiama kaip Software as a Service — *digna* komanda neturi prieigos prie klientų duomenų.  
-Tai užtikrina maksimalų privatumą, saugumą ir atitiktį.  
+**digna** yra **dirbtiniu intelektu valdoma platforma duomenų kokybei ir stebėsenai**, sukurta veikti pilnai jūsų aplinkoje — lokaliai (on-premises) arba jūsų privačiame debesyje.  
+Ji užtikrina nuolatinę kontrolę dėl *duomenų kokybės*, duomenų nuoseklumo ir laiku pristatomų duomenų.  
+
+Platforma **niekada nėra tiekiama kaip SaaS**. digna komanda **neturi prieigos prie kliento duomenų**, garantuodama aukščiausią privatumo, saugumo ir reguliavimo atitikties lygį.  
 
 ---
 
-## Diegimo parinktys
+## Diegimo parinktys: On-Premises & Private Cloud
 
 - **On-Premises**  
-  *digna* gali būti įdiegta tiesiogiai kliento infrastruktūroje, visiškai jų valdomoje.  
+  Įdiekite digna tiesiogiai savo infrastruktūroje — pilna kliento kontrolė ir izoliacija nuo išorinių paslaugų.  
 
 - **Private Cloud**  
-  Veikia kliento privačiose arba hibridinėse debesų aplinkose (VM, konteineriai arba Kubernetes).  
-  Platforma prisitaiko prie esamos debesų strategijos nereikalaujant išorinių paslaugų.  
-
+  Vykdykite digna savo privačioje arba hibridinėje debesų aplinkoje (VMs, konteineriai arba Kubernetes). Ji prisitaiko prie jūsų architektūros išlaikydama pilną duomenų suverenitetą.  
 
 ---
 
-## Vykdymas duomenų bazėje
+## Stebėsena bazėje (In-Database) aukšto našumo duomenų monitoringo tikslams
 
-*digna* vykdo patikrinimus ir anomalijų aptikimo logiką **tiesiogiai duomenų bazės variklyje**.  
-Toks požiūris sumažina duomenų judėjimą, išnaudoja natyvų duomenų bazės našumą ir užtikrina, kad stebėjimas vyksta kuo arčiau duomenų.  
-
----
-
-## Pagrindinės galimybės
-
-- Nuolatinė duomenų apimčių, pasiskirstymų ir nuoseklumo stebėsena  
-- Automatinis verslo ir techninių taisyklių tikrinimas  
-- Vėluojančių arba trūkstamų duomenų pristatymų aptikimas  
-- Įspėjimai apie struktūrinius pakeitimus lentelėse arba vaizduose  
-- Istorinių tendencijų analizė, susijusi su duomenų kokybe ir patikimumu  
+*digna* vykdo visus **duomenų kokybės patikrinimus ir anomalijų aptikimo** mechanizmus **tiesiogiai jūsų duomenų bazių variklyje**.  
+Šis unikalus požiūris minimizuoja duomenų perkėlimą, išnaudoja natyvų našumą ir užtikrina duomenų stebėseną kuo arčiau šaltinio.  
 
 ---
 
-## Privalumai
+## Pagrindinės galimybės nuolatinei stebėsenai ir stebėsenos užtikrinimui
 
-- **Visiška duomenų kontrolė** – tik kliento aplinka, be išorinės prieigos  
-- **Atitiktis pagal dizainą** – tinkama reguliuojamoms pramonės šakoms su griežtomis duomenų politikomis  
-- **Našumas** – vykdymas duomenų bazėje sumažina naštą ir efektyviai skaluojasi  
-- **Lankstumas** – ta pati platforma tiek on‑prem, tiek privačios debesijos diegimuose  
+- Nuolatinis **duomenų kiekių, pasiskirstymų ir nuoseklumo** stebėjimas  
+- Automatizuotas **techninių ir verslo taisyklių** validavimas  
+- Vėluojančių arba praleistų duomenų pristatymų aptikimas  
+- Įspėjimai apie **schemos ar struktūros pokyčius**  
+- Istorinė tendencijų analizė ilgalaikiam **duomenų patikimumui ir kokybei**  
+
+---
+
+## digna požiūrio į duomenų kokybę ir stebėseną privalumai
+
+- **Pilnas duomenų valdymas** – duomenys niekada neišeina iš jūsų aplinkos  
+- **Atitiktis pagal dizainą** – idealiai tinka reguliuojamiems sektoriams (finansai, sveikatos apsauga, telekomunikacijos)  
+- **Našumas** – stebėsena bazėje mažina vėlavimą ir efektyviai skalėja  
+- **Lankstumas** – ta pati platforma tiek lokaliai, tiek privačiame debesyje  
 - **Greitas diegimas** – įdiegimas per kelias valandas, atnaujinimai per mažiau nei valandą  
 
 ---
 
-## Integracijos
+## Integracijos su pagrindinėmis duomenų platformomis
 
-*digna* jungiasi prie:  
+*digna* sklandžiai jungiasi su:  
 
-- **Databases & Warehouses**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Data Lakes / Lakehouses**: Hadoop, Databricks 
-- **ETL & Processing**: Spark, Airflow, dbt, Informatica, Talend  
+- **Duomenų bazės ir sandėliai:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Duomenų ežerai / Lakehouses:** Hadoop, Databricks  
+- **ETL ir apdorojimo įrankiai:** Spark, Airflow, dbt, Informatica, Talend  
 
 ---
 
-## Sužinokite daugiau
+## Dažniausiai užduodami klausimai
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+**Kas yra digna platforma?**  
+AI pagrindu veikiantis sprendimas duomenų kokybei gerinti ir duomenų stebėsenai, veikiantis pilnai jūsų pačių aplinkoje.
+
+**Ar digna yra SaaS sprendimas?**  
+Ne. digna diegiama lokaliai arba jūsų privačiame debesyje, nėra tiekiama kaip Software as a Service.
+
+**Su kokiomis duomenų bazėmis digna suderinama?**  
+digna integruojasi su Teradata, Snowflake, Databricks, Oracle, PostgreSQL ir daugeliu kitų.
+
+**Kodėl rinktis digna, o ne debesų pagrindu veikiančius įrankius?**  
+Todėl, kad jis sujungia AI, pilną duomenų suverenitetą ir stebėseną bazėje — užtikrinant patikimus duomenų srautus ir atitiktį reguliavimams.
+
+---
+
+For use cases and industry applications, visit [digna.ai](https://www.digna.ai).

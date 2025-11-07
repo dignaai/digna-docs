@@ -1,68 +1,100 @@
 ---
-title: Plateforme *digna* – Qualité des données & Observabilité des données | Sur site et Cloud privé
-description: Découvrez *digna*, la plateforme d'IA pour la Qualité des données et l'Observabilité des données conçue pour les environnements sur site et les clouds privés. Assurez la conformité, les performances et un contrôle total grâce à l'exécution dans la base de données et à de larges intégrations.
-canonical_url: https://docs.digna.ai/platform/
+title: Plateforme digna – Qualité et Observabilité des Données pilotées par l'IA | Sur site & Cloud privé
+description: Découvrez digna, la plateforme européenne d'IA pour la Qualité et l'Observabilité des Données. Conçue pour le sur site et le cloud privé, digna surveille la qualité des données directement dans vos bases — assurant conformité, performance et souveraineté.
 image: /assets/logo_square.png
+keywords:
+  - qualité des données
+  - qualité de la donnée
+  - observabilité des données
+  - observabilité de la donnée
+  - détection d'anomalies par IA
+  - surveillance in-database
+  - souveraineté des données
+  - qualité des données européenne
+  - observabilité sur site
+  - plateforme de données cloud privé
+lang: fr
+robots: index, follow
+og_title: Plateforme digna – Qualité et Observabilité des Données pilotées par l'IA
+og_description: digna surveille la qualité et l'observabilité des données directement dans votre environnement. Alimentée par l'IA, totalement sur site ou en cloud privé, garantissant contrôle, conformité et performance.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
 # *digna* Platform
+<h1 style="display:none;">Plateforme pilotée par l'IA pour la Qualité et l'Observabilité des Données – digna</h1>
 
-**digna** est une plateforme pour la **Qualité des données** et l'**Observabilité des données**, conçue pour fonctionner entièrement à l'intérieur de l'environnement du client.  
+## Plateforme européenne pour la Qualité et l'Observabilité des Données
 
-Elle n'est jamais fournie en tant que Software as a Service — l'équipe *digna* n'a aucun accès aux données des clients.  
-Cela garantit une confidentialité, une sécurité et une conformité maximales.  
+**digna** est une **plateforme pilotée par l'IA pour la Qualité et l'Observabilité des Données**, conçue pour fonctionner entièrement dans votre environnement — sur site ou dans votre cloud privé.  
+Elle assure un contrôle continu de la *qualité des données*, de la cohérence des données et de la livraison en temps voulu.  
+
+La plateforme **n'est jamais fournie en SaaS**. L'équipe digna **n'a pas accès aux données clients**, garantissant une confidentialité, une sécurité et une conformité réglementaire maximales.  
 
 ---
 
-## Options de déploiement
+## Options de déploiement : Sur site & Cloud privé
 
 - **Sur site**  
-  *digna* peut être installée directement dans l'infrastructure du client, entièrement sous leur contrôle.  
+  Installez digna directement dans votre propre infrastructure — sous contrôle total du client et isolée des services externes.  
 
 - **Cloud privé**  
-  Fonctionne dans les environnements cloud privés ou hybrides du client (VMs, conteneurs ou Kubernetes).  
-  La plateforme s'adapte à la stratégie cloud existante sans nécessiter de services externes.  
-
+  Exécutez digna au sein de vos environnements cloud privés ou hybrides (VMs, conteneurs ou Kubernetes). Elle s'adapte à votre architecture tout en conservant la pleine souveraineté des données.  
 
 ---
 
-## Exécution dans la base de données
+## Exécution dans la base de données pour une surveillance des données haute performance
 
-*digna* exécute les contrôles et la logique de détection d'anomalies **directement dans le moteur de base de données**.  
-Cette approche réduit les déplacements de données, exploite les performances natives de la base et garantit que la surveillance se déroule au plus près des données.  
-
----
-
-## Fonctionnalités clés
-
-- Surveillance continue des volumes de données, des distributions et de la cohérence  
-- Validation automatisée des règles métier et techniques  
-- Détection des livraisons de données en retard ou manquantes  
-- Alertes sur les changements structurels des tables ou vues  
-- Analyse des tendances historiques en matière de qualité et de fiabilité des données  
+*digna* exécute toute la logique de **vérifications de qualité des données et de détection d'anomalies** **à l'intérieur de votre moteur de base de données**.  
+Cette approche unique minimise les mouvements de données, exploite les performances natives et garantit l'observabilité des données au plus près de la source.  
 
 ---
 
-## Avantages
+## Capacités clés pour une surveillance et une observabilité continues
 
-- **Contrôle total des données** – uniquement dans l'environnement du client, sans accès externe  
-- **Conformité by Design** – adapté aux industries réglementées avec des politiques de données strictes  
-- **Performance** – l'exécution dans la base de données réduit la surcharge et évolue efficacement  
-- **Flexibilité** – même plateforme pour les déploiements sur site et cloud privé  
+- Suivi continu des **volumes de données, distributions et cohérences**  
+- Validation automatisée des **règles techniques et métiers**  
+- Détection des **livraisons de données manquantes ou retardées**  
+- Alertes sur les **changements de schéma ou de structure**  
+- Analyse des tendances historiques pour la **fiabilité et la qualité des données** à long terme  
+
+---
+
+## Avantages de l'approche digna pour la Qualité et l'Observabilité des Données
+
+- **Contrôle total des données** – les données ne quittent jamais votre environnement  
+- **Conformité par conception** – idéal pour les secteurs régulés (finance, santé, télécoms)  
+- **Performance** – l'exécution dans la base de données réduit la latence et évolue efficacement  
+- **Flexibilité** – même plateforme pour des déploiements sur site et en cloud privé  
 - **Déploiement rapide** – installation en quelques heures, mises à niveau en moins d'une heure  
 
 ---
 
-## Intégrations
+## Intégrations avec les principales plateformes de données
 
-*digna* se connecte à :  
+*digna* se connecte sans couture avec :  
 
-- **Databases & Warehouses** : Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Data Lakes / Lakehouses** : Hadoop, Databricks 
-- **ETL & traitement** : Spark, Airflow, dbt, Informatica, Talend  
+- **Bases de données & entrepôts :** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lakes / Lakehouses :** Hadoop, Databricks  
+- **Outils ETL & de traitement :** Spark, Airflow, dbt, Informatica, Talend  
 
 ---
 
-## En savoir plus
+## Questions fréquentes
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+**Qu'est-ce que la plateforme digna ?**  
+Une solution basée sur l'IA pour améliorer la qualité et l'observabilité des données, fonctionnant entièrement au sein de votre propre environnement.
+
+**digna est-elle une solution SaaS ?**  
+Non. digna s'installe sur site ou dans votre cloud privé, et n'est pas fournie en tant que Software as a Service.
+
+**Quelles bases de données digna prend-elle en charge ?**  
+digna s'intègre à Teradata, Snowflake, Databricks, Oracle, PostgreSQL et bien d'autres.
+
+**Pourquoi choisir digna plutôt que des outils cloud ?**  
+Parce qu'elle combine IA, souveraineté totale des données et surveillance in-database — garantissant des pipelines de données fiables et la conformité réglementaire.
+
+---
+
+Pour les cas d'utilisation et les applications sectorielles, visitez [digna.ai](https://www.digna.ai).

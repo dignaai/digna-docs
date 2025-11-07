@@ -1,68 +1,100 @@
 ---
-title: digna Platformu – Veri Kalitesi & Data Observability | On-Prem ve Özel Bulut
-description: AI destekli Veri Kalitesi ve Data Observability platformu *digna*'yı keşfedin; şirket içi ve özel bulut için tasarlandı. Veritabanı içinde yürütme ve geniş entegrasyonlarla uyumluluk, performans ve tam kontrol sağlayın.
-canonical_url: https://docs.digna.ai/platform/
+title: digna Platformu – Yapay Zeka Destekli Veri Kalitesi ve Gözlemlenebilirlik | Yerinde ve Özel Bulut
+description: digna'yı keşfedin — Veri Kalitesi ve Gözlemlenebilirlik için Avrupa yapay zeka platformu. Yerinde veya özel bulut için tasarlanmış olan digna, veritabanlarınız içinde verinin kalitesini doğrudan izleyerek uyumluluk, performans ve veri egemenliği sağlar.
 image: /assets/logo_square.png
+keywords:
+  - veri kalitesi
+  - verinin kalitesi
+  - data observability
+  - veri gözlemlenebilirliği
+  - yapay zeka anomali tespiti
+  - veritabanı içi izleme
+  - veri egemenliği
+  - Avrupa veri kalitesi
+  - yerinde gözlemlenebilirlik
+  - özel bulut veri platformu
+lang: tr
+robots: index, follow
+og_title: digna Platformu – Yapay Zeka Destekli Veri Kalitesi ve Gözlemlenebilirlik
+og_description: digna, verinin kalitesini ve gözlemlenebilirliğini doğrudan ortamınızda izler. Yapay zeka destekli, tamamen yerinde veya özel bulutta çalışır; kontrol, uyumluluk ve performans sağlar.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
-# *digna* Platform
+# *digna* Platformu
+<h1 style="display:none;">Yapay Zeka Destekli Platform: Veri Kalitesi, Verinin Kalitesi ve Veri Gözlemlenebilirliği – digna</h1>
 
-**digna** müşterinin ortamı içinde tamamen çalışacak şekilde tasarlanmış bir **Veri Kalitesi** ve **Data Observability** platformudur.  
+## Veri Kalitesi ve Veri Gözlemlenebilirliği için Avrupa Platformu
 
-Hizmet olarak yazılım (SaaS) olarak hiç sunulmaz — *digna* ekibinin müşteri verilerine erişimi yoktur.  
-Bu, maksimum gizlilik, güvenlik ve uyumluluk sağlar.  
+**digna**, **veri kalitesi ve gözlemlenebilirlik için yapay zeka destekli bir platform** olup tamamen ortamınız içinde — yerinde (on-premises) veya özel bulutunuzda — çalışacak şekilde tasarlanmıştır.  
+Bu, *verinin kalitesi*, veri tutarlılığı ve zamanında teslimat üzerinde sürekli kontrol sağlar.  
+
+Platform **asla SaaS olarak teslim edilmez**. digna ekibinin **müşteri verilerine erişimi yoktur**, bu da maksimum gizlilik, güvenlik ve mevzuata uyum sağlar.  
 
 ---
 
-## Dağıtım Seçenekleri
+## Dağıtım Seçenekleri: Yerinde & Özel Bulut
 
-- **Şirket İçi (On-Premises)**  
-  *digna* doğrudan müşterinin kendi altyapısına kurulabilir ve tamamen onların kontrolü altında çalışır.  
+- **Yerinde (On-Premises)**  
+  digna'yı kendi altyapınıza doğrudan kurun — tam müşteri kontrolü altında ve dış hizmetlerden izole olarak.
 
 - **Özel Bulut**  
-  Müşterinin özel veya hibrit bulut ortamlarında (VM'ler, konteynerler veya Kubernetes) çalışır.  
-  Platform, harici hizmetlere ihtiyaç duymadan mevcut bulut stratejisine uyum sağlar.  
-
+  digna'yı özel veya hibrit bulut ortamlarınızda (VM'ler, konteynerler veya Kubernetes) çalıştırın. Mimarinize uyum sağlar ve tam veri egemenliğini korur.  
 
 ---
 
-## Veritabanı İçi Yürütme
+## Yüksek Performanslı Veri İzleme için Veritabanı İçi Çalışma
 
-*digna* kontrolleri ve anomali tespit mantığını **doğrudan veritabanı motoru içinde** yürütür.  
-Bu yaklaşım veri hareketini azaltır, yerel veritabanı performansından faydalanır ve izlemenin veriye mümkün olduğunca yakın gerçekleşmesini sağlar.  
-
----
-
-## Temel Yetkinlikler
-
-- Veri hacimleri, dağılımları ve tutarlılığının sürekli izlenmesi  
-- İş ve teknik kuralların otomatik doğrulanması  
-- Gecikmiş veya eksik veri teslimatlarının tespiti  
-- Tablolarda veya görünümlerdeki yapısal değişikliklere ilişkin uyarılar  
-- Veri kalitesi ve güvenilirliğine ilişkin geçmiş eğilimlerin analizi  
+*digna*, tüm **veri kalitesi kontrolleri ve anomali tespiti** mantığını **veritabanı motorunuzun içinde** çalıştırır.  
+Bu benzersiz yaklaşım veri hareketini en aza indirir, yerel performanstan faydalanır ve verinin kaynağına mümkün olduğunca yakın gözlemlenebilirlik sağlar.  
 
 ---
 
-## Faydalar
+## Sürekli İzleme ve Gözlemlenebilirlik için Temel Yetkinlikler
 
-- **Tam Veri Kontrolü** – yalnızca müşteri ortamı, dış erişim yok  
-- **Tasarım Gereği Uyumluluk** – sıkı veri politikalarına sahip düzenlenen sektörler için uygun  
-- **Performans** – veritabanı içinde yürütme üst yükü azaltır ve verimli ölçeklenir  
-- **Esneklik** – hem şirket içi hem de özel bulut kurulumlarında aynı platform  
-- **Hızlı Kurulum** – saatler içinde kurulum, yükseltmeler bir saatten kısa sürede  
-
----
-
-## Entegrasyonlar
-
-*digna* bağlantı kurar:  
-
-- **Databases & Warehouses**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Veri Gölleri / Lakehouse'lar**: Hadoop, Databricks 
-- **ETL & İşleme**: Spark, Airflow, dbt, Informatica, Talend  
+- **Veri hacimleri, dağılımları ve tutarlılığının** sürekli takibi  
+- **Teknik ve iş kurallarının** otomatik doğrulanması  
+- **Eksik veya gecikmiş veri teslimatlarının** tespiti  
+- **Şema veya yapısal değişiklikler** hakkında uyarılar  
+- Uzun vadeli **veri güvenilirliği ve kalitesi** için tarihsel eğilim analizi  
 
 ---
 
-## Daha Fazla Bilgi
+## digna’nın Veri Kalitesi ve Gözlemlenebilirlik Yaklaşımının Faydaları
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+- **Tam Veri Kontrolü** – veriler ortamınızdan hiç çıkmaz  
+- **Tasarım Gereği Uyumluluk** – düzenlemeye tabi sektörler için ideal (finans, sağlık, telekomünikasyon)  
+- **Performans** – veritabanı içi yürütme gecikmeyi azaltır ve verimli ölçeklenir  
+- **Esneklik** – yerinde ve özel bulut kurulumlarında aynı platform  
+- **Hızlı Kurulum** – saatler içinde kurulum, güncellemeler bir saatten kısa sürede  
+
+---
+
+## Büyük Veri Platformlarıyla Entegrasyonlar
+
+*digna* sorunsuz şekilde bağlanır:  
+
+- **Veritabanları & Veri Ambarları:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lake / Lakehouse:** Hadoop, Databricks  
+- **ETL & İşleme Araçları:** Spark, Airflow, dbt, Informatica, Talend  
+
+---
+
+## Sıkça Sorulan Sorular
+
+**digna platformu nedir?**  
+Veri kalitesini ve veri gözlemlenebilirliğini iyileştirmeye yönelik, tamamen kendi ortamınız içinde çalışan yapay zeka tabanlı bir çözüm.
+
+**digna bir SaaS çözümü mü?**  
+Hayır. digna yerinde veya özel bulutunuza kurulur; Yazılım olarak Hizmet şeklinde sunulmaz.
+
+**digna hangi veritabanlarını destekliyor?**  
+digna Teradata, Snowflake, Databricks, Oracle, PostgreSQL ve daha birçok sistemle entegre olur.
+
+**Neden bulut tabanlı araçlar yerine digna tercih edilmeli?**  
+Çünkü digna yapay zekayı, tam veri egemenliğini ve veritabanı içi izlemeyi bir araya getirir — güvenilir veri hatları ve mevzuata uyum sağlar.
+
+---
+
+Kullanım senaryoları ve sektör uygulamaları için ziyaret edin: [digna.ai](https://www.digna.ai).

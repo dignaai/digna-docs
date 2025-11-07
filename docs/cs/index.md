@@ -1,68 +1,100 @@
 ---
-title: Platforma *digna* – Data Quality & Data Observability | On-Prem & Private Cloud
-description: Objevte digna, platformu pro Data Quality a Data Observability poháněnou umělou inteligencí, navrženou pro on-premises a private cloud. Zajistěte soulad s předpisy, výkon a plnou kontrolu díky provádění v databázi a širokým integracím.
-canonical_url: https://docs.digna.ai/platform/
+title: Platforma digna – AI-řízená kvalita dat a observabilita | On-Premises & Private Cloud
+description: Objevte digna, evropskou AI platformu pro kvalitu dat a observabilitu. Navržena pro on-premises a private cloud, digna monitoruje kvalitu dat přímo ve vašich databázích — zajišťuje soulad s předpisy, výkon a suverenitu dat.
 image: /assets/logo_square.png
+keywords:
+  - kvalita dat
+  - kvalita informací
+  - observabilita dat
+  - sledování dat
+  - detekce anomálií pomocí AI
+  - in-database monitoring
+  - suverenita dat
+  - evropská kvalita dat
+  - on-premises observabilita
+  - private cloud data platform
+lang: cs
+robots: index, follow
+og_title: Platforma digna – AI-řízená kvalita dat a observabilita
+og_description: digna monitoruje kvalitu a observabilitu dat přímo ve vašem prostředí. Poháněna AI, plně on-premises nebo v private cloudu, zajišťuje kontrolu, soulad s předpisy a výkon.
+og_image: /assets/logo_square.png
+og_type: website
+twitter_card: summary_large_image
 ---
 
 # *digna* Platforma
+<h1 style="display:none;">AI-řízená platforma pro kvalitu dat a observabilitu dat – digna</h1>
 
-**digna** je platforma pro **Data Quality** a **Data Observability**, navržená tak, aby běžela zcela v prostředí zákazníka.  
+## Evropská platforma pro kvalitu dat a observabilitu dat
 
-Není nikdy poskytována jako Software as a Service — tým *digna* nemá přístup k zákaznickým datům.  
-To zajišťuje maximální soukromí, bezpečnost a dodržování předpisů.  
+**digna** je **AI-řízená platforma pro kvalitu dat a observabilitu**, navržená tak, aby fungovala zcela ve vašem prostředí — on-premises nebo v private cloudu.  
+Zajišťuje průběžnou kontrolu nad *kvalitou dat*, konzistencí dat a včasným doručením dat.  
+
+Platforma **nikdy není poskytována jako SaaS**. Tým digna **nemá přístup k datům zákazníků**, což zaručuje maximální soukromí, bezpečnost a souladu s předpisy.  
 
 ---
 
-## Možnosti nasazení
+## Možnosti nasazení: On-Premises & Private Cloud
 
 - **On-Premises**  
-  *digna* lze nainstalovat přímo do vlastní infrastruktury zákazníka, zcela pod jeho kontrolou.  
+  Nainstalujte digna přímo ve vaší vlastní infrastruktuře — pod plnou kontrolou zákazníka a izolovaně od externích služeb.  
 
 - **Private Cloud**  
-  Běží v privátních nebo hybridních cloudových prostředích zákazníka (VM, kontejnery nebo Kubernetes).  
-  Platforma se přizpůsobí stávající cloudové strategii bez potřeby externích služeb.  
-
+  Provozujte digna ve vašich privátních nebo hybridních cloudových prostředích (VMs, kontejnery nebo Kubernetes). Přizpůsobí se vaší architektuře a zároveň zachovává plnou suverenitu dat.  
 
 ---
 
-## Provádění v databázi
+## Provedení přímo v databázi pro vysoký výkon monitoringu dat
 
-*digna* provádí kontroly a logiku detekce anomálií **přímo uvnitř databázového enginu**.  
-Tento přístup snižuje přesun dat, využívá nativní výkon databáze a zajišťuje, že monitorování probíhá co nejblíže k datům.  
-
----
-
-## Klíčové schopnosti
-
-- Kontinuální monitoring objemů dat, rozložení a konzistence  
-- Automatizovaná validace obchodních a technických pravidel  
-- Detekce opožděných nebo chybějících dodávek dat  
-- Upozornění na strukturální změny v tabulkách nebo view  
-- Analýza historických trendů v kvalitě a spolehlivosti dat  
+*digna* provádí veškeré **kontroly kvality dat a logiku detekce anomálií přímo v databázovém enginu**.  
+Tento jedinečný přístup minimalizuje přesun dat, využívá nativní výkon a zajišťuje observabilitu dat co nejblíže zdroji.  
 
 ---
 
-## Výhody
+## Klíčové schopnosti pro kontinuální monitoring a observabilitu
 
-- **Plná kontrola nad daty** – pouze prostředí zákazníka, žádný externí přístup  
-- **Compliance by Design** – vhodné pro regulovaná odvětví s přísnými pravidly pro data  
-- **Výkon** – provádění v databázi snižuje režii a efektivně škáluje  
-- **Flexibilita** – stejná platforma pro on-prem i private cloud nasazení  
-- **Rychlé nasazení** – instalace během několika hodin, aktualizace za méně než hodinu  
-
----
-
-## Integrace
-
-*digna* se připojuje k:  
-
-- **Databases & Warehouses**: Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Data Lakes / Lakehouses**: Hadoop, Databricks 
-- **ETL & Processing**: Spark, Airflow, dbt, Informatica, Talend  
+- Neustálé sledování **objemů dat, jejich rozložení a konzistence**  
+- Automatizovaná validace **technických a obchodních pravidel**  
+- Detekce **chybějících nebo zpožděných dodávek dat**  
+- Upozornění na **změny schématu nebo struktury**  
+- Analýza historických trendů pro dlouhodobou **spolehlivost a kvalitu dat**  
 
 ---
 
-## Zjistit více
+## Výhody přístupu digna ke kvalitě dat a observabilitě
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+- **Plná kontrola nad daty** – data nikdy neopouštějí vaše prostředí  
+- **Soulad s předpisy v návrhu (Compliance by Design)** – ideální pro regulovaná odvětví (finance, zdravotnictví, telekomunikace)  
+- **Výkon** – provádění v databázi snižuje latenci a efektivně škáluje  
+- **Flexibilita** – stejná platforma pro nasazení on-premises i v private cloudu  
+- **Rychlé nasazení** – instalace během hodin, aktualizace do jedné hodiny  
+
+---
+
+## Integrace s hlavními datovými platformami
+
+*digna* se bezproblémově připojuje k:  
+
+- **Databáze & Data Warehouse:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lakes / Lakehouses:** Hadoop, Databricks  
+- **ETL & zpracovatelské nástroje:** Spark, Airflow, dbt, Informatica, Talend  
+
+---
+
+## Často kladené otázky
+
+**Co je platforma digna?**  
+Řešení založené na AI pro zlepšení kvality dat a observability dat, provozované zcela ve vašem vlastním prostředí.
+
+**Je digna řešení typu SaaS?**  
+Ne. digna se instaluje on-premises nebo ve vašem private cloudu, není poskytována jako Software as a Service.
+
+**S jakými databázemi digna pracuje?**  
+digna se integruje s Teradata, Snowflake, Databricks, Oracle, PostgreSQL a mnoha dalšími.
+
+**Proč zvolit digna místo nástrojů v cloudu?**  
+Protože kombinuje AI, plnou suverenitu dat a monitoring přímo v databázi — zajišťuje spolehlivé datové pipeline a soulad s regulacemi.
+
+---
+
+Pro případové studie a průmyslové aplikace navštivte [digna.ai](https://www.digna.ai).
