@@ -14,6 +14,7 @@ LANGUAGES = {
     'no': 'Norwegian',
     'sv': 'Swedish',
     'fi': 'Finnish',
+    'nb': 'Norwegian',
 
     # Eastern & Northern Europe
     'et': 'Estonian',
@@ -25,6 +26,7 @@ LANGUAGES = {
     'sl': 'Slovenian',
     'el': 'Greek',
     'ru': 'Russian',
+    'uk': 'Ukrainian'
 
     # Southern Europe
     'es': 'Spanish',
