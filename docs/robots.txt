@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Block technical build/system folders (adjust if needed)
+Disallow: /assets/
+Disallow: /static/
+Disallow: /themes/
+Disallow: /stylesheets/
+Disallow: /javascripts/
+
+Disallow: /search/
+
+Sitemap: https://docs.digna.ai/sitemap.xml
