@@ -9,7 +9,7 @@ Learn More
 - [**digna Data Analytics**](https://www.digna.ai/data-analytics)
 - [**digna Data Validation**](https://www.digna.ai/data-validation)
 - [**digna Data Timeliness**](https://www.digna.ai/data-timeliness)
-- [**digna Schema Tracker**](https://www.digna.ai/schema-tracker)
+- [**digna Schema Tracker**](https://www.digna.ai/data-schema-tracker)
 
 🖥️ [CLI & Automation](https://docs.digna.ai/cli/Introduction/)
 
