@@ -39,8 +39,8 @@ By combining automated anomaly detection, rule-based validation, and data struct
 | **Data Anomalies** | Automated anomaly detection | Learns “normal” data behavior, detects deviations in **volume, distribution, or value patterns**, and flags abnormal data movement or gaps |
 | **Data Analytics** | Trends & volatility | Analyzes long-term **metrics, stability, and change patterns** to detect drifts in data quality over time |
 | **Data Validation** | Rule-based checks | Enforces **exact values, ranges, thresholds, or reference lists** — with full audit trail and reproducibility |
-| **Data Timeliness** | Delivery monitoring | Uses AI-learned **expected arrival times** and user-defined schedules to detect **late or missing data** |
-| **Data Schema Tracker** | Structural monitoring | Detects **schema drift**, such as new or removed columns, renamed fields, or datatype changes |
+| **Timeliness** | Delivery monitoring | Uses AI-learned **expected arrival times** and user-defined schedules to detect **late or missing data** |
+| **Schema Tracker** | Structural monitoring | Detects **schema drift**, such as new or removed columns, renamed fields, or datatype changes |
 
 ---
 
