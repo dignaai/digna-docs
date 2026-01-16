@@ -50,8 +50,8 @@ Each digna module addresses a specific dimension of the **quality of data** and 
 
 - **Data Anomalies** and **Data Analytics** provide AI-driven insights and trend awareness.  
 - **Data Validation** ensures correctness through rule enforcement.  
-- **Data Timeliness** safeguards data delivery and freshness.  
-- **Data Schema Tracker** protects structure and metadata integrity.  
+- **Timeliness** safeguards data delivery and freshness.  
+- **Schema Tracker** protects structure and metadata integrity.  
 
 Together, they create a complete **Data Observability and Quality Control Framework** operating entirely within your environment — **on-premises or private cloud**.
 
