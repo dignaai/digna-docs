@@ -44,7 +44,7 @@ This release enhances flexibility across all modules and extends validation capa
 - Enables offline analysis, reporting, and integration with external tools.
 
 ## 🛠 CLI Updates  
-
+- No changes
 ---
 
 ## ✅ digna Data Validation  
