@@ -27,14 +27,14 @@ It refers to the screen **"Create a Database Connection"**.
 Provide the following information in the **"Create a Database Connection"** screen:
 
 ```
-Technology:      Snowflake
-Host Address:    Snowflake account name
-Host Port:       Not needed
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-User Name:       User name and warehouse in the format "user<@>warehouse"
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Snowflake
+Host Address:       Snowflake account name
+Host Port:          Not needed
+Database Name:      Database that contains the source schema
+User Name:          User name and warehouse in the format "user<@>warehouse"
+User Password:      Password for the user
+Use ODBC:           Disabled (default)
 ```
 
 ---
@@ -77,9 +77,9 @@ Now you can configure *digna* to use the ODBC connection, either with a **DSN (D
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
+Name:            Name of the connection. This is used for referencing the connection in other screens.
 Technology:      Snowflake
 Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
 Use ODBC:        Enabled
 ```
 
@@ -91,7 +91,6 @@ name: "PWD",            value: "{your password in curly braces}"
 
 optionally:
 name: "Database",       value: "Database that contains the source schema"
-name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
@@ -107,8 +106,7 @@ In the **"Create a Database Connection"** screen, provide the following:
 
 ```
 Technology:      Snowflake
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
+Database Name:   Database that contains the source schema
 Use ODBC:        Enabled
 ```
 
@@ -120,6 +118,5 @@ name: "Server",     value: "your-account-name.snowflakecomputing.com'
 name: "UID",        value: "your snowflake user'
 name: "PWD",        value: "your snowflake password"
 name: "Database",   value: "Database that contains the source schema"
-name: "Schema",     value: "Schema that contains the source data"
 name: "Warehouse",  value: "Warehouse to use for the execution of the SQLs"
 ```
