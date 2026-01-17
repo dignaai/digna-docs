@@ -39,8 +39,8 @@ By combining automated anomaly detection, rule-based validation, and data struct
 | **Data Anomalies** | Automated anomaly detection | Learns “normal” data behavior, detects deviations in **volume, distribution, or value patterns**, and flags abnormal data movement or gaps |
 | **Data Analytics** | Trends & volatility | Analyzes long-term **metrics, stability, and change patterns** to detect drifts in data quality over time |
 | **Data Validation** | Rule-based checks | Enforces **exact values, ranges, thresholds, or reference lists** — with full audit trail and reproducibility |
-| **Data Timeliness** | Delivery monitoring | Uses AI-learned **expected arrival times** and user-defined schedules to detect **late or missing data** |
-| **Data Schema Tracker** | Structural monitoring | Detects **schema drift**, such as new or removed columns, renamed fields, or datatype changes |
+| **Timeliness** | Delivery monitoring | Uses AI-learned **expected arrival times** and user-defined schedules to detect **late or missing data** |
+| **Schema Tracker** | Structural monitoring | Detects **schema drift**, such as new or removed columns, renamed fields, or datatype changes |
 
 ---
 
@@ -50,8 +50,8 @@ Each digna module addresses a specific dimension of the **quality of data** and 
 
 - **Data Anomalies** and **Data Analytics** provide AI-driven insights and trend awareness.  
 - **Data Validation** ensures correctness through rule enforcement.  
-- **Data Timeliness** safeguards data delivery and freshness.  
-- **Data Schema Tracker** protects structure and metadata integrity.  
+- **Timeliness** safeguards data delivery and freshness.  
+- **Schema Tracker** protects structure and metadata integrity.  
 
 Together, they create a complete **Data Observability and Quality Control Framework** operating entirely within your environment — **on-premises or private cloud**.
 

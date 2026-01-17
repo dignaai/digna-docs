@@ -1,5 +1,6 @@
-site_name: Documentation | Data Quality & Data Observability Platform
-site_author: digna.ai
+site_name: Documentation | Data Quality & Data Observability Platform | digna
+site_author: digna GmbH
+site_description: Official documentation for digna, the European AI-powered Data Quality and Data Observability platform. Learn how to install, configure, and integrate digna, connect databases, and use modules such as Data Anomalies, Data Analytics, Data Validation, Timeliness, and Schema Tracker.
 site_url: https://docs.digna.ai
 theme:
   language: en
@@ -27,11 +28,11 @@ nav:
           - Introduction: platform/data_anomalies/Introduction.md
       - digna Data Analytics:
           - Introduction: platform/data_analytics/Introduction.md
-      - digna Data Timeliness:
-          - Introduction: platform/data_timeliness/Introduction.md
       - digna Data Validation:
           - Introduction: platform/data_validation/Introduction.md
-      - digna Data Schema Tracker:
+      - digna Timeliness:
+          - Introduction: platform/data_timeliness/Introduction.md
+      - digna Schema Tracker:
           - Introduction: platform/schema_tracker/Introduction.md
   - Getting Started:
       - First steps:
@@ -55,6 +56,7 @@ nav:
           - Teradata: databases/teradata_connector_guide.md
   - CLI Reference:
           - Introduction: cli/Introduction.md
+          - Release 2026.01: cli/Command_Line_Interface_202601.md
           - Release 2025.09: cli/Command_Line_Interface_202509.md
           - Release 2025.04: cli/Command_Line_Interface_202504.md
           - Release 2024.12: cli/Command_Line_Interface_202412.md
@@ -62,6 +64,7 @@ nav:
           - Release 2024.09: cli/Command_Line_Interface_202409.md
 
   - Changelog:
+          - Release 2026.01: changelog/Release_202601.md
           - Release 2025.09: changelog/Release_202509.md
           - Release 2025.04: changelog/Release_202504.md
           - Release 2024.12: changelog/Release_202412.md
@@ -183,9 +186,6 @@ plugins:
         - locale: "it"
           name: Italiano
           build: true
-          Platform: Piattaforma
-          Databases: Basi di dati
-          Introduction: Introduzione
           nav_translations:
               Platform: Piattaforma
               Databases: Basi di dati
