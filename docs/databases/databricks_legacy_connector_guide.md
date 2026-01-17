@@ -31,14 +31,19 @@ To authenticate using a personal access token, refer to the official Databricks 
 Provide the following information in the **"Create a Database Connection"** screen:
 
 ```
-Technology:      Databricks (Legacy)
-Host Address:    Databricks hostname, e.g. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:       443
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-User Name:       HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:   Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Use ODBC:        Disabled (default)
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Databricks (Legacy)
+Host Address:       Databricks hostname, e.g. "xxxxxxxxxxxxxxxxxxx.databricks.com"
+Host Port:          443
+Database Name:      This parameter is not in use for databricks without unity catalog
+User Name:          HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
+User Password:      Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Disabled (default)
 ```
 
 ---
@@ -86,9 +91,9 @@ Now you can configure *digna* to use the ODBC connection, either with a **DSN (D
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
+Name:            Name of the connection. This is used for referencing the connection in other screens.
 Technology:      Databricks (Legacy)
 Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
 Use ODBC:        Enabled
 ```
 
@@ -109,9 +114,9 @@ name: "DSN",    value: "*digna*data_databricks"
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
+Name:            Name of the connection. This is used for referencing the connection in other screens.
 Technology:      Databricks (Legacy)
 Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
 Use ODBC:        Enabled
 ```
 
