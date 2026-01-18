@@ -109,10 +109,16 @@ Now you can configure *digna* to use the ODBC connection, either with a **DSN (D
 In the **"Create Database Connection"** screen, provide the following:
 
 ```
-Name:            Name of the connection. This is used for referencing the connection in other screens.
-Technology:      MS SQL Server
-Database Name:   Database that contains the source schemata
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         MS SQL Server
+Database Name:      Database that contains the source schemata
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+                    For serverless SQL pool, only "Standard" is supported.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
 #### ODBC Properties
@@ -136,10 +142,16 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
-Name:            Name of the connection. This is used for referencing the connection in other screens.
-Technology:      MS SQL Server
-Database Name:   Name of the database that contains the source data schema
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         MS SQL Server
+Database Name:      Name of the database that contains the source data schema
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+                    For serverless SQL pool, only "Standard" is supported.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
 #### ODBC Properties

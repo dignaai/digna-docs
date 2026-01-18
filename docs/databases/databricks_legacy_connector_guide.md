@@ -91,10 +91,15 @@ Now you can configure *digna* to use the ODBC connection, either with a **DSN (D
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
-Name:            Name of the connection. This is used for referencing the connection in other screens.
-Technology:      Databricks (Legacy)
-Database Name:   This parameter is not in use for databricks without unity catalog
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Databricks (Legacy)
+Database Name:      This parameter is not in use for databricks without unity catalog
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
 #### ODBC Properties
@@ -114,10 +119,15 @@ name: "DSN",    value: "*digna*data_databricks"
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
-Name:            Name of the connection. This is used for referencing the connection in other screens.
-Technology:      Databricks (Legacy)
-Database Name:   This parameter is not in use for databricks without unity catalog
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Databricks (Legacy)
+Database Name:      This parameter is not in use for databricks without unity catalog
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
 #### ODBC Properties
