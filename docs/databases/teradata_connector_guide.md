@@ -27,14 +27,19 @@ It refers to the screen **"Create a Database Connection"**.
 Provide the following information in the **"Create a Database Connection"** screen:
 
 ```
-Technology:      Teradata
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 1025
-Database Name:   Database name
-Schema Name:     Database name
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Teradata
+Host Address:       Server name or IP address
+Host Port:          Port number, e.g. 1025
+Database Name:      Database name
+User Name:          Database user name
+User Password:      Password for the user
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Disabled (default)
 ```
 
 ---
@@ -77,9 +82,9 @@ Now you can configure *digna* to use the ODBC connection, either with a **DSN (D
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
+Name:            Name of the connection. This is used for referencing the connection in other screens.
 Technology:      Teradata
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
+Database Name:   Database that contains the source data
 Use ODBC:        Enabled
 ```
 
@@ -102,9 +107,9 @@ name: "PWD",        value: "your database password"
 In the **"Create a Database Connection"** screen, provide the following:
 
 ```
+Name:            Name of the connection. This is used for referencing the connection in other screens.
 Technology:      Teradata
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
+Database Name:   Database that contains the source data
 Use ODBC:        Enabled
 ```
 
