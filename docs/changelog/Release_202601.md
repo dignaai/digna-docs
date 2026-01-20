@@ -27,16 +27,17 @@ This release enhances flexibility across all modules and significantly extends *
 ### Logical Datasources  
 - Datasources now represent a **logical layer** within a project.  
 - Each datasource can be backed by:
-  - a **database table**
-  - a **database view**
-  - or a **custom SQL statement**  
+   - a **database table**
+   - a **database view**
+   - a **custom SQL statement**  
 - This separation improves reuse, clarity, and inspection modeling across modules.  
 - **Impact:** Decouples inspections and data quality rules from physical storage, improving maintainability and reuse.
 
 ### Anomaly Relevance Condition  
-- An **Anomaly Relevance Condition** can now be defined to control anomaly status evaluation.  
+- An **Anomaly Relevance Condition** can now be defined to control anomaly status evaluation on level of dataset.  
 - Statistics are calculated independently of whether the condition is set or met.  
 - If the condition is **not met**, **digna Data Anomalies** does not provide anomaly status (green / yellow / red).  
+- **Example:** Exclude the dataset from anomaly evaluation when the record count is below 10.
 - **Impact:** Ensures anomalies are evaluated only in relevant business contexts.
 
 ### Per-Module Notification Configuration  
