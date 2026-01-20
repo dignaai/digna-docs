@@ -62,12 +62,12 @@ With this release, **digna Data Validation** now supports a comprehensive set of
 
 Together, these checks enable enforcement of **structural and relational data quality rules** across complex data landscapes.
 
-### Uniqueness Checks for Multiple Columns (digna Data Validation)
+### Uniqueness Checks for Multiple Columns
 - Introduced **Uniqueness Checks** for a configurable **set of columns**.  
 - Enables validation of compound keys and business-level uniqueness constraints.  
 - **Impact:** Detects duplicate business entities that cannot be identified with single-column checks.
 
-### Referential Integrity Checks (digna Data Validation)
+### Referential Integrity Checks
 - Introduced **Referential Integrity Checks** to validate relationships between datasources.  
 - Ensures that **foreign key values** in a source datasource exist in a referenced target datasource.  
 - Supports validation across:
