@@ -31,7 +31,7 @@ Name:               Name of the connection. This is used for referencing the con
 Technology:         Teradata
 Host Address:       Server name or IP address
 Host Port:          Port number, e.g. 1025
-Database Name:      Database name
+Database Name:      Can be left empty. Digna treats databases as schemas for Teradata.
 User Name:          Database user name
 User Password:      Password for the user
 Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
@@ -84,7 +84,7 @@ In the **"Create a Database Connection"** screen, provide the following:
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Teradata
-Database Name:      Database that contains the source data
+Database Name:      Can be left empty. Digna treats databases as schemas for Teradata.
 Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
                     - Standard: Metrics are calculated directly on the source tables without copying the data.
                     - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
@@ -114,7 +114,7 @@ In the **"Create a Database Connection"** screen, provide the following:
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Teradata
-Database Name:      Database that contains the source data
+Database Name:      Can be left empty. Digna treats databases as schemas for Teradata.
 Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
                     - Standard: Metrics are calculated directly on the source tables without copying the data.
                     - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
