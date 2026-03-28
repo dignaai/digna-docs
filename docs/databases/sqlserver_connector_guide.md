@@ -83,7 +83,7 @@ and click the **Finish** button.
 #### Step 5
 ![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the ** Test datasource ** button.
+Now click the **Test datasource** button.
 
 #### Step 6
 ![Step 1](images/sqlserver/create_odbc_data_source_step6.png)
@@ -117,7 +117,7 @@ Use ODBC:           Enabled
 #### ODBC Properties
 
 ```
-name: "DSN",        value: "azure-synopse-serverless-1"
+name: "DSN",        value: "sqlserver-1"
 name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 name: "DATABASE",   value: "name of the database that contains the source data schema"
