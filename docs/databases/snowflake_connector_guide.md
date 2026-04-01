@@ -38,7 +38,7 @@ Profiling Mode:     The profiling mode determines how digna processes data and c
                     - Standard: Metrics are calculated directly on the source tables without copying the data.
                     - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
                     - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
 Use ODBC:           Disabled (default)
 ```
 
@@ -89,7 +89,7 @@ Profiling Mode:     The profiling mode determines how digna processes data and c
                     - Standard: Metrics are calculated directly on the source tables without copying the data.
                     - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
                     - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
 Use ODBC:           Enabled
 ```
 
@@ -121,7 +121,7 @@ Profiling Mode:     The profiling mode determines how digna processes data and c
                     - Standard: Metrics are calculated directly on the source tables without copying the data.
                     - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
                     - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
 Use ODBC:           Enabled
 ```
 
