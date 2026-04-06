@@ -51,10 +51,10 @@ This release introduces advanced time-series analysis, reusable validation compo
 
 ---
 
-### Column-Level Relevance Conditions  
+### Statistic-Level Relevance Conditions  
 - Define relevance conditions on **column level for each statistic**  
 - Extends the concept of anomaly relevance conditions  
-- Control when a statistic should be considered relevant  
+- Control when a statistic should be considered relevant
 - Reduce noise by excluding non-critical situations  
 
 **Impact:** Improves signal quality by focusing only on meaningful deviations.
