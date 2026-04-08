@@ -8,7 +8,7 @@ image: /assets/logo_square.png
 # digna CLI Reference 2026.04
 **2026-04-08**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.01**, including usage examples and options.
+This page documents the full set of commands available in ***digna*** CLI release **2026.04**, including usage examples and options.
 
 ---
 
@@ -84,7 +84,7 @@ dignacli --version
   
 #### Example Output
 ```bash
-dignacli version 2026.01
+dignacli version 2026.04
 ```
 
 ### logging options
