@@ -20,6 +20,7 @@ og_description: تقوم digna بمراقبة جودة وقابلية ملاحظ
 og_image: /assets/logo_square.png
 og_type: website
 twitter_card: summary_large_image
+canonical_url: https://docs.digna.ai/
 ---
 
 # منصة *digna*

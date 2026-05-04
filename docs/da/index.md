@@ -18,7 +18,8 @@ robots: index, follow
 og_title: digna-platform – AI-drevet datakvalitet & observabilitet
 og_description: digna overvåger datakvalitet og dataobservabilitet direkte i dit miljø. AI-drevet, fuldt on-premises eller i private cloud, hvilket sikrer kontrol, overholdelse og ydeevne.
 og_image: /assets/logo_square.png
-og_type: website
+og_type: website 
+canonical_url: https://docs.digna.ai/
 twitter_card: summary_large_image
 ---
 

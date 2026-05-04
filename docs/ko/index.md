@@ -20,6 +20,7 @@ og_description: digna는 고객 환경 내에서 직접 데이터의 품질과 �
 og_image: /assets/logo_square.png
 og_type: website
 twitter_card: summary_large_image
+canonical_url: https://docs.digna.ai/
 ---
 
 # *digna* 플랫폼

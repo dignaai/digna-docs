@@ -20,6 +20,7 @@ og_description: digna आपके वातावरण के अंदर स
 og_image: /assets/logo_square.png
 og_type: website
 twitter_card: summary_large_image
+canonical_url: https://docs.digna.ai/
 ---
 
 # *digna* प्लेटफ़ॉर्म
