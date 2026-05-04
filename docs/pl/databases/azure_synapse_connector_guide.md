@@ -2,6 +2,7 @@
 title: Azure Synapse Connector – Integracja bazy danych | digna Documentation
 description: Skonfiguruj digna, aby łączyła się z Azure Synapse Analytics przy użyciu natywnego sterownika Pythona lub sterownika ODBC. Obsługuje zarówno serverless, jak i dedykowane pule SQL.
 image: /assets/logo_square.png
+canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

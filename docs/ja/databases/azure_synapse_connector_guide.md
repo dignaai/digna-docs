@@ -2,6 +2,7 @@
 title: Azure Synapse コネクタ – データベース統合 | digna ドキュメント
 description: ネイティブの Python ドライバーまたは ODBC ドライバーを使用して digna を Azure Synapse Analytics に接続する方法を構成します。サーバーレスおよび専用の SQL プールの両方をサポートします。
 image: /assets/logo_square.png
+canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

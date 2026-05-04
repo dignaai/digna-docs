@@ -2,6 +2,7 @@
 title: Azure Synapse Csatlakozó – Adatbázis integráció | digna Dokumentáció
 description: Állítsa be a digna-t, hogy csatlakozzon az Azure Synapse Analyticshez a natív Python driver vagy az ODBC driver használatával. Mind a serverless, mind a dedicated SQL pool támogatott.
 image: /assets/logo_square.png
+canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

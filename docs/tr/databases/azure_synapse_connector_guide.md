@@ -2,6 +2,7 @@
 title: Azure Synapse Bağlayıcısı – Veritabanı Entegrasyonu | digna Dokümantasyonu
 description: digna'yı, yerel Python sürücüsü veya ODBC sürücüsü kullanarak Azure Synapse Analytics'e bağlanacak şekilde yapılandırın. Hem sunucusuz hem de özel SQL havuzlarını destekler.
 image: /assets/logo_square.png
+canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

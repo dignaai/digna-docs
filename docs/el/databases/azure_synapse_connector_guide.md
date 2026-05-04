@@ -2,6 +2,7 @@
 title: Συνδετήρας Azure Synapse – Ενσωμάτωση Βάσης Δεδομένων | digna Documentation
 description: Διαμορφώστε το digna για σύνδεση με το Azure Synapse Analytics χρησιμοποιώντας είτε τον native Python driver είτε τον ODBC driver. Υποστηρίζει τόσο serverless όσο και dedicated SQL pools.
 image: /assets/logo_square.png
+canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

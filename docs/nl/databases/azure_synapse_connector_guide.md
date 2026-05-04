@@ -2,6 +2,7 @@
 title: Azure Synapse-connector – Database-integratie | digna Documentatie
 description: Configureer *digna* om verbinding te maken met Azure Synapse Analytics met behulp van de native Python-driver of de ODBC-driver. Ondersteunt zowel serverless als dedicated SQL-pools.
 image: /assets/logo_square.png
+canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 
