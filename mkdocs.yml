@@ -65,6 +65,7 @@ nav:
           - Release 2024.09: cli/Command_Line_Interface_202409.md
 
   - Changelog:
+          - Release 2026.06: changelog/Release_202606.md
           - Release 2026.04: changelog/Release_202604.md
           - Release 2026.01: changelog/Release_202601.md
           - Release 2025.09: changelog/Release_202509.md
