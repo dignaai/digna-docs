@@ -37,7 +37,7 @@ nav:
   - Installation & Deployment:
       - Windows:
           - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
-      - Single Sign-on: installation_deployment/sso_integration_guide.md
+      - How to configure Single Sign-on: installation_deployment/sso_integration_guide.md
   - Getting Started:
       - First steps:
           - How to create a data project: getting_started/how_to_create_project.md
