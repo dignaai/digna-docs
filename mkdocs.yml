@@ -34,6 +34,9 @@ nav:
           - Introduction: platform/data_timeliness/Introduction.md
       - digna Schema Tracker:
           - Introduction: platform/schema_tracker/Introduction.md
+  - Installation & Deployment:
+      - Windows:
+          - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
   - Getting Started:
       - First steps:
           - How to create a data project: getting_started/how_to_create_project.md
@@ -114,10 +117,6 @@ extra_css:
 # --- SEO & Performance ---
 plugins:
   - search
-  - ultralytics:
-      add_desc: true
-      add_image: true
-      add_keywords: true
   - minify:
       minify_html: true
       minify_js: true
@@ -130,6 +129,7 @@ plugins:
           name: English
           default: true
           build: true
+
 
         - locale: "de"
           name: Deutsch
@@ -611,3 +611,4 @@ plugins:
             Scheduling: الجدولة
             Integration: التكامل
             CLI Reference: مرجع CLI
+
