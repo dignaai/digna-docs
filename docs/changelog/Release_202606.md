@@ -42,7 +42,7 @@ This release introduces the new **digna Python SDK**, official **Docker deployme
 
 ---
 
-### QueryMode – Flexible SQL Execution Strategy[¶](#querymode-flexible-sql-execution-strategy "Permanent link")
+### QueryMode – Flexible SQL Execution Strategy
 
 Configure query execution strategy: **Single** or **Combined** mode
 
