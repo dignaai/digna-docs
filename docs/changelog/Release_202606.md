@@ -46,12 +46,12 @@ This release introduces the new **digna Python SDK**, official **Docker deployme
 
 Configure query execution strategy: **Single** or **Combined** mode
 
-- **Single Mode**: Each statistic is calculated with one dedicated SQL query
+**Single Mode**: Each statistic is calculated with one dedicated SQL query
   - Ideal for large datasources where memory constraints are a concern
   - Prevents combined query resource exhaustion (out of memory, spool limits)
   - Higher query count but lower per-query memory footprint
 
-- **Combined Mode**: All statistics are computed within a single SQL query
+**Combined Mode**: All statistics are computed within a single SQL query
   - Reduces total query count and network overhead
   - Optimizes performance when datasources are manageable in memory
   - More efficient for frequent, parallel executions
