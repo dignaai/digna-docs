@@ -1,12 +1,12 @@
 ---
-title: Ein Projekt erstellen | digna Dokumentation
+title: Projekt erstellen | digna Dokumentation
 description: Schritt-für-Schritt-Anleitung zum Erstellen eines neuen Projekts in digna. Erfahren Sie, wie Sie den Projektbereich öffnen, Details eingeben und Projekte mit einer interaktiven Demo speichern.
 ---
 
 
-# Ein Projekt erstellen
+# Projekt erstellen
 
-Diese Anleitung zeigt die minimalen Schritte, die erforderlich sind, um ein neues Projekt in *digna* zu erstellen.  
+Diese Anleitung zeigt die minimalen Schritte zum Erstellen eines neuen Projekts in *digna*.  
 
 
 
@@ -21,15 +21,15 @@ Diese Anleitung zeigt die minimalen Schritte, die erforderlich sind, um ein neue
 ### Schritte
 
 1. **Projektbereich öffnen**
-   - Klicken Sie in der linken Navigation auf **Projects**.
+   - Klicken Sie in der linken Navigation auf **Projekte**.
 
-2. **Ein neues Projekt erstellen**
-   - Klicken Sie auf die Schaltfläche **New Project**.
+2. **Neues Projekt erstellen**
+   - Klicken Sie auf die Schaltfläche **Neues Projekt**.
 
 3. **Projektdetails eingeben**
-   - Geben Sie einen **Project Name** ein.  
-   - (Optional) Fügen Sie eine **Description** zur Kontextangabe hinzu.
+   - Geben Sie einen **Projektnamen** an.  
+   - (Optional) Fügen Sie eine **Beschreibung** für den Kontext hinzu.
 
 4. **Projekt speichern**
-   - Klicken Sie auf **Create**, um abzuschließen.  
-   - Das Projekt erscheint jetzt in Ihrer **Projects list**.
+   - Klicken Sie auf **Erstellen**, um abzuschließen.  
+   - Das Projekt erscheint nun in Ihrer **Projektliste**.
