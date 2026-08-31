@@ -43,7 +43,9 @@ This release introduces the new **digna Python SDK**, official **Docker deployme
 ---
 
 ### QueryMode – Flexible SQL Execution Strategy[¶](#querymode-flexible-sql-execution-strategy "Permanent link")
+
 Configure query execution strategy: **Single** or **Combined** mode
+
 - **Single Mode**: Each statistic is calculated with one dedicated SQL query
   - Ideal for large datasources where memory constraints are a concern
   - Prevents combined query resource exhaustion (out of memory, spool limits)
