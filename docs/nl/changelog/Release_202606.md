@@ -12,7 +12,7 @@ Deze release introduceert de nieuwe **digna Python SDK**, officiële **Docker-im
 
 ---
 
-## 🚀 Nieuwe functies  
+## Nieuwe functies  
 
 ### digna Python SDK – Automatiseer alles met Python  
 - Installatie via:
@@ -84,7 +84,7 @@ Stel de query-uitvoeringsstrategie in: **Single** of **Combined** modus
 
 ---
 
-## 🧪 Platformverbeteringen  
+## Platformverbeteringen  
 
 - Volledige Python SDK-integratie voor automatisering  
 - Gefcontaineriseerde deployment via Docker  
@@ -93,7 +93,7 @@ Stel de query-uitvoeringsstrategie in: **Single** of **Combined** modus
 
 ---
 
-## 🎯 Wie profiteert van deze release  
+## Wie profiteert van deze release  
 
 - Data Engineers: automatisering, SDK-gebruik, pipeline-integratie  
 - Platformteams: vereenvoudigde deployment via Docker  
@@ -102,7 +102,7 @@ Stel de query-uitvoeringsstrategie in: **Single** of **Combined** modus
 
 ---
 
-## 🛠 CLI-updates  
+## CLI-updates  
 - Toegevoegde SDK-integratiesteun  
 - Verbeterde import/export-workflows  
 - Algemeen stabielheids- en prestatieverbeteringen

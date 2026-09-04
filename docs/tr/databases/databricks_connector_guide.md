@@ -19,12 +19,12 @@ Bu belge **"Create a Database Connection"** ekranına atıfta bulunur.
 **Kütüphane:** `databricks-sql-connector`  
 **Desteklenen Kimlik Doğrulama:** Yalnızca Personal Access Token (PAT)
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### Personal Access Token (PAT)
 
 Kişisel erişim belirteci kullanarak kimlik doğrulamak için resmi Databricks dokümantasyonuna bakın:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımladığınız isimle eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımladığınız isimle eşleşmelidir.
 
 ---
 

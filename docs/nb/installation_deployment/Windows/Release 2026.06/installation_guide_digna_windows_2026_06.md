@@ -65,7 +65,7 @@ Du kan legge til en ny database for digna i din eksisterende PostgreSQL-server.
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **⚠️ Recommended Specifications**
+> **Recommended Specifications**
 >
 > - **Memory**: 32 GB RAM (i stedet for 16 GB)
 > - **Disk Space**: 50 GB tilgjengelig lagringsplass (i stedet for 10 GB)
@@ -122,7 +122,7 @@ Angi og bekreft et passord for PostgreSQL-superbrukeren (`postgres`). **Lagre de
 
 Standard PostgreSQL-port er `5432`. Du kan bruke standarden eller spesifisere en annen port ved behov.
 
-> **💡 Tip**
+> **Tip**
 >
 > Hvis port 5432 allerede er i bruk, velg en alternativ port og noter den for senere konfigurering.
 
@@ -200,7 +200,7 @@ For å sikre at Markdown-filer (`.md`) blir servert riktig av IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > Uten denne innstillingen kan `.md`-filer bli servert feil.
 
@@ -227,7 +227,7 @@ Apache Tomcat er en åpen kildekode Java servlet-container og webserver.
    - Gå til `http://localhost:8080`
    - Du bør se Apache Tomcat velkomstsiden
 
-> **💡 Tip**
+> **Tip**
 >
 > Apache Tomcat starter ofte automatisk etter installasjon. Hvis den ikke gjør det, naviger til `bin`-mappen og kjør `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Bruk sterke, komplekse passord for databasebrukere. Unngå lett gjetnbare legitimasjoner.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **⚠️ Important**
+> **Important**
 >
 > Lisensfilen er **ikke** inkludert i installasjonspakken og vil bli levert separat av digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Dette oppretter en bruker med full administrative rettigheter.
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Bruk et sterkt passord med en blanding av store og små bokstaver, tall og spesialtegn.
 
@@ -545,7 +545,7 @@ Følgende batch-filer er tilgjengelige:
 - `start_service.bat` — Starter tjenesten
 - `stop_service.bat` — Stopper tjenesten
 
-> **⚠️ Administrator Required**
+> **Administrator Required**
 >
 > Alle batch-filer må kjøres med Administrator-rettigheter.
 
@@ -587,7 +587,7 @@ Digna-serveren er nå registrert som en Windows-tjeneste med **automatisk oppsta
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > Stopp alltid tjenesten før du oppdaterer applikasjonsfiler.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Kopier den nye `digna`-kjørbare filen og `dashboard`-mappen til installasjonskatalogen
 
 
-> **✅ Important**
+> **Important**
 >
 > Filen `config.toml` er **aldri** inkludert i installasjons-ZIP-en. Din eksisterende konfigurasjon forblir trygg.
 

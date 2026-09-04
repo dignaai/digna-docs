@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **लाइब्रेरी:** `PyHive`  
 **सपोर्टेड प्रमाणीकरण:** केवल पासवर्ड-आधारित प्रमाणीकरण
 
-> ⚠️ अन्य प्रमाणीकरण विधियों के लिए, कृपया ODBC ड्राइवर का उपयोग करें।
+> अन्य प्रमाणीकरण विधियों के लिए, कृपया ODBC ड्राइवर का उपयोग करें।
 
 ### *digna* कॉन्फ़िगरेशन (नेटिव ड्राइवर)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

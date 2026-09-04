@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `python-oracledb`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ 他の認証方式を使用する場合は、ODBC ドライバを使用してください。
+> 他の認証方式を使用する場合は、ODBC ドライバを使用してください。
 
 ### *digna* の設定（ネイティブドライバ）
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` は ODBC ドライバ構成で定義した名前と一致している必要があります。
+> `DSN` は ODBC ドライバ構成で定義した名前と一致している必要があります。
 
 ---
 

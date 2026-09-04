@@ -142,7 +142,7 @@ usePassword = true
 - Ühtegi kasutajanime/parooli välja ei kuvata
 - Aineteid ainult OIDC autentimine on võimalik
 
-> **💡 Näpunäide**
+> **Näpunäide**
 >
 > Paroolipõhine sisselogimine on saadaval ainult kasutajatele, kes loodi parooliga kasutades käsku `digna user add` või läbi juhtpaneeli.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Tagasi suunamise URL pärast autentimist | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC konfiguratsiooni lõpp-punkt | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Tähtis**
+> **Tähtis**
 >
 > Asenda kohatäited (`<client_id>`, `<client_secret>`, `<tenant_id>`) tegelike volitustega, mis saadakse sinu identiteedipakkuja arendajapaneelilt.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Kontrolli, et iga seadistatud pakkuja nupp oleks nähtav:
 
-- ✅ Peaks olema nähtav "Login with Microsoft" nupp
-- ✅ Peaks olema nähtav "Login with Google" nupp
-- ✅ (Kui usePassword = true) Peaks olema nähtavad kasutajanime/parooli väljad
+- Peaks olema nähtav "Login with Microsoft" nupp
+- Peaks olema nähtav "Login with Google" nupp
+- (Kui usePassword = true) Peaks olema nähtavad kasutajanime/parooli väljad
 
 Kui nuppe ei kuvata:
 - Kontrolli, et `dashboard_config.toml` on salvestatud
@@ -317,10 +317,10 @@ Klõpsa ühel SSO nupul (nt "Login with Microsoft"):
 
 Pärast edukat SSO sisselogimist:
 
-- ✅ Kasutaja peaks automaatselt loodama saama digna's
-- ✅ Kasutaja peaks olema sisse logitud
-- ✅ Kasutaja profiilis peaksid olema nähtavad sinu identiteedipakkuja andmed
-- ✅ Sa peaksid nägema digna juhtpaneeli
+- Kasutaja peaks automaatselt loodama saama digna's
+- Kasutaja peaks olema sisse logitud
+- Kasutaja profiilis peaksid olema nähtavad sinu identiteedipakkuja andmed
+- Sa peaksid nägema digna juhtpaneeli
 
 #### Samm 6: Testi parooliga sisselogimist (kui lubatud)
 
@@ -437,7 +437,7 @@ Võta ühendust support@digna.ai, kui vajad abi konkreetse pakkuja integreerimis
 
 ## Parimad tavad
 
-✅ DO:
+DO:
 - Kasuta tootmiskeskkonnas HTTPS-i (mitte HTTP)
 - Hoia kliendisaladusi turvaliselt (kasuta keskkonnamuutujad, kui võimalik)
 - Keera salajasi võtmeid perioodiliselt
@@ -446,7 +446,7 @@ Võta ühendust support@digna.ai, kui vajad abi konkreetse pakkuja integreerimis
 - Jälgi sisselogimislogisid ebatavalise tegevuse jaoks
 - Hoia identiteedipakkuja konfiguratsioon sünkroonis digna seadistusega
 
-❌ DON'T:
+DON'T:
 - Ära hoia kliendisaladusi versioonihalduses
 - Ära kasuta HTTP redirect URI-sid tootmises
 - Ära konfigureeri mitut pakkujat sama võtmega
@@ -460,9 +460,9 @@ Võta ühendust support@digna.ai, kui vajad abi konkreetse pakkuja integreerimis
 
 Vajad abi SSO seadistusega?
 
-- 📧 **E-post:** support@digna.ai
-- 📚 **Dokumentatsioon:** https://docs.digna.ai
-- 🌐 **Veebileht:** https://www.digna.ai
+- **E-post:** support@digna.ai
+- **Dokumentatsioon:** https://docs.digna.ai
+- **Veebileht:** https://www.digna.ai
 
 ---
 

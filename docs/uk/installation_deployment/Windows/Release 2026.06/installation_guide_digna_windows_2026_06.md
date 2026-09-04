@@ -65,7 +65,7 @@ digna складається з двох основних компонентів
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **⚠️ Recommended Specifications**
+> **Recommended Specifications**
 >
 > - **Memory**: 32 GB RAM (замість 16 GB)
 > - **Disk Space**: 50 GB available storage (замість 10 GB)
@@ -122,7 +122,7 @@ digna складається з двох основних компонентів
 
 Стандартний порт PostgreSQL — `5432`. Можете використовувати значення за замовчуванням або вказати інший порт за потреби.
 
-> **💡 Tip**
+> **Tip**
 >
 > Якщо порт 5432 вже використовується, виберіть альтернативний порт і зафіксуйте його для подальшої конфігурації.
 
@@ -200,7 +200,7 @@ IIS вимагає компонент URL Rewrite. Завантажте та в�
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > Без цієї настройки `.md` файли можуть не віддаватися коректно.
 
@@ -227,7 +227,7 @@ Apache Tomcat — відкрите середовище для виконанн�
    - Перейдіть на `http://localhost:8080`
    - Ви повинні побачити сторінку привітання Apache Tomcat
 
-> **💡 Tip**
+> **Tip**
 >
 > Зазвичай Apache Tomcat запускається автоматично після встановлення. Якщо ні, відкрийте папку `bin` і запустіть `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Використовуйте сильні, складні паролі для користувачів бази даних. Уникайте легко вгадуваних облікових даних.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **⚠️ Important**
+> **Important**
 >
 > Файл ліцензії **не** входить до пакета встановлення і надається окремо компанією digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Це створить користувача з повними адміністративними правами.
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Використовуйте сильний пароль із комбінацією великих і малих літер, цифр та спеціальних символів.
 
@@ -545,7 +545,7 @@ digna user add "Admin User" AdminPassword123! --su
 - `start_service.bat` — запуск служби
 - `stop_service.bat` — зупинка служби
 
-> **⚠️ Administrator Required**
+> **Administrator Required**
 >
 > Усі батч‑файли повинні виконуватись з правами Адміністратора.
 
@@ -587,7 +587,7 @@ digna user add "Admin User" AdminPassword123! --su
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > Завжди зупиняйте службу перед оновленням файлів застосунку.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Скопіюйте новий виконуваний файл `digna`, папку `dashboard` у ваш каталог встановлення
 
 
-> **✅ Important**
+> **Important**
 >
 > Файл `config.toml` **ніколи** не включається до ZIP‑пакета інсталяції. Ваша існуюча конфігурація залишається безпечною.
 

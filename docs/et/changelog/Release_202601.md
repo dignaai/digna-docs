@@ -12,7 +12,7 @@ See väljalase suurendab paindlikkust kõigis moodulites ja laiendab oluliselt *
 
 ---
 
-## 🚀 Uued funktsioonid  
+## Uued funktsioonid  
 
 ### Globaalsed andmebaasiühendused  
 - Andmebaasiühendused konfigureeritakse nüüd **globaalsel tasemel**.  
@@ -52,7 +52,7 @@ See väljalase suurendab paindlikkust kõigis moodulites ja laiendab oluliselt *
 
 ---
 
-## 🧪 Laiendatud andmevalideerimise võimalused  
+## Laiendatud andmevalideerimise võimalused  
 
 Selle väljalasega toetab **digna Data Validation** nüüd põhjalikku komplekti andmekvaliteedi reegleid:
 
@@ -76,7 +76,7 @@ Koos võimaldavad need kontrollid kehtestada **struktuurseid ja relatsioonilisi 
 
 ---
 
-## 🎯 Kes sellest väljalasest kasu saab  
+## Kes sellest väljalasest kasu saab  
 
 - **Andmeinsenerid:** paindlikum andmeallikate modelleerimine ja taaskasutatavad andmebaasiühendused  
 - **Andmekvaliteedi ja halduse meeskonnad:** laiendatud valideerimise ulatus, sealhulgas relatsioonilise terviklikkuse reeglid  
@@ -85,7 +85,7 @@ Koos võimaldavad need kontrollid kehtestada **struktuurseid ja relatsioonilisi 
 
 ---
 
-## 🛠 CLI uuendused  
+## CLI uuendused  
 - Puuduvad muudatused
 
 ---

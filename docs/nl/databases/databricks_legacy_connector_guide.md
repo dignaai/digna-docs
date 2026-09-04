@@ -19,12 +19,12 @@ Het verwijst naar het scherm **"Create a Database Connection"**.
 **Library:** `databricks-sql-connector`  
 **Ondersteunde authenticatie:** alleen Personal Access Token (PAT)
 
-> ⚠️ Voor andere authenticatiemethoden, gebruik de ODBC-driver.
+> Voor andere authenticatiemethoden, gebruik de ODBC-driver.
 
 ### Personal Access Token (PAT)
 
 Om te authenticeren met een Personal Access Token, raadpleeg de officiële Databricks-documentatie:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* configuratie (native driver)
 
@@ -98,7 +98,7 @@ Gebruik ODBC:     Ingeschakeld
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die in je ODBC-driverconfiguratie is gedefinieerd.
+> De `DSN` moet overeenkomen met de naam die in je ODBC-driverconfiguratie is gedefinieerd.
 
 ---
 

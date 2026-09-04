@@ -142,7 +142,7 @@ usePassword = true
 - Nav lietotājvārda/paroles lauku
 - Pieejama tikai OIDC autentifikācija
 
-> **💡 Padoms**
+> **Padoms**
 >
 > Pieteikšanās ar paroli ir pieejama tikai tiem lietotājiem, kuri tika izveidoti ar parolēm, izmantojot komandu `digna user add` vai caur informācijas paneli.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Jā | Pāradresācijas (callback) URL pēc autentifikācijas | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Jā | OIDC konfigurācijas beigu punkts | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Svarīgi**
+> **Svarīgi**
 >
 > Aizstājiet vietturu vērtības (`<client_id>`, `<client_secret>`, `<tenant_id>`) ar reālām akreditācijām no jūsu identitātes sniedzēja izstrādātāju paneļa.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Pārliecinieties, ka pieteikšanās pogas parādās katram konfigurētajam sniedzējam:
 
-- ✅ Jāredz poga "Pierakstīties ar Microsoft"
-- ✅ Jāredz poga "Pierakstīties ar Google"
-- ✅ (Ja usePassword = true) Jāredz lietotājvārda/paroles lauki
+- Jāredz poga "Pierakstīties ar Microsoft"
+- Jāredz poga "Pierakstīties ar Google"
+- (Ja usePassword = true) Jāredz lietotājvārda/paroles lauki
 
 Ja pogas neparādās:
 - Pārbaudiet, vai `dashboard_config.toml` ir saglabāts
@@ -317,10 +317,10 @@ Noklikšķiniet uz vienas no SSO pogām (piem., "Pierakstīties ar Microsoft"):
 
 Pēc veiksmīgas SSO pieteikšanās:
 
-- ✅ Lietotājs jāizveido automātiski digna sistēmā
-- ✅ Lietotājs jābūt pieteiktam
-- ✅ Lietotāja profilā jābūt parādītiem identitātes sniedzēja datiem
-- ✅ Jums jāredz digna informācijas panelis
+- Lietotājs jāizveido automātiski digna sistēmā
+- Lietotājs jābūt pieteiktam
+- Lietotāja profilā jābūt parādītiem identitātes sniedzēja datiem
+- Jums jāredz digna informācijas panelis
 
 #### 6. solis: Pārbaudīt pieteikšanos ar paroli (ja ieslēgta)
 
@@ -437,7 +437,7 @@ Sazinieties ar support@digna.ai, ja nepieciešama palīdzība ar konkrēta snied
 
 ## Labākās prakses
 
-✅ DARĪT:
+DARĪT:
 - Izmantojiet HTTPS ražošanā (nevis HTTP)
 - Glabājiet klienta noslēpumus droši (ja iespējams, izmantojiet vides mainīgos)
 - Periodiski mainiet noslēpumus
@@ -446,7 +446,7 @@ Sazinieties ar support@digna.ai, ja nepieciešama palīdzība ar konkrēta snied
 - Uzraugiet pieteikšanās žurnālus, lai noteiktu neparastu aktivitāti
 - Sinhronizējiet identitātes sniedzēja konfigurāciju ar digna konfigurāciju
 
-❌ NEDARĪT:
+NEDARĪT:
 - Glabāt klienta noslēpumus versiju kontrolē
 - Izmantot HTTP redirect URI ražošanā
 - Konfigurēt vairākus sniedzējus ar vienādu atslēgu
@@ -460,9 +460,9 @@ Sazinieties ar support@digna.ai, ja nepieciešama palīdzība ar konkrēta snied
 
 Nepieciešama palīdzība SSO konfigurācijā?
 
-- 📧 **E-pasts:** support@digna.ai
-- 📚 **Dokumentācija:** https://docs.digna.ai
-- 🌐 **Tīmeklis:** https://www.digna.ai
+- **E-pasts:** support@digna.ai
+- **Dokumentācija:** https://docs.digna.ai
+- **Tīmeklis:** https://www.digna.ai
 
 ---
 

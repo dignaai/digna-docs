@@ -12,7 +12,7 @@ Ar izlaidumu 2026.04 digna būtiski paplašina savas iespējas analītikā un da
 
 ---
 
-## 🚀 Jaunumi  
+## Jaunumi  
 
 ### Analytics Chart – laika rindu analīze bez datu zinātnes  
 - Jauns **Analytics Chart** interaktīvai laika rindu analīzei  
@@ -61,7 +61,7 @@ Ar izlaidumu 2026.04 digna būtiski paplašina savas iespējas analītikā un da
 
 ---
 
-## 🧪 Paplašinātas Data Analytics & Validation iespējas  
+## Paplašinātas Data Analytics & Validation iespējas  
 
 Ar šo izlaidumu digna paplašina gan jomu saistītu datu izpratni, gan datu validācijas standartizāciju:
 
@@ -74,7 +74,7 @@ Kopā šīs iespējas ļauj organizācijām ne tikai atklāt problēmas, bet ar�
 
 ---
 
-## 🎯 Kam šis izlaidums noder  
+## Kam šis izlaidums noder  
 
 - **Datubūvēšanas inženieri (Data Engineers):** atkārtoti izmantojama validācijas loģika un uzlabota kontrole pār monitoringa uzvedību  
 - **Datu kvalitātes un pārvaldības komandas:** standartizēti noteikumi un konsekventa datu validācija visos sistēmas slāņos  
@@ -83,7 +83,7 @@ Kopā šīs iespējas ļauj organizācijām ne tikai atklāt problēmas, bet ar�
 
 ---
 
-## 🛠 CLI atjauninājumi  
+## CLI atjauninājumi  
 - Izmaiņu nav  
 
 ---

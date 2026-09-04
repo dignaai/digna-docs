@@ -12,7 +12,7 @@ Bu sürüm gelişmiş zaman serisi analizi, yeniden kullanılabilir doğrulama b
 
 ---
 
-## 🚀 Yeni Özellikler  
+## Yeni Özellikler  
 
 ### Analytics Chart – Veri Bilimi Gerektirmeyen Zaman Serisi Analizi  
 - Etkileşimli zaman serisi analizi için yeni **Analytics Chart**  
@@ -61,7 +61,7 @@ Bu sürüm gelişmiş zaman serisi analizi, yeniden kullanılabilir doğrulama b
 
 ---
 
-## 🧪 Genişletilmiş Data Analytics ve Doğrulama Yetkinlikleri  
+## Genişletilmiş Data Analytics ve Doğrulama Yetkinlikleri  
 
 Bu sürümle digna hem **veri anlama** hem de **veri doğrulama standardizasyonunu** genişletiyor:
 
@@ -74,7 +74,7 @@ Bu yetenekler birlikte kuruluşların sorunları tespit etmesinin ötesine geçi
 
 ---
 
-## 🎯 Bu Sürümdən Kimler Faydalanır  
+## Bu Sürümdən Kimler Faydalanır  
 
 - **Veri Mühendisleri:** Yeniden kullanılabilir doğrulama mantığı ve izleme davranışı üzerinde gelişmiş kontrol  
 - **Veri Kalitesi & Yönetişim Ekipleri:** Sistemler genelinde standardize kurallar ve tutarlı veri doğrulama  
@@ -83,7 +83,7 @@ Bu yetenekler birlikte kuruluşların sorunları tespit etmesinin ötesine geçi
 
 ---
 
-## 🛠 CLI Güncellemeleri  
+## CLI Güncellemeleri  
 - Değişiklik yok  
 
 ---

@@ -142,7 +142,7 @@ usePassword = true
 - Δεν εμφανίζονται πεδία username/password
 - Διαθέσιμη μόνο η OIDC αυθεντικοποίηση
 
-> **💡 Tip**
+> **Tip**
 >
 > Η σύνδεση με κωδικό είναι διαθέσιμη μόνο για χρήστες που δημιουργήθηκαν με κωδικούς χρησιμοποιώντας την εντολή `digna user add` ή μέσω του dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Important**
+> **Important**
 >
 > Αντικαταστήστε τις τιμές placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) με τα πραγματικά διαπιστευτήρια από το developer portal του παρόχου ταυτότητας.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Ελέγξτε ότι τα κουμπιά σύνδεσης εμφανίζονται για κάθε ρυθμισμένο πάροχο:
 
-- ✅ Πρέπει να εμφανίζεται το κουμπί "Login with Microsoft"
-- ✅ Πρέπει να εμφανίζεται το κουμπί "Login with Google"
-- ✅ (Αν `usePassword = true`) Πρέπει να εμφανίζονται πεδία username/password
+- Πρέπει να εμφανίζεται το κουμπί "Login with Microsoft"
+- Πρέπει να εμφανίζεται το κουμπί "Login with Google"
+- (Αν `usePassword = true`) Πρέπει να εμφανίζονται πεδία username/password
 
 Αν τα κουμπιά δεν εμφανίζονται:
 - Ελέγξτε ότι το `dashboard_config.toml` αποθηκεύτηκε
@@ -317,10 +317,10 @@ http://localhost:5173
 
 Μετά από επιτυχή SSO σύνδεση:
 
-- ✅ Ο χρήστης θα πρέπει να δημιουργείται αυτόματα στο digna
-- ✅ Ο χρήστης θα πρέπει να είναι συνδεδεμένος
-- ✅ Το προφίλ του χρήστη θα εμφανίζει τα στοιχεία από τον πάροχο ταυτότητας
-- ✅ Θα πρέπει να βλέπετε το dashboard του digna
+- Ο χρήστης θα πρέπει να δημιουργείται αυτόματα στο digna
+- Ο χρήστης θα πρέπει να είναι συνδεδεμένος
+- Το προφίλ του χρήστη θα εμφανίζει τα στοιχεία από τον πάροχο ταυτότητας
+- Θα πρέπει να βλέπετε το dashboard του digna
 
 #### Step 6: Test Password Login (If Enabled)
 
@@ -437,7 +437,7 @@ http://localhost:5173
 
 ## Best Practices
 
-✅ **DO:**
+**DO:**
 - Χρησιμοποιείτε HTTPS στην παραγωγή (όχι HTTP)
 - Αποθηκεύετε τα client secrets με ασφάλεια (χρησιμοποιήστε μεταβλητές περιβάλλοντος αν είναι δυνατό)
 - Περιστρέφετε τα secrets περιοδικά
@@ -446,7 +446,7 @@ http://localhost:5173
 - Παρακολουθείτε τα logs σύνδεσης για ασυνήθιστη δραστηριότητα
 - Κρατάτε τη διαμόρφωση του παρόχου ταυτότητας σε συγχρονισμό με τη διαμόρφωση του digna
 
-❌ **DON'T:**
+**DON'T:**
 - Αποθηκεύετε client secrets σε σύστημα ελέγχου έκδοσης
 - Χρησιμοποιείτε HTTP redirect URIs στην παραγωγή
 - Διαμορφώνετε πολλούς παρόχους με το ίδιο key
@@ -460,9 +460,9 @@ http://localhost:5173
 
 Χρειάζεστε βοήθεια με τη διαμόρφωση SSO;
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentation:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentation:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

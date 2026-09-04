@@ -20,7 +20,7 @@ Ohje viittaa näyttöön **"Create a Database Connection"**.
 **Kirjasto:** `PyHive`  
 **Tuettu todennus:** Vain salasanaan perustuva todennus
 
-> ⚠️ Muita todennusmenetelmiä varten käytä ODBC-ajuria.
+> Muita todennusmenetelmiä varten käytä ODBC-ajuria.
 
 ### *digna* -konfiguraatio (natiivi ajuri)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` on oltava sama kuin ODBC-ajurikonfiguraatiossasi määritelty nimi.
+> `DSN` on oltava sama kuin ODBC-ajurikonfiguraatiossasi määritelty nimi.
 
 ---
 

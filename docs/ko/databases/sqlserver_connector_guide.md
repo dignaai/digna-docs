@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `pymssql`  
 **지원 인증 방식:** 암호 기반 인증만
 
-> ⚠️ 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
+> 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
 
 ### *digna* 구성 (네이티브 드라이버)
 
@@ -111,7 +111,7 @@ name: "PWD",        value: "your database password"
 name: "DATABASE",   value: "name of the database that contains the source data schema"
 ```
 
-> 🔹 `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
+> `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
 
 ---
 

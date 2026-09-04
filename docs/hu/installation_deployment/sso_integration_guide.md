@@ -142,7 +142,7 @@ usePassword = true
 - Nincsenek felhasználónév/jelszó mezők
 - Csak OIDC hitelesítés érhető el
 
-> **💡 Tipp**
+> **Tipp**
 >
 > A jelszó alapú bejelentkezés csak azoknál a felhasználóknál érhető el, akiket jelszóval hoztak létre a `digna user add` parancs segítségével vagy a dashboardon keresztül.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Igen | Visszahívási URL hitelesítés után | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Igen | Az OIDC konfigurációs végpont | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Fontos**
+> **Fontos**
 >
 > Cserélje ki a helykitöltő értékeket (`<client_id>`, `<client_secret>`, `<tenant_id>`) a szolgáltatójától kapott valós adatokra a fejlesztői/konzolos felületen.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Ellenőrizze, hogy megjelennek-e a bejelentkezési gombok minden konfigurált szolgáltatóhoz:
 
-- ✅ Meg kell jelennie a "Bejelentkezés Microsofttal" gombnak
-- ✅ Meg kell jelennie a "Bejelentkezés Google-fiókkal" gombnak
-- ✅ (Ha usePassword = true) Meg kell jelennie a felhasználónév/jelszó mezőknek
+- Meg kell jelennie a "Bejelentkezés Microsofttal" gombnak
+- Meg kell jelennie a "Bejelentkezés Google-fiókkal" gombnak
+- (Ha usePassword = true) Meg kell jelennie a felhasználónév/jelszó mezőknek
 
 Ha a gombok nem jelennek meg:
 - Ellenőrizze, hogy a `dashboard_config.toml` el lett-e mentve
@@ -317,10 +317,10 @@ Kattintson valamelyik SSO gombra (például "Bejelentkezés Microsofttal"):
 
 Sikeres SSO bejelentkezés után:
 
-- ✅ A felhasználó automatikusan létrejön a digna-ban
-- ✅ A felhasználó be van jelentkezve
-- ✅ A felhasználói profil megjeleníti az identitásszolgáltató adatait
-- ✅ Látnia kell a digna dashboardot
+- A felhasználó automatikusan létrejön a digna-ban
+- A felhasználó be van jelentkezve
+- A felhasználói profil megjeleníti az identitásszolgáltató adatait
+- Látnia kell a digna dashboardot
 
 #### 6. lépés: Jelszavas bejelentkezés tesztelése (ha engedélyezve)
 
@@ -437,7 +437,7 @@ Ha segítségre van szüksége egy konkrét szolgáltató integrálásához, lé
 
 ## Legjobb gyakorlatok
 
-✅ DO:
+DO:
 - Használjon HTTPS-t éles környezetben (ne HTTP-t)
 - Tárolja biztonságosan a kliens titkokat (lehetőleg környezeti változóban)
 - Rendszeresen forgassa a titkokat
@@ -446,7 +446,7 @@ Ha segítségre van szüksége egy konkrét szolgáltató integrálásához, lé
 - Figyelje a bejelentkezési naplókat szokatlan aktivitásért
 - Tartsa szinkronban az identitásszolgáltató konfigurációját a digna beállításokkal
 
-❌ DON'T:
+DON'T:
 - Ne tárolja a kliens titkokat verziókezelésben
 - Ne használjon HTTP redirect URI-kat éles környezetben
 - Ne konfiguráljon több szolgáltatót ugyanazzal a kulccsal
@@ -460,9 +460,9 @@ Ha segítségre van szüksége egy konkrét szolgáltató integrálásához, lé
 
 Szüksége van segítségre az SSO konfigurálásához?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Dokumentáció:** https://docs.digna.ai
-- 🌐 **Weboldal:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Dokumentáció:** https://docs.digna.ai
+- **Weboldal:** https://www.digna.ai
 
 ---
 

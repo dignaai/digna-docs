@@ -20,7 +20,7 @@ Tämä viittaa kohtaan **"Luo tietokantayhteys"**.
 **Kirjasto:** `psycopg`  
 **Tuettu todennus:** Vain salasanapohjainen todennus
 
-> ⚠️ Muihin todennusmenetelmiin käytä ODBC-ajuria.
+> Muihin todennusmenetelmiin käytä ODBC-ajuria.
 
 ### *digna* -määritys (natiivinen ajuri)
 
@@ -87,7 +87,7 @@ Käytä ODBC:         Käytössä
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` pitää vastata ODBC-ajurin konfiguraatiossa määriteltyä nimeä.
+> `DSN` pitää vastata ODBC-ajurin konfiguraatiossa määriteltyä nimeä.
 
 ---
 

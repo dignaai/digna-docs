@@ -20,7 +20,7 @@ Se refiere a la pantalla **"Crear una conexión de base de datos"**.
 **Library:** `python-oracledb`  
 **Supported Authentication:** Solo autenticación basada en contraseña
 
-> ⚠️ Para otros métodos de autenticación, utilice el controlador ODBC.
+> Para otros métodos de autenticación, utilice el controlador ODBC.
 
 ### Configuración de *digna* (Controlador nativo)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "tu usuario de Oracle"
 name: "PWD",            value: "{tu contraseña entre llaves}"
 ```
 
-> 🔹 El `DSN` debe coincidir con el nombre definido en la configuración de su controlador ODBC.
+> El `DSN` debe coincidir con el nombre definido en la configuración de su controlador ODBC.
 
 ---
 

@@ -22,7 +22,7 @@ Het verwijst naar het scherm **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Ondersteunde authenticatie:** Alleen op wachtwoord gebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden gebruik je de ODBC-driver.
+> Voor andere authenticatiemethoden gebruik je de ODBC-driver.
 
 ### *digna* Configuratie (Native Driver)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die in je ODBC-driverconfiguratie is gedefinieerd.
+> De `DSN` moet overeenkomen met de naam die in je ODBC-driverconfiguratie is gedefinieerd.
 
 ---
 

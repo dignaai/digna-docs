@@ -20,7 +20,7 @@ A leírás a **"Create a Database Connection"** képernyőre vonatkozik.
 **Könyvtár:** `snowflake-connector-python`  
 **Támogatott hitelesítés:** Csak jelszóalapú hitelesítés
 
-> ⚠️ Más hitelesítési módszerekhez kérjük, használja az ODBC illesztőprogramot.
+> Más hitelesítési módszerekhez kérjük, használja az ODBC illesztőprogramot.
 
 ### *digna* konfiguráció (natív illesztőprogram)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC illesztőprogram konfigurációjában definiált névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC illesztőprogram konfigurációjában definiált névvel.
 
 ---
 

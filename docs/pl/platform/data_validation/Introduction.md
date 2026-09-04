@@ -1,38 +1,37 @@
 ---
-title: Data Validation – Kontrole oparte na regułach dla zgodności i audytowalności | digna Dokumentacja
-description: Dowiedz się, jak digna Data Validation wymusza deterministyczne, oparte na regułach kontrole z progami, zakresami i listami referencyjnymi. Zapewnij zgodność, audytowalność i raportowanie regulacyjne w finansach, opiece zdrowotnej i innych branżach wrażliwych na dane.
+title: Data Validation – Kontrole oparte na regułach dla zgodności i audytowalności | Dokumentacja digna
+description: Dowiedz się, jak digna Data Validation egzekwuje deterministyczne kontrole oparte na regułach z progami, zakresami i listami referencyjnymi. Zapewnij zgodność, audytowalność i raportowanie regulacyjne w finansach, ochronie zdrowia i innych branżach wrażliwych na dane.
 image: /assets/logo_square.png
 keywords:
-  - data validation
-  - kontrole oparte na regułach danych
+  - walidacja danych
+  - kontrole danych oparte na regułach
   - jakość danych
-  - poprawność danych
+  - jakość danych
   - obserwowalność danych
   - progi i zakresy
-  - walidacja list referencyjnych
+  - walidacja względem list referencyjnych
   - audytowalność
   - monitorowanie zgodności
-  - digna data validation
+  - digna Data Validation
 lang: pl
 robots: index, follow
-og_title: Data Validation – Kontrole oparte na regułach dla zgodności i audytowalności | digna Dokumentacja
-og_description: digna Data Validation wymusza deterministyczne, oparte na regułach kontrole z progami, zakresami i listami referencyjnymi. Zaprojektowany dla branż regulowanych, zapewnia zgodność, przejrzystość i audytowalność.
+og_title: Data Validation – Kontrole oparte na regułach dla zgodności i audytowalności | Dokumentacja digna
+og_description: digna Data Validation egzekwuje deterministyczne kontrole oparte na regułach z progami, zakresami i listami referencyjnymi. Zaprojektowany dla branż regulowanych, zapewnia zgodność, przejrzystość i audytowalność.
 og_image: /assets/logo_square.png
 og_type: article
 twitter_card: summary_large_image
 ---
 
 # Data Validation – Kontrole oparte na regułach
-<h1 style="display:none;">Moduł Data Validation oparty na AI dla jakości danych i obserwowalności – digna</h1>
 
 ---
 
 ## Purpose
 
-The **Data Validation** module ensures the **quality of data** through precise, rule-based checks.  
-It allows organizations to define deterministic business and technical validation logic, ensuring that data meets compliance standards, contractual SLAs, and regulatory requirements.
+Moduł **Data Validation** zapewnia **jakość danych** poprzez precyzyjne kontrole oparte na regułach.  
+Umożliwia organizacjom zdefiniowanie deterministycznej logiki walidacji biznesowej i technicznej, zapewniając, że dane spełniają standardy zgodności, umowne SLA oraz wymagania regulacyjne.
 
-By combining *in-database rule execution*, *complete audit trails*, and *integration with other digna modules*, **Data Validation** guarantees consistent and traceable **Data Quality and Observability** across complex enterprise environments.
+Łącząc *wykonywanie reguł w bazie danych*, *pełne ścieżki audytu* oraz *integrację z innymi modułami digna*, **Data Validation** gwarantuje spójną i możliwą do śledzenia **jakość danych i obserwowalność** w złożonych środowiskach korporacyjnych.
 
 ---
 
@@ -40,24 +39,24 @@ By combining *in-database rule execution*, *complete audit trails*, and *integra
 
 ### Supported Validation Types
 
-- **Equality Checks**  
-  Confirm that values match expected results (e.g., reference codes, Boolean flags, categorical mappings).
+- **Kontrole równości**  
+  Sprawdzają, czy wartości odpowiadają oczekiwanym wynikom (np. kody referencyjne, flagi logiczne, mapowania kategorii).
 
-- **Thresholds & Ranges**  
-  Validate numeric measures or KPIs against defined limits — static or dynamically derived.
+- **Progi i zakresy**  
+  Weryfikują miary numeryczne lub KPI względem zdefiniowanych limitów — statycznych lub dynamicznie wyprowadzanych.
 
-- **Reference Lists & Lookups**  
-  Check whether field values exist within approved master data sets (e.g., VAT codes, ISO country lists, product catalogs).
+- **Listy referencyjne i wyszukiwania**  
+  Sprawdzają, czy wartości pól znajdują się w zatwierdzonych zestawach danych podstawowych (np. kody VAT, listy krajów ISO, katalogi produktów).
 
-- **Cross-Column Consistency**  
-  Ensure relational correctness (e.g., currency aligns with region, risk category matches asset type).
+- **Spójność między kolumnami**  
+  Zapewniają poprawność relacyjną (np. waluta zgodna z regionem, kategoria ryzyka dopasowana do typu aktywa).
 
-- **Null Handling Rules**  
-  Detect unexpected null or empty values in critical columns.
+- **Zasady obsługi wartości null**  
+  Wykrywają nieoczekiwane wartości null lub puste w krytycznych kolumnach.
 
 ### Execution and Logging
 
-- **In-Database Processing** – All validation rules execute directly in your database (Teradata, Snowflake, Databricks, PostgreSQL, etc.).  
-- **No Data Extraction** – digna never transfers raw data outside your environment.  
-- **Full Traceability** – Each rule result is logged with timestamp, responsible dataset, record counts, and pass/fail outcomes.  
+- **Przetwarzanie w bazie danych** – Wszystkie reguły walidacyjne wykonywane są bezpośrednio w Twojej bazie danych (Teradata, Snowflake, Databricks, PostgreSQL itp.).  
+- **Brak ekstrakcji danych** – digna nigdy nie przesyła surowych danych poza Twoje środowisko.  
+- **Pełna śledzalność** – Wynik każdej reguły jest logowany z sygnaturą czasową, odpowiedzialnym zbiorem danych, liczbą rekordów oraz wynikiem zaliczenia/niezaliczenia.  
 - **Audyt**

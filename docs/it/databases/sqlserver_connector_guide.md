@@ -20,7 +20,7 @@ Si riferisce alla schermata **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Supported Authentication:** Solo autenticazione basata su password
 
-> ⚠️ Per altri metodi di autenticazione, utilizzare il driver ODBC.
+> Per altri metodi di autenticazione, utilizzare il driver ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -114,7 +114,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

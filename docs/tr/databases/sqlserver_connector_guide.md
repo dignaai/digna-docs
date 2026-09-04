@@ -20,7 +20,7 @@ Bu belge **"Veritabanı Bağlantısı Oluştur"** ekranına atıfta bulunur.
 **Kütüphane:** `pymssql`  
 **Desteklenen Kimlik Doğrulama:** Sadece parola tabanlı kimlik doğrulama
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -113,7 +113,7 @@ name: "PWD",        value: "veritabanı şifreniz"
 name: "DATABASE",   value: "kaynak veri şemasını içeren veritabanının adı"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımladığınız adla eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımladığınız adla eşleşmelidir.
 
 ---
 

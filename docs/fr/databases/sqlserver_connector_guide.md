@@ -20,7 +20,7 @@ Il fait référence à l'écran **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Authentification prise en charge :** uniquement l’authentification par mot de passe
 
-> ⚠️ Pour d’autres méthodes d’authentification, veuillez utiliser le pilote ODBC.
+> Pour d’autres méthodes d’authentification, veuillez utiliser le pilote ODBC.
 
 ### Configuration *digna* (Pilote natif)
 
@@ -112,7 +112,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
+> Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
 
 ---
 

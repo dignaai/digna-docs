@@ -12,7 +12,7 @@ Esta versão amplia a flexibilidade em todos os módulos e estende significativa
 
 ---
 
-## 🚀 Novos Recursos  
+## Novos Recursos  
 
 ### Conexões de Banco de Dados Globais  
 - As conexões de banco de dados agora são configuradas em nível **global**.  
@@ -52,7 +52,7 @@ Esta versão amplia a flexibilidade em todos os módulos e estende significativa
 
 ---
 
-## 🧪 Capacidades Estendidas de Validação de Dados  
+## Capacidades Estendidas de Validação de Dados  
 
 Com este release, o **digna Data Validation** agora suporta um conjunto abrangente de regras de qualidade de dados:
 
@@ -76,7 +76,7 @@ Juntas, essas verificações possibilitam a aplicação de **regras de qualidade
 
 ---
 
-## 🎯 Quem se Beneficia com Este Release  
+## Quem se Beneficia com Este Release  
 
 - **Engenheiros de Dados:** Modelagem de datasources mais flexível e conexões de banco reutilizáveis  
 - **Times de Qualidade de Dados & Governança:** Cobertura de validação expandida incluindo regras de integridade relacional  
@@ -85,7 +85,7 @@ Juntas, essas verificações possibilitam a aplicação de **regras de qualidade
 
 ---
 
-## 🛠 Atualizações da CLI  
+## Atualizações da CLI  
 - Sem alterações
 
 ---

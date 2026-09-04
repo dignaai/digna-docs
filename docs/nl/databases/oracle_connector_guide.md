@@ -20,7 +20,7 @@ Er wordt verwezen naar het scherm **"Create a Database Connection"**.
 **Library:** `python-oracledb`  
 **Supported Authentication:** Alleen wachtwoordgebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden, gebruik de ODBC-driver.
+> Voor andere authenticatiemethoden, gebruik de ODBC-driver.
 
 ### *digna* Configuration (Native Driver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die is opgegeven in je ODBC-driverconfiguratie.
+> De `DSN` moet overeenkomen met de naam die is opgegeven in je ODBC-driverconfiguratie.
 
 ---
 

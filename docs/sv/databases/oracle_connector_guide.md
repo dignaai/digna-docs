@@ -20,7 +20,7 @@ It refers to the screen **"Create a Database Connection"**.
 **Library:** `python-oracledb`  
 **Stödd autentisering:** Endast lösenordsbaserad autentisering
 
-> ⚠️ För andra autentiseringsmetoder, använd ODBC-drivrutinen.
+> För andra autentiseringsmetoder, använd ODBC-drivrutinen.
 
 ### *digna* konfiguration (inbyggd drivrutin)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

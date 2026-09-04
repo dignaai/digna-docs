@@ -142,7 +142,7 @@ usePassword = true
 - ユーザー名/パスワード入力欄は表示されない
 - OIDC 認証のみが使用可能
 
-> 💡 ヒント
+> ヒント
 >
 > パスワードベースのログインは、`digna user add` コマンドやダッシュボードを使ってパスワードで作成されたユーザーのみ利用できます。
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | はい | 認証後のコールバック URL | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | はい | OIDC の構成エンドポイント | `https://login.microsoftonline.com/...` |
 
-> ⚠️ 重要
+> 重要
 >
 > プレースホルダ（`<client_id>`, `<client_secret>`, `<tenant_id>`）は、アイデンティティプロバイダの開発者ポータルから取得した実際の値に置き換えてください。
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 設定した各プロバイダのログインボタンが表示されていることを確認します:
 
-- ✅ "Login with Microsoft" ボタンが表示される
-- ✅ "Login with Google" ボタンが表示される
-- ✅ （`usePassword = true` の場合）ユーザー名/パスワード欄が表示される
+- "Login with Microsoft" ボタンが表示される
+- "Login with Google" ボタンが表示される
+- （`usePassword = true` の場合）ユーザー名/パスワード欄が表示される
 
 ボタンが表示されない場合:
 - `dashboard_config.toml` が保存されているか確認
@@ -317,10 +317,10 @@ SSO ボタン（例: "Login with Microsoft"）をクリックします:
 
 SSO ログイン成功後:
 
-- ✅ ユーザーが自動的に digna に作成されるはずです
-- ✅ ユーザーがログイン状態になるはずです
-- ✅ ユーザープロファイルにアイデンティティプロバイダの情報が表示されるはずです
-- ✅ digna ダッシュボードが表示されるはずです
+- ユーザーが自動的に digna に作成されるはずです
+- ユーザーがログイン状態になるはずです
+- ユーザープロファイルにアイデンティティプロバイダの情報が表示されるはずです
+- digna ダッシュボードが表示されるはずです
 
 #### ステップ 6: パスワードログインのテスト（有効な場合）
 
@@ -437,7 +437,7 @@ OpenID Connect をサポートする任意のプロバイダを統合できま�
 
 ## ベストプラクティス
 
-✅ 推奨:
+推奨:
 - 本番環境では HTTPS を使用する（HTTP は使用しない）
 - クライアントシークレットは安全に保管する（可能な限り環境変数を使用）
 - 定期的にシークレットをローテーションする
@@ -446,7 +446,7 @@ OpenID Connect をサポートする任意のプロバイダを統合できま�
 - ログインログを監視して異常な活動を検出する
 - アイデンティティプロバイダの設定を digna 設定と同期させておく
 
-❌ 非推奨:
+非推奨:
 - クライアントシークレットをバージョン管理に保存する
 - 本番で HTTP リダイレクト URI を使用する
 - 同じキーで複数のプロバイダを設定する
@@ -460,9 +460,9 @@ OpenID Connect をサポートする任意のプロバイダを統合できま�
 
 SSO 設定でサポートが必要ですか？
 
-- 📧 Email: support@digna.ai
-- 📚 ドキュメント: https://docs.digna.ai
-- 🌐 ウェブサイト: https://www.digna.ai
+- Email: support@digna.ai
+- ドキュメント: https://docs.digna.ai
+- ウェブサイト: https://www.digna.ai
 
 ---
 

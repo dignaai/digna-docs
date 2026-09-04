@@ -1,89 +1,89 @@
 ---
 title: digna Wydanie 2026.04 | Analytics Chart, Enumerations & Szablony reguł walidacji
-description: Dowiedz się, co nowego w wydaniu digna 2026.04. Ta wersja wprowadza zaawansowaną analizę szeregów czasowych z Analytics Chart, wielokrotnego użytku szablony reguł walidacji, enumeracje do scentralizowanej standaryzacji wartości oraz warunki relewancji na poziomie kolumn.
-keywords: digna Wydanie 2026.04, digna changelog, digna Data Analytics, time series analysis, regression, data validation templates, enumerations, allowed values validation, data quality rules, data observability
+description: Dowiedz się, co nowego w digna Wydanie 2026.04. Ta wersja wprowadza zaawansowaną analizę szeregów czasowych dzięki Analytics Chart, wielokrotnego użytku szablony reguł walidacji, enumeracje wartości dozwolonych oraz warunki relewantności na poziomie kolumn.
+keywords: digna Wydanie 2026.04, digna changelog, digna Data Analytics, analiza szeregów czasowych, regresja, szablony walidacji danych, enumeracje, walidacja dozwolonych wartości, reguły jakości danych, obserwowalność danych
 image: /assets/logo_square.png
 ---
 
-# Changelog – Wydanie 2026.04  
+# Dziennik zmian – Wydanie 2026.04  
 
-W wydaniu 2026.04 digna znacząco rozszerza swoje możliwości w obszarze analityki i walidacji danych.  
-W tej wersji wprowadzono zaawansowaną analizę szeregów czasowych, wielokrotnego użytku komponenty walidacyjne oraz scentralizowaną standaryzację wartości.
+W wydaniu 2026.04 digna znacząco rozszerza możliwości w zakresie analityki i walidacji danych.  
+Ta wersja wprowadza zaawansowaną analizę szeregów czasowych, wielokrotnego użytku komponenty walidacyjne oraz scentralizowaną standaryzację wartości.
 
 ---
 
-## 🚀 Nowości  
+## Nowe funkcje  
 
-### Analytics Chart – analiza szeregów czasowych bez potrzeby data science  
+### Analytics Chart – analiza szeregów czasowych bez Data Science  
 - Nowy **Analytics Chart** do interaktywnej analizy szeregów czasowych  
 - Wbudowane metody analityczne:
     - Regresja liniowa, kwadratowa i sześcienna  
-    - Regresja kawałkami (piecewise) z konfigurowalnymi punktami łamania  
+    - Regresja kawałkami z konfigurowalnymi punktami łamania  
     - Techniki wygładzania  
     - Analiza kwantylowa  
-- Automatyczna identyfikacja trendów, sezonowości i zmian wzorców  
-- Analiza reszt dla głębszego wglądu w odchylenia  
+- Automatyczne rozpoznawanie trendów, sezonowości i zmian wzorców  
+- Analiza resztkowa dla głębszego wglądu w odchylenia  
 - Szeregi czasowe są automatycznie obliczane dla każdego zestawu danych  
 
-**Wpływ:** Umożliwia użytkownikom zrozumienie złożonego zachowania danych w czasie bez konieczności posiadania wiedzy z zakresu data science lub używania zewnętrznych narzędzi.
+**Wpływ:** Umożliwia użytkownikom zrozumienie złożonego zachowania danych w czasie bez konieczności posiadania wiedzy z zakresu data science ani użycia narzędzi zewnętrznych.
 
 ---
 
-### Enumerations – centralna definicja dozwolonych wartości  
-- Definiuj wielokrotnego użytku zbiory dozwolonych wartości (np. kraje, stany, kody statusów)  
-- Waliduj wartości kolumn względem predefiniowanych enumeracji w **Data Validation**  
-- Reużywaj enumeracji w wielu projektach i źródłach danych  
-- Używaj enumeracji wszędzie za pomocą `#ENUM:MY_ENUM#`  
-- Wszystkie sprawdzenia są wykonywane **bezpośrednio w bazie danych źródłowej**  
+### Enumerations – centralne definiowanie dozwolonych wartości  
+- Definiowanie wielokrotnego użytku zestawów dozwolonych wartości (np. kraje, stany, kody statusu)  
+- Walidacja wartości kolumn względem zdefiniowanych enumeracji w **digna Data Validation**  
+- Ponowne użycie enumeracji w różnych projektach i źródłach danych  
+- Korzystanie z enumeracji wszędzie za pomocą `#ENUM:MY_ENUM#`  
+- Wszystkie kontrole są wykonywane **bezpośrednio w bazie danych źródłowej**  
 
-**Wpływ:** Zapewnia spójne i znormalizowane wartości danych w całej organizacji.
+**Wpływ:** Zapewnia spójność i standaryzację wartości danych w całej organizacji.
 
 ---
 
 ### Szablony reguł walidacji – wielokrotnego użytku logika jakości danych  
-- Definiuj wielokrotnego użytku reguły walidacji (np. sprawdzenia białych znaków, NOT NULL, sprawdzenia formatu)  
-- Stosuj szablony w wielu zestawach danych  
-- Zapewniaj spójną logikę reguł w różnych projektach  
-- Ogranicz powielanie konfiguracji i ręczną pracę  
-- Wszystkie sprawdzenia są wykonywane **bezpośrednio w bazie danych źródłowej**  
+- Definiowanie wielokrotnego użytku reguł walidacji (np. sprawdzenia białych znaków, NOT NULL, kontrole formatów)  
+- Zastosowanie szablonów w wielu zestawach danych  
+- Zapewnienie spójnej logiki reguł w projektach  
+- Redukcja duplikacji i ręcznej konfiguracji  
+- Wszystkie kontrole są wykonywane **bezpośrednio w bazie danych źródłowej**  
 
-**Wpływ:** Umożliwia skalowalną i wydajną walidację danych bez konieczności przenoszenia danych.
+**Wpływ:** Umożliwia skalowalną i wydajną walidację danych bez przemieszczania danych.
 
 ---
 
-### Warunki relewancji na poziomie statystyki  
-- Zdefiniuj warunki relewancji na **poziomie kolumny dla każdej statystyki**  
-- Rozszerza koncepcję warunków relewancji dla anomalii  
+### Warunki istotności na poziomie statystyk  
+- Definiowanie warunków istotności na **poziomie kolumny dla każdej statystyki**  
+- Rozszerza koncepcję warunków relewantności anomalii  
 - Kontroluj, kiedy dana statystyka powinna być uznana za istotną  
-- Zmniejszaj szum przez wykluczanie sytuacji niekrytycznych  
+- Redukuj szum przez wyłączenie sytuacji niekrytycznych  
 
-**Wpływ:** Poprawia jakość sygnałów, koncentrując się wyłącznie na istotnych odchyleniach.
-
----
-
-## 🧪 Rozszerzone możliwości Data Analytics i walidacji  
-
-W tym wydaniu digna rozwija zarówno aspekty związane ze zrozumieniem danych, jak i standaryzacją walidacji danych:
-
-- Zaawansowana interpretacja **szeregów czasowych** bez konieczności posiadania wiedzy data science  
-- Scentralizowana definicja **dozwolonych wartości za pomocą enumeracji**  
-- Wielokrotnego użytku **logika walidacji poprzez szablony**  
-- Drobnoziarnista kontrola nad **relewancją statystyk i alertów**  
-
-Razem te możliwości pozwalają organizacjom nie tylko wykrywać problemy, ale także **rozumieć, standaryzować i kontrolować jakość danych**.
+**Wpływ:** Poprawia jakość sygnałów przez skupienie się wyłącznie na istotnych odchyleniach.
 
 ---
 
-## 🎯 Kto skorzysta z tego wydania  
+## Rozszerzone możliwości Data Analytics i walidacji  
 
-- Inżynierowie danych: wielokrotnego użytku logika walidacji i lepsza kontrola nad zachowaniem monitoringu  
-- Zespoły ds. jakości danych i governance: znormalizowane reguły i spójna walidacja danych w różnych systemach  
-- Zespoły Analytics i BI: lepsze zrozumienie trendów i odchyleń  
-- Właściciele platformy: zwiększona adopcja dzięki uproszczonej analizie i skalowalnej walidacji  
+W tym wydaniu digna poszerza zarówno zakres **zrozumienia danych**, jak i **standaryzacji walidacji danych**:
+
+- Zaawansowana **interpretacja szeregów czasowych** bez wiedzy z zakresu data science  
+- Scentralizowane definiowanie **dozwolonych wartości za pomocą enumeracji**  
+- Wielokrotnego użytku **logika walidacji za pomocą szablonów**  
+- Drobnoziarnista kontrola nad **istotnością statystyk i alertów**  
+
+Razem te możliwości umożliwiają organizacjom nie tylko wykrywanie problemów, ale także **zrozumienie, standaryzację i kontrolę jakości danych**.
 
 ---
 
-## 🛠 Aktualizacje CLI  
+## Kto skorzysta z tego wydania  
+
+- **Inżynierowie danych:** wielokrotnego użytku logika walidacji i lepsza kontrola zachowania monitoringu  
+- **Zespoły ds. jakości danych i governance:** znormalizowane reguły i spójna walidacja danych w systemach  
+- **Zespoły analityczne i BI:** lepsze zrozumienie trendów i odchyleń  
+- **Właściciele platformy:** zwiększona adopcja dzięki uproszczonej analizie i skalowalnej walidacji  
+
+---
+
+## Aktualizacje CLI  
 - Brak zmian  
 
 ---

@@ -12,7 +12,7 @@ See versioon toob kaasa uue **digna Python SDK**, ametliku **Docker‑deploy toe
 
 ---
 
-## 🚀 Uued funktsioonid  
+## Uued funktsioonid  
 
 ### digna Python SDK – automatiseeri kõik Pythoniga  
 - Installi:
@@ -84,7 +84,7 @@ Seadista päringute täitmise strateegia: **Single** või **Combined** mode
 
 ---
 
-## 🧪 Platvormi täiustused  
+## Platvormi täiustused  
 
 - Täielik Python SDK integratsioon automatiseerimiseks  
 - Konteineripõhine juurutus Dockeriga  
@@ -93,7 +93,7 @@ Seadista päringute täitmise strateegia: **Single** või **Combined** mode
 
 ---
 
-## 🎯 Kellele see väljalase kasulik on  
+## Kellele see väljalase kasulik on  
 
 - Andmeinsenerid: automatiseerimine, SDK‑kasutus, torujuhtmete integratsioon  
 - Platvormimeeskonnad: lihtsustatud juurutus Dockeriga  
@@ -102,7 +102,7 @@ Seadista päringute täitmise strateegia: **Single** või **Combined** mode
 
 ---
 
-## 🛠 CLI uuendused  
+## CLI uuendused  
 - Lisatud SDK integratsiooni tugi  
 - Parendatud import/eksport töövood  
 - Üldised stabiilsuse ja jõudluse parandused

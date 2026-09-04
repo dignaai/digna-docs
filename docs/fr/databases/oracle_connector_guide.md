@@ -20,7 +20,7 @@ Il fait référence à l’écran **"Create a Database Connection"**.
 **Bibliothèque :** `python-oracledb`  
 **Authentification prise en charge :** uniquement l’authentification par mot de passe
 
-> ⚠️ Pour d’autres méthodes d’authentification, veuillez utiliser le pilote ODBC.
+> Pour d’autres méthodes d’authentification, veuillez utiliser le pilote ODBC.
 
 ### Configuration *digna* (pilote natif)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "votre utilisateur oracle"
 name: "PWD",            value: "{votre mot de passe entre accolades}"
 ```
 
-> 🔹 Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
+> Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
 
 ---
 

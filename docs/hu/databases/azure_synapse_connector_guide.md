@@ -22,7 +22,7 @@ A dokumentum a **"Create a Database Connection"** képernyőre hivatkozik.
 **Könyvtár:** `pymssql`  
 **Támogatott hitelesítés:** Csak jelszó alapú hitelesítés
 
-> ⚠️ Más hitelesítési módszerekhez használja az ODBC drivert.
+> Más hitelesítési módszerekhez használja az ODBC drivert.
 
 ### *digna* konfiguráció (natív illesztőprogram)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
 
 ---
 

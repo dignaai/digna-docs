@@ -12,7 +12,7 @@ This release introduces advanced time-series analysis, reusable validation compo
 
 ---
 
-## 🚀 New Features  
+## New Features  
 
 ### Analytics Chart – Time Series Analysis Without Data Science  
 - New **Analytics Chart** for interactive time-series analysis  
@@ -61,7 +61,7 @@ This release introduces advanced time-series analysis, reusable validation compo
 
 ---
 
-## 🧪 Extended Data Analytics & Validation Capabilities  
+## Extended Data Analytics & Validation Capabilities  
 
 With this release, digna expands both **data understanding** and **data validation standardization**:
 
@@ -74,7 +74,7 @@ Together, these capabilities enable organizations to not only detect issues, but
 
 ---
 
-## 🎯 Who Benefits from This Release  
+## Who Benefits from This Release  
 
 - **Data Engineers:** Reusable validation logic and improved control over monitoring behavior  
 - **Data Quality & Governance Teams:** Standardized rules and consistent data validation across systems  
@@ -83,7 +83,7 @@ Together, these capabilities enable organizations to not only detect issues, but
 
 ---
 
-## 🛠 CLI Updates  
+## CLI Updates  
 - No changes  
 
 ---

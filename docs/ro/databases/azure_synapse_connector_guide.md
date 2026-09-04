@@ -22,7 +22,7 @@ Se face referire la ecranul **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Supported Authentication:** Autentificare pe bază de parolă (doar)
 
-> ⚠️ Pentru alte metode de autentificare, vă rugăm să folosiți driverul ODBC.
+> Pentru alte metode de autentificare, vă rugăm să folosiți driverul ODBC.
 
 ### Configurarea *digna* (Driver nativ)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "numele bazei de date care conține schema de date su
 
 ```
 
-> 🔹 `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
+> `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
 
 ---
 

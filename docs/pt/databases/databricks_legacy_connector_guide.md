@@ -19,12 +19,12 @@ Refere-se à tela **"Create a Database Connection"**.
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** Personal Access Token (PAT) only
 
-> ⚠️ Para outros métodos de autenticação, use o driver ODBC.
+> Para outros métodos de autenticação, use o driver ODBC.
 
 ### Personal Access Token (PAT)
 
 Para autenticar usando um token de acesso pessoal, consulte a documentação oficial do Databricks:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* Configuration (Native Driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 O `DSN` deve corresponder ao nome definido na configuração do seu driver ODBC.
+> O `DSN` deve corresponder ao nome definido na configuração do seu driver ODBC.
 
 ---
 

@@ -20,7 +20,7 @@ Bu, **"Create a Database Connection"** ekranına atıfta bulunur.
 **Kütüphane:** `python-oracledb`  
 **Desteklenen Kimlik Doğrulama:** Yalnızca parola tabanlı kimlik doğrulama
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "Oracle kullanıcı adınız"
 name: "PWD",            value: "{şifreniz süslü parantez içinde}"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
 
 ---
 

@@ -22,7 +22,7 @@ See viitab ekraanile **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Supported Authentication:** Ainult paroolipõhine autentimine
 
-> ⚠️ Muude autentimismeetodite puhul kasutage palun ODBC-draiverit.
+> Muude autentimismeetodite puhul kasutage palun ODBC-draiverit.
 
 ### *digna* konfiguratsioon (natiivne draiver)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` peab vastama teie ODBC draiveri konfigureerimisel määratud nimele.
+> `DSN` peab vastama teie ODBC draiveri konfigureerimisel määratud nimele.
 
 ---
 

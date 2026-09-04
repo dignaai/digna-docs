@@ -20,7 +20,7 @@ Ez a **"Create a Database Connection"** képernyőre hivatkozik.
 **Library:** `psycopg`  
 **Támogatott hitelesítés:** csak jelszavas hitelesítés
 
-> ⚠️ Más hitelesítési módszerekhez kérjük, használja az ODBC-illesztőprogramot.
+> Más hitelesítési módszerekhez kérjük, használja az ODBC-illesztőprogramot.
 
 ### *digna* konfiguráció (natív illesztőprogram)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC-illesztőprogram konfigurációjában definiált névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC-illesztőprogram konfigurációjában definiált névvel.
 
 ---
 

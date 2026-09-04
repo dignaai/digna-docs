@@ -65,7 +65,7 @@ digna दो मुख्य घटकों से मिलकर बनता
 
 **यदि आप उसी मशीन पर PostgreSQL इंस्टॉल कर रहे हैं जहाँ digna चलेगा:**
 
-> **⚠️ Recommended Specifications**
+> **Recommended Specifications**
 >
 > - **Memory**: 32 GB RAM (16 GB के बजाय)
 > - **Disk Space**: 50 GB उपलब्ध स्टोरेज (10 GB के बजाय)
@@ -122,7 +122,7 @@ PostgreSQL सुपरयूज़र (`postgres`) के लिए एक प�
 
 डिफ़ॉल्ट PostgreSQL पोर्ट `5432` है। आप डिफ़ॉल्ट का उपयोग कर सकते हैं या आवश्यकता अनुसार अलग पोर्ट निर्दिष्ट कर सकते हैं।
 
-> **💡 Tip**
+> **Tip**
 >
 > यदि पोर्ट 5432 पहले से उपयोग में है, तो एक वैकल्पिक पोर्ट चुनें और बाद में कॉन्फ़िगरेशन के लिए उसे नोट कर लें।
 
@@ -200,7 +200,7 @@ IIS को URL Rewrite कॉम्पोनेंट की आवश्यक�
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > इस सेटिंग के बिना, `.md` फ़ाइलें सही तरीके से सर्व नहीं हो सकती हैं।
 
@@ -227,7 +227,7 @@ Apache Tomcat एक ओपन-सोर्स Java servlet कंटेनर �
    - `http://localhost:8080` पर नेविगेट करें
    - आपको Apache Tomcat का welcome पेज दिखाई देना चाहिए
 
-> **💡 Tip**
+> **Tip**
 >
 > Apache Tomcat आम तौर पर इंस्टॉलेशन के बाद स्वतः प्रारंभ हो जाता है। यदि यह नहीं होता है, तो `bin` फ़ोल्डर में जाकर `startup.bat` चलाएँ।
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > डेटाबेस यूज़र्स के लिए मजबूत, जटिल पासवर्ड का उपयोग करें। आसानी से अनुमान लगाने योग्य क्रेडेंशियल्स से बचें।
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### चरण 3: लाइसेंस फ़ाइल इंस्टॉल करें
 
-> **⚠️ Important**
+> **Important**
 >
 > लाइसेंस फ़ाइल इंस्टॉलेशन पैकेज में **शामिल नहीं** होती और digna द्वारा अलग से प्रदान की जाएगी।
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 यह एक उपयोगकर्ता बनाता है जिसके पास पूर्ण प्रशासनिक अधिकार होंगे।
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > अपरकेस, लोअरकेस, नंबर और स्पेशल कैरेक्टर्स का मिश्रण करके एक मजबूत पासवर्ड उपयोग करें।
 
@@ -545,7 +545,7 @@ digna बैकएंड को Windows सेवा के रूप में 
 - `start_service.bat` — चलती सेवा को शुरू करता है
 - `stop_service.bat` — चलती सेवा को रोकता है
 
-> **⚠️ Administrator Required**
+> **Administrator Required**
 >
 > सभी बैच फ़ाइलें Administrator विशेषाधिकारों के साथ चलानी होंगी।
 
@@ -587,7 +587,7 @@ digna सर्वर अब Windows सेवा के रूप में र
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > एप्लिकेशन फाइल्स को अपडेट करने से पहले हमेशा सेवा को रोकें।
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. नई `digna` executable और `dashboard` फ़ोल्डर को अपनी इंस्टॉलेशन डायरेक्टरी में कॉपी करें
 
 
-> **✅ Important**
+> **Important**
 >
 > `config.toml` फ़ाइल इंस्टॉलेशन ZIP में **कभी भी** शामिल नहीं होती। आपकी मौजूदा कॉन्फ़िगरेशन सुरक्षित रहती है।
 

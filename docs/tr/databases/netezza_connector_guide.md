@@ -66,7 +66,7 @@ name: "UID",        value: "veritabanı kullanıcı adınız"
 name: "PWD",        value: "veritabanı parolanız"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
 
 ---
 

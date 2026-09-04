@@ -20,7 +20,7 @@ Tiek atsauce uz ekrānu **"Create a Database Connection"**.
 **Bibliotēka:** `psycopg`  
 **Atbalstītā autentifikācija:** tikai autentifikācija ar paroli
 
-> ⚠️ Citu autentifikācijas metožu gadījumā, lūdzu, izmantojiet ODBC draiveri.
+> Citu autentifikācijas metožu gadījumā, lūdzu, izmantojiet ODBC draiveri.
 
 ### *digna* konfigurācija (dabiskais draiveris)
 
@@ -87,7 +87,7 @@ Izmantot ODBC:        Ieslēgts
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
+> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
 
 ---
 

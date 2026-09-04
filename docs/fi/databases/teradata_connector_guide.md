@@ -20,7 +20,7 @@ Oppaassa viitataan näyttöön **"Luo tietokantayhteys"**.
 **Kirjasto:** `teradatasql`  
 **Tuettu todennus:** Vain salasanaperusteinen todennus
 
-> ⚠️ Muiden todennustapojen kohdalla käytä ODBC-ajuria.
+> Muiden todennustapojen kohdalla käytä ODBC-ajuria.
 
 ### *digna* -konfiguraatio (natiivinen ajuri)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` on oltava sama kuin ODBC-ajurin konfiguraatiossa määritelty nimi.
+> `DSN` on oltava sama kuin ODBC-ajurin konfiguraatiossa määritelty nimi.
 
 ---
 

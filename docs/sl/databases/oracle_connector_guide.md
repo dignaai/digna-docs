@@ -20,7 +20,7 @@ Navaja zaslon **"Create a Database Connection"**.
 **Library:** `python-oracledb`  
 **Supported Authentication:** Samo overjanje z geslom
 
-> ⚠️ Za druge metode overjanja uporabite ODBC gonilnik.
+> Za druge metode overjanja uporabite ODBC gonilnik.
 
 ### *digna* Configuration (Native Driver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` mora ustrezati imenu, definiranemu v vaši ODBC konfiguraciji gonilnika.
+> `DSN` mora ustrezati imenu, definiranemu v vaši ODBC konfiguraciji gonilnika.
 
 ---
 

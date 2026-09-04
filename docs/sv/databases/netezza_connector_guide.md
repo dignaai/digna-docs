@@ -66,7 +66,7 @@ name: "UID",        value: "din databasanvändare"
 name: "PWD",        value: "ditt databaslösenord"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

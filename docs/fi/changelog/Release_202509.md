@@ -12,7 +12,7 @@ Tämä julkaisu myös vahvistaa todennusta ja parantaa ilmoitusten käsittelyä 
 
 ---
 
-## 🚀 Uudet ominaisuudet  
+## Uudet ominaisuudet  
 
 ### Modulaarinen arkkitehtuuri  
 - digna noudattaa nyt **modulaarista arkkitehtuuria**.  
@@ -35,7 +35,7 @@ Tämä julkaisu myös vahvistaa todennusta ja parantaa ilmoitusten käsittelyä 
 
 ---
 
-## 🛠 CLI-päivitykset  
+## CLI-päivitykset  
 
 - **Uusi komento: `inspect-cancel`** – Peruuta tarkastuksia pyynnön ID:llä tai lopeta kaikki aktiiviset pyynnöt.  
 - **Uusi komento: `check-config`** – Tarkista määritystiedostot ennen käynnistystä.  
@@ -43,6 +43,6 @@ Tämä julkaisu myös vahvistaa todennusta ja parantaa ilmoitusten käsittelyä 
 - **Parannettu `inspect`-komento** – Uusi optio `--bypass-backend` (`-bb`) ja standardoidut paluuarvot (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentaatio  
+## Dokumentaatio  
 - Uudet oppaat:  
   - Single Sign-On -integraatio-opas

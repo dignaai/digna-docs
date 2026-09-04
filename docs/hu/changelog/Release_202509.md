@@ -12,7 +12,7 @@ Ez a kiadás továbbá megerősíti a hitelesítést és javítja az értesíté
 
 ---
 
-## 🚀 Új funkciók  
+## Új funkciók  
 
 ### Moduláris felépítés  
 - A digna mostantól **moduláris architektúrát** követ.  
@@ -35,7 +35,7 @@ Ez a kiadás továbbá megerősíti a hitelesítést és javítja az értesíté
 
 ---
 
-## 🛠 CLI frissítések  
+## CLI frissítések  
 
 - **Új parancs: `inspect-cancel`** – Törli a vizsgálatokat kérésazonosító alapján, vagy leállítja az összes aktív kérést.  
 - **Új parancs: `check-config`** – Konfigurációs fájlok érvényesítése indítás előtt.  
@@ -43,6 +43,6 @@ Ez a kiadás továbbá megerősíti a hitelesítést és javítja az értesíté
 - **Kibővített `inspect` parancs** – Új opció `--bypass-backend` (`-bb`) és szabványosított visszatérési kódok (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentáció  
+## Dokumentáció  
 - Új útmutatók:  
   - Single Sign-On integrációs útmutató

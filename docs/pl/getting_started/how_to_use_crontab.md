@@ -1,12 +1,12 @@
 ---
-title: Zaawansowane planowanie z crontab
-description: Dowiedz się, jak zaplanować zadanie w *digna* używając wyrażeń crontab, aby uzyskać zaawansowane czasy uruchamiania.
+title: Zaawansowane planowanie z Crontab | Dokumentacja digna
+description: Dowiedz się, jak zaplanować zadanie w digna za pomocą wyrażeń crontab, aby uzyskać bardziej zaawansowane ustawienia czasowe.
 ---
 
-# Advanced Scheduling with Crontab
+# Zaawansowane planowanie z Crontab
 
-This guide shows how to schedule jobs in *digna* using **crontab expressions**.  
-Unlike the standard patterns (daily, weekly, monthly), crontab gives you full flexibility to define custom schedules.
+Ten przewodnik pokazuje, jak planować zadania w *digna* przy użyciu **wyrażeń crontab**.  
+W przeciwieństwie do standardowych wzorców (daily, weekly, monthly), crontab daje pełną elastyczność w definiowaniu niestandardowych harmonogramów.
 
 ---
 
@@ -18,18 +18,18 @@ Unlike the standard patterns (daily, weekly, monthly), crontab gives you full fl
 
 ## What You Will Learn
 
-- How to open the **Scheduling** section in the dashboard  
-- How to create a new job using a **crontab expression**  
-- How to set a schedule that runs only on **weekends at 10:00**  
+- Jak otworzyć sekcję **Scheduling** w panelu  
+- Jak utworzyć nowe zadanie używając **wyrażenia crontab**  
+- Jak ustawić harmonogram, który uruchamia się tylko w **weekendy o 10:00**  
 
 ---
 
 ## Example: Weekend Schedule
 
-To schedule a job to run every **Saturday and Sunday at 10:00 AM**, use the following expression:
+Aby zaplanować zadanie, które będzie uruchamiane w każdą **sobotę i niedzielę o 10:00**, użyj następującego wyrażenia:
 
 
-- `0` → minuta (dokładnie na początku godziny)  
+- `0` → minuta (na pełną godzinę)  
 - `10` → godzina (10:00)  
 - `*` → każdy dzień miesiąca  
 - `*` → każdy miesiąc  
@@ -39,8 +39,8 @@ To schedule a job to run every **Saturday and Sunday at 10:00 AM**, use the foll
 
 ## Why Use Crontab?
 
-- Create schedules beyond standard daily, weekly, or monthly patterns  
-- Define precise run times (specific days, hours, or intervals)  
-- Useful for weekend jobs, off-hours checks, or frequent monitoring  
+- Tworzenie harmonogramów wykraczających poza standardowe wzorce daily, weekly lub monthly  
+- Definiowanie precyzyjnych godzin uruchomienia (konkretne dni, godziny lub interwały)  
+- Przydatne dla zadań weekendowych, kontroli poza godzinami pracy lub częstego monitoringu  
 
 ---

@@ -65,7 +65,7 @@ Můžete přidat novou databázi pro digna na váš existující PostgreSQL serv
 
 **Pokud instalujete PostgreSQL na stejný stroj jako digna:**
 
-> **⚠️ Doporučené specifikace**
+> **Doporučené specifikace**
 >
 > - **Paměť**: 32 GB RAM (místo 16 GB)
 > - **Volné místo na disku**: 50 GB dostupného úložiště (místo 10 GB)
@@ -122,7 +122,7 @@ Zadejte a potvrďte heslo pro superuživatele PostgreSQL (`postgres`). **Uložte
 
 Výchozí port PostgreSQL je `5432`. Můžete použít výchozí nebo specifikovat jiný port podle potřeby.
 
-> **💡 Tip**
+> **Tip**
 >
 > Pokud je port 5432 již obsazen, zvolte alternativní port a poznamenejte si ho pro pozdější konfiguraci.
 
@@ -200,7 +200,7 @@ Aby byly Markdown soubory (`.md`) správně obsluhovány IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Důležité**
+> **Důležité**
 >
 > Bez tohoto nastavení nemusí být `.md` soubory správně obsluhovány.
 
@@ -227,7 +227,7 @@ Apache Tomcat je open-source kontejner pro Java servlety a webový server.
    - Přejděte na `http://localhost:8080`
    - Měli byste vidět uvítací stránku Apache Tomcat
 
-> **💡 Tip**
+> **Tip**
 >
 > Apache Tomcat se obvykle spustí automaticky po instalaci. Pokud se nespustí, přejděte do složky `bin` a spusťte `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Nejlepší postup**
+> **Nejlepší postup**
 >
 > Používejte silná, komplexní hesla pro databázové uživatele. Vyvarujte se snadno uhodnutelných přihlašovacích údajů.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Krok 3: Instalace licenčního souboru
 
-> **⚠️ Důležité**
+> **Důležité**
 >
 > Licenční soubor **není** součástí instalačního balíku a bude vám poskytnut samostatně společností digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Tím se vytvoří uživatel s plnými administrátorskými právy.
 
-> **✅ Nejlepší postup**
+> **Nejlepší postup**
 >
 > Používejte silné heslo obsahující kombinaci velkých a malých písmen, čísel a speciálních znaků.
 
@@ -545,7 +545,7 @@ K dispozici jsou tyto dávkové soubory:
 - `start_service.bat` — Spustí registrovanou službu
 - `stop_service.bat` — Zastaví běžící službu
 
-> **⚠️ Vyžadováno oprávnění správce**
+> **Vyžadováno oprávnění správce**
 >
 > Všechny dávkové soubory musí být spuštěny s oprávněními Administrátora.
 
@@ -587,7 +587,7 @@ digna server je nyní zaregistrován jako Windows služba s povoleným automatic
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > Vždy službu zastavte před aktualizací souborů aplikace.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Zkopírujte nový spustitelný soubor `digna` a složku `dashboard` do instalačního adresáře
 
 
-> **✅ Důležité**
+> **Důležité**
 >
 > Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše existující konfigurace zůstane zachována.
 

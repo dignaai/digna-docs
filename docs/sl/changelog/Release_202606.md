@@ -12,7 +12,7 @@ Ta različica uvaja nov **digna Python SDK**, uradno **Docker podporo za namesti
 
 ---
 
-## 🚀 Nove funkcije  
+## Nove funkcije  
 
 ### digna Python SDK – avtomatizirajte vse s Pythonom  
 - Namestitev:
@@ -85,7 +85,7 @@ Konfigurirajte strategijo izvajanja poizvedb: **Single** ali **Combined** način
 
 ---
 
-## 🧪 Izboljšave platforme  
+## Izboljšave platforme  
 
 - Popolna integracija Python SDK za avtomatizacijo  
 - Kontejnerizirana namestitev prek Dockerja  
@@ -94,7 +94,7 @@ Konfigurirajte strategijo izvajanja poizvedb: **Single** ali **Combined** način
 
 ---
 
-## 🎯 Kdo ima koristi od te izdaje  
+## Kdo ima koristi od te izdaje  
 
 - Data Inženirji: avtomatizacija, uporaba SDK, integracija v cevovode  
 - Platformne ekipe: poenostavljena namestitev prek Dockerja  
@@ -103,7 +103,7 @@ Konfigurirajte strategijo izvajanja poizvedb: **Single** ali **Combined** način
 
 ---
 
-## 🛠 Posodobitve CLI  
+## Posodobitve CLI  
 - Dodana podpora za integracijo SDK  
 - Izboljšani poteki uvoza/izvoza  
 - Splošne izboljšave stabilnosti in zmogljivosti

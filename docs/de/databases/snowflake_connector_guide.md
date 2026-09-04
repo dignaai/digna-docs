@@ -20,7 +20,7 @@ Er bezieht sich auf den Bildschirm **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
 
-> ⚠️ Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
 
 ### *digna* Konfiguration (nativer Treiber)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
+> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
 
 ---
 

@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `pymssql`  
 **Υποστηριζόμενος Έλεγχος Ταυτότητας:** Μόνο έλεγχος ταυτότητας με κωδικό (password)
 
-> ⚠️ Για άλλες μεθόδους ελέγχου ταυτότητας, χρησιμοποιήστε τον ODBC driver.
+> Για άλλες μεθόδους ελέγχου ταυτότητας, χρησιμοποιήστε τον ODBC driver.
 
 ### *digna* Ρυθμίσεις (Native Driver)
 
@@ -112,7 +112,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 Το `DSN` πρέπει να ταιριάζει με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver.
+> Το `DSN` πρέπει να ταιριάζει με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver.
 
 ---
 

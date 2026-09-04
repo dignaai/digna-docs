@@ -20,7 +20,7 @@ Bu, **"Create a Database Connection"** ekranına atıfta bulunur.
 **Kütüphane:** `teradatasql`  
 **Desteklenen Kimlik Doğrulama:** Yalnızca parola tabanlı kimlik doğrulama
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -90,7 +90,7 @@ name: "UID",        value: "veritabanı kullanıcı adınız"
 name: "PWD",        value: "veritabanı parolanız"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımlanan ad ile eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımlanan ad ile eşleşmelidir.
 
 ---
 

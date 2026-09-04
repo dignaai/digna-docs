@@ -20,7 +20,7 @@ Det hänvisar till skärmen **"Create a Database Connection"**.
 **Library:** `psycopg`  
 **Supported Authentication:** Endast lösenordsbaserad autentisering
 
-> ⚠️ För andra autentiseringsmetoder, använd ODBC-drivrutinen.
+> För andra autentiseringsmetoder, använd ODBC-drivrutinen.
 
 ### *digna* Konfiguration (Native Driver)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` måste matcha namnet som definierats i din ODBC-drivrutinskonfiguration.
+> `DSN` måste matcha namnet som definierats i din ODBC-drivrutinskonfiguration.
 
 ---
 

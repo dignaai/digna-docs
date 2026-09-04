@@ -20,7 +20,7 @@ Si fa riferimento alla schermata **"Crea una connessione al database"**.
 **Library:** `teradatasql`  
 **Autenticazione supportata:** Solo autenticazione tramite password
 
-> ⚠️ Per altri metodi di autenticazione, utilizza il driver ODBC.
+> Per altri metodi di autenticazione, utilizza il driver ODBC.
 
 ### Configurazione di *digna* (Driver nativo)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "il tuo utente del database"
 name: "PWD",        value: "la tua password del database"
 ```
 
-> 🔹 Il `DSN` deve corrispondere al nome definito nella configurazione del tuo driver ODBC.
+> Il `DSN` deve corrispondere al nome definito nella configurazione del tuo driver ODBC.
 
 ---
 

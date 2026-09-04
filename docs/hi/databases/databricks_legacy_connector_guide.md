@@ -19,12 +19,12 @@ image: /assets/logo_square.png
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** Personal Access Token (PAT) only
 
-> ⚠️ अन्य प्रमाणीकरण विधियों के लिए, कृपया ODBC ड्राइवर का उपयोग करें।
+> अन्य प्रमाणीकरण विधियों के लिए, कृपया ODBC ड्राइवर का उपयोग करें।
 
 ### Personal Access Token (PAT)
 
 Personal Access Token का उपयोग करके प्रमाणीकृत करने के लिए, आधिकारिक Databricks डॉक्स देखें:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* कॉन्फ़िगरेशन (नैटिव ड्राइवर)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN` उसी नाम से मेल खाना चाहिए जो आपने अपने ODBC ड्राइवर कॉन्फ़िगरेशन में परिभाषित किया है।
+> `DSN` उसी नाम से मेल खाना चाहिए जो आपने अपने ODBC ड्राइवर कॉन्फ़िगरेशन में परिभाषित किया है।
 
 ---
 

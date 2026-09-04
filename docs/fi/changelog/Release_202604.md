@@ -12,7 +12,7 @@ Tämä julkaisu esittelee edistyneitä aikasarja-analyysejä, uudelleenkäytett�
 
 ---
 
-## 🚀 Uudet ominaisuudet  
+## Uudet ominaisuudet  
 
 ### Analytics Chart – Aikasarja-analyysi ilman data science -osaamista  
 - Uusi **Analytics Chart** interaktiiviseen aikasarja-analyysiin  
@@ -61,7 +61,7 @@ Tämä julkaisu esittelee edistyneitä aikasarja-analyysejä, uudelleenkäytett�
 
 ---
 
-## 🧪 Laajennetut Data Analytics- ja Validation-ominaisuudet  
+## Laajennetut Data Analytics- ja Validation-ominaisuudet  
 
 Tässä julkaisussa digna laajentaa sekä **datan ymmärrystä** että **datan validoinnin standardisointia**:
 
@@ -74,7 +74,7 @@ Näiden ominaisuuksien avulla organisaatiot voivat paitsi havaita ongelmia, myö
 
 ---
 
-## 🎯 Kenelle julkaisu hyödyttää  
+## Kenelle julkaisu hyödyttää  
 
 - **Data Engineers:** Uudelleenkäytettävät validointilogiikat ja parannettu hallinta seurannan käytöksestä  
 - **Data Quality & Governance -tiimit:** Standardoidut säännöt ja yhtenäinen datan validointi järjestelmien välillä  
@@ -83,7 +83,7 @@ Näiden ominaisuuksien avulla organisaatiot voivat paitsi havaita ongelmia, myö
 
 ---
 
-## 🛠 CLI-päivitykset  
+## CLI-päivitykset  
 - Ei muutoksia  
 
 ---

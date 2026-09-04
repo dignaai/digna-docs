@@ -12,7 +12,7 @@ Questa versione introduce analisi avanzate delle serie temporali, componenti di 
 
 ---
 
-## 🚀 Novità  
+## Novità  
 
 ### Analytics Chart – Analisi delle serie temporali senza competenze di Data Science  
 - Nuovo **Analytics Chart** per l’analisi interattiva delle serie temporali  
@@ -61,7 +61,7 @@ Questa versione introduce analisi avanzate delle serie temporali, componenti di 
 
 ---
 
-## 🧪 Capacità estese di Data Analytics e Validazione  
+## Capacità estese di Data Analytics e Validazione  
 
 Con questa release, digna amplia sia la comprensione dei dati sia la standardizzazione della validazione:
 
@@ -74,7 +74,7 @@ Insieme, queste capacità consentono alle organizzazioni non solo di rilevare pr
 
 ---
 
-## 🎯 A chi è utile questa release  
+## A chi è utile questa release  
 
 - **Data Engineers:** Logica di validazione riutilizzabile e maggiore controllo sul comportamento del monitoring  
 - **Team di Data Quality & Governance:** Regole standardizzate e validazione coerente dei dati tra i sistemi  
@@ -83,7 +83,7 @@ Insieme, queste capacità consentono alle organizzazioni non solo di rilevare pr
 
 ---
 
-## 🛠 Aggiornamenti CLI  
+## Aggiornamenti CLI  
 - Nessuna modifica  
 
 ---

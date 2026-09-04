@@ -20,7 +20,7 @@ Navaja zaslon **"Ustvari povezavo z bazo podatkov"**.
 **Library:** `psycopg`  
 **Supported Authentication:** Samo preverjanje pristnosti z geslom
 
-> ⚠️ Za druge metode preverjanja pristnosti uporabite ODBC drajver.
+> Za druge metode preverjanja pristnosti uporabite ODBC drajver.
 
 ### Konfiguracija *digna* (nativni drajver)
 
@@ -87,7 +87,7 @@ Uporabi ODBC:        Omogočeno
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` mora ustrezati imenu, določenemu v konfiguraciji vašega ODBC drajverja.
+> `DSN` mora ustrezati imenu, določenemu v konfiguraciji vašega ODBC drajverja.
 
 ---
 

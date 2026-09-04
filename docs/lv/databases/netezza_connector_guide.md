@@ -66,7 +66,7 @@ name: "UID",        value: "jūsu datubāzes lietotājs"
 name: "PWD",        value: "jūsu datubāzes parole"
 ```
 
-> 🔹 `DSN` ir jāsakrīt ar nosaukumu, kas definēts jūsu ODBC draivera konfigurācijā.
+> `DSN` ir jāsakrīt ar nosaukumu, kas definēts jūsu ODBC draivera konfigurācijā.
 
 ---
 

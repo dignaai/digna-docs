@@ -20,7 +20,7 @@ See viitab ekraanile **"Loo andmebaasiühendus"**.
 **Raamatukogu:** `PyHive`  
 **Toetatav autentimine:** Ainult paroolipõhine autentimine
 
-> ⚠️ Muude autentimisviiside jaoks kasutage ODBC-draiverit.
+> Muude autentimisviiside jaoks kasutage ODBC-draiverit.
 
 ### *digna* konfiguratsioon (natiivne draiver)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` peab vastama teie ODBC draiveri konfiguratsioonis määratud nimele.
+> `DSN` peab vastama teie ODBC draiveri konfiguratsioonis määratud nimele.
 
 ---
 

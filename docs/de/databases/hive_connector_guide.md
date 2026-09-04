@@ -20,7 +20,7 @@ Sie bezieht sich auf den Bildschirm **"Create a Database Connection"**.
 **Bibliothek:** `PyHive`  
 **Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
 
-> ⚠️ Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
 
 ### *digna*-Konfiguration (nativer Treiber)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{Ihr Passwort in geschweiften Klammern}"
 ```
 
-> 🔹 Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
+> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
 
 ---
 

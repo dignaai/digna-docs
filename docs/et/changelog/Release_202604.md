@@ -12,7 +12,7 @@ See väljalase toob kaasa täiustatud ajaseeriate analüüsi, taaskasutatavad va
 
 ---
 
-## 🚀 Uued funktsioonid  
+## Uued funktsioonid  
 
 ### Analytics Chart – ajaseeriate analüüs ilma andmeteaduseta  
 - Uus **Analytics Chart** interaktiivseks ajaseeriate analüüsiks  
@@ -61,7 +61,7 @@ See väljalase toob kaasa täiustatud ajaseeriate analüüsi, taaskasutatavad va
 
 ---
 
-## 🧪 Laiendatud Data Analytics & Validation võimalused  
+## Laiendatud Data Analytics & Validation võimalused  
 
 Selle väljalaske abil laiendab digna nii **andmete mõistmist** kui ka **andmete valideerimise standardiseerimist**:
 
@@ -74,7 +74,7 @@ Koos võimaldavad need funktsioonid organisatsioonidel mitte ainult tuvastada pr
 
 ---
 
-## 🎯 Kellele see väljalase kasulik on  
+## Kellele see väljalase kasulik on  
 
 - **Andmeinsenerid:** Taaskasutatav valideerimisloogika ja parem kontroll monitooringu käitumise üle  
 - **Andmekvaliteedi & halduse meeskonnad:** Standardiseeritud reeglid ja järjepidev andmete valideerimine süsteemide lõikes  
@@ -83,7 +83,7 @@ Koos võimaldavad need funktsioonid organisatsioonidel mitte ainult tuvastada pr
 
 ---
 
-## 🛠 CLI uuendused  
+## CLI uuendused  
 - Muudatusi pole  
 
 ---

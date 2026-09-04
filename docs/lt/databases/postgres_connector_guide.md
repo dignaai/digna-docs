@@ -20,7 +20,7 @@ Jame nurodoma ekrano dalis **"Create a Database Connection"**.
 **Library:** `psycopg`  
 **Supported Authentication:** Tik autentifikacija su slaptažodžiu
 
-> ⚠️ Jei naudojate kitus autentifikacijos metodus, prašome naudoti ODBC draiverį.
+> Jei naudojate kitus autentifikacijos metodus, prašome naudoti ODBC draiverį.
 
 ### *digna* Configuration (Native Driver)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

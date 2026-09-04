@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `python-oracledb`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ لأساليب المصادقة الأخرى، الرجاء استخدام برنامج تشغيل ODBC.
+> لأساليب المصادقة الأخرى، الرجاء استخدام برنامج تشغيل ODBC.
 
 ### تكوين *digna* (برنامج التشغيل الأصلي)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 يجب أن يتطابق `DSN` مع الاسم المحدد في تكوين برنامج تشغيل ODBC الخاص بك.
+> يجب أن يتطابق `DSN` مع الاسم المحدد في تكوين برنامج تشغيل ODBC الخاص بك.
 
 ---
 

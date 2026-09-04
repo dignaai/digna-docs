@@ -20,7 +20,7 @@ Viitab ekraanile **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Toetatud autentimine:** Ainult paroolipõhine autentimine
 
-> ⚠️ Muude autentimismeetodite korral kasutage palun ODBC-draiverit.
+> Muude autentimismeetodite korral kasutage palun ODBC-draiverit.
 
 ### *digna* konfiguratsioon (natiivne draiver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Skeem, mis sisaldab lähteandmeid"
 name: "Warehouse",      value: "Warehouse, mida kasutada SQL-ide täitmiseks"
 ```
 
-> 🔹 `DSN` peab vastama teie ODBC draiveri konfiguratsioonis määratud nimele.
+> `DSN` peab vastama teie ODBC draiveri konfiguratsioonis määratud nimele.
 
 ---
 

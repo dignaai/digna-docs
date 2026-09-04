@@ -65,7 +65,7 @@ Voit lisätä uuden tietokannan dignalle olemassa olevaan PostgreSQL-palvelimees
 
 **Jos asennat PostgreSQL:n samalle koneelle kuin digna:**
 
-> **⚠️ Suositellut resurssit**
+> **Suositellut resurssit**
 >
 > - **Muisti**: 32 GB RAM (16 GB sijaan)
 > - **Levyn vapaa tila**: 50 GB käytettävissä (10 GB sijaan)
@@ -122,7 +122,7 @@ Syötä ja vahvista salasana PostgreSQL-superkäyttäjälle (`postgres`). **Tall
 
 Oletusportti on `5432`. Voit käyttää oletusta tai määrittää toisen portin tarvittaessa.
 
-> **💡 Vinkki**
+> **Vinkki**
 >
 > Jos portti 5432 on jo käytössä, valitse vaihtoehtoinen portti ja muista tämä myöhemmin konfiguroitaessa.
 
@@ -200,7 +200,7 @@ Varmistaaksesi, että Markdown-tiedostot (`.md`) palvelin toimittaa oikein IIS:s
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Tärkeää**
+> **Tärkeää**
 >
 > Ilman tätä asetusta `.md`-tiedostot eivät välttämättä palveudu oikein.
 
@@ -227,7 +227,7 @@ Apache Tomcat on avoimen lähdekoodin Java-servlet-kontti ja web-palvelin.
    - Siirry osoitteeseen `http://localhost:8080`
    - Näet Apache Tomcatin tervetulosivun
 
-> **💡 Vinkki**
+> **Vinkki**
 >
 > Tomcat yleensä käynnistyy automaattisesti asennuksen jälkeen. Jos se ei käynnisty, siirry `bin`-kansioon ja suorita `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Hyvä käytäntö**
+> **Hyvä käytäntö**
 >
 > Käytä vahvoja ja monimutkaisia salasanoja tietokantakäyttäjille. Vältä helposti arvattavia tunnuksia.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Vaihe 3: Asenna lisenssitiedosto
 
-> **⚠️ Tärkeää**
+> **Tärkeää**
 >
 > Lisenssitiedosto **ei** sisälly asennuspakettiin ja toimitetaan erikseen dignalta.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Tämä luo käyttäjän, jolla on täydet hallintaoikeudet.
 
-> **✅ Hyvä käytäntö**
+> **Hyvä käytäntö**
 >
 > Käytä vahvaa salasanaa, joka sisältää isoja ja pieniä kirjaimia, numeroita ja erikoismerkkejä.
 
@@ -545,7 +545,7 @@ Seuraavat batch-tiedostot ovat käytettävissä:
 - `start_service.bat` — Käynnistää palvelun
 - `stop_service.bat` — Pysäyttää palvelun
 
-> **⚠️ Järjestelmänvalvojan oikeudet vaaditaan**
+> **Järjestelmänvalvojan oikeudet vaaditaan**
 >
 > Kaikki batch-tiedostot on suoritettava järjestelmänvalvojan oikeuksin.
 
@@ -587,7 +587,7 @@ digna-palvelin rekisteröityy nyt Windows-palveluna **automaattisella käynnisty
    stop_service.bat
    ```
 
-> **💡 Vinkki**
+> **Vinkki**
 >
 > Pysäytä aina palvelu ennen sovellustiedostojen päivittämistä.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Kopioi uusi `digna`-suoritettava ja `dashboard`-kansio asennushakemistoosi
 
 
-> **✅ Tärkeää**
+> **Tärkeää**
 >
 > `config.toml`-tiedostoa EI KOSKAAN sisällytetä asennusZIP:iin. Olemassa oleva konfiguraatiosi säilyy ennallaan.
 

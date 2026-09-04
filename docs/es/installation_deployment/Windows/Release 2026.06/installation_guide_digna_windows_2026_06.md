@@ -65,7 +65,7 @@ Puedes añadir una nueva base de datos para digna a tu servidor PostgreSQL exist
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **⚠️ Recommended Specifications**
+> **Recommended Specifications**
 >
 > - **Memory**: 32 GB RAM (instead of 16 GB)
 > - **Disk Space**: 50 GB available storage (instead of 10 GB)
@@ -122,7 +122,7 @@ Introduce y confirma una contraseña para el superusuario de PostgreSQL (`postgr
 
 El puerto por defecto de PostgreSQL es `5432`. Puedes usar el valor por defecto o especificar un puerto diferente si es necesario.
 
-> **💡 Tip**
+> **Tip**
 >
 > Si el puerto 5432 ya está en uso, elige un puerto alternativo y anótalo para la configuración posterior.
 
@@ -200,7 +200,7 @@ Para asegurar que los archivos Markdown (`.md`) se sirvan correctamente desde II
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > Sin esta configuración, los archivos `.md` podrían no servir correctamente.
 
@@ -227,7 +227,7 @@ Apache Tomcat es un contenedor de servlets Java y servidor web de código abiert
    - Navega a `http://localhost:8080`
    - Deberías ver la página de bienvenida de Apache Tomcat
 
-> **💡 Tip**
+> **Tip**
 >
 > Apache Tomcat normalmente se inicia automáticamente después de la instalación. Si no lo hace, navega a la carpeta `bin` y ejecuta `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Usa contraseñas fuertes y complejas para los usuarios de la base de datos. Evita credenciales fácilmente adivinables.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **⚠️ Important**
+> **Important**
 >
 > El archivo de licencia **no** está incluido en el paquete de instalación y se proporcionará por separado por digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Esto crea un usuario con privilegios administrativos completos.
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Usa una contraseña fuerte con una mezcla de mayúsculas, minúsculas, números y caracteres especiales.
 
@@ -545,7 +545,7 @@ Los siguientes archivos batch están disponibles:
 - `start_service.bat` — Inicia el servicio registrado
 - `stop_service.bat` — Detiene el servicio registrado
 
-> **⚠️ Administrator Required**
+> **Administrator Required**
 >
 > Todos los archivos batch deben ejecutarse con privilegios de Administrador.
 
@@ -587,7 +587,7 @@ El servidor digna ya está registrado como un servicio de Windows con inicio **a
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > Siempre detén el servicio antes de actualizar los archivos de la aplicación.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Copia el nuevo ejecutable `digna` y la carpeta `dashboard` a tu directorio de instalación
 
 
-> **✅ Important**
+> **Important**
 >
 > El archivo `config.toml` **nunca** se incluye en el ZIP de instalación. Tu configuración existente permanece segura.
 

@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `teradatasql`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ Для других методов аутентификации используйте драйвер ODBC.
+> Для других методов аутентификации используйте драйвер ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` должен соответствовать имени, указанному в конфигурации вашего ODBC-драйвера.
+> `DSN` должен соответствовать имени, указанному в конфигурации вашего ODBC-драйвера.
 
 ---
 

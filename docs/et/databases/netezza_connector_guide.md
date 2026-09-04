@@ -66,7 +66,7 @@ name: "UID",        value: "teie andmebaasi kasutaja"
 name: "PWD",        value: "teie andmebaasi parool"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

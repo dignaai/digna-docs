@@ -20,7 +20,7 @@ See viitab ekraanile **"Create a Database Connection"**.
 **Library:** `psycopg`  
 **Toetatav autentimine:** Ainult paroolipõhine autentimine
 
-> ⚠️ Muude autentimismeetodite jaoks kasutage palun ODBC-draiverit.
+> Muude autentimismeetodite jaoks kasutage palun ODBC-draiverit.
 
 ### *digna* konfiguratsioon (natiivne draiver)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` peab vastama nimele, mis on määratletud teie ODBC-draiveri konfiguratsioonis.
+> `DSN` peab vastama nimele, mis on määratletud teie ODBC-draiveri konfiguratsioonis.
 
 ---
 

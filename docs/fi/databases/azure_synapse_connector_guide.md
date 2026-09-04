@@ -22,7 +22,7 @@ Ohje viittaa näyttöön **"Create a Database Connection"**.
 **Kirjasto:** `pymssql`  
 **Tuettu todennus:** Vain salasanaan perustuva todennus
 
-> ⚠️ Muihin todennusmenetelmiin tarkoitettu yhteys kannattaa tehdä ODBC-ajurin kautta.
+> Muihin todennusmenetelmiin tarkoitettu yhteys kannattaa tehdä ODBC-ajurin kautta.
 
 ### *digna* -konfiguraatio (natiiviajuri)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN`-arvon pitää vastata ODBC-ajurin konfiguroinnissa määriteltyä nimeä.
+> `DSN`-arvon pitää vastata ODBC-ajurin konfiguroinnissa määriteltyä nimeä.
 
 ---
 

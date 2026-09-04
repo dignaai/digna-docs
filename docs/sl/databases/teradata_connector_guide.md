@@ -20,7 +20,7 @@ Navaja se zaslon **"Ustvari povezavo z bazo podatkov"**.
 **Knjižnica:** `teradatasql`  
 **Podprta avtentikacija:** Samo avtentikacija z geslom
 
-> ⚠️ Za druge metode avtentikacije uporabite ODBC gonilnik.
+> Za druge metode avtentikacije uporabite ODBC gonilnik.
 
 ### Konfiguracija *digna* (izvorni gonilnik)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "vaš uporabnik baze podatkov"
 name: "PWD",        value: "vaše geslo za bazo podatkov"
 ```
 
-> 🔹 Vrednost `DSN` se mora ujemati z imenom, definiranim v konfiguraciji vašega ODBC gonilnika.
+> Vrednost `DSN` se mora ujemati z imenom, definiranim v konfiguraciji vašega ODBC gonilnika.
 
 ---
 

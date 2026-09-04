@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `teradatasql`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하십시오.
+> 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하십시오.
 
 ### *digna* Configuration (Native Driver)
 
@@ -90,7 +90,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
+> `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
 
 ---
 

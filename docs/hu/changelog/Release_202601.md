@@ -12,7 +12,7 @@ Ez a kiadás növeli a rugalmasságot az összes modulban, és jelentősen kiter
 
 ---
 
-## 🚀 Új funkciók  
+## Új funkciók  
 
 ### Globális adatbázis-kapcsolatok  
 - Az adatbázis-kapcsolatok mostantól **globális szinten** konfigurálhatók.  
@@ -52,7 +52,7 @@ Ez a kiadás növeli a rugalmasságot az összes modulban, és jelentősen kiter
 
 ---
 
-## 🧪 Kiterjesztett Data Validation képességek  
+## Kiterjesztett Data Validation képességek  
 
 Ezzel a kiadással a **Data Validation** mostantól átfogó adatminőségi szabálykészletet támogat:
 
@@ -76,7 +76,7 @@ Ezek a vizsgálatok együtt lehetővé teszik a **strukturális és relációs a
 
 ---
 
-## 🎯 Kiknek előnyös ez a kiadás  
+## Kiknek előnyös ez a kiadás  
 
 - **Data Engineers:** Rugalmasabb adatforrás-modellezés és újrahasználható adatbázis-kapcsolatok  
 - **Data Quality & Governance csapatok:** Bővített validációs lefedettség, beleértve a relációs integritási szabályokat  
@@ -85,7 +85,7 @@ Ezek a vizsgálatok együtt lehetővé teszik a **strukturális és relációs a
 
 ---
 
-## 🛠 CLI frissítések  
+## CLI frissítések  
 - Nincs változás
 
 ---

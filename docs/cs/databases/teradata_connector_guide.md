@@ -20,7 +20,7 @@ Odkazuje na obrazovku **"Vytvoření připojení k databázi"**.
 **Knihovna:** `teradatasql`  
 **Podporovaná autentizace:** Pouze autentizace pomocí hesla
 
-> ⚠️ Pro jiné metody autentizace použijte prosím ODBC driver.
+> Pro jiné metody autentizace použijte prosím ODBC driver.
 
 ### *digna* konfigurace (nativní driver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "váš uživatel databáze"
 name: "PWD",        value: "vaše databázové heslo"
 ```
 
-> 🔹 Hodnota `DSN` musí odpovídat názvu definovanému v konfiguraci vašeho ODBC driveru.
+> Hodnota `DSN` musí odpovídat názvu definovanému v konfiguraci vašeho ODBC driveru.
 
 ---
 

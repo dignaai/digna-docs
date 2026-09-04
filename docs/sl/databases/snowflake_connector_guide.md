@@ -20,7 +20,7 @@ Navaja se zaslon **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Podprta avtentikacija:** samo avtentikacija z geslom
 
-> ⚠️ Za druge metode avtentikacije uporabite ODBC gonilnik.
+> Za druge metode avtentikacije uporabite ODBC gonilnik.
 
 ### *digna* konfiguracija (nativni gonilnik)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 `DSN` se mora ujemati z imenom, definiranim v vaši ODBC konfiguraciji.
+> `DSN` se mora ujemati z imenom, definiranim v vaši ODBC konfiguraciji.
 
 ---
 

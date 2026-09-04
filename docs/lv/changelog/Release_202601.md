@@ -12,7 +12,7 @@ Ar izlaidumu 2026.01 digna ievieš būtiskus uzlabojumus datu avotu modelēšan�
 
 ---
 
-## 🚀 Jaunās iespējas  
+## Jaunās iespējas  
 
 ### Globālas datubāzu savienojumu konfigurācijas  
 - Datubāzu savienojumi tagad konfigurējami **globālā līmenī**.  
@@ -52,7 +52,7 @@ Ar izlaidumu 2026.01 digna ievieš būtiskus uzlabojumus datu avotu modelēšan�
 
 ---
 
-## 🧪 Paplašinātās datu validācijas iespējas  
+## Paplašinātās datu validācijas iespējas  
 
 Ar šo izlaidumu **digna Data Validation** tagad atbalsta plašu datu kvalitātes noteikumu kopumu:
 
@@ -76,7 +76,7 @@ Kopā šīs pārbaudes ļauj īstenot **strukturālās un attiecību datu kvalit
 
 ---
 
-## 🎯 Kam šis izlaidums noder  
+## Kam šis izlaidums noder  
 
 - **Datu inženieri:** Elastīgāka datu avotu modelēšana un atkārtoti izmantojami datubāzu savienojumi  
 - **Datu kvalitātes un pārvaldības komandas:** Paplašināts validācijas pārklājums, ieskaitot attiecību integritātes noteikumus  
@@ -85,7 +85,7 @@ Kopā šīs pārbaudes ļauj īstenot **strukturālās un attiecību datu kvalit
 
 ---
 
-## 🛠 CLI atjauninājumi  
+## CLI atjauninājumi  
 - Izmaiņu nav
 
 ---

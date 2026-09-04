@@ -20,7 +20,7 @@ See viitab ekraanile **"Loo andmebaasiühendus"**.
 **Library:** `teradatasql`  
 **Toetatav autentimine:** Ainult paroolipõhine autentimine
 
-> ⚠️ Muude autentimisviiside jaoks kasutage palun ODBC-draiverit.
+> Muude autentimisviiside jaoks kasutage palun ODBC-draiverit.
 
 ### *digna* konfiguratsioon (natiivne draiver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` peab vastama teie ODBC-draiveri konfiguratsioonis määratud nimele.
+> `DSN` peab vastama teie ODBC-draiveri konfiguratsioonis määratud nimele.
 
 ---
 

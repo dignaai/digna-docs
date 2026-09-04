@@ -12,7 +12,7 @@ Bu sürüm yeni **digna Python SDK**'sını, resmi **Docker dağıtım desteğin
 
 ---
 
-## 🚀 Yeni Özellikler  
+## Yeni Özellikler  
 
 ### digna Python SDK – Her şeyi Python ile Otomatikleştirin  
 - Kurulum:
@@ -84,7 +84,7 @@ Etkisi: Kuruluş genelinde ölçeklenebilir ve tutarlı veri kalite yönetişimi
 
 ---
 
-## 🧪 Platform Geliştirmeleri  
+## Platform Geliştirmeleri  
 
 - Otomasyon için tam Python SDK entegrasyonu  
 - Docker ile konteynerleştirilmiş dağıtım  
@@ -93,7 +93,7 @@ Etkisi: Kuruluş genelinde ölçeklenebilir ve tutarlı veri kalite yönetişimi
 
 ---
 
-## 🎯 Bu Sürümden Kim Yararlanır  
+## Bu Sürümden Kim Yararlanır  
 
 - Veri Mühendisleri: otomasyon, SDK kullanımı, pipeline entegrasyonu  
 - Platform Ekipleri: Docker ile basitleştirilmiş dağıtım  
@@ -102,7 +102,7 @@ Etkisi: Kuruluş genelinde ölçeklenebilir ve tutarlı veri kalite yönetişimi
 
 ---
 
-## 🛠 CLI Güncellemeleri  
+## CLI Güncellemeleri  
 - SDK entegrasyon desteği eklendi  
 - İçe/dışa aktarma iş akışları iyileştirildi  
 - Genel kararlılık ve performans iyileştirmeleri  

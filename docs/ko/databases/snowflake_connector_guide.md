@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **라이브러리:** `snowflake-connector-python`  
 **지원되는 인증:** 암호 기반 인증만
 
-> ⚠️ 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
+> 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
 
 ### *digna* 구성(네이티브 드라이버)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
+> `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
 
 ---
 

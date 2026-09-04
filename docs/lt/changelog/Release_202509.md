@@ -12,7 +12,7 @@ Su Išleidimu 2025.09 digna pristato naują **modulinę architektūrą** ir pale
 
 ---
 
-## 🚀 Naujos funkcijos  
+## Naujos funkcijos  
 
 ### Modulinis dizainas  
 - digna dabar naudoja **modulinę architektūrą**.  
@@ -35,7 +35,7 @@ Su Išleidimu 2025.09 digna pristato naują **modulinę architektūrą** ir pale
 
 ---
 
-## 🛠 CLI atnaujinimai  
+## CLI atnaujinimai  
 
 - **Nauja komanda: `inspect-cancel`** – Atšaukti inspekcijas pagal užklausos ID arba nutraukti visas aktyvias užklausas.  
 - **Nauja komanda: `check-config`** – Patikrinti konfigūracijos failus prieš paleidimą.  
@@ -43,6 +43,6 @@ Su Išleidimu 2025.09 digna pristato naują **modulinę architektūrą** ir pale
 - **Patobulinta `inspect` komanda** – Nauja parinktis `--bypass-backend` (`-bb`) ir standartizuotos grąžinimo reikšmės (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentacija  
+## Dokumentacija  
 - Nauji vadovai:  
   - Single Sign-On integracijos vadovas

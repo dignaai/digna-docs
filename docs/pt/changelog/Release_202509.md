@@ -12,7 +12,7 @@ Esta versão também reforça a autenticação e melhora o tratamento de notific
 
 ---
 
-## 🚀 Novos Recursos  
+## Novos Recursos  
 
 ### Design Modular  
 - digna agora segue uma **arquitetura modular**.  
@@ -35,7 +35,7 @@ Esta versão também reforça a autenticação e melhora o tratamento de notific
 
 ---
 
-## 🛠 Atualizações do CLI  
+## Atualizações do CLI  
 
 - **Novo comando: `inspect-cancel`** – Cancela inspeções por ID de requisição ou termina todas as requisições ativas.  
 - **Novo comando: `check-config`** – Valida arquivos de configuração antes da inicialização.  
@@ -43,6 +43,6 @@ Esta versão também reforça a autenticação e melhora o tratamento de notific
 - **Comando `inspect` aprimorado** – Nova opção `--bypass-backend` (`-bb`) e códigos de retorno padronizados (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Documentação  
+## Documentação  
 - Novos guias:  
   - Guia de Integração Single Sign-On

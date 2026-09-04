@@ -65,7 +65,7 @@ Je kunt een nieuwe database voor digna toevoegen aan je bestaande PostgreSQL-ser
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **⚠️ Recommended Specifications**
+> **Recommended Specifications**
 >
 > - **Memory**: 32 GB RAM (in plaats van 16 GB)
 > - **Disk Space**: 50 GB beschikbare opslag (in plaats van 10 GB)
@@ -122,7 +122,7 @@ Voer een wachtwoord in en bevestig dit voor de PostgreSQL superuser (`postgres`)
 
 De standaard PostgreSQL-poort is `5432`. Je kunt de standaardpoort gebruiken of een andere poort opgeven indien nodig.
 
-> **💡 Tip**
+> **Tip**
 >
 > Als poort 5432 al in gebruik is, kies dan een alternatieve poort en noteer deze voor latere configuratie.
 
@@ -200,7 +200,7 @@ Om ervoor te zorgen dat Markdown-bestanden (`.md`) correct door IIS worden geser
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > Zonder deze instelling kunnen `.md`-bestanden mogelijk niet correct worden geserveerd.
 
@@ -227,7 +227,7 @@ Apache Tomcat is een open-source Java servletcontainer en webserver.
    - Navigeer naar `http://localhost:8080`
    - Je zou de Apache Tomcat-welkomstpagina moeten zien
 
-> **💡 Tip**
+> **Tip**
 >
 > Apache Tomcat start meestal automatisch na installatie. Als dat niet het geval is, navigeer dan naar de `bin`-map en voer `startup.bat` uit.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Gebruik sterke, complexe wachtwoorden voor databasegebruikers. Vermijd gemakkelijk te raden inloggegevens.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **⚠️ Important**
+> **Important**
 >
 > Het licentiebestand is **niet** opgenomen in het installatiepakket en wordt apart door digna verstrekt.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Dit maakt een gebruiker met volledige administratieve rechten.
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Gebruik een sterk wachtwoord met een mix van hoofdletters, kleine letters, cijfers en speciale tekens.
 
@@ -545,7 +545,7 @@ De volgende batchbestanden zijn beschikbaar:
 - `start_service.bat` — Start de service
 - `stop_service.bat` — Stopt de service
 
-> **⚠️ Administrator Required**
+> **Administrator Required**
 >
 > Alle batchbestanden moeten met Administrator-rechten worden uitgevoerd.
 
@@ -587,7 +587,7 @@ De digna-server is nu geregistreerd als Windows-service met **automatic startup*
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > Stop altijd de service voordat je applicatiebestanden bijwerkt.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Kopieer de nieuwe `digna`-executable en de `dashboard`-map naar je installatiemap
 
 
-> **✅ Important**
+> **Important**
 >
 > Het `config.toml`-bestand wordt **nooit** opgenomen in het installatie-ZIP. Je bestaande configuratie blijft behouden.
 

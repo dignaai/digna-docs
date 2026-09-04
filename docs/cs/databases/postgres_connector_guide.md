@@ -20,7 +20,7 @@ Odkazuje na obrazovku **"Create a Database Connection"**.
 **Knihovna:** `psycopg`  
 **Podporované ověřování:** Pouze ověřování pomocí hesla
 
-> ⚠️ Pro jiné metody ověřování použijte prosím ODBC ovladač.
+> Pro jiné metody ověřování použijte prosím ODBC ovladač.
 
 ### Konfigurace *digna* (nativní ovladač)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
+> `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
 
 ---
 

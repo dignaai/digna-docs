@@ -20,7 +20,7 @@ Dit heeft betrekking op het scherm **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Ondersteunde authenticatie:** Alleen wachtwoordgebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden, gebruik de ODBC-driver.
+> Voor andere authenticatiemethoden, gebruik de ODBC-driver.
 
 ### *digna* configuratie (native driver)
 
@@ -113,7 +113,7 @@ name: "PWD",        value: "uw databasewachtwoord"
 name: "DATABASE",   value: "naam van de database die het bronschema bevat"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die in uw ODBC-driverconfiguratie is ingesteld.
+> De `DSN` moet overeenkomen met de naam die in uw ODBC-driverconfiguratie is ingesteld.
 
 ---
 

@@ -12,7 +12,7 @@ Su leidimu 2026.06 digna žengia reikšmingą žingsnį į priekį automatizavim
 
 ---
 
-## 🚀 Naujos funkcijos  
+## Naujos funkcijos  
 
 ### digna Python SDK – Automatizuokite viską naudodami Python  
 - Diegimas:
@@ -84,7 +84,7 @@ Sukonfigūruokite užklausų vykdymo strategiją: **Single** arba **Combined** r
 
 ---
 
-## 🧪 Platformos patobulinimai  
+## Platformos patobulinimai  
 
 - Pilna Python SDK integracija automatizavimui  
 - Konteinerizuotas diegimas per Docker  
@@ -93,7 +93,7 @@ Sukonfigūruokite užklausų vykdymo strategiją: **Single** arba **Combined** r
 
 ---
 
-## 🎯 Kam naudingas šis leidimas  
+## Kam naudingas šis leidimas  
 
 - Duomenų inžinieriams: automatizavimas, SDK naudojimas, pipeline integracija  
 - Platformos komandoms: supaprastintas diegimas per Docker  
@@ -102,7 +102,7 @@ Sukonfigūruokite užklausų vykdymo strategiją: **Single** arba **Combined** r
 
 ---
 
-## 🛠 CLI atnaujinimai  
+## CLI atnaujinimai  
 - Įtraukta SDK integracijos palaikymas  
 - Patobulinti importo/eksporto darbo srautai  
 - Bendri stabilumo ir našumo pagerinimai

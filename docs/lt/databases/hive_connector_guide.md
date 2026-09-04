@@ -20,7 +20,7 @@ Jis nurodo ekraną **"Create a Database Connection"**.
 **Biblioteka:** `PyHive`  
 **Palaikomas autentifikavimas:** Tik slaptažodžiu pagrįstas autentifikavimas
 
-> ⚠️ Kitų autentifikavimo metodų atveju naudokite ODBC tvarkyklę.
+> Kitų autentifikavimo metodų atveju naudokite ODBC tvarkyklę.
 
 ### *digna* konfigūracija (gimtasis tvarkyklė)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{jūsų slaptažodis figūrinėse skliausteliuose}"
 ```
 
-> 🔹 `DSN` turi atitikti pavadinimą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
+> `DSN` turi atitikti pavadinimą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
 
 ---
 

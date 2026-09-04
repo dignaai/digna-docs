@@ -12,7 +12,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🚀 새로운 기능  
+## 새로운 기능  
 
 ### digna Python SDK – Python으로 모든 것을 자동화  
 - 설치 방법:
@@ -84,7 +84,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🧪 플랫폼 개선사항  
+## 플랫폼 개선사항  
 
 - 자동화를 위한 전체 Python SDK 통합  
 - Docker를 통한 컨테이너화된 배포  
@@ -93,7 +93,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🎯 이 릴리스의 혜택 대상  
+## 이 릴리스의 혜택 대상  
 
 - 데이터 엔지니어: 자동화, SDK 활용, 파이프라인 통합  
 - 플랫폼 팀: Docker를 통한 간소화된 배포  
@@ -102,7 +102,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🛠 CLI 업데이트  
+## CLI 업데이트  
 - SDK 통합 지원 추가  
 - 가져오기/내보내기 워크플로 개선  
 - 전반적인 안정성 및 성능 향상

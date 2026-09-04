@@ -20,7 +20,7 @@ A dokumentum a **"Create a Database Connection"** képernyőre hivatkozik.
 **Library:** `python-oracledb`  
 **Támogatott hitelesítés:** csak jelszó alapú hitelesítés
 
-> ⚠️ Más hitelesítési módszerekhez kérjük, használja az ODBC drivert.
+> Más hitelesítési módszerekhez kérjük, használja az ODBC drivert.
 
 ### *digna* konfiguráció (natív driver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC illesztőprogram konfigurációjában megadott névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC illesztőprogram konfigurációjában megadott névvel.
 
 ---
 

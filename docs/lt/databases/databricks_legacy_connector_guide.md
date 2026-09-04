@@ -19,12 +19,12 @@ Jis nurodo ekraną **„Create a Database Connection“**.
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** tik asmeninis prieigos raktas (Personal Access Token, PAT)
 
-> ⚠️ Jei norite naudoti kitus autentifikacijos metodus, prašome naudoti ODBC driverį.
+> Jei norite naudoti kitus autentifikacijos metodus, prašome naudoti ODBC driverį.
 
 ### Personal Access Token (PAT)
 
 Norėdami autentifikuotis naudojant asmeninį prieigos raktą, kreipkitės į oficialią Databricks dokumentaciją:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* konfigūracija (vietinis driveris)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN` turi atitikti vardą, nurodytą jūsų ODBC driverio konfigūracijoje.
+> `DSN` turi atitikti vardą, nurodytą jūsų ODBC driverio konfigūracijoje.
 
 ---
 

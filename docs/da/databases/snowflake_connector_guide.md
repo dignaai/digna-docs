@@ -20,7 +20,7 @@ Den henviser til skærmen **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Supported Authentication:** Kun adgangskodebaseret godkendelse
 
-> ⚠️ For andre godkendelsesmetoder, brug venligst ODBC-driveren.
+> For andre godkendelsesmetoder, brug venligst ODBC-driveren.
 
 ### *digna* Konfiguration (Native Driver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 `DSN` skal matche navnet, der er defineret i din ODBC-driverkonfiguration.
+> `DSN` skal matche navnet, der er defineret i din ODBC-driverkonfiguration.
 
 ---
 

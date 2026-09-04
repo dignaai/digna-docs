@@ -19,12 +19,12 @@ See viitab ekraanile **"Create a Database Connection"**.
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** Personal Access Token (PAT) only
 
-> ⚠️ Muude autentimismeetodite jaoks kasutage palun ODBC draiverit.
+> Muude autentimismeetodite jaoks kasutage palun ODBC draiverit.
 
 ### Personal Access Token (PAT)
 
 Isikliku juurdepääsu tokeni kasutamiseks autentimiseks vaadake ametlikku Databricksi dokumentatsiooni:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* Configuration (Native Driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN` peab vastama nimele, mis on määratud teie ODBC draiveri konfiguratsioonis.
+> `DSN` peab vastama nimele, mis on määratud teie ODBC draiveri konfiguratsioonis.
 
 ---
 

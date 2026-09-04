@@ -20,7 +20,7 @@ Bu, **"Create a Database Connection"** ekranına atıfta bulunur.
 **Kütüphane:** `PyHive`  
 **Desteklenen Kimlik Doğrulama:** Sadece parola tabanlı kimlik doğrulama
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{şifreniz süslü parantez içinde}"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
 
 ---
 

@@ -20,7 +20,7 @@ Il se réfère à l'écran **"Create a Database Connection"**.
 **Bibliothèque :** `teradatasql`  
 **Authentification prise en charge :** uniquement l'authentification par mot de passe
 
-> ⚠️ Pour d'autres méthodes d'authentification, veuillez utiliser le pilote ODBC.
+> Pour d'autres méthodes d'authentification, veuillez utiliser le pilote ODBC.
 
 ### Configuration *digna* (pilote natif)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "votre utilisateur de base de données"
 name: "PWD",        value: "votre mot de passe de base de données"
 ```
 
-> 🔹 Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
+> Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
 
 ---
 

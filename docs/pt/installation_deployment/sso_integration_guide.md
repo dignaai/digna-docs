@@ -142,7 +142,7 @@ usePassword = true
 - Não há campos de nome de usuário/senha
 - Apenas autenticação OIDC está disponível
 
-> **💡 Dica**
+> **Dica**
 >
 > O login por senha só está disponível para usuários que foram criados com senha usando o comando `digna user add` ou via dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Sim | URL de callback após autenticação | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Sim | Endpoint de configuração OIDC | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Importante**
+> **Importante**
 >
 > Substitua os valores de placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) pelas credenciais reais do portal do provedor de identidade.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Verifique se os botões de login aparecem para cada provedor configurado:
 
-- ✅ Deve ver o botão "Login with Microsoft"
-- ✅ Deve ver o botão "Login with Google"
-- ✅ (Se usePassword = true) Deve ver campos de usuário/senha
+- Deve ver o botão "Login with Microsoft"
+- Deve ver o botão "Login with Google"
+- (Se usePassword = true) Deve ver campos de usuário/senha
 
 Se os botões não aparecerem:
 - Verifique se `dashboard_config.toml` foi salvo
@@ -317,10 +317,10 @@ Clique em um dos botões SSO (por exemplo, "Login with Microsoft"):
 
 Após login SSO bem-sucedido:
 
-- ✅ O usuário deve ser criado automaticamente no digna
-- ✅ O usuário deve estar autenticado
-- ✅ O perfil do usuário deve exibir suas credenciais do provedor de identidade
-- ✅ Você deve ver o dashboard do digna
+- O usuário deve ser criado automaticamente no digna
+- O usuário deve estar autenticado
+- O perfil do usuário deve exibir suas credenciais do provedor de identidade
+- Você deve ver o dashboard do digna
 
 #### Etapa 6: Testar Login por Senha (Se Habilitado)
 
@@ -437,7 +437,7 @@ Contacte support@digna.ai se precisar de ajuda para integrar um provedor especí
 
 ## Boas Práticas
 
-✅ **FAÇA:**
+**FAÇA:**
 - Use HTTPS em produção (não HTTP)
 - Armazene segredos de cliente com segurança (use variáveis de ambiente quando possível)
 - Rodecie segredos periodicamente
@@ -446,7 +446,7 @@ Contacte support@digna.ai se precisar de ajuda para integrar um provedor especí
 - Monitore logs de login para atividades incomuns
 - Mantenha a configuração do provedor de identidade sincronizada com a configuração do digna
 
-❌ **NÃO:**
+**NÃO:**
 - Armazene segredos de cliente no controle de versão
 - Use URIs de redirect HTTP em produção
 - Configure múltiplos provedores com a mesma key
@@ -460,9 +460,9 @@ Contacte support@digna.ai se precisar de ajuda para integrar um provedor especí
 
 Precisa de ajuda com a configuração de SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentação:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentação:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

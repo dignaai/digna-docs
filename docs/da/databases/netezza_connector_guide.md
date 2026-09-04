@@ -66,7 +66,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` skal matche navnet defineret i din ODBC-driverkonfiguration.
+> `DSN` skal matche navnet defineret i din ODBC-driverkonfiguration.
 
 ---
 

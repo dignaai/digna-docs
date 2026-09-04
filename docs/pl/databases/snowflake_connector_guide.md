@@ -20,7 +20,7 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Supported Authentication:** Tylko uwierzytelnianie oparte na haśle
 
-> ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
+> Dla innych metod uwierzytelniania użyj sterownika ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -104,7 +104,7 @@ name: "Database",       value: "Baza danych zawierająca źródłowe schematy"
 name: "Warehouse",      value: "Warehouse używany do wykonywania zapytań SQL"
 ```
 
-> 🔹 Wartość `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> Wartość `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
 
 ---
 

@@ -20,7 +20,7 @@ Den hänvisar till skärmen **"Skapa en databasanslutning"**.
 **Library:** `snowflake-connector-python`  
 **Stödd autentisering:** Endast lösenordsbaserad autentisering
 
-> ⚠️ För andra autentiseringsmetoder, använd ODBC-drivrutinen.
+> För andra autentiseringsmetoder, använd ODBC-drivrutinen.
 
 ### *digna* Konfiguration (Native Driver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schemat som innehåller källdata"
 name: "Warehouse",      value: "Warehouse som ska användas för körning av SQL"
 ```
 
-> 🔹 `DSN` måste matcha det namn som definierats i din ODBC-drivrutinskonfiguration.
+> `DSN` måste matcha det namn som definierats i din ODBC-drivrutinskonfiguration.
 
 ---
 

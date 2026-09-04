@@ -12,7 +12,7 @@ Bu sürüm ayrıca kimlik doğrulamayı güçlendirir ve platform genelinde bild
 
 ---
 
-## 🚀 Yeni Özellikler  
+## Yeni Özellikler  
 
 ### Modüler Tasarım  
 - digna artık **modüler bir mimari** izliyor.  
@@ -35,7 +35,7 @@ Bu sürüm ayrıca kimlik doğrulamayı güçlendirir ve platform genelinde bild
 
 ---
 
-## 🛠 CLI Güncellemeleri  
+## CLI Güncellemeleri  
 
 - **Yeni komut: `inspect-cancel`** – Denetimleri istek kimliğine göre iptal edin veya tüm aktif istekleri sonlandırın.  
 - **Yeni komut: `check-config`** – Başlangıç öncesinde yapılandırma dosyalarını doğrulayın.  
@@ -43,6 +43,6 @@ Bu sürüm ayrıca kimlik doğrulamayı güçlendirir ve platform genelinde bild
 - **Geliştirilmiş `inspect` komutu** – Yeni seçenek `--bypass-backend` (`-bb`) ve standartlaştırılmış dönüş kodları (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokümantasyon  
+## Dokümantasyon  
 - Yeni kılavuzlar:  
   - Single Sign-On Entegrasyon Kılavuzu

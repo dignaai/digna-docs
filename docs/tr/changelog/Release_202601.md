@@ -12,7 +12,7 @@ Bu sürüm tüm modüller genelinde esnekliği artırır ve **veri kalitesi ve d
 
 ---
 
-## 🚀 Yeni Özellikler  
+## Yeni Özellikler  
 
 ### Küresel Veritabanı Bağlantıları  
 - Veritabanı bağlantıları artık **küresel düzeyde** yapılandırılabiliyor.  
@@ -52,7 +52,7 @@ Bu sürüm tüm modüller genelinde esnekliği artırır ve **veri kalitesi ve d
 
 ---
 
-## 🧪 Genişletilmiş Veri Doğrulama Yetenekleri  
+## Genişletilmiş Veri Doğrulama Yetenekleri  
 
 Bu sürümle birlikte **digna Data Validation**, kapsamlı bir veri kalitesi kural setini destekler:
 
@@ -76,7 +76,7 @@ Bu kontroller birlikte, karmaşık veri ortamlarında **yapısal ve ilişkisel v
 
 ---
 
-## 🎯 Bu Sürümlerden Kimler Yararlanır  
+## Bu Sürümlerden Kimler Yararlanır  
 
 - **Veri Mühendisleri:** Daha esnek veri kaynağı modelleme ve yeniden kullanılabilir veritabanı bağlantıları  
 - **Veri Kalitesi & Yönetişim Ekipleri:** İlişkisel bütünlük kurallarını da içerecek şekilde genişletilmiş doğrulama kapsamı  
@@ -85,7 +85,7 @@ Bu kontroller birlikte, karmaşık veri ortamlarında **yapısal ve ilişkisel v
 
 ---
 
-## 🛠 CLI Güncellemeleri  
+## CLI Güncellemeleri  
 - Değişiklik yok
 
 ---

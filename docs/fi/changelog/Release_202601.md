@@ -12,7 +12,7 @@ Tämä julkaisu lisää joustavuutta kaikissa moduuleissa ja laajentaa merkittä
 
 ---
 
-## 🚀 Uudet ominaisuudet  
+## Uudet ominaisuudet  
 
 ### Globaalit tietokantayhteydet  
 - Tietokantayhteydet konfiguroidaan nyt **globaalilla tasolla**.  
@@ -52,7 +52,7 @@ Tämä julkaisu lisää joustavuutta kaikissa moduuleissa ja laajentaa merkittä
 
 ---
 
-## 🧪 Laajennetut Data Validation -ominaisuudet  
+## Laajennetut Data Validation -ominaisuudet  
 
 Tässä julkaisussa **digna Data Validation** tukee nyt laajaa joukkoa datalaatusääntöjä:
 
@@ -76,7 +76,7 @@ Nämä tarkistukset yhdessä mahdollistavat **rakenteellisten ja relaatioiden da
 
 ---
 
-## 🎯 Kenelle tämä julkaisu hyödyttää  
+## Kenelle tämä julkaisu hyödyttää  
 
 - **Data-insinöörit:** Joustavampi tietolähdemallinnus ja uudelleenkäytettävät tietokantayhteydet  
 - **Datalaatu- ja hallintotiimit:** Laajentunut validointikattavuus, mukaan lukien relaatiotason eheys säännöt  
@@ -85,7 +85,7 @@ Nämä tarkistukset yhdessä mahdollistavat **rakenteellisten ja relaatioiden da
 
 ---
 
-## 🛠 CLI-päivitykset  
+## CLI-päivitykset  
 - Ei muutoksia
 
 ---

@@ -12,7 +12,7 @@ Deze release versterkt ook de authenticatie en verbetert de afhandeling van noti
 
 ---
 
-## 🚀 Nieuwe functies  
+## Nieuwe functies  
 
 ### Modulair ontwerp  
 - digna volgt nu een **modulaire architectuur**.  
@@ -35,7 +35,7 @@ Deze release versterkt ook de authenticatie en verbetert de afhandeling van noti
 
 ---
 
-## 🛠 CLI-updates  
+## CLI-updates  
 
 - **Nieuwe opdracht: `inspect-cancel`** – Annuleer inspecties op aanvraag-ID of beëindig alle actieve verzoeken.  
 - **Nieuwe opdracht: `check-config`** – Valideer configuratiebestanden vóór opstart.  
@@ -43,6 +43,6 @@ Deze release versterkt ook de authenticatie en verbetert de afhandeling van noti
 - **Verbeterde `inspect`-opdracht** – Nieuwe optie `--bypass-backend` (`-bb`) en gestandaardiseerde returncodes (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Documentatie  
+## Documentatie  
 - Nieuwe gidsen:  
   - Single Sign-On integratiegids

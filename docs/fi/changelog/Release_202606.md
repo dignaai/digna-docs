@@ -12,7 +12,7 @@ Tässä julkaisussa esittelemme uuden **digna Python SDK:n**, virallisen **Docke
 
 ---
 
-## 🚀 Uudet ominaisuudet  
+## Uudet ominaisuudet  
 
 ### digna Python SDK – Automatisoi kaikki Pythonilla  
 - Asenna:
@@ -84,7 +84,7 @@ Määritä kyselyjen suoritusstrategia: **Single** tai **Combined** -tila
 
 ---
 
-## 🧪 Alustan parannukset  
+## Alustan parannukset  
 
 - Täydellinen Python SDK -integraatio automaatiolle  
 - Konttioitu käyttöönotto Dockerin kautta  
@@ -93,7 +93,7 @@ Määritä kyselyjen suoritusstrategia: **Single** tai **Combined** -tila
 
 ---
 
-## 🎯 Kenelle tämä julkaisu hyödyttää  
+## Kenelle tämä julkaisu hyödyttää  
 
 - Data-insinöörit: automatisointi, SDK:n käyttö, putkistojen integraatio  
 - Alustatiimit: yksinkertaistettu käyttöönotto Dockerin avulla  
@@ -102,7 +102,7 @@ Määritä kyselyjen suoritusstrategia: **Single** tai **Combined** -tila
 
 ---
 
-## 🛠 CLI-päivitykset  
+## CLI-päivitykset  
 - Lisätty SDK-integraation tuki  
 - Parannetut tuonti-/vienti-työnkulut  
 - Yleisiä vakaus- ja suorituskykyparannuksia

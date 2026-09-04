@@ -12,7 +12,7 @@ Su Išleidimu 2026.01 digna pristato esminių patobulinimų duomenų šaltinių 
 
 ---
 
-## 🚀 Naujos funkcijos  
+## Naujos funkcijos  
 
 ### Globalios duomenų bazės jungtys  
 - Dabar duomenų bazės jungtys konfigūruojamos **globaliu lygiu**.  
@@ -52,7 +52,7 @@ Su Išleidimu 2026.01 digna pristato esminių patobulinimų duomenų šaltinių 
 
 ---
 
-## 🧪 Išplėstos Data Validation galimybės  
+## Išplėstos Data Validation galimybės  
 
 Su šiuo leidimu **digna Data Validation** dabar palaiko išsamų duomenų kokybės taisyklių rinkinį:
 
@@ -76,7 +76,7 @@ Su šiuo leidimu **digna Data Validation** dabar palaiko išsamų duomenų kokyb
 
 ---
 
-## 🎯 Kam naudingas šis leidimas  
+## Kam naudingas šis leidimas  
 
 - **Duomenų inžinieriams:** lankstesnis duomenų šaltinių modeliavimas ir pakartotinai naudojamos duomenų bazės jungtys  
 - **Duomenų kokybės ir valdymo komandoms:** išplėsta validacijos aprėptis, įskaitant relacinius vientisumo patikrinimus  
@@ -85,7 +85,7 @@ Su šiuo leidimu **digna Data Validation** dabar palaiko išsamų duomenų kokyb
 
 ---
 
-## 🛠 CLI atnaujinimai  
+## CLI atnaujinimai  
 - Nėra pakeitimų
 
 ---

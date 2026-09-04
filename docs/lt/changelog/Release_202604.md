@@ -12,7 +12,7 @@ Su Release 2026.04 digna žymiai plečia savo gebėjimus analitikoje ir duomenų
 
 ---
 
-## 🚀 Naujos funkcijos  
+## Naujos funkcijos  
 
 ### Analytics Chart – laiko eilučių analizė be duomenų mokslo  
 - Naujas **Analytics Chart** interaktyviai laiko eilučių analizei  
@@ -61,7 +61,7 @@ Su Release 2026.04 digna žymiai plečia savo gebėjimus analitikoje ir duomenų
 
 ---
 
-## 🧪 Išplėstos Data Analytics & Validation galimybės  
+## Išplėstos Data Analytics & Validation galimybės  
 
 Su šia versija digna plečia tiek **duomenų supratimą**, tiek **duomenų validacijos standartizavimą**:
 
@@ -74,7 +74,7 @@ Su šia versija digna plečia tiek **duomenų supratimą**, tiek **duomenų vali
 
 ---
 
-## 🎯 Kas gauna naudą iš šios versijos  
+## Kas gauna naudą iš šios versijos  
 
 - **Duomenų inžinieriai:** Pakartotinai naudojama validacijos logika ir pagerinta kontrolė stebėjimo elgesiui  
 - **Duomenų kokybės ir valdymo komandos:** Standartizuotos taisyklės ir nuosekli duomenų validacija tarp sistemų  
@@ -83,7 +83,7 @@ Su šia versija digna plečia tiek **duomenų supratimą**, tiek **duomenų vali
 
 ---
 
-## 🛠 CLI atnaujinimai  
+## CLI atnaujinimai  
 - Nėra pakeitimų  
 
 ---

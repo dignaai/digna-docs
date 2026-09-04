@@ -20,7 +20,7 @@ Atsauce uz ekrānu **"Create a Database Connection"**.
 **Bibliotēka:** `python-oracledb`  
 **Atbalstītā autentifikācija:** Tikai parolei balstīta autentifikācija
 
-> ⚠️ Citu autentifikācijas metožu gadījumā izmantojiet ODBC draiveri.
+> Citu autentifikācijas metožu gadījumā izmantojiet ODBC draiveri.
 
 ### *digna* konfigurācija (nativais draiveris)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "jūsu Oracle lietotājs"
 name: "PWD",            value: "{jūsu parole figzīmotās iekavās}"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

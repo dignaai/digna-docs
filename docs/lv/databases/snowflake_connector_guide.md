@@ -20,7 +20,7 @@ Tas attiecas uz ekrānu **"Create a Database Connection"**.
 **Bibliotēka:** `snowflake-connector-python`  
 **Atbalstītā autentifikācija:** Tikai paroles autentifikācija
 
-> ⚠️ Lai izmantotu citas autentifikācijas metodes, lūdzu izmantojiet ODBC driver.
+> Lai izmantotu citas autentifikācijas metodes, lūdzu izmantojiet ODBC driver.
 
 ### *digna* konfigurācija (nativais draiveris)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC driver konfigurācijā.
+> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC driver konfigurācijā.
 
 ---
 

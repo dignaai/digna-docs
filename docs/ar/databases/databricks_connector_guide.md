@@ -19,12 +19,12 @@ image: /assets/logo_square.png
 **المكتبة:** `databricks-sql-connector`  
 **طرق المصادقة المدعومة:** رمز الوصول الشخصي (PAT) فقط
 
-> ⚠️ بالنسبة لطرق المصادقة الأخرى، يرجى استخدام برنامج تشغيل ODBC.
+> بالنسبة لطرق المصادقة الأخرى، يرجى استخدام برنامج تشغيل ODBC.
 
 ### رمز الوصول الشخصي (PAT)
 
 للمصادقة باستخدام رمز وصول شخصي، راجع الوثائق الرسمية لـ Databricks:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### تكوين *digna* (الموصل الأصلي)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 يجب أن يطابق `DSN` الاسم المعرفة في تكوين برنامج تشغيل ODBC الخاص بك.
+> يجب أن يطابق `DSN` الاسم المعرفة في تكوين برنامج تشغيل ODBC الخاص بك.
 
 ---
 

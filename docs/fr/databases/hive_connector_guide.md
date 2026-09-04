@@ -20,7 +20,7 @@ Il fait référence à l'écran **"Create a Database Connection"**.
 **Library:** `PyHive`  
 **Supported Authentication:** authentification par mot de passe uniquement
 
-> ⚠️ Pour les autres méthodes d'authentification, veuillez utiliser le pilote ODBC.
+> Pour les autres méthodes d'authentification, veuillez utiliser le pilote ODBC.
 
 ### Configuration *digna* (pilote natif)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{votre mot de passe entre accolades}"
 ```
 
-> 🔹 Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
+> Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
 
 ---
 

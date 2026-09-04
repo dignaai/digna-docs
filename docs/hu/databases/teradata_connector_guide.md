@@ -20,7 +20,7 @@ A leírás a **"Create a Database Connection"** képernyőre hivatkozik.
 **Library:** `teradatasql`  
 **Támogatott hitelesítés:** csak jelszavas hitelesítés
 
-> ⚠️ Más hitelesítési módszerek esetén kérjük, használja az ODBC drivert.
+> Más hitelesítési módszerek esetén kérjük, használja az ODBC drivert.
 
 ### *digna* konfiguráció (natív driver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában definiált névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában definiált névvel.
 
 ---
 

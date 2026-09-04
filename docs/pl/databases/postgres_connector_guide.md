@@ -20,7 +20,7 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 **Biblioteka:** `psycopg`  
 **Obsługiwane uwierzytelnianie:** Tylko uwierzytelnianie za pomocą hasła
 
-> ⚠️ Dla innych metod uwierzytelniania prosimy użyć sterownika ODBC.
+> Dla innych metod uwierzytelniania prosimy użyć sterownika ODBC.
 
 ### Konfiguracja *digna* (natywny sterownik)
 
@@ -97,7 +97,7 @@ Use ODBC:           Włączone
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
 
 ---
 

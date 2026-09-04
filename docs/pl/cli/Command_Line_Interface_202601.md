@@ -1,6 +1,6 @@
 ---
 title: digna CLI Reference 2026.01 – Commands & Examples | digna Documentation
-description: Kompletny przewodnik po wydaniu digna CLI 2026.01. Dowiedz się, jak zarządzać użytkownikami, repozytoriami i danymi za pomocą poleceń takich jak add-user, check-config, check-repo-connection, inspect, inspect-async i innych.
+description: Complete reference for digna CLI release 2026.01 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
 canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
@@ -8,16 +8,16 @@ image: /assets/logo_square.png
 # digna CLI Reference 2026.01
 **2026-01-15**
 
-Ta strona dokumentuje pełny zestaw poleceń dostępnych w CLI ***digna*** w wydaniu **2026.01**, włącznie z przykładami użycia i opcjami.
+Ta strona dokumentuje pełen zestaw poleceń dostępnych w CLI ***digna*** w wydaniu **2026.01**, w tym przykłady użycia i opcje.
 
 ---
 
-## CLI Basics
+## Podstawy CLI
 
 ---
 
 ### help
-Opcja `--help` dostarcza informacji o dostępnych poleceniach i ich użyciu. Istnieją dwa główne sposoby użycia tej opcji:
+Opcja `--help` dostarcza informacji o dostępnych poleceniach i ich użyciu. Istnieją dwa główne sposoby korzystania z tej opcji:
 
 1. **Wyświetlenie ogólnej pomocy:**
    
@@ -26,51 +26,51 @@ Opcja `--help` dostarcza informacji o dostępnych poleceniach i ich użyciu. Ist
    dignacli --help
    ```
 
-2. **Uzyskanie pomocy dla konkretnych poleceń:**  
+2. **Uzyskanie pomocy dla konkretnego polecenia:**  
   
-    Aby uzyskać szczegółowe informacje o konkretnym poleceniu, dołącz `--help` do tego polecenia.
-    Na przykład, aby otrzymać pomoc dotyczącą polecenia `add-user`, uruchom:
+    Aby uzyskać szczegółowe informacje o konkretnym poleceniu, dodaj `--help` do tego polecenia.
+    Na przykład, aby uzyskać pomoc dla polecenia `add-user`, uruchom:
      ```bash
      dignacli add-user --help
      ```
 
-     ### wyjście:
+     ### output:
       
      - **Opis polecenia:** Szczegółowy opis działania polecenia.  
      - **Składnia:** Pokazuje dokładną składnię, w tym argumenty wymagane i opcjonalne.  
-     - **Opcje:** Lista opcji specyficznych dla polecenia oraz ich wyjaśnienia.  
-     - **Przykłady:** Przykłady efektywnego wykonania polecenia.
+     - **Opcje:** Wymienia opcje specyficzne dla polecenia wraz z ich objaśnieniami.  
+     - **Przykłady:** Zawiera przykłady skutecznego wykonania polecenia.
 
 ### check-config
 
-Polecenie check-config to narzędzie w ramach CLI ***digna*** służące do testowania konfiguracji ***digna***. To polecenie sprawdza, czy komponenty ***digna*** potrafią znaleźć potrzebne elementy konfiguracyjne w pliku config.toml.
+Polecenie check-config jest narzędziem w CLI ***digna*** służącym do testowania konfiguracji ***digna***. Polecenie to sprawdza, czy komponenty ***digna*** mogą znaleźć wymagane elementy konfiguracyjne w pliku config.toml.
 
 #### Opcje
 
-- `--configpath`, `-cp`: Plik lub katalog zawierający konfigurację. Jeśli zostanie pominięte, zostanie użyty ../config.toml.
+- `--configpath`, `-cp`: Plik lub katalog zawierający konfigurację. Jeśli pominięte, zostanie użyty ../config.toml.
       
 #### Użycie polecenia
 ```bash
 dignacli check-config
 ```
 
-Po pomyślnym wykonaniu polecenie zwraca potwierdzenie kompletności konfiguracji.  
+Po pomyślnym wykonaniu polecenie wypisuje potwierdzenie kompletności konfiguracji.  
   
 Jeśli konfiguracja wydaje się niekompletna, zostaną wypisane brakujące elementy konfiguracyjne.
 
   
 ### check-repo-connection
 
-Polecenie check-repo-connection to narzędzie w ramach CLI ***digna*** służące do testowania łączności i dostępu do określonego repozytorium ***digna***. Polecenie zapewnia, że CLI może komunikować się z repozytorium.
+Polecenie check-repo-connection jest narzędziem w CLI ***digna*** służącym do testowania łączności i dostępu do określonego repozytorium ***digna***. Polecenie to sprawdza, czy CLI może komunikować się z repozytorium.
       
 #### Użycie polecenia
 ```bash
 dignacli check-repo-connection
 ```
 
-Po pomyślnym wykonaniu polecenie zwraca potwierdzenie połączenia wraz ze szczegółami repozytorium: wersja repozytorium, host, baza danych oraz schemat.  
+Po pomyślnym wykonaniu polecenie wypisuje potwierdzenie połączenia wraz ze szczegółami repozytorium: wersja repozytorium, host, baza danych i schemat.  
   
-Jeśli połączenie z repozytorium nie powiedzie się, sprawdź plik config.toml pod kątem prawidłowych ustawień konfiguracyjnych.
+Jeśli połączenie z repozytorium nie powiedzie się, sprawdź plik config.toml pod kątem poprawnych ustawień konfiguracyjnych.
 
 
 ### version
@@ -82,20 +82,20 @@ Aby sprawdzić zainstalowaną wersję *dignacli*, użyj opcji --version.
 dignacli --version
 ```
   
-#### Przykładowe wyjście
+#### Przykładowy wynik
 ```bash
 dignacli version 2026.01
 ```
 
 ### opcje logowania
   
-Domyślnie wyjście konsoli poleceń ***digna*** jest zaprojektowane jako minimalistyczne. Większość poleceń oferuje możliwość uzyskania dodatkowych informacji, przy użyciu następujących opcji:  
+Domyślnie wyjście konsoli poleceń ***digna*** jest minimalistyczne. Większość poleceń oferuje możliwość uzyskania dodatkowych informacji, korzystając z następujących opcji:  
   
 -- verbose (-v)  
 -- debug (-d)  
 -- logfile (lf)  
  
-„verbose” i „debug” określają poziom szczegółowości, natomiast przełącznik „logfile” pozwala przekierować wyjście do pliku zamiast na konsolę.
+„verbose” i „debug” definiują poziom szczegółowości, natomiast przełącznik „logfile” pozwala przekierować wyjście do pliku zamiast do okna konsoli.
 
 ## Zarządzanie użytkownikami
 
@@ -110,18 +110,18 @@ dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
   
 #### Argumenty
 
-- **USER_NAME**: Nazwa użytkownika dla nowego użytkownika (wymagane).
-- **USER_FULL_NAME**: Pełna nazwa nowego użytkownika (wymagane).
+- **USER_NAME**: Nazwa użytkownika dla nowego konta (wymagane).
+- **USER_FULL_NAME**: Pełne imię i nazwisko nowego użytkownika (wymagane).
 - **USER_PASSWORD**: Hasło dla nowego użytkownika (wymagane).
 
 #### Opcje
 
-- `--is_superuser`, `-su`: Flaga oznaczająca, że nowy użytkownik ma uprawnienia administratora.
-- `--valid_until`, `-vu`: Ustawia datę wygaśnięcia konta użytkownika w formacie `YYYY-MM-DD HH:MI:SS`. Jeśli nie zostanie ustawione, konto nie ma daty wygaśnięcia.
+- `--is_superuser`, `-su`: Flaga oznaczająca nowego użytkownika jako administratora.
+- `--valid_until`, `-vu`: Ustawia datę wygaśnięcia konta w formacie `YYYY-MM-DD HH:MI:SS`. Jeśli nie zostanie ustawiona, konto nie ma daty wygaśnięcia.
 
 #### Przykład
 
-Aby dodać nowego użytkownika o nazwie `jdoe`, imieniu i nazwisku `John Doe` oraz haśle `password123`:
+Aby dodać nowego użytkownika o nazwie użytkownika `jdoe`, pełnym imieniu `John Doe` i haśle `password123`:
 
 ```bash
 dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
@@ -134,7 +134,7 @@ dignacli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59
 
 ### delete-user
   
-Polecenie `delete-user` w CLI ***digna*** służy do usuwania istniejącego użytkownika z systemu ***digna***.
+Polecenie `delete-user` w CLI ***digna*** służy do usunięcia istniejącego użytkownika z systemu ***digna***.
   
 #### Użycie polecenia
 ```bash
@@ -142,18 +142,18 @@ dignacli delete-user USER_NAME
 ```
   
 #### Argumenty
-- **USER_NAME**: Nazwa użytkownika, który ma zostać usunięty (wymagane). To jedyny wymagany argument dla tego polecenia.
+- **USER_NAME**: Nazwa użytkownika, który ma zostać usunięty (wymagane). To jedyny argument wymagany przez polecenie.
 
 #### Przykład
 ```bash
 dignacli delete-user jdoe
 ```
   
-Wykonanie tego polecenia usunie użytkownika `jdoe` z systemu ***digna***, odbierając mu dostęp i usuwając powiązane dane oraz uprawnienia z repozytorium.
+Wykonanie tego polecenia usunie użytkownika `jdoe` z systemu ***digna***, cofając jego dostęp i usuwając powiązane dane oraz uprawnienia z repozytorium.
 
 ### modify-user
 
-Polecenie `modify-user` w CLI ***digna*** służy do zaktualizowania danych istniejącego użytkownika w systemie ***digna***.
+Polecenie `modify-user` w CLI ***digna*** służy do aktualizacji danych istniejącego użytkownika w systemie ***digna***.
 
 #### Użycie polecenia
   
@@ -163,17 +163,17 @@ dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
   
 #### Argumenty
   
-- **USER_NAME**: Nazwa użytkownika, który ma zostać zmodyfikowany (wymagane).
-- **USER_FULL_NAME**: Nowa pełna nazwa użytkownika (wymagane).
+- **USER_NAME**: Nazwa użytkownika, którego dane mają zostać zmodyfikowane (wymagane).
+- **USER_FULL_NAME**: Nowe pełne imię i nazwisko użytkownika (wymagane).
   
 #### Opcje  
   
-- `--is_superuser`, `-su`: Ustawia użytkownika jako superużytkownika, przyznając podwyższone uprawnienia. Ta flaga nie wymaga wartości.  
-- `--valid_until`, `-vu`: Ustawia datę wygaśnięcia konta użytkownika w formacie YYYY-MM-DD HH:MI:SS. Jeśli nie zostanie podana, konto pozostaje ważne bez ograniczeń czasowych.  
+- `--is_superuser`, `-su`: Ustawia użytkownika jako superusera, przyznając podwyższone uprawnienia. Ta flaga nie wymaga wartości.  
+- `--valid_until`, `-vu`: Ustawia datę wygaśnięcia konta w formacie YYYY-MM-DD HH:MI:SS. Jeśli nie zostanie podana, konto pozostaje ważne bezterminowo.  
   
 #### Przykład
   
-Aby zmodyfikować pełną nazwę użytkownika `jdoe` na „Johnathan Doe” i ustawić użytkownika jako superużytkownika:
+Aby zmodyfikować pełne imię użytkownika `jdoe` na „Johnathan Doe” i ustawić użytkownika jako superuser:
 ```bash
 dignacli modify-user jdoe "Johnathan Doe" --is_superuser
 ```
@@ -209,13 +209,13 @@ Polecenie `list-users` w CLI ***digna*** wyświetla listę wszystkich użytkowni
 dignacli list-users
 ```
 
-Wykonanie tego polecenia w CLI ***digna*** połączy się z repozytorium ***digna*** i wyświetli wszystkich użytkowników, pokazując ich ID, nazwę użytkownika, pełne imię i nazwisko, status superużytkownika oraz znaczniki czasowe wygaśnięcia.
+Wykonanie tego polecenia w CLI ***digna*** połączy się z repozytorium ***digna*** i wyświetli wszystkich użytkowników, pokazując ich ID, nazwę użytkownika, pełne imię i nazwisko, status superusera oraz znaczniki czasu wygaśnięcia.
 
 ## Zarządzanie repozytorium
 
 ### upgrade-repo
   
-Polecenie `upgrade-repo` w CLI ***digna*** służy do aktualizacji lub inicjalizacji repozytorium ***digna***. To polecenie jest niezbędne do stosowania aktualizacji lub konfiguracji infrastruktury repozytorium po raz pierwszy.
+Polecenie `upgrade-repo` w CLI ***digna*** służy do aktualizacji lub inicjalizacji repozytorium ***digna***. To polecenie jest niezbędne do zastosowania aktualizacji lub pierwszorazowego skonfigurowania infrastruktury repozytorium.
   
 #### Użycie polecenia
 
@@ -225,17 +225,17 @@ dignacli upgrade-repo [options]
   
 #### Opcje
   
-- `--simulation-mode`, `-s`: Po włączeniu, opcja uruchamia polecenie w trybie symulacji, który drukuje instrukcje SQL, które zostałyby wykonane, ale ich nie wykonuje. Jest to przydatne do podglądu zmian bez dokonywania modyfikacji w repozytorium.  
+- `--simulation-mode`, `-s`: Po włączeniu to polecenie działa w trybie symulacji, który wypisuje instrukcje SQL, które zostałyby wykonane, ale ich faktycznie nie wykonuje. Przydatne do przejrzenia zmian bez wprowadzania modyfikacji w repozytorium.  
 
   
 #### Przykład
   
-Aby zaktualizować repozytorium ***digna***, możesz uruchomić polecenie bez opcji:
+Aby zaktualizować repozytorium ***digna***, można uruchomić polecenie bez opcji:
   
 ```bash
 dignacli upgrade-repo
 ```  
-Aby uruchomić aktualizację w trybie symulacji (aby zobaczyć instrukcje SQL bez ich stosowania):
+Aby uruchomić aktualizację w trybie symulacji (zobaczyć instrukcje SQL bez ich zastosowania):
   
 ```bash
 dignacli upgrade-repo --simulation-mode
@@ -258,16 +258,16 @@ dignacli encrypt <PASSWORD>
   
 #### Przykład
   
-Aby zaszyfrować hasło, należy podać hasło jako argument.   
+Aby zaszyfrować hasło, należy podać je jako argument.   
 Na przykład, aby zaszyfrować hasło `mypassword123`, użyj:
 ```bash
 dignacli encrypt mypassword123
 ```
-To polecenie zwraca zaszyfrowaną wersję podanego hasła, którą można następnie użyć w bezpiecznych kontekstach. Jeśli argument hasła nie zostanie podany, CLI wyświetli błąd informujący o brakującym argumencie.
+Polecenie zwróci zaszyfrowaną wersję podanego hasła, którą można wykorzystać w bezpiecznych kontekstach. Jeśli argument hasła nie zostanie podany, CLI wyświetli błąd wskazujący brakujący argument.
 
 ### generate-key
   
-Polecenie `generate-key` służy do wygenerowania klucza Fernet, który jest niezbędny do zabezpieczania haseł przechowywanych w repozytorium ***digna***.
+Polecenie `generate-key` służy do wygenerowania klucza Fernet, który jest niezbędny do zabezpieczenia haseł przechowywanych w repozytorium ***digna***.
   
 #### Użycie polecenia
 ```bash
@@ -278,7 +278,7 @@ dignacli generate-key
 
 ### clean-up
 
-Polecenie `clean-up` w CLI ***digna*** służy do usuwania profili, predykcji i danych systemu sygnalizacji świetlnej dla jednego lub wielu źródeł danych w określonym projekcie. To polecenie jest istotne dla zarządzania cyklem życia danych, pomagając utrzymać porządek i wydajność poprzez usuwanie przestarzałych lub niepotrzebnych danych.
+Polecenie `clean-up` w CLI ***digna*** służy do usuwania profili, predykcji oraz danych systemu sygnalizacji świetlnej dla jednego lub więcej źródeł danych w ramach określonego projektu. Polecenie to jest istotne dla zarządzania cyklem życia danych, pomagając utrzymać porządek i wydajność środowiska danych poprzez usuwanie przestarzałych lub niepotrzebnych danych.
 
 #### Użycie polecenia
 
@@ -288,20 +288,20 @@ dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 #### Argumenty
   
-- **PROJECT_NAME**: Nazwa projektu, z którego mają być usunięte dane (wymagane). Użycie słowa kluczowego all-projects w tym argumencie instruuje ***digna***, aby iterował po wszystkich istniejących projektach i zastosował to polecenie.
-- **FROM_DATE**: Data i czas rozpoczęcia usuwania danych. Akceptowalne formaty obejmują %Y-%m-%d, %Y-%m-%dT%H:%M:%S lub %Y-%m-%d %H:%M:%S (wymagane).
-- **TO_DATE**: Data i czas zakończenia usuwania danych, zgodnie z tymi samymi formatami co FROM_DATE (wymagane).
+- **PROJECT_NAME**: Nazwa projektu, z którego dane mają zostać usunięte (wymagane). Użycie słowa kluczowego all-projects w tym argumencie instruuje ***digna*** o iteracji po wszystkich istniejących projektach i zastosowaniu polecenia.
+- **FROM_DATE**: Data i godzina początkowa dla usuwania danych. Akceptowalne formaty to %Y-%m-%d, %Y-%m-%dT%H:%M:%S lub %Y-%m-%d %H:%M:%S (wymagane).
+- **TO_DATE**: Data i godzina końcowa dla usuwania danych, zgodnie z tymi samymi formatami co FROM_DATE (wymagane).
   
 #### Opcje
   
 - `--table-name`, `-tn`: Ogranicza operację clean-up do konkretnej tabeli w projekcie.
-- `--table-filter`, `-tf`: Filtruje i ogranicza clean-up do tabel zawierających określony podciąg w nazwie.
+- `--table-filter`, `-tf`: Filtr pozwalający ograniczyć clean-up do tabel zawierających określony podciąg w nazwie.
 - `--timing`, `-tm`: Wyświetla czas trwania procesu clean-up po jego zakończeniu.
-- `--help`: Wyświetla informacje pomocy dla polecenia clean-up i kończy działanie.
+- `--help`: Wyświetla informacje pomocnicze dla polecenia clean-up i kończy działanie.
   
 #### Przykład
   
-Aby usunąć dane z projektu ProjectA między 1 stycznia 2023 a 30 czerwca 2023:
+Aby usunąć dane z projektu ProjectA pomiędzy 1 stycznia 2023 a 30 czerwca 2023:
   
 ```bash
 dignacli clean-up ProjectA 2023-01-01 2023-06-30
@@ -313,12 +313,12 @@ Aby usunąć dane tylko z konkretnej tabeli o nazwie `Table1`:
 dignacli clean-up ProjectA 2023-01-01 2023-06-30 --table-name Table1
 ```
   
-To polecenie pomaga w zarządzaniu miejscem na dysku i zapewnia, że repozytorium zawiera tylko istotne informacje.
+To polecenie pomaga w zarządzaniu miejscem na dane i zapewnia, że repozytorium zawiera tylko istotne informacje.
 
 ### remove-orphans
   
 Polecenie `remove-orphans` w CLI ***digna*** służy do porządkowania repozytorium ***digna***.  
-Gdy użytkownik usuwa projekty lub źródła danych, profile i predykcje pozostają w repozytorium. To polecenie usuwa takie porzucone wiersze z repozytorium.
+Gdy użytkownik usuwa projekty lub źródła danych, profile i predykcje mogą pozostać w repozytorium. Dzięki temu poleceniu takie osierocone wiersze zostaną usunięte z repozytorium.
   
 #### Użycie polecenia
   
@@ -349,7 +349,7 @@ dignacli list-ds <PROJECT_NAME>
 ```
 
 #### Argumenty
-- **PROJECT_NAME**: Nazwa projektu, dla którego wyświetlane są źródła danych (wymagane).
+- **PROJECT_NAME**: Nazwa projektu, dla którego wymieniane są źródła danych (wymagane).
   
 #### Przykład
   
@@ -359,12 +359,12 @@ Aby wyświetlić wszystkie źródła danych w projekcie o nazwie `ProjectA`:
 dignacli list-ds ProjectA
 ```
   
-To polecenie daje użytkownikom przegląd źródeł danych dostępnych w projekcie, pomagając w nawigacji i zarządzaniu krajobrazem danych.
+To polecenie daje użytkownikom przegląd źródeł danych dostępnych w projekcie, ułatwiając nawigację i zarządzanie krajobrazem danych.
 
 
 ### inspect
 
-Polecenie `inspect` w CLI ***digna*** służy do tworzenia profili, predykcji i danych systemu sygnalizacji świetlnej dla jednego lub wielu źródeł danych w określonym projekcie. Polecenie pomaga w analizie i monitorowaniu danych w zdefiniowanym okresie. Po zakończeniu inspekcji zwracana jest wartość obliczonego systemu sygnalizacji świetlnej:  
+Polecenie `inspect` w CLI ***digna*** służy do tworzenia profili, predykcji oraz danych systemu sygnalizacji świetlnej dla jednego lub więcej źródeł danych w określonym projekcie. Polecenie to pomaga analizować i monitorować dane w zdefiniowanym okresie. Po zakończeniu inspekcji zwracana jest wartość obliczonego systemu sygnalizacji świetlnej:  
 - 0: OK  
 - 1: INFO  
 - 2: WARNING
@@ -377,27 +377,27 @@ dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 #### Argumenty
   
-- **PROJECT_NAME**: Nazwa projektu, dla którego mają być sprawdzone dane (wymagane). Użycie słowa kluczowego all-projects w tym argumencie instruuje ***digna***, aby iterował po wszystkich istniejących projektach i zastosował to polecenie.
-- **FROM_DATE**: Data i czas rozpoczęcia inspekcji danych. Akceptowalne formaty obejmują %Y-%m-%d, %Y-%m-%dT%H:%M:%S lub %Y-%m-%d %H:%M:%S (wymagane).
-- **TO_DATE**: Data i czas zakończenia inspekcji danych, zgodnie z tymi samymi formatami co FROM_DATE (wymagane).
+- **PROJECT_NAME**: Nazwa projektu, którego dane mają zostać poddane inspekcji (wymagane). Użycie słowa kluczowego all-projects w tym argumencie instruuje ***digna*** o iteracji po wszystkich istniejących projektach i zastosowaniu polecenia.
+- **FROM_DATE**: Data i godzina początkowa inspekcji danych. Akceptowane formaty to %Y-%m-%d, %Y-%m-%dT%H:%M:%S lub %Y-%m-%d %H:%M:%S (wymagane).
+- **TO_DATE**: Data i godzina końcowa inspekcji danych, zgodnie z tymi samymi formatami co FROM_DATE (wymagane).
   
 #### Opcje
 
 - `--table-name`, `-tn`: Ogranicza inspekcję do konkretnej tabeli w projekcie.
-- `--table-filter`, `-tf`: Filtruje i inspektuje jedynie tabele zawierające określony podciąg w nazwie.
-- `--enable_notification`, `-en`: Włącza wysyłanie powiadomień w przypadku alarmów.
+- `--table-filter`, `-tf`: Filtruje, aby inspekcja objęła tylko tabele zawierające podany podciąg w nazwie.
+- `--enable_notification`, `-en`: Włącza wysyłanie powiadomień w przypadku alertów.
 - `--bypass-backend`, `-bb`: Pomija backend i uruchamia inspekcję bezpośrednio z CLI (tylko do celów testowych!).
 
   
 #### Przykład
   
-Aby przeskanować dane dla projektu `ProjectA` od 1 stycznia 2024 do 31 stycznia 2024:
+Aby przeprowadzić inspekcję danych dla projektu `ProjectA` od 1 stycznia 2024 do 31 stycznia 2024:
   
 ```bash
 dignacli inspect ProjectA 2024-01-01 2024-01-31
 ```
   
-Aby sprawdzić tylko konkretną tabelę i wymusić ponowne obliczenie predykcji:
+Aby sprawdzić tylko konkretną tabelę i wymusić przeliczenie predykcji:
   
 ```bash
 dignacli inspect ProjectA 2024-01-01 2024-01-31 --table-name Table1 --force-prediction
@@ -406,8 +406,8 @@ To polecenie jest przydatne do generowania zaktualizowanych profili i predykcji,
 
 ### inspect-async
 
-Polecenie `inspect-async` w CLI ***digna*** służy do tworzenia profili, predykcji i danych systemu sygnalizacji świetlnej dla jednego lub wielu źródeł danych w określonym projekcie. Polecenie pomaga w analizie i monitorowaniu danych w zdefiniowanym okresie. W przeciwieństwie do polecenia `inspect-async`, to nie czeka na zakończenie inspekcji.
-Zamiast tego zwraca identyfikator żądania dla przesłanego zapytania inspekcyjnego. Aby sprawdzić postęp procesu inspekcji, użyj polecenia `inspect-status`
+Polecenie `inspect-async` w CLI ***digna*** służy do tworzenia profili, predykcji oraz danych systemu sygnalizacji świetlnej dla jednego lub więcej źródeł danych w określonym projekcie. Polecenie to pomaga analizować i monitorować dane w zdefiniowanym okresie. W przeciwieństwie do polecenia `inspect-async`, to polecenie nie czeka na zakończenie inspekcji.
+Zamiast tego zwraca identyfikator żądania dla zgłoszonej inspekcji. Aby sprawdzić postęp procesu inspekcji, użyj polecenia `inspect-status`
 
 #### Użycie polecenia
 
@@ -417,20 +417,20 @@ dignacli inspect-async <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 #### Argumenty
   
-- **PROJECT_NAME**: Nazwa projektu, dla którego mają być sprawdzone dane (wymagane). Użycie słowa kluczowego all-projects w tym argumencie instruuje ***digna***, aby iterował po wszystkich istniejących projektach i zastosował to polecenie.
-- **FROM_DATE**: Data i czas rozpoczęcia inspekcji danych. Akceptowalne formaty obejmują %Y-%m-%d, %Y-%m-%dT%H:%M:%S lub %Y-%m-%d %H:%M:%S (wymagane).
-- **TO_DATE**: Data i czas zakończenia inspekcji danych, zgodnie z tymi samymi formatami co FROM_DATE (wymagane).
+- **PROJECT_NAME**: Nazwa projektu, którego dane mają zostać poddane inspekcji (wymagane). Użycie słowa kluczowego all-projects w tym argumencie instruuje ***digna*** o iteracji po wszystkich istniejących projektach i zastosowaniu polecenia.
+- **FROM_DATE**: Data i godzina początkowa inspekcji danych. Akceptowane formaty to %Y-%m-%d, %Y-%m-%dT%H:%M:%S lub %Y-%m-%d %H:%M:%S (wymagane).
+- **TO_DATE**: Data i godzina końcowa inspekcji danych, zgodnie z tymi samymi formatami co FROM_DATE (wymagane).
   
 #### Opcje
 
 - `--table-name`, `-tn`: Ogranicza inspekcję do konkretnej tabeli w projekcie.
-- `--table-filter`, `-tf`: Filtruje i inspektuje jedynie tabele zawierające określony podciąg w nazwie.
-- `--enable_notification`, `-en`: Włącza wysyłanie powiadomień w przypadku alarmów.
+- `--table-filter`, `-tf`: Filtruje, aby inspekcja objęła tylko tabele zawierające podany podciąg w nazwie.
+- `--enable_notification`, `-en`: Włącza wysyłanie powiadomień w przypadku alertów.
 
   
 #### Przykład
   
-Aby przeskanować dane dla projektu `ProjectA` od 1 stycznia 2024 do 31 stycznia 2024:
+Aby uruchomić inspekcję danych dla projektu `ProjectA` od 1 stycznia 2024 do 31 stycznia 2024:
   
 ```bash
 dignacli inspect-async ProjectA 2024-01-01 2024-01-31
@@ -461,7 +461,7 @@ dignacli inspect-status 12345
 
 ### inspect-cancel
 
-Polecenie `inspect-cancel` w CLI ***digna*** służy do anulowania inspekcji na podstawie identyfikatora żądania lub może być użyte do anulowania wszystkich aktualnych żądań.
+Polecenie `inspect-cancel` w CLI ***digna*** służy do anulowania inspekcji na podstawie identyfikatora żądania lub może zostać użyte do anulowania wszystkich bieżących żądań.
 
 #### Użycie polecenia
 
@@ -483,7 +483,7 @@ Aby anulować inspekcję o identyfikatorze żądania 12345:
 dignacli inspect-cancel 12345
 ```
 
-Aby anulować wszystkie żądania, które są obecnie uruchomione lub oczekujące:
+Aby anulować wszystkie żądania, które są aktualnie uruchomione lub oczekujące:
   
 ```bash
 dignacli inspect-cancel --killall
@@ -501,7 +501,7 @@ dignacli export-ds <PROJECT_NAME> [options]
 ```
 
 #### Argumenty
-- **PROJECT_NAME**: Nazwa projektu, z którego będą eksportowane źródła danych.
+- **PROJECT_NAME**: Nazwa projektu, z którego źródła danych zostaną wyeksportowane.
 
 #### Opcje
 
@@ -521,7 +521,7 @@ To polecenie eksportuje wszystkie źródła danych z `ProjectA` jako dokument JS
 
 ### import-ds
 
-Polecenie `import-ds` w CLI ***digna*** służy do importowania źródeł danych do docelowego projektu i utworzenia raportu importu.
+Polecenie `import-ds` w CLI ***digna*** służy do importowania źródeł danych do docelowego projektu oraz utworzenia raportu z importu.
 
 #### Użycie polecenia
   
@@ -530,12 +530,12 @@ dignacli import-ds <PROJECT_NAME> <EXPORT_FILE> [options]
 ```
 
 #### Argumenty
-- **PROJECT_NAME**: Nazwa projektu, do którego będą importowane źródła danych.
-- **EXPORT_FILE**: Nazwa pliku eksportu źródeł danych, który ma zostać zaimportowany.
+- **PROJECT_NAME**: Nazwa projektu, do którego źródła danych zostaną zaimportowane.
+- **EXPORT_FILE**: Nazwa pliku z eksportem źródeł danych do zaimportowania.
 
 #### Opcje
 
-- `--output-file`, `-o`: Plik do zapisania raportu z importu (jeśli nie określono, drukuje w terminalu w formie tabelarycznej).
+- `--output-file`, `-o`: Plik do zapisania raportu z importu (jeśli nie zostanie podany, raport zostanie wypisany w terminalu w formie tabelarycznej).
 - `--output-format`, `-f`: Format zapisu raportu z importu (json, csv).
     
 #### Przykład
@@ -546,11 +546,11 @@ Aby zaimportować wszystkie źródła danych z pliku eksportu `my_export.json` d
 dignacli import-ds ProjectB my_export.json
 ```
   
-Po imporcie to polecenie pokaże również raport zaimportowanych i pominiętych obiektów. Do `ProjectB` zostaną zaimportowane tylko nowe źródła danych. Aby dowiedzieć się, które obiekty zostałyby zaimportowane, a które pominięte, można użyć polecenia `plan-import-ds`
+Po imporcie polecenie pokaże raport zaimportowanych i pominiętych obiektów. Do `ProjectB` zostaną zaimportowane tylko nowe źródła danych. Aby dowiedzieć się, które obiekty zostałyby zaimportowane, a które pominięte, można użyć polecenia `plan-import-ds`
 
 ### plan-import-ds
 
-Polecenie `plan-import-ds` w CLI ***digna*** służy do zaplanowania importu źródeł danych do docelowego projektu i utworzenia raportu importu bez rzeczywistego wykonania importu.
+Polecenie `plan-import-ds` w CLI ***digna*** służy do przeanalizowania importu źródeł danych do docelowego projektu i wygenerowania raportu planu importu.
 
 #### Użycie polecenia
   
@@ -559,13 +559,13 @@ dignacli plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [options]
 ```
 
 #### Argumenty
-- **PROJECT_NAME**: Nazwa projektu, do którego źródła danych zostałyby zaimportowane.
-- **EXPORT_FILE**: Nazwa pliku eksportu źródeł danych do analizy przed importem.
+- **PROJECT_NAME**: Nazwa projektu, do którego źródła danych miałyby zostać zaimportowane.
+- **EXPORT_FILE**: Nazwa pliku z eksportem źródeł danych, który ma zostać przeanalizowany przed importem.
 
 #### Opcje
 
-- `--output-file`, `-o`: Plik do zapisania raportu z importu (jeśli nie określono, drukuje w terminalu w formie tabelarycznej).
-- `--output-format`, `-f`: Format zapisu raportu z importu (json, csv).
+- `--output-file`, `-o`: Plik do zapisania raportu planu importu (jeśli nie zostanie podany, raport zostanie wypisany w terminalu w formie tabelarycznej).
+- `--output-format`, `-f`: Format zapisu raportu planu importu (json, csv).
     
 #### Przykład
   
@@ -575,4 +575,4 @@ Aby sprawdzić, które źródła danych zostałyby zaimportowane, a które pomin
 dignacli plan-import-ds ProjectB my_export.json
 ```
   
-To polecenie pokaże jedynie plan importu obiektów do zaimportowania i pominięcia.
+To polecenie pokaże jedynie plan importu obiektów, które zostałyby zaimportowane i pominięte.

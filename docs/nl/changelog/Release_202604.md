@@ -12,7 +12,7 @@ Deze release introduceert geavanceerde tijdreeksanalyse, herbruikbare validatiec
 
 ---
 
-## 🚀 Nieuwe functies  
+## Nieuwe functies  
 
 ### Analytics Chart – Tijdreeksanalyse zonder Data Science  
 - Nieuwe **Analytics Chart** voor interactieve tijdreeksanalyse  
@@ -61,7 +61,7 @@ Deze release introduceert geavanceerde tijdreeksanalyse, herbruikbare validatiec
 
 ---
 
-## 🧪 Uitgebreide Data Analytics & Validatie-mogelijkheden  
+## Uitgebreide Data Analytics & Validatie-mogelijkheden  
 
 Met deze release breidt digna zowel het begrip van data als de standaardisatie van datavalidatie uit:
 
@@ -74,7 +74,7 @@ Samen stellen deze mogelijkheden organisaties in staat niet alleen problemen te 
 
 ---
 
-## 🎯 Wie profiteert van deze release  
+## Wie profiteert van deze release  
 
 - **Data Engineers:** Herbruikbare validatielogica en verbeterde controle over monitoring-gedrag  
 - **Data Quality & Governance Teams:** Gestandaardiseerde regels en consistente datavalidatie over systemen heen  
@@ -83,7 +83,7 @@ Samen stellen deze mogelijkheden organisaties in staat niet alleen problemen te 
 
 ---
 
-## 🛠 CLI-updates  
+## CLI-updates  
 - Geen wijzigingen  
 
 ---

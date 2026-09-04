@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `python-oracledb`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ Για άλλες μεθόδους αυθεντικοποίησης, χρησιμοποιήστε τον ODBC driver.
+> Για άλλες μεθόδους αυθεντικοποίησης, χρησιμοποιήστε τον ODBC driver.
 
 ### *digna* Configuration (Native Driver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 Το `DSN` πρέπει να συμφωνεί με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver σας.
+> Το `DSN` πρέπει να συμφωνεί με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver σας.
 
 ---
 

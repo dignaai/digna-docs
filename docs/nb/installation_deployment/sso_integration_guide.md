@@ -142,7 +142,7 @@ usePassword = true
 - Ingen brukernavn-/passordfelt
 - Kun OIDC-autentisering er tilgjengelig
 
-> **💡 Tips**
+> **Tips**
 >
 > Passordbasert innlogging er kun tilgjengelig for brukere som ble opprettet med passord ved hjelp av `digna user add`-kommandoen eller via dashboardet.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL etter autentisering | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-konfigurasjonsendepunkt | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Viktig**
+> **Viktig**
 >
 > Erstatt plassholderverdier (`<client_id>`, `<client_secret>`, `<tenant_id>`) med faktiske legitimasjoner fra identitetsleverandørens developer-portal.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Sjekk at innloggingsknapper vises for hver konfigurert leverandør:
 
-- ✅ Skal vise "Login with Microsoft"-knapp
-- ✅ Skal vise "Login with Google"-knapp
-- ✅ (Hvis usePassword = true) Skal vise brukernavn-/passordfelt
+- Skal vise "Login with Microsoft"-knapp
+- Skal vise "Login with Google"-knapp
+- (Hvis usePassword = true) Skal vise brukernavn-/passordfelt
 
 Hvis knappene ikke vises:
 - Sjekk at `dashboard_config.toml` ble lagret
@@ -317,10 +317,10 @@ Klikk en av SSO-knappene (f.eks. "Login with Microsoft"):
 
 Etter vellykket SSO-innlogging:
 
-- ✅ Bruker skal automatisk opprettes i digna
-- ✅ Bruker skal være innlogget
-- ✅ Brukerprofil skal vise dine identitetsleverandøropplysninger
-- ✅ Du skal se digna-dashboardet
+- Bruker skal automatisk opprettes i digna
+- Bruker skal være innlogget
+- Brukerprofil skal vise dine identitetsleverandøropplysninger
+- Du skal se digna-dashboardet
 
 #### Trinn 6: Test passordinnlogging (hvis aktivert)
 
@@ -437,7 +437,7 @@ Kontakt support@digna.ai hvis du trenger hjelp med å integrere en spesifikk lev
 
 ## Beste praksis
 
-✅ **GJØR:**
+**GJØR:**
 - Bruk HTTPS i produksjon (ikke HTTP)
 - Lagre client secrets sikkert (bruk miljøvariabler hvis mulig)
 - Roter secrets jevnlig
@@ -446,7 +446,7 @@ Kontakt support@digna.ai hvis du trenger hjelp med å integrere en spesifikk lev
 - Overvåk innloggingslogger for uvanlig aktivitet
 - Hold identitetsleverandørkonfigurasjonen synkronisert med digna-konfig
 
-❌ **IKKE:**
+**IKKE:**
 - Lagre client secrets i versjonskontroll
 - Bruk HTTP redirect-URIer i produksjon
 - Konfigurer flere leverandører med samme key
@@ -460,9 +460,9 @@ Kontakt support@digna.ai hvis du trenger hjelp med å integrere en spesifikk lev
 
 Trenger du hjelp med SSO-konfigurasjon?
 
-- 📧 **E-post:** support@digna.ai
-- 📚 **Dokumentasjon:** https://docs.digna.ai
-- 🌐 **Nettsted:** https://www.digna.ai
+- **E-post:** support@digna.ai
+- **Dokumentasjon:** https://docs.digna.ai
+- **Nettsted:** https://www.digna.ai
 
 ---
 

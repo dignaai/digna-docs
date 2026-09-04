@@ -20,7 +20,7 @@ Ohje viittaa näyttöön **"Create a Database Connection"**.
 **Kirjasto:** `snowflake-connector-python`  
 **Tuettu todennus:** Vain salasanapohjainen todennus
 
-> ⚠️ Muille todennusmenetelmille käytä ODBC-ajuria.
+> Muille todennusmenetelmille käytä ODBC-ajuria.
 
 ### *digna*-kokoonpano (natiivinen ajuri)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Skeema, joka sisältää lähdetiedot"
 name: "Warehouse",      value: "Warehouse, jota käytetään SQL-lauseiden suorittamiseen"
 ```
 
-> 🔹 `DSN`-arvon on oltava sama kuin ODBC-ajurin konfiguroinnissa määritelty nimi.
+> `DSN`-arvon on oltava sama kuin ODBC-ajurin konfiguroinnissa määritelty nimi.
 
 ---
 

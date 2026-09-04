@@ -12,7 +12,7 @@ Toto vydání zvyšuje flexibilitu napříč všemi moduly a výrazně rozšiřu
 
 ---
 
-## 🚀 Nové funkce  
+## Nové funkce  
 
 ### Globální připojení k databázím  
 - Připojení k databázím jsou nyní konfigurována na **globální úrovni**.  
@@ -52,7 +52,7 @@ Toto vydání zvyšuje flexibilitu napříč všemi moduly a výrazně rozšiřu
 
 ---
 
-## 🧪 Rozšířené možnosti validace dat  
+## Rozšířené možnosti validace dat  
 
 S tímto vydáním nyní **digna Data Validation** podporuje komplexní sadu pravidel kvality dat:
 
@@ -76,7 +76,7 @@ Tyto kontroly dohromady umožňují vynucení **strukturálních a relačních p
 
 ---
 
-## 🎯 Komu toto vydání pomůže  
+## Komu toto vydání pomůže  
 
 - **Datoví inženýři:** Flexibilnější modelování zdrojů dat a znovupoužitelná databázová připojení  
 - **Týmy pro kvalitu a správu dat:** Rozšířené pokrytí validace včetně pravidel referenční integrity  
@@ -85,7 +85,7 @@ Tyto kontroly dohromady umožňují vynucení **strukturálních a relačních p
 
 ---
 
-## 🛠 Aktualizace CLI  
+## Aktualizace CLI  
 - Žádné změny
 
 ---

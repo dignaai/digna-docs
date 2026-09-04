@@ -12,7 +12,7 @@ Denna utgåva introducerar det nya **digna Python SDK**, officiellt **Docker-st�
 
 ---
 
-## 🚀 Nya funktioner  
+## Nya funktioner  
 
 ### digna Python SDK – Automatisera allt med Python  
 - Installera via:
@@ -84,7 +84,7 @@ Påverkan: Möjliggör skalbar och konsekvent styrning av datakvalitet i hela or
 
 ---
 
-## 🧪 Plattformförbättringar  
+## Plattformförbättringar  
 
 - Full Python SDK-integration för automatisering  
 - Containeriserad distribution via Docker  
@@ -93,7 +93,7 @@ Påverkan: Möjliggör skalbar och konsekvent styrning av datakvalitet i hela or
 
 ---
 
-## 🎯 Vem gynnas av denna release  
+## Vem gynnas av denna release  
 
 - Dataingenjörer: automatisering, SDK-användning, pipeline-integration  
 - Plattformsteam: förenklad distribution via Docker  
@@ -102,7 +102,7 @@ Påverkan: Möjliggör skalbar och konsekvent styrning av datakvalitet i hela or
 
 ---
 
-## 🛠 CLI-uppdateringar  
+## CLI-uppdateringar  
 - Lagt till stöd för SDK-integration  
 - Förbättrade import/export-arbetsflöden  
 - Allmänna stabilitets- och prestandaförbättringar

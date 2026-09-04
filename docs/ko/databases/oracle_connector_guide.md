@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **라이브러리:** `python-oracledb`  
 **지원되는 인증:** 비밀번호 기반 인증만 지원
 
-> ⚠️ 다른 인증 방식이 필요한 경우 ODBC 드라이버를 사용하세요.
+> 다른 인증 방식이 필요한 경우 ODBC 드라이버를 사용하세요.
 
 ### *digna* 구성 (네이티브 드라이버)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN`은 ODBC 드라이버 구성에서 정의된 이름과 일치해야 합니다.
+> `DSN`은 ODBC 드라이버 구성에서 정의된 이름과 일치해야 합니다.
 
 ---
 

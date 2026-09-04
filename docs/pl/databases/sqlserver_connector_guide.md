@@ -20,7 +20,7 @@ Odnosi się do ekranu **"Utwórz połączenie z bazą danych"**.
 **Biblioteka:** `pymssql`  
 **Obsługiwane uwierzytelnianie:** Tylko uwierzytelnianie oparte na haśle
 
-> ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
+> Dla innych metod uwierzytelniania użyj sterownika ODBC.
 
 ### Konfiguracja *digna* (sterownik natywny)
 
@@ -123,7 +123,7 @@ name: "PWD",        value: "twoje hasło do bazy danych"
 name: "DATABASE",   value: "nazwa bazy danych zawierającej schemat źródłowy"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
 
 ---
 

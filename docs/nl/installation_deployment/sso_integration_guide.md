@@ -142,7 +142,7 @@ usePassword = true
 - Geen gebruikersnaam/wachtwoordvelden
 - Alleen OIDC-authenticatie is beschikbaar
 
-> **💡 Tip**
+> **Tip**
 >
 > Wachtwoordgebaseerde login is alleen beschikbaar voor gebruikers die zijn aangemaakt met wachtwoorden via het `digna user add` commando of via het dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL na authenticatie | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-configuratie-eindpunt | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Belangrijk**
+> **Belangrijk**
 >
 > Vervang placeholder-waarden (`<client_id>`, `<client_secret>`, `<tenant_id>`) door echte gegevens uit het developer- of app-portaal van je identity provider.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Controleer of loginknoppen verschijnen voor elke geconfigureerde provider:
 
-- ✅ Je zou de knop "Login with Microsoft" moeten zien
-- ✅ Je zou de knop "Login with Google" moeten zien
-- ✅ (Als usePassword = true) Je zou velden voor gebruikersnaam/wachtwoord moeten zien
+- Je zou de knop "Login with Microsoft" moeten zien
+- Je zou de knop "Login with Google" moeten zien
+- (Als usePassword = true) Je zou velden voor gebruikersnaam/wachtwoord moeten zien
 
 Als knoppen niet verschijnen:
 - Controleer of `dashboard_config.toml` is opgeslagen
@@ -317,10 +317,10 @@ Klik op een van de SSO-knoppen (bijv. "Login with Microsoft"):
 
 Na een succesvolle SSO-login:
 
-- ✅ Gebruiker zou automatisch in digna moeten worden aangemaakt
-- ✅ Gebruiker zou ingelogd moeten zijn
-- ✅ Het gebruikersprofiel zou je identity-providergegevens moeten weergeven
-- ✅ Je zou het digna-dashboard moeten zien
+- Gebruiker zou automatisch in digna moeten worden aangemaakt
+- Gebruiker zou ingelogd moeten zijn
+- Het gebruikersprofiel zou je identity-providergegevens moeten weergeven
+- Je zou het digna-dashboard moeten zien
 
 #### Stap 6: Test wachtwoordlogin (indien ingeschakeld)
 
@@ -437,7 +437,7 @@ Neem contact op met support@digna.ai als je hulp nodig hebt bij het integreren v
 
 ## Best Practices
 
-✅ **DO:**
+**DO:**
 - Gebruik HTTPS in productie (niet HTTP)
 - Bewaar client secrets veilig (gebruik indien mogelijk omgevingsvariabelen)
 - Verwissel secrets periodiek
@@ -446,7 +446,7 @@ Neem contact op met support@digna.ai als je hulp nodig hebt bij het integreren v
 - Monitor loginlogs op ongewoon gedrag
 - Houd de identity provider-configuratie in sync met de digna-config
 
-❌ **DON'T:**
+**DON'T:**
 - Bewaar client secrets in versiebeheer
 - Gebruik HTTP-redirect-URI's in productie
 - Configureer meerdere providers met dezelfde key
@@ -460,9 +460,9 @@ Neem contact op met support@digna.ai als je hulp nodig hebt bij het integreren v
 
 Heb je hulp nodig bij SSO-configuratie?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentatie:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentatie:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

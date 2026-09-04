@@ -142,7 +142,7 @@ usePassword = true
 - Nėra naudotojo vardo/slaptažodžio laukų
 - Galima tik OIDC autentifikacija
 
-> **💡 Patarimas**
+> **Patarimas**
 >
 > Slaptažodžiu pagrįstas prisijungimas yra prieinamas tik vartotojams, kurie buvo sukurti su slaptažodžiais naudojant komandą `digna user add` arba per dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Taip | Atgalinio kvietimo (callback) URL po autentifikacijos | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Taip | OIDC konfigūracijos galinė vieta | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Svarbu**
+> **Svarbu**
 >
 > Pakeiskite vietos užpildo reikšmes (`<client_id>`, `<client_secret>`, `<tenant_id>`) tikromis kredencialų reikšmėmis iš jūsų identiteto tiekėjo kūrėjo portalo.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Patikrinkite, ar atsirado prisijungimo mygtukai kiekvienam sukonfigūruotam tiekėjui:
 
-- ✅ Turėtumėte matyti mygtuką "Prisijungti su Microsoft"
-- ✅ Turėtumėte matyti mygtuką "Prisijungti su Google"
-- ✅ (Jei usePassword = true) Turėtumėte matyti naudotojo vardo/slaptažodžio laukus
+- Turėtumėte matyti mygtuką "Prisijungti su Microsoft"
+- Turėtumėte matyti mygtuką "Prisijungti su Google"
+- (Jei usePassword = true) Turėtumėte matyti naudotojo vardo/slaptažodžio laukus
 
 Jei mygtukų nematote:
 - Patikrinkite, ar `dashboard_config.toml` įrašytas
@@ -317,10 +317,10 @@ Spustelėkite vieną iš SSO mygtukų (pvz., "Prisijungti su Microsoft"):
 
 Sėkmingo SSO prisijungimo metu:
 
-- ✅ Vartotojas turėtų būti automatiškai sukurtas digna
-- ✅ Vartotojas turėtų būti prisijungęs
-- ✅ Vartotojo profilyje turėtų matytis jūsų identiteto tiekėjo informacija
-- ✅ Turėtumėte matyti digna dashboard
+- Vartotojas turėtų būti automatiškai sukurtas digna
+- Vartotojas turėtų būti prisijungęs
+- Vartotojo profilyje turėtų matytis jūsų identiteto tiekėjo informacija
+- Turėtumėte matyti digna dashboard
 
 #### 6 žingsnis: išbandykite prisijungimą slaptažodžiu (jei įjungta)
 
@@ -437,7 +437,7 @@ Jei reikia pagalbos integruojant konkretų tiekėją, susisiekite su support@dig
 
 ## Geriausios praktikos
 
-✅ DARYKITE:
+DARYKITE:
 - Naudokite HTTPS produkcijoje (ne HTTP)
 - Saugokite klientų slaptuosius raktus saugiai (jei galima, naudokite aplinkos kintamuosius)
 - Periodiškai keiskite slaptuosius raktus
@@ -446,7 +446,7 @@ Jei reikia pagalbos integruojant konkretų tiekėją, susisiekite su support@dig
 - Stebėkite prisijungimo žurnalus dėl neįprastos veiklos
 - Laikykite identiteto tiekėjo konfigūraciją sinchronizuotą su digna konfigūracija
 
-❌ NEDARYKITE:
+NEDARYKITE:
 - Nelaikykite klientų slaptųjų raktų versijų valdyme (version control)
 - Nenaudokite HTTP redirect URI produkcijoje
 - Nekonfigūruokite kelių tiekėjų su tuo pačiu raktu
@@ -460,9 +460,9 @@ Jei reikia pagalbos integruojant konkretų tiekėją, susisiekite su support@dig
 
 Reikia pagalbos su SSO konfigūracija?
 
-- 📧 **El. paštas:** support@digna.ai
-- 📚 **Dokumentacija:** https://docs.digna.ai
-- 🌐 **Svetainė:** https://www.digna.ai
+- **El. paštas:** support@digna.ai
+- **Dokumentacija:** https://docs.digna.ai
+- **Svetainė:** https://www.digna.ai
 
 ---
 

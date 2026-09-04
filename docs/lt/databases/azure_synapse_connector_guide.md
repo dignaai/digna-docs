@@ -22,7 +22,7 @@ Tai nurodo ekraną **"Create a Database Connection"**.
 **Biblioteka:** `pymssql`  
 **Palaikoma autentifikacija:** tik autentifikacija su slaptažodžiu
 
-> ⚠️ Jei naudojate kitus autentifikacijos metodus, prašome naudoti ODBC tvarkyklę.
+> Jei naudojate kitus autentifikacijos metodus, prašome naudoti ODBC tvarkyklę.
 
 ### *digna* konfigūracija (natyvus tvarkyklė)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` turi atitikti pavadinimą, apibrėžtą jūsų ODBC tvarkyklės konfiguracijoje.
+> `DSN` turi atitikti pavadinimą, apibrėžtą jūsų ODBC tvarkyklės konfiguracijoje.
 
 ---
 

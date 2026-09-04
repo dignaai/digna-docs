@@ -20,7 +20,7 @@ Dit verwijst naar het scherm **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Ondersteunde authenticatie:** Alleen wachtwoordgebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden, gebruik de ODBC-driver.
+> Voor andere authenticatiemethoden, gebruik de ODBC-driver.
 
 ### *digna* Configuratie (Native Driver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die is gedefinieerd in je ODBC-driverconfiguratie.
+> De `DSN` moet overeenkomen met de naam die is gedefinieerd in je ODBC-driverconfiguratie.
 
 ---
 

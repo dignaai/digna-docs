@@ -19,12 +19,12 @@ Navaja se zaslon **"Create a Database Connection"**.
 **Knjižnica:** `databricks-sql-connector`  
 **Podprta avtentikacija:** osebni dostopni žeton (PAT) samo
 
-> ⚠️ Za druge metode avtentikacije uporabite ODBC gonilnik.
+> Za druge metode avtentikacije uporabite ODBC gonilnik.
 
 ### Osebni dostopni žeton (PAT)
 
 Za avtentikacijo z osebnim dostopnim žetonom se sklicujte na uradno dokumentacijo Databricks:  
-👉 [Kako pridobiti PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[Kako pridobiti PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### Konfiguracija *digna* (izvorni gonilnik)
 
@@ -98,7 +98,7 @@ Use ODBC:        Omogočeno
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 Vrednost `DSN` se mora ujemati z imenom, definiranem v konfiguraciji vašega ODBC gonilnika.
+> Vrednost `DSN` se mora ujemati z imenom, definiranem v konfiguraciji vašega ODBC gonilnika.
 
 ---
 

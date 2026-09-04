@@ -66,7 +66,7 @@ name: "UID",        value: "jūsų duomenų bazės vartotojas"
 name: "PWD",        value: "jūsų duomenų bazės slaptažodis"
 ```
 
-> 🔹 `DSN` turi atitikti pavadinimą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
+> `DSN` turi atitikti pavadinimą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
 
 ---
 

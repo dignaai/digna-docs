@@ -20,7 +20,7 @@ Jis nurodo ekraną **"Create a Database Connection"**.
 **Library:** `teradatasql`  
 **Palaikoma autentifikacija:** Tik autentifikacija slaptažodžiu
 
-> ⚠️ Kitoms autentifikacijos metodikoms naudokite ODBC draiverį.
+> Kitoms autentifikacijos metodikoms naudokite ODBC draiverį.
 
 ### *digna* konfigūracija (vietinis draiveris)
 
@@ -90,7 +90,7 @@ name: "UID",        value: "jūsų duomenų bazės vartotojas"
 name: "PWD",        value: "jūsų duomenų bazės slaptažodis"
 ```
 
-> 🔹 `DSN` turi sutapti su vardu, nurodytu jūsų ODBC draiverio konfigūracijoje.
+> `DSN` turi sutapti su vardu, nurodytu jūsų ODBC draiverio konfigūracijoje.
 
 ---
 

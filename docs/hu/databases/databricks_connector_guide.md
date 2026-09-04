@@ -19,12 +19,12 @@ Ez a képernyőre hivatkozik: **"Create a Database Connection"**.
 **Library:** `databricks-sql-connector`  
 **Támogatott hitelesítés:** csak Personal Access Token (PAT)
 
-> ⚠️ Más hitelesítési módszerekhez használja az ODBC drivert.
+> Más hitelesítési módszerekhez használja az ODBC drivert.
 
 ### Personal Access Token (PAT)
 
 A személyes hozzáférési tokennel való hitelesítéshez lásd a hivatalos Databricks dokumentációt:  
-👉 [Hogyan szerezzünk PAT-et](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[Hogyan szerezzünk PAT-et](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* Konfiguráció (Natív illesztőprogram)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
 
 ---
 

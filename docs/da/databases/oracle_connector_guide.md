@@ -20,7 +20,7 @@ Der henvises til skærmbilledet **"Create a Database Connection"**.
 **Library:** `python-oracledb`  
 **Understøttet autentificering:** Kun adgangskodebaseret autentificering
 
-> ⚠️ For andre autentificeringsmetoder, brug venligst ODBC-driveren.
+> For andre autentificeringsmetoder, brug venligst ODBC-driveren.
 
 ### *digna* Konfiguration (Native Driver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

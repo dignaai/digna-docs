@@ -19,12 +19,12 @@ image: /assets/logo_square.png
 **Library:** `databricks-sql-connector`  
 **지원되는 인증 방법:** Personal Access Token (PAT)만 지원
 
-> ⚠️ 다른 인증 방법이 필요하면 ODBC 드라이버를 사용하세요.
+> 다른 인증 방법이 필요하면 ODBC 드라이버를 사용하세요.
 
 ### Personal Access Token (PAT)
 
 개인 액세스 토큰으로 인증하려면 공식 Databricks 문서를 참조하세요:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* 구성 (네이티브 드라이버)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
+> `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
 
 ---
 

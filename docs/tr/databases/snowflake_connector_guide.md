@@ -20,7 +20,7 @@ Bu, **"Veritabanı Bağlantısı Oluştur"** ekranına atıfta bulunur.
 **Kütüphane:** `snowflake-connector-python`  
 **Desteklenen Kimlik Doğrulama:** Yalnızca parola tabanlı kimlik doğrulama
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Kaynak veriyi içeren şema"
 name: "Warehouse",      value: "SQL'lerin yürütülmesi için kullanılacak warehouse"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımladığınız adla eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımladığınız adla eşleşmelidir.
 
 ---
 

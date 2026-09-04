@@ -20,7 +20,7 @@ Tai nurodo ekraną **"Create a Database Connection"**.
 **Biblioteka:** `python-oracledb`  
 **Palaikomas autentifikavimas:** Tik slaptažodžiu pagrįstas autentifikavimas
 
-> ⚠️ Kitiems autentifikavimo metodams naudokite ODBC tvarkyklę.
+> Kitiems autentifikavimo metodams naudokite ODBC tvarkyklę.
 
 ### *digna* konfigūracija (natyvus tvarkyklė)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` turi atitikti pavadinimą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
+> `DSN` turi atitikti pavadinimą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
 
 ---
 

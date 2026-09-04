@@ -83,4 +83,4 @@ canonical_url: https://docs.digna.ai/
 
 ## Дізнатися більше
 
-🌐 [www.*digna*.ai](https://www.*digna*.ai)
+[www.*digna*.ai](https://www.*digna*.ai)

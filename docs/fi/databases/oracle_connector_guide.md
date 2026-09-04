@@ -20,7 +20,7 @@ Ohje viittaa näyttöön **"Create a Database Connection"**.
 **Kirjasto:** `python-oracledb`  
 **Tuetut todennustavat:** Vain salasanapohjainen todennus
 
-> ⚠️ Muiden todennusmenetelmien osalta käytä ODBC-ajuria.
+> Muiden todennusmenetelmien osalta käytä ODBC-ajuria.
 
 ### *digna* -konfigurointi (natiivi ajuri)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` on oltava sama kuin ODBC-ajurin asetuksissa määritelty nimi.
+> `DSN` on oltava sama kuin ODBC-ajurin asetuksissa määritelty nimi.
 
 ---
 

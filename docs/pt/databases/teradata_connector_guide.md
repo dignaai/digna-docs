@@ -20,7 +20,7 @@ Refere-se à tela **"Create a Database Connection"**.
 **Library:** `teradatasql`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ Para outros métodos de autenticação, utilize o driver ODBC.
+> Para outros métodos de autenticação, utilize o driver ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 O `DSN` deve corresponder ao nome definido na configuração do seu driver ODBC.
+> O `DSN` deve corresponder ao nome definido na configuração do seu driver ODBC.
 
 ---
 

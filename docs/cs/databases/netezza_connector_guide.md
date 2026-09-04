@@ -66,7 +66,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
+> `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
 
 ---
 

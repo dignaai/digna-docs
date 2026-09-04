@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **ライブラリ:** `snowflake-connector-python`  
 **サポートされる認証:** パスワード認証のみ
 
-> ⚠️ 他の認証方法を利用する場合は、ODBC ドライバーを使用してください。
+> 他の認証方法を利用する場合は、ODBC ドライバーを使用してください。
 
 ### *digna* の設定（ネイティブドライバー）
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 `DSN` は ODBC ドライバー構成で定義した名前と一致する必要があります。
+> `DSN` は ODBC ドライバー構成で定義した名前と一致する必要があります。
 
 ---
 

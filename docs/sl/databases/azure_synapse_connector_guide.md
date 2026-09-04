@@ -22,7 +22,7 @@ Sklicuje se na zaslon **"Create a Database Connection"**.
 **Knjižnica:** `pymssql`  
 **Podprta avtentikacija:** Samo avtentikacija z geslom
 
-> ⚠️ Za druge metode avtentikacije uporabite ODBC gonilnik.
+> Za druge metode avtentikacije uporabite ODBC gonilnik.
 
 ### Konfiguracija *digna* (izvorni gonilnik)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` mora ustrezati imenu, definiranemu v nastavitvi vašega ODBC gonilnika.
+> `DSN` mora ustrezati imenu, definiranemu v nastavitvi vašega ODBC gonilnika.
 
 ---
 

@@ -7,8 +7,8 @@
     wrap.className = "digna-feedback";
     wrap.innerHTML =
       '<span class="digna-feedback__label">Was this page helpful?</span>' +
-      '<button type="button" class="digna-feedback__btn" data-value="yes" aria-label="Yes, this page was helpful">🙂</button>' +
-      '<button type="button" class="digna-feedback__btn" data-value="no" aria-label="No, this page was not helpful">🙁</button>' +
+      '<button type="button" class="digna-feedback__btn" data-value="yes" aria-label="Yes, this page was helpful">Yes</button>' +
+      '<button type="button" class="digna-feedback__btn" data-value="no" aria-label="No, this page was not helpful">No</button>' +
       '<span class="digna-feedback__thanks" hidden>Thanks for your feedback!</span>';
     article.appendChild(wrap);
 

@@ -1,11 +1,11 @@
 ---
-title: Połącz bazę danych | Dokumentacja digna
-description: Przewodnik krok po kroku, jak podłączyć bazę danych do istniejącego projektu w digna. Dowiedz się, jak skonfigurować połączenia, podać poświadczenia i umożliwić bezpieczny dostęp.
+title: Podłącz bazę danych | Dokumentacja digna
+description: Przewodnik krok po kroku dotyczący podłączenia bazy danych do istniejącego projektu w digna. Dowiedz się, jak skonfigurować połączenia, podać dane uwierzytelniające i włączyć bezpieczny dostęp.
 ---
 
-# Połącz bazę danych
+# Podłącz bazę danych
 
-Ten przewodnik pokazuje minimalne kroki potrzebne do dodania połączenia z bazą danych do projektu.
+Ten przewodnik pokazuje minimalne kroki potrzebne do dodania połączenia z bazą danych do twojego projektu.
 
 ## Demo interaktywne
 
@@ -29,17 +29,17 @@ Ten przewodnik pokazuje minimalne kroki potrzebne do dodania połączenia z baz�
 
 ### Kroki
 
-1. **Otwórz projekt**  
-   W lewym panelu nawigacji kliknij **Projects** i wybierz docelowy projekt.
+1. **Open Your Project**  
+   W lewej nawigacji kliknij **Projects** i wybierz docelowy projekt.
 
-2. **Dodaj połączenie**  
+2. **Add a Connection**  
    Przejdź do **Connections** i kliknij **Add Connection**.
 
-3. **Wybierz typ bazy danych**  
-   Wybierz bazę, którą chcesz podłączyć (np. PostgreSQL, MySQL, SQL Server, Oracle, Snowflake, Teradata).
+3. **Choose Database Type**  
+   Wybierz typ bazy danych, którą chcesz podłączyć (np. PostgreSQL, MySQL, SQL Server, Oracle, Snowflake, Teradata).
 
-4. **Wprowadź dane połączenia**  
+4. **Enter Connection Details**  
    Podaj **Name**, **Host**, **Port**, **Database/Service** oraz **Credentials** (nazwa użytkownika/hasło lub SSO, jeśli dotyczy).
 
-5. **Testuj i zapisz**  
-   Kliknij **Test**. Jeśli test zakończy się powodzeniem, kliknij **Save**. Połączenie pojawi się w sekcji **Connections** dla projektu.
+5. **Test & Save**  
+   Kliknij **Test**. Jeśli test się powiedzie, kliknij **Save**. Połączenie pojawi się w sekcji **Connections** dla projektu.

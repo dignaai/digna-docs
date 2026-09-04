@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `teradatasql`  
 **Supported Authentication:** Μόνο αυθεντικοποίηση με κωδικό πρόσβασης
 
-> ⚠️ Για άλλες μεθόδους αυθεντικοποίησης, χρησιμοποιήστε τον ODBC driver.
+> Για άλλες μεθόδους αυθεντικοποίησης, χρησιμοποιήστε τον ODBC driver.
 
 ### *digna* Configuration (Native Driver)
 
@@ -90,7 +90,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 Το `DSN` πρέπει να ταιριάζει με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver σας.
+> Το `DSN` πρέπει να ταιριάζει με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver σας.
 
 ---
 

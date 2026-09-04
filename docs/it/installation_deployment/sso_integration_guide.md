@@ -142,7 +142,7 @@ usePassword = true
 - Nessun campo username/password
 - Disponibile solo l'autenticazione OIDC
 
-> **💡 Suggerimento**
+> **Suggerimento**
 >
 > Il login tramite password è disponibile solo per gli utenti creati con password usando il comando `digna user add` o tramite la dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Sì | URL di callback dopo l'autenticazione | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Sì | Endpoint di configurazione OIDC | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Importante**
+> **Importante**
 >
 > Sostituisci i valori segnaposto (`<client_id>`, `<client_secret>`, `<tenant_id>`) con le credenziali effettive ottenute dal portale sviluppatori del tuo provider di identità.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Controlla che appaiano i pulsanti di login per ogni provider configurato:
 
-- ✅ Dovrebbe comparire il pulsante "Login with Microsoft"
-- ✅ Dovrebbe comparire il pulsante "Login with Google"
-- ✅ (Se usePassword = true) Dovrebbero comparire i campi username/password
+- Dovrebbe comparire il pulsante "Login with Microsoft"
+- Dovrebbe comparire il pulsante "Login with Google"
+- (Se usePassword = true) Dovrebbero comparire i campi username/password
 
 Se i pulsanti non appaiono:
 - Verifica che `dashboard_config.toml` sia stato salvato
@@ -317,10 +317,10 @@ Clicca uno dei pulsanti SSO (es., "Login with Microsoft"):
 
 Dopo un login SSO riuscito:
 
-- ✅ L'utente dovrebbe essere creato automaticamente in digna
-- ✅ L'utente dovrebbe risultare autenticato
-- ✅ Il profilo utente dovrebbe mostrare le informazioni del provider di identità
-- ✅ Dovresti vedere la dashboard di digna
+- L'utente dovrebbe essere creato automaticamente in digna
+- L'utente dovrebbe risultare autenticato
+- Il profilo utente dovrebbe mostrare le informazioni del provider di identità
+- Dovresti vedere la dashboard di digna
 
 #### Passo 6: Testare il login con password (se abilitato)
 
@@ -437,7 +437,7 @@ Contatta support@digna.ai se hai bisogno di aiuto per integrare un provider spec
 
 ## Best Practices
 
-✅ FARE:
+FARE:
 - Usa HTTPS in produzione (non HTTP)
 - Conserva i client secret in modo sicuro (usa variabili d'ambiente se possibile)
 - Ruota i secret periodicamente
@@ -446,7 +446,7 @@ Contatta support@digna.ai se hai bisogno di aiuto per integrare un provider spec
 - Monitora i log di accesso per attività sospette
 - Mantieni la configurazione del provider di identità in sincronizzazione con la config di digna
 
-❌ NON FARE:
+NON FARE:
 - Conservare i client secret nel controllo di versione
 - Usare redirect URI HTTP in produzione
 - Configurare più provider con la stessa key
@@ -460,9 +460,9 @@ Contatta support@digna.ai se hai bisogno di aiuto per integrare un provider spec
 
 Hai bisogno di aiuto con la configurazione SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentazione:** https://docs.digna.ai
-- 🌐 **Sito web:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentazione:** https://docs.digna.ai
+- **Sito web:** https://www.digna.ai
 
 ---
 

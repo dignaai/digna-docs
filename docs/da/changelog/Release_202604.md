@@ -12,7 +12,7 @@ Denne udgivelse introducerer avanceret tidsserieanalyse, genanvendelige valideri
 
 ---
 
-## 🚀 Nye funktioner  
+## Nye funktioner  
 
 ### Analytics Chart – Tidsserieanalyse uden data science  
 - Nyt **Analytics Chart** til interaktiv tidsserieanalyse  
@@ -61,7 +61,7 @@ Denne udgivelse introducerer avanceret tidsserieanalyse, genanvendelige valideri
 
 ---
 
-## 🧪 Udvidede Data Analytics & Validation-muligheder  
+## Udvidede Data Analytics & Validation-muligheder  
 
 Med denne udgivelse udvider digna både forståelsen af data og standardiseringen af datavalidering:
 
@@ -74,7 +74,7 @@ Sammen gør disse funktioner det muligt for organisationer ikke blot at opdage p
 
 ---
 
-## 🎯 Hvem får gavn af denne udgivelse  
+## Hvem får gavn af denne udgivelse  
 
 - **Data Engineers:** Genanvendelig valideringslogik og forbedret kontrol over overvågningsadfærd  
 - **Data Quality & Governance Teams:** Standardiserede regler og konsistent datavalidering på tværs af systemer  
@@ -83,7 +83,7 @@ Sammen gør disse funktioner det muligt for organisationer ikke blot at opdage p
 
 ---
 
-## 🛠 CLI-opdateringer  
+## CLI-opdateringer  
 - Ingen ændringer  
 
 ---

@@ -1,6 +1,6 @@
 ---
 title: Utwórz projekt | Dokumentacja digna
-description: Przewodnik krok po kroku tworzenia nowego projektu w digna. Dowiedz się, jak otworzyć sekcję projektów, wprowadzić szczegóły i zapisać projekt — zawiera interaktywne demo.
+description: Przewodnik krok po kroku tworzenia nowego projektu w digna. Dowiedz się, jak otworzyć sekcję projektów, wprowadzić dane i zapisać projekt wraz z interaktywną prezentacją.
 ---
 
 
@@ -20,16 +20,16 @@ Ten przewodnik pokazuje minimalne kroki wymagane do utworzenia nowego projektu w
 
 ### Kroki
 
-1. **Otwórz sekcję Projektów**
-   - W lewym menu nawigacyjnym kliknij **Projects**.
+1. **Otwórz sekcję projektu**
+   - W lewym menu kliknij **Projects**.
 
 2. **Utwórz nowy projekt**
    - Kliknij przycisk **New Project**.
 
-3. **Wprowadź szczegóły projektu**
-   - Podaj **Project Name**.  
-   - (Opcjonalnie) Dodaj **Description**, aby dodać kontekst.
+3. **Wprowadź dane projektu**
+   - Wprowadź **Project Name**.  
+   - (Opcjonalnie) Dodaj **Description** dla kontekstu.
 
 4. **Zapisz projekt**
    - Kliknij **Create**, aby zakończyć.  
-   - Projekt pojawi się teraz w Twojej liście **Projects list**.
+   - Projekt pojawi się teraz na Twojej liście **Projects list**.

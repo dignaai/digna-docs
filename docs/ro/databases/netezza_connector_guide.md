@@ -66,7 +66,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
+> `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
 
 ---
 

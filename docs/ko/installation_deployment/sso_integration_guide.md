@@ -142,7 +142,7 @@ usePassword = true
 - 사용자 이름/비밀번호 필드가 없습니다.
 - OIDC 인증만 사용할 수 있습니다.
 
-> **💡 팁**
+> **팁**
 >
 > 비밀번호 기반 로그인은 `digna user add` 명령어 또는 대시보드를 통해 비밀번호로 생성된 사용자에게만 제공됩니다.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | 인증 후 콜백 URL | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC 구성 엔드포인트 | `https://login.microsoftonline.com/...` |
 
-> **⚠️ 중요**
+> **중요**
 >
 > 플레이스홀더 값(`<client_id>`, `<client_secret>`, `<tenant_id>`)을 아이덴티티 제공자 개발자 포털에서 발급받은 실제 자격 증명으로 바꾸세요.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 구성한 각 공급자에 대한 로그인 버튼이 표시되는지 확인합니다:
 
-- ✅ "Login with Microsoft" 버튼이 보여야 함
-- ✅ "Login with Google" 버튼이 보여야 함
-- ✅ (`usePassword = true`인 경우) 사용자명/비밀번호 필드가 보여야 함
+- "Login with Microsoft" 버튼이 보여야 함
+- "Login with Google" 버튼이 보여야 함
+- (`usePassword = true`인 경우) 사용자명/비밀번호 필드가 보여야 함
 
 버튼이 보이지 않는 경우:
 - `dashboard_config.toml`이 저장되었는지 확인
@@ -317,10 +317,10 @@ SSO 버튼(예: "Login with Microsoft")을 클릭합니다:
 
 SSO 로그인 성공 후:
 
-- ✅ 사용자가 digna에 자동으로 생성되어야 함
-- ✅ 사용자가 로그인되어야 함
-- ✅ 사용자 프로필에 아이덴티티 제공자 정보가 표시되어야 함
-- ✅ digna 대시보드를 볼 수 있어야 함
+- 사용자가 digna에 자동으로 생성되어야 함
+- 사용자가 로그인되어야 함
+- 사용자 프로필에 아이덴티티 제공자 정보가 표시되어야 함
+- digna 대시보드를 볼 수 있어야 함
 
 #### 6단계: 비밀번호 로그인 테스트(활성화된 경우)
 
@@ -437,7 +437,7 @@ OpenID Connect를 지원하는 모든 공급자를 통합할 수 있습니다. �
 
 ## Best Practices
 
-✅ **권장 사항:**
+**권장 사항:**
 - 프로덕션에서는 HTTPS 사용(HTTP 사용 금지)
 - 클라이언트 시크릿을 안전하게 보관(가능하면 환경 변수 사용)
 - 주기적으로 시크릿 교체(rotate) 수행
@@ -446,7 +446,7 @@ OpenID Connect를 지원하는 모든 공급자를 통합할 수 있습니다. �
 - 로그인 로그를 모니터링하여 이상 활동 감지
 - 아이덴티티 제공자 구성과 digna 구성을 동기화 상태로 유지
 
-❌ **금지 사항:**
+**금지 사항:**
 - 클라이언트 시크릿을 버전 관리에 저장하지 마세요
 - 프로덕션에서 HTTP 리디렉션 URI 사용 금지
 - 동일한 키로 여러 공급자 구성 금지
@@ -460,9 +460,9 @@ OpenID Connect를 지원하는 모든 공급자를 통합할 수 있습니다. �
 
 SSO 구성에 도움이 필요하신가요?
 
-- 📧 **이메일:** support@digna.ai
-- 📚 **문서:** https://docs.digna.ai
-- 🌐 **웹사이트:** https://www.digna.ai
+- **이메일:** support@digna.ai
+- **문서:** https://docs.digna.ai
+- **웹사이트:** https://www.digna.ai
 
 ---
 

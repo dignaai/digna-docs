@@ -66,7 +66,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC illesztőprogram konfigurációjában definiált névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC illesztőprogram konfigurációjában definiált névvel.
 
 ---
 

@@ -20,7 +20,7 @@ Den viser til skjermen **"Create a Database Connection"**.
 **Library:** `PyHive`  
 **Støttede autentiseringsmetoder:** Kun passordbasert autentisering
 
-> ⚠️ For andre autentiseringsmetoder, bruk ODBC-driveren.
+> For andre autentiseringsmetoder, bruk ODBC-driveren.
 
 ### *digna*-konfigurasjon (Native Driver)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{ditt passord i krøllparenteser}"
 ```
 
-> 🔹 `DSN` må samsvare med navnet som er definert i ODBC-driverkonfigurasjonen din.
+> `DSN` må samsvare med navnet som er definert i ODBC-driverkonfigurasjonen din.
 
 ---
 

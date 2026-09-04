@@ -20,7 +20,7 @@ Se referă la ecranul **"Create a Database Connection"**.
 **Library:** `snowflake-connector-python`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ Pentru alte metode de autentificare, folosiți driverul ODBC.
+> Pentru alte metode de autentificare, folosiți driverul ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

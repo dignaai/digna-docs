@@ -20,7 +20,7 @@ Odkazuje na obrazovku **"Vytvořit připojení k databázi"**.
 **Knihovna:** `PyHive`  
 **Podporované ověřování:** Pouze ověřování pomocí hesla
 
-> ⚠️ Pro jiné metody ověřování použijte prosím ODBC ovladač.
+> Pro jiné metody ověřování použijte prosím ODBC ovladač.
 
 ### Konfigurace *digna* (nativní ovladač)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{vaše heslo v složených závorkách}"
 ```
 
-> 🔹 Hodnota `DSN` musí odpovídat jménu definovanému ve vaší konfiguraci ODBC ovladače.
+> Hodnota `DSN` musí odpovídat jménu definovanému ve vaší konfiguraci ODBC ovladače.
 
 ---
 

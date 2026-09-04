@@ -12,7 +12,7 @@ Cette version renforce la flexibilité dans tous les modules et étend significa
 
 ---
 
-## 🚀 Nouvelles fonctionnalités  
+## Nouvelles fonctionnalités  
 
 ### Connexions globales de base de données  
 - Les connexions aux bases de données sont désormais configurées au **niveau global**.  
@@ -52,7 +52,7 @@ Cette version renforce la flexibilité dans tous les modules et étend significa
 
 ---
 
-## 🧪 Capacités étendues de validation des données  
+## Capacités étendues de validation des données  
 
 Avec cette version, **digna Data Validation** prend désormais en charge un ensemble complet de règles de qualité des données :
 
@@ -76,7 +76,7 @@ Ensemble, ces contrôles permettent d'appliquer des **règles de qualité struct
 
 ---
 
-## 🎯 Bénéficiaires de cette version  
+## Bénéficiaires de cette version  
 
 - **Ingénieurs de données :** Modélisation des sources de données plus flexible et connexions de base de données réutilisables  
 - **Équipes Qualité des données & Gouvernance :** Couverture de validation étendue incluant les règles d'intégrité relationnelle  
@@ -85,7 +85,7 @@ Ensemble, ces contrôles permettent d'appliquer des **règles de qualité struct
 
 ---
 
-## 🛠 Mises à jour CLI  
+## Mises à jour CLI  
 - Aucune modification
 
 ---

@@ -12,7 +12,7 @@ Esta versão introduz análise avançada de séries temporais, componentes reuti
 
 ---
 
-## 🚀 Novos Recursos  
+## Novos Recursos  
 
 ### Analytics Chart – Análise de Séries Temporais Sem Ciência de Dados  
 - Novo **Analytics Chart** para análise interativa de séries temporais  
@@ -61,7 +61,7 @@ Esta versão introduz análise avançada de séries temporais, componentes reuti
 
 ---
 
-## 🧪 Capacidades Estendidas de Data Analytics & Validação  
+## Capacidades Estendidas de Data Analytics & Validação  
 
 Com esta versão, a digna expande tanto o entendimento de dados quanto a padronização da validação:
 
@@ -74,7 +74,7 @@ Juntas, essas capacidades permitem que as organizações não apenas detectem pr
 
 ---
 
-## 🎯 Quem se Beneficia desta Versão  
+## Quem se Beneficia desta Versão  
 
 - **Engenheiros de Dados:** Lógica de validação reutilizável e maior controle sobre o comportamento do monitoramento  
 - **Equipes de Qualidade de Dados e Governança:** Regras padronizadas e validação consistente entre sistemas  
@@ -83,7 +83,7 @@ Juntas, essas capacidades permitem que as organizações não apenas detectem pr
 
 ---
 
-## 🛠 Atualizações da CLI  
+## Atualizações da CLI  
 - Sem alterações  
 
 ---

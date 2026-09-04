@@ -19,12 +19,12 @@ Tā atsaucas uz ekrānu **"Create a Database Connection"**.
 **Bibliotēka:** `databricks-sql-connector`  
 **Atbalstītā autentifikācija:** tikai Personal Access Token (PAT)
 
-> ⚠️ Citu autentifikācijas metožu gadījumā izmantojiet ODBC draiveri.
+> Citu autentifikācijas metožu gadījumā izmantojiet ODBC draiveri.
 
 ### Personal Access Token (PAT)
 
 Lai autentificētos, izmantojot personal access token, skatiet oficiālo Databricks dokumentāciju:  
-👉 [Kā iegūt PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[Kā iegūt PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* konfigurācija (Native Driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
+> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
 
 ---
 

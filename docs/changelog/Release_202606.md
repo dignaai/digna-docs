@@ -12,7 +12,7 @@ This release introduces the new **digna Python SDK**, official **Docker deployme
 
 ---
 
-## 🚀 New Features  
+## New Features  
 
 ### digna Python SDK – Automate Everything with Python  
 - Install via:
@@ -85,7 +85,7 @@ Configure query execution strategy: **Single** or **Combined** mode
 
 ---
 
-## 🧪 Platform Enhancements  
+## Platform Enhancements  
 
 - Full Python SDK integration for automation  
 - Containerized deployment via Docker  
@@ -94,7 +94,7 @@ Configure query execution strategy: **Single** or **Combined** mode
 
 ---
 
-## 🎯 Who Benefits from This Release  
+## Who Benefits from This Release  
 
 - Data Engineers: automation, SDK usage, pipeline integration  
 - Platform Teams: simplified deployment via Docker  
@@ -103,7 +103,7 @@ Configure query execution strategy: **Single** or **Combined** mode
 
 ---
 
-## 🛠 CLI Updates  
+## CLI Updates  
 - Added SDK integration support  
 - Improved import/export workflows  
 - General stability and performance improvements  

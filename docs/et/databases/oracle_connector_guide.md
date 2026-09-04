@@ -20,7 +20,7 @@ See viitab ekraanile **"Create a Database Connection"**.
 **Raamatukogu:** `python-oracledb`  
 **Toetatud autentimine:** Ainult paroolipõhine autentimine
 
-> ⚠️ Kui soovite muid autentimismeetodeid, kasutage ODBC draiverit.
+> Kui soovite muid autentimismeetodeid, kasutage ODBC draiverit.
 
 ### *digna* konfiguratsioon (natiivne draiver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` peab vastama nimele, mis on määratud teie ODBC draiveri konfiguratsioonis.
+> `DSN` peab vastama nimele, mis on määratud teie ODBC draiveri konfiguratsioonis.
 
 ---
 

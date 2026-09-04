@@ -12,7 +12,7 @@ Tato verze představuje nový **digna Python SDK**, oficiální podporu nasazen�
 
 ---
 
-## 🚀 Nové funkce  
+## Nové funkce  
 
 ### digna Python SDK – Automatizujte vše pomocí Pythonu  
 - Nainstalujte pomocí:
@@ -84,7 +84,7 @@ Konfigurujte strategii vykonávání dotazů: **Single** nebo **Combined** reži
 
 ---
 
-## 🧪 Vylepšení platformy  
+## Vylepšení platformy  
 
 - Plná integrace Python SDK pro automatizaci  
 - Kontejnerizované nasazení přes Docker  
@@ -93,7 +93,7 @@ Konfigurujte strategii vykonávání dotazů: **Single** nebo **Combined** reži
 
 ---
 
-## 🎯 Pro koho je toto vydání určeno  
+## Pro koho je toto vydání určeno  
 
 - Datoví inženýři: automatizace, používání SDK, integrace do pipeline  
 - Platformní týmy: zjednodušené nasazení přes Docker  
@@ -102,7 +102,7 @@ Konfigurujte strategii vykonávání dotazů: **Single** nebo **Combined** reži
 
 ---
 
-## 🛠 Aktualizace CLI  
+## Aktualizace CLI  
 - Přidána podpora integrace SDK  
 - Vylepšené workflowy importu/exportu  
 - Obecná zlepšení stability a výkonu

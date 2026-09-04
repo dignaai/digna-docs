@@ -20,7 +20,7 @@ Jame nurodoma ekrano dalis **"Create a Database Connection"**.
 **Biblioteka:** `snowflake-connector-python`  
 **Palaikoma autentifikacija:** Tik autentifikacija su slaptažodžiu
 
-> ⚠️ Jei naudojate kitus autentifikacijos metodus, naudokite ODBC tvarkyklę.
+> Jei naudojate kitus autentifikacijos metodus, naudokite ODBC tvarkyklę.
 
 ### *digna* konfigūracija (natyvi tvarkyklė)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 `DSN` turi atitikti vardą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
+> `DSN` turi atitikti vardą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
 
 ---
 

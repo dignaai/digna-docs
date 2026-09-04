@@ -20,7 +20,7 @@ Se face referire la ecranul **"Creează o conexiune la bază de date"**.
 **Library:** `PyHive`  
 **Autentificare acceptată:** Doar autentificare pe bază de parolă
 
-> ⚠️ Pentru alte metode de autentificare, utilizează driverul ODBC.
+> Pentru alte metode de autentificare, utilizează driverul ODBC.
 
 ### Configurare *digna* (Driver nativ)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{parola ta între acolade}"
 ```
 
-> 🔹 `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
+> `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
 
 ---
 

@@ -22,7 +22,7 @@ Odkazuje na obrazovku **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Supported Authentication:** Pouze ověřování pomocí hesla
 
-> ⚠️ Pro jiné metody ověřování použijte prosím ODBC ovladač.
+> Pro jiné metody ověřování použijte prosím ODBC ovladač.
 
 ### *digna* Configuration (Native Driver)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
+> `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
 
 ---
 

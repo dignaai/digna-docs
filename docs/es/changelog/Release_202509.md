@@ -12,7 +12,7 @@ Esta versión también refuerza la autenticación y mejora la gestión de notifi
 
 ---
 
-## 🚀 Nuevas funciones  
+## Nuevas funciones  
 
 ### Diseño modular  
 - digna ahora sigue una **arquitectura modular**.  
@@ -35,7 +35,7 @@ Esta versión también refuerza la autenticación y mejora la gestión de notifi
 
 ---
 
-## 🛠 Actualizaciones de la CLI  
+## Actualizaciones de la CLI  
 
 - **Nuevo comando: `inspect-cancel`** – Cancelar inspecciones por ID de solicitud o terminar todas las solicitudes activas.  
 - **Nuevo comando: `check-config`** – Validar archivos de configuración antes del arranque.  
@@ -43,6 +43,6 @@ Esta versión también refuerza la autenticación y mejora la gestión de notifi
 - **Comando `inspect` mejorado** – Nueva opción `--bypass-backend` (`-bb`) y códigos de retorno estandarizados (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Documentación  
+## Documentación  
 - Nuevas guías:  
   - Guía de integración de Single Sign-On

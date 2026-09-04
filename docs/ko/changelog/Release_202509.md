@@ -12,7 +12,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🚀 새로운 기능
+## 새로운 기능
 
 ### 모듈형 설계
 - digna가 이제 **모듈형 아키텍처**를 따릅니다.  
@@ -35,7 +35,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🛠 CLI 업데이트
+## CLI 업데이트
 
 - **새 명령: `inspect-cancel`** – 요청 ID로 검사를 취소하거나 활성 요청을 모두 종료합니다.  
 - **새 명령: `check-config`** – 시작 전 구성 파일을 검증합니다.  
@@ -43,6 +43,6 @@ image: /assets/logo_square.png
 - **강화된 `inspect` 명령** – 새로운 옵션 `--bypass-backend` (`-bb`)와 표준화된 반환 코드 (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 문서
+## 문서
 - 신규 가이드:  
   - Single Sign-On 통합 가이드

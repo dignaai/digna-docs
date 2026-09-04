@@ -12,7 +12,7 @@ Ez a verzió bemutatja az új **digna Python SDK**-t, a hivatalos **Docker telep
 
 ---
 
-## 🚀 Új funkciók  
+## Új funkciók  
 
 ### digna Python SDK – Automatizálj mindent Pythonnal  
 - Telepítés:
@@ -84,7 +84,7 @@ Hatás: Lehetővé teszi az adatminőség skálázható és következetes irány
 
 ---
 
-## 🧪 Platform fejlesztések  
+## Platform fejlesztések  
 
 - Teljes Python SDK integráció az automatizáláshoz  
 - Konténeres telepítés Dockerrel  
@@ -93,7 +93,7 @@ Hatás: Lehetővé teszi az adatminőség skálázható és következetes irány
 
 ---
 
-## 🎯 Kiknek hasznos ez a kiadás  
+## Kiknek hasznos ez a kiadás  
 
 - Data Engineers: automatizálás, SDK használat, pipeline integráció  
 - Platform csapatok: egyszerűsített telepítés Dockerrel  
@@ -102,7 +102,7 @@ Hatás: Lehetővé teszi az adatminőség skálázható és következetes irány
 
 ---
 
-## 🛠 CLI frissítések  
+## CLI frissítések  
 - SDK integráció támogatás hozzáadva  
 - Javított import/export munkafolyamatok  
 - Általános stabilitás- és teljesítményjavítások

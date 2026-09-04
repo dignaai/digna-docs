@@ -21,7 +21,7 @@ canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 **Library:** `pymssql`  
 **Supported Authentication:** केवल पासवर्ड-आधारित प्रमाणीकरण
 
-> ⚠️ अन्य प्रमाणीकरण विधियों के लिए कृपया ODBC ड्राइवर का उपयोग करें।
+> अन्य प्रमाणीकरण विधियों के लिए कृपया ODBC ड्राइवर का उपयोग करें।
 
 ### *digna* Configuration (Native Driver)
 
@@ -117,7 +117,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` वही होना चाहिए जो आपने अपने ODBC ड्राइवर कॉन्फ़िगरेशन में परिभाषित किया है।
+> `DSN` वही होना चाहिए जो आपने अपने ODBC ड्राइवर कॉन्फ़िगरेशन में परिभाषित किया है।
 
 ---
 

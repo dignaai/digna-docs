@@ -12,7 +12,7 @@ Denne utgivelsen øker fleksibiliteten i alle moduler og utvider betydelig dekni
 
 ---
 
-## 🚀 Nye funksjoner  
+## Nye funksjoner  
 
 ### Globale databasetilkoblinger  
 - Databasetilkoblinger konfigureres nå på et **globalt nivå**.  
@@ -52,7 +52,7 @@ Denne utgivelsen øker fleksibiliteten i alle moduler og utvider betydelig dekni
 
 ---
 
-## 🧪 Utvidede muligheter for datavalidering  
+## Utvidede muligheter for datavalidering  
 
 Med denne utgivelsen støtter **digna Data Validation** nå et omfattende sett med datakvalitetsregler:
 
@@ -76,7 +76,7 @@ Sammen gjør disse kontrollene det mulig å håndheve **strukturelle og relasjon
 
 ---
 
-## 🎯 Hvem drar nytte av denne utgivelsen  
+## Hvem drar nytte av denne utgivelsen  
 
 - **Dataingeniører:** Mer fleksibel modellering av datakilder og gjenbrukbare databasetilkoblinger  
 - **Team for datakvalitet og styring:** Utvidet valideringsdekning inkludert regler for referanseintegritet  
@@ -85,7 +85,7 @@ Sammen gjør disse kontrollene det mulig å håndheve **strukturelle og relasjon
 
 ---
 
-## 🛠 CLI-oppdateringer  
+## CLI-oppdateringer  
 - Ingen endringer
 
 ---

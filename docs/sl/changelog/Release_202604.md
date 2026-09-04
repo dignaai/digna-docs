@@ -12,7 +12,7 @@ Ta izdaja uvaja napredno analizo časovnih vrst, ponovno uporabne komponente za 
 
 ---
 
-## 🚀 New Features  
+## New Features  
 
 ### Analytics Chart – Time Series Analysis Without Data Science  
 - Novi **Analytics Chart** za interaktivno analizo časovnih vrst  
@@ -61,7 +61,7 @@ Ta izdaja uvaja napredno analizo časovnih vrst, ponovno uporabne komponente za 
 
 ---
 
-## 🧪 Extended Data Analytics & Validation Capabilities  
+## Extended Data Analytics & Validation Capabilities  
 
 Z to izdajo digna širi tako **razumevanje podatkov** kot **standardizacijo validacije podatkov**:
 
@@ -74,7 +74,7 @@ Skupaj te zmožnosti omogočajo organizacijam, da ne le zaznavajo težave, ampak
 
 ---
 
-## 🎯 Kdo ima koristi od te izdaje  
+## Kdo ima koristi od te izdaje  
 
 - **Inženirji podatkov:** Ponovno uporabna logika validacije in izboljšan nadzor nad vedenjem spremljanja  
 - **Ekipe za kakovost podatkov in upravljanje:** Standardizirana pravila in dosledna validacija podatkov med sistemi  
@@ -83,7 +83,7 @@ Skupaj te zmožnosti omogočajo organizacijam, da ne le zaznavajo težave, ampak
 
 ---
 
-## 🛠 CLI Updates  
+## CLI Updates  
 - Brez sprememb  
 
 ---

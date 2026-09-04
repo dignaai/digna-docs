@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `snowflake-connector-python`  
 **Supported Authentication:** المصادقة بناءً على كلمة المرور فقط
 
-> ⚠️ لطرق المصادقة الأخرى، يرجى استخدام برنامج تشغيل ODBC.
+> لطرق المصادقة الأخرى، يرجى استخدام برنامج تشغيل ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 يجب أن يتطابق `DSN` مع الاسم المُعرف في تكوين برنامج تشغيل ODBC لديك.
+> يجب أن يتطابق `DSN` مع الاسم المُعرف في تكوين برنامج تشغيل ODBC لديك.
 
 ---
 

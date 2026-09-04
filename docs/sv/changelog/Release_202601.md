@@ -12,7 +12,7 @@ Denna version ökar flexibiliteten i alla moduler och utökar avsevärt täcknin
 
 ---
 
-## 🚀 Nya funktioner  
+## Nya funktioner  
 
 ### Globala databasanslutningar  
 - Databasanslutningar konfigureras nu på **global nivå**.  
@@ -52,7 +52,7 @@ Denna version ökar flexibiliteten i alla moduler och utökar avsevärt täcknin
 
 ---
 
-## 🧪 Utökade möjligheter i digna Data Validation  
+## Utökade möjligheter i digna Data Validation  
 
 Med denna release stödjer **digna Data Validation** nu ett omfattande uppsättning regler för datakvalitet:
 
@@ -76,7 +76,7 @@ Tillsammans möjliggör dessa kontroller upprätthållande av **strukturella och
 
 ---
 
-## 🎯 Vem gynnas av denna release  
+## Vem gynnas av denna release  
 
 - **Dataingenjörer:** Mer flexibel modellering av datasources och återanvändbara databasanslutningar  
 - **Datakvalitet- och styrningsteam:** Utökad valideringstäckning inklusive regler för referensintegritet  
@@ -85,7 +85,7 @@ Tillsammans möjliggör dessa kontroller upprätthållande av **strukturella och
 
 ---
 
-## 🛠 CLI-uppdateringar  
+## CLI-uppdateringar  
 - Inga förändringar
 
 ---

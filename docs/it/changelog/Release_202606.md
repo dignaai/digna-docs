@@ -12,7 +12,7 @@ Questa release introduce il nuovo **digna Python SDK**, il supporto ufficiale pe
 
 ---
 
-## 🚀 Nuove funzionalità  
+## Nuove funzionalità  
 
 ### digna Python SDK – Automatizza tutto con Python  
 - Installazione:
@@ -84,7 +84,7 @@ Configura la strategia di esecuzione delle query: modalità **Single** o **Combi
 
 ---
 
-## 🧪 Miglioramenti della piattaforma  
+## Miglioramenti della piattaforma  
 
 - Integrazione completa del Python SDK per l'automazione  
 - Deployment containerizzato tramite Docker  
@@ -93,7 +93,7 @@ Configura la strategia di esecuzione delle query: modalità **Single** o **Combi
 
 ---
 
-## 🎯 Beneficiari di questa release  
+## Beneficiari di questa release  
 
 - Data Engineer: automazione, utilizzo del SDK, integrazione in pipeline  
 - Team di piattaforma: deployment semplificato tramite Docker  
@@ -102,7 +102,7 @@ Configura la strategia di esecuzione delle query: modalità **Single** o **Combi
 
 ---
 
-## 🛠 Aggiornamenti CLI  
+## Aggiornamenti CLI  
 - Aggiunto supporto all'integrazione con lo SDK  
 - Migliorati i flussi di import/export  
 - Miglioramenti generali di stabilità e prestazioni

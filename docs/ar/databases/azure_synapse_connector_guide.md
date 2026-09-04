@@ -22,7 +22,7 @@ canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 **المكتبة:** `pymssql`  
 **أسلوب المصادقة المدعوم:** المصادقة باستخدام كلمة المرور فقط
 
-> ⚠️ لأساليب المصادقة الأخرى، يرجى استخدام برنامج تشغيل ODBC.
+> لأساليب المصادقة الأخرى، يرجى استخدام برنامج تشغيل ODBC.
 
 ### تكوين *digna* (الموصل الأصلي)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 يجب أن يتطابق `DSN` مع الاسم المحدد في تكوين برنامج تشغيل ODBC الخاص بك.
+> يجب أن يتطابق `DSN` مع الاسم المحدد في تكوين برنامج تشغيل ODBC الخاص بك.
 
 ---
 

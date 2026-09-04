@@ -65,7 +65,7 @@ V obstoječi PostgreSQL strežnik lahko dodate novo bazo za digna.
 
 **Če nameščate PostgreSQL na isti stroj kot digna:**
 
-> **⚠️ Priporočene specifikacije**
+> **Priporočene specifikacije**
 >
 > - **Pomnilnik**: 32 GB RAM (namesto 16 GB)
 > - **Prostor na disku**: 50 GB prostega prostora (namesto 10 GB)
@@ -122,7 +122,7 @@ Vnesite in potrdite geslo za PostgreSQL superuporabnika (`postgres`). **Shranjen
 
 Privzeti PostgreSQL port je `5432`. Uporabite privzeto ali določite drug port po potrebi.
 
-> **💡 Namig**
+> **Namig**
 >
 > Če je port 5432 že v uporabi, izberite alternativni port in si ga zabeležite za kasnejšo konfiguracijo.
 
@@ -200,7 +200,7 @@ Da se zagotovI pravilno serviranje Markdown datotek (`.md`) v IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Pomembno**
+> **Pomembno**
 >
 > Brez te nastavitve se `.md` datoteke morda ne bodo servisirale pravilno.
 
@@ -227,7 +227,7 @@ Apache Tomcat je odprtokodni Java servlet container in spletni strežnik.
    - Pojdite na `http://localhost:8080`
    - Videti bi morali Apache Tomcat welcome stran
 
-> **💡 Namig**
+> **Namig**
 >
 > Apache Tomcat se običajno zažene samodejno po namestitvi. Če se ne zažene, pojdite v mapo `bin` in zaženite `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Najboljša praksa**
+> **Najboljša praksa**
 >
 > Uporabljajte močna, kompleksna gesla za uporabnike baze podatkov. Izogibajte se enostavnim in lahko ugibljivim poverilnicam.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Korak 3: Namestite licenčno datoteko
 
-> **⚠️ Pomembno**
+> **Pomembno**
 >
 > Licenčna datoteka **ni** vključena v namestitveni paket in vam bo posredovana ločeno s strani digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Ta ukaz ustvari uporabnika s polnimi administratorskimi pravicami.
 
-> **✅ Najboljša praksa**
+> **Najboljša praksa**
 >
 > Uporabljajte močno geslo z mešanico velikih/malih črk, številk in posebnih znakov.
 
@@ -545,7 +545,7 @@ Na voljo so naslednje batch datoteke:
 - `start_service.bat` — zažene storitev
 - `stop_service.bat` — ustavi storitev
 
-> **⚠️ Potrebne so administratorske pravice**
+> **Potrebne so administratorske pravice**
 >
 > Vse batch datoteke je treba zagnati z administratorskimi privilegiji.
 
@@ -587,7 +587,7 @@ Digna strežnik je sedaj registriran kot Windows storitev z nastavljeno **samode
    stop_service.bat
    ```
 
-> **💡 Namig**
+> **Namig**
 >
 > Pred posodobitvijo datotek aplikacije storitev vedno zaustavite.
 
@@ -670,7 +670,7 @@ ren dashboard dashboard_old
 1. Razširite nov ZIP paket z namestitvijo digna
 2. Kopirajte novo izvršljivo datoteko `digna` in mapo `dashboard` v vaš imenik namestitve
 
-> **✅ Pomembno**
+> **Pomembno**
 >
 > Datoteka `config.toml` **nikoli** ni vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
 

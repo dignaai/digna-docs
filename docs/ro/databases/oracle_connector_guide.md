@@ -20,7 +20,7 @@ Se referă la ecranul **"Create a Database Connection"**.
 **Library:** `python-oracledb`  
 **Autentificare acceptată:** Doar autentificare pe bază de parolă
 
-> ⚠️ Pentru alte metode de autentificare, te rugăm să folosești driverul ODBC.
+> Pentru alte metode de autentificare, te rugăm să folosești driverul ODBC.
 
 ### Configurarea *digna* (Driver nativ)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
+> `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
 
 ---
 

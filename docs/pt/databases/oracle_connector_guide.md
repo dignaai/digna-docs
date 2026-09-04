@@ -20,7 +20,7 @@ Refere-se à tela **"Create a Database Connection"**.
 **Library:** `python-oracledb`  
 **Supported Authentication:** Password-based authentication only
 
-> ⚠️ Para outros métodos de autenticação, por favor use o driver ODBC.
+> Para outros métodos de autenticação, por favor use o driver ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -94,7 +94,7 @@ name: "UID",            value: "your oracle user"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 O `DSN` deve corresponder ao nome definido na configuração do seu driver ODBC.
+> O `DSN` deve corresponder ao nome definido na configuração do seu driver ODBC.
 
 ---
 

@@ -142,7 +142,7 @@ usePassword = true
 - No username/password fields
 - Only OIDC authentication is available
 
-> **💡 Tip**
+> **Tip**
 >
 > Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Important**
+> **Important**
 >
 > Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Check that login buttons appear for each configured provider:
 
-- ✅ Should see "Login with Microsoft" button
-- ✅ Should see "Login with Google" button
-- ✅ (If usePassword = true) Should see username/password fields
+- Should see "Login with Microsoft" button
+- Should see "Login with Google" button
+- (If usePassword = true) Should see username/password fields
 
 If buttons don't appear:
 - Check that `dashboard_config.toml` was saved
@@ -317,10 +317,10 @@ Click one of the SSO buttons (e.g., "Login with Microsoft"):
 
 After successful SSO login:
 
-- ✅ User should be automatically created in digna
-- ✅ User should be logged in
-- ✅ User profile should display your identity provider credentials
-- ✅ You should see the digna dashboard
+- User should be automatically created in digna
+- User should be logged in
+- User profile should display your identity provider credentials
+- You should see the digna dashboard
 
 #### Step 6: Test Password Login (If Enabled)
 
@@ -437,7 +437,7 @@ Contact support@digna.ai if you need help integrating a specific provider.
 
 ## Best Practices
 
-✅ **DO:**
+**DO:**
 - Use HTTPS in production (not HTTP)
 - Store client secrets securely (use environment variables if possible)
 - Rotate secrets periodically
@@ -446,7 +446,7 @@ Contact support@digna.ai if you need help integrating a specific provider.
 - Monitor login logs for unusual activity
 - Keep identity provider configuration in sync with digna config
 
-❌ **DON'T:**
+**DON'T:**
 - Store client secrets in version control
 - Use HTTP redirect URIs in production
 - Configure multiple providers with the same key
@@ -460,9 +460,9 @@ Contact support@digna.ai if you need help integrating a specific provider.
 
 Need help with SSO configuration?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentation:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentation:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

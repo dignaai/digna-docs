@@ -142,7 +142,7 @@ usePassword = true
 - No hay campos de usuario/contraseña
 - Solo está disponible la autenticación OIDC
 
-> **💡 Consejo**
+> **Consejo**
 >
 > El inicio de sesión basado en contraseña solo está disponible para usuarios que fueron creados con contraseñas usando el comando `digna user add` o a través del panel.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Sí | URL de callback después de la autenticación | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Sí | Endpoint de configuración OIDC | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Importante**
+> **Importante**
 >
 > Reemplaza los valores de marcador de posición (`<client_id>`, `<client_secret>`, `<tenant_id>`) con las credenciales reales desde el portal de desarrolladores de tu proveedor de identidad.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Comprueba que aparezcan botones de inicio de sesión para cada proveedor configurado:
 
-- ✅ Deberías ver el botón "Iniciar sesión con Microsoft"
-- ✅ Deberías ver el botón "Iniciar sesión con Google"
-- ✅ (Si usePassword = true) Deberías ver campos de usuario/contraseña
+- Deberías ver el botón "Iniciar sesión con Microsoft"
+- Deberías ver el botón "Iniciar sesión con Google"
+- (Si usePassword = true) Deberías ver campos de usuario/contraseña
 
 Si los botones no aparecen:
 - Verifica que `dashboard_config.toml` se haya guardado
@@ -317,10 +317,10 @@ Haz clic en uno de los botones SSO (por ejemplo, "Iniciar sesión con Microsoft"
 
 Después de un inicio de sesión SSO exitoso:
 
-- ✅ El usuario debería crearse automáticamente en digna
-- ✅ El usuario debería quedar autenticado
-- ✅ El perfil del usuario debería mostrar tus credenciales del proveedor de identidad
-- ✅ Deberías ver el panel de digna
+- El usuario debería crearse automáticamente en digna
+- El usuario debería quedar autenticado
+- El perfil del usuario debería mostrar tus credenciales del proveedor de identidad
+- Deberías ver el panel de digna
 
 #### Paso 6: Probar Inicio de Sesión con Contraseña (Si está Habilitado)
 
@@ -437,7 +437,7 @@ Contacta a support@digna.ai si necesitas ayuda integrando un proveedor específi
 
 ## Buenas Prácticas
 
-✅ **HACER:**
+**HACER:**
 - Usar HTTPS en producción (no HTTP)
 - Almacenar client secrets de forma segura (usar variables de entorno si es posible)
 - Rotar secretos periódicamente
@@ -446,7 +446,7 @@ Contacta a support@digna.ai si necesitas ayuda integrando un proveedor específi
 - Monitorizar logs de inicio de sesión por actividad inusual
 - Mantener la configuración del proveedor de identidad sincronizada con la configuración de digna
 
-❌ **NO HACER:**
+**NO HACER:**
 - Almacenar client secrets en control de versiones
 - Usar redirect URIs HTTP en producción
 - Configurar múltiples proveedores con la misma key
@@ -460,9 +460,9 @@ Contacta a support@digna.ai si necesitas ayuda integrando un proveedor específi
 
 ¿Necesitas ayuda con la configuración de SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentación:** https://docs.digna.ai
-- 🌐 **Sitio web:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentación:** https://docs.digna.ai
+- **Sitio web:** https://www.digna.ai
 
 ---
 

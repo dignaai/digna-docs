@@ -12,7 +12,7 @@ Dieses Release führt erweiterte Zeitreihenanalysen, wiederverwendbare Validieru
 
 ---
 
-## 🚀 Neue Funktionen  
+## Neue Funktionen  
 
 ### Analytics Chart – Zeitreihenanalyse ohne Data-Science-Kenntnisse  
 - Neues **Analytics Chart** für interaktive Zeitreihenanalysen  
@@ -61,7 +61,7 @@ Dieses Release führt erweiterte Zeitreihenanalysen, wiederverwendbare Validieru
 
 ---
 
-## 🧪 Erweiterte Data Analytics- und Validierungsfunktionen  
+## Erweiterte Data Analytics- und Validierungsfunktionen  
 
 Mit diesem Release erweitert digna sowohl das **Datenverständnis** als auch die **Standardisierung der Datenvalidierung**:
 
@@ -74,7 +74,7 @@ Gemeinsam ermöglichen diese Funktionen Organisationen nicht nur, Probleme zu er
 
 ---
 
-## 🎯 Wer profitiert von diesem Release  
+## Wer profitiert von diesem Release  
 
 - Dateningenieure: Wiederverwendbare Validierungslogik und verbesserte Kontrolle über das Monitoring-Verhalten  
 - Teams für Datenqualität und Governance: Standardisierte Regeln und konsistente Datenvalidierung systemübergreifend  
@@ -83,7 +83,7 @@ Gemeinsam ermöglichen diese Funktionen Organisationen nicht nur, Probleme zu er
 
 ---
 
-## 🛠 CLI-Updates  
+## CLI-Updates  
 - Keine Änderungen  
 
 ---

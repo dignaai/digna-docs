@@ -1,127 +1,126 @@
 ---
-title: Data Timeliness – Monitorowanie terminowych dostaw | Dokumentacja digna
-description: Dowiedz się, jak Data Timeliness od digna zapewnia, że dane docierają na czas. Wykrywaj opóźnione lub brakujące dostawy, monitoruj SLA i chroń procesy biznesowe przed ukrytymi opóźnieniami. Wykrywanie wspomagane AI dla lepszej jakości danych i obserwowalności potoków danych.
+title: Data Timeliness – Monitorowanie terminowości dostaw | Dokumentacja digna
+description: Dowiedz się, jak Data Timeliness od digna zapewnia, że dane docierają na czas. Wykrywaj opóźnienia lub brakujące dostawy, monitoruj SLA i zabezpieczaj procesy biznesowe przed cichymi opóźnieniami. Wykrywanie wspomagane AI dla lepszej jakości danych i obserwowalności potoków danych.
 canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
-  - terminowość danych
-  - monitorowanie dostaw
-  - jakość danych
-  - jakość informacji
-  - obserwowalność danych
-  - wykrywanie opóźnionych danych
-  - alerty o brakujących danych
-  - monitorowanie SLA
-  - analiza dostaw AI
+  - data timeliness
+  - delivery monitoring
+  - data quality
+  - quality of data
+  - observability of data
+  - late data detection
+  - missing data alerting
+  - sla monitoring
+  - ai delivery analysis
   - digna data timeliness
 lang: pl
 robots: index, follow
-og_title: Data Timeliness – Monitorowanie terminowych dostaw | Dokumentacja digna
-og_description: Data Timeliness od digna automatycznie wykrywa opóźnione lub brakujące dostawy danych przy użyciu AI. Chroń procesy biznesowe, monitoruj SLA i zapewnij terminowe oraz wiarygodne dane we wszystkich potokach.
+og_title: Data Timeliness – Monitorowanie terminowości dostaw | Dokumentacja digna
+og_description: Data Timeliness od digna automatycznie wykrywa opóźnione lub brakujące dostawy danych przy użyciu AI. Zabezpiecz procesy biznesowe, monitoruj SLA i zapewnij terminowe, niezawodne dane w całych potokach.
 og_image: /assets/logo_square.png
 og_type: article
 twitter_card: summary_large_image
 ---
 
 # Data Timeliness – On-Time Delivery Monitoring
-<h1 style="display:none;">AI-Driven Data Timeliness Module for Data Quality and Observability – digna</h1>
 
 ---
 
-## Cel
+## Purpose
 
-Moduł **Data Timeliness** zapewnia, że **dane docierają na czas** — za każdym razem.  
-Ciągle monitoruje harmonogramy dostaw i automatycznie wykrywa, gdy zbiory danych, tabele lub pliki są **opóźnione, brakujące lub niekompletne**.  
+The **Data Timeliness** module ensures that **data arrives on time** - every time.  
+It continuously monitors delivery schedules and automatically detects when datasets, tables, or files are **delayed, missing, or incomplete**.  
 
-Łącząc uczenie AI z harmonogramami definiowanymi przez użytkownika, *digna* pozwala organizacjom zapobiegać błędom downstream i utrzymywać rygorystyczne cele **SLA (Service Level Agreement)** zarówno dla **jakości danych**, jak i **obserwowalności potoków danych**.
+By combining AI learning with user-defined schedules, *digna* enables organizations to prevent downstream errors and uphold strict **SLA (Service Level Agreement)** targets for both **Data Quality** and **observability of data pipelines**.
 
 ---
 
-## Przegląd techniczny
+## Technical Overview
 
-### Podwójne tryby monitorowania
+### Dual Monitoring Modes
 - **AI-Learned Arrival Patterns**  
-  digna automatycznie uczy się naturalnego rytmu dostaw danych — codziennie, co godzinę lub sterowanych zdarzeniami — analizując historyczne znaczniki czasu i czasy zakończenia.  
-  Dostosowuje się do zmian w kalendarzach biznesowych, weekendów czy szczytów na koniec miesiąca.
+  digna automatically learns the natural rhythm of your data deliveries — daily, hourly, or event-driven — by analyzing historical timestamps and completion times.  
+  It adapts to changes in business calendars, weekends, or month-end peaks.
 
 - **User-Defined Schedules**  
-  Użytkownicy mogą jawnie określić oczekiwane czasy dostaw (np. *w każdy dzień powszedni przed 07:30*).  
-  digna porównuje rzeczywisty czas przybycia z zaplanowanym harmonogramem i generuje alerty, gdy dane są opóźnione lub brakujące.
+  Users can define expected delivery times explicitly (e.g., *every weekday before 7:30 AM*).  
+  digna compares the actual arrival time with the planned schedule and raises alerts when data is late or missing.
 
-### Mechanizm wykrywania
-- Ocena **znaczników czasu w metadanych**, **liczby rekordów** i **świeżości tabel**  
-- Wykrywa **zawieszone zadania ETL**, **nieudane ekstrakcje** i **częściowe przybycie plików**  
-- Integruje się z *Data Anomalies* oraz *Data Validation* dla skonsolidowanych wglądów
+### Detection Mechanism
+- Evaluates **metadata timestamps**, **record counts**, and **table freshness**  
+- Detects **stalled ETL jobs**, **failed extractions**, and **partial file arrivals**  
+- Integrates with *Data Anomalies* and *Data Validation* for combined insights
 
 ---
 
-## Scenariusze wykrywania
+## Detection Scenarios
 
-| Scenariusz | Opis |
+| Scenario | Description |
 |-----------|--------------|
-| **Late data arrival** | Codzienny strumień danych rynkowych opóźniony o dwie godziny, powodujący niedotrzymanie SLA w raportach |
-| **Missing load** | Zaplanowana tabela lub partycja nie została zaktualizowana dla bieżącej daty |
-| **Chained dependency delay** | Opóźnienie zadania upstream wpływa na odświeżenie potoku downstream |
-| **Weekend pattern shift** | Model AI automatycznie dostosowuje się, gdy w niedziele nie oczekuje się danych |
+| **Late data arrival** | Daily market data feed delayed by two hours, causing reports to miss SLAs |
+| **Missing load** | A scheduled table or partition not updated for the current date |
+| **Chained dependency delay** | Upstream job delay impacts downstream pipeline refresh |
+| **Weekend pattern shift** | AI model adapts automatically when no data is expected on Sundays |
 
 ---
 
-## Architektura i wykonanie
+## Architecture and Execution
 
-- **Wykonanie w bazie danych:** digna uruchamia kontrole terminowości bezpośrednio w Twojej bazie danych lub hurtowni danych.  
-- **Lekki dostęp do metadanych:** odczytuje znaczniki czasu z zadań, liczbę rekordów i informacje o partycjach — bez konieczności ekstrakcji danych.  
-- **Konfigurowalna częstotliwość:** planuj monitorowanie per zbiór danych, schemat lub potok.  
-- **Alerty między modułami:** wyniki mogą wywoływać wizualne ostrzeżenia w *Inspection Hub* lub powiadomienia przez e-mail, Slack lub API.  
-
----
-
-## Przykładowe zastosowania
-
-- **Dane rynków finansowych:** wykrywanie opóźnień w aktualizacjach cen lub danych transakcyjnych.  
-- **Ładowania do hurtowni danych:** monitorowanie, kiedy nocne zadania ETL kończą się później niż oczekiwano.  
-- **Udostępnianie danych między zespołami:** zapewnienie, że dostawy działowe następują przed dziennymi cutoffami.  
-- **Raportowanie regulacyjne:** potwierdzenie, że zgłoszenia zawierają najnowszy dostępny zrzut danych.  
+- **In-database execution:** digna runs timeliness checks directly inside your database or data warehouse.  
+- **Lightweight metadata access:** reads job timestamps, record counts, and partition info — no data extraction required.  
+- **Configurable frequency:** schedule monitoring per dataset, schema, or pipeline.  
+- **Cross-module alerts:** results can trigger visual warnings in *Inspection Hub* or notifications via email, Slack, or API.  
 
 ---
 
-## Korzyści
+## Example Use Cases
 
-| Obszar | Korzyść |
+- **Financial Market Feeds:** detect delays in price or trading data updates.  
+- **Data Warehouse Loads:** monitor when nightly ETL jobs finish later than expected.  
+- **Data Sharing Between Teams:** ensure departmental data deliveries occur before daily cutoffs.  
+- **Regulatory Reporting:** confirm that submissions include the latest available data snapshot.  
+
+---
+
+## Benefits
+
+| Area | Benefit |
 |------|----------|
-| **Ciągłość biznesowa** | Zapobiega przerwom operacyjnym spowodowanym opóźnionymi lub brakującymi danymi |
-| **Jakość danych** | Poprawia wiarygodność i spójność potoków danych |
-| **Zgodność** | Zapewnia przestrzeganie SLA i przejrzystość audytową |
-| **Automatyzacja** | AI eliminuje ręczne śledzenie harmonogramów |
-| **Integracja** | Działa bezproblemowo z *Data Analytics* do wizualizacji trendów terminowości w czasie |
+| **Business Continuity** | Prevents operational disruptions due to delayed or missing data |
+| **Data Quality** | Improves reliability and consistency of data pipelines |
+| **Compliance** | Ensures SLA adherence and audit transparency |
+| **Automation** | AI eliminates manual schedule tracking |
+| **Integration** | Works seamlessly with *Data Analytics* to visualize timeliness trends over time |
 
 ---
 
-## Jak digna uczy się oczekiwanych czasów dostaw
+## How digna Learns Expected Delivery Times
 
-1. **Analiza historyczna:** digna obserwuje wcześniejsze czasy ładowania i ich trwania.  
-2. **Modelowanie AI:** uczenie maszynowe tworzy dynamiczną bazę odniesienia dla oczekiwanego czasu przybycia.  
-3. **Monitorowanie:** Każda nowa dostawa jest porównywana z bazą odniesienia.  
-4. **Alertowanie:** Odchylenia wywołują alerty z kontekstowymi metrykami i wskaźnikami pewności.
+1. **Historical Analysis:** digna observes previous load times and durations.  
+2. **AI Modeling:** Machine learning creates a dynamic baseline for expected arrival.  
+3. **Monitoring:** Each new delivery is compared to the baseline.  
+4. **Alerting:** Deviations trigger alerts with contextual metrics and confidence scores.  
 
-To ciągłe uczenie się dostosowuje się do ewoluujących procesów przy jednoczesnym utrzymaniu niskiego poziomu fałszywych alarmów.
-
----
-
-## Najczęściej zadawane pytania
-
-**Czy mogę zdefiniować własne czasy dostaw?**  
-Tak. digna obsługuje zarówno stałe harmonogramy definiowane przez użytkownika, jak i wzorce wyuczone przez AI.
-
-**Czy można zintegrować to z moim narzędziem ETL lub orkiestracyjnym?**  
-Tak. digna integruje się z narzędziami takimi jak Airflow, dbt, Informatica czy niestandardowe schedulery.
-
-**Gdzie odbywają się obliczenia?**  
-Wszystkie analizy uruchamiane są w Twojej bazie danych lub hurtowni w chmurze — bez użycia zewnętrznych usług.
-
-**Co się dzieje, gdy dane są opóźnione?**  
-digna generuje alerty w panelu, Inspection Hub oraz poprzez API/webhooki, aby natychmiast powiadomić zespoły operacyjne.
+This continuous learning approach adapts to evolving processes while keeping false positives low.
 
 ---
 
+## Frequently Asked Questions
 
-**digna Data Timeliness** pomaga zapewnić **zaufanie do danych**, łącząc **wykrywanie oparte na AI**, **lokalne wykonanie (on-premises)** oraz **obserwowalność danych** — wszystko w Twoim kontrolowanym środowisku.
+**Can I define my own delivery times?**  
+Yes. digna supports both fixed user schedules and AI-learned patterns.
+
+**Can it integrate with my ETL or orchestration tool?**  
+Yes. digna integrates with tools such as Airflow, dbt, Informatica, or custom schedulers.
+
+**Where does computation happen?**  
+All analysis runs within your database or cloud warehouse — no external service is used.
+
+**What happens when data is late?**  
+digna raises alerts in the dashboard, Inspection Hub, and via API/webhooks to notify operations teams instantly.
+
+---
+
+
+**digna Data Timeliness** helps ensure **trust in data**, combining **AI-driven detection**, **on-premises execution**, and **data observability** — all within your controlled environment.

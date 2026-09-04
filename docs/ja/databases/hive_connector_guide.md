@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `PyHive`  
 **Supported Authentication:** パスワード認証のみ
 
-> ⚠️ 他の認証方式を使用する場合は、ODBCドライバを使用してください。
+> 他の認証方式を使用する場合は、ODBCドライバを使用してください。
 
 ### *digna* の設定（ネイティブドライバ）
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` はODBCドライバ設定で定義した名前と一致する必要があります。
+> `DSN` はODBCドライバ設定で定義した名前と一致する必要があります。
 
 ---
 

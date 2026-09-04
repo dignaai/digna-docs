@@ -20,7 +20,7 @@ Den hänvisar till skärmen **"Create a Database Connection"**.
 **Library:** `teradatasql`  
 **Stödd autentisering:** Endast lösenordsbaserad autentisering
 
-> ⚠️ För andra autentiseringsmetoder, använd ODBC-drivrutinen.
+> För andra autentiseringsmetoder, använd ODBC-drivrutinen.
 
 ### *digna*-konfiguration (inbyggd drivrutin)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` måste stämma överens med namnet som definierats i din ODBC-drivrutinskonfiguration.
+> `DSN` måste stämma överens med namnet som definierats i din ODBC-drivrutinskonfiguration.
 
 ---
 

@@ -20,7 +20,7 @@ Navaja se zaslon **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Supported Authentication:** Samo overjanje z geslom
 
-> ⚠️ Za druge metode overjanja uporabite ODBC gonilnik.
+> Za druge metode overjanja uporabite ODBC gonilnik.
 
 ### *digna* Configuration (Native Driver)
 
@@ -114,7 +114,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` se mora ujemati z imenom, definiranim v konfiguraciji vašega ODBC gonilnika.
+> `DSN` se mora ujemati z imenom, definiranim v konfiguraciji vašega ODBC gonilnika.
 
 ---
 

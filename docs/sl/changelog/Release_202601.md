@@ -12,7 +12,7 @@ Ta izdaja povečuje prilagodljivost v vseh modulih in občutno širi področje *
 
 ---
 
-## 🚀 Nove funkcije  
+## Nove funkcije  
 
 ### Globalne povezave do baz podatkov  
 - Povezave do baz podatkov so zdaj konfigurirane na **globalni ravni**.  
@@ -52,7 +52,7 @@ Ta izdaja povečuje prilagodljivost v vseh modulih in občutno širi področje *
 
 ---
 
-## 🧪 Razširjene zmogljivosti Data Validation  
+## Razširjene zmogljivosti Data Validation  
 
 Z to izdajo **digna Data Validation** zdaj podpira obsežen nabor pravil kakovosti podatkov:
 
@@ -76,7 +76,7 @@ Skupaj ta preverjanja omogočajo uveljavljanje **strukturnih in relacijskih prav
 
 ---
 
-## 🎯 Kdo ima koristi od te izdaje  
+## Kdo ima koristi od te izdaje  
 
 - **Data Engineers:** bolj prilagodljivo modeliranje podatkovnih virov in ponovno uporabne povezave do baz podatkov  
 - **Data Quality & Governance Teams:** razširjeno področje preverjanj, vključno s pravili relacijske celovitosti  
@@ -85,7 +85,7 @@ Skupaj ta preverjanja omogočajo uveljavljanje **strukturnih in relacijskih prav
 
 ---
 
-## 🛠 CLI posodobitve  
+## CLI posodobitve  
 - Brez sprememb
 
 ---

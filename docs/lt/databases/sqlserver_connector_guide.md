@@ -20,7 +20,7 @@ Jame nurodoma sąsaja **„Sukurti duomenų bazės ryšį“**.
 **Biblioteka:** `pymssql`  
 **Palaikoma autentifikacija:** Tik slaptažodžiu pagrįsta autentifikacija
 
-> ⚠️ Kitoms autentifikacijos metodikoms naudokite ODBC tvarkyklę.
+> Kitoms autentifikacijos metodikoms naudokite ODBC tvarkyklę.
 
 ### *digna* konfigūracija (natyvi tvarkyklė)
 
@@ -113,7 +113,7 @@ name: "PWD",        value: "jūsų duomenų bazės slaptažodis"
 name: "DATABASE",   value: "duomenų bazės pavadinimas, kuriame yra šaltinio duomenų schema"
 ```
 
-> 🔹 `DSN` turi atitikti vardą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
+> `DSN` turi atitikti vardą, nurodytą jūsų ODBC tvarkyklės konfigūracijoje.
 
 ---
 

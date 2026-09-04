@@ -20,7 +20,7 @@ Hace referencia a la pantalla **"Crear una conexión de base de datos"**.
 **Librería:** `pymssql`  
 **Autenticación compatible:** Solo autenticación basada en contraseña
 
-> ⚠️ Para otros métodos de autenticación, utilice el controlador ODBC.
+> Para otros métodos de autenticación, utilice el controlador ODBC.
 
 ### Configuración de *digna* (Controlador nativo)
 
@@ -114,7 +114,7 @@ name: "DATABASE",   value: "nombre de la base de datos que contiene el esquema d
 
 ```
 
-> 🔹 El `DSN` debe coincidir con el nombre definido en la configuración de su controlador ODBC.
+> El `DSN` debe coincidir con el nombre definido en la configuración de su controlador ODBC.
 
 ---
 

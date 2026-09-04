@@ -1,13 +1,13 @@
 ---
-title: Konektor Netezza – Integracja z bazą danych | dokumentacja digna
-description: Skonfiguruj *digna*, aby łączyła się z Netezza przy użyciu sterownika ODBC NetezzaSQL. Obsługuje uwierzytelnianie na podstawie hasła zarówno z użyciem DSN, jak i konfiguracji bez DSN dla elastycznego połączenia.
+title: Konektor Netezza – Integracja bazy danych | dokumentacja digna
+description: Skonfiguruj digna, aby łączyło się z Netezza za pomocą sterownika ODBC NetezzaSQL. Wspiera uwierzytelnianie na podstawie hasła przy konfiguracjach z DSN lub bez DSN dla elastycznej łączności.
 image: /assets/logo_square.png
 ---
 
 
-# Konektor źródłowy dla Netezza
+# Source Connector for Netezza
 
-Niniejszy przewodnik opisuje, jak skonfigurować *digna*, aby łączyła się z Netezza przy użyciu sterownika ODBC.
+Niniejszy przewodnik opisuje, jak skonfigurować *digna*, aby łączyło się z Netezza przy użyciu sterownika ODBC.
 
 Odnosi się do ekranu **"Create a Database Connection"**.
 
@@ -15,50 +15,55 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 
 ---
 
-## Sterownik ODBC
+## ODBC Driver
 
-Sterownik ODBC może obsługiwać różne opcje uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu opartym na haśle przy użyciu sterownika **NetezzaSQL**.
+Sterownik ODBC może obsługiwać różne opcje uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu na podstawie hasła przy użyciu sterownika **NetezzaSQL**.
 
-### 1. Zainstaluj sterownik ODBC
+### 1. Install the ODBC Driver
 
-Zainstaluj sterownik **NetezzaSQL** (lub podobny) zgodnie z oficjalnym przewodnikiem instalacji dostawcy.
+Zainstaluj sterownik **NetezzaSQL** (lub podobny), postępując zgodnie z oficjalnym przewodnikiem instalacyjnym dostawcy.
 
-### 2. Skonfiguruj źródło danych ODBC
+### 2. Configure the ODBC Data Source
 
-Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC z uwierzytelnianiem opartym na haśle:
+Wykonaj następujące kroki, aby skonfigurować nowe źródło danych ODBC z uwierzytelnianiem na podstawie hasła:
 
-#### Krok 1
+#### Step 1
 ![Step 1](images/netezza/create_odbc_data_source_step1.png)
 
-W zależności od sterownika Netezza, wymagań dotyczących konfiguracji i bezpieczeństwa, może być konieczne podanie dodatkowych danych na kartach **Advanced DSN Options**, **SSL DSN Options** lub **Driver Options**. Dla najprostszej konfiguracji wystarczy podać dane w **DSN Options**.
+W zależności od sterownika Netezza, wymagań instalacyjnych i zabezpieczeń, może być konieczne podanie danych również na kartach **Advanced DSN Options**, **SSL DSN Options** lub **Driver Options**. Dla najprostszej konfiguracji wystarczy podać dane na karcie **DSN Options**.
 
 Kliknij przycisk **Test Connection**.
 
-#### Krok 2
+#### Step 2
 ![Step 2](images/netezza/create_odbc_data_source_step2.png)
 
-Gdy pojawi się ekran potwierdzający powodzenie, ODBC jest poprawnie skonfigurowane.
+Gdy zobaczysz ekran potwierdzający powodzenie, ODBC jest poprawnie skonfigurowany.
 
 ---
 
-Teraz możesz skonfigurować *digna*, aby korzystała z połączenia ODBC, albo z użyciem **DSN (Data Source Name)**, albo w konfiguracji **bez DSN**.
+Teraz możesz skonfigurować *digna*, aby używało połączenia ODBC — albo z wykorzystaniem **DSN (Data Source Name)**, albo w konfiguracji **DSN-less**.
 
 ---
 
-### A. Konfiguracja oparta na DSN
+### A. DSN-Based Configuration
 
-#### Konfiguracja *digna*
+#### *digna* Configuration
 
-Na ekranie **"Create a Database Connection"** podaj następujące wartości:
+Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technology:      Netezza
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Netezza
+Database Name:      Database that contains the source schemas
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
-#### Właściwości ODBC
+#### ODBC Properties
 
 ```
 name: "DSN",        value: "NZSQL"
@@ -66,24 +71,29 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji Twojego sterownika ODBC.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 
-### B. Konfiguracja bez DSN
+### B. DSN-less Configuration
 
-#### Konfiguracja *digna*
+#### *digna* Configuration
 
-Na ekranie **"Create a Database Connection"** podaj następujące wartości:
+Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technology:      Netezza
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Netezza
+Database Name:      Database that contains the source schemas
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
-#### Właściwości ODBC
+#### ODBC Properties
 
 ```
 name: "DRIVER",     value: "NetezzaSQL"

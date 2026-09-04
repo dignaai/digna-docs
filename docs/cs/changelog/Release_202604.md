@@ -12,7 +12,7 @@ Tato verze představuje pokročilou analýzu časových řad, znovupoužitelné 
 
 ---
 
-## 🚀 Nové funkce  
+## Nové funkce  
 
 ### Analytics Chart – analýza časových řad bez data science  
 - Nový **Analytics Chart** pro interaktivní analýzu časových řad  
@@ -61,7 +61,7 @@ Tato verze představuje pokročilou analýzu časových řad, znovupoužitelné 
 
 ---
 
-## 🧪 Rozšířené možnosti Data Analytics a validace  
+## Rozšířené možnosti Data Analytics a validace  
 
 S tímto vydáním digna rozšiřuje jak schopnosti pro porozumění datům, tak standardizaci validace:
 
@@ -74,7 +74,7 @@ Tyto schopnosti organizacím umožňují nejen detekovat problémy, ale také **
 
 ---
 
-## 🎯 Kdo z tohoto vydání profitujete  
+## Kdo z tohoto vydání profitujete  
 
 - Datoví inženýři: znovupoužitelná validační logika a lepší kontrola monitoringu  
 - Týmy pro kvalitu dat a správu (Data Quality & Governance): standardizovaná pravidla a konzistentní validace napříč systémy  
@@ -83,7 +83,7 @@ Tyto schopnosti organizacím umožňují nejen detekovat problémy, ale také **
 
 ---
 
-## 🛠 Aktualizace CLI  
+## Aktualizace CLI  
 - Žádné změny  
 
 ---

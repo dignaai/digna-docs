@@ -20,7 +20,7 @@ Het verwijst naar het scherm **"Create a Database Connection"**.
 **Library:** `teradatasql`  
 **Ondersteunde authenticatie:** Alleen wachtwoordgebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden gebruikt u de ODBC-driver.
+> Voor andere authenticatiemethoden gebruikt u de ODBC-driver.
 
 ### *digna* configuratie (native driver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die is gedefinieerd in uw ODBC-driverconfiguratie.
+> De `DSN` moet overeenkomen met de naam die is gedefinieerd in uw ODBC-driverconfiguratie.
 
 ---
 

@@ -20,7 +20,7 @@ Odkazuje na obrazovku **„Vytvořit připojení k databázi“**.
 **Knihovna:** `snowflake-connector-python`  
 **Podporovaná autentizace:** Pouze autentizace založená na hesle
 
-> ⚠️ Pro jiné metody autentizace prosím použijte ODBC ovladač.
+> Pro jiné metody autentizace prosím použijte ODBC ovladač.
 
 ### *digna* konfigurace (nativní ovladač)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schéma, které obsahuje zdrojová data"
 name: "Warehouse",      value: "Warehouse použité pro vykonávání SQL příkazů"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

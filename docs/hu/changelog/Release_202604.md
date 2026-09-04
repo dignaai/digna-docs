@@ -12,7 +12,7 @@ Ez a verzió fejlett idősorelemzést, újrahasznosítható validációs kompone
 
 ---
 
-## 🚀 Új funkciók  
+## Új funkciók  
 
 ### Analytics Chart – Idősorelemzés adattudományi háttér nélkül  
 - Új **Analytics Chart** interaktív idősorelemzéshez  
@@ -61,7 +61,7 @@ Ez a verzió fejlett idősorelemzést, újrahasznosítható validációs kompone
 
 ---
 
-## 🧪 Kiterjesztett Data Analytics & validációs képességek  
+## Kiterjesztett Data Analytics & validációs képességek  
 
 Ezzel a kiadással a digna bővíti mind az **adatmegértést**, mind az **adatvalidáció standardizálását**:
 
@@ -74,7 +74,7 @@ Ezek a képességek együtt lehetővé teszik a szervezetek számára, hogy ne c
 
 ---
 
-## 🎯 Kik profitálnak ebből a kiadásból  
+## Kik profitálnak ebből a kiadásból  
 
 - Adatmérnökök: újrahasznosítható validációs logika és jobb kontroll a monitorozás viselkedése felett  
 - Adatminőség- és kormányzási csapatok: szabványosított szabályok és konzisztens adatvalidáció rendszerek között  
@@ -83,7 +83,7 @@ Ezek a képességek együtt lehetővé teszik a szervezetek számára, hogy ne c
 
 ---
 
-## 🛠 CLI frissítések  
+## CLI frissítések  
 - Nincs változás  
 
 ---

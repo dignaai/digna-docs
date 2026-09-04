@@ -20,7 +20,7 @@ Se face referire la ecranul **"Create a Database Connection"**.
 **Library:** `psycopg`  
 **Supported Authentication:** Doar autentificare pe bază de parolă
 
-> ⚠️ Pentru alte metode de autentificare, vă rugăm să folosiți driverul ODBC.
+> Pentru alte metode de autentificare, vă rugăm să folosiți driverul ODBC.
 
 ### *digna* Configuration (Native Driver)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

@@ -12,7 +12,7 @@ Această versiune introduce analiză avansată de serii temporale, componente re
 
 ---
 
-## 🚀 Funcționalități noi  
+## Funcționalități noi  
 
 ### Analytics Chart – Analiză de serii temporale fără Data Science  
 - Nou: **Analytics Chart** pentru analiză interactivă a seriilor temporale  
@@ -61,7 +61,7 @@ Această versiune introduce analiză avansată de serii temporale, componente re
 
 ---
 
-## 🧪 Capabilități extinse pentru Data Analytics & Validation  
+## Capabilități extinse pentru Data Analytics & Validation  
 
 Cu această versiune, digna extinde atât înțelegerea datelor, cât și standardizarea validării datelor:
 
@@ -74,7 +74,7 @@ Cu această versiune, digna extinde atât înțelegerea datelor, cât și standa
 
 ---
 
-## 🎯 Cine beneficiază de această versiune  
+## Cine beneficiază de această versiune  
 
 - **Data Engineers:** Logică de validare reutilizabilă și control îmbunătățit asupra comportamentului de monitorizare  
 - **Echipe de Calitate și Guvernanță a Datelor:** Reguli standardizate și validare consistentă a datelor între sisteme  
@@ -83,7 +83,7 @@ Cu această versiune, digna extinde atât înțelegerea datelor, cât și standa
 
 ---
 
-## 🛠 Actualizări CLI  
+## Actualizări CLI  
 - Nicio modificare  
 
 ---

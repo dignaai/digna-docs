@@ -142,7 +142,7 @@ usePassword = true
 - Keine Benutzername-/Passwortfelder
 - Nur OIDC-Authentifizierung ist verfügbar
 
-> **💡 Tipp**
+> **Tipp**
 >
 > Die passwortbasierte Anmeldung ist nur für Benutzer verfügbar, die mit Passwörtern über den Befehl `digna user add` oder über das Dashboard erstellt wurden.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL nach der Authentifizierung | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-Konfigurationsendpunkt | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Wichtig**
+> **Wichtig**
 >
 > Ersetzen Sie Platzhalterwerte (`<client_id>`, `<client_secret>`, `<tenant_id>`) durch tatsächliche Anmeldeinformationen aus dem Entwicklerportal Ihres Identitätsanbieters.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Überprüfen Sie, ob Login-Schaltflächen für jeden konfigurierten Anbieter angezeigt werden:
 
-- ✅ Sie sollten die Schaltfläche "Mit Microsoft anmelden" sehen
-- ✅ Sie sollten die Schaltfläche "Mit Google anmelden" sehen
-- ✅ (Wenn usePassword = true) Sie sollten Benutzername-/Passwortfelder sehen
+- Sie sollten die Schaltfläche "Mit Microsoft anmelden" sehen
+- Sie sollten die Schaltfläche "Mit Google anmelden" sehen
+- (Wenn usePassword = true) Sie sollten Benutzername-/Passwortfelder sehen
 
 Wenn Schaltflächen nicht angezeigt werden:
 - Prüfen Sie, ob `dashboard_config.toml` gespeichert wurde
@@ -317,10 +317,10 @@ Klicken Sie auf eine der SSO-Schaltflächen (z. B. "Mit Microsoft anmelden"):
 
 Nach erfolgreichem SSO-Login:
 
-- ✅ Der Benutzer sollte automatisch in digna angelegt werden
-- ✅ Der Benutzer sollte eingeloggt sein
-- ✅ Das Benutzerprofil sollte Ihre Identitätsanbieterangaben anzeigen
-- ✅ Sie sollten das digna-Dashboard sehen
+- Der Benutzer sollte automatisch in digna angelegt werden
+- Der Benutzer sollte eingeloggt sein
+- Das Benutzerprofil sollte Ihre Identitätsanbieterangaben anzeigen
+- Sie sollten das digna-Dashboard sehen
 
 #### Schritt 6: Passwort-Login testen (falls aktiviert)
 
@@ -437,7 +437,7 @@ Kontaktieren Sie support@digna.ai, wenn Sie Hilfe bei der Integration eines best
 
 ## Beste Vorgehensweisen
 
-✅ EMPFEHLUNGEN:
+EMPFEHLUNGEN:
 - Verwenden Sie in Produktion HTTPS (nicht HTTP)
 - Speichern Sie Client-Secrets sicher (verwenden Sie wenn möglich Umgebungsvariablen)
 - Rotieren Sie Secrets regelmäßig
@@ -446,7 +446,7 @@ Kontaktieren Sie support@digna.ai, wenn Sie Hilfe bei der Integration eines best
 - Überwachen Sie Login-Logs auf ungewöhnliche Aktivitäten
 - Halten Sie die Konfiguration des Identitätsanbieters synchron mit der digna-Konfiguration
 
-❌ NICHT:
+NICHT:
 - Speichern Sie Client-Secrets im Versionskontrollsystem
 - Verwenden Sie HTTP-Redirect-URIs in der Produktion
 - Konfigurieren Sie mehrere Anbieter mit demselben Schlüssel
@@ -460,9 +460,9 @@ Kontaktieren Sie support@digna.ai, wenn Sie Hilfe bei der Integration eines best
 
 Brauchen Sie Hilfe bei der SSO-Konfiguration?
 
-- 📧 **E-Mail:** support@digna.ai
-- 📚 **Dokumentation:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **E-Mail:** support@digna.ai
+- **Dokumentation:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

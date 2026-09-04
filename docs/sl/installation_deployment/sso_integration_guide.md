@@ -142,7 +142,7 @@ usePassword = true
 - Ni polj za uporabniško ime/geslo
 - Na voljo je samo OIDC avtentikacija
 
-> **💡 Nasvet**
+> **Nasvet**
 >
 > Prijava z geslom je na voljo samo za uporabnike, ki so bili ustvarjeni z gesli z ukazom `digna user add` ali prek nadzorne plošče.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL po avtentikaciji | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC konfiguracijska točka | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Pomembno**
+> **Pomembno**
 >
 > Zamenjajte nadomestne vrednosti (`<client_id>`, `<client_secret>`, `<tenant_id>`) z dejavnimi poverilnicami iz razvijalskega konzola vašega ponudnika identitete.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Preverite, ali se za vsakega konfiguriranega ponudnika prikažejo gumbi za prijavo:
 
-- ✅ Morali bi videti gumb "Login with Microsoft"
-- ✅ Morali bi videti gumb "Login with Google"
-- ✅ (Če je usePassword = true) Morali bi videti polja za uporabniško ime/geslo
+- Morali bi videti gumb "Login with Microsoft"
+- Morali bi videti gumb "Login with Google"
+- (Če je usePassword = true) Morali bi videti polja za uporabniško ime/geslo
 
 Če se gumbi ne prikažejo:
 - Preverite, da je `dashboard_config.toml` shranjen
@@ -317,10 +317,10 @@ Kliknite enega od SSO gumbov (npr. "Login with Microsoft"):
 
 Po uspešni SSO prijavi:
 
-- ✅ Uporabnik bi moral biti samodejno ustvarjen v digna
-- ✅ Uporabnik bi moral biti prijavljen
-- ✅ Profil uporabnika bi moral prikazati poverilnice ponudnika identitete
-- ✅ Videli bi morali digna nadzorno ploščo
+- Uporabnik bi moral biti samodejno ustvarjen v digna
+- Uporabnik bi moral biti prijavljen
+- Profil uporabnika bi moral prikazati poverilnice ponudnika identitete
+- Videli bi morali digna nadzorno ploščo
 
 #### Korak 6: Preizkus prijave z geslom (če omogočeno)
 
@@ -437,7 +437,7 @@ Kontaktirajte support@digna.ai, če potrebujete pomoč pri integraciji specifič
 
 ## Best Practices
 
-✅ DO:
+DO:
 - Uporabljajte HTTPS v produkciji (ne HTTP)
 - Hranite client secret varno (po možnosti v okolijskih spremenljivkah)
 - Občasno rotirajte (zamenjajte) skrivnosti
@@ -446,7 +446,7 @@ Kontaktirajte support@digna.ai, če potrebujete pomoč pri integraciji specifič
 - Spremljajte prijavne zapise zaradi sumljivih dejavnosti
 - Ohranjajte sinhronizacijo nastavitev ponudnika identitete z digna konfiguracijo
 
-❌ DON'T:
+DON'T:
 - Ne shranjujte client secret v sistem za nadzor različic
 - Ne uporabljajte HTTP redirect URI v produkciji
 - Ne konfigurirajte več ponudnikov z istim ključem
@@ -460,9 +460,9 @@ Kontaktirajte support@digna.ai, če potrebujete pomoč pri integraciji specifič
 
 Potrebujete pomoč pri konfiguraciji SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Dokumentacija:** https://docs.digna.ai
-- 🌐 **Spletna stran:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Dokumentacija:** https://docs.digna.ai
+- **Spletna stran:** https://www.digna.ai
 
 ---
 

@@ -142,7 +142,7 @@ usePassword = true
 - Kullanıcı adı/parola alanı yoktur
 - Sadece OIDC ile kimlik doğrulama kullanılabilir
 
-> **💡 İpucu**
+> **İpucu**
 >
 > Parola tabanlı giriş, yalnızca `digna user add` komutuyla veya panel üzerinden parola ile oluşturulmuş kullanıcılar için kullanılabilir.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Evet | Kimlik doğrulama sonrası geri çağırma (callback) URL'si | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Evet | OIDC yapılandırma uç noktası | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Önemli**
+> **Önemli**
 >
 > Yer tutucu değerleri (`<client_id>`, `<client_secret>`, `<tenant_id>`) kimlik sağlayıcınızın geliştirici portalından alınan gerçek kimlik bilgileriyle değiştirin.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Yapılandırılan her sağlayıcı için giriş düğmelerinin göründüğünü kontrol edin:
 
-- ✅ "Microsoft ile giriş" düğmesi görünmeli
-- ✅ "Google ile giriş" düğmesi görünmeli
-- ✅ (`usePassword = true` ise) Kullanıcı adı/parola alanları görünmeli
+- "Microsoft ile giriş" düğmesi görünmeli
+- "Google ile giriş" düğmesi görünmeli
+- (`usePassword = true` ise) Kullanıcı adı/parola alanları görünmeli
 
 Düğmeler görünmüyorsa:
 - `dashboard_config.toml` dosyasının kaydedildiğini kontrol edin
@@ -317,10 +317,10 @@ SSO düğmelerinden birine tıklayın (ör. "Microsoft ile giriş"):
 
 Başarılı SSO girişinden sonra:
 
-- ✅ Kullanıcı otomatik olarak digna'da oluşturulmalı
-- ✅ Kullanıcı giriş yapmış olmalı
-- ✅ Kullanıcı profili kimlik sağlayıcı bilgilerinizi göstermeli
-- ✅ digna panelini görmelisiniz
+- Kullanıcı otomatik olarak digna'da oluşturulmalı
+- Kullanıcı giriş yapmış olmalı
+- Kullanıcı profili kimlik sağlayıcı bilgilerinizi göstermeli
+- digna panelini görmelisiniz
 
 #### Adım 6: Parola Girişini Test Edin (Etkinse)
 
@@ -437,7 +437,7 @@ Belirli bir sağlayıcının entegrasyonunda yardıma ihtiyacınız olursa suppo
 
 ## En İyi Uygulamalar
 
-✅ YAPIN:
+YAPIN:
 - Üretimde HTTPS kullanın (HTTP kullanmayın)
 - Client secret'ları güvenli şekilde saklayın (mümkünse ortam değişkenleri kullanın)
 - Secret'ları düzenli olarak döndürün
@@ -446,7 +446,7 @@ Belirli bir sağlayıcının entegrasyonunda yardıma ihtiyacınız olursa suppo
 - Olağandışı etkinlikler için giriş loglarını izleyin
 - Kimlik sağlayıcı yapılandırmasını digna yapılandırmasıyla senkron tutun
 
-❌ YAPMAYIN:
+YAPMAYIN:
 - Client secret'ları versiyon kontrol sisteminde saklamayın
 - Üretimde HTTP redirect URI'leri kullanmayın
 - Aynı key ile birden fazla sağlayıcı yapılandırmayın
@@ -460,9 +460,9 @@ Belirli bir sağlayıcının entegrasyonunda yardıma ihtiyacınız olursa suppo
 
 SSO yapılandırması ile ilgili yardıma mı ihtiyacınız var?
 
-- 📧 **E-posta:** support@digna.ai
-- 📚 **Dokümantasyon:** https://docs.digna.ai
-- 🌐 **Web sitesi:** https://www.digna.ai
+- **E-posta:** support@digna.ai
+- **Dokümantasyon:** https://docs.digna.ai
+- **Web sitesi:** https://www.digna.ai
 
 ---
 

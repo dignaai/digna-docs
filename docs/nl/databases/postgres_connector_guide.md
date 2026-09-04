@@ -20,7 +20,7 @@ Deze handleiding verwijst naar het scherm **"Maak een databaseverbinding"**.
 **Library:** `psycopg`  
 **Ondersteunde authenticatie:** Alleen wachtwoordgebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden gebruikt u de ODBC-driver.
+> Voor andere authenticatiemethoden gebruikt u de ODBC-driver.
 
 ### *digna*-configuratie (native driver)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die in uw ODBC-driverconfiguratie is gedefinieerd.
+> De `DSN` moet overeenkomen met de naam die in uw ODBC-driverconfiguratie is gedefinieerd.
 
 ---
 

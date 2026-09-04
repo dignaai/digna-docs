@@ -20,7 +20,7 @@ Den henviser til skærmen **"Opret en databaseforbindelse"**.
 **Library:** `pymssql`  
 **Understøttet autentificering:** Kun adgangskodebaseret autentificering
 
-> ⚠️ For andre autentificeringsmetoder, brug venligst ODBC-driveren.
+> For andre autentificeringsmetoder, brug venligst ODBC-driveren.
 
 ### *digna* konfiguration (native driver)
 
@@ -113,7 +113,7 @@ name: "PWD",        value: "din databaseadgangskode"
 name: "DATABASE",   value: "navnet på databasen, der indeholder kilde-data-skemaet"
 ```
 
-> 🔹 `DSN` skal matche navnet defineret i din ODBC-driverkonfiguration.
+> `DSN` skal matche navnet defineret i din ODBC-driverkonfiguration.
 
 ---
 

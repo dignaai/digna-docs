@@ -142,7 +142,7 @@ usePassword = true
 - कोई यूजरनेम/पासवर्ड फ़ील्ड नहीं होगा
 - केवल OIDC प्रमाणीकरण उपलब्ध होगा
 
-> **💡 Tip**
+> **Tip**
 >
 > पासवर्ड-आधारित लॉगिन केवल उन उपयोगकर्ताओं के लिए उपलब्ध है जिन्हें `digna user add` कमांड या डैशबोर्ड के माध्यम से पासवर्ड के साथ बनाया गया हो।
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | प्रमाणीकरण के बाद कॉलबैक URL | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC कॉन्फ़िगरेशन एंडपॉइंट | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Important**
+> **Important**
 >
 > प्लेसहोल्डर वैल्यूज़ (`<client_id>`, `<client_secret>`, `<tenant_id>`) को अपने पहचान प्रदाता के डेवलपर पोर्टल से प्राप्त वास्तविक क्रेडेंशियल से बदलें।
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 जाँचें कि प्रत्येक कॉन्फ़िगर किए गए प्रदाता के लिए लॉगिन बटन दिखाई दे रहे हैं:
 
-- ✅ "Login with Microsoft" बटन दिखाई देना चाहिए
-- ✅ "Login with Google" बटन दिखाई देना चाहिए
-- ✅ (यदि usePassword = true) यूजरनेम/पासवर्ड फ़ील्ड दिखाई देने चाहिए
+- "Login with Microsoft" बटन दिखाई देना चाहिए
+- "Login with Google" बटन दिखाई देना चाहिए
+- (यदि usePassword = true) यूजरनेम/पासवर्ड फ़ील्ड दिखाई देने चाहिए
 
 यदि बटन दिखाई नहीं दे रहे हैं:
 - जाँचें कि `dashboard_config.toml` सेव हुई है
@@ -317,10 +317,10 @@ http://localhost:5173
 
 सफल SSO लॉगिन के बाद:
 
-- ✅ उपयोगकर्ता स्वचालित रूप से digna में बनाया जाना चाहिए
-- ✅ उपयोगकर्ता लॉग इन होना चाहिए
-- ✅ उपयोगकर्ता प्रोफ़ाइल में आपके पहचान प्रदाता की जानकारी दिखनी चाहिए
-- ✅ आपको digna डैशबोर्ड दिखना चाहिए
+- उपयोगकर्ता स्वचालित रूप से digna में बनाया जाना चाहिए
+- उपयोगकर्ता लॉग इन होना चाहिए
+- उपयोगकर्ता प्रोफ़ाइल में आपके पहचान प्रदाता की जानकारी दिखनी चाहिए
+- आपको digna डैशबोर्ड दिखना चाहिए
 
 #### Step 6: Test Password Login (If Enabled)
 
@@ -437,7 +437,7 @@ http://localhost:5173
 
 ## Best Practices
 
-✅ **करें:**
+**करें:**
 - प्रोडक्शन में HTTPS का उपयोग करें (HTTP का उपयोग न करें)
 - क्लाइंट सीक्रेट्स को सुरक्षित रूप से स्टोर करें (यदि संभव हो तो environment variables का उपयोग करें)
 - समय-समय पर सीक्रेट्स रोटेट करें
@@ -446,7 +446,7 @@ http://localhost:5173
 - लॉगिन लॉग्स की निगरानी करें असामान्य गतिविधि के लिए
 - पहचान प्रदाता कॉन्फ़िगरेशन को digna कॉन्फ़िग के साथ सिंक रखें
 
-❌ **न करें:**
+**न करें:**
 - क्लाइंट सीक्रेट्स को वर्ज़न कंट्रोल में स्टोर न करें
 - प्रोडक्शन में HTTP redirect URIs का उपयोग न करें
 - एक ही key के साथ कई प्रदाताओं को कॉन्फ़िगर न करें
@@ -460,9 +460,9 @@ http://localhost:5173
 
 SSO कॉन्फ़िगरेशन में मदद चाहिए?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentation:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentation:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

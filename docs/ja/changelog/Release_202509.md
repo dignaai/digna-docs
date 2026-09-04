@@ -12,7 +12,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🚀 新機能  
+## 新機能  
 
 ### モジュラー設計  
 - digna は現在 **モジュラーアーキテクチャ** を採用しました。  
@@ -35,7 +35,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🛠 CLI の更新  
+## CLI の更新  
 
 - **新コマンド: `inspect-cancel`** – リクエストIDで検査をキャンセルするか、すべてのアクティブなリクエストを終了します。  
 - **新コマンド: `check-config`** – 起動前に設定ファイルを検証します。  
@@ -43,6 +43,6 @@ image: /assets/logo_square.png
 - **強化された `inspect` コマンド** – 新オプション `--bypass-backend` (`-bb`) と標準化された戻りコード（`0 = OK, 1 = INFO, 2 = WARNING`）を追加しました。  
 
 
-## 📘 ドキュメント  
+## ドキュメント  
 - 新しいガイド:  
   - シングルサインオン統合ガイド

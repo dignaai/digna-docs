@@ -12,7 +12,7 @@ Ta izdaja prav tako krepi overjanje in izboljšuje upravljanje obvestil po celot
 
 ---
 
-## 🚀 Nove funkcije  
+## Nove funkcije  
 
 ### Modularna zasnova  
 - digna zdaj sledi **modularni arhitekturi**.  
@@ -35,7 +35,7 @@ Ta izdaja prav tako krepi overjanje in izboljšuje upravljanje obvestil po celot
 
 ---
 
-## 🛠 Posodobitve CLI  
+## Posodobitve CLI  
 
 - **Nova ukaz: `inspect-cancel`** – Prekliči inšpekcije po ID zahteve ali prekine vse aktivne zahtevke.  
 - **Nova ukaz: `check-config`** – Validira konfiguracijske datoteke pred zagonom.  
@@ -43,6 +43,6 @@ Ta izdaja prav tako krepi overjanje in izboljšuje upravljanje obvestil po celot
 - **Izboljšan ukaz `inspect`** – Nova možnost `--bypass-backend` (`-bb`) in standardizirane povratne kode (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentacija  
+## Dokumentacija  
 - Novi vodniki:  
   - Vodnik za integracijo Single Sign-On

@@ -12,7 +12,7 @@ Această versiune mărește flexibilitatea în toate modulele și extinde semnif
 
 ---
 
-## 🚀 Caracteristici noi  
+## Caracteristici noi  
 
 ### Conexiuni globale la baze de date  
 - Conexiunile la baze de date sunt acum configurate la nivel **global**.  
@@ -52,7 +52,7 @@ Această versiune mărește flexibilitatea în toate modulele și extinde semnif
 
 ---
 
-## 🧪 Capacități extinse de validare a datelor  
+## Capacități extinse de validare a datelor  
 
 Cu această versiune, **digna Data Validation** suportă acum un set cuprinzător de reguli de calitate a datelor:
 
@@ -76,7 +76,7 @@ Cu această versiune, **digna Data Validation** suportă acum un set cuprinzăto
 
 ---
 
-## 🎯 Cui îi este folositoare această versiune  
+## Cui îi este folositoare această versiune  
 
 - **Data Engineers:** Modelare mai flexibilă a surselor de date și conexiuni reutilizabile la baze de date  
 - **Echipe Calitate & Guvernanță a Datelor:** Acoperire extinsă a validărilor, inclusiv reguli de integritate relațională  
@@ -85,7 +85,7 @@ Cu această versiune, **digna Data Validation** suportă acum un set cuprinzăto
 
 ---
 
-## 🛠 Actualizări CLI  
+## Actualizări CLI  
 - Nicio modificare
 
 ---

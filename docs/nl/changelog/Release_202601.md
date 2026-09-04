@@ -12,7 +12,7 @@ Deze release vergroot de flexibiliteit in alle modules en breidt de dekking voor
 
 ---
 
-## 🚀 Nieuwe functies  
+## Nieuwe functies  
 
 ### Globale databaseverbindingen  
 - Databaseverbindingen worden nu op **globaal niveau** geconfigureerd.  
@@ -52,7 +52,7 @@ Deze release vergroot de flexibiliteit in alle modules en breidt de dekking voor
 
 ---
 
-## 🧪 Uitgebreide mogelijkheden voor gegevensvalidatie  
+## Uitgebreide mogelijkheden voor gegevensvalidatie  
 
 Met deze release ondersteunt **digna Data Validation** nu een uitgebreide set regels voor gegevenskwaliteit:
 
@@ -76,7 +76,7 @@ Samen stellen deze controles in staat om **structurele en relationele regels voo
 
 ---
 
-## 🎯 Wie profiteert van deze release  
+## Wie profiteert van deze release  
 
 - **Data Engineers:** Flexibeler datasourcemodellering en herbruikbare databaseverbindingen  
 - **Teams voor gegevenskwaliteit & governance:** Uitgebreide validatiedekking inclusief relationele integriteitsregels  
@@ -85,7 +85,7 @@ Samen stellen deze controles in staat om **structurele en relationele regels voo
 
 ---
 
-## 🛠 CLI-updates  
+## CLI-updates  
 - Geen wijzigingen
 
 ---

@@ -65,7 +65,7 @@ You can add a new database for digna to your existing PostgreSQL Server.
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **⚠️ Recommended Specifications**
+> **Recommended Specifications**
 >
 > - **Memory**: 32 GB RAM (instead of 16 GB)
 > - **Disk Space**: 50 GB available storage (instead of 10 GB)
@@ -122,7 +122,7 @@ Enter and confirm a password for the PostgreSQL superuser (`postgres`). **Save t
 
 The default PostgreSQL port is `5432`. You can use the default or specify a different port if needed.
 
-> **💡 Tip**
+> **Tip**
 >
 > If port 5432 is already in use, choose an alternative port and note it for later configuration.
 
@@ -200,7 +200,7 @@ To ensure Markdown files (`.md`) are served correctly by IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > Without this setting, `.md` files may not be served properly.
 
@@ -227,7 +227,7 @@ Apache Tomcat is an open-source Java servlet container and web server.
    - Navigate to `http://localhost:8080`
    - You should see the Apache Tomcat welcome page
 
-> **💡 Tip**
+> **Tip**
 >
 > Apache Tomcat typically starts automatically after installation. If it doesn't, navigate to the `bin` folder and run `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Use strong, complex passwords for database users. Avoid easily guessable credentials.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **⚠️ Important**
+> **Important**
 >
 > The license file is **not** included in the installation package and will be provided separately by digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 This creates a user with full administrative privileges.
 
-> **✅ Best Practice**
+> **Best Practice**
 >
 > Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
 
@@ -545,7 +545,7 @@ The following batch files are available:
 - `start_service.bat` — Starts the running service
 - `stop_service.bat` — Stops the running service
 
-> **⚠️ Administrator Required**
+> **Administrator Required**
 >
 > All batch files must be executed with Administrator privileges.
 
@@ -587,7 +587,7 @@ The digna server is now registered as a Windows service with **automatic startup
    stop_service.bat
    ```
 
-> **💡 Tip**
+> **Tip**
 >
 > Always stop the service before updating application files.
 
@@ -671,7 +671,7 @@ ren dashboard dashboard_old
 2. Copy the new `digna` executable, `dashboard` folder to your installation directory
 
 
-> **✅ Important**
+> **Important**
 >
 > The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
 

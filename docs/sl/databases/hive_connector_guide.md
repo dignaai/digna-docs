@@ -20,7 +20,7 @@ Sklicuje se na zaslon **"Create a Database Connection"**.
 **Knjižnica:** `PyHive`  
 **Podprto overjanje:** Samo overjanje z geslom
 
-> ⚠️ Za druge metode overjanja uporabite ODBC gonilnik.
+> Za druge metode overjanja uporabite ODBC gonilnik.
 
 ### Konfiguracija *digna* (izvorni gonilnik)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` se mora ujemati z imenom, določenim v konfiguraciji vašega ODBC gonilnika.
+> `DSN` se mora ujemati z imenom, določenim v konfiguraciji vašega ODBC gonilnika.
 
 ---
 

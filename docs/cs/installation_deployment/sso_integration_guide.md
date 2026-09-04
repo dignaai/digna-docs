@@ -142,7 +142,7 @@ usePassword = true
 - Žádná pole pro uživatelské jméno/heslo
 - K dispozici je pouze OIDC autentizace
 
-> **💡 Tip**
+> **Tip**
 >
 > Přihlášení pomocí hesla je dostupné pouze pro uživatele, kteří byli vytvořeni s hesly pomocí příkazu `digna user add` nebo přes dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ano | Callback URL po autentizaci | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ano | OIDC konfigurační endpoint | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Důležité**
+> **Důležité**
 >
 > Nahraďte zástupné hodnoty (`<client_id>`, `<client_secret>`, `<tenant_id>`) skutečnými údaji z vývojářského portálu vašeho identity providera.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Zkontrolujte, že se zobrazí tlačítka pro přihlášení pro každého nakonfigurovaného providera:
 
-- ✅ Mělo by být vidět tlačítko "Login with Microsoft"
-- ✅ Mělo by být vidět tlačítko "Login with Google"
-- ✅ (Pokud usePassword = true) Měla by být viditelná pole pro uživatelské jméno/heslo
+- Mělo by být vidět tlačítko "Login with Microsoft"
+- Mělo by být vidět tlačítko "Login with Google"
+- (Pokud usePassword = true) Měla by být viditelná pole pro uživatelské jméno/heslo
 
 Pokud se tlačítka nezobrazují:
 - Zkontrolujte, že `dashboard_config.toml` byl uložen
@@ -317,10 +317,10 @@ Klikněte na jedno z SSO tlačítek (např. "Login with Microsoft"):
 
 Po úspěšném SSO přihlášení:
 
-- ✅ Uživatel by měl být automaticky vytvořen v digna
-- ✅ Uživatel by měl být přihlášen
-- ✅ Profil uživatele by měl zobrazit údaje z identity providera
-- ✅ Měli byste vidět digna dashboard
+- Uživatel by měl být automaticky vytvořen v digna
+- Uživatel by měl být přihlášen
+- Profil uživatele by měl zobrazit údaje z identity providera
+- Měli byste vidět digna dashboard
 
 #### Krok 6: Otestovat přihlášení pomocí hesla (pokud povoleno)
 
@@ -437,7 +437,7 @@ Kontaktujte support@digna.ai, pokud potřebujete pomoc s integrací konkrétníh
 
 ## Doporučené postupy
 
-✅ DO:
+DO:
 - Používejte HTTPS v produkci (ne HTTP)
 - Uchovávejte client secret bezpečně (pokud možno použijte environment proměnné)
 - Periodicky rotujte tajné klíče
@@ -446,7 +446,7 @@ Kontaktujte support@digna.ai, pokud potřebujete pomoc s integrací konkrétníh
 - Monitorujte logy přihlášení kvůli neobvyklé aktivitě
 - Udržujte konfiguraci identity providera v syncu s konfigurací digna
 
-❌ DON'T:
+DON'T:
 - Neukládejte client secret do verzovacího systému
 - Nepoužívejte HTTP redirect URI v produkci
 - Nekonfigurujte více providerů se stejným klíčem
@@ -460,9 +460,9 @@ Kontaktujte support@digna.ai, pokud potřebujete pomoc s integrací konkrétníh
 
 Potřebujete pomoc s konfigurací SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Dokumentace:** https://docs.digna.ai
-- 🌐 **Web:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Dokumentace:** https://docs.digna.ai
+- **Web:** https://www.digna.ai
 
 ---
 

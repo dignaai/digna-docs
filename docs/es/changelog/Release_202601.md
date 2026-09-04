@@ -12,7 +12,7 @@ Esta versión aumenta la flexibilidad en todos los módulos y amplía significat
 
 ---
 
-## 🚀 Nuevas funciones  
+## Nuevas funciones  
 
 ### Conexiones de base de datos globales  
 - Las conexiones de base de datos ahora se configuran a nivel **global**.  
@@ -52,7 +52,7 @@ Esta versión aumenta la flexibilidad en todos los módulos y amplía significat
 
 ---
 
-## 🧪 Capacidades ampliadas de validación de datos  
+## Capacidades ampliadas de validación de datos  
 
 Con esta versión, **digna Data Validation** ahora soporta un conjunto completo de reglas de calidad de datos:
 
@@ -76,7 +76,7 @@ En conjunto, estas comprobaciones permiten aplicar **reglas estructurales y rela
 
 ---
 
-## 🎯 Quién se beneficia de esta versión  
+## Quién se beneficia de esta versión  
 
 - **Ingenieros de datos:** Modelado de datasource más flexible y conexiones de base de datos reutilizables  
 - **Equipos de Calidad de Datos y Gobierno:** Cobertura de validación ampliada, incluidas reglas de integridad relacional  
@@ -85,7 +85,7 @@ En conjunto, estas comprobaciones permiten aplicar **reglas estructurales y rela
 
 ---
 
-## 🛠 Actualizaciones de la CLI  
+## Actualizaciones de la CLI  
 - Sin cambios
 
 ---

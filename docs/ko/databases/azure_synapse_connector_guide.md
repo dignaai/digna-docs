@@ -22,7 +22,7 @@ It refers to the screen **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Supported Authentication:** 비밀번호 기반 인증만 지원
 
-> ⚠️ 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
+> 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
 
 ### *digna* Configuration (Native Driver)
 
@@ -118,7 +118,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
+> `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
 
 ---
 

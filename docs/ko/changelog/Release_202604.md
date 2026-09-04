@@ -12,7 +12,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🚀 신규 기능  
+## 신규 기능  
 
 ### Analytics Chart – 데이터 사이언스 없이 시계열 분석  
 - 상호작용형 시계열 분석을 위한 새로운 **Analytics Chart**  
@@ -61,7 +61,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🧪 확장된 Data Analytics & Validation 기능  
+## 확장된 Data Analytics & Validation 기능  
 
 이번 릴리스로 digna는 **데이터 이해**와 **데이터 검증 표준화**를 동시에 확장합니다:
 
@@ -74,7 +74,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🎯 본 릴리스의 주요 수혜자  
+## 본 릴리스의 주요 수혜자  
 
 - **데이터 엔지니어:** 재사용 가능한 검증 로직 및 모니터링 동작에 대한 향상된 제어  
 - **데이터 품질 및 거버넌스 팀:** 표준화된 규칙과 시스템 전반에 걸친 일관된 데이터 검증  
@@ -83,7 +83,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🛠 CLI 업데이트  
+## CLI 업데이트  
 - 변경 없음  
 
 ---

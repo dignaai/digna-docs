@@ -19,12 +19,12 @@ Vztahuje se na obrazovku **"Create a Database Connection"**.
 **Knihovna:** `databricks-sql-connector`  
 **Podporovaná autentizace:** pouze osobní přístupový token (Personal Access Token, PAT)
 
-> ⚠️ Pro jiné metody autentizace použijte prosím ovladač ODBC.
+> Pro jiné metody autentizace použijte prosím ovladač ODBC.
 
 ### Osobní přístupový token (PAT)
 
 Pro autentizaci pomocí osobního přístupového tokenu odkažte na oficiální dokumentaci Databricks:  
-👉 [Jak získat PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[Jak získat PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### Konfigurace *digna* (nativní driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 Hodnota `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
+> Hodnota `DSN` musí odpovídat názvu definovanému ve vaší konfiguraci ODBC ovladače.
 
 ---
 

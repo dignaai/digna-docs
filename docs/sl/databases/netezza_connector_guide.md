@@ -66,7 +66,7 @@ name: "UID",        value: "vaš uporabnik baze podatkov"
 name: "PWD",        value: "vaše geslo za bazo podatkov"
 ```
 
-> 🔹 Vrednost `DSN` mora ustrezati imenu, definiranemu v vaši konfiguraciji ODBC gonilnika.
+> Vrednost `DSN` mora ustrezati imenu, definiranemu v vaši konfiguraciji ODBC gonilnika.
 
 ---
 

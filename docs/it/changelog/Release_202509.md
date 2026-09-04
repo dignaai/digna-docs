@@ -12,7 +12,7 @@ Questa release rafforza inoltre l'autenticazione e migliora la gestione delle no
 
 ---
 
-## 🚀 Nuove funzionalità  
+## Nuove funzionalità  
 
 ### Design modulare  
 - digna ora adotta una **architettura modulare**.  
@@ -35,7 +35,7 @@ Questa release rafforza inoltre l'autenticazione e migliora la gestione delle no
 
 ---
 
-## 🛠 Aggiornamenti CLI  
+## Aggiornamenti CLI  
 
 - **Nuovo comando: `inspect-cancel`** – Annulla le ispezioni tramite ID richiesta o termina tutte le richieste attive.  
 - **Nuovo comando: `check-config`** – Valida i file di configurazione prima dell'avvio.  
@@ -43,6 +43,6 @@ Questa release rafforza inoltre l'autenticazione e migliora la gestione delle no
 - **Comando `inspect` migliorato** – Nuova opzione `--bypass-backend` (`-bb`) e codici di ritorno standardizzati (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Documentazione  
+## Documentazione  
 - Nuove guide:  
   - Guida all'integrazione Single Sign-On

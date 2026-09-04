@@ -12,7 +12,7 @@ Toto vydání rovněž posiluje ověřování a vylepšuje zpracování notifika
 
 ---
 
-## 🚀 Nové funkce  
+## Nové funkce  
 
 ### Modulární architektura  
 - digna nyní používá **modulární architekturu**.  
@@ -35,7 +35,7 @@ Toto vydání rovněž posiluje ověřování a vylepšuje zpracování notifika
 
 ---
 
-## 🛠 Aktualizace CLI  
+## Aktualizace CLI  
 
 - **Nový příkaz: `inspect-cancel`** – zruší inspekce podle ID požadavku nebo ukončí všechny aktivní požadavky.  
 - **Nový příkaz: `check-config`** – ověří konfigurační soubory před spuštěním.  
@@ -43,6 +43,6 @@ Toto vydání rovněž posiluje ověřování a vylepšuje zpracování notifika
 - **Vylepšený příkaz `inspect`** – nová volba `--bypass-backend` (`-bb`) a standardizované návratové kódy (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentace  
+## Dokumentace  
 - Nové návody:  
   - Průvodce integrací Single Sign-On

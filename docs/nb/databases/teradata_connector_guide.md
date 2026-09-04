@@ -20,7 +20,7 @@ Den viser til skjermen **"Opprett en databaseforbindelse"**.
 **Library:** `teradatasql`  
 **Støttet autentisering:** Kun passordbasert autentisering
 
-> ⚠️ For andre autentiseringsmetoder, bruk ODBC-driveren.
+> For andre autentiseringsmetoder, bruk ODBC-driveren.
 
 ### *digna*-konfigurasjon (native driver)
 
@@ -91,7 +91,7 @@ name: "UID",        value: "your database user"
 name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` må samsvare med navnet som er definert i ODBC-driverkonfigurasjonen din.
+> `DSN` må samsvare med navnet som er definert i ODBC-driverkonfigurasjonen din.
 
 ---
 

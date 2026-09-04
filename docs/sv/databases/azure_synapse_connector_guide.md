@@ -22,7 +22,7 @@ Den hänvisar till skärmen **"Create a Database Connection"**.
 **Library:** `pymssql`  
 **Stödd autentisering:** Endast lösenordsbaserad autentisering
 
-> ⚠️ För andra autentiseringsmetoder, använd ODBC-drivrutinen.
+> För andra autentiseringsmetoder, använd ODBC-drivrutinen.
 
 ### *digna* konfiguration (inbyggd drivrutin)
 
@@ -120,7 +120,7 @@ name: "DATABASE",   value: "namnet på databasen som innehåller källschemat"
 
 ```
 
-> 🔹 `DSN` måste matcha namnet som definierats i din ODBC-drivrutinskonfiguration.
+> `DSN` måste matcha namnet som definierats i din ODBC-drivrutinskonfiguration.
 
 ---
 

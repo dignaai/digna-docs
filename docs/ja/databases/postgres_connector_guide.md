@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `psycopg`  
 **Supported Authentication:** パスワード認証のみ
 
-> ⚠️ 他の認証方式が必要な場合は、ODBC ドライバを使用してください。
+> 他の認証方式が必要な場合は、ODBC ドライバを使用してください。
 
 ### *digna* Configuration (Native Driver)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN` は ODBC ドライバ構成で定義した名前と一致している必要があります。
+> `DSN` は ODBC ドライバ構成で定義した名前と一致している必要があります。
 
 ---
 

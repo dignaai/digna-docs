@@ -12,7 +12,7 @@ Ar izlaidumu 2025.09 digna ievieš jaunu **modulāru arhitektūru** un palaid pi
 
 ---
 
-## 🚀 Jaunas funkcijas  
+## Jaunas funkcijas  
 
 ### Modulārais dizains  
 - digna tagad seko **modulārai arhitektūrai**.  
@@ -35,7 +35,7 @@ Ar izlaidumu 2025.09 digna ievieš jaunu **modulāru arhitektūru** un palaid pi
 
 ---
 
-## 🛠 CLI atjauninājumi  
+## CLI atjauninājumi  
 
 - **Jauna komanda: `inspect-cancel`** – Atcelt inspekcijas pēc pieprasījuma ID vai pārtraukt visus aktīvos pieprasījumus.  
 - **Jauna komanda: `check-config`** – Validēt konfigurācijas failus pirms palaišanas.  
@@ -43,6 +43,6 @@ Ar izlaidumu 2025.09 digna ievieš jaunu **modulāru arhitektūru** un palaid pi
 - **Uzlabota komanda `inspect`** – Jauna opcija `--bypass-backend` (`-bb`) un standartizēti atgriešanas kodi (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentācija  
+## Dokumentācija  
 - Jauni ceļveži:  
   - Single Sign-On integrācijas ceļvedis

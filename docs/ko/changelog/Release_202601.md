@@ -12,7 +12,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🚀 새로운 기능
+## 새로운 기능
 
 ### 글로벌 데이터베이스 연결  
 - 데이터베이스 연결을 이제 **글로벌 수준**에서 구성합니다.  
@@ -52,7 +52,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🧪 확장된 Data Validation 기능
+## 확장된 Data Validation 기능
 
 이번 릴리스로 **digna Data Validation**은 다음을 포함한 포괄적인 데이터 품질 규칙을 지원합니다:
 
@@ -76,7 +76,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🎯 이 릴리스의 혜택 대상
+## 이 릴리스의 혜택 대상
 
 - **데이터 엔지니어:** 보다 유연한 데이터 소스 모델링 및 재사용 가능한 데이터베이스 연결  
 - **데이터 품질 및 거버넌스 팀:** 참조 무결성 규칙을 포함한 확장된 검증 범위  
@@ -85,7 +85,7 @@ image: /assets/logo_square.png
 
 ---
 
-## 🛠 CLI 업데이트  
+## CLI 업데이트  
 - 변경 사항 없음
 
 ---

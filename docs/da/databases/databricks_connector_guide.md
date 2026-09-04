@@ -19,12 +19,12 @@ Den henviser til skærmen **"Opret en databaseforbindelse"**.
 **Bibliotek:** `databricks-sql-connector`  
 **Understøttet autentificering:** Kun Personal Access Token (PAT)
 
-> ⚠️ For andre godkendelsesmetoder, brug venligst ODBC-driveren.
+> For andre godkendelsesmetoder, brug venligst ODBC-driveren.
 
 ### Personal Access Token (PAT)
 
 For at godkende ved hjælp af en personal access token, se den officielle Databricks-dokumentation:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* konfiguration (Native Driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
+> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 

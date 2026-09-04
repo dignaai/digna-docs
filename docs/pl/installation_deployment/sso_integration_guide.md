@@ -142,7 +142,7 @@ usePassword = true
 - Brak pól nazwy użytkownika/hasła
 - Dostępne jest wyłącznie uwierzytelnianie OIDC
 
-> **💡 Wskazówka**
+> **Wskazówka**
 >
 > Logowanie za pomocą hasła jest dostępne tylko dla użytkowników utworzonych z hasłem przy użyciu polecenia `digna user add` lub poprzez dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | URL przekierowania po uwierzytelnieniu | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | Punkt końcowy konfiguracji OIDC | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Ważne**
+> **Ważne**
 >
 > Zastąp wartości zastępcze (`<client_id>`, `<client_secret>`, `<tenant_id>`) rzeczywistymi danymi z panelu deweloperskiego Twojego dostawcy tożsamości.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Sprawdź, czy przyciski logowania pojawiają się dla każdego skonfigurowanego dostawcy:
 
-- ✅ Powinien być widoczny przycisk "Login with Microsoft"
-- ✅ Powinien być widoczny przycisk "Login with Google"
-- ✅ (Jeśli usePassword = true) Powinny być widoczne pola nazwy użytkownika/hasła
+- Powinien być widoczny przycisk "Login with Microsoft"
+- Powinien być widoczny przycisk "Login with Google"
+- (Jeśli usePassword = true) Powinny być widoczne pola nazwy użytkownika/hasła
 
 Jeśli przyciski się nie pojawiają:
 - Sprawdź, czy `dashboard_config.toml` został zapisany
@@ -317,10 +317,10 @@ Kliknij jeden z przycisków SSO (np. "Login with Microsoft"):
 
 Po pomyślnym logowaniu SSO:
 
-- ✅ Użytkownik powinien zostać automatycznie utworzony w digna
-- ✅ Użytkownik powinien być zalogowany
-- ✅ Profil użytkownika powinien pokazywać dane z dostawcy tożsamości
-- ✅ Powinieneś zobaczyć dashboard digna
+- Użytkownik powinien zostać automatycznie utworzony w digna
+- Użytkownik powinien być zalogowany
+- Profil użytkownika powinien pokazywać dane z dostawcy tożsamości
+- Powinieneś zobaczyć dashboard digna
 
 #### Krok 6: Przetestuj logowanie hasłem (jeśli włączone)
 
@@ -437,7 +437,7 @@ Skontaktuj się z support@digna.ai, jeśli potrzebujesz pomocy przy integracji k
 
 ## Najlepsze praktyki
 
-✅ DO:
+DO:
 - Używaj HTTPS w środowisku produkcyjnym (nie HTTP)
 - Przechowuj client secret bezpiecznie (używaj zmiennych środowiskowych, jeśli to możliwe)
 - Okresowo rotuj sekrety
@@ -446,7 +446,7 @@ Skontaktuj się z support@digna.ai, jeśli potrzebujesz pomocy przy integracji k
 - Monitoruj logi logowań pod kątem nieprawidłowej aktywności
 - Utrzymuj konfigurację dostawcy tożsamości w synchronizacji z konfiguracją digna
 
-❌ DON'T:
+DON'T:
 - Przechowuj client secret w systemie kontroli wersji
 - Używaj HTTP redirect URI w produkcji
 - Konfiguruj wielu dostawców z tym samym kluczem
@@ -460,9 +460,9 @@ Skontaktuj się z support@digna.ai, jeśli potrzebujesz pomocy przy integracji k
 
 Potrzebujesz pomocy z konfiguracją SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Dokumentacja:** https://docs.digna.ai
-- 🌐 **Strona:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Dokumentacja:** https://docs.digna.ai
+- **Strona:** https://www.digna.ai
 
 ---
 

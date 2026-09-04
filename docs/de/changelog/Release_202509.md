@@ -12,7 +12,7 @@ Dieses Release stärkt außerdem die Authentifizierung und verbessert das Benach
 
 ---
 
-## 🚀 Neue Features  
+## Neue Features  
 
 ### Modulares Design  
 - digna folgt jetzt einer **modularen Architektur**.  
@@ -35,7 +35,7 @@ Dieses Release stärkt außerdem die Authentifizierung und verbessert das Benach
 
 ---
 
-## 🛠 CLI-Updates  
+## CLI-Updates  
 
 - **Neuer Befehl: `inspect-cancel`** – Inspektionen nach Request-ID abbrechen oder alle aktiven Anfragen beenden.  
 - **Neuer Befehl: `check-config`** – Konfigurationsdateien vor dem Start validieren.  
@@ -43,6 +43,6 @@ Dieses Release stärkt außerdem die Authentifizierung und verbessert das Benach
 - **Verbesserter `inspect`-Befehl** – Neue Option `--bypass-backend` (`-bb`) und standardisierte Rückgabecodes (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentation  
+## Dokumentation  
 - Neue Anleitungen:  
   - Single Sign-On-Integrationsanleitung

@@ -142,7 +142,7 @@ usePassword = true
 - Aucun champ nom d'utilisateur/mot de passe
 - Seule l'authentification OIDC est disponible
 
-> **💡 Astuce**
+> **Astuce**
 >
 > La connexion par mot de passe n'est disponible que pour les utilisateurs créés avec un mot de passe via la commande `digna user add` ou via le tableau de bord.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Oui | URL de rappel après authentification | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Oui | Endpoint de configuration OIDC | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Important**
+> **Important**
 >
 > Remplacez les valeurs factices (`<client_id>`, `<client_secret>`, `<tenant_id>`) par les identifiants réels depuis le portail développeur de votre fournisseur d'identité.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Vérifiez que les boutons de connexion apparaissent pour chaque fournisseur configuré :
 
-- ✅ Vous devriez voir le bouton "Se connecter avec Microsoft"
-- ✅ Vous devriez voir le bouton "Se connecter avec Google"
-- ✅ (Si usePassword = true) Vous devriez voir les champs nom d'utilisateur/mot de passe
+- Vous devriez voir le bouton "Se connecter avec Microsoft"
+- Vous devriez voir le bouton "Se connecter avec Google"
+- (Si usePassword = true) Vous devriez voir les champs nom d'utilisateur/mot de passe
 
 Si les boutons n'apparaissent pas :
 - Vérifiez que `dashboard_config.toml` a été sauvegardé
@@ -317,10 +317,10 @@ Cliquez sur l'un des boutons SSO (par ex., "Se connecter avec Microsoft") :
 
 Après une connexion SSO réussie :
 
-- ✅ L'utilisateur devrait être créé automatiquement dans digna
-- ✅ L'utilisateur devrait être connecté
-- ✅ Le profil utilisateur devrait afficher vos informations du fournisseur d'identité
-- ✅ Vous devriez voir le tableau de bord digna
+- L'utilisateur devrait être créé automatiquement dans digna
+- L'utilisateur devrait être connecté
+- Le profil utilisateur devrait afficher vos informations du fournisseur d'identité
+- Vous devriez voir le tableau de bord digna
 
 #### Étape 6 : Tester la connexion par mot de passe (si activée)
 
@@ -437,7 +437,7 @@ Contactez support@digna.ai si vous avez besoin d'aide pour intégrer un fourniss
 
 ## Bonnes pratiques
 
-✅ **À FAIRE :**
+**À FAIRE :**
 - Utiliser HTTPS en production (pas HTTP)
 - Stocker les secrets clients de manière sécurisée (utiliser des variables d'environnement si possible)
 - Faire pivoter les secrets périodiquement
@@ -446,7 +446,7 @@ Contactez support@digna.ai si vous avez besoin d'aide pour intégrer un fourniss
 - Surveiller les journaux de connexion pour toute activité anormale
 - Tenir la configuration du fournisseur d'identité synchronisée avec la configuration digna
 
-❌ **À NE PAS FAIRE :**
+**À NE PAS FAIRE :**
 - Stocker les secrets clients dans le contrôle de version
 - Utiliser des URI de redirection HTTP en production
 - Configurer plusieurs fournisseurs avec la même key
@@ -460,9 +460,9 @@ Contactez support@digna.ai si vous avez besoin d'aide pour intégrer un fourniss
 
 Besoin d'aide pour la configuration SSO ?
 
-- 📧 **Email :** support@digna.ai
-- 📚 **Documentation :** https://docs.digna.ai
-- 🌐 **Site web :** https://www.digna.ai
+- **Email :** support@digna.ai
+- **Documentation :** https://docs.digna.ai
+- **Site web :** https://www.digna.ai
 
 ---
 

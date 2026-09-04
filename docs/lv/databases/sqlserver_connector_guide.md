@@ -20,7 +20,7 @@ Tas attiecas uz ekrānu **"Create a Database Connection"**.
 **Bibliotēka:** `pymssql`  
 **Atbalstītā autentifikācija:** Tikai paroles autentifikācija
 
-> ⚠️ Ja nepieciešamas citas autentifikācijas metodes, lūdzu, izmantojiet ODBC draiveri.
+> Ja nepieciešamas citas autentifikācijas metodes, lūdzu, izmantojiet ODBC draiveri.
 
 ### *digna* konfigurācija (vietējais draiveris)
 
@@ -112,7 +112,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
+> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
 
 ---
 

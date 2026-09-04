@@ -12,7 +12,7 @@ See versioon tugevdab ka autentimist ning parandab teavituste haldamist platvorm
 
 ---
 
-## 🚀 Uued funktsioonid
+## Uued funktsioonid
 
 ### Mooduline ülesehitus
 - digna kasutab nüüd **moodulitest koosnevat arhitektuuri**.  
@@ -35,13 +35,13 @@ See versioon tugevdab ka autentimist ning parandab teavituste haldamist platvorm
 
 ---
 
-## 🛠 CLI uuendused
+## CLI uuendused
 
 - **Uus käsk: `inspect-cancel`** – tühista inspekteerimised päringu ID järgi või lõpetada kõik aktiivsed päringud.  
 - **Uus käsk: `check-config`** – valideeri konfiguratsioonifailid enne käivitust.  
 - **Uus käsk: `remove-orphans`** – puhasta orvuks jäänud repositooriumi kirjed.  
 - **Täiendatud `inspect` käsk** – uus valik `--bypass-backend` (`-bb`) ja standardiseeritud väljumiskoodid (`0 = OK, 1 = INFO, 2 = WARNING`).
 
-## 📘 Dokumentatsioon
+## Dokumentatsioon
 - Uued juhendid:  
   - Single Sign-On integratsiooni juhend

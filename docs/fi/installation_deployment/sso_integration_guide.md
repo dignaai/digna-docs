@@ -142,7 +142,7 @@ usePassword = true
 - Ei käyttäjätunnus/salasana-kenttiä
 - Vain OIDC-autentikointi on käytettävissä
 
-> **💡 Vinkki**
+> **Vinkki**
 >
 > Salasanapohjainen kirjautuminen on käytettävissä vain käyttäjille, jotka on luotu salasanoilla `digna user add` -komennolla tai dashboardin kautta.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback-URL autentikoinnin jälkeen | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC-konfiguraatio-päätepiste | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Tärkeää**
+> **Tärkeää**
 >
 > Korvaa paikkamerkkien arvot (`<client_id>`, `<client_secret>`, `<tenant_id>`) todellisilla tunnuksilla identiteetin tarjoajan kehittäjäportaalista.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Tarkista, että konfiguroiduille tarjoajille näkyy kirjautumispainikkeet:
 
-- ✅ Näkyy "Kirjaudu Microsoftilla" -painike
-- ✅ Näkyy "Kirjaudu Googlella" -painike
-- ✅ (Jos usePassword = true) Näkyy käyttäjätunnus/salasana-kentät
+- Näkyy "Kirjaudu Microsoftilla" -painike
+- Näkyy "Kirjaudu Googlella" -painike
+- (Jos usePassword = true) Näkyy käyttäjätunnus/salasana-kentät
 
 Jos painikkeita ei näy:
 - Tarkista, että `dashboard_config.toml` on tallennettu
@@ -317,10 +317,10 @@ Klikkaa yhtä SSO-painikkeista (esim. "Kirjaudu Microsoftilla"):
 
 Onnistuneen SSO-kirjautumisen jälkeen:
 
-- ✅ Käyttäjä luodaan automaattisesti dignaan
-- ✅ Käyttäjä kirjautuu sisään
-- ✅ Käyttäjäprofiilissa näkyvät identiteetin tarjoajan tiedot
-- ✅ Näet digna-dashboardin
+- Käyttäjä luodaan automaattisesti dignaan
+- Käyttäjä kirjautuu sisään
+- Käyttäjäprofiilissa näkyvät identiteetin tarjoajan tiedot
+- Näet digna-dashboardin
 
 #### Vaihe 6: Testaa salasana-kirjautuminen (jos käytössä)
 
@@ -437,7 +437,7 @@ Ota yhteyttä support@digna.ai, jos tarvitset apua tietyn tarjoajan integroinnis
 
 ## Best Practices
 
-✅ **TEKE:**
+**TEKE:**
 - Käytä HTTPS:ää tuotannossa (ei HTTP:tä)
 - Säilytä client-secret turvallisesti (käytä ympäristömuuttujia jos mahdollista)
 - Kierrätä salaisuuksia säännöllisesti
@@ -446,7 +446,7 @@ Ota yhteyttä support@digna.ai, jos tarvitset apua tietyn tarjoajan integroinnis
 - Seuraa kirjautumislokeja poikkeavuuksien varalta
 - Pidä identiteetin tarjoajan konfiguraatio synkronoituna digna-konfiguraation kanssa
 
-❌ **ÄLÄ:**
+**ÄLÄ:**
 - Tallenna client-secretoja versionhallintaan
 - Käytä HTTP-redirect URI:ta tuotannossa
 - Konfiguroi useita tarjoajia samalla key-arvolla
@@ -460,9 +460,9 @@ Ota yhteyttä support@digna.ai, jos tarvitset apua tietyn tarjoajan integroinnis
 
 Tarvitsetko apua SSO-konfiguroinnissa?
 
-- 📧 **Sähköposti:** support@digna.ai
-- 📚 **Dokumentaatio:** https://docs.digna.ai
-- 🌐 **Verkkosivusto:** https://www.digna.ai
+- **Sähköposti:** support@digna.ai
+- **Dokumentaatio:** https://docs.digna.ai
+- **Verkkosivusto:** https://www.digna.ai
 
 ---
 

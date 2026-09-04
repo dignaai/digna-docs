@@ -19,12 +19,12 @@ image: /assets/logo_square.png
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** Personal Access Token (PAT) only
 
-> ⚠️ Για άλλες μεθόδους ταυτοποίησης, χρησιμοποιήστε τον ODBC driver.
+> Για άλλες μεθόδους ταυτοποίησης, χρησιμοποιήστε τον ODBC driver.
 
 ### Personal Access Token (PAT)
 
 Για να κάνετε ταυτοποίηση χρησιμοποιώντας personal access token, ανατρέξτε στην επίσημη τεκμηρίωση της Databricks:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* Configuration (Native Driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 To `DSN` πρέπει να αντιστοιχεί στο όνομα που έχει οριστεί στη ρύθμιση του ODBC driver σας.
+> To `DSN` πρέπει να αντιστοιχεί στο όνομα που έχει οριστεί στη ρύθμιση του ODBC driver σας.
 
 ---
 

@@ -12,7 +12,7 @@ Denne udgivelse styrker også autentifikationen og forbedrer håndteringen af no
 
 ---
 
-## 🚀 Nye funktioner  
+## Nye funktioner  
 
 ### Modulært design  
 - digna følger nu en **modulær arkitektur**.  
@@ -35,7 +35,7 @@ Denne udgivelse styrker også autentifikationen og forbedrer håndteringen af no
 
 ---
 
-## 🛠 CLI-opdateringer  
+## CLI-opdateringer  
 
 - **Ny kommando: `inspect-cancel`** – Annuller inspektioner efter request-ID eller afslut alle aktive forespørgsler.  
 - **Ny kommando: `check-config`** – Valider konfigurationsfiler før opstart.  
@@ -43,6 +43,6 @@ Denne udgivelse styrker også autentifikationen og forbedrer håndteringen af no
 - **Forbedret `inspect`-kommando** – Ny option `--bypass-backend` (`-bb`) og standardiserede returkoder (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Dokumentation  
+## Dokumentation  
 - Nye guider:  
   - Guide til integration af Single Sign-On

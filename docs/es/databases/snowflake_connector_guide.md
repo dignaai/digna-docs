@@ -20,7 +20,7 @@ Se refiere a la pantalla **"Crear una conexión de base de datos"**.
 **Librería:** `snowflake-connector-python`  
 **Autenticación soportada:** Solo autenticación basada en contraseña
 
-> ⚠️ Para otros métodos de autenticación, por favor use el driver ODBC.
+> Para otros métodos de autenticación, por favor use el driver ODBC.
 
 ### Configuración de *digna* (Driver nativo)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Esquema que contiene los datos de origen"
 name: "Warehouse",      value: "Warehouse a usar para la ejecución de los SQLs"
 ```
 
-> 🔹 El `DSN` debe coincidir con el nombre definido en la configuración de su driver ODBC.
+> El `DSN` debe coincidir con el nombre definido en la configuración de su driver ODBC.
 
 ---
 

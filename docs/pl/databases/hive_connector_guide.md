@@ -20,7 +20,7 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 **Biblioteka:** `PyHive`  
 **Obsługiwane uwierzytelnianie:** wyłącznie uwierzytelnianie za pomocą hasła
 
-> ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
+> Dla innych metod uwierzytelniania użyj sterownika ODBC.
 
 ### Konfiguracja *digna* (nattywny sterownik)
 
@@ -99,7 +99,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
 
 ---
 

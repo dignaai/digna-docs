@@ -20,7 +20,7 @@ Ez a következő képernyőre hivatkozik: **"Adatbázis-kapcsolat létrehozása"
 **Library:** `PyHive`  
 **Támogatott hitelesítés:** Csak jelszó alapú hitelesítés
 
-> ⚠️ Más hitelesítési módszerekhez kérjük, használja az ODBC drivert.
+> Más hitelesítési módszerekhez kérjük, használja az ODBC drivert.
 
 ### *digna* konfiguráció (natív illesztő)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{a jelszavát kapcsos zárójelek között}"
 ```
 
-> 🔹 A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
+> A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
 
 ---
 

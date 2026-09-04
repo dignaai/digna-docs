@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Βιβλιοθήκη:** `snowflake-connector-python`  
 **Υποστηριζόμενη μέθοδος πιστοποίησης:** Μόνο πιστοποίηση με κωδικό πρόσβασης
 
-> ⚠️ Για άλλες μεθόδους αυθεντικοποίησης, χρησιμοποιήστε τον ODBC driver.
+> Για άλλες μεθόδους αυθεντικοποίησης, χρησιμοποιήστε τον ODBC driver.
 
 ### Διαμόρφωση *digna* (Γηγενής Driver)
 
@@ -95,7 +95,7 @@ name: "Schema",         value: "Schema that contains the source data"
 name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
 ```
 
-> 🔹 Το `DSN` πρέπει να ταιριάζει με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver σας.
+> Το `DSN` πρέπει να ταιριάζει με το όνομα που έχει οριστεί στη διαμόρφωση του ODBC driver σας.
 
 ---
 

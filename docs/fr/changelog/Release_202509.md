@@ -12,7 +12,7 @@ Cette version renforce également l'authentification et améliore la gestion des
 
 ---
 
-## 🚀 Nouvelles fonctionnalités  
+## Nouvelles fonctionnalités  
 
 ### Architecture modulaire  
 - digna adopte désormais une **architecture modulaire**.  
@@ -35,7 +35,7 @@ Cette version renforce également l'authentification et améliore la gestion des
 
 ---
 
-## 🛠 Mises à jour de la CLI  
+## Mises à jour de la CLI  
 
 - **Nouvelle commande : `inspect-cancel`** – Annule les inspections par ID de requête ou termine toutes les requêtes actives.  
 - **Nouvelle commande : `check-config`** – Valide les fichiers de configuration avant le démarrage.  
@@ -43,6 +43,6 @@ Cette version renforce également l'authentification et améliore la gestion des
 - **Commande `inspect` améliorée** – Nouvelle option `--bypass-backend` (`-bb`) et codes de retour standardisés (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Documentation  
+## Documentation  
 - Nouveaux guides:  
   - Guide d'intégration Single Sign-On

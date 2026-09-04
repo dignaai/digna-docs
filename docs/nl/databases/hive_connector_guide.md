@@ -20,7 +20,7 @@ It verwijst naar het scherm **"Create a Database Connection"**.
 **Library:** `PyHive`  
 **Ondersteunde authenticatie:** Alleen wachtwoordgebaseerde authenticatie
 
-> ⚠️ Voor andere authenticatiemethoden gebruikt u de ODBC-driver.
+> Voor andere authenticatiemethoden gebruikt u de ODBC-driver.
 
 ### *digna* Configuratie (Native Driver)
 
@@ -89,7 +89,7 @@ name: "DSN",            value: "*digna*data_hdp"
 name: "PWD",            value: "{uw wachtwoord tussen accolades}"
 ```
 
-> 🔹 De `DSN` moet overeenkomen met de naam die is gedefinieerd in uw ODBC-driverconfiguratie.
+> De `DSN` moet overeenkomen met de naam die is gedefinieerd in uw ODBC-driverconfiguratie.
 
 ---
 

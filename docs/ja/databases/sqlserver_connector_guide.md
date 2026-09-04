@@ -20,7 +20,7 @@ image: /assets/logo_square.png
 **Library:** `pymssql`  
 **サポートされる認証:** パスワードベースの認証のみ
 
-> ⚠️ 他の認証方法を使用する場合は、ODBC ドライバーを使用してください。
+> 他の認証方法を使用する場合は、ODBC ドライバーを使用してください。
 
 ### *digna* の構成（ネイティブドライバー）
 
@@ -112,7 +112,7 @@ name: "DATABASE",   value: "name of the database that contains the source data s
 
 ```
 
-> 🔹 `DSN` は ODBC ドライバー構成で定義した名前と一致している必要があります。
+> `DSN` は ODBC ドライバー構成で定義した名前と一致している必要があります。
 
 ---
 

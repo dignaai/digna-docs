@@ -12,7 +12,7 @@ Dieses Release erhöht die Flexibilität in allen Modulen und erweitert die **Ab
 
 ---
 
-## 🚀 Neue Features  
+## Neue Features  
 
 ### Globale Datenbankverbindungen  
 - Datenbankverbindungen werden jetzt auf einer **globalen Ebene** konfiguriert.  
@@ -52,7 +52,7 @@ Dieses Release erhöht die Flexibilität in allen Modulen und erweitert die **Ab
 
 ---
 
-## 🧪 Erweiterte Data Validation-Fähigkeiten  
+## Erweiterte Data Validation-Fähigkeiten  
 
 Mit diesem Release unterstützt **digna Data Validation** jetzt ein umfassendes Set an Data-Quality-Regeln:
 
@@ -76,7 +76,7 @@ Diese Prüfungen zusammen ermöglichen die Durchsetzung von **strukturellen und 
 
 ---
 
-## 🎯 Wer profitiert von diesem Release  
+## Wer profitiert von diesem Release  
 
 - **Data Engineers:** Flexibleres Datasource-Modelling und wiederverwendbare Datenbankverbindungen  
 - **Data Quality & Governance Teams:** Erweiterte Validierungsabdeckung einschließlich relationaler Integritätsregeln  
@@ -85,7 +85,7 @@ Diese Prüfungen zusammen ermöglichen die Durchsetzung von **strukturellen und 
 
 ---
 
-## 🛠 CLI-Updates  
+## CLI-Updates  
 - Keine Änderungen
 
 ---

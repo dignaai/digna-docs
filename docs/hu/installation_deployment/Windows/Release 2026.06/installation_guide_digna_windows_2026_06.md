@@ -65,7 +65,7 @@ Hozzáadhat egy új adatbázist a digna számára a meglévő PostgreSQL szerver
 
 **Ha a PostgreSQL-t ugyanarra a gépre telepíti, ahol a digna fut:**
 
-> **⚠️ Ajánlott specifikációk**
+> **Ajánlott specifikációk**
 >
 > - **Memória**: 32 GB RAM (a 16 GB helyett)
 > - **Lemezterület**: 50 GB szabad tárhely (a 10 GB helyett)
@@ -122,7 +122,7 @@ Adja meg és erősítse meg a PostgreSQL szuperfelhasználó (`postgres`) jelsza
 
 Az alapértelmezett PostgreSQL port a `5432`. Használhatja az alapértelmezettet vagy megadhat más portot, ha szükséges.
 
-> **💡 Tipp**
+> **Tipp**
 >
 > Ha a 5432-es port már foglalt, válasszon alternatív portot és jegyezze fel későbbi konfigurációhoz.
 
@@ -200,7 +200,7 @@ Annak érdekében, hogy a Markdown fájlok (`.md`) megfelelően legyenek kiszolg
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Fontos**
+> **Fontos**
 >
 > Ennek a beállításnak hiányában a `.md` fájlok előfordulhat, hogy nem lesznek megfelelően kiszolgálva.
 
@@ -227,7 +227,7 @@ Az Apache Tomcat egy nyílt forráskódú Java servlet-konténer és webszerver.
    - Navigáljon a `http://localhost:8080` címre
    - Látnia kell az Apache Tomcat üdvözlő oldalát
 
-> **💡 Tipp**
+> **Tipp**
 >
 > Az Apache Tomcat általában automatikusan elindul a telepítés után. Ha nem indul el, nyissa meg a `bin` mappát és futtassa a `startup.bat` fájlt.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Legjobb gyakorlat**
+> **Legjobb gyakorlat**
 >
 > Használjon erős, összetett jelszavakat az adatbázis-felhasználókhoz. Kerülje az könnyen kitalálható hitelesítő adatokat.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### 3. lépés: Licencfájl telepítése
 
-> **⚠️ Fontos**
+> **Fontos**
 >
 > A licencfájl **nem** része a telepítési csomagnak; külön kerül Önnek átadásra a digna által.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Ez létrehoz egy teljes adminisztrátori jogosultságokkal rendelkező felhasználót.
 
-> **✅ Legjobb gyakorlat**
+> **Legjobb gyakorlat**
 >
 > Használjon erős jelszót, amely tartalmaz nagy- és kisbetűket, számokat és speciális karaktereket.
 
@@ -545,7 +545,7 @@ A következő batch fájlok állnak rendelkezésre:
 - `start_service.bat` — szolgáltatás indítása
 - `stop_service.bat` — szolgáltatás leállítása
 
-> **⚠️ Rendszergazdai jogosultság szükséges**
+> **Rendszergazdai jogosultság szükséges**
 >
 > Minden batch fájlt rendszergazdai jogosultsággal kell futtatni.
 
@@ -587,7 +587,7 @@ A digna szerver most regisztrálva lett Windows szolgáltatásként, automatikus
    stop_service.bat
    ```
 
-> **💡 Tipp**
+> **Tipp**
 >
 > Mindig állítsa le a szolgáltatást a programfájlok frissítése előtt.
 
@@ -670,7 +670,7 @@ ren dashboard dashboard_old
 1. Csomagolja ki az új digna telepítő ZIP fájlt
 2. Másolja az új `digna` futtathatót és a `dashboard` mappát a telepítési könyvtárába
 
-> **✅ Fontos**
+> **Fontos**
 >
 > A `config.toml` fájl **soha** nincs benne a telepítő ZIP-ben. A meglévő konfigurációja biztonságban marad.
 

@@ -12,7 +12,7 @@ Cette version introduit une analyse avancée des séries temporelles, des compos
 
 ---
 
-## 🚀 Nouvelles fonctionnalités  
+## Nouvelles fonctionnalités  
 
 ### Analytics Chart – Analyse des séries temporelles sans science des données  
 - Nouveau **Analytics Chart** pour l'analyse interactive des séries temporelles  
@@ -61,7 +61,7 @@ Cette version introduit une analyse avancée des séries temporelles, des compos
 
 ---
 
-## 🧪 Capacités étendues d'analyse de données et de validation  
+## Capacités étendues d'analyse de données et de validation  
 
 Avec cette version, digna étend à la fois la **compréhension des données** et la **standardisation de la validation des données** :
 
@@ -74,7 +74,7 @@ Ensemble, ces capacités permettent aux organisations non seulement de détecter
 
 ---
 
-## 🎯 Bénéficiaires de cette version  
+## Bénéficiaires de cette version  
 
 - **Ingénieurs de données :** Logique de validation réutilisable et meilleur contrôle du comportement de surveillance  
 - **Équipes Qualité des données & Gouvernance :** Règles standardisées et validation cohérente des données entre les systèmes  
@@ -83,7 +83,7 @@ Ensemble, ces capacités permettent aux organisations non seulement de détecter
 
 ---
 
-## 🛠 Mises à jour CLI  
+## Mises à jour CLI  
 - Aucun changement  
 
 ---

@@ -19,12 +19,12 @@ Ohje viittaa näyttöön **"Create a Database Connection"**.
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** Personal Access Token (PAT) only
 
-> ⚠️ Muita todennustapoja varten käytä ODBC-ajuria.
+> Muita todennustapoja varten käytä ODBC-ajuria.
 
 ### Personal Access Token (PAT)
 
 Henkilökohtaisen käyttöoikeustunnuksen avulla todennukseen katso Databricksin virallinen dokumentaatio:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna* Configuration (Native Driver)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN` on vastattava nimeä, joka on määritelty ODBC-ajurin asetuksissa.
+> `DSN` on vastattava nimeä, joka on määritelty ODBC-ajurin asetuksissa.
 
 ---
 

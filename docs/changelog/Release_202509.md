@@ -12,7 +12,7 @@ This release also strengthens authentication and improves notification handling 
 
 ---
 
-## 🚀 New Features  
+## New Features  
 
 ### Modular Design  
 - digna now follows a **modular architecture**.  
@@ -35,7 +35,7 @@ This release also strengthens authentication and improves notification handling 
 
 ---
 
-## 🛠 CLI Updates  
+## CLI Updates  
 
 - **New command: `inspect-cancel`** – Cancel inspections by request ID or terminate all active requests.  
 - **New command: `check-config`** – Validate configuration files before startup.  
@@ -43,6 +43,6 @@ This release also strengthens authentication and improves notification handling 
 - **Enhanced `inspect` command** – New option `--bypass-backend` (`-bb`) and standardized return codes (`0 = OK, 1 = INFO, 2 = WARNING`).  
 
 
-## 📘 Documentation  
+## Documentation  
 - New guides:  
   - Single Sign-On Integration Guide  

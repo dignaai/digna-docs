@@ -12,7 +12,7 @@ Ar izlaidumu 2026.06 digna sper lielu soli uz priekšu automatizācijas, paplaš
 
 ---
 
-## 🚀 Jaunumi  
+## Jaunumi  
 
 ### digna Python SDK – Automatizējiet visu ar Python  
 - Instalēšanai:
@@ -84,7 +84,7 @@ Konfigurējiet vaicājumu izpildes stratēģiju: **Single** vai **Combined** re�
 
 ---
 
-## 🧪 Platformas uzlabojumi  
+## Platformas uzlabojumi  
 
 - Pilnīga Python SDK integrācija automatizācijai  
 - Konteinerizēta izvietošana caur Docker  
@@ -93,7 +93,7 @@ Konfigurējiet vaicājumu izpildes stratēģiju: **Single** vai **Combined** re�
 
 ---
 
-## 🎯 Kam šī versija noder  
+## Kam šī versija noder  
 
 - Datu inženieri: automatizācija, SDK izmantošana, cauruļvadu integrācija  
 - Platformas komandas: vienkāršota izvietošana ar Docker  
@@ -102,7 +102,7 @@ Konfigurējiet vaicājumu izpildes stratēģiju: **Single** vai **Combined** re�
 
 ---
 
-## 🛠 CLI atjauninājumi  
+## CLI atjauninājumi  
 - Pievienota SDK integrācijas atbalsts  
 - Uzlaboti importēšanas/eksportēšanas darbplūsmas  
 - Vispārīgi stabilitātes un veiktspējas uzlabojumi

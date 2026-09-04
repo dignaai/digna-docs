@@ -65,7 +65,7 @@ Poți adăuga o bază de date nouă pentru digna pe serverul PostgreSQL existent
 
 **Dacă instalezi PostgreSQL pe aceeași mașină cu digna:**
 
-> **⚠️ Specificații recomandate**
+> **Specificații recomandate**
 >
 > - **Memory**: 32 GB RAM (în loc de 16 GB)
 > - **Disk Space**: 50 GB spațiu disponibil (în loc de 10 GB)
@@ -122,7 +122,7 @@ Introdu și confirmă o parolă pentru superuser-ul PostgreSQL (`postgres`). **P
 
 Portul implicit PostgreSQL este `5432`. Poți folosi valoarea implicită sau specifica un alt port dacă este necesar.
 
-> **💡 Sfat**
+> **Sfat**
 >
 > Dacă portul 5432 este deja utilizat, alege un port alternativ și notează-l pentru configurările ulterioare.
 
@@ -200,7 +200,7 @@ Pentru a te asigura că fișierele Markdown (`.md`) sunt servite corect de IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **⚠️ Important**
+> **Important**
 >
 > Fără această setare, fișierele `.md` s-ar putea să nu fie servite corect.
 
@@ -227,7 +227,7 @@ Apache Tomcat este un container Java servlet open-source și un web server.
    - Navighează la `http://localhost:8080`
    - Ar trebui să vezi pagina de bun venit Apache Tomcat
 
-> **💡 Sfat**
+> **Sfat**
 >
 > Apache Tomcat pornește de obicei automat după instalare. Dacă nu pornește, navighează în folderul `bin` și rulează `startup.bat`.
 
@@ -267,7 +267,7 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **✅ Practică recomandată**
+> **Practică recomandată**
 >
 > Folosește parole puternice și complexe pentru utilizatorii bazei de date. Evită credențiale ușor de ghicit.
 
@@ -285,7 +285,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Pasul 3: Instalează fișierul de licență
 
-> **⚠️ Important**
+> **Important**
 >
 > Fișierul de licență **nu** este inclus în pachetul de instalare și va fi furnizat separat de digna.
 
@@ -468,7 +468,7 @@ digna user add "Admin User" AdminPassword123! --su
 
 Aceasta creează un utilizator cu privilegii administrative complete.
 
-> **✅ Practică recomandată**
+> **Practică recomandată**
 >
 > Folosește o parolă puternică cu un mix de majuscule, minuscule, cifre și caractere speciale.
 
@@ -545,7 +545,7 @@ Următoarele fișiere batch sunt disponibile:
 - `start_service.bat` — pornește serviciul
 - `stop_service.bat` — oprește serviciul
 
-> **⚠️ Administrator necesar**
+> **Administrator necesar**
 >
 > Toate fișierele batch trebuie executate cu privilegii de Administrator.
 
@@ -587,7 +587,7 @@ Serverul digna este acum înregistrat ca serviciu Windows cu pornire **automatic
    stop_service.bat
    ```
 
-> **💡 Sfat**
+> **Sfat**
 >
 > Oprește întotdeauna serviciul înainte de a actualiza fișierele aplicației.
 
@@ -670,7 +670,7 @@ ren dashboard dashboard_old
 1. Extrage noul fișier ZIP de instalare digna
 2. Copiază noul executabil `digna` și folderul `dashboard` în directorul tău de instalare
 
-> **✅ Important**
+> **Important**
 >
 > Fișierul `config.toml` **nu** este niciodată inclus în ZIP-ul de instalare. Configurația ta existentă rămâne în siguranță.
 

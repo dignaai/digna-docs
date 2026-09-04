@@ -20,7 +20,7 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 **Biblioteka:** `python-oracledb`  
 **Obsługiwane uwierzytelnianie:** Tylko uwierzytelnianie za pomocą hasła
 
-> ⚠️ Dla innych metod uwierzytelniania prosimy użyć sterownika ODBC.
+> Dla innych metod uwierzytelniania prosimy użyć sterownika ODBC.
 
 ### Konfiguracja *digna* (natywny sterownik)
 
@@ -105,7 +105,7 @@ name: "UID",            value: "twoj_uzytkownik_oracle"
 name: "PWD",            value: "{twoje haslo w nawiasach klamrowych}"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji Twojego sterownika ODBC.
+> `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji Twojego sterownika ODBC.
 
 ---
 

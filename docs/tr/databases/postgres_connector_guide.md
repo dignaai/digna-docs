@@ -20,7 +20,7 @@ Ekran **"Create a Database Connection"**'a atıfta bulunmaktadır.
 **Kütüphane:** `psycopg`  
 **Desteklenen Kimlik Doğrulama:** Yalnızca parola tabanlı kimlik doğrulama
 
-> ⚠️ Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
+> Diğer kimlik doğrulama yöntemleri için lütfen ODBC sürücüsünü kullanın.
 
 ### *digna* Yapılandırması (Yerel Sürücü)
 
@@ -87,7 +87,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "PostgreSQL35W"
 ```
 
-> 🔹 `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
+> `DSN`, ODBC sürücü yapılandırmanızda tanımlı olan ad ile eşleşmelidir.
 
 ---
 

@@ -142,7 +142,7 @@ usePassword = true
 - Nu există câmpuri pentru nume de utilizator/parolă
 - Este disponibilă doar autentificarea OIDC
 
-> **💡 Sfat**
+> **Sfat**
 >
 > Autentificarea pe bază de parolă este disponibilă doar pentru utilizatorii creați cu parole folosind comanda `digna user add` sau prin dashboard.
 
@@ -210,7 +210,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Da | URL-ul de callback după autentificare | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Da | Endpoint-ul de configurare OIDC | `https://login.microsoftonline.com/...` |
 
-> **⚠️ Important**
+> **Important**
 >
 > Înlocuiți valorile placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) cu acreditările reale din portalul dezvoltatorului furnizorului vostru de identitate.
 
@@ -295,9 +295,9 @@ http://localhost:5173
 
 Verificați dacă apar butoanele de autentificare pentru fiecare furnizor configurat:
 
-- ✅ Ar trebui să vedeți butonul "Login with Microsoft"
-- ✅ Ar trebui să vedeți butonul "Login with Google"
-- ✅ (Dacă usePassword = true) Ar trebui să vedeți câmpuri pentru nume de utilizator/parolă
+- Ar trebui să vedeți butonul "Login with Microsoft"
+- Ar trebui să vedeți butonul "Login with Google"
+- (Dacă usePassword = true) Ar trebui să vedeți câmpuri pentru nume de utilizator/parolă
 
 Dacă butoanele nu apar:
 - Verificați că `dashboard_config.toml` a fost salvat
@@ -317,10 +317,10 @@ Faceți clic pe unul dintre butoanele SSO (de ex., "Login with Microsoft"):
 
 După autentificarea SSO cu succes:
 
-- ✅ Utilizatorul ar trebui creat automat în digna
-- ✅ Utilizatorul ar trebui autentificat
-- ✅ Profilul utilizatorului ar trebui să afișeze acreditările furnizorului de identitate
-- ✅ Ar trebui să vedeți dashboard-ul digna
+- Utilizatorul ar trebui creat automat în digna
+- Utilizatorul ar trebui autentificat
+- Profilul utilizatorului ar trebui să afișeze acreditările furnizorului de identitate
+- Ar trebui să vedeți dashboard-ul digna
 
 #### Pasul 6: Testați autentificarea prin parolă (dacă este activată)
 
@@ -437,7 +437,7 @@ Contactați support@digna.ai dacă aveți nevoie de ajutor pentru integrarea unu
 
 ## Practici recomandate
 
-✅ **FACEȚI:**
+**FACEȚI:**
 - Folosiți HTTPS în producție (nu HTTP)
 - Stocați secretele clientului în siguranță (folosiți variabile de mediu dacă este posibil)
 - Rotați secretele periodic
@@ -446,7 +446,7 @@ Contactați support@digna.ai dacă aveți nevoie de ajutor pentru integrarea unu
 - Monitorizați log-urile de autentificare pentru activitate neobișnuită
 - Mențineți configurația furnizorului de identitate sincronizată cu configurația digna
 
-❌ **NU FACEȚI:**
+**NU FACEȚI:**
 - Nu stocați secretele clientului în controlul versiunii
 - Nu folosiți redirect URI-uri HTTP în producție
 - Nu configurați mai mulți furnizori cu aceeași cheie
@@ -460,9 +460,9 @@ Contactați support@digna.ai dacă aveți nevoie de ajutor pentru integrarea unu
 
 Aveți nevoie de ajutor pentru configurarea SSO?
 
-- 📧 **Email:** support@digna.ai
-- 📚 **Documentație:** https://docs.digna.ai
-- 🌐 **Website:** https://www.digna.ai
+- **Email:** support@digna.ai
+- **Documentație:** https://docs.digna.ai
+- **Website:** https://www.digna.ai
 
 ---
 

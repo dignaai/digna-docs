@@ -19,12 +19,12 @@ Den hänvisar till skärmen **"Skapa en databasanslutning"**.
 **Bibliotek:** `databricks-sql-connector`  
 **Stödd autentisering:** Personligt åtkomsttoken (PAT) endast
 
-> ⚠️ För andra autentiseringsmetoder, använd ODBC-drivrutinen.
+> För andra autentiseringsmetoder, använd ODBC-drivrutinen.
 
 ### Personligt åtkomsttoken (PAT)
 
 För att autentisera med ett personligt åtkomsttoken, se den officiella Databricks-dokumentationen:  
-👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
 ### *digna*-konfiguration (inbyggd drivrutin)
 
@@ -98,7 +98,7 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 `DSN` måste matcha namnet som är definierat i din ODBC-drivrutinskonfiguration.
+> `DSN` måste matcha namnet som är definierat i din ODBC-drivrutinskonfiguration.
 
 ---
 
