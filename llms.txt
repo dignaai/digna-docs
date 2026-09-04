@@ -1,0 +1,60 @@
+# digna Documentation
+
+> digna is a European AI-driven platform for Data Quality and Data Observability. It runs entirely inside the customer's own environment — on-premises or in a private cloud, never as SaaS — executing all data quality checks and anomaly detection directly inside the database engine, so data never leaves the customer's environment. digna has no access to customer data.
+
+## Platform
+
+- [Platform Overview](https://docs.digna.ai/platform/overview/): Technical overview of all digna modules — Data Anomalies, Data Analytics, Data Validation, Data Timeliness, and Data Schema Tracker.
+- [Data Anomalies](https://docs.digna.ai/platform/data_anomalies/Introduction/): AI-based detection of irregularities in data volume, missing values, distributions, and column relationships — no manual rule writing required.
+- [Data Analytics](https://docs.digna.ai/platform/data_analytics/Introduction/): Trend and volatility analysis for long-term data reliability, built on top of Data Anomalies metrics.
+- [Data Validation](https://docs.digna.ai/platform/data_validation/Introduction/): Rule-based checks for deterministic, auditable data quality and compliance.
+- [Data Timeliness](https://docs.digna.ai/platform/data_timeliness/Introduction/): Monitors on-time arrival of data deliveries and correlates delays with anomalies.
+- [Data Schema Tracker](https://docs.digna.ai/platform/schema_tracker/Introduction/): Detects and tracks structural/schema changes in monitored datasets.
+
+## Getting Started
+
+- [Create a Data Project](https://docs.digna.ai/getting_started/how_to_create_project/)
+- [Connect a Database to a Data Project](https://docs.digna.ai/getting_started/how_to_connect_database_to_data_project/)
+- [Add a Datasource to a Project](https://docs.digna.ai/getting_started/how_to_add_a_datasource_to_project/)
+- [Schedule a Daily Job](https://docs.digna.ai/getting_started/how_to_schedule_a_daily_job/)
+- [Advanced Scheduling with Crontab](https://docs.digna.ai/getting_started/how_to_use_crontab/)
+
+## Installation & Deployment
+
+- [Windows Installation Guide (Release 2026.06)](<https://docs.digna.ai/installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06/>): System requirements, PostgreSQL setup, web server configuration (IIS/Tomcat), backend and dashboard configuration, running digna as a Windows service, upgrading.
+- [Single Sign-On (SSO) Integration Guide](https://docs.digna.ai/installation_deployment/sso_integration_guide/): Configure OIDC-based SSO with Microsoft Entra ID, Google Workspace, Okta, and other OIDC-compliant identity providers.
+
+## Database Integrations
+
+digna connects to databases and warehouses via native drivers or ODBC. Setup guides:
+
+- [PostgreSQL](https://docs.digna.ai/databases/postgres_connector_guide/)
+- [Snowflake](https://docs.digna.ai/databases/snowflake_connector_guide/)
+- [Databricks (Unity Catalog)](https://docs.digna.ai/databases/databricks_connector_guide/)
+- [Databricks (Legacy)](https://docs.digna.ai/databases/databricks_legacy_connector_guide/)
+- [Oracle](https://docs.digna.ai/databases/oracle_connector_guide/)
+- [MS SQL Server](https://docs.digna.ai/databases/sqlserver_connector_guide/)
+- [Teradata](https://docs.digna.ai/databases/teradata_connector_guide/)
+- [Azure Synapse](https://docs.digna.ai/databases/azure_synapse_connector_guide/)
+- [Apache Hive](https://docs.digna.ai/databases/hive_connector_guide/)
+- [Netezza](https://docs.digna.ai/databases/netezza_connector_guide/)
+
+## CLI Reference
+
+- [CLI Introduction](https://docs.digna.ai/cli/Introduction/): Purpose and key features of the digna command-line interface.
+- [CLI Reference — Release 2026.04 (latest)](https://docs.digna.ai/cli/Command_Line_Interface_202604/)
+
+Older CLI releases (2026.01 back to 2024.09) are also documented under `/cli/` but omitted here for brevity.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/changelog/Release_202606/): digna Python SDK, Docker deployment support, redesigned dashboard, extended import/export for validation rules.
+- [Release 2026.04](https://docs.digna.ai/changelog/Release_202604/)
+- [Release 2026.01](https://docs.digna.ai/changelog/Release_202601/)
+
+Older changelog entries (2025.09 back to 2024.12) are also documented under `/changelog/` but omitted here for brevity.
+
+## Notes
+
+- This documentation is also available in 26 languages under a locale prefix, e.g. `/de/`, `/fr/`, `/ja/` (see the sitemap at https://docs.digna.ai/sitemap.xml for the full list). The URLs above are the canonical English versions.
+- The marketing site at https://www.digna.ai covers use cases, industry applications, and company information not duplicated here.

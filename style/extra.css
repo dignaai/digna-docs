@@ -1,0 +1,869 @@
+/* =========================================================================
+   digna docs — brand & polish overrides for MkDocs Material
+   ========================================================================= */
+
+/* --- Brand palette (digna blue) ---
+   Applied via theme.palette primary/accent: custom in mkdocs.yml.
+   These variables are picked up automatically for both the light
+   and dark (slate) color schemes. */
+[data-md-color-primary="custom"] {
+  --md-primary-fg-color:         #016BFF;
+  --md-primary-fg-color--light:  #4D94FF;
+  --md-primary-fg-color--dark:   #0052CC;
+  --md-primary-bg-color:         #FFFFFF;
+  --md-primary-bg-color--light:  hsla(0, 0%, 100%, 0.7);
+}
+
+[data-md-color-accent="custom"] {
+  --md-accent-fg-color:               #0052CC;
+  --md-accent-fg-color--transparent:  #0052CC1a;
+  --md-accent-bg-color:               #FFFFFF;
+  --md-accent-bg-color--light:        hsla(0, 0%, 100%, 0.7);
+}
+
+/* --- Typography ---
+   Inter is loaded explicitly in overrides/main.html; system-ui stack
+   is the fallback while it loads (or if the request fails). */
+:root {
+  --md-text-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  --md-code-font: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+/* --- Surface tokens ---
+   One set of names for borders, panels and shadows so tables, code
+   blocks, images, cards and admonitions all sit on the same visual
+   system instead of each inventing its own greys. Note 1rem = 20px
+   here: Material sets `html { font-size: 125% }`. */
+[data-md-color-scheme="default"] {
+  --dg-border:        #E2E8F0;
+  --dg-border-strong: #CBD5E1;
+  --dg-surface:       #FFFFFF;
+  --dg-surface-alt:   #F7F9FC;
+  --dg-tint:          #F1F6FF;
+  --dg-shadow:        0 1px 2px rgba(15, 23, 42, 0.05),
+                      0 1px 3px rgba(15, 23, 42, 0.05);
+  --dg-shadow-lg:     0 8px 24px rgba(15, 23, 42, 0.09),
+                      0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+/* Shift Material's slate scheme from its default violet-grey to a
+   blue-grey that matches the brand and the navy footer. */
+[data-md-color-scheme="slate"] {
+  --md-hue: 214;
+  --dg-border:        hsla(214, 30%, 80%, 0.14);
+  --dg-border-strong: hsla(214, 30%, 80%, 0.26);
+  --dg-surface:       hsla(214, 40%, 80%, 0.04);
+  --dg-surface-alt:   hsla(214, 40%, 80%, 0.07);
+  --dg-tint:          rgba(1, 107, 255, 0.14);
+  --dg-shadow:        0 1px 2px rgba(0, 0, 0, 0.35);
+  --dg-shadow-lg:     0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* =========================================================================
+   Layout — wider page grid on large screens, but a capped reading measure
+   inside it. Material's stock content column runs to ~110 characters per
+   line on a laptop, which is well past comfortable for long-form docs.
+   ========================================================================= */
+
+.md-grid {
+  max-width: 66rem; /* 1320px */
+}
+
+/* Material gutters this element with `margin: 0 .8rem`, which centring
+   would otherwise wipe out — hence the explicit padding. */
+.md-content__inner {
+  max-width: 37.6rem; /* ~720px of text plus the .8rem gutters */
+  margin-inline: auto;
+  padding-inline: 0.8rem;
+}
+
+.md-typeset {
+  line-height: 1.7;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Material renders h1 in a muted grey, which leaves the page title with
+   less presence than the h2s below it. Full contrast, tighter to its
+   lede. */
+.md-typeset h1 {
+  font-weight: 800;
+  margin-bottom: 0.8em;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset p,
+.md-typeset li {
+  letter-spacing: -0.006em;
+}
+
+/* Tracking adjustments are tuned for Latin text. Applied to a connected
+   script such as Arabic they interfere with letterform joining, and in
+   CJK they simply loosen an already-even rhythm — so opt those locales
+   out. Material sets <html lang> per language, which :lang() picks up. */
+:is(:lang(ar), :lang(he), :lang(fa), :lang(ur), :lang(hi), :lang(ja),
+  :lang(ko), :lang(zh), :lang(th)) :is(h1, h2, h3, h4, p, li, td, th) {
+  letter-spacing: normal;
+}
+
+/* Give section headings real air above them and pull their own label
+   tight to the text they introduce, so a long page reads as a stack of
+   sections rather than one undifferentiated column. */
+.md-typeset h2 {
+  margin-top: 2.4em;
+  margin-bottom: 0.8em;
+  font-size: 1.35em;
+}
+
+.md-typeset h3 {
+  margin-top: 1.9em;
+  margin-bottom: 0.6em;
+}
+
+/* Most pages in this project separate sections with `---`, which lands
+   immediately before the next h2. A hairline is enough there; Material's
+   default rule plus the heading margin reads as a hard break. */
+.md-typeset hr {
+  border-bottom-color: var(--dg-border);
+  margin: 2.2em 0;
+}
+
+.md-typeset hr + h2 {
+  margin-top: 1.4em;
+}
+
+/* Heading anchors (toc.permalink) — visible enough to discover, quiet
+   enough to ignore. */
+.md-typeset .headerlink {
+  color: var(--md-default-fg-color--lightest);
+  transition: color 125ms ease, opacity 125ms ease;
+}
+
+.md-typeset :hover > .headerlink,
+.md-typeset .headerlink:focus {
+  color: var(--md-primary-fg-color);
+}
+
+/* Body links: underlined so they are identifiable without relying on
+   colour alone. */
+.md-typeset a:not(.md-button):not(.headerlink):not(.dg-card) {
+  text-decoration-color: var(--md-primary-fg-color--light);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-line: underline;
+}
+
+.md-typeset a:not(.md-button):not(.headerlink):hover {
+  text-decoration-color: currentcolor;
+}
+
+/* =========================================================================
+   Figures — the docs carry ~1,200 product screenshots, almost all of them
+   light UI on a white page. Without a frame they bleed into the body and
+   it is not obvious where the screenshot stops and the page resumes.
+   ========================================================================= */
+
+.md-typeset img:not(.twemoji):not(.emojione):not(.gemoji) {
+  border: 1px solid var(--dg-border);
+  border-radius: 0.4rem;
+  box-shadow: var(--dg-shadow);
+  background-color: var(--dg-surface);
+}
+
+/* Icons rendered as SVG (pymdownx.emoji, admonition icons) must not pick
+   up the screenshot frame. */
+.md-typeset .twemoji svg,
+.md-typeset .md-button svg,
+.md-typeset .admonition svg {
+  border: 0;
+  box-shadow: none;
+}
+
+/* =========================================================================
+   Tables — a hairline grid with a tinted header, wrapped so wide tables
+   scroll inside their own box instead of stretching the page.
+   ========================================================================= */
+
+.md-typeset .md-typeset__table {
+  width: 100%;
+}
+
+.md-typeset table:not([class]) {
+  border: 1px solid var(--dg-border);
+  border-radius: 0.4rem;
+  box-shadow: none;
+  font-size: 0.68rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--dg-surface-alt);
+  color: var(--md-default-fg-color);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid var(--dg-border-strong);
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--dg-border);
+  vertical-align: top;
+}
+
+.md-typeset table:not([class]) tbody tr {
+  transition: background-color 125ms ease;
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: var(--dg-tint);
+  box-shadow: none;
+}
+
+/* =========================================================================
+   Code — softer surface, matching border radius, and a copy button that
+   only asserts itself on hover.
+   ========================================================================= */
+
+/* Fenced blocks in this project are a mix of language-tagged fences (which
+   Pygments wraps in .highlight) and untagged ones (which stay a bare
+   <pre><code>). Framing the <code> covers both without doubling borders. */
+.md-typeset pre > code {
+  border: 1px solid var(--dg-border);
+  border-radius: 0.4rem;
+}
+
+.md-typeset .highlighttable .linenos,
+.md-typeset .highlighttable .code {
+  border: 0;
+}
+
+[data-md-color-scheme="default"] {
+  --md-code-bg-color: #F7F9FC;
+}
+
+/* Inline code: tinted rather than grey, so it separates from body text
+   without competing with links. */
+.md-typeset code:not(pre code) {
+  border: 1px solid var(--dg-border);
+  border-radius: 0.25rem;
+  padding: 0.1em 0.35em;
+}
+
+.md-clipboard:hover,
+.md-typeset .highlight .md-clipboard:hover,
+.md-typeset pre:hover > .md-clipboard:hover {
+  color: var(--md-primary-fg-color);
+}
+
+/* =========================================================================
+   Content tabs & keyboard keys (pymdownx.tabbed / pymdownx.keys)
+   ========================================================================= */
+
+.md-typeset .tabbed-set > .tabbed-labels {
+  box-shadow: 0 -1px 0 var(--dg-border) inset;
+}
+
+.md-typeset .tabbed-set > input:checked + label {
+  color: var(--md-primary-fg-color);
+}
+
+.md-typeset kbd,
+.md-typeset .keys kbd {
+  border-radius: 0.25rem;
+  border: 1px solid var(--dg-border-strong);
+  box-shadow: 0 1px 0 var(--dg-border-strong);
+  background-color: var(--dg-surface-alt);
+}
+
+/* Sidebar & TOC: tighter, denser type than Material's default —
+   reads closer to a hand-built product nav than a generic doc tree. */
+.md-nav {
+  font-size: 0.65rem;
+}
+
+.md-nav__title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-nav__link {
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+
+.md-nav--primary .md-nav__title,
+.md-nav--secondary .md-nav__title {
+  padding-bottom: 0.6rem;
+}
+
+/* --- Footer layout ---
+   Material sets `.md-main { flex-grow: 1 }` so it always stretches to
+   fill the full viewport height, pinning the footer to the bottom of
+   the screen even on short pages — on anything but a very tall page
+   that leaves a large dead gap between the content and the footer.
+   Let the footer follow the content directly instead. */
+.md-main {
+  padding-bottom: 0;
+  flex-grow: 0;
+  width: 100%;
+}
+
+/* =========================================================================
+   Footer — on-brand navy instead of generic flat black, with a blue
+   top accent that echoes the header wash, clearer separation between
+   the prev/next row and the copyright row, and visible hover states.
+   ========================================================================= */
+
+.md-footer {
+  --md-footer-bg-color: #0B1626;
+  --md-footer-bg-color--dark: #081221;
+  --md-footer-fg-color: #FFFFFF;
+  --md-footer-fg-color--light: #A9BEDD;
+  --md-footer-fg-color--lighter: #5D7BA6;
+  position: relative;
+}
+
+.md-footer::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background-image: linear-gradient(
+    90deg,
+    var(--md-primary-fg-color--light),
+    var(--md-primary-fg-color)
+  );
+}
+
+.md-footer__inner {
+  padding: 1rem 0.2rem;
+}
+
+.md-footer__link {
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  margin: 0.6rem 0;
+  transition: background-color 125ms ease, opacity 125ms ease;
+}
+
+.md-footer__link:focus,
+.md-footer__link:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.md-footer-meta {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.md-footer-meta__inner {
+  padding: 0.9rem 0.2rem;
+  align-items: center;
+}
+
+html .md-footer-meta.md-typeset a:focus,
+html .md-footer-meta.md-typeset a:hover {
+  color: #FFFFFF;
+}
+
+.md-social__link {
+  border-radius: 999px;
+  transition: background-color 125ms ease, transform 125ms ease;
+}
+
+.md-social__link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* =========================================================================
+   Header — light, product-style top bar instead of a full-bleed color
+   band (dark/slate mode keeps Material's default colored header, which
+   already reads well and needs no change).
+   ========================================================================= */
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: #EAF2FF;
+  color: #0F172A;
+  box-shadow: none;
+  border-bottom: 1px solid #CBDFFC;
+}
+
+[data-md-color-scheme="default"] .md-header[data-md-state="shadow"] {
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06), 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+/* theme.logo is a raster image, so recolor it with a filter instead of
+   relying on currentColor (which only affects inline SVG logos). */
+[data-md-color-scheme="default"] .md-logo img {
+  filter: invert(1);
+}
+
+[data-md-color-scheme="default"] .md-search__form {
+  background-color: #DCE9FC;
+}
+
+[data-md-color-scheme="default"] .md-search__form:hover {
+  background-color: #CBDFFC;
+}
+
+[data-md-color-scheme="default"] .md-search__input:focus ~ .md-search__form,
+[data-md-color-scheme="default"] .md-search__form:focus-within {
+  box-shadow: 0 0 0 2px var(--md-primary-fg-color--light);
+}
+
+[data-md-color-scheme="default"] .md-search__input::placeholder,
+[data-md-color-scheme="default"] .md-search__input + .md-search__icon {
+  color: #4A6B94;
+}
+
+/* Tabs bar: same wash as the header, muted inactive links, brand-blue
+   active link with a bolder underline instead of a filled band.
+   With navigation.tabs.sticky the tabs render *inside* <header>, so the
+   separating hairline belongs on the header and not on the tabs — two
+   borders there would stack into a visible double rule. */
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #EAF2FF;
+  color: #0F172A;
+  border-bottom: 0;
+}
+
+.md-tabs__link {
+  padding-bottom: 0.9rem;
+  opacity: 1;
+  font-weight: 500;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link {
+  color: #40556F;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link:hover {
+  color: var(--md-primary-fg-color);
+}
+
+.md-tabs__item--active .md-tabs__link {
+  font-weight: 700;
+  box-shadow: 0 3px 0 0 currentcolor;
+}
+
+[data-md-color-scheme="default"] .md-tabs__item--active .md-tabs__link {
+  color: var(--md-primary-fg-color);
+}
+
+/* Dark mode: a navy bar that matches the footer, rather than Material's
+   default full-saturation primary-colour band. */
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #0B1626;
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: none;
+}
+
+[data-md-color-scheme="slate"] .md-search__form {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-md-color-scheme="slate"] .md-search__form:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-md-color-scheme="slate"] .md-tabs__item--active .md-tabs__link {
+  color: #FFFFFF;
+}
+
+/* Call-to-action button injected in overrides/partials/header.html.
+   Filled so it reads as a clear focal point rather than blending into
+   the header chrome; colors flip per scheme so it stays high-contrast
+   on both the light (blue-tinted) and slate (blue) header. */
+.md-header__cta {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.6rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-image 125ms ease, background-color 125ms ease,
+    color 125ms ease, border-color 125ms ease, box-shadow 125ms ease,
+    transform 125ms ease;
+}
+
+[data-md-color-scheme="default"] .md-header__cta {
+  background-image: linear-gradient(
+    135deg,
+    var(--md-primary-fg-color--light),
+    var(--md-primary-fg-color)
+  );
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(1, 107, 255, 0.35);
+}
+
+[data-md-color-scheme="default"] .md-header__cta:hover {
+  background-image: linear-gradient(
+    135deg,
+    var(--md-primary-fg-color),
+    var(--md-primary-fg-color--dark)
+  );
+  box-shadow: 0 3px 10px rgba(1, 107, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+[data-md-color-scheme="slate"] .md-header__cta {
+  background-color: #FFFFFF;
+  color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-header__cta:hover {
+  background-color: var(--md-primary-fg-color--light);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-header__cta {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   Navigation — sidebar & table of contents
+   ========================================================================= */
+
+.md-nav__item .md-nav__link--active {
+  border-radius: 0.3rem;
+  background-color: rgba(1, 107, 255, 0.12);
+}
+
+.md-nav--secondary .md-nav__link--active {
+  background-color: transparent;
+  border-inline-start: 3px solid var(--md-primary-fg-color);
+  padding-inline-start: calc(0.6rem - 3px);
+}
+
+/* The nav is long enough to scroll on most pages; a permanently visible
+   grey bar next to every page is more chrome than it earns. Fade it in
+   when the sidebar is actually being used. */
+.md-sidebar__scrollwrap {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 250ms ease;
+}
+
+.md-sidebar:hover .md-sidebar__scrollwrap,
+.md-sidebar__scrollwrap:focus-within {
+  scrollbar-color: var(--dg-border-strong) transparent;
+}
+
+.md-sidebar__scrollwrap::-webkit-scrollbar {
+  width: 4px;
+}
+
+.md-sidebar__scrollwrap::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+  transition: background-color 250ms ease;
+}
+
+.md-sidebar:hover .md-sidebar__scrollwrap::-webkit-scrollbar-thumb {
+  background-color: var(--dg-border-strong);
+}
+
+/* Keyboard focus should be obvious everywhere, in brand blue rather than
+   the browser default. */
+.md-nav__link:focus-visible,
+.md-tabs__link:focus-visible,
+.md-header__cta:focus-visible,
+.md-typeset a:focus-visible,
+.md-footer__link:focus-visible,
+.md-social__link:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+  border-radius: 0.2rem;
+}
+
+/* Back-to-top button: match the pill language used by the header CTA. */
+.md-top {
+  border-radius: 999px;
+  box-shadow: var(--dg-shadow-lg);
+  background-color: var(--md-default-bg-color);
+  transition: transform 125ms ease, box-shadow 125ms ease;
+}
+
+.md-top:hover {
+  background-color: var(--md-default-bg-color);
+  color: var(--md-primary-fg-color);
+  transform: translate(-50%, -2px);
+}
+
+/* =========================================================================
+   Buttons & admonitions — rounder, softer, more "product" than the
+   default flat Material look.
+   ========================================================================= */
+
+.md-typeset .md-button {
+  border-radius: 0.4rem;
+  transition: color 125ms, background-color 125ms, border-color 125ms,
+    transform 125ms, box-shadow 125ms;
+}
+
+.md-typeset .md-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+/* =========================================================================
+   Homepage — hero and section cards
+   (markup in overrides/partials/home.html, rendered for every locale)
+   ========================================================================= */
+
+/* The landing page runs wider than an article: the hero and the card grid
+   need the room, while the prose below it keeps the normal measure.
+   Where :has() is unsupported the page simply keeps the article measure —
+   the hero and a two-up card grid still read correctly at that width. */
+.md-content__inner:has(> .dg-home) {
+  max-width: 49.6rem;
+}
+
+.dg-home__body {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+/* The homepage sits at the root of the nav and therefore has no child
+   pages to list, so Material renders an empty 242px sidebar column beside
+   it. Reclaim that space for the landing page — but only on desktop, where
+   the sidebar is a column; below the breakpoint it is the drawer menu and
+   must stay. */
+@media screen and (min-width: 76.25em) {
+  .md-main__inner:has(.dg-home) .md-sidebar--primary {
+    display: none;
+  }
+}
+
+.dg-hero {
+  margin: 0.6rem 0 2.2rem;
+  padding: 2.2rem 2rem 2.4rem;
+  border: 1px solid var(--dg-border);
+  border-radius: 0.8rem;
+  background-image: radial-gradient(
+      120% 140% at 0% 0%,
+      var(--dg-tint) 0%,
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--dg-surface-alt), transparent);
+  background-color: var(--dg-surface);
+}
+
+.dg-hero__eyebrow {
+  margin: 0 0 0.7rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--md-primary-fg-color);
+}
+
+/* Material renders h1 in a muted grey; the hero headline is the one place
+   on the site that should carry full contrast. */
+.md-typeset .dg-hero__title {
+  margin: 0 0 0.6rem;
+  font-size: 2.1rem;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--md-default-fg-color);
+}
+
+/* The heading anchor is carried over with the markup lifted out of the
+   article body; it has nothing to link to up here. */
+.dg-hero__title .headerlink {
+  display: none;
+}
+
+.md-typeset .dg-hero__lede {
+  margin: 0;
+  max-width: 30rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color--light);
+}
+
+.dg-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.md-typeset .dg-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin: 0;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.md-typeset .dg-hero__cta svg {
+  width: 1em;
+  height: 1em;
+  fill: currentcolor;
+}
+
+/* --- Section cards --- */
+
+.dg-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 3rem;
+}
+
+.md-typeset .dg-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "icon  title"
+    "meta  meta";
+  align-items: center;
+  gap: 0.15rem 0.6rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--dg-border);
+  border-radius: 0.6rem;
+  background-color: var(--dg-surface);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 125ms ease, box-shadow 125ms ease,
+    transform 125ms ease;
+}
+
+.md-typeset .dg-card:hover,
+.md-typeset .dg-card:focus-visible {
+  border-color: var(--md-primary-fg-color--light);
+  box-shadow: var(--dg-shadow-lg);
+  transform: translateY(-2px);
+  color: inherit;
+}
+
+.dg-card__icon {
+  grid-area: icon;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.4rem;
+  background-color: var(--dg-tint);
+  color: var(--md-primary-fg-color);
+}
+
+.dg-card__icon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: currentcolor;
+}
+
+.dg-card__title {
+  grid-area: title;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.dg-card__meta {
+  grid-area: meta;
+  margin-top: 0.5rem;
+  font-size: 0.62rem;
+  line-height: 1.45;
+  color: var(--md-default-fg-color--light);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 44.9375em) {
+  .dg-hero {
+    padding: 1.6rem 1.2rem 1.8rem;
+  }
+
+  .md-typeset .dg-hero__title {
+    font-size: 1.6rem;
+  }
+}
+
+/* =========================================================================
+   "Was this page helpful?" feedback widget
+   (injected by assets/javascripts/feedback.js)
+   ========================================================================= */
+
+.digna-feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 3rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.digna-feedback__label {
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  margin-inline-end: 0.2rem;
+}
+
+.digna-feedback__btn {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 125ms, transform 125ms;
+}
+
+.digna-feedback__btn:hover:not(:disabled) {
+  border-color: var(--md-primary-fg-color);
+  transform: translateY(-1px);
+}
+
+.digna-feedback__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.digna-feedback__btn--selected {
+  border-color: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color);
+}
+
+.digna-feedback__thanks {
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+}

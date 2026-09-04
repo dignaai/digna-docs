@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# The on-site search results page has no unique indexable content.
+Disallow: /search/
+
+Sitemap: https://docs.digna.ai/sitemap.xml
