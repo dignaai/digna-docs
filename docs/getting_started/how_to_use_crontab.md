@@ -1,5 +1,5 @@
 ---
-title: Advanced Scheduling with Crontab
+title: Advanced Scheduling with Crontab | digna Documentation
 description: Learn how to schedule a job in digna using crontab expressions for advanced timing.
 ---
 

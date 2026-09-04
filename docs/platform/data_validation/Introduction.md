@@ -23,7 +23,6 @@ twitter_card: summary_large_image
 ---
 
 # Data Validation – Rule-Based Checks
-<h1 style="display:none;">AI-Driven Data Validation Module for Data Quality and Observability – digna</h1>
 
 ---
 

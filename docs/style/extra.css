@@ -1,28 +1,327 @@
+/* =========================================================================
+   digna docs — brand & polish overrides for MkDocs Material
+   ========================================================================= */
+
+/* --- Brand palette (digna blue) ---
+   Applied via theme.palette primary/accent: custom in mkdocs.yml.
+   These variables are picked up automatically for both the light
+   and dark (slate) color schemes. */
+[data-md-color-primary="custom"] {
+  --md-primary-fg-color:         #016BFF;
+  --md-primary-fg-color--light:  #4D94FF;
+  --md-primary-fg-color--dark:   #0052CC;
+  --md-primary-bg-color:         #FFFFFF;
+  --md-primary-bg-color--light:  hsla(0, 0%, 100%, 0.7);
+}
+
+[data-md-color-accent="custom"] {
+  --md-accent-fg-color:               #0052CC;
+  --md-accent-fg-color--transparent:  #0052CC1a;
+  --md-accent-bg-color:               #FFFFFF;
+  --md-accent-bg-color--light:        hsla(0, 0%, 100%, 0.7);
+}
+
+/* --- Typography ---
+   theme.font is disabled (no external font requests), so provide an
+   explicit, modern system font stack instead of the browser default. */
 :root {
-  --md-primary-fg-color:        #016BFF; /* your primary color */
-  --md-primary-fg-color--light: #ff8a50; /* lighter shade */
-  --md-primary-fg-color--dark:  #c41c00; /* darker shade */
+  --md-text-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --md-code-font: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
 }
 
-
-/* --- Sticky footer setup for MkDocs Material --- */
-
-.md-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 50;
+.md-typeset {
+  line-height: 1.7;
 }
 
-/* Add padding to prevent footer from overlapping content */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+  margin-bottom: 1.2em;
+}
+
+/* --- Footer layout ---
+   Let it flow naturally at the end of the page content (Material's
+   default flex layout already handles this correctly). */
 .md-main {
-  padding-bottom: 1.5rem; /* Adjust based on footer height */
+  padding-bottom: 0;
 }
 
-/* Optional: make it slightly translucent */
+/* =========================================================================
+   Footer — on-brand navy instead of generic flat black, with a blue
+   top accent that echoes the header wash, clearer separation between
+   the prev/next row and the copyright row, and visible hover states.
+   ========================================================================= */
+
 .md-footer {
-  background-color: #016BFF;
-  backdrop-filter: blur(6px);
+  --md-footer-bg-color: #0B1626;
+  --md-footer-bg-color--dark: #081221;
+  --md-footer-fg-color: #FFFFFF;
+  --md-footer-fg-color--light: #A9BEDD;
+  --md-footer-fg-color--lighter: #5D7BA6;
+  position: relative;
 }
 
+.md-footer::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background-image: linear-gradient(
+    90deg,
+    var(--md-primary-fg-color--light),
+    var(--md-primary-fg-color)
+  );
+}
+
+.md-footer__inner {
+  padding: 1rem 0.2rem;
+}
+
+.md-footer__link {
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  margin: 0.6rem 0;
+  transition: background-color 125ms ease, opacity 125ms ease;
+}
+
+.md-footer__link:focus,
+.md-footer__link:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.md-footer-meta {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.md-footer-meta__inner {
+  padding: 0.9rem 0.2rem;
+  align-items: center;
+}
+
+html .md-footer-meta.md-typeset a:focus,
+html .md-footer-meta.md-typeset a:hover {
+  color: #FFFFFF;
+}
+
+.md-social__link {
+  border-radius: 999px;
+  transition: background-color 125ms ease, transform 125ms ease;
+}
+
+.md-social__link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* =========================================================================
+   Header — light, product-style top bar instead of a full-bleed color
+   band (dark/slate mode keeps Material's default colored header, which
+   already reads well and needs no change).
+   ========================================================================= */
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: #EAF2FF;
+  color: #0F172A;
+  box-shadow: none;
+  border-bottom: 1px solid #CBDFFC;
+}
+
+[data-md-color-scheme="default"] .md-header[data-md-state="shadow"] {
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06), 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+/* theme.logo is a raster image, so recolor it with a filter instead of
+   relying on currentColor (which only affects inline SVG logos). */
+[data-md-color-scheme="default"] .md-logo img {
+  filter: invert(1);
+}
+
+[data-md-color-scheme="default"] .md-search__form {
+  background-color: #DCE9FC;
+}
+
+[data-md-color-scheme="default"] .md-search__form:hover {
+  background-color: #CBDFFC;
+}
+
+[data-md-color-scheme="default"] .md-search__input:focus ~ .md-search__form,
+[data-md-color-scheme="default"] .md-search__form:focus-within {
+  box-shadow: 0 0 0 2px var(--md-primary-fg-color--light);
+}
+
+[data-md-color-scheme="default"] .md-search__input::placeholder,
+[data-md-color-scheme="default"] .md-search__input + .md-search__icon {
+  color: #4A6B94;
+}
+
+/* Tabs bar: same wash as the header, muted inactive links, brand-blue
+   active link with a bolder underline instead of a filled band. */
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #EAF2FF;
+  color: #0F172A;
+  border-bottom: 1px solid #CBDFFC;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link {
+  padding-bottom: 0.9rem;
+}
+
+[data-md-color-scheme="default"] .md-tabs__item--active .md-tabs__link {
+  color: var(--md-primary-fg-color);
+  box-shadow: 0 3px 0 0 var(--md-primary-fg-color);
+}
+
+/* Call-to-action button injected in overrides/partials/header.html.
+   Filled so it reads as a clear focal point rather than blending into
+   the header chrome; colors flip per scheme so it stays high-contrast
+   on both the light (blue-tinted) and slate (blue) header. */
+.md-header__cta {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.6rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-image 125ms ease, background-color 125ms ease,
+    color 125ms ease, border-color 125ms ease, box-shadow 125ms ease,
+    transform 125ms ease;
+}
+
+[data-md-color-scheme="default"] .md-header__cta {
+  background-image: linear-gradient(
+    135deg,
+    var(--md-primary-fg-color--light),
+    var(--md-primary-fg-color)
+  );
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(1, 107, 255, 0.35);
+}
+
+[data-md-color-scheme="default"] .md-header__cta:hover {
+  background-image: linear-gradient(
+    135deg,
+    var(--md-primary-fg-color),
+    var(--md-primary-fg-color--dark)
+  );
+  box-shadow: 0 3px 10px rgba(1, 107, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+[data-md-color-scheme="slate"] .md-header__cta {
+  background-color: #FFFFFF;
+  color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-header__cta:hover {
+  background-color: var(--md-primary-fg-color--light);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-header__cta {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   Navigation — sidebar & table of contents
+   ========================================================================= */
+
+.md-nav__item .md-nav__link--active {
+  border-radius: 0.3rem;
+  background-color: rgba(1, 107, 255, 0.12);
+}
+
+.md-nav--secondary .md-nav__link--active {
+  background-color: transparent;
+  border-inline-start: 3px solid var(--md-primary-fg-color);
+  padding-inline-start: calc(0.6rem - 3px);
+}
+
+/* =========================================================================
+   Buttons & admonitions — rounder, softer, more "product" than the
+   default flat Material look.
+   ========================================================================= */
+
+.md-typeset .md-button {
+  border-radius: 0.4rem;
+  transition: color 125ms, background-color 125ms, border-color 125ms,
+    transform 125ms, box-shadow 125ms;
+}
+
+.md-typeset .md-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+/* =========================================================================
+   "Was this page helpful?" feedback widget
+   (injected by assets/javascripts/feedback.js)
+   ========================================================================= */
+
+.digna-feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 3rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.digna-feedback__label {
+  font-weight: 700;
+  color: var(--md-default-fg-color);
+  margin-inline-end: 0.2rem;
+}
+
+.digna-feedback__btn {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--md-default-bg-color);
+  border-radius: 999px;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 125ms, transform 125ms;
+}
+
+.digna-feedback__btn:hover:not(:disabled) {
+  border-color: var(--md-primary-fg-color);
+  transform: translateY(-1px);
+}
+
+.digna-feedback__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.digna-feedback__btn--selected {
+  border-color: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color);
+}
+
+.digna-feedback__thanks {
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+}

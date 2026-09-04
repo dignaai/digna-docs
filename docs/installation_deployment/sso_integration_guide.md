@@ -1,3 +1,26 @@
+---
+title: Single Sign-On (SSO) Integration Guide | digna Documentation
+description: Step-by-step guide to configuring Single Sign-On (SSO) for digna using OpenID Connect (OIDC). Covers dashboard and backend configuration, testing, troubleshooting, and supported identity providers including Microsoft Entra ID, Google Workspace, and Okta.
+image: /assets/logo_square.png
+keywords:
+  - digna sso
+  - single sign-on
+  - oidc integration
+  - openid connect
+  - microsoft entra id
+  - azure ad sso
+  - google workspace sso
+  - okta integration
+  - enterprise authentication
+lang: en
+robots: index, follow
+og_title: digna Single Sign-On (SSO) Integration Guide
+og_description: Configure Single Sign-On for digna using OpenID Connect. Step-by-step setup for Microsoft Entra ID, Google Workspace, Okta, and other OIDC-compliant identity providers.
+og_image: /assets/logo_square.png
+og_type: article
+twitter_card: summary_large_image
+---
+
 # Single Sign-On Integration Guide
 
 ---
@@ -14,7 +37,7 @@
 
 ---
 
-## Introduction and Overview
+## Introduction and Overview {: #introduction-and-overview }
 
 This guide provides step-by-step instructions for integrating Single Sign-On (SSO) with the digna platform using **OpenID Connect (OIDC)**.
 
@@ -29,7 +52,7 @@ SSO in digna is implemented using the OIDC protocol. Multiple identity providers
 - **`dashboard_config.toml`** — Controls the frontend login interface
 - **`config.toml`** — Configures the backend OIDC connections
 
-### Supported Providers
+### Supported Providers {: #supported-providers-overview }
 
 Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
 
@@ -43,7 +66,7 @@ Common OIDC providers include:
 
 ---
 
-## Configuration Steps
+## Configuration Steps {: #configuration-steps }
 
 SSO configuration requires updates to two files. This section explains how to configure each one.
 
@@ -58,7 +81,7 @@ Both files must be configured for SSO to work properly.
 
 ---
 
-## Dashboard Configuration
+## Dashboard Configuration {: #dashboard-configuration }
 
 ### File Location
 
@@ -144,7 +167,7 @@ label = "Login with Okta"
 
 ---
 
-## Backend Configuration
+## Backend Configuration {: #backend-configuration }
 
 ### File Location
 
@@ -221,7 +244,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ---
 
-## Testing Login
+## Testing Login {: #testing-login }
 
 After completing the configuration, verify that SSO is working correctly.
 
@@ -309,7 +332,7 @@ If `usePassword = true`:
 
 ---
 
-## Troubleshooting
+## Troubleshooting {: #troubleshooting }
 
 ### Login Buttons Don't Appear
 
@@ -387,7 +410,7 @@ If `usePassword = true`:
 
 ---
 
-## Supported Providers
+## Supported Providers {: #supported-providers }
 
 ### Tested & Supported
 

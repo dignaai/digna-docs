@@ -24,7 +24,6 @@ twitter_card: summary_large_image
 ---
 
 # Data Timeliness – On-Time Delivery Monitoring
-<h1 style="display:none;">AI-Driven Data Timeliness Module for Data Quality and Observability – digna</h1>
 
 ---
 

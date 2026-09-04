@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{#-
+  Page frontmatter across this project already writes complete titles
+  that end in "| digna Documentation" (the site_name) by convention.
+  Material's stock htmltitle block always appends site_name on top of
+  that, producing "X | digna Documentation - digna Documentation" —
+  duplicated and truncated in search results. Use page.meta.title
+  verbatim when it's set; only fall back to appending site_name for
+  pages that don't set an explicit title.
+-#}
+{% block htmltitle %}
+  {% if page.meta and page.meta.title %}
+    <title>{{ page.meta.title }}</title>
+  {% elif page.title and not page.is_homepage %}
+    <title>{{ page.title | striptags }} | {{ config.site_name }}</title>
+  {% else %}
+    <title>{{ config.site_name }}</title>
+  {% endif %}
+{% endblock %}
+
+{#-
+  Material's base.html only turns page.meta.description / .author into
+  actual <meta> tags — every other SEO field used in this project's
+  frontmatter (keywords, robots, image, og_*, twitter_card) was being
+  silently ignored. This block wires those up as real Open Graph /
+  Twitter Card / robots / keywords meta tags, with sensible fallbacks
+  to site-wide config so pages that only set title/description still
+  get a complete, correct set of tags.
+-#}
+{% block extrahead %}
+  {% set meta = page.meta or {} %}
+  {% set og_title = meta.og_title or meta.title or page.title or config.site_name %}
+  {% set og_description = meta.og_description or meta.description or config.site_description %}
+  {% set og_image_path = meta.og_image or meta.image %}
+  {% set og_type = meta.og_type or "website" %}
+
+  {% if og_title %}
+    <meta property="og:title" content="{{ og_title }}">
+  {% endif %}
+  {% if og_description %}
+    <meta property="og:description" content="{{ og_description }}">
+  {% endif %}
+  {% if page.canonical_url %}
+    <meta property="og:url" content="{{ page.canonical_url }}">
+  {% endif %}
+  <meta property="og:type" content="{{ og_type }}">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  {% if og_image_path %}
+    {% set og_image_url = og_image_path if og_image_path.startswith("http") else (config.site_url.rstrip("/") ~ "/" ~ og_image_path.lstrip("/")) %}
+    <meta property="og:image" content="{{ og_image_url }}">
+    <meta property="og:image:alt" content="{{ og_title }}">
+  {% endif %}
+
+  {% set twitter_card = meta.twitter_card or (og_image_path and "summary_large_image") or "summary" %}
+  <meta name="twitter:card" content="{{ twitter_card }}">
+  {% if og_title %}
+    <meta name="twitter:title" content="{{ og_title }}">
+  {% endif %}
+  {% if og_description %}
+    <meta name="twitter:description" content="{{ og_description }}">
+  {% endif %}
+  {% if og_image_path %}
+    <meta name="twitter:image" content="{{ og_image_url }}">
+  {% endif %}
+
+  {% if meta.keywords %}
+    <meta name="keywords" content="{{ meta.keywords if meta.keywords is string else meta.keywords | join(', ') }}">
+  {% endif %}
+
+  <meta name="robots" content="{{ meta.robots or 'index, follow' }}">
+
+  {#- config.theme.language is the per-page locale mkdocs-static-i18n
+      sets during each language's build pass (it's what already drives
+      <html lang="...">), unlike page.meta.lang which most pages never
+      set. x-default points at this project's default/fallback
+      language (English), reusing the "en" entry the i18n plugin
+      already adds to config.extra.alternate for every page. -#}
+  {% set locale_map = {"en": "en_US", "nb": "nb_NO"} %}
+  {% set page_lang = config.theme.language or "en" %}
+  <meta property="og:locale" content="{{ locale_map.get(page_lang, page_lang ~ '_' ~ page_lang.upper()) }}">
+
+  {% if config.extra.alternate %}
+    {% for alt in config.extra.alternate %}
+      {% if alt.lang == "en" %}
+        <link rel="alternate" hreflang="x-default" href="{{ alt.link | url }}">
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {#- Structured data: Organization (entity identity for search engines
+      and AI systems), WebSite with a SearchAction (Google sitelinks
+      searchbox), a per-page BreadcrumbList built from the real nav
+      ancestry (page.parent chain — Material's own breadcrumb UI is
+      JS-rendered client-side, so crawlers never see it without this),
+      and FAQPage on the homepage matching its existing FAQ content. -#}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "digna",
+    "url": "https://www.digna.ai",
+    "logo": "{{ config.site_url.rstrip('/') ~ '/assets/logo_square.png' }}",
+    "sameAs": [
+      {% set social_links = [] %}
+      {% for item in (config.extra.social or []) %}
+        {% if item.link and not item.link.startswith("mailto:") %}
+          {% set social_links = social_links + [item.link] %}
+        {% endif %}
+      {% endfor %}
+      {% for link in social_links %}
+        "{{ link | e }}"{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "{{ config.site_name | e }}",
+    "url": "{{ config.site_url | e }}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "{{ config.site_url.rstrip('/') }}/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  {% set ns = namespace(node=page.parent, crumbs=[]) %}
+  {% for _ in range(8) %}
+    {% if ns.node %}
+      {% if ns.node.is_page and ns.node.title and ns.node.url %}
+        {% set ns.crumbs = [ns.node] + ns.crumbs %}
+      {% endif %}
+      {% set ns.node = ns.node.parent %}
+    {% endif %}
+  {% endfor %}
+  {% if not page.is_homepage %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "{{ config.site_name | e }}", "item": "{{ config.site_url | e }}"}
+        {% set pos = namespace(n=2) %}
+        {% for crumb in ns.crumbs %}
+        ,{"@type": "ListItem", "position": {{ pos.n }}, "name": "{{ crumb.title | e }}", "item": "{{ (config.site_url.rstrip('/') ~ '/' ~ crumb.url.lstrip('/')) | e }}"}
+        {% set pos.n = pos.n + 1 %}
+        {% endfor %}
+        ,{"@type": "ListItem", "position": {{ pos.n }}, "name": "{{ (page.title | striptags if page.title else og_title) | e }}", "item": "{{ (page.canonical_url or config.site_url) | e }}"}
+      ]
+    }
+    </script>
+  {% endif %}
+
+  {% if page.is_homepage and page_lang == "en" %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the digna platform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An AI-based solution for improving the quality of data and observability of data, operating completely within your own environment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is digna a SaaS solution?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. digna is installed on-premises or in your private cloud, not delivered as Software as a Service."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which databases does digna support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "digna integrates with Teradata, Snowflake, Databricks, Oracle, PostgreSQL, and many others."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why choose digna over cloud-based tools?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because it combines AI, full data sovereignty, and in-database monitoring — ensuring reliable data pipelines and regulatory compliance."
+          }
+        }
+      ]
+    }
+    </script>
+  {% endif %}
+{% endblock %}

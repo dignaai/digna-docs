@@ -23,7 +23,6 @@ twitter_card: summary_large_image
 ---
 
 # *digna* Platform
-<h1 style="display:none;">AI-Driven Platform for Data Quality, Quality of Data, and Observability of Data – digna</h1>
 
 ## European Platform for Data Quality and Data Observability
 

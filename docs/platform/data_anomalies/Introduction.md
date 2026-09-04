@@ -23,7 +23,6 @@ twitter_card: summary_large_image
 ---
 
 # Data Anomalies – Automated Detection
-<h1 style="display:none;">AI-Driven Module for Data Quality and Observability – digna Data Anomalies</h1>
 
 ---
 

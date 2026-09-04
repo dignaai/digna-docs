@@ -24,7 +24,6 @@ twitter_card: summary_large_image
 ---
 
 # Data Schema Tracker – Monitor Schema Evolution
-<h1 style="display:none;">AI-Driven Module for Metadata Observability and Data Quality – digna Data Schema Tracker</h1>
 
 ---
 

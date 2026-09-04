@@ -1,5 +1,5 @@
 ---
-title: How to Create a Job that Runs Daily
+title: How to Create a Job that Runs Daily | digna Documentation
 description: Learn how to schedule a daily inspection job in digna using the dashboard.
 keywords: digna scheduling, data quality automation, daily job
 ---

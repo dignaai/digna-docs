@@ -24,7 +24,6 @@ twitter_card: summary_large_image
 ---
 
 # Data Analytics – Trends and Stability
-<h1 style="display:none;">AI-Driven Data Analytics Module for Data Quality and Observability – digna</h1>
 
 ---
 

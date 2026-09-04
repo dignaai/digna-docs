@@ -1,3 +1,10 @@
+---
+title: Windows Installation Guide – digna Release 2026.06 | digna Documentation
+description: Step-by-step guide to installing digna Release 2026.06 on Windows — system requirements, PostgreSQL setup, web server configuration, backend and dashboard configuration, running digna as a Windows service, and upgrading to a new release.
+keywords: digna windows installation, digna deployment guide, digna backend setup, digna dashboard installation, postgresql setup, digna windows service, digna upgrade guide
+image: /assets/logo_square.png
+---
+
 # Windows Installation Guide for digna Release 2026.06
 
 **Release:** 2026.06
@@ -22,7 +29,7 @@
 
 ---
 
-## Introduction
+## Introduction {: #introduction }
 
 ### About digna
 
@@ -39,7 +46,7 @@ This release brings data observability capabilities directly into your code, ena
 
 ---
 
-## System Requirements
+## System Requirements {: #system-requirements }
 
 Before you begin the installation, ensure that your system meets the following minimum requirements:
 
@@ -67,7 +74,7 @@ You can add a new database for digna to your existing PostgreSQL Server.
 
 ---
 
-## Pre-Installation Setup
+## Pre-Installation Setup {: #pre-installation-setup }
 
 Before installing digna, ensure that two key prerequisites are in place:
 
@@ -78,7 +85,7 @@ If these components are not already set up, follow the sections below to install
 
 ---
 
-## PostgreSQL Server Setup
+## PostgreSQL Server Setup {: #postgresql-server-setup }
 
 ### If You Already Have PostgreSQL
 
@@ -139,7 +146,7 @@ You should see the PostgreSQL version if the installation was successful.
 
 ---
 
-## Web Server Configuration
+## Web Server Configuration {: #web-server-configuration }
 
 digna requires a web server to host the dashboard. Choose one of the following options:
 
@@ -148,7 +155,7 @@ digna requires a web server to host the dashboard. Choose one of the following o
 
 You only need to install and configure **one** of these servers.
 
-### IIS Setup
+### IIS Setup {: #iis-setup }
 
 #### Overview
 
@@ -199,7 +206,7 @@ To ensure Markdown files (`.md`) are served correctly by IIS:
 
 ---
 
-### Apache Tomcat Setup
+### Apache Tomcat Setup {: #apache-tomcat-setup }
 
 #### Overview
 
@@ -226,7 +233,7 @@ Apache Tomcat is an open-source Java servlet container and web server.
 
 ---
 
-## Initial Installation
+## Initial Installation {: #initial-installation }
 
 ### Step 1: Set Up the digna Repository
 
@@ -301,7 +308,7 @@ digna_installation/
 
 ---
 
-## Backend Configuration
+## Backend Configuration {: #backend-configuration }
 
 ### Step 1: Create and Edit the Configuration File
 
@@ -467,7 +474,7 @@ This creates a user with full administrative privileges.
 
 ---
 
-## Dashboard Configuration
+## Dashboard Configuration {: #dashboard-configuration }
 
 ### Step 1: Deploy Dashboard to Web Server
 
@@ -518,7 +525,7 @@ Choose your web server and follow the corresponding deployment steps.
 
 ---
 
-## Running digna as a Windows Service
+## Running digna as a Windows Service {: #running-digna-as-a-windows-service }
 
 ### Why Use a Windows Service?
 
@@ -625,7 +632,7 @@ The digna server is now unregistered as a Windows service.
 
 ---
 
-## Upgrading to a New Release
+## Upgrading to a New Release {: #upgrading-to-a-new-release }
 
 ### Before You Upgrade
 
