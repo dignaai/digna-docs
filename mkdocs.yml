@@ -26,17 +26,21 @@ theme:
         name: Switch to light mode
   features:
     - navigation.tabs
+    - navigation.tabs.sticky  # keep the section tabs visible while scrolling
     - navigation.sections
     - navigation.path         # breadcrumbs (Insiders gives extra options, but not required)
     - navigation.top          # back-to-top button
+    - navigation.tracking     # reflect the active anchor in the address bar
     - navigation.footer       # next/previous page links
     - content.code.copy
     - content.code.select
+    - content.code.annotate
     - content.tabs.link
+    - content.tooltips        # styled tooltips for title="" and abbreviations
     - search.highlight
+    - search.suggest
     - search.share
     - navigation.indexes
-    - toc.sticky  # Sticky scrolling TOC on right
     - toc.follow  # Highlights current section
 
 extra_javascript:
@@ -127,12 +131,36 @@ copyright: >
     © 2025 digna GmbH — <a href="https://www.digna.ai" target="_blank" rel="noopener">www.digna.ai</a>
 
 markdown_extensions:
+  - abbr                  # *[SSO]: Single Sign-on  ->  tooltip on every mention
   - admonition
-  - pymdownx.details
-  - pymdownx.superfences
   - attr_list             # lets us add .md-button, .cards, .grid in Markdown
+  - def_list
+  - footnotes
+  - md_in_html            # required for the "grid cards" layout used on landing pages
+  - tables
+  # NB: pymdownx.betterem is deliberately NOT enabled. Several pages use
+  # nested emphasis of the form `**Extracting the ***digna*** CLI:**`,
+  # which betterem renders as literal asterisks while Python-Markdown's
+  # default smart_emphasis parses it as intended.
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true     # line numbers become linkable anchors
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys           # ++ctrl+c++ renders as keyboard keys
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true   # required by the content.tabs.link theme feature
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - toc:
-      toc_depth: 2      # only show 2 levels (H1 + H2)#
+      permalink: true   # anchor link on every heading, so sections are shareable
+      toc_depth: 3      # H1-H3 in the right-hand table of contents
 
 extra_css:
   - style/extra.css

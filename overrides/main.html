@@ -1,6 +1,41 @@
 {% extends "base.html" %}
 
 {#-
+  theme.font is disabled (no automatic Google Fonts request via
+  Material's own font-loading partial), but a real webfont still
+  reads as meaningfully more "designed" than the system-ui fallback
+  stack, so load Inter explicitly and deliberately here instead. -#}
+{% block styles %}
+  {{ super() }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+{#-
+  The homepage gets a landing-page treatment (hero + section cards +
+  the usual prose underneath) instead of the stock article layout.
+  See partials/home.html — it is driven entirely by the nav and the
+  page's own frontmatter, so every locale gets it for free.
+
+  Note `page.is_homepage` is NOT usable here: MkDocs only sets it when the
+  page's URL is the site root, so it is true for /index.html but false for
+  /de/, /fr/, … even though each of those is the homepage of its locale.
+  Testing "an index page whose URL has no path separator left" is true for
+  exactly one page per language (`index.md` and `<locale>/index.md`) and
+  false for nested index pages such as platform/data_anomalies/index.md.
+  Jinja block scoping means this cannot be hoisted into a shared variable,
+  hence the repetition against the identical test in {% block extrahead %}.
+-#}
+{% block content %}
+  {% if page and page.is_index and "/" not in page.url.strip("/") %}
+    {% include "partials/home.html" %}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{#-
   Page frontmatter across this project already writes complete titles
   that end in "| digna Documentation" (the site_name) by convention.
   Material's stock htmltitle block always appends site_name on top of
@@ -138,7 +173,11 @@
       {% set ns.node = ns.node.parent %}
     {% endif %}
   {% endfor %}
-  {% if not page.is_homepage %}
+  {#- Same locale-aware homepage test as {% block content %} above: a
+      locale root such as /de/ is a homepage too, and should no more carry
+      a breadcrumb trail than / does. -#}
+  {% set is_home = page.is_index and "/" not in page.url.strip("/") %}
+  {% if not is_home %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -156,7 +195,7 @@
     </script>
   {% endif %}
 
-  {% if page.is_homepage and page_lang == "en" %}
+  {% if is_home and page_lang == "en" %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

@@ -1,0 +1,119 @@
+{#-
+  Landing page layout for the site homepage (docs.digna.ai/, /de/, /fr/, …).
+
+  Everything here is derived from data MkDocs already localises, so the
+  same template produces a correctly translated landing page for all 26
+  locales without a single per-language content file:
+
+    * the headline comes from the page's own <h1> (translated markdown),
+    * the standfirst from `description:` in the page frontmatter,
+    * every card title from the nav, which mkdocs-static-i18n rewrites
+      through the `nav_translations` map in mkdocs.yml.
+
+  The rest of the markdown body is rendered underneath unchanged, so the
+  keyword-rich prose and FAQ that the SEO setup depends on stay intact.
+-#}
+
+{#- Recursively find the first real page under a nav section, so a card
+    for a section links somewhere useful instead of nowhere. -#}
+{% macro first_page_url(item) %}
+  {%- if item.is_page or item.is_link -%}
+    {{- item.url -}}
+  {%- elif item.children -%}
+    {{- first_page_url(item.children[0]) -}}
+  {%- endif -%}
+{% endmacro %}
+
+{#- Pick an icon from the URL rather than the title: paths are the same in
+    every language, titles are not. -#}
+{% macro icon_for(url) %}
+  {%- if "installation" in url or "deployment" in url -%}material/server-network
+  {%- elif "getting_started" in url -%}material/rocket-launch-outline
+  {%- elif "databases" in url or "integration" in url -%}material/database-outline
+  {%- elif "cli" in url -%}material/console-line
+  {%- elif "changelog" in url -%}material/history
+  {%- elif "platform" in url -%}material/view-grid-outline
+  {%- else -%}material/book-open-variant
+  {%- endif -%}
+{% endmacro %}
+
+{#- Split the rendered body at the first </h1> so the headline can be
+    lifted into the hero while the remainder flows on below it. Falls back
+    to the untouched body if a translation ever omits the heading. -#}
+{% set _parts = page.content.split("</h1>", 1) %}
+{% if _parts | length == 2 and "<h1" in _parts[0] %}
+  {% set hero_title = _parts[0].split(">", 1)[1] %}
+  {% set body_html = _parts[1] %}
+{% else %}
+  {% set hero_title = page.title %}
+  {% set body_html = page.content %}
+{% endif %}
+
+{#- The primary call to action reuses the "Getting Started" section, which
+    already has a translated title in every locale. -#}
+{% set ns = namespace(cta=none) %}
+{% for item in nav %}
+  {% if ns.cta is none and item.children and "getting_started" in first_page_url(item) %}
+    {% set ns.cta = item %}
+  {% endif %}
+{% endfor %}
+
+{#- This partial is rendered inside Material's own
+    <article class="md-content__inner md-typeset">, so it must not open an
+    article of its own. The wrapper below is what widens that ancestor —
+    see `.md-content__inner:has(> .dg-home)` in style/extra.css. -#}
+<div class="dg-home">
+
+  <header class="dg-hero">
+    <p class="dg-hero__eyebrow">{{ config.site_name }}</p>
+    <h1 class="dg-hero__title">{{ hero_title }}</h1>
+    {% if page.meta and page.meta.description %}
+      <p class="dg-hero__lede">{{ page.meta.description }}</p>
+    {% endif %}
+    <div class="dg-hero__actions">
+      {% if ns.cta %}
+        <a href="{{ first_page_url(ns.cta) | trim | url }}" class="md-button md-button--primary dg-hero__cta">
+          {{ ns.cta.title }}
+          {% include ".icons/material/arrow-right.svg" %}
+        </a>
+      {% endif %}
+      <a href="https://www.digna.ai" target="_blank" rel="noopener" class="md-button dg-hero__cta">
+        digna.ai
+      </a>
+    </div>
+  </header>
+
+  <nav class="dg-cards" aria-label="{{ config.site_name }}">
+    {% for item in nav %}
+      {%- set target = first_page_url(item) | trim -%}
+      {%- if item.title and target and target != "." and not item.is_link -%}
+        <a class="dg-card" href="{{ target | url }}">
+          <span class="dg-card__icon">
+            {% include ".icons/" ~ icon_for(target) | trim ~ ".svg" %}
+          </span>
+          <span class="dg-card__title">{{ item.title }}</span>
+          {%- if item.children -%}
+            {#- A section whose only child is itself a section (Integration ->
+                Databases) would otherwise advertise a single generic word;
+                list that child's own pages instead. -#}
+            {%- set entries = item.children[0].children
+                  if item.children | length == 1 and item.children[0].children
+                  else item.children -%}
+            {%- set leaves = [] -%}
+            {%- for child in entries -%}
+              {%- if child.title -%}{{ leaves.append(child.title) or "" }}{%- endif -%}
+            {%- endfor -%}
+            {%- if leaves -%}
+              <span class="dg-card__meta">{{ leaves[:4] | join(" · ") }}</span>
+            {%- endif -%}
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+    {% endfor %}
+  </nav>
+
+  <div class="dg-home__body">
+    {{ body_html }}
+  </div>
+
+</div>
