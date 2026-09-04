@@ -1,83 +1,82 @@
 ---
-title: Platforma digna – AI do Jakości Danych i Observability | On-Premises & Prywatna Chmura
-description: Odkryj digna, europejską platformę AI do Jakości Danych i Observability. Zbudowana dla instalacji on-premises i prywatnej chmry, digna monitoruje jakość danych bezpośrednio w Twoich bazach danych — zapewniając zgodność, wydajność i suwerenność danych.
+title: Platforma digna – oparta na AI do jakości i obserwowalności danych | On-Premises & Private Cloud
+description: Poznaj digna, europejską platformę opartą na AI do jakości i obserwowalności danych. Zaprojektowana do pracy lokalnie i w prywatnej chmurze, digna monitoruje jakość danych bezpośrednio w Twoich bazach danych — zapewniając zgodność, wydajność i suwerenność danych.
 image: /assets/logo_square.png
 keywords:
   - jakość danych
-  - quality of data
-  - data observability
-  - observability of data
+  - jakość danych
+  - obserwowalność danych
+  - obserwowalność danych
   - wykrywanie anomalii AI
-  - monitorowanie w bazie danych
+  - monitoring w bazie danych
   - suwerenność danych
   - europejska jakość danych
-  - observability on-premises
-  - platforma danych w prywatnej chmurze
+  - obserwowalność on-premises
+  - platforma danych dla prywatnej chmury
 lang: pl
 robots: index, follow
-og_title: Platforma digna – AI do Jakości Danych i Observability
-og_description: digna monitoruje jakość i observability danych bezpośrednio w Twoim środowisku. Napędzana AI, w pełni on-premises lub w prywatnej chmurze, zapewniając kontrolę, zgodność i wydajność.
+og_title: Platforma digna – oparta na AI do jakości i obserwowalności danych
+og_description: digna monitoruje jakość i obserwowalność danych bezpośrednio w Twoim środowisku. Oparta na AI, w pełni lokalnie lub w prywatnej chmurze, zapewnia kontrolę, zgodność i wydajność.
 og_image: /assets/logo_square.png
 og_type: website
 twitter_card: summary_large_image
-canonical_url: https://docs.digna.ai/
 ---
 
 # *digna* Platforma
-<h1 style="display:none;">AI-Driven Platform for Data Quality, Quality of Data, and Observability of Data – digna</h1>
+<h1 style="display:none;">Platforma napędzana AI dla jakości danych i obserwowalności danych – digna</h1>
 
-## Europejska platforma do jakości danych i observability danych
+## Europejska platforma do jakości danych i obserwowalności
 
-**digna** to **platforma napędzana AI do Jakości Danych i Observability**, zaprojektowana tak, aby działać w całości w Twoim środowisku — lokalnie (on-premises) lub w prywatnej chmurze.  
-Zapewnia ciągłą kontrolę nad *jakością danych*, spójnością danych oraz terminowością ich dostaw.  
+**digna** to **platforma oparta na AI do jakości danych i obserwowalności**, zaprojektowana do działania w całości w Twoim środowisku — lokalnie (on-premises) lub w prywatnej chmurze.  
+Zapewnia ciągłą kontrolę nad *jakością danych*, spójnością danych oraz terminową dostawą.  
 
-Platforma **nigdy nie jest dostarczana jako SaaS**. Zespół digna **nie ma dostępu do danych klienta**, co gwarantuje maksymalną prywatność, bezpieczeństwo i zgodność z regulacjami.  
+Platforma **nigdy nie jest dostarczana jako SaaS**. Zespół digna **nie ma dostępu do danych klientów**, co gwarantuje maksymalną prywatność, bezpieczeństwo i zgodność z regulacjami.  
 
 ---
 
-## Opcje wdrożenia: On-Premises i prywatna chmura
+## Opcje wdrożenia: On-Premises & Private Cloud
 
 - **On-Premises**  
-  Zainstaluj digna bezpośrednio we własnej infrastrukturze — pod pełną kontrolą klienta i odizolowaną od usług zewnętrznych.  
+  Zainstaluj digna bezpośrednio w swojej infrastrukturze — pod pełną kontrolą klienta i odizolowaną od usług zewnętrznych.  
 
-- **Prywatna chmura**  
-  Uruchom digna w ramach prywatnych lub hybrydowych środowisk chmurowych (VMs, kontenery lub Kubernetes). Dostosowuje się do Twojej architektury, zachowując pełną suwerenność danych.  
+- **Private Cloud**  
+  Uruchom digna w prywatnym lub hybrydowym środowisku chmurowym (VM, kontenery lub Kubernetes). Dopasowuje się do Twojej architektury, zachowując pełną suwerenność danych.  
 
 ---
 
-## Wykonywanie bezpośrednio w silniku bazy danych dla wysokowydajnego monitorowania danych
+## Wykonywanie w bazie danych dla wysokowydajnego monitoringu danych
 
-*digna* wykonuje wszystkie **kontrole jakości danych i logikę wykrywania anomalii** **bezpośrednio w silniku Twojej bazy danych**.  
+*digna* wykonuje wszystkie **kontrole jakości danych i logikę wykrywania anomalii** **wewnątrz silnika Twojej bazy danych**.  
 To unikalne podejście minimalizuje przemieszczanie danych, wykorzystuje natywną wydajność i zapewnia obserwowalność danych jak najbliżej źródła.  
 
 ---
 
-## Kluczowe możliwości do ciągłego monitoringu i observability
+## Kluczowe możliwości dla ciągłego monitoringu i obserwowalności
 
 - Ciągłe śledzenie **wolumenów danych, rozkładów i spójności**  
 - Automatyczna walidacja **reguł technicznych i biznesowych**  
-- Wykrywanie **braku lub opóźnień w dostawach danych**  
-- Alerty dotyczące **zmian schematu lub struktury**  
+- Wykrywanie **brakujących lub opóźnionych dostaw danych**  
+- Alerty o **zmianach schematu lub strukturze**  
 - Analiza trendów historycznych dla długoterminowej **niezawodności i jakości danych**  
 
 ---
 
-## Korzyści wynikające z podejścia digna do jakości danych i observability
+## Korzyści podejścia digna do jakości i obserwowalności danych
 
 - **Pełna kontrola nad danymi** – dane nigdy nie opuszczają Twojego środowiska  
 - **Zgodność przez projekt** – idealne dla sektorów regulowanych (finanse, opieka zdrowotna, telekomunikacja)  
-- **Wydajność** – wykonywanie w silniku bazy danych zmniejsza opóźnienia i skalowalnie działa wydajnie  
-- **Elastyczność** – ta sama platforma zarówno dla środowisk on-premises, jak i prywatnej chmury  
-- **Szybkie wdrożenie** – instalacja w ciągu kilku godzin, aktualizacje w mniej niż godzinę  
+- **Wydajność** – wykonywanie w bazie danych redukuje opóźnienia i efektywnie skaluje się  
+- **Elastyczność** – ta sama platforma dla wdrożeń lokalnych i prywatnej chmury  
+- **Szybkie wdrożenie** – instalacja w ciągu godzin, aktualizacje w mniej niż godzinę  
 
 ---
 
 ## Integracje z głównymi platformami danych
 
-*digna* łączy się płynnie z:  
+*digna* łączy się bezproblemowo z:  
 
-- **Bazy danych i hurtownie danych:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
-- **Data Lakes / Lakehouses:** Hadoop, Databricks  
+- **Bazy danych i hurtownie:** Teradata, Snowflake, BigQuery, Redshift, Oracle, PostgreSQL, SQL Server, MySQL  
+- **Data Lake / Lakehouse:** Hadoop, Databricks  
 - **Narzędzia ETL i przetwarzania:** Spark, Airflow, dbt, Informatica, Talend  
 
 ---
@@ -85,17 +84,17 @@ To unikalne podejście minimalizuje przemieszczanie danych, wykorzystuje natywn�
 ## Najczęściej zadawane pytania
 
 **Czym jest platforma digna?**  
-Rozwiązanie oparte na AI do poprawy jakości danych i observability danych, działające całkowicie w Twoim środowisku.
+Rozwiązaniem opartym na AI do poprawy jakości i obserwowalności danych, działającym całkowicie w Twoim środowisku.
 
 **Czy digna to rozwiązanie SaaS?**  
-Nie. digna jest instalowana lokalnie lub w Twojej prywatnej chmurze, nie jest dostarczana jako Software as a Service.
+Nie. digna jest instalowana lokalnie lub w Twojej prywatnej chmurze, nie jest dostarczana jako oprogramowanie w modelu SaaS.
 
 **Z jakimi bazami danych współpracuje digna?**  
 digna integruje się z Teradata, Snowflake, Databricks, Oracle, PostgreSQL i wieloma innymi.
 
 **Dlaczego wybrać digna zamiast narzędzi opartych na chmurze?**  
-Ponieważ łączy AI, pełną suwerenność danych i monitorowanie w bazie danych — zapewniając niezawodne potoki danych i zgodność regulacyjną.
+Ponieważ łączy AI, pełną suwerenność danych i monitoring w bazie danych — zapewniając niezawodne potoki danych i zgodność regulacyjną.
 
 ---
 
-Dla przypadków użycia i zastosowań branżowych odwiedź [digna.ai](https://www.digna.ai).
+Aby poznać przypadki użycia i zastosowania branżowe, odwiedź [digna.ai](https://www.digna.ai).

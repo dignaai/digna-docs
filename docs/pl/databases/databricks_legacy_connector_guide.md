@@ -1,14 +1,14 @@
 ---
-title: Łącznik Databricks (Legacy, bez Unity Catalog) | digna Dokumentacja
-description: Skonfiguruj digna tak, aby łączyła się z Databricks bez Unity Catalog, używając natywnego konektora Python lub sterownika Simba Spark ODBC. Wspiera uwierzytelnianie oparte na tokenie oraz elastyczne opcje łączności.
+title: Złącze Databricks (Legacy, without Unity Catalog) | Dokumentacja digna
+description: Skonfiguruj digna, aby łączyło się z Databricks bez Unity Catalog, używając natywnego konektora Python lub sterownika Simba Spark ODBC. Obsługuje uwierzytelnianie oparte na tokenie oraz elastyczne możliwości łączenia.
 image: /assets/logo_square.png
 ---
 
 # Source Connector for Databricks - without Unity Catalog
 
-Ten przewodnik opisuje, jak skonfigurować *digna*, aby połączyć się z Databricks, używając natywnego konektora Python lub sterownika ODBC.
+Ten przewodnik opisuje, jak skonfigurować *digna*, aby połączyć się z Databricks, używając albo natywnego konektora Python, albo sterownika ODBC.
 
-Odnosi się do ekranu **"Create a Database Connection"**.
+Odwołuje się do ekranu **"Create a Database Connection"**.
 
 ![Create a database connection](images/data_source_config_input_mask.png)
 
@@ -19,7 +19,7 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 **Library:** `databricks-sql-connector`  
 **Supported Authentication:** Personal Access Token (PAT) only
 
-> ⚠️ Dla innych metod uwierzytelniania użyj proszę sterownika ODBC.
+> ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
 
 ### Personal Access Token (PAT)
 
@@ -28,32 +28,37 @@ Aby uwierzytelnić się za pomocą personal access token, odnieś się do oficja
 
 ### *digna* Configuration (Native Driver)
 
-Podaj następujące informacje na ekranie **"Create a Database Connection"**:
+Podaj następujące informacje w ekranie **"Create a Database Connection"**:
 
 ```
-Technology:      Databricks (Legacy)
-Host Address:    Databricks hostname, e.g. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:       443
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-User Name:       HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:   Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Use ODBC:        Disabled (default)
+Name:               Nazwa połączenia. Używana do odwoływania się do połączenia w innych ekranach.
+Technology:         Databricks (Legacy)
+Host Address:       Nazwa hosta Databricks, np. "xxxxxxxxxxxxxxxxxxx.databricks.com"
+Host Port:          443
+Database Name:      This parameter is not in use for databricks without unity catalog
+User Name:          HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
+User Password:      Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do trwałej tabeli, a metryki są obliczane na skopiowanych danych.
+                    - Session: Dane są kopiowane do sesyjnej lub tymczasowej tabeli, a metryki są obliczane na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent" tabele robocze będą umieszczane w tym schemacie.
+Use ODBC:           Disabled (default)
 ```
 
 ---
 
 ## ODBC Driver
 
-Sterownik ODBC obsługuje szerszy zakres metod uwierzytelniania i opcji łączności. Ta sekcja koncentruje się na uwierzytelnianiu opartym na tokenie przy użyciu **Simba Spark ODBC Driver**.
+Sterownik ODBC obsługuje szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu opartym na tokenie przy użyciu **Simba Spark ODBC Driver**.
 
-### 1. Zainstaluj sterownik ODBC
+### 1. Install the ODBC Driver
 
-Zainstaluj **Simba Spark ODBC Driver**, postępując zgodnie z oficjalnym przewodnikiem instalacji dostawcy.
+Zainstaluj **Simba Spark ODBC Driver** postępując zgodnie z oficjalnym przewodnikiem instalacji dostawcy.
 
-### 2. Skonfiguruj źródło danych ODBC
+### 2. Configure the ODBC Data Source
 
-Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC przy użyciu Personal Access Token:
+Wykonaj następujące kroki, aby skonfigurować nowe źródło danych ODBC używając Personal Access Token:
 
 #### Step 1
 ![Step 1](images/databricks/create_odbc_data_source_step1.png)
@@ -67,29 +72,34 @@ Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC przy uży
 #### Step 4
 ![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test połączenia
+#### Step 5 – Test the connection
 
-Kliknij przycisk **TEST**. Pomyślne połączenie powinno wyglądać tak:
+Kliknij przycisk **TEST**. Udane połączenie powinno wyglądać tak:
 
 ![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
 ---
 
-Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC, albo za pomocą **DSN (Data Source Name)**, albo w konfiguracji **DSN-less**.
+Teraz możesz skonfigurować *digna*, aby używało połączenia ODBC, albo przy użyciu **DSN (Data Source Name)**, albo konfiguracji **DSN-less**.
 
 ---
 
-### A. Konfiguracja oparta na DSN
+### A. DSN-Based Configuration
 
 #### *digna* Configuration
 
-Na ekranie **"Create a Database Connection"** podaj następujące informacje:
+W ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technology:      Databricks (Legacy)
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Nazwa połączenia. Używana do odwoływania się do połączenia w innych ekranach.
+Technology:         Databricks (Legacy)
+Database Name:      This parameter is not in use for databricks without unity catalog
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do trwałej tabeli, a metryki są obliczane na skopiowanych danych.
+                    - Session: Dane są kopiowane do sesyjnej lub tymczasowej tabeli, a metryki są obliczane na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent" tabele robocze będą umieszczane w tym schemacie.
+Use ODBC:           Enabled
 ```
 
 #### ODBC Properties
@@ -98,21 +108,26 @@ Use ODBC:        Enabled
 name: "DSN",    value: "*digna*data_databricks"
 ```
 
-> 🔹 Wartość `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 
-### B. Konfiguracja DSN-less
+### B. DSN-less Configuration
 
 #### *digna* Configuration
 
-Na ekranie **"Create a Database Connection"** podaj następujące informacje:
+W ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technology:      Databricks (Legacy)
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Nazwa połączenia. Używana do odwoływania się do połączenia w innych ekranach.
+Technology:         Databricks (Legacy)
+Database Name:      This parameter is not in use for databricks without unity catalog
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do trwałej tabeli, a metryki są obliczane na skopiowanych danych.
+                    - Session: Dane są kopiowane do sesyjnej lub tymczasowej tabeli, a metryki są obliczane na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent" tabele robocze będą umieszczane w tym schemacie.
+Use ODBC:           Enabled
 ```
 
 #### ODBC Properties

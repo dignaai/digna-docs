@@ -1,13 +1,13 @@
 ---
-title: Apache Hive Connector – Database Integration | digna Documentation
-description: Configure digna to connect to Apache Hive using the native PyHive driver or the Cloudera ODBC driver. Supports password-based authentication and DSN or DSN-less setups.
+title: Konektor Apache Hive – integracja bazy danych | Dokumentacja digna
+description: Skonfiguruj digna do łączenia się z Apache Hive przy użyciu natywnego sterownika PyHive lub sterownika ODBC firmy Cloudera. Obsługuje uwierzytelnianie za pomocą hasła oraz konfiguracje DSN i bez DSN.
 image: /assets/logo_square.png
 ---
 
 
-# Źródłowy konektor dla Hive
+# Konektor źródłowy dla Hive
 
-Ten przewodnik opisuje, jak skonfigurować *digna*, aby łączyło się z Hive przy użyciu natywnego konektora Pythona lub sterownika ODBC.
+Ten przewodnik opisuje, jak skonfigurować *digna*, aby łączyła się z Hive za pomocą natywnego konektora Python lub sterownika ODBC.
 
 Odnosi się do ekranu **"Create a Database Connection"**.
 
@@ -18,23 +18,28 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 ## Natywny sterownik Python
 
 **Biblioteka:** `PyHive`  
-**Obsługiwane uwierzytelnianie:** tylko uwierzytelnianie za pomocą hasła
+**Obsługiwane uwierzytelnianie:** wyłącznie uwierzytelnianie za pomocą hasła
 
 > ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
 
-### Konfiguracja *digna* (natywny sterownik)
+### Konfiguracja *digna* (nattywny sterownik)
 
-Podaj następujące informacje na ekranie **"Create a Database Connection"**:
+Podaj następujące informacje w ekranie **"Create a Database Connection"**:
 
 ```
-Technologia:      Apache Hive
-Adres hosta:      Nazwa serwera lub adres IP
-Port hosta:       Numer portu, np. 10000
-Nazwa bazy danych: Schemat zawierający dane źródłowe
-Nazwa schematu:   Schemat zawierający dane źródłowe
-Nazwa użytkownika: Nazwa użytkownika bazy danych
-Hasło użytkownika: Hasło dla użytkownika
-Użyj ODBC:        Wyłączone (domyślnie)
+Name:               Nazwa połączenia. Używana do odwoływania się do połączenia w innych ekranach.
+Technology:         Apache Hive
+Host Address:       Nazwa serwera lub adres IP
+Host Port:          Numer portu, np. 10000
+Database Name:      Schemat zawierający źródłowe dane
+User Name:          Nazwa użytkownika bazy danych
+User Password:      Hasło użytkownika
+Profiling Mode:     Tryb profilowania określa, w jaki sposób digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do tabeli trwałej, a metryki obliczane są na skopiowanych danych.
+                    - Session: Dane są kopiowane do sesyjnej lub tymczasowej tabeli, a metryki obliczane są na tych tymczasowych danych.
+Work Schema Name:   Przy wyborze trybu "Permanent" tabele robocze zostaną umieszczone w tym schemacie.
+Use ODBC:           Wyłączone (domyślnie)
 ```
 
 ---
@@ -45,19 +50,19 @@ Sterownik ODBC może obsługiwać szerszy zakres opcji uwierzytelniania i łącz
 
 ### 1. Zainstaluj sterownik ODBC
 
-Zainstaluj **Cloudera ODBC Driver for Apache Hive** (lub podobny) zgodnie z oficjalnym przewodnikiem instalacji dostawcy.
+Zainstaluj **Cloudera ODBC Driver for Apache Hive** (lub podobny), postępując zgodnie z oficjalnym przewodnikiem instalacyjnym dostawcy.
 
 ### 2. Skonfiguruj źródło danych ODBC
 
-Wykonaj następujące kroki, aby skonfigurować nowe źródło danych ODBC używając uwierzytelniania za pomocą hasła:
+Wykonaj następujące kroki, aby skonfigurować nowe źródło danych ODBC z uwierzytelnianiem za pomocą hasła:
 
 #### Krok 1
 ![Krok 1](images/hive/create_odbc_data_source_step1.png)
 
 
-#### Krok 2 – Przetestuj połączenie
+#### Krok 2 – Test połączenia
 
-Podaj hasło i kliknij przycisk **Test**.
+Wprowadź hasło i kliknij przycisk **Testuj**.
 
 ![Krok 2](images/hive/create_odbc_data_source_step2.png)
 
@@ -65,7 +70,7 @@ Po pomyślnym teście kliknij przycisk **OK**.
 
 ---
 
-Teraz możesz skonfigurować *digna*, aby używało połączenia ODBC, albo z użyciem **DSN (Data Source Name)**, albo w konfiguracji **bez DSN**.
+Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC, albo przy użyciu **DSN (Data Source Name)**, albo konfiguracji **bez DSN**.
 
 ---
 
@@ -73,23 +78,28 @@ Teraz możesz skonfigurować *digna*, aby używało połączenia ODBC, albo z u�
 
 #### Konfiguracja *digna*
 
-Na ekranie **"Create a Database Connection"** podaj następujące informacje:
+W ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technologia:      Apache Hive
-Nazwa bazy danych: Schemat zawierający dane źródłowe (taki sam jak Nazwa schematu)
-Nazwa schematu:   Schemat zawierający dane źródłowe
-Użyj ODBC:        Włączone
+Name:               Nazwa połączenia. Używana do odwoływania się do połączenia w innych ekranach.
+Technology:         Apache Hive
+Database Name:      Schemat zawierający źródłowe dane
+Profiling Mode:     Tryb profilowania określa, w jaki sposób digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do tabeli trwałej, a metryki obliczane są na skopiowanych danych.
+                    - Session: Dane są kopiowane do sesyjnej lub tymczasowej tabeli, a metryki obliczane są na tych tymczasowych danych.
+Work Schema Name:   Przy wyborze trybu "Permanent" tabele robocze zostaną umieszczone w tym schemacie.
+Use ODBC:           Włączone
 ```
 
 #### Właściwości ODBC
 
 ```
 name: "DSN",            value: "*digna*data_hdp"
-name: "PWD",            value: "{twoje hasło w nawiasach klamrowych}"
+name: "PWD",            value: "{your password in curly braces}"
 ```
 
-> 🔹 `DSN` musi zgadzać się z nazwą zdefiniowaną w konfiguracji sterownika ODBC.
+> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
 
 ---
 
@@ -97,23 +107,28 @@ name: "PWD",            value: "{twoje hasło w nawiasach klamrowych}"
 
 #### Konfiguracja *digna*
 
-Na ekranie **"Create a Database Connection"** podaj następujące informacje:
+W ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technologia:      Apache Hive
-Nazwa bazy danych: Schemat zawierający dane źródłowe (taki sam jak Nazwa schematu)
-Nazwa schematu:   Schemat zawierający dane źródłowe
-Użyj ODBC:        Włączone
+Name:               Nazwa połączenia. Używana do odwoływania się do połączenia w innych ekranach.
+Technology:         Apache Hive
+Database Name:      Schemat zawierający źródłowe dane
+Profiling Mode:     Tryb profilowania określa, w jaki sposób digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do tabeli trwałej, a metryki obliczane są na skopiowanych danych.
+                    - Session: Dane są kopiowane do sesyjnej lub tymczasowej tabeli, a metryki obliczane są na tych tymczasowych danych.
+Work Schema Name:   Przy wyborze trybu "Permanent" tabele robocze zostaną umieszczone w tym schemacie.
+Use ODBC:           Włączone
 ```
 
 #### Właściwości ODBC
 
 ```
 name: "DRIVER",     value: "Cloudera ODBC Driver for Apache Hive"
-name: "HOST",       value: "nazwa Twojego serwera lub adres IP"
+name: "HOST",       value: "nazwa serwera lub adres IP"
 name: "PORT",       value: "Numer portu, np. 10000"
-name: "Schema",     value: "Schemat zawierający dane źródłowe"
-name: "UID",        value: "Twój użytkownik Hive"
-name: "PWD",        value: "Twoje hasło Hive"
+name: "Schema",     value: "Schemat zawierający źródłowe dane"
+name: "UID",        value: "your hive user'
+name: "PWD",        value: "your hive password"
 name: "AuthMech",   value: "3"
 ```

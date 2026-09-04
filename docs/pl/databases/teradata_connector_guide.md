@@ -1,118 +1,133 @@
 ---
-title: Konektor Teradata – Integracja bazy danych | digna Documentation
-description: Skonfiguruj digna do połączenia z Teradata przy użyciu sterownika Python teradatasql lub sterownika Teradata ODBC. Obsługuje uwierzytelnianie oparte na haśle w konfiguracjach z DSN lub bez DSN.
+title: Konektor Teradata – integracja bazy danych | Dokumentacja digna
+description: Skonfiguruj digna, aby łączył się z Teradata za pomocą sterownika Python teradatasql lub sterownika ODBC Teradata. Obsługuje uwierzytelnianie oparte na haśle przy konfiguracjach z DSN lub bez DSN.
 image: /assets/logo_square.png
 ---
 
 
-# Źródłowy konektor dla Teradata
+# Source Connector for Teradata
 
-Ten przewodnik opisuje, jak skonfigurować *digna* do połączenia z Teradata przy użyciu albo natywnego konektora Pythona, albo sterownika ODBC.
+Ten przewodnik opisuje, jak skonfigurować *digna*, aby łączyła się z Teradata przy użyciu natywnego konektora Python lub sterownika ODBC.
 
 Odnosi się do ekranu **"Create a Database Connection"**.
 
-![Utwórz połączenie z bazą danych](images/data_source_config_input_mask.png)
+![Create a database connection](images/data_source_config_input_mask.png)
 
 ---
 
-## Natywny sterownik Pythona
+## Native Python Driver
 
-**Biblioteka:** `teradatasql`  
-**Obsługiwane uwierzytelnianie:** Tylko uwierzytelnianie oparte na haśle
+**Library:** `teradatasql`  
+**Supported Authentication:** Password-based authentication only
 
-> ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
+> ⚠️ For other authentication methods, please use the ODBC driver.
 
-### Konfiguracja *digna* (natywny sterownik)
+### *digna* Configuration (Native Driver)
 
 Wprowadź następujące informacje na ekranie **"Create a Database Connection"**:
 
 ```
-Technologia:      Teradata
-Adres hosta:      Nazwa serwera lub adres IP
-Port hosta:       Numer portu, np. 1025
-Nazwa bazy danych:  Nazwa bazy danych
-Nazwa schematu:     Nazwa bazy danych
-Nazwa użytkownika:  Nazwa użytkownika bazy danych
-Hasło użytkownika:  Hasło użytkownika
-Użyj ODBC:         Wyłączone (domyślnie)
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Teradata
+Host Address:       Server name or IP address
+Host Port:          Port number, e.g. 1025
+Database Name:      Can be left empty. Digna treats databases as schemas for Teradata.
+User Name:          Database user name
+User Password:      Password for the user
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Disabled (default)
 ```
 
 ---
 
-## Sterownik ODBC
+## ODBC Driver
 
-Sterownik ODBC może obsługiwać szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu opartym na haśle przy użyciu sterownika **Teradata Database ODBC Driver 20.00**.
+Sterownik ODBC może obsługiwać szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja skupia się na uwierzytelnianiu opartym na haśle z użyciem sterownika **Teradata Database ODBC Driver 20.00**.
 
-### 1. Zainstaluj sterownik ODBC
+### 1. Install the ODBC Driver
 
-Zainstaluj sterownik **Teradata Database ODBC Driver 20.00** (lub podobny), postępując zgodnie z oficjalnym przewodnikiem instalacyjnym dostawcy.
+Zainstaluj sterownik **Teradata Database ODBC Driver 20.00** (lub podobny) zgodnie z oficjalnym przewodnikiem instalacyjnym producenta.
 
-### 2. Skonfiguruj źródło danych ODBC
+### 2. Configure the ODBC Data Source
 
 Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC z uwierzytelnianiem opartym na haśle:
 
-#### Krok 1
-![Krok 1](images/teradata/create_odbc_data_source_step1.png)
+#### Step 1
+![Step 1](images/teradata/create_odbc_data_source_step1.png)
 
 Kliknij przycisk **Test**.
 
-#### Krok 2
-![Krok 2](images/teradata/create_odbc_data_source_step2.png)
+#### Step 2
+![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
 Podaj nazwę użytkownika i hasło.
 
 Kliknij przycisk **OK**.  
-Gdy zobaczysz ekran potwierdzający, ODBC jest poprawnie skonfigurowane.
+Kiedy pojawi się ekran potwierdzający powodzenie, ODBC jest poprawnie skonfigurowany.
 
 ---
 
-Teraz możesz skonfigurować *digna*, aby używało połączenia ODBC, albo z ustawieniem **DSN (Data Source Name)**, albo w konfiguracji **bez DSN**.
+Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC — albo z wykorzystaniem **DSN (Data Source Name)**, albo w konfiguracji **bez DSN (DSN-less)**.
 
 ---
 
-### A. Konfiguracja oparta na DSN
+### A. DSN-Based Configuration
 
-#### Konfiguracja *digna*
+#### *digna* Configuration
 
-Na ekranie **"Create a Database Connection"** podaj następujące dane:
+Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technologia:      Teradata
-Nazwa bazy danych:   Baza danych zawierająca schemat źródłowy
-Nazwa schematu:      Schemat zawierający źródłowe dane
-Użyj ODBC:           Włączone
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Teradata
+Database Name:      Can be left empty. Digna treats databases as schemas for Teradata.
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
-#### Właściwości ODBC
+#### ODBC Properties
 
 ```
 name: "DSN",        value: "*digna*data_teradata"
-name: "UID",        value: "twój użytkownik bazy danych"
-name: "PWD",        value: "twoje hasło do bazy danych"
+name: "UID",        value: "your database user"
+name: "PWD",        value: "your database password"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> 🔹 The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 
-### B. Konfiguracja bez DSN
+### B. DSN-less Configuration
 
-#### Konfiguracja *digna*
+#### *digna* Configuration
 
-Na ekranie **"Create a Database Connection"** podaj następujące dane:
+Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technologia:      Teradata
-Nazwa bazy danych:   Schemat zawierający źródłowe dane (taka sama jak Nazwa schematu)
-Nazwa schematu:      Schemat zawierający źródłowe dane
-Użyj ODBC:           Włączone
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Teradata
+Database Name:      Can be left empty. Digna treats databases as schemas for Teradata.
+Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
+                    - Standard: Metrics are calculated directly on the source tables without copying the data.
+                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
+                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
+Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
+Use ODBC:           Enabled
 ```
 
-#### Właściwości ODBC
+#### ODBC Properties
 
 ```
 name: "DRIVER",     value: "Teradata Database ODBC Driver 20.00"
-name: "DBCNAME",    value: "nazwa twojego serwera lub adres IP"
-name: "UID",        value: "twój użytkownik bazy danych"
-name: "PWD",        value: "twoje hasło do bazy danych"
+name: "DBCNAME",    value: "your server name or IP address"
+name: "UID",        value: "your database user"
+name: "PWD",        value: "your database password"
 ```

@@ -1,98 +1,108 @@
 ---
 title: Konektor Databricks z Unity Catalog – Integracja bazy danych | Dokumentacja digna
-description: Skonfiguruj digna, aby łączył się z Databricks z Unity Catalog, używając natywnego konektora Python lub sterownika ODBC. Obsługa uwierzytelniania za pomocą tokenów oraz elastyczne opcje łączności.
+description: Skonfiguruj digna, aby łączyła się z Databricks z Unity Catalog przy użyciu natywnego konektora Python lub sterownika ODBC. Obsługuje uwierzytelnianie oparte na tokenach i elastyczną łączność.
 image: /assets/logo_square.png
 ---
 
-# Konektor źródłowy dla Databricks - z Unity Catalog
+# Source Connector for Databricks - with Unity Catalog
 
-Ten przewodnik opisuje, jak skonfigurować *digna*, aby połączyć się z Databricks, używając albo natywnego konektora Python, albo sterownika ODBC.
+Ten przewodnik opisuje, jak skonfigurować *digna*, aby łączyła się z Databricks przy użyciu natywnego konektora Python lub sterownika ODBC.
 
 Odnosi się do ekranu **"Create a Database Connection"**.
 
-![Utwórz połączenie z bazą danych](images/data_source_config_input_mask.png)
+![Create a database connection](images/data_source_config_input_mask.png)
 
 ---
 
-## Natywny sterownik Python
+## Native Python Driver
 
 **Library:** `databricks-sql-connector`  
-**Obsługiwane uwierzytelnianie:** tylko Personal Access Token (PAT)
+**Supported Authentication:** Personal Access Token (PAT) only
 
 > ⚠️ Dla innych metod uwierzytelniania użyj sterownika ODBC.
 
 ### Personal Access Token (PAT)
 
-Aby uwierzytelnić się za pomocą Personal Access Token, zapoznaj się z oficjalną dokumentacją Databricks:  
+Aby uwierzytelnić się przy użyciu personal access token, odnieś się do oficjalnej dokumentacji Databricks:  
 👉 [How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
 
-### Konfiguracja *digna* (natywny sterownik)
+### *digna* Configuration (Native Driver)
 
-Podaj następujące informacje w ekranie **"Create a Database Connection"**:
+Podaj następujące informacje na ekranie **"Create a Database Connection"**:
 
 ```
-Technology:      Databricks
-Host Address:    Databricks hostname, e.g. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:       443
-Database Name:   Name of the catalog to use. 
-Schema Name:     Schema that contains the source data
-User Name:       HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:   Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Use ODBC:        Disabled (default)
+Name:               Nazwa połączenia. Służy do odwołań do połączenia w innych ekranach.
+Technology:         Databricks
+Host Address:       Nazwa hosta Databricks, np. "xxxxxxxxxxxxxxxxxxx.databricks.com"
+Host Port:          np. 443
+Database Name:      Nazwa katalogu (catalog), którego chcesz używać. 
+User Name:          HTTP Path udostępniony przez Databricks, np. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
+User Password:      Personal Access Token, np. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do stałej tabeli, a metryki są obliczane na skopiowanych danych.
+                    - Session: Dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki są obliczane na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent", tabele robocze zostaną umieszczone w tym schemacie.
+Use ODBC:           Disabled (domyślnie)
 ```
 
 ---
 
-## Sterownik ODBC
+## ODBC Driver
 
-Sterownik ODBC obsługuje szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu za pomocą tokena przy użyciu **Simba Spark ODBC Driver**.
+Sterownik ODBC obsługuje szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu opartym na tokenie przy użyciu **Simba Spark ODBC Driver**.
 
 ### 1. Zainstaluj sterownik ODBC
 
-Zainstaluj **Simba Spark ODBC Driver**, postępując zgodnie z oficjalnym przewodnikiem instalacji dostawcy.
+Zainstaluj **Simba Spark ODBC Driver**, postępując zgodnie z oficjalnym przewodnikiem instalacyjnym dostawcy.
 
 ### 2. Skonfiguruj źródło danych ODBC
 
-Wykonaj następujące kroki, aby skonfigurować nowe źródło danych ODBC używając Personal Access Token:
+Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC przy użyciu Personal Access Token:
 
-#### Krok 1
-![Krok 1](images/databricks/create_odbc_data_source_step1.png)
+#### Step 1
+![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Krok 2
-![Krok 2](images/databricks/create_odbc_data_source_step2.png)
+#### Step 2
+![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Krok 3
-![Krok 3](images/databricks/create_odbc_data_source_step3.png)
+#### Step 3
+![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Krok 4
-![Krok 4](images/databricks/create_odbc_data_source_step4.png)
+#### Step 4
+![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Krok 5 – Test połączenia
+#### Step 5 – Test połączenia
 
 Kliknij przycisk **TEST**. Pomyślne połączenie powinno wyglądać tak:
 
-![Krok 5](images/databricks/create_odbc_data_source_step5.png)
+![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
 ---
 
-Teraz możesz skonfigurować *digna*, aby używał połączenia ODBC, albo z **DSN (Data Source Name)**, albo w konfiguracji **bez DSN**.
+Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC, albo z konfiguracją **DSN (Data Source Name)**, albo w trybie **DSN-less**.
 
 ---
 
-### A. Konfiguracja oparta na DSN
+### A. DSN-Based Configuration
 
-#### Konfiguracja *digna*
+#### *digna* Configuration
 
-W ekranie **"Create a Database Connection"** podaj następujące informacje:
+Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technology:      Databricks
-Database Name:   Name of the catalog to use.
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Nazwa połączenia. Służy do odwołań do połączenia w innych ekranach.
+Technology:         Databricks
+Database Name:      Nazwa katalogu (catalog), którego chcesz używać.
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do stałej tabeli, a metryki są obliczane na skopiowanych danych.
+                    - Session: Dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki są obliczane na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent", tabele robocze zostaną umieszczone w tym schemacie.
+Use ODBC:           Enabled
 ```
 
-#### Właściwości ODBC
+#### ODBC Properties
 
 ```
 name: "DSN",    value: "*digna*data_databricks"
@@ -102,20 +112,25 @@ name: "DSN",    value: "*digna*data_databricks"
 
 ---
 
-### B. Konfiguracja bez DSN
+### B. DSN-less Configuration
 
-#### Konfiguracja *digna*
+#### *digna* Configuration
 
-W ekranie **"Create a Database Connection"** podaj następujące informacje:
+Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technology:      Databricks
-Database Name:   Name of the catalog to use.
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Nazwa połączenia. Służy do odwołań do połączenia w innych ekranach.
+Technology:         Databricks
+Database Name:      Nazwa katalogu (catalog), którego chcesz używać.
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki są obliczane bezpośrednio na tabelach źródłowych bez kopiowania danych.
+                    - Permanent: Dane dla inspektowanego dnia są kopiowane do stałej tabeli, a metryki są obliczane na skopiowanych danych.
+                    - Session: Dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki są obliczane na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent", tabele robocze zostaną umieszczone w tym schemacie.
+Use ODBC:           Enabled
 ```
 
-#### Właściwości ODBC
+#### ODBC Properties
 
 ```
 name = "Driver",          value = "{Simba Spark ODBC Driver}"

@@ -1,13 +1,13 @@
 ---
-title: Oracle Connector – integracja z bazą danych | dokumentacja digna
-description: Skonfiguruj digna, aby łączyła się z Oracle przy użyciu sterownika python-oracledb lub sterownika Oracle ODBC. Obsługuje uwierzytelnianie na podstawie hasła z konfiguracją DSN lub bez DSN.
+title: Konektor Oracle – Integracja z bazą danych | Dokumentacja digna
+description: Skonfiguruj digna do łączenia się z Oracle przy użyciu sterownika python-oracledb lub sterownika Oracle ODBC. Obsługuje uwierzytelnianie za pomocą hasła przy konfiguracjach z DSN lub bez DSN.
 image: /assets/logo_square.png
 ---
 
 
-# Konektor źródłowy dla Oracle
+# Źródłowy konektor dla Oracle
 
-Ten przewodnik opisuje, jak skonfigurować *digna*, aby łączyła się z bazą Oracle DB przy użyciu natywnego konektora Pythona lub sterownika ODBC.
+Ten przewodnik opisuje, jak skonfigurować *digna*, aby łączyła się z Oracle DB używając natywnego konektora Python lub sterownika ODBC.
 
 Odnosi się do ekranu **"Create a Database Connection"**.
 
@@ -15,33 +15,39 @@ Odnosi się do ekranu **"Create a Database Connection"**.
 
 ---
 
-## Natywny sterownik Pythona
+## Natywny sterownik Python
 
 **Biblioteka:** `python-oracledb`  
-**Obsługiwane uwierzytelnianie:** Tylko uwierzytelnianie na podstawie hasła
+**Obsługiwane uwierzytelnianie:** Tylko uwierzytelnianie za pomocą hasła
 
-> ⚠️ W przypadku innych metod uwierzytelniania prosimy o użycie sterownika ODBC.
+> ⚠️ Dla innych metod uwierzytelniania prosimy użyć sterownika ODBC.
 
 ### Konfiguracja *digna* (natywny sterownik)
 
 Podaj następujące informacje na ekranie **"Create a Database Connection"**:
 
 ```
-Technologia:      Oracle
-Adres hosta:      Nazwa serwera lub adres IP
-Port hosta:       Numer portu, np. 1521
-Nazwa bazy danych: Nazwa instancji, service name
-Schemat:          Schemat zawierający źródłowe dane
-Nazwa użytkownika: Nazwa użytkownika bazy danych
-Hasło użytkownika: Hasło dla użytkownika
-Użyj ODBC:        Wyłączone (domyślnie)
+Name:               Nazwa połączenia. Używana do odwołań do tego połączenia na innych ekranach.
+Technology:         Oracle
+Host Address:       Nazwa serwera lub adres IP
+Host Port:          Numer portu, np. 1521
+Database Name:      Nazwa instancji lub service name
+Schema Name:        Schemat zawierający źródłowe dane
+User Name:          Nazwa użytkownika bazy danych
+User Password:      Hasło użytkownika
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki obliczane są bezpośrednio na źródłowych tabelach bez kopiowania danych.
+                    - Permanent: Dane dla inspekcjonowanego dnia są kopiowane do stałej tabeli, a metryki obliczane są na skopiowanych danych.
+                    - Session: Dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki obliczane są na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent" tabele robocze będą umieszczone w tym schemacie.
+Use ODBC:           Wyłączone (domyślnie)
 ```
 
 ---
 
 ## Sterownik ODBC
 
-Sterownik ODBC może obsługiwać szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu za pomocą hasła przy użyciu sterownika **Oracle in OraDB21Home1**.
+Sterownik ODBC może obsługiwać szerszy zakres opcji uwierzytelniania i łączności. Ta sekcja koncentruje się na uwierzytelnianiu za pomocą hasła z użyciem sterownika **Oracle in OraDB21Home1**.
 
 ### 1. Zainstaluj sterownik ODBC
 
@@ -49,13 +55,13 @@ Zainstaluj **Oracle in OraDB21Home1** (lub podobny), postępując zgodnie z ofic
 
 ### 2. Skonfiguruj źródło danych ODBC
 
-Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC z uwierzytelnianiem na podstawie hasła:
+Wykonaj poniższe kroki, aby skonfigurować nowe źródło danych ODBC z uwierzytelnianiem za pomocą hasła:
 
 #### Krok 1
 ![Krok 1](images/oracle/create_odbc_data_source_step1.png)
 
 Uwaga:
-Nazwa usługi TNS musi być skonfigurowana w pliku tnsnames.ora instalacji klienta Oracle. To tam podajesz deskryptor połączenia (host, port, service name).
+Nazwa usługi TNS (TNS Service Name) musi być skonfigurowana w pliku tnsnames.ora instalacji klienta Oracle. To tam podajesz deskryptor połączenia (host, port, service name).
 
 #### Krok 2 – Test połączenia
 
@@ -69,7 +75,7 @@ Podaj hasło i kliknij przycisk **OK**.
 
 ---
 
-Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC, albo z konfiguracją **DSN (Data Source Name)**, albo bez DSN.
+Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC, albo z użyciem **DSN (Data Source Name)**, albo w konfiguracji **bez DSN**.
 
 ---
 
@@ -80,21 +86,26 @@ Teraz możesz skonfigurować *digna*, aby używała połączenia ODBC, albo z ko
 Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technologia:      Oracle
-Nazwa bazy danych: Baza danych zawierająca źródłowy schemat
-Schemat:          Schemat zawierający źródłowe dane
-Użyj ODBC:        Włączone
+Name:               Nazwa połączenia. Używana do odwołań do tego połączenia na innych ekranach.
+Technology:         Oracle
+Database Name:      Baza danych zawierająca schemat źródłowy
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki obliczane są bezpośrednio na źródłowych tabelach bez kopiowania danych.
+                    - Permanent: Dane dla inspekcjonowanego dnia są kopiowane do stałej tabeli, a metryki obliczane są na skopiowanych danych.
+                    - Session: Dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki obliczane są na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent" tabele robocze będą umieszczone w tym schemacie.
+Use ODBC:           Włączone
 ```
 
 #### Właściwości ODBC
 
 ```
 name: "DSN",            value: "*digna*data_oracle"
-name: "UID",            value: "your oracle user"
-name: "PWD",            value: "{your password in curly braces}"
+name: "UID",            value: "twoj_uzytkownik_oracle"
+name: "PWD",            value: "{twoje haslo w nawiasach klamrowych}"
 ```
 
-> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji sterownika ODBC.
+> 🔹 `DSN` musi odpowiadać nazwie zdefiniowanej w konfiguracji Twojego sterownika ODBC.
 
 ---
 
@@ -105,10 +116,15 @@ name: "PWD",            value: "{your password in curly braces}"
 Na ekranie **"Create a Database Connection"** podaj następujące informacje:
 
 ```
-Technologia:      Oracle
-Nazwa bazy danych: Schemat zawierający źródłowe dane (taka sama jak Schemat)
-Schemat:          Schemat zawierający źródłowe dane
-Użyj ODBC:        Włączone
+Name:               Nazwa połączenia. Używana do odwołań do tego połączenia na innych ekranach.
+Technology:         Oracle
+Database Name:      Schemat zawierający źródłowe dane (to samo co Schema Name)
+Profiling Mode:     Tryb profilowania określa, jak digna przetwarza dane i oblicza metryki:
+                    - Standard: Metryki obliczane są bezpośrednio na źródłowych tabelach bez kopiowania danych.
+                    - Permanent: Dane dla inspekcjonowanego dnia są kopiowane do stałej tabeli, a metryki obliczane są na skopiowanych danych.
+                    - Session: Dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki obliczane są na tych tymczasowych danych.
+Work Schema Name:   Przy użyciu trybu "Permanent" tabele robocze będą umieszczone w tym schemacie.
+Use ODBC:           Włączone
 ```
 
 #### Właściwości ODBC
