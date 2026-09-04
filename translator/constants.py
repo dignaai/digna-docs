@@ -11,6 +11,7 @@ MAIN_FOLDERS = [
     'cli',
     'databases',
     'getting_started',
+    'installation_deployment',
     'platform',
 ]
 

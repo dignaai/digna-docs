@@ -109,6 +109,7 @@ def translate_file(
         Do not translate the module names: Data Anomalies, Data Analytics, Data Validation, Data Timeliness, Data Schema Tracker.
         Preserve all Markdown formatting from the original text.
         Do not change any file paths in the text.
+        Headings may end with an explicit id attribute like "{{: #some-id }}" (curly braces containing a hash and a slug). Keep these attributes character-for-character identical, including the slug — they are anchor targets that in-page links depend on and must not be translated or altered.
         Provide only the translated content in your response.
         Do not include any comments, explanations, or questions.
     """
