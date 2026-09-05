@@ -65,12 +65,24 @@ nav:
       - digna Schema Tracker:
           - Introduction: platform/schema_tracker/Introduction.md
   - Installation & Deployment:
-      - Windows:
-          - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
-      - macOS:
-          - Release 2026.06: installation_deployment/macOS/Release 2026.06/installation_guide_digna_macos_2026_06.md
-      - Linux:
-          - Release 2026.06: installation_deployment/Linux/Release 2026.06/installation_guide_digna_linux_2026_06.md
+      # Platforms are grouped by kind and listed alphabetically within a group.
+      # There is no default platform, so none is promoted to the top.
+      - Operating Systems:
+          - Linux:
+              - Release 2026.06: installation_deployment/Linux/Release 2026.06/installation_guide_digna_linux_2026_06.md
+          - macOS:
+              - Release 2026.06: installation_deployment/macOS/Release 2026.06/installation_guide_digna_macos_2026_06.md
+          - Windows:
+              - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
+      # Cloud Native guides (AWS, Azure, Hetzner, …) belong in a sibling group
+      # here, alphabetical in the same way. A nav group cannot be empty, so it
+      # is added with the first guide; the pages live alongside the operating
+      # systems at installation_deployment/<Provider>/, and "Cloud Native" is
+      # kept in English across all locales, so no nav_translations are needed:
+      #
+      #   - Cloud Native:
+      #       - AWS:
+      #           - Release 2026.06: installation_deployment/AWS/Release 2026.06/...
       - How to configure Single Sign-on: installation_deployment/sso_integration_guide.md
   - Getting Started:
       - First Steps:
@@ -216,6 +228,7 @@ plugins:
             Databases: Datenbanken
             Introduction: Einführung
             Installation & Deployment: Installation & Bereitstellung
+            Operating Systems: Betriebssysteme
             Windows: Windows
             How to configure Single Sign-on: Wie man Single Sign-on konfiguriert
             How to schedule a daily job: Wie man einen täglichen Job schedult
@@ -237,6 +250,7 @@ plugins:
             Databases: Bases de données
             Introduction: Introduction
             Installation & Deployment: Installation et déploiement
+            Operating Systems: Systèmes d'exploitation
             Windows: Windows
             How to configure Single Sign-on: Comment configurer l'authentification unique
             How to schedule a daily job: Comment programmer une tâche quotidienne
@@ -258,6 +272,7 @@ plugins:
              Databases: Bases de datos
              Introduction: Introducción
              Installation & Deployment: Instalación e implementación
+             Operating Systems: Sistemas operativos
              Windows: Windows
              How to configure Single Sign-on: Cómo configurar el inicio de sesión único
              How to schedule a daily job: Cómo programar una tarea diaria
@@ -279,6 +294,7 @@ plugins:
               Databases: Basi di dati
               Introduction: Introduzione
               Installation & Deployment: Installazione e distribuzione
+              Operating Systems: Sistemi operativi
               Windows: Windows
               How to configure Single Sign-on: Come configurare l'accesso single sign-on
               How to schedule a daily job: Come pianificare un job giornaliero
@@ -300,6 +316,7 @@ plugins:
             Databases: Bazy danych
             Introduction: Wprowadzenie
             Installation & Deployment: Instalacja i wdrażanie
+            Operating Systems: Systemy operacyjne
             Windows: Windows
             How to configure Single Sign-on: Jak skonfigurować logowanie jednokrotne
             How to schedule a daily job: Jak zdefiniować codzienne zadanie w harmonogramie
@@ -321,6 +338,7 @@ plugins:
             Databases: Bancos de dados
             Introduction: Introdução
             Installation & Deployment: Instalação e implementação
+            Operating Systems: Sistemas operativos
             Windows: Windows
             How to configure Single Sign-on: Como configurar o logon único
             How to schedule a daily job: Como agendar uma tarefa diária
@@ -341,6 +359,7 @@ plugins:
               Databases: Databaser
               Introduction: Introduktion
               Installation & Deployment: Installation och distribution
+              Operating Systems: Operativsystem
               Windows: Windows
               How to configure Single Sign-on: Hur man konfigurerar enkel inloggning
               How to schedule a daily job: Hur man schemalägger ett dagligt jobb
@@ -362,6 +381,7 @@ plugins:
             Databases: Databaser
             Introduction: Introduksjon
             Installation & Deployment: Installasjon og distribusjon
+            Operating Systems: Operativsystemer
             Windows: Windows
             How to configure Single Sign-on: Hvordan konfigurere enkel pålogging
             How to schedule a daily job: Hvordan planlegge en daglig jobb
@@ -383,6 +403,7 @@ plugins:
             Databases: Databaser
             Introduction: Introduktion
             Installation & Deployment: Installation og implementering
+            Operating Systems: Operativsystemer
             Windows: Windows
             How to configure Single Sign-on: Sådan konfigureres single sign-on
             How to schedule a daily job: Sådan planlægges et dagligt job
@@ -404,6 +425,7 @@ plugins:
             Databases: Tietokannat
             Introduction: Johdanto
             Installation & Deployment: Asennus ja käyttöönotto
+            Operating Systems: Käyttöjärjestelmät
             Windows: Windows
             How to configure Single Sign-on: Kuinka määrittää kertakirjautuminen
             How to schedule a daily job: Kuinka ajoittaa päivittäinen tehtävä
@@ -425,6 +447,7 @@ plugins:
             Databases: Andmebaasid
             Introduction: Sissejuhatus
             Installation & Deployment: Paigaldamine ja juurutamine
+            Operating Systems: Operatsioonisüsteemid
             Windows: Windows
             How to configure Single Sign-on: Kuidas konfigureerida ühekordset sisselogimist
             How to schedule a daily job: Kuidas ajastada igapäevast tööülesannet
@@ -446,6 +469,7 @@ plugins:
             Databases: Duomenų bazės
             Introduction: Įvadas
             Installation & Deployment: Diegimas ir diegimas
+            Operating Systems: Operacinės sistemos
             Windows: Windows
             How to configure Single Sign-on: Kaip konfigūruoti vienodą prisijungimą
             How to schedule a daily job: Kaip suplanuoti kasdienę užduotį
@@ -467,6 +491,7 @@ plugins:
             Databases: Datu bāzes
             Introduction: Ievads
             Installation & Deployment: Instalācija un izvietošana
+            Operating Systems: Operētājsistēmas
             Windows: Windows
             How to configure Single Sign-on: Kā konfigurēt vienreizēju pierakstīšanos
             How to schedule a daily job: Kā ieplānot ikdienas uzdevumu
@@ -488,6 +513,7 @@ plugins:
             Databases: Databanken
             Introduction: Inleiding
             Installation & Deployment: Installatie en implementatie
+            Operating Systems: Besturingssystemen
             Windows: Windows
             How to configure Single Sign-on: Hoe je eenmalige aanmelding configureert
             How to schedule a daily job: Hoe je een dagelijkse taak inplant
@@ -509,6 +535,7 @@ plugins:
             Databases: Databáze
             Introduction: Úvod
             Installation & Deployment: Instalace a nasazení
+            Operating Systems: Operační systémy
             Windows: Windows
             How to configure Single Sign-on: Jak nakonfigurovat jednotné přihlašování
             How to schedule a daily job: Jak naplánovat denní úlohu
@@ -530,6 +557,7 @@ plugins:
               Databases: Adatbázisok
               Introduction: Bevezetés
               Installation & Deployment: Telepítés és telepítés
+              Operating Systems: Operációs rendszerek
               Windows: Windows
               How to configure Single Sign-on: Az egyszeri bejelentkezés konfigurálása
               How to schedule a daily job: Napi feladat ütemezése
@@ -551,6 +579,7 @@ plugins:
             Databases: Veritabanları
             Introduction: Giriş
             Installation & Deployment: Kurulum ve dağıtım
+            Operating Systems: İşletim sistemleri
             Windows: Windows
             How to configure Single Sign-on: Çoklu oturum açmayı yapılandırma
             How to schedule a daily job: Günlük bir işi zamanlama
@@ -572,6 +601,7 @@ plugins:
             Databases: Baze de date
             Introduction: Introducere
             Installation & Deployment: Instalare și implementare
+            Operating Systems: Sisteme de operare
             Windows: Windows
             How to configure Single Sign-on: Cum să configurezi autentificarea unică
             How to schedule a daily job: Cum să programezi o sarcină zilnică
@@ -593,6 +623,7 @@ plugins:
             Databases: Podatkovne baze
             Introduction: Uvod
             Installation & Deployment: Namestitev in razmestitev
+            Operating Systems: Operacijski sistemi
             Windows: Windows
             How to configure Single Sign-on: Kako konfigurirati enotno prijavo
             How to schedule a daily job: Kako razporediti dnevno opravilo
@@ -614,6 +645,7 @@ plugins:
             Databases: Βάσεις δεδομένων
             Introduction: Εισαγωγή
             Installation & Deployment: Εγκατάσταση και ανάπτυξη
+            Operating Systems: Λειτουργικά συστήματα
             Windows: Windows
             How to configure Single Sign-on: Πώς να ρυθμίσετε την ενιαία σύνδεση
             How to schedule a daily job: Πώς να προγραμματίσετε μια ημερήσια εργασία
@@ -635,6 +667,7 @@ plugins:
             Databases: Бази даних
             Introduction: Вступ
             Installation & Deployment: Установка та розгортання
+            Operating Systems: Операційні системи
             Windows: Windows
             How to configure Single Sign-on: Як налаштувати єдину систему входу
             How to schedule a daily job: Як запланувати щоденне завдання
@@ -656,6 +689,7 @@ plugins:
             Databases: Базы данных
             Introduction: Введение
             Installation & Deployment: Установка и развертывание
+            Operating Systems: Операционные системы
             Windows: Windows
             How to configure Single Sign-on: Как настроить единый вход
             How to schedule a daily job: Как запланировать ежедневное задание
@@ -677,6 +711,7 @@ plugins:
             Databases: データベース
             Introduction: イントロダクション
             Installation & Deployment: インストールとデプロイメント
+            Operating Systems: オペレーティングシステム
             Windows: Windows
             How to configure Single Sign-on: シングルサインオンを設定する方法
             How to schedule a daily job: 毎日のジョブをスケジュールする方法
@@ -698,6 +733,7 @@ plugins:
             Databases: 데이터베이스
             Introduction: 소개
             Installation & Deployment: 설치 및 배포
+            Operating Systems: 운영 체제
             Windows: Windows
             How to configure Single Sign-on: 싱글 사인온을 구성하는 방법
             How to schedule a daily job: 일일 작업을 스케줄하는 방법
@@ -719,6 +755,7 @@ plugins:
             Databases: डेटाबेस
             Introduction: परिचय
             Installation & Deployment: इंस्टॉलेशन और तैनाती
+            Operating Systems: ऑपरेटिंग सिस्टम
             Windows: Windows
             How to configure Single Sign-on: एकल साइन-ऑन को कॉन्फ़िगर करने का तरीका
             How to schedule a daily job: दैनिक कार्य को शेड्यूल करने का तरीका
@@ -740,6 +777,7 @@ plugins:
             Databases: قواعد البيانات
             Introduction: المقدمة
             Installation & Deployment: التثبيت والنشر
+            Operating Systems: أنظمة التشغيل
             Windows: Windows
             How to configure Single Sign-on: كيفية تكوين الدخول الموحد
             How to schedule a daily job: كيفية جدولة مهمة يومية
