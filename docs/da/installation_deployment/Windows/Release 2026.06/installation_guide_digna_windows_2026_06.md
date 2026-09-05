@@ -1,7 +1,7 @@
 ---
-title: Windows Installation Guide – digna Release 2026.06 | digna Documentation
-description: Step-by-step guide to installing digna Release 2026.06 on Windows — system requirements, PostgreSQL setup, web server configuration, backend and dashboard configuration, running digna as a Windows service, and upgrading to a new release.
-keywords: digna windows installation, digna deployment guide, digna backend setup, digna dashboard installation, postgresql setup, digna windows service, digna upgrade guide
+title: Windows-installationsvejledning – digna Release 2026.06 | digna-dokumentation
+description: Trin-for-trin vejledning til installation af digna Release 2026.06 på Windows — systemkrav, PostgreSQL-opsætning, webserverkonfiguration, backend- og dashboard-konfiguration, kørsel af digna som Windows-service og opgradering til ny release.
+keywords: digna Windows-installation, digna udrulningsvejledning, digna backend-opsætning, digna dashboard-installation, postgresql-opsætning, digna Windows-service, digna opgraderingsvejledning
 image: /assets/logo_square.png
 ---
 
@@ -9,132 +9,136 @@ image: /assets/logo_square.png
 
 **Release:** 2026.06
 
-**Sidst opdateret:** 30. august 2026
+**Senest opdateret:** 30. august 2026
 
 
 ---
 
-## Table of Contents
+## Indholdsfortegnelse
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Windows Service](#running-digna-as-a-windows-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
+1. [Introduktion](#introduction)
+2. [Systemkrav](#system-requirements)
+3. [Forberedende opsætning](#pre-installation-setup)
+4. [PostgreSQL-serveropsætning](#postgresql-server-setup)
+5. [Webserverkonfiguration](#web-server-configuration)
+6. [Initial installation](#initial-installation)
+7. [Backend-konfiguration](#backend-configuration)
+8. [Dashboard-konfiguration](#dashboard-configuration)
+9. [Kørsel af digna som Windows-service](#running-digna-as-a-windows-service)
+10. [Opgradering til en ny release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Introduktion {: #introduction }
 
-### About digna
+### Om digna
 
-digna er en omfattende AI-drevet platform designet til at optimere datakvalitetsstyring på tværs af forskellige data-miljøer som warehouses, lakes og lakehouses. Bygget til at være meget skalerbar og tilpasningsdygtig, håndterer digna moderne dataudfordringer gennem automatisering, realtidsmonitorering og anomalidetektion.
+digna er en omfattende AI-drevet platform designet til at optimere datakvalitetsstyring på tværs af forskellige data-miljøer såsom warehouses, lakes og lakehouses. Bygget til at være meget skalerbar og tilpasningsdygtig, adresserer digna moderne dataudfordringer gennem automatisering, realtidsmonitorering og anomalidetektion.
 
 digna består af to hovedkomponenter:
 
 - **dignabackend**: Applikationens kerneengine, ansvarlig for databehandling og udførelse af kvalitetskontroller.
-- **dignadashboard**: Et webbaseret interface hostet på en webserver, der giver en brugervenlig måde at interagere med digna-platformen og visualisere datakvalitetsmålinger.
+- **dignadashboard**: Et webbaseret interface hostet på en webserver, som giver en brugervenlig måde at interagere med digna-platformen og visualisere datakvalitetsmålinger.
 
-### What's New in Release 2026.06
+### Hvad er nyt i Release 2026.06
 
-Denne release bringer dataobservability-muligheder direkte ind i din kode, så udviklere kan overvåge datakvalitet ved kilden. Se [release notes](http://docs.digna.ai/changelog/Release_202606/) for fulde detaljer.
+Denne release bringer dataobservabilitet direkte ind i din kode, hvilket gør det muligt for udviklere at overvåge datakvalitet ved kilden. Se [udgivelsesnoterne](http://docs.digna.ai/changelog/Release_202606/) for fulde detaljer.
+
+### Leder du efter macOS eller Linux?
+
+Denne vejledning dækker Windows. For andre platforme, se [macOS-installationsvejledningen](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) eller [Linux-installationsvejledningen](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
-## System Requirements {: #system-requirements }
+## Systemkrav {: #system-requirements }
 
-Før du begynder installationen, sørg for at dit system opfylder følgende minimumskrav:
+Før du påbegynder installationen, skal du sikre dig, at dit system opfylder følgende minimumskrav:
 
-| Requirement | Specification |
+| Krav | Specifikation |
 |---|---|
-| **Operating System** | Windows Server eller Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB ledig lagerplads |
+| **Operativsystem** | Windows Server eller Windows 10/11 |
+| **Hukommelse (minimal opsætning)** | 16 GB RAM |
+| **Diskplads** | 10 GB ledig lagerplads |
 | **Database** | PostgreSQL Server 12 eller nyere |
-| **Web Server** | IIS, Apache Tomcat eller tilsvarende |
+| **Webserver** | IIS, Apache Tomcat eller tilsvarende |
 
-### Database Installation Options
+### Databaseinstallationsmuligheder
 
 **Hvis PostgreSQL allerede er installeret:**
-Du kan tilføje en ny database til digna på din eksisterende PostgreSQL-server.
+Du kan oprette en ny database til digna på din eksisterende PostgreSQL-server.
 
 **Hvis du installerer PostgreSQL på samme maskine som digna:**
 
 !!! info "Anbefalede specifikationer"
 
-    - **Memory**: 32 GB RAM (i stedet for 16 GB)
-    - **Disk Space**: 50 GB ledig lagerplads (i stedet for 10 GB)
+    - **Hukommelse**: 32 GB RAM (i stedet for 16 GB)
+    - **Diskplads**: 50 GB ledig lagerplads (i stedet for 10 GB)
 
-    Disse højere specifikationer rummer både digna og PostgreSQL-databasen, når de kører samtidigt.
-
----
-
-## Pre-Installation Setup {: #pre-installation-setup }
-
-Før du installerer digna, skal du sikre dig, at to vigtige forudsætninger er på plads:
-
-1. **PostgreSQL Server** – til lagring af beregnede målinger og performance-data
-2. **Web Server** – til hosting af digna Dashboard
-
-Hvis disse komponenter ikke allerede er sat op, følg sektionerne nedenfor for at installere og konfigurere dem.
+    Disse højere specifikationer tager højde for både digna og PostgreSQL-databasen, der kører samtidigt.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Forberedende opsætning {: #pre-installation-setup }
 
-### If You Already Have PostgreSQL
+Før du installerer digna, skal du sikre, at to nøgleforudsætninger er på plads:
 
-Hvis PostgreSQL allerede er installeret og kører på din lokale maskine, eller hvis du bruger en administreret fjern-PostgreSQL-server, kan du springe til [næste afsnit](#web-server-configuration).
+1. **PostgreSQL Server** – til lagring af beregnede målinger og ydelsesdata
+2. **Webserver** – til hosting af digna Dashboard
 
-### Installing PostgreSQL
+Hvis disse komponenter ikke allerede er sat op, følg afsnittene nedenfor for at installere og konfigurere dem.
+
+---
+
+## PostgreSQL-serveropsætning {: #postgresql-server-setup }
+
+### Hvis du allerede har PostgreSQL
+
+Hvis PostgreSQL allerede er installeret og kører på din lokale maskine, eller hvis du bruger en administreret fjern-PostgreSQL-server, kan du springe videre til [næste afsnit](#web-server-configuration).
+
+### Installation af PostgreSQL
 
 Følg disse trin for at installere PostgreSQL på Windows:
 
-#### Step 1: Download PostgreSQL
+#### Trin 1: Download PostgreSQL
 
 1. Besøg [PostgreSQL Downloads page](https://www.postgresql.org/download/)
 2. Vælg **Windows**
 3. Download den nyeste installer
 
-#### Step 2: Run the Installer
+#### Trin 2: Kør installatøren
 
-1. Dobbeltklik på den downloadede installationsfil
-2. Følg vejledningen i setup-guiden
+1. Dobbeltklik på den downloadede installerfil
+2. Følg anvisningerne i installationsguiden
 
-#### Step 3: Choose Installation Directory
+#### Trin 3: Vælg installationsmappe
 
-Vælg den mappe, hvor PostgreSQL skal installeres. Standardplaceringen er normalt passende.
+Vælg den mappe, hvor PostgreSQL skal installeres. Standardplaceringen er som regel passende.
 
-#### Step 4: Select Components
+#### Trin 4: Vælg komponenter
 
-For en standardopsætning, behold de forvalgte komponentmuligheder.
+For en standardopsætning beholdes de forvalgte komponenter.
 
-#### Step 5: Set PostgreSQL Superuser Password
+#### Trin 5: Angiv PostgreSQL-superbrugerens adgangskode
 
 Indtast og bekræft en adgangskode for PostgreSQL-superbrugeren (`postgres`). **Gem denne adgangskode sikkert** — du får brug for den senere.
 
-#### Step 6: Configure Port Number
+#### Trin 6: Konfigurer portnummer
 
-Standard PostgreSQL-porten er `5432`. Du kan bruge standarden eller angive en anden port, hvis nødvendigt.
+Standardporten for PostgreSQL er `5432`. Du kan bruge standarden eller angive en anden port efter behov.
 
 !!! tip "Tip"
 
-    Hvis port 5432 allerede er i brug, vælg en alternativ port og bemærk den til senere konfiguration.
+    Hvis port 5432 allerede er i brug, vælg en alternativ port og noter den til senere konfiguration.
 
-#### Step 7: Choose Locale
+#### Trin 7: Vælg lokalitet (locale)
 
-Vælg locale for din database. Standardindstillingen er normalt passende for de fleste installationer.
+Vælg lokalitet for din database. Standardindstillingen er som regel passende for de fleste installationer.
 
-#### Step 8: Complete Installation
+#### Trin 8: Afslut installation
 
-Klik **Next** gennem de resterende trin, og klik derefter **Finish**.
+Klik **Næste** gennem de resterende trin, og klik derefter **Finish**.
 
-#### Step 9: Verify Installation
+#### Trin 9: Bekræft installation
 
 Åbn Kommandoprompt og verificer, at PostgreSQL er installeret:
 
@@ -142,11 +146,11 @@ Klik **Next** gennem de resterende trin, og klik derefter **Finish**.
 psql --version
 ```
 
-Du bør se PostgreSQL-versionen, hvis installationen lykkedes.
+Du burde se PostgreSQL-versionen, hvis installationen var vellykket.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Webserverkonfiguration {: #web-server-configuration }
 
 digna kræver en webserver til at hoste dashboardet. Vælg en af følgende muligheder:
 
@@ -155,41 +159,41 @@ digna kræver en webserver til at hoste dashboardet. Vælg en af følgende mulig
 
 Du behøver kun at installere og konfigurere **én** af disse servere.
 
-### IIS Setup {: #iis-setup }
+### IIS-opsætning {: #iis-setup }
 
-#### Overview
+#### Oversigt
 
 Internet Information Services (IIS) er Microsofts webserver til hosting af websites og webapplikationer.
 
-#### Enabling IIS
+#### Aktivering af IIS
 
 1. **Åbn Kontrolpanel**
    - Tryk `Win + R`
    - Skriv `control` og tryk Enter
 
 2. **Gå til Windows-funktioner**
-   - Klik **Programs**
-   - Vælg **Turn Windows features on or off**
+   - Klik **Programmer**
+   - Vælg **Slå Windows-funktioner til eller fra**
 
-3. **Aktiver Internet Information Services**
+3. **Aktivér Internet Information Services**
    - Rul ned og find **Internet Information Services (IIS)**
-   - Marker afkrydsningsfeltet for at aktivere det
+   - Sæt flueben for at aktivere det
    - Klik på **+** for at udvide og verificere, at disse underkomponenter er valgt:
      - **Web Management Tools**
      - **World Wide Web Services**
 
 4. **Klik OK** for at anvende ændringerne
 
-5. **Verificer IIS-installation**
+5. **Bekræft IIS-installation**
    - Åbn din browser
    - Naviger til `http://localhost`
-   - Du bør se IIS Welcome-siden
+   - Du bør se IIS Velkomstsiden
 
-#### Påkrævet: URL Rewrite Module
+#### Påkrævet: URL Rewrite-modulet
 
-IIS kræver URL Rewrite-komponenten. Download og installer den fra [den officielle Microsoft-side](https://www.iis.net/downloads/microsoft/url-rewrite).
+IIS kræver URL Rewrite-komponenten. Download og installer det fra [den officielle Microsoft-side](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Påkrævet: MIME Type for Markdown Files
+#### Påkrævet: MIME-type for Markdown-filer
 
 For at sikre, at Markdown-filer (`.md`) serveres korrekt af IIS:
 
@@ -202,13 +206,13 @@ For at sikre, at Markdown-filer (`.md`) serveres korrekt af IIS:
 
 !!! warning "Vigtigt"
 
-    Uden denne indstilling kan `.md` filer ikke blive serveret korrekt.
+    Uden denne indstilling kan `.md`-filer muligvis ikke blive serveret korrekt.
 
 ---
 
-### Apache Tomcat Setup {: #apache-tomcat-setup }
+### Apache Tomcat-opsætning {: #apache-tomcat-setup }
 
-#### Overview
+#### Oversigt
 
 Apache Tomcat er en open-source Java servlet-container og webserver.
 
@@ -222,24 +226,24 @@ Apache Tomcat er en open-source Java servlet-container og webserver.
    - Udpak ZIP-filen til en mappe på dit system
    - Eksempel: `C:\Program Files\Apache Tomcat`
 
-3. **Verificer at Tomcat kører**
+3. **Bekræft, at Tomcat kører**
    - Åbn din browser
    - Naviger til `http://localhost:8080`
-   - Du bør se Apache Tomcat welcome-siden
+   - Du bør se Apache Tomcat velkomstsiden
 
 !!! tip "Tip"
 
-    Apache Tomcat starter typisk automatisk efter installation. Hvis den ikke gør, gå til `bin`-mappen og kør `startup.bat`.
+    Apache Tomcat starter typisk automatisk efter installation. Hvis det ikke gør, naviger til `bin`-mappen og kør `startup.bat`.
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Initial installation {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Trin 1: Opret digna-repositoriet
 
-Digna-repositoriet lagrer alle målinger beregnet af digna. Det fungerer som den centrale database for analytiske og performance-data.
+Digna-repositoriet gemmer alle målinger beregnet af digna. Det fungerer som den centrale database for analytiske og ydelsesdata.
 
-#### Create Repository Schema and User
+#### Opret repositorieschema og bruger
 
 Åbn din PostgreSQL-klient (pgAdmin, psql eller lignende) og udfør følgende SQL-kommandoer:
 
@@ -253,9 +257,9 @@ GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 
 **Erstat følgende pladsholdere:**
 
-- `<digna_repo_schema>` — Dit ønskede schema-navn (f.eks. `dignarepo`)
+- `<digna_repo_schema>` — Dit ønskede schemanavn (f.eks. `dignarepo`)
 - `<digna_repo_user>` — Dit ønskede brugernavn (f.eks. `digna_user`)
-- `<digna_repo_password>` — En sikker adgangskode til denne bruger
+- `<digna_repo_password>` — Et sikkert password til denne bruger
 
 **Eksempel:**
 
@@ -267,35 +271,35 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Best Practice"
+!!! tip "Bedste praksis"
 
     Brug stærke, komplekse adgangskoder til databasebrugere. Undgå let gættelige legitimationsoplysninger.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Trin 2: Udpak digna-installationspakken
 
-1. Find den digna-installations ZIP-fil, du har fået
-2. Udpak den til din ønskede installationsplacering
+1. Find digna-installations-ZIP-filen, der er leveret til dig
+2. Udpak den til det ønskede installationssted
 3. Efter udpakning bør du se følgende elementer:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Hovedeksekverbar (backend + CLI kombineret)
+   - `dashboard/` — Webdashboard-interface
+   - `digna` — Hoved-udførbar fil (backend + CLI kombineret)
    - `config.toml` — Konfigurationsfil
-   - `license.toml` — Licensfil (kopier din hertil)
+   - `license.toml` — License-fil (kopiér din fil hertil)
 
-### Step 3: Install the License File
+### Trin 3: Installer license-filen
 
 !!! warning "Vigtigt"
 
-    Licensfilen er **ikke** inkluderet i installationspakken og vil blive leveret separat af digna.
+    License-filen er **ikke** inkluderet i installationspakken og leveres separat af digna.
 
 1. Find den `license.toml`-fil, der er leveret til dig
-2. Kopiér den ind i root-mappen for digna-installationen (hvor `config.toml` og `digna`-eksekverbar er placeret)
+2. Kopiér den til roden af digna-installationsmappen (hvor `config.toml` og den `digna`-eksekverbare fil ligger)
 
-**Hvorfor dette er vigtigt:**
-Licensfilen indeholder dine kundeoplysninger, licensudløbsdato og digital signatur. **Ændr ikke denne fil** — alle ændringer vil ugyldiggøre den.
+**Hvorfor det er vigtigt:**
+License-filen indeholder dine kundeoplysninger, licensens udløbsdato og digital signatur. **Rediger ikke denne fil** — ændringer vil ugyldiggøre den.
 
-**Mappestruktur efter opsætning:**
+**Mappe struktur efter opsætning:**
 
 ```
 digna_installation/
@@ -308,19 +312,19 @@ digna_installation/
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backend-konfiguration {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Trin 1: Opret og rediger konfigurationsfilen
 
-Filen `config_template.toml` leveres i din digna-installationsmappe. Du skal kun omdøbe den til `config.toml`.
+Filen `config_template.toml` er inkluderet i din digna-installationsmappe. Du skal blot omdøbe den til `config.toml`.
 
 **Placering:** `digna_installation/config.toml`
 
 Åbn `config.toml` i en teksteditor og konfigurer hver sektion nedenfor.
 
-#### [app] Section
+#### [app] Sektionen
 
-Denne sektion konfigurerer digna-backend applikationsindstillinger:
+Denne sektion konfigurerer digna backend-applikationens indstillinger:
 
 ```toml
 [app]
@@ -332,16 +336,16 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
 | `digna_APP_HOST` | `localhost` eller IP-adresse | Hostnavn eller IP hvor dignabackend er hostet |
-| `digna_APP_PORT` | `8082` (standard) | Port for REST API-endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboard er på en anden server, inkluder dens URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Kræves for CORS med legitimationsoplysninger |
+| `digna_APP_PORT` | `8082` (standard) | Port for REST API endpoints |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboardet ligger på en anden server, medtag dets URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Påkrævet for CORS med legitimationsoplysninger |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillad alle HTTP-metoder |
 | `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Tillad alle headers |
 
-#### [repo] Section
+#### [repo] Sektionen
 
 Denne sektion konfigurerer forbindelsen til PostgreSQL-databasen:
 
@@ -355,16 +359,16 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` eller IP | PostgreSQL-serverens hostname/IP |
+| `digna_REPO_HOST` | `localhost` eller IP | PostgreSQL-serverens hostnavn/IP |
 | `digna_REPO_PORT` | `5432` (standard) | PostgreSQL-port |
 | `digna_REPO_DB` | `postgres` | Databasenavn |
 | `digna_REPO_SCHEMA` | `dignarepo` | Schema oprettet tidligere |
 | `digna_REPO_USER` | `digna_user` | Bruger oprettet i PostgreSQL-opsætningen |
-| `digna_REPO_PASSWORD` | Din adgangskode | Adgangskode sat under schema-oprettelsen |
+| `digna_REPO_PASSWORD` | Dit password | Password sat under schema-oprettelsen |
 
-#### [base] Section
+#### [base] Sektionen
 
 Denne sektion indeholder sikkerheds- og cookie-indstillinger:
 
@@ -380,17 +384,17 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
-| `digna_FERNET_KEY` | Krypteringsnøgle | Bruges til at kryptere tokens og cookies (standard leveret) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Skal matche dit frontend-domæne |
+| `digna_FERNET_KEY` | Krypteringsnøgle | Bruges til at kryptere tokens og cookies (standard leveres) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Match dit frontend-domæne |
 | `digna_COOKIE_SECURE` | `false` (lokalt) / `true` (produktion) | Brug `true` for HTTPS-forbindelser |
 | `digna_COOKIE_HTTPONLY` | `true` | Altid aktiveret for sikkerhed |
-| `digna_COOKIE_SAME_SITE` | `lax` | Forebygger CSRF-angreb |
+| `digna_COOKIE_SAME_SITE` | `lax` | Forhindrer CSRF-angreb |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 timer) | Session timeout i sekunder |
 | `digna_MAX_WORKERS` | Antal CPU-kerner - 1 | Antal parallelle inspektionsopgaver |
 
-#### [logging] Section
+#### [logging] Sektionen
 
 Denne sektion konfigurerer logningsadfærd:
 
@@ -400,17 +404,17 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
 | `digna_LOGGING_MODE` | `INFO` eller `DEBUG` | `INFO` til produktion, `DEBUG` til fejlfinding |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Antal daglige log-backups der opbevares |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Antal daglige log-backups, der gemmes |
 
 ---
 
-### Step 3: Initialize the Repository
+### Trin 3: Initialiser repositoriet
 
 1. Åbn Kommandoprompt
-2. Naviger til din digna-installationsmappe (hvor `config.toml` og `digna`-eksekverbar er placeret)
+2. Skift til din digna-installationsmappe (hvor `config.toml` og den `digna`-eksekverbare fil ligger)
 3. Kør forbindelsestesten:
 
 ```bash
@@ -419,7 +423,7 @@ digna repo check
 
 Du bør se en bekræftelse på, at forbindelsen er etableret (selve repositoriet er endnu ikke initialiseret).
 
-### Step 4: Install the Repository Schema
+### Trin 4: Installer repository-schemaet
 
 I samme mappe, kør:
 
@@ -429,7 +433,7 @@ digna repo install
 
 Denne kommando installerer de nødvendige tabeller og schema i din PostgreSQL-database.
 
-### Step 5: Start the digna Server
+### Trin 5: Start digna-serveren
 
 I digna-installationsmappen, start serveren med:
 
@@ -438,10 +442,10 @@ digna serve --address <host> --port <port>
 ```
 
 **Parametre:**
-- `--address` — Server hostname/IP
-- `--port` — Server port 
+- `--address` — Serverens hostnavn/IP
+- `--port` — Serverens port 
 
-Du bør se opstartsmeldinger, der bekræfter, at serveren kører:
+Du bør se opstartsbeskeder, der bekræfter, at serveren kører:
 
 ```
 INFO:     Started server process [1234]
@@ -450,10 +454,10 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### Step 6: Create an Admin User
+### Trin 6: Opret en admin-bruger
 
 1. Åbn et **nyt** Kommandoprompt-vindue
-2. Naviger til din digna-installationsmappe
+2. Skift til din digna-installationsmappe
 3. Kør følgende kommando for at oprette en admin-bruger:
 
 ```bash
@@ -468,37 +472,37 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 Dette opretter en bruger med fulde administrative rettigheder.
 
-!!! tip "Best Practice"
+!!! tip "Bedste praksis"
 
     Brug en stærk adgangskode med en blanding af store og små bogstaver, tal og specialtegn.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboard-konfiguration {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Trin 1: Deploy dashboardet til webserveren
 
-Digna-dashboardet har sin egen separate `config.toml`-fil placeret i `dashboard/`-mappen. Denne konfiguration leveres allerede og kræver ikke ændringer under den indledende opsætning. Du skal kun konfigurere den, hvis du har behov for at tilpasse backend-forbindelsen.
+Digna-dashboardet har sin egen separate `config.toml`-fil placeret i `dashboard/`-mappen. Denne konfiguration er allerede leveret og kræver ikke ændringer under initial opsætning. Du behøver kun at konfigurere den, hvis du vil tilpasse backend-forbindelsen.
 
-Hvis du har brug for at ændre dashboard-konfigurationen (f.eks. til multi-instance deployment), henvises til dashboardets dokumentation.
+Hvis du skal modificere dashboard-konfigurationen (f.eks. ved multi-instance udrulninger), henvises til dashboardets dokumentation.
 
-Vælg din webserver og følg de tilsvarende deploy-trin.
+Vælg din webserver og følg de tilsvarende deployments-trin nedenfor.
 
-#### Deploying to IIS
+#### Deploy til IIS
 
 1. **Åbn IIS Manager**
    - Tryk `Win + R`, skriv `inetmgr`, tryk Enter
 
 2. **Opret et nyt website**
-   - Højreklik på **Sites** i venstre panel
+   - I venstre panel, højreklik på **Sites**
    - Vælg **Add Website...**
 
-3. **Konfigurer sitet**
+3. **Konfigurer websitet**
    - **Site Name**: Indtast et navn (f.eks. "dignaDashboard")
    - **Physical Path**: Klik Browse og vælg din `dashboard`-mappe
-   - **Binding**: Sæt IP-adresse og port (standardport 80 for HTTP, 443 for HTTPS)
+   - **Binding**: Sæt IP-adresse og port (standard port 80 for HTTP, 443 for HTTPS)
 
-4. **Start sitet**
+4. **Start websitet**
    - Klik **OK** for at oprette sitet
    - Højreklik på det nye site og vælg **Start**
 
@@ -507,16 +511,16 @@ Vælg din webserver og følg de tilsvarende deploy-trin.
    - Naviger til `http://localhost` (eller din konfigurerede URL)
    - Du bør se digna-dashboardets login-side
 
-#### Deploying to Apache Tomcat
+#### Deploy til Apache Tomcat
 
 1. **Kopier dashboard til Tomcat**
    - Kopiér `dashboard`-mappen til din Tomcat `webapps`-mappe
    - Omdøb den om nødvendigt (f.eks. til `digna`)
    - Eksempel: `C:\Program Files\Apache Tomcat\webapps\digna`
 
-2. **Verificer deployment**
-   - Opdater eller genindlæs Tomcat management-siden (http://localhost:8080)
-   - Du bør se "digna" (eller dit valgte navn) opført i de deployede applikationer
+2. **Bekræft deployment**
+   - Opdater eller genindlæs Tomcat administrationssiden (http://localhost:8080)
+   - Du bør se "digna" (eller dit valgte navn) listet under deployerede applikationer
 
 3. **Adgang til dashboardet**
    - Åbn din browser
@@ -525,37 +529,37 @@ Vælg din webserver og følg de tilsvarende deploy-trin.
 
 ---
 
-## Running digna as a Windows Service {: #running-digna-as-a-windows-service }
+## Kørsel af digna som en Windows-service {: #running-digna-as-a-windows-service }
 
-### Why Use a Windows Service?
+### Hvorfor bruge en Windows-service?
 
-At køre digna-backend som en Windows-tjeneste sikrer, at den:
+At køre digna-backend som en Windows-service sikrer, at den:
 - Starter automatisk, når serveren booter
 - Kører i baggrunden uden et åbent Kommandoprompt-vindue
 - Genstarter automatisk, hvis den crasher
-- Kan administreres gennem Windows Services
+- Kan administreres via Windows Services
 
-### Service Management Files
+### Service-administrationsfiler
 
-Alle nødvendige filer ligger i digna-installationsmappen under: `bin/`
+Alle nødvendige filer findes i digna-installationsmappens underkatalog: `bin/`
 
 Følgende batch-filer er tilgængelige:
-- `install_service.bat` — Registrerer digna som en Windows-tjeneste
-- `uninstall_service.bat` — Afregistrerer tjenesten
-- `start_service.bat` — Starter den registrerede tjeneste
-- `stop_service.bat` — Stopper den registrerede tjeneste
+- `install_service.bat` — Registrerer digna som en Windows-service
+- `uninstall_service.bat` — Fjerner service-registreringen
+- `start_service.bat` — Starter servicen
+- `stop_service.bat` — Stopper servicen
 
-!!! warning "Administrator påkrævet"
+!!! warning "Administratorrettigheder kræves"
 
-    Alle batch-filer skal køres med Administrator-rettigheder.
+    Alle batch-filer skal køres med Administrator-privilegier.
 
-### Installing the Service
+### Installation af servicen
 
 1. **Åbn Kommandoprompt som Administrator**
    - Højreklik på Kommandoprompt
    - Vælg "Kør som administrator"
 
-2. **Naviger til bin-mappen**
+2. **Skift til bin-mappen**
    ```bash
    cd C:\path\to\digna\bin
    ```
@@ -565,23 +569,23 @@ Følgende batch-filer er tilgængelige:
    install_service.bat
    ```
 
-Digna-serveren er nu registreret som en Windows-tjeneste med **automatisk opstart** aktiveret. Tjenesten starter ikke nødvendigvis med det samme — se næste sektion for at starte den.
+Digna-serveren er nu registreret som en Windows-service med **automatisk opstart** aktiveret. Servicen starter ikke umiddelbart — se næste afsnit for at starte den.
 
-### Starting and Stopping the Service
+### Start og stop af servicen
 
-#### To Start the Service
+#### For at starte servicen
 
 1. Åbn Kommandoprompt som Administrator
-2. Naviger til `digna\bin`
+2. Skift til `digna\bin`
 3. Kør:
    ```bash
    start_service.bat
    ```
 
-#### To Stop the Service
+#### For at stoppe servicen
 
 1. Åbn Kommandoprompt som Administrator
-2. Naviger til `digna\bin`
+2. Skift til `digna\bin`
 3. Kør:
    ```bash
    stop_service.bat
@@ -589,13 +593,13 @@ Digna-serveren er nu registreret som en Windows-tjeneste med **automatisk opstar
 
 !!! tip "Tip"
 
-    Stop altid tjenesten, før du opdaterer applikationsfiler.
+    Stop altid servicen før opdatering af applikationsfiler.
 
-### Moving the Service to a New Directory
+### Flytning af servicen til en ny mappe
 
-Hvis du har brug for at flytte digna-installationen:
+Hvis du skal flytte digna-installationen:
 
-1. **Afinstaller den nuværende tjeneste**
+1. **Afinstaller den nuværende service**
    ```bash
    cd C:\old\path\digna\bin
    uninstall_service.bat
@@ -604,55 +608,55 @@ Hvis du har brug for at flytte digna-installationen:
 2. **Flyt applikationsfilerne**
    - Flyt hele digna-installationsmappen til den nye placering
 
-3. **Geninstaller tjenesten**
+3. **Geninstaller servicen**
    ```bash
    cd C:\new\path\digna\bin
    install_service.bat
    ```
 
-4. **Start tjenesten**
+4. **Start servicen**
    ```bash
    start_service.bat
    ```
 
-### Uninstalling the Service
+### Afinstallation af servicen
 
-1. **Stop den kørende tjeneste**
+1. **Stop den kørende service**
    ```bash
    cd C:\path\to\digna\bin
    stop_service.bat
    ```
 
-2. **Afinstaller tjenesten**
+2. **Afinstaller servicen**
    ```bash
    uninstall_service.bat
    ```
 
-Digna-serveren er nu afregistreret som en Windows-tjeneste.
+Digna-serveren er nu fjernet som en Windows-service.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Opgradering til en ny release {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Før du opgraderer
 
-**Det er obligatorisk at lave en backup af digna Repository**
+**Det er obligatorisk at lave en backup af digna-repositoriet**
 
-Før du opgraderer digna, sikkerhedskopier dit repository (PostgreSQL) for at beskytte mod datatab.
+Før du opgraderer digna, skal du sikkerhedskopiere dit repository (PostgreSQL) for at beskytte imod datatab.
 En backup sikrer, at du kan gendanne, hvis opgraderingen støder på uventede problemer.
 
-### Upgrade Process
+### Opgraderingsproces
 
-#### Step 1: Stop digna Service
+#### Trin 1: Stop digna-servicen
 
-Hvis digna kører som en Windows-tjeneste, stop den først:
+Hvis digna kører som Windows-service, stop den først:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Step 2: Backup Current Backend Installation
+#### Trin 2: Backup af nuværende backend-installation
 
 I din digna-installationsmappe:
 
@@ -665,22 +669,22 @@ ren dignabackend dignabackend_old
 ren dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### Trin 3: Udpak og deploy ny version
 
-1. Udpak den nye digna-installations ZIP-fil
-2. Kopiér den nye `digna`-eksekverbare og `dashboard`-mappen til din installationsmappe
+1. Udpak den nye digna-installations-ZIP-fil
+2. Kopiér den nye `digna`-eksekverbare fil og `dashboard`-mappen til din installationsmappe
 
 
 !!! warning "Vigtigt"
 
-    Filen `config.toml` medtages **aldrig** i installations-ZIP'en. Din eksisterende konfiguration forbliver sikker.
+    `config.toml`-filen er **aldrig** inkluderet i installations-ZIP'en. Din eksisterende konfiguration forbliver bevaret.
 
-### Step 4: Restore Your Configuration Files
+### Trin 4: Gendan dine konfigurationsfiler
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Step 5: Upgrade the Repository Schema
+### Trin 5: Opgrader repository-schemaet
 
 Naviger til din digna-installationsmappe og kør:
 
@@ -688,28 +692,28 @@ Naviger til din digna-installationsmappe og kør:
 digna repo upgrade
 ```
 
-Dette opdaterer PostgreSQL-schemaet til den nyeste version, samtidig med at alle eksisterende data bevares.
+Dette opdaterer PostgreSQL-schemaet til den nyeste version samtidig med, at alle eksisterende data bevares.
 
-### Step 6: Restart Services
+### Trin 6: Genstart services
 
-Hvis det kører som en Windows-tjeneste:
+Hvis du kører som Windows-service:
 
 ```bash
 cd C:\path\to\digna\bin
 start_service.bat
 ```
 
-Hvis det køres manuelt, genstart serveren:
+Hvis du kører manuelt, genstart serveren:
 
 ```bash
 cd C:\path\to\digna
 digna serve --address <address> --port <port>
 ```
 
-Hvis du bruger IIS eller Tomcat, genstart den respektive webserver.
+Hvis du bruger IIS eller Tomcat, genstart den pågældende webserver.
 
-#### Step 7: Verify the Upgrade
+#### Trin 7: Bekræft opgraderingen
 
-1. Gå til digna-dashboardet
-2. Bekræft, at interfacet indlæses korrekt
-3. Tjek serverlogfilerne for eventuelle fejl
+1. Åbn digna-dashboardet
+2. Bekræft, at interfacet loader korrekt
+3. Tjek serverens logfiler for eventuelle fejl

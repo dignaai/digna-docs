@@ -1,140 +1,144 @@
 ---
-title: Windows Installation Guide – digna Release 2026.06 | digna Documentation
-description: Step-by-step guide to installing digna Release 2026.06 on Windows — system requirements, PostgreSQL setup, web server configuration, backend and dashboard configuration, running digna as a Windows service, and upgrading to a new release.
-keywords: digna windows installation, digna deployment guide, digna backend setup, digna dashboard installation, postgresql setup, digna windows service, digna upgrade guide
+title: Guía de instalación en Windows – digna Release 2026.06 | Documentación de digna
+description: Guía paso a paso para instalar digna Release 2026.06 en Windows — requisitos del sistema, configuración de PostgreSQL, configuración del servidor web, configuración del backend y del panel, ejecución de digna como servicio de Windows y actualización a una nueva versión.
+keywords: instalación digna windows, guía de despliegue digna, configuración backend digna, instalación dashboard digna, configuración postgresql, servicio Windows digna, guía de actualización digna
 image: /assets/logo_square.png
 ---
 
-# Windows Installation Guide for digna Release 2026.06
+# Guía de instalación en Windows para digna Release 2026.06
 
 **Release:** 2026.06
 
-**Last Updated:** August 30, 2026
+**Última actualización:** 30 de agosto de 2026
 
 
 ---
 
-## Table of Contents
+## Tabla de contenidos
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Windows Service](#running-digna-as-a-windows-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
+1. [Introducción](#introduction)
+2. [Requisitos del sistema](#system-requirements)
+3. [Preparativos previos a la instalación](#pre-installation-setup)
+4. [Configuración del servidor PostgreSQL](#postgresql-server-setup)
+5. [Configuración del servidor web](#web-server-configuration)
+6. [Instalación inicial](#initial-installation)
+7. [Configuración del backend](#backend-configuration)
+8. [Configuración del panel (dashboard)](#dashboard-configuration)
+9. [Ejecutar digna como servicio de Windows](#running-digna-as-a-windows-service)
+10. [Actualizar a una nueva versión](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Introducción {: #introduction }
 
-### About digna
+### Acerca de digna
 
-digna es una plataforma integral impulsada por IA diseñada para optimizar la gestión de la calidad de datos en varios entornos de datos como warehouses, lakes y lakehouses. Construida para ser altamente escalable y adaptable, digna aborda los desafíos modernos de datos mediante automatización, monitorización en tiempo real y detección de anomalías.
+digna es una plataforma integral impulsada por IA diseñada para optimizar la gestión de la calidad de los datos en diversos entornos, como data warehouses, data lakes y lakehouses. Diseñada para ser altamente escalable y adaptable, digna aborda los desafíos modernos de datos mediante automatización, monitoreo en tiempo real y detección de anomalías.
 
 digna consta de dos componentes principales:
 
-- **dignabackend**: El motor principal de la aplicación, responsable de procesar datos y realizar comprobaciones de calidad.
-- **dignadashboard**: Una interfaz web alojada en un servidor web, que proporciona una forma amigable de interactuar con la plataforma digna y visualizar métricas de calidad de datos.
+- **dignabackend**: El motor central de la aplicación, responsable de procesar datos y realizar comprobaciones de calidad.
+- **dignadashboard**: Una interfaz web alojada en un servidor web, que ofrece una forma amigable de interactuar con la plataforma digna y visualizar las métricas de calidad de datos.
 
-### What's New in Release 2026.06
+### Novedades en la Release 2026.06
 
-Esta versión incorpora capacidades de observabilidad de datos directamente en tu código, lo que permite a los desarrolladores monitorizar la calidad de los datos en el origen. Consulta las [release notes](http://docs.digna.ai/changelog/Release_202606/) para más detalles.
+Esta versión incorpora capacidades de observabilidad de datos directamente en tu código, permitiendo a los desarrolladores supervisar la calidad de los datos en el origen. Consulta las [notas de la versión](http://docs.digna.ai/changelog/Release_202606/) para obtener detalles completos.
+
+### ¿Buscas macOS o Linux?
+
+Esta guía cubre Windows. Para otras plataformas, consulta la [Guía de instalación para macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) o la [Guía de instalación para Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
-## System Requirements {: #system-requirements }
+## Requisitos del sistema {: #system-requirements }
 
-Antes de comenzar la instalación, asegúrate de que tu sistema cumpla los siguientes requisitos mínimos:
+Antes de comenzar la instalación, asegúrate de que tu sistema cumpla con los siguientes requisitos mínimos:
 
-| Requirement | Specification |
+| Requisito | Especificación |
 |---|---|
-| **Operating System** | Windows Server or Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | IIS, Apache Tomcat, or equivalent |
+| **Sistema operativo** | Windows Server o Windows 10/11 |
+| **Memoria (instalación mínima)** | 16 GB RAM |
+| **Espacio en disco** | 10 GB de almacenamiento disponible |
+| **Base de datos** | PostgreSQL Server 12 o superior |
+| **Servidor web** | IIS, Apache Tomcat, o equivalente |
 
-### Database Installation Options
+### Opciones de instalación de la base de datos
 
-**If PostgreSQL is already installed:**
-Puedes añadir una nueva base de datos para digna a tu servidor PostgreSQL existente.
+**Si PostgreSQL ya está instalado:**
+Puedes añadir una nueva base de datos para digna en tu servidor PostgreSQL existente.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Si vas a instalar PostgreSQL en la misma máquina que digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Especificaciones recomendadas"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Memoria**: 32 GB RAM (en lugar de 16 GB)
+    - **Espacio en disco**: 50 GB de almacenamiento disponible (en lugar de 10 GB)
 
     Estas especificaciones superiores acomodan tanto digna como la base de datos PostgreSQL ejecutándose simultáneamente.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Preparativos previos a la instalación {: #pre-installation-setup }
 
-Antes de instalar digna, asegúrate de que dos requisitos clave estén en su lugar:
+Antes de instalar digna, asegúrate de que dos prerrequisitos clave estén en su lugar:
 
-1. **PostgreSQL Server** – para almacenar métricas calculadas y datos de rendimiento
-2. **Web Server** – para alojar el digna Dashboard
+1. **Servidor PostgreSQL** – para almacenar métricas calculadas y datos de rendimiento
+2. **Servidor web** – para alojar el digna Dashboard
 
-Si estos componentes aún no están configurados, sigue las secciones a continuación para instalarlos y configurarlos.
+Si estos componentes aún no están configurados, sigue las secciones siguientes para instalarlos y configurarlos.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Configuración del servidor PostgreSQL {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Si ya tienes PostgreSQL
 
-Si PostgreSQL ya está instalado y en ejecución en tu máquina local o si estás usando un servidor PostgreSQL remoto gestionado, puedes saltar a la [siguiente sección](#web-server-configuration).
+Si PostgreSQL ya está instalado y en funcionamiento en tu máquina local o si estás utilizando un servidor PostgreSQL gestionado de forma remota, puedes saltar a la [siguiente sección](#web-server-configuration).
 
-### Installing PostgreSQL
+### Instalación de PostgreSQL
 
 Sigue estos pasos para instalar PostgreSQL en Windows:
 
-#### Step 1: Download PostgreSQL
+#### Paso 1: Descargar PostgreSQL
 
 1. Visita la [página de descargas de PostgreSQL](https://www.postgresql.org/download/)
 2. Selecciona **Windows**
 3. Descarga el instalador más reciente
 
-#### Step 2: Run the Installer
+#### Paso 2: Ejecutar el instalador
 
 1. Haz doble clic en el archivo del instalador descargado
 2. Sigue las indicaciones del asistente de instalación
 
-#### Step 3: Choose Installation Directory
+#### Paso 3: Elegir el directorio de instalación
 
-Selecciona el directorio donde se instalará PostgreSQL. La ubicación por defecto suele ser adecuada.
+Selecciona el directorio donde se instalará PostgreSQL. La ubicación predeterminada suele ser adecuada.
 
-#### Step 4: Select Components
+#### Paso 4: Seleccionar componentes
 
-Para una instalación estándar, mantén las opciones de componentes por defecto seleccionadas.
+Para una configuración estándar, mantiene las opciones de componentes predeterminadas seleccionadas.
 
-#### Step 5: Set PostgreSQL Superuser Password
+#### Paso 5: Establecer la contraseña del superusuario de PostgreSQL
 
 Introduce y confirma una contraseña para el superusuario de PostgreSQL (`postgres`). **Guarda esta contraseña de forma segura** — la necesitarás más adelante.
 
-#### Step 6: Configure Port Number
+#### Paso 6: Configurar el número de puerto
 
-El puerto por defecto de PostgreSQL es `5432`. Puedes usar el valor por defecto o especificar un puerto diferente si es necesario.
+El puerto predeterminado de PostgreSQL es `5432`. Puedes usar el predeterminado o especificar otro puerto si es necesario.
 
-!!! tip "Tip"
+!!! tip "Consejo"
 
     Si el puerto 5432 ya está en uso, elige un puerto alternativo y anótalo para la configuración posterior.
 
-#### Step 7: Choose Locale
+#### Paso 7: Elegir la configuración regional (locale)
 
-Selecciona la localidad para tu base de datos. La configuración por defecto suele ser adecuada para la mayoría de las instalaciones.
+Selecciona la configuración regional para tu base de datos. La opción predeterminada suele ser adecuada para la mayoría de las instalaciones.
 
-#### Step 8: Complete Installation
+#### Paso 8: Completar la instalación
 
 Haz clic en **Next** en los pasos restantes y luego en **Finish**.
 
-#### Step 9: Verify Installation
+#### Paso 9: Verificar la instalación
 
 Abre el Símbolo del sistema y verifica que PostgreSQL esté instalado:
 
@@ -146,7 +150,7 @@ Deberías ver la versión de PostgreSQL si la instalación fue exitosa.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Configuración del servidor web {: #web-server-configuration }
 
 digna requiere un servidor web para alojar el dashboard. Elige una de las siguientes opciones:
 
@@ -155,24 +159,24 @@ digna requiere un servidor web para alojar el dashboard. Elige una de las siguie
 
 Solo necesitas instalar y configurar **uno** de estos servidores.
 
-### IIS Setup {: #iis-setup }
+### Configuración de IIS {: #iis-setup }
 
-#### Overview
+#### Descripción general
 
 Internet Information Services (IIS) es el servidor web de Microsoft para alojar sitios web y aplicaciones web.
 
-#### Enabling IIS
+#### Habilitar IIS
 
-1. **Abre el Panel de Control**
+1. **Abrir el Panel de control**
    - Presiona `Win + R`
    - Escribe `control` y presiona Enter
 
-2. **Navega a Windows Features**
+2. **Ir a Funciones de Windows**
    - Haz clic en **Programs**
    - Selecciona **Turn Windows features on or off**
 
-3. **Habilita Internet Information Services**
-   - Desplázate hacia abajo y busca **Internet Information Services (IIS)**
+3. **Habilitar Internet Information Services**
+   - Desplázate y busca **Internet Information Services (IIS)**
    - Marca la casilla para habilitarlo
    - Haz clic en el **+** para expandir y verifica que estos subcomponentes estén seleccionados:
      - **Web Management Tools**
@@ -180,18 +184,18 @@ Internet Information Services (IIS) es el servidor web de Microsoft para alojar 
 
 4. **Haz clic en OK** para aplicar los cambios
 
-5. **Verifica la instalación de IIS**
+5. **Verificar la instalación de IIS**
    - Abre tu navegador
    - Navega a `http://localhost`
    - Deberías ver la página de bienvenida de IIS
 
-#### Required: URL Rewrite Module
+#### Requerido: módulo URL Rewrite
 
 IIS requiere el componente URL Rewrite. Descárgalo e instálalo desde la [página oficial de Microsoft](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Required: MIME Type for Markdown Files
+#### Requerido: tipo MIME para archivos Markdown
 
-Para asegurar que los archivos Markdown (`.md`) se sirvan correctamente desde IIS:
+Para asegurar que los archivos Markdown (`.md`) se sirvan correctamente en IIS:
 
 1. Abre **IIS Manager** (presiona `Win + R`, escribe `inetmgr`, presiona Enter)
 2. Navega a **Your Site > MIME Types**
@@ -200,48 +204,48 @@ Para asegurar que los archivos Markdown (`.md`) se sirvan correctamente desde II
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-!!! warning "Important"
+!!! warning "Importante"
 
-    Sin esta configuración, los archivos `.md` podrían no servir correctamente.
+    Sin esta configuración, los archivos `.md` podrían no servirse correctamente.
 
 ---
 
-### Apache Tomcat Setup {: #apache-tomcat-setup }
+### Configuración de Apache Tomcat {: #apache-tomcat-setup }
 
-#### Overview
+#### Descripción general
 
 Apache Tomcat es un contenedor de servlets Java y servidor web de código abierto.
 
-#### Installation
+#### Instalación
 
-1. **Download Apache Tomcat**
+1. **Descargar Apache Tomcat**
    - Visita [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
    - Descarga la distribución ZIP para Windows
 
-2. **Extract the Archive**
-   - Extrae el archivo ZIP a un directorio en tu sistema
+2. **Extraer el archivo**
+   - Extrae el archivo ZIP en un directorio de tu sistema
    - Ejemplo: `C:\Program Files\Apache Tomcat`
 
-3. **Verify Tomcat is Running**
+3. **Verificar que Tomcat esté en ejecución**
    - Abre tu navegador
    - Navega a `http://localhost:8080`
    - Deberías ver la página de bienvenida de Apache Tomcat
 
-!!! tip "Tip"
+!!! tip "Consejo"
 
     Apache Tomcat normalmente se inicia automáticamente después de la instalación. Si no lo hace, navega a la carpeta `bin` y ejecuta `startup.bat`.
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Instalación inicial {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Paso 1: Configurar el repositorio de digna
 
 El repositorio de digna almacena todas las métricas calculadas por digna. Actúa como la base de datos central para datos analíticos y de rendimiento.
 
-#### Create Repository Schema and User
+#### Crear esquema y usuario del repositorio
 
-Abre tu cliente de PostgreSQL (pgAdmin, psql, o similar) y ejecuta los siguientes comandos SQL:
+Abre tu cliente de PostgreSQL (pgAdmin, psql u otro) y ejecuta los siguientes comandos SQL:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -253,8 +257,8 @@ GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 
 **Reemplaza los siguientes marcadores:**
 
-- `<digna_repo_schema>` — El nombre de esquema deseado (p. ej., `dignarepo`)
-- `<digna_repo_user>` — El nombre de usuario deseado (p. ej., `digna_user`)
+- `<digna_repo_schema>` — El nombre de esquema que desees (p. ej., `dignarepo`)
+- `<digna_repo_user>` — El nombre de usuario que desees (p. ej., `digna_user`)
 - `<digna_repo_password>` — Una contraseña segura para este usuario
 
 **Ejemplo:**
@@ -267,58 +271,58 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Best Practice"
+!!! tip "Mejor práctica"
 
-    Usa contraseñas fuertes y complejas para los usuarios de la base de datos. Evita credenciales fácilmente adivinables.
+    Usa contraseñas fuertes y complejas para los usuarios de la base de datos. Evita credenciales fáciles de adivinar.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Paso 2: Extraer el paquete de instalación de digna
 
-1. Localiza el archivo ZIP de instalación de digna proporcionado
-2. Extráelo en la ubicación de instalación deseada
-3. Después de la extracción, deberías ver los siguientes elementos:
-   - `dashboard/` — Interfaz web del dashboard
+1. Localiza el archivo ZIP de instalación de digna que se te proporcionó
+2. Extrae el archivo en la ubicación de instalación deseada
+3. Después de extraer, deberías ver los siguientes elementos:
+   - `dashboard/` — Interfaz web del panel
    - `digna` — Ejecutable principal (backend + CLI combinados)
    - `config.toml` — Archivo de configuración
    - `license.toml` — Archivo de licencia (copia el tuyo aquí)
 
-### Step 3: Install the License File
+### Paso 3: Instalar el archivo de licencia
 
-!!! warning "Important"
+!!! warning "Importante"
 
-    El archivo de licencia **no** está incluido en el paquete de instalación y se proporcionará por separado por digna.
+    El archivo de licencia **no** está incluido en el paquete de instalación y se entregará por separado por digna.
 
-1. Localiza el archivo `license.toml` proporcionado
+1. Localiza el archivo `license.toml` que se te proporcionó
 2. Cópialo en el directorio raíz de instalación de digna (donde están `config.toml` y el ejecutable `digna`)
 
-**Por qué importa:**
+**Por qué esto importa:**
 El archivo de licencia contiene la información del cliente, la fecha de expiración de la licencia y la firma digital. **No modifiques este archivo** — cualquier cambio lo invalidará.
 
 **Estructura de directorios después de la configuración:**
 
 ```
 digna_installation/
-├── config.toml         (configuration file)
-├── license.toml        (YOUR LICENSE FILE - copy here)
-├── digna               (main executable)
-└── dashboard/          (web interface)
-    └── (dashboard files)
+├── config.toml         (archivo de configuración)
+├── license.toml        (TU ARCHIVO DE LICENCIA - cópialo aquí)
+├── digna               (ejecutable principal)
+└── dashboard/          (interfaz web)
+    └── (archivos del dashboard)
 ```
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Configuración del backend {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Paso 1: Crear y editar el archivo de configuración
 
-El archivo `config_template.toml` se proporciona en tu directorio de instalación de digna. Solo necesitas renombrarlo a `config.toml`.
+Se proporciona el archivo `config_template.toml` en tu directorio de instalación de digna. Solo necesitas renombrarlo a `config.toml`.
 
 **Ubicación:** `digna_installation/config.toml`
 
 Abre `config.toml` en un editor de texto y configura cada sección a continuación.
 
-#### [app] Section
+#### Sección [app]
 
 Esta sección configura los ajustes de la aplicación backend de digna:
 
@@ -332,16 +336,16 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parámetro | Valor | Notas |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` o dirección IP | Nombre de host o IP donde se aloja dignabackend |
+| `digna_APP_PORT` | `8082` (predeterminado) | Puerto para los endpoints REST API |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL del frontend | Si el dashboard está en otro servidor, incluye su URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Requerido para CORS con credenciales |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Permitir todos los métodos HTTP |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Permitir todos los encabezados |
 
-#### [repo] Section
+#### Sección [repo]
 
 Esta sección configura la conexión a la base de datos PostgreSQL:
 
@@ -355,16 +359,16 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parámetro | Valor | Notas |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` o IP | Hostname/IP del servidor PostgreSQL |
+| `digna_REPO_PORT` | `5432` (predeterminado) | Puerto de PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Nombre de la base de datos |
+| `digna_REPO_SCHEMA` | `dignarepo` | Esquema creado anteriormente |
+| `digna_REPO_USER` | `digna_user` | Usuario creado en la configuración de PostgreSQL |
+| `digna_REPO_PASSWORD` | Tu contraseña | Contraseña establecida durante la creación del esquema |
 
-#### [base] Section
+#### Sección [base]
 
 Esta sección contiene ajustes de seguridad y cookies:
 
@@ -380,19 +384,19 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Parámetro | Valor | Notas |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | Clave de cifrado | Se utiliza para cifrar tokens y cookies (se proporciona una por defecto) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Debe coincidir con el dominio del frontend |
+| `digna_COOKIE_SECURE` | `false` (local) / `true` (producción) | Usa `true` para conexiones HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | Siempre habilitado por seguridad |
+| `digna_COOKIE_SAME_SITE` | `lax` | Previene ataques CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 horas) | Tiempo de expiración de sesión en segundos |
+| `digna_MAX_WORKERS` | Número de núcleos de CPU - 1 | Número de tareas de inspección en paralelo |
 
-#### [logging] Section
+#### Sección [logging]
 
-Esta sección configura el comportamiento de los logs:
+Esta sección configura el comportamiento del registro (logging):
 
 ```toml
 [logging]
@@ -400,14 +404,14 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parámetro | Valor | Notas |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` o `DEBUG` | `INFO` para producción, `DEBUG` para depuración |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Número de copias de seguridad diarias de logs a conservar |
 
 ---
 
-### Step 3: Initialize the Repository
+### Paso 3: Inicializar el repositorio
 
 1. Abre el Símbolo del sistema
 2. Navega al directorio de instalación de digna (donde están `config.toml` y el ejecutable `digna`)
@@ -417,9 +421,9 @@ digna_LOGGING_BACKUP_COUNT = 10
 digna repo check
 ```
 
-Deberías ver una confirmación de que la conexión está establecida (el repositorio en sí aún no se ha inicializado).
+Deberías ver una confirmación de que la conexión se ha establecido (el repositorio en sí aún no se ha inicializado).
 
-### Step 4: Install the Repository Schema
+### Paso 4: Instalar el esquema del repositorio
 
 En el mismo directorio, ejecuta:
 
@@ -429,7 +433,7 @@ digna repo install
 
 Este comando instala las tablas y el esquema necesarios en tu base de datos PostgreSQL.
 
-### Step 5: Start the digna Server
+### Paso 5: Iniciar el servidor digna
 
 En el directorio de instalación de digna, inicia el servidor con:
 
@@ -438,7 +442,7 @@ digna serve --address <host> --port <port>
 ```
 
 **Parámetros:**
-- `--address` — Hostname/IP del servidor
+- `--address` — Nombre de host/IP del servidor
 - `--port` — Puerto del servidor
 
 Deberías ver mensajes de inicio confirmando que el servidor está en ejecución:
@@ -450,11 +454,11 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### Step 6: Create an Admin User
+### Paso 6: Crear un usuario administrador
 
 1. Abre una ventana **nueva** del Símbolo del sistema
 2. Navega al directorio de instalación de digna
-3. Ejecuta el siguiente comando para crear un usuario admin:
+3. Ejecuta el siguiente comando para crear un usuario administrador:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -468,108 +472,108 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 Esto crea un usuario con privilegios administrativos completos.
 
-!!! tip "Best Practice"
+!!! tip "Mejor práctica"
 
-    Usa una contraseña fuerte con una mezcla de mayúsculas, minúsculas, números y caracteres especiales.
+    Usa una contraseña fuerte con mezcla de mayúsculas, minúsculas, números y caracteres especiales.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Configuración del panel (dashboard) {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Paso 1: Desplegar el dashboard en el servidor web
 
-El digna dashboard tiene su propio archivo `config.toml` ubicado en el directorio `dashboard/`. Esta configuración ya está proporcionada y no requiere cambios durante la configuración inicial. Solo necesitas modificarla si necesitas personalizar la conexión al backend.
+El dashboard de digna tiene su propio archivo `config.toml` ubicado en el directorio `dashboard/`. Esta configuración ya se proporciona y no requiere cambios durante la configuración inicial. Solo necesitas modificarla si requieres personalizar la conexión al backend.
 
-Si necesitas modificar la configuración del dashboard (por ejemplo, para despliegues multi-instancia), consulta la documentación del dashboard.
+Si necesitas modificar la configuración del dashboard (p. ej., para despliegues multi-instancia), consulta la documentación del dashboard.
 
 Elige tu servidor web y sigue los pasos de despliegue correspondientes.
 
-#### Deploying to IIS
+#### Despliegue en IIS
 
-1. **Abre IIS Manager**
+1. **Abrir IIS Manager**
    - Presiona `Win + R`, escribe `inetmgr`, presiona Enter
 
-2. **Crea un nuevo sitio web**
-   - En el panel izquierdo, haz clic derecho en **Sites**
+2. **Crear un nuevo sitio web**
+   - En el panel izquierdo, clic derecho en **Sites**
    - Selecciona **Add Website...**
 
-3. **Configura el sitio**
+3. **Configurar el sitio**
    - **Site Name**: Introduce un nombre (p. ej., "dignaDashboard")
    - **Physical Path**: Haz clic en Browse y selecciona tu carpeta `dashboard`
-   - **Binding**: Configura la dirección IP y el puerto (puerto 80 por defecto para HTTP, 443 para HTTPS)
+   - **Binding**: Configura la dirección IP y el puerto (puerto 80 para HTTP, 443 para HTTPS por defecto)
 
-4. **Inicia el sitio**
+4. **Iniciar el sitio**
    - Haz clic en **OK** para crear el sitio
-   - Haz clic derecho en el nuevo sitio y selecciona **Start**
+   - Clic derecho en el nuevo sitio y selecciona **Start**
 
-5. **Prueba la instalación**
+5. **Probar la instalación**
    - Abre tu navegador
-   - Navega a `http://localhost` (o la URL que hayas configurado)
-   - Deberías ver la página de login del digna dashboard
+   - Navega a `http://localhost` (o a la URL configurada)
+   - Deberías ver la página de inicio de sesión del dashboard de digna
 
-#### Deploying to Apache Tomcat
+#### Despliegue en Apache Tomcat
 
-1. **Copia el dashboard a Tomcat**
-   - Copia la carpeta `dashboard` al directorio `webapps` de Tomcat
+1. **Copiar el dashboard a Tomcat**
+   - Copia la carpeta `dashboard` a tu directorio `webapps` de Tomcat
    - Renómbrala si es necesario (p. ej., a `digna`)
    - Ejemplo: `C:\Program Files\Apache Tomcat\webapps\digna`
 
-2. **Verifica el despliegue**
+2. **Verificar el despliegue**
    - Actualiza o recarga la página de administración de Tomcat (http://localhost:8080)
-   - Deberías ver "digna" (o el nombre que hayas elegido) listado en las aplicaciones desplegadas
+   - Deberías ver "digna" (o el nombre elegido) listado en las aplicaciones desplegadas
 
-3. **Accede al dashboard**
+3. **Acceder al dashboard**
    - Abre tu navegador
    - Navega a `http://localhost:8080/digna`
-   - Deberías ver la página de login del digna dashboard
+   - Deberías ver la página de inicio de sesión del dashboard de digna
 
 ---
 
-## Running digna as a Windows Service {: #running-digna-as-a-windows-service }
+## Ejecutar digna como servicio de Windows {: #running-digna-as-a-windows-service }
 
-### Why Use a Windows Service?
+### ¿Por qué usar un servicio de Windows?
 
 Ejecutar el backend de digna como servicio de Windows asegura que:
-- Se inicie automáticamente cuando el servidor arranque
-- Se ejecute en segundo plano sin una ventana del Símbolo del sistema abierta
+- Se inicie automáticamente al arrancar el servidor
+- Se ejecute en segundo plano sin necesidad de una ventana del Símbolo del sistema abierta
 - Se reinicie automáticamente si se bloquea
 - Se pueda gestionar a través de Servicios de Windows
 
-### Service Management Files
+### Archivos de gestión del servicio
 
-Todos los archivos necesarios se encuentran en el directorio de instalación de digna bajo: `bin/`
+Todos los archivos necesarios están ubicados en el directorio de instalación de digna bajo: `bin/`
 
 Los siguientes archivos batch están disponibles:
-- `install_service.bat` — Registra digna como un servicio de Windows
+- `install_service.bat` — Registra digna como servicio de Windows
 - `uninstall_service.bat` — Anula el registro del servicio
-- `start_service.bat` — Inicia el servicio registrado
-- `stop_service.bat` — Detiene el servicio registrado
+- `start_service.bat` — Inicia el servicio en ejecución
+- `stop_service.bat` — Detiene el servicio en ejecución
 
-!!! warning "Administrator Required"
+!!! warning "Se requieren privilegios de Administrador"
 
     Todos los archivos batch deben ejecutarse con privilegios de Administrador.
 
-### Installing the Service
+### Instalar el servicio
 
-1. **Abre el Símbolo del sistema como Administrador**
-   - Haz clic derecho en Símbolo del sistema
+1. **Abrir Símbolo del sistema como Administrador**
+   - Clic derecho en Símbolo del sistema
    - Selecciona "Run as Administrator"
 
-2. **Navega a la carpeta bin**
+2. **Navegar a la carpeta bin**
    ```bash
    cd C:\path\to\digna\bin
    ```
 
-3. **Ejecuta el script de instalación**
+3. **Ejecutar el script de instalación**
    ```bash
    install_service.bat
    ```
 
-El servidor digna ya está registrado como un servicio de Windows con inicio **automático** habilitado. El servicio no se inicia inmediatamente — consulta la sección siguiente para iniciarlo.
+El servidor digna ahora está registrado como un servicio de Windows con inicio **automático** habilitado. El servicio no se inicia inmediatamente — consulta la sección siguiente para iniciarlo.
 
-### Starting and Stopping the Service
+### Iniciar y detener el servicio
 
-#### To Start the Service
+#### Para iniciar el servicio
 
 1. Abre el Símbolo del sistema como Administrador
 2. Navega a `digna\bin`
@@ -578,7 +582,7 @@ El servidor digna ya está registrado como un servicio de Windows con inicio **a
    start_service.bat
    ```
 
-#### To Stop the Service
+#### Para detener el servicio
 
 1. Abre el Símbolo del sistema como Administrador
 2. Navega a `digna\bin`
@@ -587,100 +591,100 @@ El servidor digna ya está registrado como un servicio de Windows con inicio **a
    stop_service.bat
    ```
 
-!!! tip "Tip"
+!!! tip "Consejo"
 
     Siempre detén el servicio antes de actualizar los archivos de la aplicación.
 
-### Moving the Service to a New Directory
+### Mover el servicio a un nuevo directorio
 
-Si necesitas mover la instalación de digna:
+Si necesitas reubicar la instalación de digna:
 
-1. **Desinstala el servicio actual**
+1. **Desinstalar el servicio actual**
    ```bash
    cd C:\old\path\digna\bin
    uninstall_service.bat
    ```
 
-2. **Mueve los archivos de la aplicación**
+2. **Mover los archivos de la aplicación**
    - Mueve toda la carpeta de instalación de digna a la nueva ubicación
 
-3. **Reinstala el servicio**
+3. **Reinstalar el servicio**
    ```bash
    cd C:\new\path\digna\bin
    install_service.bat
    ```
 
-4. **Inicia el servicio**
+4. **Iniciar el servicio**
    ```bash
    start_service.bat
    ```
 
-### Uninstalling the Service
+### Desinstalar el servicio
 
-1. **Detén el servicio en ejecución**
+1. **Detener el servicio en ejecución**
    ```bash
    cd C:\path\to\digna\bin
    stop_service.bat
    ```
 
-2. **Desinstala el servicio**
+2. **Desinstalar el servicio**
    ```bash
    uninstall_service.bat
    ```
 
-El servidor digna ya no estará registrado como servicio de Windows.
+El servidor digna ahora está dado de baja como servicio de Windows.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Actualizar a una nueva versión {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Antes de actualizar
 
-**Creating a digna Repository Backup is Mandatory**
+**Es obligatorio crear una copia de seguridad del repositorio de digna**
 
-Antes de actualizar digna, realiza una copia de seguridad de tu repositorio (PostgreSQL) para protegerte contra la pérdida de datos.
-Una copia de seguridad garantiza que puedas recuperar el estado si la actualización encuentra problemas inesperados.
+Antes de actualizar digna, realiza una copia de seguridad de tu repositorio (PostgreSQL) para protegerte contra pérdida de datos.
+Una copia de seguridad asegura que puedas recuperar si la actualización encuentra problemas inesperados.
 
-### Upgrade Process
+### Proceso de actualización
 
-#### Step 1: Stop digna Service
+#### Paso 1: Detener el servicio digna
 
-Si digna se ejecuta como servicio de Windows, deténlo primero:
+Si digna se está ejecutando como servicio de Windows, deténlo primero:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Step 2: Backup Current Backend Installation
+#### Paso 2: Hacer una copia de seguridad de la instalación actual del backend
 
 En tu directorio de instalación de digna:
 
 ```bash
-# Rename folder containing dignabackend
+# Cambiar el nombre de la carpeta que contiene dignabackend
 ren dignabackend dignabackend_old
 ```
 ```bash
-# Rename dashboard
+# Cambiar el nombre del dashboard
 ren dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### Paso 3: Extraer y desplegar la nueva versión
 
 1. Extrae el nuevo archivo ZIP de instalación de digna
 2. Copia el nuevo ejecutable `digna` y la carpeta `dashboard` a tu directorio de instalación
 
 
-!!! warning "Important"
+!!! warning "Importante"
 
     El archivo `config.toml` **nunca** se incluye en el ZIP de instalación. Tu configuración existente permanece segura.
 
-### Step 4: Restore Your Configuration Files
+### Paso 4: Restaurar tus archivos de configuración
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Step 5: Upgrade the Repository Schema
+### Paso 5: Actualizar el esquema del repositorio
 
 Navega a tu directorio de instalación de digna y ejecuta:
 
@@ -690,7 +694,7 @@ digna repo upgrade
 
 Esto actualiza el esquema de PostgreSQL a la versión más reciente preservando todos los datos existentes.
 
-### Step 6: Restart Services
+### Paso 6: Reiniciar los servicios
 
 Si se ejecuta como servicio de Windows:
 
@@ -708,8 +712,8 @@ digna serve --address <address> --port <port>
 
 Si usas IIS o Tomcat, reinicia el servidor web correspondiente.
 
-#### Step 7: Verify the Upgrade
+#### Paso 7: Verificar la actualización
 
-1. Accede al digna dashboard
-2. Verifica que la interfaz cargue correctamente
-3. Revisa los logs del servidor en busca de errores
+1. Accede al dashboard de digna
+2. Verifica que la interfaz se cargue correctamente
+3. Revisa los registros del servidor en busca de errores
