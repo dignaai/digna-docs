@@ -13,6 +13,7 @@ MAIN_FOLDERS = [
     'getting_started',
     'installation_deployment',
     'platform',
+    'sso',
 ]
 
 

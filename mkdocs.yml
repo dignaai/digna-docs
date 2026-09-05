@@ -83,7 +83,6 @@ nav:
       #   - Cloud Native:
       #       - AWS:
       #           - Release 2026.06: installation_deployment/AWS/Release 2026.06/...
-      - How to configure Single Sign-on: installation_deployment/sso_integration_guide.md
   - Getting Started:
       - First Steps:
           - How to create a data project: getting_started/how_to_create_project.md
@@ -104,6 +103,18 @@ nav:
           - Snowflake: databases/snowflake_connector_guide.md
           - MS SQL Server: databases/sqlserver_connector_guide.md
           - Teradata: databases/teradata_connector_guide.md
+      # Providers are alphabetical, as in Databases above. The Overview leads
+      # because it holds the digna-side configuration every provider shares.
+      - Single Sign-On:
+          - Overview: sso/overview.md
+          - AD FS: sso/adfs_sso_guide.md
+          - Auth0: sso/auth0_sso_guide.md
+          - Google Workspace: sso/google_workspace_sso_guide.md
+          - Keycloak: sso/keycloak_sso_guide.md
+          - Microsoft Entra ID: sso/microsoft_entra_id_sso_guide.md
+          - Okta: sso/okta_sso_guide.md
+          - OneLogin: sso/onelogin_sso_guide.md
+          - PingOne: sso/pingone_sso_guide.md
   - CLI Reference:
           - Introduction: cli/Introduction.md
           - Release 2026.04: cli/Command_Line_Interface_202604.md
@@ -230,7 +241,6 @@ plugins:
             Installation & Deployment: Installation & Bereitstellung
             Operating Systems: Betriebssysteme
             Windows: Windows
-            How to configure Single Sign-on: Wie man Single Sign-on konfiguriert
             How to schedule a daily job: Wie man einen täglichen Job schedult
             How to use crontab definition: Wie man eine Crontab-Definition verwendet
             How to create a data project: Wie man ein Datenprojekt erstellt
@@ -252,7 +262,6 @@ plugins:
             Installation & Deployment: Installation et déploiement
             Operating Systems: Systèmes d'exploitation
             Windows: Windows
-            How to configure Single Sign-on: Comment configurer l'authentification unique
             How to schedule a daily job: Comment programmer une tâche quotidienne
             How to use crontab definition: Comment utiliser une définition crontab
             How to create a data project: Comment créer un projet de données
@@ -274,7 +283,6 @@ plugins:
              Installation & Deployment: Instalación e implementación
              Operating Systems: Sistemas operativos
              Windows: Windows
-             How to configure Single Sign-on: Cómo configurar el inicio de sesión único
              How to schedule a daily job: Cómo programar una tarea diaria
              How to use crontab definition: Cómo usar una definición de crontab
              How to create a data project: Cómo crear un proyecto de datos
@@ -296,7 +304,6 @@ plugins:
               Installation & Deployment: Installazione e distribuzione
               Operating Systems: Sistemi operativi
               Windows: Windows
-              How to configure Single Sign-on: Come configurare l'accesso single sign-on
               How to schedule a daily job: Come pianificare un job giornaliero
               How to use crontab definition: Come utilizzare una definizione di crontab
               How to create a data project: Come creare un progetto di dati
@@ -318,7 +325,6 @@ plugins:
             Installation & Deployment: Instalacja i wdrażanie
             Operating Systems: Systemy operacyjne
             Windows: Windows
-            How to configure Single Sign-on: Jak skonfigurować logowanie jednokrotne
             How to schedule a daily job: Jak zdefiniować codzienne zadanie w harmonogramie
             How to use crontab definition: Jak używać definicji crontab
             How to create a data project: Jak utworzyć projekt danych
@@ -340,7 +346,6 @@ plugins:
             Installation & Deployment: Instalação e implementação
             Operating Systems: Sistemas operativos
             Windows: Windows
-            How to configure Single Sign-on: Como configurar o logon único
             How to schedule a daily job: Como agendar uma tarefa diária
             How to use crontab definition: Como usar uma definição de crontab
             How to create a data project: Como criar um projeto de dados
@@ -361,7 +366,6 @@ plugins:
               Installation & Deployment: Installation och distribution
               Operating Systems: Operativsystem
               Windows: Windows
-              How to configure Single Sign-on: Hur man konfigurerar enkel inloggning
               How to schedule a daily job: Hur man schemalägger ett dagligt jobb
               How to use crontab definition: Hur man använder en crontab-definition
               How to create a data project: Hur man skapar ett dataprojekt
@@ -383,7 +387,6 @@ plugins:
             Installation & Deployment: Installasjon og distribusjon
             Operating Systems: Operativsystemer
             Windows: Windows
-            How to configure Single Sign-on: Hvordan konfigurere enkel pålogging
             How to schedule a daily job: Hvordan planlegge en daglig jobb
             How to use crontab definition: Hvordan bruke en crontab-definisjon
             How to create a data project: Hvordan opprette et dataprosjekt
@@ -405,7 +408,6 @@ plugins:
             Installation & Deployment: Installation og implementering
             Operating Systems: Operativsystemer
             Windows: Windows
-            How to configure Single Sign-on: Sådan konfigureres single sign-on
             How to schedule a daily job: Sådan planlægges et dagligt job
             How to use crontab definition: Sådan bruges en crontab-definition
             How to create a data project: Sådan oprettes et dataprojekt
@@ -427,7 +429,6 @@ plugins:
             Installation & Deployment: Asennus ja käyttöönotto
             Operating Systems: Käyttöjärjestelmät
             Windows: Windows
-            How to configure Single Sign-on: Kuinka määrittää kertakirjautuminen
             How to schedule a daily job: Kuinka ajoittaa päivittäinen tehtävä
             How to use crontab definition: Kuinka käyttää crontab-määritelmää
             How to create a data project: Kuinka luoda dataprojeki
@@ -449,7 +450,6 @@ plugins:
             Installation & Deployment: Paigaldamine ja juurutamine
             Operating Systems: Operatsioonisüsteemid
             Windows: Windows
-            How to configure Single Sign-on: Kuidas konfigureerida ühekordset sisselogimist
             How to schedule a daily job: Kuidas ajastada igapäevast tööülesannet
             How to use crontab definition: Kuidas kasutada crontab määratlust
             How to create a data project: Kuidas luua andmeprojekt
@@ -471,7 +471,6 @@ plugins:
             Installation & Deployment: Diegimas ir diegimas
             Operating Systems: Operacinės sistemos
             Windows: Windows
-            How to configure Single Sign-on: Kaip konfigūruoti vienodą prisijungimą
             How to schedule a daily job: Kaip suplanuoti kasdienę užduotį
             How to use crontab definition: Kaip naudoti crontab apibrėžimą
             How to create a data project: Kaip sukurti duomenų projektą
@@ -493,7 +492,6 @@ plugins:
             Installation & Deployment: Instalācija un izvietošana
             Operating Systems: Operētājsistēmas
             Windows: Windows
-            How to configure Single Sign-on: Kā konfigurēt vienreizēju pierakstīšanos
             How to schedule a daily job: Kā ieplānot ikdienas uzdevumu
             How to use crontab definition: Kā izmantot crontab definīciju
             How to create a data project: Kā izveidot datu projektu
@@ -515,7 +513,6 @@ plugins:
             Installation & Deployment: Installatie en implementatie
             Operating Systems: Besturingssystemen
             Windows: Windows
-            How to configure Single Sign-on: Hoe je eenmalige aanmelding configureert
             How to schedule a daily job: Hoe je een dagelijkse taak inplant
             How to use crontab definition: Hoe je een crontab-definitie gebruikt
             How to create a data project: Hoe je een dataproject maakt
@@ -537,7 +534,6 @@ plugins:
             Installation & Deployment: Instalace a nasazení
             Operating Systems: Operační systémy
             Windows: Windows
-            How to configure Single Sign-on: Jak nakonfigurovat jednotné přihlašování
             How to schedule a daily job: Jak naplánovat denní úlohu
             How to use crontab definition: Jak použít definici crontabu
             How to create a data project: Jak vytvořit datový projekt
@@ -559,7 +555,6 @@ plugins:
               Installation & Deployment: Telepítés és telepítés
               Operating Systems: Operációs rendszerek
               Windows: Windows
-              How to configure Single Sign-on: Az egyszeri bejelentkezés konfigurálása
               How to schedule a daily job: Napi feladat ütemezése
               How to use crontab definition: A crontab definíció használata
               How to create a data project: Adatprojekt létrehozása
@@ -581,7 +576,6 @@ plugins:
             Installation & Deployment: Kurulum ve dağıtım
             Operating Systems: İşletim sistemleri
             Windows: Windows
-            How to configure Single Sign-on: Çoklu oturum açmayı yapılandırma
             How to schedule a daily job: Günlük bir işi zamanlama
             How to use crontab definition: Bir crontab tanımını kullanma
             How to create a data project: Bir veri projesi oluşturma
@@ -603,7 +597,6 @@ plugins:
             Installation & Deployment: Instalare și implementare
             Operating Systems: Sisteme de operare
             Windows: Windows
-            How to configure Single Sign-on: Cum să configurezi autentificarea unică
             How to schedule a daily job: Cum să programezi o sarcină zilnică
             How to use crontab definition: Cum să folosești o definiție crontab
             How to create a data project: Cum să creezi un proiect de date
@@ -625,7 +618,6 @@ plugins:
             Installation & Deployment: Namestitev in razmestitev
             Operating Systems: Operacijski sistemi
             Windows: Windows
-            How to configure Single Sign-on: Kako konfigurirati enotno prijavo
             How to schedule a daily job: Kako razporediti dnevno opravilo
             How to use crontab definition: Kako uporabiti definicijo crontab
             How to create a data project: Kako ustvariti podatkovni projekt
@@ -647,7 +639,6 @@ plugins:
             Installation & Deployment: Εγκατάσταση και ανάπτυξη
             Operating Systems: Λειτουργικά συστήματα
             Windows: Windows
-            How to configure Single Sign-on: Πώς να ρυθμίσετε την ενιαία σύνδεση
             How to schedule a daily job: Πώς να προγραμματίσετε μια ημερήσια εργασία
             How to use crontab definition: Πώς να χρησιμοποιήσετε έναν ορισμό crontab
             How to create a data project: Πώς να δημιουργήσετε ένα έργο δεδομένων
@@ -669,7 +660,6 @@ plugins:
             Installation & Deployment: Установка та розгортання
             Operating Systems: Операційні системи
             Windows: Windows
-            How to configure Single Sign-on: Як налаштувати єдину систему входу
             How to schedule a daily job: Як запланувати щоденне завдання
             How to use crontab definition: Як використовувати визначення crontab
             How to create a data project: Як створити проєкт даних
@@ -691,7 +681,6 @@ plugins:
             Installation & Deployment: Установка и развертывание
             Operating Systems: Операционные системы
             Windows: Windows
-            How to configure Single Sign-on: Как настроить единый вход
             How to schedule a daily job: Как запланировать ежедневное задание
             How to use crontab definition: Как использовать определение crontab
             How to create a data project: Как создать проект данных
@@ -713,7 +702,6 @@ plugins:
             Installation & Deployment: インストールとデプロイメント
             Operating Systems: オペレーティングシステム
             Windows: Windows
-            How to configure Single Sign-on: シングルサインオンを設定する方法
             How to schedule a daily job: 毎日のジョブをスケジュールする方法
             How to use crontab definition: crontab 定義を使用する方法
             How to create a data project: データプロジェクトを作成する方法
@@ -735,7 +723,6 @@ plugins:
             Installation & Deployment: 설치 및 배포
             Operating Systems: 운영 체제
             Windows: Windows
-            How to configure Single Sign-on: 싱글 사인온을 구성하는 방법
             How to schedule a daily job: 일일 작업을 스케줄하는 방법
             How to use crontab definition: crontab 정의를 사용하는 방법
             How to create a data project: 데이터 프로젝트를 생성하는 방법
@@ -757,7 +744,6 @@ plugins:
             Installation & Deployment: इंस्टॉलेशन और तैनाती
             Operating Systems: ऑपरेटिंग सिस्टम
             Windows: Windows
-            How to configure Single Sign-on: एकल साइन-ऑन को कॉन्फ़िगर करने का तरीका
             How to schedule a daily job: दैनिक कार्य को शेड्यूल करने का तरीका
             How to use crontab definition: crontab परिभाषा का उपयोग कैसे करें
             How to create a data project: डेटा प्रोजेक्ट कैसे बनाएं
@@ -779,7 +765,6 @@ plugins:
             Installation & Deployment: التثبيت والنشر
             Operating Systems: أنظمة التشغيل
             Windows: Windows
-            How to configure Single Sign-on: كيفية تكوين الدخول الموحد
             How to schedule a daily job: كيفية جدولة مهمة يومية
             How to use crontab definition: كيفية استخدام تعريف crontab
             How to create a data project: كيفية إنشاء مشروع بيانات

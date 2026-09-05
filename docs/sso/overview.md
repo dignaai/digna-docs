@@ -1,6 +1,6 @@
 ---
-title: Single Sign-On (SSO) Integration Guide | digna Documentation
-description: Step-by-step guide to configuring Single Sign-On (SSO) for digna using OpenID Connect (OIDC). Covers dashboard and backend configuration, testing, troubleshooting, and supported identity providers including Microsoft Entra ID, Google Workspace, and Okta.
+title: Single Sign-On (SSO) Overview | digna Documentation
+description: How Single Sign-On works in digna using OpenID Connect (OIDC). Covers dashboard and backend configuration, testing, troubleshooting, and links to per-provider setup guides for Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne and AD FS.
 image: /assets/logo_square.png
 keywords:
   - digna sso
@@ -21,19 +21,20 @@ og_type: article
 twitter_card: summary_large_image
 ---
 
-# Single Sign-On Integration Guide
+# Single Sign-On Overview
 
 ---
 
 ## Table of Contents
 
 1. [Introduction and Overview](#introduction-and-overview)
-2. [Configuration Steps](#configuration-steps)
-3. [Dashboard Configuration](#dashboard-configuration)
-4. [Backend Configuration](#backend-configuration)
-5. [Testing Login](#testing-login)
-6. [Troubleshooting](#troubleshooting)
-7. [Supported Providers](#supported-providers)
+2. [Provider Guides](#provider-guides)
+3. [Configuration Steps](#configuration-steps)
+4. [Dashboard Configuration](#dashboard-configuration)
+5. [Backend Configuration](#backend-configuration)
+6. [Testing Login](#testing-login)
+7. [Troubleshooting](#troubleshooting)
+8. [Supported Providers](#supported-providers)
 
 ---
 
@@ -56,13 +57,24 @@ SSO in digna is implemented using the OIDC protocol. Multiple identity providers
 
 Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
 
-Common OIDC providers include:
-- Microsoft Entra ID (Azure AD)
-- Google Workspace
-- Okta
-- Auth0
-- Keycloak
-- Other OIDC-compliant identity providers
+---
+
+## Provider Guides {: #provider-guides }
+
+Every provider needs the same four values — a client ID, a client secret, a redirect URI and a discovery URL — but each one puts them in a different place in its admin console, and several have a provider-specific step that the others do not. The guides below cover that half of the work; this page covers the digna half, which is identical for all of them.
+
+| Provider | Guide | Worth knowing |
+|---|---|---|
+| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
+| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
+| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
+| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
+| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
+| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
+| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
+| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+
+Any other OIDC-compliant provider works the same way — see [Other OIDC Providers](#supported-providers).
 
 ---
 
@@ -265,21 +277,26 @@ Before testing, ensure:
 
 Restart the digna backend and web server to apply changes.
 
-**If running as Windows service:**
+**If running as a service on Windows:**
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 start_service.bat
 ```
 
+**If running as a service on Linux or macOS:**
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+sudo ./start_service.sh
+```
+
 **If running manually:**
 ```bash
-cd C:\path\to\digna
 digna serve --address localhost --port 8082
 ```
 
-**If using IIS or Tomcat:**
-Restart your web server service.
+**Restart the web server too** — IIS or Tomcat on Windows, nginx or Apache on Linux and macOS.
 
 #### Step 2: Open Dashboard
 
@@ -418,9 +435,14 @@ The following OIDC providers have been tested and are known to work:
 
 | Provider | Configuration URL | Setup Guide |
 |---|---|---|
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft Doc](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google Doc](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta Doc](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
 
 ### Other OIDC Providers
 
