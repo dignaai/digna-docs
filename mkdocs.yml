@@ -67,6 +67,10 @@ nav:
   - Installation & Deployment:
       - Windows:
           - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
+      - macOS:
+          - Release 2026.06: installation_deployment/macOS/Release 2026.06/installation_guide_digna_macos_2026_06.md
+      - Linux:
+          - Release 2026.06: installation_deployment/Linux/Release 2026.06/installation_guide_digna_linux_2026_06.md
       - How to configure Single Sign-on: installation_deployment/sso_integration_guide.md
   - Getting Started:
       - First Steps:

@@ -44,6 +44,10 @@ digna consists of two main components:
 
 This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
 
+### Looking for macOS or Linux?
+
+This guide covers Windows. For other platforms, see the [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) or the [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
 ---
 
 ## System Requirements {: #system-requirements }
