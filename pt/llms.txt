@@ -1,0 +1,89 @@
+# digna Documentation
+
+> Descubra a digna, a plataforma europeia com IA para Qualidade e Observabilidade de Dados. Projetada para on-premises e private cloud, a digna monitora a qualidade dos dados diretamente dentro dos seus bancos de dados — garantindo conformidade, desempenho e soberania.
+
+## Plataforma
+
+- [Overview](https://docs.digna.ai/pt/platform/overview/): Explore os módulos centrais do digna — a plataforma europeia com IA para Qualidade de Dados e Observabilidade. Saiba como cada módulo melhora a qualidade, a observabilidade e a confiabilidade dos dados no seu ambiente local ou em nuvem privada.
+
+### digna Data Anomalies
+
+- [Introdução](https://docs.digna.ai/pt/platform/data_anomalies/Introduction/): Saiba como o digna Data Anomalies detecta automaticamente quedas de volume, valores ausentes, deslocamentos de distribuição e padrões inesperados sem necessidade de regras manuais. Melhore a qualidade dos dados e a observabilidade dos pipelines com detecção de anomalias orientada por IA.
+
+### digna Data Analytics
+
+- [Introdução](https://docs.digna.ai/pt/platform/data_analytics/Introduction/): Saiba como o Data Analytics da digna revela tendências de longo prazo, volatilidade e estabilidade dos dados em KPIs. Detecte mudanças na qualidade e observabilidade dos dados, descubra anomalias ocultas e transforme estatísticas em insights acionáveis.
+
+### digna Data Validation
+
+- [Introdução](https://docs.digna.ai/pt/platform/data_validation/Introduction/): Descubra como o Data Validation da digna aplica verificações determinísticas baseadas em regras com limiares, intervalos e listas de referência. Garanta conformidade, auditabilidade e reporte regulatório em finanças, saúde e outras indústrias sensíveis a dados.
+
+### digna Timeliness
+
+- [Introdução](https://docs.digna.ai/pt/platform/data_timeliness/Introduction/): Saiba como o Data Timeliness da digna garante que os dados cheguem quando esperado. Detecte entregas atrasadas ou ausentes, monitore SLAs e proteja processos de negócio contra atrasos silenciosos. Detecção com IA para melhorar a qualidade e a observabilidade dos pipelines de dados.
+
+### digna Schema Tracker
+
+- [Introdução](https://docs.digna.ai/pt/platform/schema_tracker/Introduction/): Aprenda como o digna Data Schema Tracker monitora alterações de colunas, atualizações de tipos de dados e schema drift. Detecte e envie alertas tanto para mudanças de esquema intencionais quanto não intencionais para evitar falhas de ETL, dashboards quebrados e perda de observabilidade dos dados.
+
+## Instalação e implementação
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/pt/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Step-by-step guide to installing digna Release 2026.06 on Windows — system requirements, PostgreSQL setup, web server configuration, backend and dashboard configuration, running digna as a Windows service, and upgrading to a new release.
+- [Como configurar o logon único](https://docs.digna.ai/pt/installation_deployment/sso_integration_guide/): Guia passo a passo para configurar Single Sign-On (SSO) para digna usando OpenID Connect (OIDC). Abrange configuração do dashboard e backend, testes, solução de problemas e provedores de identidade suportados incluindo Microsoft Entra ID, Google Workspace e Okta.
+
+## Primeiros passos
+
+### Primeiros passos
+
+- [Como criar um projeto de dados](https://docs.digna.ai/pt/getting_started/how_to_create_project/): Guia passo a passo para criar um novo projeto no digna. Saiba como abrir a seção de projetos, inserir detalhes e salvar projetos com uma demonstração interativa.
+- [Como conectar um banco de dados a um projeto de dados](https://docs.digna.ai/pt/getting_started/how_to_connect_database_to_data_project/): Guia passo a passo para conectar um banco de dados a um projeto existente no digna. Aprenda a configurar conexões, fornecer credenciais e habilitar acesso seguro.
+- [Como adicionar uma fonte de dados a um projeto](https://docs.digna.ai/pt/getting_started/how_to_add_a_datasource_to_project/): Guia passo a passo para conectar um banco de dados a um projeto existente no digna. Aprenda como escolher uma conexão, configurar as opções e ativar o acesso seguro.
+
+### Agendamento
+
+- [Como agendar uma tarefa diária](https://docs.digna.ai/pt/getting_started/how_to_schedule_a_daily_job/): Aprenda como agendar um job de inspeção diário no digna usando o dashboard.
+- [Como usar uma definição de crontab](https://docs.digna.ai/pt/getting_started/how_to_use_crontab/): Aprenda a agendar um job no digna usando expressões crontab para agendamento avançado.
+
+## Integração
+
+### Bancos de dados
+
+- [Azure Synapse](https://docs.digna.ai/pt/databases/azure_synapse_connector_guide/): Configure o *digna* para conectar ao Azure Synapse Analytics usando o driver nativo Python ou o driver ODBC. Suporta pools SQL serverless e dedicados.
+- [Databricks](https://docs.digna.ai/pt/databases/databricks_connector_guide/): Configure o digna para conectar-se ao Databricks com Unity Catalog usando o conector Python nativo ou o driver ODBC. Suporta autenticação por token e conectividade flexível.
+- [Databricks Legacy](https://docs.digna.ai/pt/databases/databricks_legacy_connector_guide/): Configure o *digna* para conectar ao Databricks sem Unity Catalog usando o conector nativo em Python ou o driver ODBC Simba Spark. Suporta autenticação por token e conectividade flexível.
+- [Hive](https://docs.digna.ai/pt/databases/hive_connector_guide/): Configure o digna para conectar-se ao Apache Hive usando o driver nativo PyHive ou o driver ODBC da Cloudera. Suporta autenticação baseada em senha e configurações com DSN ou sem DSN.
+- [Netezza](https://docs.digna.ai/pt/databases/netezza_connector_guide/): Configure o *digna* para conectar-se ao Netezza usando o driver ODBC NetezzaSQL. Suporta autenticação por senha com configurações com DSN ou sem DSN para conectividade flexível.
+- [Oracle](https://docs.digna.ai/pt/databases/oracle_connector_guide/): Configure o digna para conectar ao Oracle usando o driver python-oracledb ou o driver ODBC da Oracle. Suporta autenticação por senha com configurações DSN ou sem DSN.
+- [PostgreSQL](https://docs.digna.ai/pt/databases/postgres_connector_guide/): Configure o digna para conectar ao PostgreSQL usando o driver Python psycopg ou o driver ODBC do PostgreSQL. Suporta autenticação por senha com configurações com DSN ou sem DSN.
+- [Snowflake](https://docs.digna.ai/pt/databases/snowflake_connector_guide/): Configure o digna para conectar ao Snowflake usando o conector Python nativo ou o driver ODBC do Snowflake. Suporta autenticação por senha com configurações com DSN ou sem DSN.
+- [MS SQL Server](https://docs.digna.ai/pt/databases/sqlserver_connector_guide/): Configure o digna para conectar ao Microsoft SQL Server usando o driver Python pymssql ou o driver ODBC do SQL Server. Suporta autenticação por senha em configurações com DSN ou sem DSN.
+- [Teradata](https://docs.digna.ai/pt/databases/teradata_connector_guide/): Configure o digna para conectar-se ao Teradata usando o driver Python teradatasql ou o driver ODBC da Teradata. Suporta autenticação baseada em senha com configurações com DSN ou sem DSN.
+
+## CLI Reference
+
+- [Introdução](https://docs.digna.ai/pt/cli/Introduction/): Introdução à interface de linha de comando (CLI) do digna — uma ferramenta textual para automatizar e gerir recursos do digna, incluindo os fundamentos da instalação no Windows.
+- [Release 2026.04](https://docs.digna.ai/pt/cli/Command_Line_Interface_202604/): Referência completa da CLI digna versão 2026.04
+- [Release 2026.01](https://docs.digna.ai/pt/cli/Command_Line_Interface_202601/): Referência completa para o digna CLI release 2026.01. Aprenda a gerenciar usuários, repositórios e dados com comandos como add-user, check-config, check-repo-connection, inspect, inspect-async e outros.
+- [Release 2025.09](https://docs.digna.ai/pt/cli/Command_Line_Interface_202509/): Referência completa da CLI digna release 2025.109 Aprenda a gerenciar usuários, repositórios e dados com comandos como add-user, check-config, check-repo-connection, inspect, inspect-async e mais.
+- [Release 2025.04](https://docs.digna.ai/pt/cli/Command_Line_Interface_202504/): Referência completa da CLI digna versão 2025.04. Aprenda a gerenciar usuários, repositórios e dados com comandos como add-user, check-repo-connection, upgrade-repo, inspect e outros.
+- [Release 2024.12](https://docs.digna.ai/pt/cli/Command_Line_Interface_202412/): Referência completa para a CLI digna release 2024.12. Aprenda a gerenciar usuários, repositórios e dados com comandos como add-user, check-repo-connection, upgrade-repo, inspect e mais.
+- [Release 2024.11](https://docs.digna.ai/pt/cli/Command_Line_Interface_202411/): Referência completa para a CLI digna release 2024.11. Aprenda a gerenciar usuários, repositórios e dados com comandos como add-user, check-repo-connection, upgrade-repo, inspect, tls-status e mais.
+- [Release 2024.09](https://docs.digna.ai/pt/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/pt/changelog/Release_202606/): Saiba o que há de novo na digna Release 2026.06. Esta versão apresenta o novo Python SDK da digna, suporte oficial à implantação via Docker, uma experiência de painel redesenhada e capacidades estendidas de importação/exportação para regras de validação de dados.
+- [Release 2026.04](https://docs.digna.ai/pt/changelog/Release_202604/): Saiba o que há de novo na digna Versão 2026.04. Esta versão introduz análise avançada de séries temporais com Analytics Chart, componentes reutilizáveis de validação, e padronização centralizada de valores.
+- [Release 2026.01](https://docs.digna.ai/pt/changelog/Release_202601/): Saiba o que há de novo no digna Release 2026.01. Esta versão introduz conexões de banco de dados globais, datasources lógicos, condições de relevância de anomalias, exportações CSV e validação avançada de dados incluindo checagens de integridade referencial.
+- [Release 2025.09](https://docs.digna.ai/pt/changelog/Release_202509/): Saiba o que há de novo no digna Release 2025.09. Esta versão introduz uma arquitetura modular, cinco novos módulos, MFA via OIDC e notificações por módulo.
+- [Release 2025.04](https://docs.digna.ai/pt/changelog/Release_202504/): Saiba o que há de novo no digna Release 2025.04. Esta versão introduz o Inspection Hub, suporte multilíngue (inglês, alemão, polonês), importação/exportação de fontes de dados via dignacli, a primeira versão do Module Analytics e uma experiência de dashboard aprimorada.
+- [Release 2024.12](https://docs.digna.ai/pt/changelog/Release_202412/): Descubra o que há de novo na release digna 2024.12. Esta versão introduz um agendador embutido, relatórios em PDF, colunas customizadas flexíveis, placeholders dinâmicos para consultas de snapshot e otimização de limiares mais inteligente para melhorar a detecção de anomalias e o monitoramento da qualidade de dados.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.

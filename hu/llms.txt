@@ -1,0 +1,89 @@
+# digna Documentation
+
+> Fedezze fel a digna-t, az európai AI‑vezérelt platformot az adatminőség és az adatok megfigyelhetősége számára. Helyben telepítve vagy privát felhőben, a digna közvetlenül az adatbázisaiban figyeli az adatok minőségét — biztosítva a megfelelést, teljesítményt és adat­szuverenitást.
+
+## Platforma
+
+- [Overview](https://docs.digna.ai/hu/platform/overview/): Fedezze fel a digna alapmoduljait — az európai MI-alapú platformot az adatminőség és megfigyelhetőség terén. Ismerje meg, hogyan javítja az egyes modul a adatok minőségét, megfigyelhetőségét és megbízhatóságát helyszíni vagy privát felhős környezetben.
+
+### digna Data Anomalies
+
+- [Bevezetés](https://docs.digna.ai/hu/platform/data_anomalies/Introduction/): Ismerd meg, hogyan észleli a digna Data Anomalies automatikusan a volumencsökkenéseket, hiányzó értékeket, eloszláseltolódásokat és váratlan mintázatokat manuális szabályírás nélkül. Javítsd az adatok minőségét és az adati folyamatok megfigyelhetőségét AI-alapú anomáliafelismeréssel.
+
+### digna Data Analytics
+
+- [Bevezetés](https://docs.digna.ai/hu/platform/data_analytics/Introduction/): Tudja meg, hogyan tárja fel a digna Data Analytics a hosszú távú trendeket, volatilitást és az adatok stabilitását KPI-kon keresztül. Észlelje az adatminőség és megfigyelhetőség változásait, fedezze fel a rejtett anomáliákat, és alakítsa a statisztikákat cselekvésre váltható betekintésekké.
+
+### digna Data Validation
+
+- [Bevezetés](https://docs.digna.ai/hu/platform/data_validation/Introduction/): Fedezze fel, hogyan érvényesíti a digna Data Validation determinisztikus, szabályalapú ellenőrzéseket küszöbértékekkel, tartományokkal és referencialistákkal. Biztosítsa a megfelelést, az auditálhatóságot és a szabályozói jelentéstételt a pénzügyi, egészségügyi és más adatszenzitív iparágakban.
+
+### digna Timeliness
+
+- [Bevezetés](https://docs.digna.ai/hu/platform/data_timeliness/Introduction/): Ismerje meg, hogyan biztosítja a digna Data Timeliness, hogy az adatok a vártnak megfelelően érkezzenek. Észlelje a késői vagy hiányzó kézbesítéseket, figyelje az SLA-kat, és védje az üzleti folyamatokat a néma késésektől. MI-alapú észlelés a jobb adatminőségért és a csővezetékek megfigyelhetőségéért.
+
+### digna Schema Tracker
+
+- [Bevezetés](https://docs.digna.ai/hu/platform/schema_tracker/Introduction/): Ismerje meg, hogyan figyeli a digna Data Schema Tracker az oszlopváltozásokat, adattípus-frissítéseket és a séma driftet. Észlelje és riasztson szándékos és szándékolatlan sémaváltozások esetén, hogy megelőzze az ETL-hibákat, törött dashboardokat és az adatok megfigyelhetőségének elvesztését.
+
+## Telepítés és telepítés
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/hu/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Lépésről lépésre útmutató a digna Release 2026.06 Windowsra történő telepítéséhez — rendszerkövetelmények, PostgreSQL beállítás, webszerver konfiguráció, backend és dashboard konfiguráció, digna futtatása Windows szolgáltatásként és verziófrissítés.
+- [Az egyszeri bejelentkezés konfigurálása](https://docs.digna.ai/hu/installation_deployment/sso_integration_guide/): Lépésről lépésre útmutató a Single Sign-On (SSO) beállításához digna számára OpenID Connect (OIDC) használatával. Lefedi a dashboard és backend konfigurációt, tesztelést, hibakeresést és a támogatott identitásszolgáltatókat, beleértve a Microsoft Entra ID-t, Google Workspace-t és Okta-t.
+
+## Első lépések
+
+### Első lépések
+
+- [Adatprojekt létrehozása](https://docs.digna.ai/hu/getting_started/how_to_create_project/): Lépésről lépésre útmutató új projekt létrehozásához a digna-ban. Ismerd meg, hogyan nyisd meg a projekt szekciót, add meg a részleteket, és mentsd el a projektet egy interaktív demó segítségével.
+- [Adatbázis csatlakoztatása az adatprojekthez](https://docs.digna.ai/hu/getting_started/how_to_connect_database_to_data_project/): Lépésről lépésre útmutató egy adatbázis csatlakoztatásához egy meglévő projekthez a digna rendszerben. Ismerd meg a kapcsolat konfigurálását, a hitelesítő adatok megadását és a biztonságos hozzáférés engedélyezését.
+- [Adatforrás hozzáadása a projekthez](https://docs.digna.ai/hu/getting_started/how_to_add_a_datasource_to_project/): Lépésről lépésre útmutató egy adatbázis csatlakoztatásához egy meglévő projekthez a digna alkalmazásban. Ismerje meg, hogyan válasszon kapcsolatot, konfiguráljon beállításokat és engedélyezzen biztonságos hozzáférést.
+
+### Ütemezés
+
+- [Napi feladat ütemezése](https://docs.digna.ai/hu/getting_started/how_to_schedule_a_daily_job/): Ismerd meg, hogyan ütemezz egy napi ellenőrző jobot a digna dashboardján.
+- [A crontab definíció használata](https://docs.digna.ai/hu/getting_started/how_to_use_crontab/): Tanuld meg, hogyan ütemezhetsz feladatot a *digna*-ban crontab-kifejezések segítségével összetettebb időzítésekhez.
+
+## Integráció
+
+### Adatbázisok
+
+- [Azure Synapse](https://docs.digna.ai/hu/databases/azure_synapse_connector_guide/): Állítsa be a digna-t, hogy csatlakozzon az Azure Synapse Analyticshez a natív Python driver vagy az ODBC driver használatával. Mind a serverless, mind a dedicated SQL pool támogatott.
+- [Databricks](https://docs.digna.ai/hu/databases/databricks_connector_guide/): Configure digna to connect to Databricks with Unity Catalog using the native Python connector or ODBC driver. Supports token-based authentication and flexible connectivity.
+- [Databricks Legacy](https://docs.digna.ai/hu/databases/databricks_legacy_connector_guide/): Konfigurálja a digna-t Databrickshez Unity Catalog nélkül a natív Python connectorral vagy a Simba Spark ODBC driverrel. Támogatja a token-alapú hitelesítést és rugalmas csatlakozást.
+- [Hive](https://docs.digna.ai/hu/databases/hive_connector_guide/): Konfigurálja a digna-t az Apache Hive-hoz való csatlakozáshoz a natív PyHive driver vagy a Cloudera ODBC driver használatával. Támogatja a jelszó alapú hitelesítést, valamint DSN-es és DSN-nélküli beállításokat.
+- [Netezza](https://docs.digna.ai/hu/databases/netezza_connector_guide/): Konfigurálja a digna-t Netezza-hez való csatlakozáshoz a NetezzaSQL ODBC-illesztőprogram használatával. Támogatja a jelszó alapú hitelesítést DSN vagy DSN nélküli beállításokkal a rugalmas csatlakoztathatóság érdekében.
+- [Oracle](https://docs.digna.ai/hu/databases/oracle_connector_guide/): Konfigurálja a digna-t, hogy Oracle-hoz csatlakozzon a python-oracledb driverrel vagy az Oracle ODBC driverrel. Támogatja a jelszó alapú hitelesítést DSN-es és DSN-less beállításokkal.
+- [PostgreSQL](https://docs.digna.ai/hu/databases/postgres_connector_guide/): Konfigurálja a digna-t PostgreSQL-hez való csatlakozáshoz a psycopg Python-illesztőprogrammal vagy a PostgreSQL ODBC-illesztőprogrammal. Támogatja a jelszavas hitelesítést DSN-es vagy DSN-nélküli beállításokkal.
+- [Snowflake](https://docs.digna.ai/hu/databases/snowflake_connector_guide/): Állítsa be a digna-t, hogy csatlakozzon a Snowflake-hez a Python connector vagy a Snowflake ODBC driver használatával. Támogatja a jelszóalapú hitelesítést DSN-es vagy DSN-nélküli konfigurációkban.
+- [MS SQL Server](https://docs.digna.ai/hu/databases/sqlserver_connector_guide/): Konfigurálja a digna-t, hogy csatlakozzon a Microsoft SQL Serverhez a pymssql Python driver vagy az SQL Server ODBC driver használatával. Támogatja a jelszó alapú hitelesítést DSN-es és DSN-nélküli beállításokkal.
+- [Teradata](https://docs.digna.ai/hu/databases/teradata_connector_guide/): Állítsa be a digna-t Teradata-hoz való csatlakozáshoz a teradatasql Python driver vagy a Teradata ODBC driver használatával. Támogatja a jelszavas hitelesítést DSN-es és DSN nélküli beállításokkal.
+
+## CLI-referencia
+
+- [Bevezetés](https://docs.digna.ai/hu/cli/Introduction/): Bevezetés a digna parancssori felületébe (CLI) — szöveges eszköz a digna erőforrások automatizálásához és kezeléséhez, beleértve a Windows-telepítés alapjait.
+- [Release 2026.04](https://docs.digna.ai/hu/cli/Command_Line_Interface_202604/): Teljes referencia a digna CLI kiadásról 2026.04
+- [Release 2026.01](https://docs.digna.ai/hu/cli/Command_Line_Interface_202601/): Teljes referencia a digna CLI kiadásról 2026.01. Ismerje meg a felhasználók, adattárak és adatok kezelését olyan parancsokkal, mint az add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.
+- [Release 2025.09](https://docs.digna.ai/hu/cli/Command_Line_Interface_202509/): Teljes referencia a digna CLI 2025.109 kiadásához. Ismerje meg, hogyan kezelhet felhasználókat, repository-kat és adatokat olyan parancsokkal, mint add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.
+- [Release 2025.04](https://docs.digna.ai/hu/cli/Command_Line_Interface_202504/): Teljes referencia a digna CLI 2025.04 kiadáshoz. Ismerje meg a felhasználók, tárolók és adatok kezelését olyan parancsokkal, mint add-user, check-repo-connection, upgrade-repo, inspect és továbbiak.
+- [Release 2024.12](https://docs.digna.ai/hu/cli/Command_Line_Interface_202412/): Teljes referencia a digna CLI 2024.12 kiadásához. Ismerje meg, hogyan kezelhet felhasználókat, tárolókat és adatokat olyan parancsokkal, mint az add-user, check-repo-connection, upgrade-repo, inspect és továbbiak.
+- [Release 2024.11](https://docs.digna.ai/hu/cli/Command_Line_Interface_202411/): Complete reference for digna CLI release 2024.11. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
+- [Release 2024.09](https://docs.digna.ai/hu/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/hu/changelog/Release_202606/): Ismerd meg, mi újság a digna 2026.06-os kiadásában. Ez a verzió bemutatja az új digna Python SDK-t, a Docker telepítési támogatást, az átdolgozott dashboard élményt és a bővített import/export lehetőségeket az érvényesítési szabályok kezeléséhez.
+- [Release 2026.04](https://docs.digna.ai/hu/changelog/Release_202604/): Tudja meg, mi újság a digna kiadásában 2026.04. Ez a verzió fejlett idősorelemzést vezet be az Analytics Chart segítségével, újrahasznosítható validációs szabály sablonokat, enumerációkat az engedélyezett értékekhez és oszlop szintű relevanciafeltételeket.
+- [Release 2026.01](https://docs.digna.ai/hu/changelog/Release_202601/): Ismerd meg, mi újság a digna 2026.01 kiadásában. Ez a verzió bevezeti a globális adatbázis-kapcsolatokat, logikai adatforrásokat, anomália relevancia feltételeket, CSV exportokat és fejlett adatellenőrzést, beleértve a referenciális integritás-ellenőrzéseket.
+- [Release 2025.09](https://docs.digna.ai/hu/changelog/Release_202509/): Ismerje meg, mi az újdonság a digna Kiadás 2025.09-ben. Ez a verzió moduláris architektúrát, öt új modult, MFA-t OIDC-en keresztül és modulonkénti értesítéseket vezet be.
+- [Release 2025.04](https://docs.digna.ai/hu/changelog/Release_202504/): Tudja meg, mi újság a digna 2025.04 kiadásában. Ez a verzió bemutatja az Inspection Hubot, a többnyelvű támogatást (angol, német, lengyel), az adatforrások import/exportját dignacli segítségével, a Module Analytics első kiadását és egy továbbfejlesztett irányítópult-élményt.
+- [Release 2024.12](https://docs.digna.ai/hu/changelog/Release_202412/): Tudja meg, mi újság a digna 2024.12-es kiadásában. Ez a verzió beépített ütemezőt, PDF-jelentéseket, rugalmas egyéni oszlopokat, dinamikus snapshot lekérdezéshelyettesítőket és okosabb küszöboptimalizálást hoz az anomáliaészlelés és az adatminőség-ellenőrzés javítására.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.

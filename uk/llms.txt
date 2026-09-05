@@ -1,0 +1,89 @@
+# digna Documentation
+
+> Відкрийте для себе digna — європейську платформу штучного інтелекту для якості даних і спостережуваності. Розроблена для локального розгортання або приватної хмари, digna забезпечує відповідність, продуктивність і суверенітет даних шляхом безпосереднього моніторингу якості даних у ваших базах даних.
+
+## Платформа
+
+- [Overview](https://docs.digna.ai/uk/platform/overview/): Ознайомтеся з основними модулями digna — європейської AI-платформи для якості даних і спостережуваності. Дізнайтеся, як кожен модуль підвищує якість, спостережуваність і надійність даних у вашому on-premises або приватному хмарному середовищі.
+
+### digna Data Anomalies
+
+- [Вступ](https://docs.digna.ai/uk/platform/data_anomalies/Introduction/): Дізнайтеся, як digna Data Anomalies автоматично виявляє спади обсягу, пропущені значення, зсуви розподілів і неочікувані патерни без ручних правил. Покращте якість даних за допомогою виявлення аномалій на базі ШІ.
+
+### digna Data Analytics
+
+- [Вступ](https://docs.digna.ai/uk/platform/data_analytics/Introduction/): Дізнайтеся, як digna Data Analytics виявляє довгострокові тренди, волатильність і стабільність даних у KPIs. Виявляйте аномалії у відсутніх значеннях, порівнюйте періоди стабільності та перетворюйте статистику на практичні висновки.
+
+### digna Data Validation
+
+- [Вступ](https://docs.digna.ai/uk/platform/data_validation/Introduction/): Дізнайтеся, як digna Data Validation забезпечує детерміновані перевірки на основі правил з порогами, діапазонами та довідниками. Забезпечте відповідність, відстежуваність і регуляторну звітність у фінансах, охороні здоров'я та інших галузях.
+
+### digna Timeliness
+
+- [Вступ](https://docs.digna.ai/uk/platform/data_timeliness/Introduction/): Дізнайтеся, як digna Data Timeliness гарантує надходження даних у очікуваний час. Виявляйте запізнення доставок, моніторте SLAs та захищайте бізнес-процеси від прихованих затримок і відсутності даних.
+
+### digna Schema Tracker
+
+- [Вступ](https://docs.digna.ai/uk/platform/schema_tracker/Introduction/): Дізнайтеся, як digna Data Schema Tracker відстежує зміни стовпців, оновлення типів даних та дрейф схеми. Отримуйте сповіщення про умисні та ненавмисні зміни, щоб запобігти збоям ETL та помилкам на дашбордах.
+
+## Установка та розгортання
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Покроковий посібник зі встановлення digna Release 2026.06 на Windows — системні вимоги, налаштування PostgreSQL, конфігурація веб‑сервера, налаштування backend і dashboard, запуск digna як служби Windows та оновлення до нової версії.
+- [Як налаштувати єдину систему входу](https://docs.digna.ai/uk/installation_deployment/sso_integration_guide/): Step-by-step guide to configuring Single Sign-On (SSO) for digna using OpenID Connect (OIDC). Covers dashboard and backend configuration, testing, troubleshooting, and supported identity providers including Microsoft Entra ID, Google Workspace, and Okta.
+
+## Початок роботи
+
+### Перші кроки
+
+- [Як створити проєкт даних](https://docs.digna.ai/uk/getting_started/how_to_create_project/): Покроковий посібник зі створення нового проєкту в digna. Дізнайтеся, як відкрити розділ проєктів, ввести дані та зберегти проєкти за допомогою інтерактивної демонстрації.
+- [Як підключити базу даних до проєкту даних](https://docs.digna.ai/uk/getting_started/how_to_connect_database_to_data_project/): Покроковий посібник з підключення бази даних до існуючого проєкту в digna. Дізнайтеся, як налаштувати з'єднання, вказати облікові дані та забезпечити безпечний доступ.
+- [Як додати джерело даних до проєкту](https://docs.digna.ai/uk/getting_started/how_to_add_a_datasource_to_project/): Покроковий посібник щодо підключення бази даних до існуючого проєкту в digna. Дізнайтеся, як вибрати підключення, налаштувати параметри та забезпечити безпечний доступ.
+
+### Планування
+
+- [Як запланувати щоденне завдання](https://docs.digna.ai/uk/getting_started/how_to_schedule_a_daily_job/): Дізнайтеся, як запланувати щоденне інспекційне завдання в digna через dashboard.
+- [Як використовувати визначення crontab](https://docs.digna.ai/uk/getting_started/how_to_use_crontab/): Дізнайтеся, як планувати завдання в digna за допомогою crontab expressions для розширеного налаштування часу.
+
+## Інтеграція
+
+### Бази даних
+
+- [Azure Synapse](https://docs.digna.ai/uk/databases/azure_synapse_connector_guide/): Configure digna to connect to Azure Synapse Analytics using either the native Python driver or the ODBC driver. Supports both serverless and dedicated SQL pools.
+- [Databricks](https://docs.digna.ai/uk/databases/databricks_connector_guide/): Налаштуйте digna для підключення до Databricks з Unity Catalog за допомогою рідного Python-конектора або ODBC-драйвера. Підтримується автентифікація на основі токена та гнучкі варіанти підключення.
+- [Databricks Legacy](https://docs.digna.ai/uk/databases/databricks_legacy_connector_guide/): Налаштуйте digna для підключення до Databricks без Unity Catalog, використовуючи нативний Python-конектор або Simba Spark ODBC драйвер. Підтримується автентифікація на основі токена та гнучкі варіанти підключення.
+- [Hive](https://docs.digna.ai/uk/databases/hive_connector_guide/): Configure digna to connect to Apache Hive using the native PyHive driver or the Cloudera ODBC driver. Supports password-based authentication and DSN or DSN-less setups.
+- [Netezza](https://docs.digna.ai/uk/databases/netezza_connector_guide/): Налаштуйте digna для підключення до Netezza за допомогою ODBC-драйвера NetezzaSQL. Підтримується автентифікація за паролем з використанням DSN або без DSN для гнучкого підключення.
+- [Oracle](https://docs.digna.ai/uk/databases/oracle_connector_guide/): Налаштуйте digna для підключення до Oracle за допомогою драйвера python-oracledb або драйвера Oracle ODBC. Підтримується автентифікація на основі пароля з використанням DSN або без DSN.
+- [PostgreSQL](https://docs.digna.ai/uk/databases/postgres_connector_guide/): Configure digna to connect to PostgreSQL using the psycopg Python driver or the PostgreSQL ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
+- [Snowflake](https://docs.digna.ai/uk/databases/snowflake_connector_guide/): Налаштуйте digna для підключення до Snowflake за допомогою Python-конектора або ODBC-драйвера. Підтримується автентифікація за паролем у конфігураціях з DSN або без DSN.
+- [MS SQL Server](https://docs.digna.ai/uk/databases/sqlserver_connector_guide/): Configure digna to connect to Microsoft SQL Server using the pymssql Python driver or the SQL Server ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
+- [Teradata](https://docs.digna.ai/uk/databases/teradata_connector_guide/): Налаштуйте digna для підключення до Teradata за допомогою Python-драйвера teradatasql або драйвера ODBC Teradata. Підтримується автентифікація на основі пароля у конфігураціях з DSN або без DSN.
+
+## Довідник CLI
+
+- [Вступ](https://docs.digna.ai/uk/cli/Introduction/): Вступ до інтерфейсу командного рядка (CLI) digna — текстового інструмента для автоматизації та керування ресурсами digna, включно з основами встановлення у Windows.
+- [Release 2026.04](https://docs.digna.ai/uk/cli/Command_Line_Interface_202604/): Повний довідник для digna CLI випуску 2026.04
+- [Release 2026.01](https://docs.digna.ai/uk/cli/Command_Line_Interface_202601/): Повний довідник для digna CLI випуску 2026.01. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-config, check-repo-connection, inspect, inspect-async та інших.
+- [Release 2025.09](https://docs.digna.ai/uk/cli/Command_Line_Interface_202509/): Повний довідник для digna CLI релізу 2025.09. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-config, check-repo-connection, inspect, inspect-async та ін.
+- [Release 2025.04](https://docs.digna.ai/uk/cli/Command_Line_Interface_202504/): Повний довідник для digna CLI релізу 2025.04. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-repo-connection, upgrade-repo, inspect та інших.
+- [Release 2024.12](https://docs.digna.ai/uk/cli/Command_Line_Interface_202412/): Повний довідник для digna CLI релізу 2024.12. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд таких як add-user, check-repo-connection, upgrade-repo, inspect та інших.
+- [Release 2024.11](https://docs.digna.ai/uk/cli/Command_Line_Interface_202411/): Complete reference for digna CLI release 2024.11. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
+- [Release 2024.09](https://docs.digna.ai/uk/cli/Command_Line_Interface_202409/): Повний довідник для digna CLI релізу 2024.09. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-repo-connection, upgrade-repo, inspect, tls-status та інших.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/uk/changelog/Release_202606/): Дізнайтеся про нове в digna Release 2026.06. У цій версії представлено новий **digna Python SDK**, офіційну підтримку **Docker**, оновлений інтерфейс панелі та розширені можливості імпорту/експорту правил валідації.
+- [Release 2026.04](https://docs.digna.ai/uk/changelog/Release_202604/): Дізнайтеся про нове в релізі digna 2026.04. У цій версії з'явився розширений аналіз часових рядів за допомогою Analytics Chart, багаторазові шаблони правил валідації, перелічення (enumerations) для дозволених значень та умови релевантності на рівні стовпця.
+- [Release 2026.01](https://docs.digna.ai/uk/changelog/Release_202601/): Дізнайтеся, що нового у випуску digna 2026.01. У цій версії додано глобальні підключення до баз даних, логічні джерела даних, умови релевантності аномалій, експорт у CSV та розширену валідацію даних, включно з перевірками референтної цілісності.
+- [Release 2025.09](https://docs.digna.ai/uk/changelog/Release_202509/): Дізнайтеся про нове в релізі digna 2025.09. Ця версія запроваджує модульну архітектуру, п'ять нових модулів, MFA через OIDC та сповіщення по модулю.
+- [Release 2025.04](https://docs.digna.ai/uk/changelog/Release_202504/): Дізнайтеся про новинки у випуску digna 2025.04. У цій версії представлено Inspection Hub, підтримку декількох мов (англійська, німецька, польська), імпорт/експорт джерел даних через dignacli, перший випуск Module Analytics та покращений досвід роботи з дашбордом.
+- [Release 2024.12](https://docs.digna.ai/uk/changelog/Release_202412/): Дізнайтесь, що нового в digna Release 2024.12. У цьому релізі додано вбудований планувальник, PDF-звіти, гнучкі кастомні колонки, динамічні плейсхолдери в snapshot-запитах та розумнішу оптимізацію порогів для покращення виявлення аномалій і моніторингу якості даних.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.

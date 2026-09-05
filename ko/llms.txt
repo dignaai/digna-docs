@@ -1,0 +1,89 @@
+# digna Documentation
+
+> 온프레미스 및 프라이빗 클라우드용 유럽산 AI 플랫폼 digna를 만나보세요. digna는 데이터베이스 내부에서 직접 데이터 품질을 모니터링하여 컴플라이언스, 성능, 데이터 주권을 보장합니다.
+
+## 플랫폼
+
+- [Overview](https://docs.digna.ai/ko/platform/overview/): 온프레미스 또는 프라이빗 클라우드 환경에서 데이터의 품질, 관측성 및 신뢰성을 개선하는 digna의 핵심 모듈을 살펴보세요.
+
+### digna Data Anomalies
+
+- [소개](https://docs.digna.ai/ko/platform/data_anomalies/Introduction/): digna Data Anomalies가 수동 규칙 코딩 없이 볼륨 감소, 결측값, 분포 변화 및 예기치 않은 패턴을 자동으로 감지하는 방법을 알아보세요. AI 기반 이상 탐지로 데이터 파이프라인의 데이터 품질과 관측성을 향상시키세요.
+
+### digna Data Analytics
+
+- [소개](https://docs.digna.ai/ko/platform/data_analytics/Introduction/): digna Data Analytics가 KPI 전반에서 장기 추세, 변동성 및 데이터 안정성을 어떻게 드러내는지 알아보세요. 데이터 품질과 관찰성의 변화를 감지하고 숨겨진 이상을 발견하여 통계 정보를 실행 가능한 인사이트로 전환하는 방법을 설명합니다.
+
+### digna Data Validation
+
+- [소개](https://docs.digna.ai/ko/platform/data_validation/Introduction/): digna Data Validation이 임계값, 범위, 참조 목록을 포함한 결정론적 규칙 기반 검사를 어떻게 적용하는지 알아보세요. 금융, 의료 및 기타 데이터 민감 산업에서 컴플라이언스, 감사 가능성 및 규제 보고를 보장합니다.
+
+### digna Timeliness
+
+- [소개](https://docs.digna.ai/ko/platform/data_timeliness/Introduction/): digna Data Timeliness가 데이터가 예상 시점에 도착하는지 어떻게 보장하는지 알아보세요. 지연되거나 누락된 전달을 감지하고 SLA를 모니터링하며 비즈니스 프로세스를 은밀한 지연으로부터 보호합니다. 향상된 데이터 품질과 파이프라인 관찰을 위한 AI 기반 감지.
+
+### digna Schema Tracker
+
+- [소개](https://docs.digna.ai/ko/platform/schema_tracker/Introduction/): digna Data Schema Tracker가 컬럼 변경, 데이터 타입 업데이트 및 스키마 드리프트를 어떻게 모니터링하는지 알아보세요. 의도적이든 비의도적이든 스키마 변경을 감지하고 경고하여 ETL 실패, 깨진 대시보드 및 관찰성 상실을 방지합니다.
+
+## 설치 및 배포
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Windows에 digna Release 2026.06을 설치하는 단계별 가이드 — 시스템 요구사항, PostgreSQL 설정, 웹 서버 구성, 백엔드 및 대시보드 구성, Windows 서비스로 digna 실행, 새 릴리스로 업그레이드
+- [싱글 사인온을 구성하는 방법](https://docs.digna.ai/ko/installation_deployment/sso_integration_guide/): OpenID Connect (OIDC)를 사용하여 digna에 Single Sign-On (SSO)을 구성하는 단계별 가이드입니다. 대시보드 및 백엔드 구성, 테스트, 문제 해결 및 Microsoft Entra ID, Google Workspace, Okta를 포함한 지원되는 IdP를 다룹니다.
+
+## 시작하기
+
+### 첫 단계
+
+- [데이터 프로젝트를 생성하는 방법](https://docs.digna.ai/ko/getting_started/how_to_create_project/): digna에서 새 프로젝트를 만드는 단계별 가이드. 프로젝트 섹션 열기, 세부 정보 입력, 대화형 데모로 프로젝트 저장 방법을 알아보세요.
+- [데이터베이스를 데이터 프로젝트에 연결하는 방법](https://docs.digna.ai/ko/getting_started/how_to_connect_database_to_data_project/): 기존 digna 프로젝트에 데이터베이스를 연결하는 단계별 가이드입니다. 연결 구성, 자격 증명 제공 및 보안 액세스 활성화 방법을 알아보세요.
+- [데이터 소스를 프로젝트에 추가하는 방법](https://docs.digna.ai/ko/getting_started/how_to_add_a_datasource_to_project/): digna에서 기존 프로젝트에 데이터베이스를 연결하는 단계별 가이드입니다. 연결 선택, 설정 구성 및 보안 액세스 활성화 방법을 알아보세요.
+
+### 스케줄링
+
+- [일일 작업을 스케줄하는 방법](https://docs.digna.ai/ko/getting_started/how_to_schedule_a_daily_job/): digna 대시보드를 사용해 일일 검사 작업을 예약하는 방법을 알아보세요.
+- [crontab 정의를 사용하는 방법](https://docs.digna.ai/ko/getting_started/how_to_use_crontab/): crontab 표현식을 사용해 digna에서 고급 타이밍으로 작업을 예약하는 방법을 알아보세요.
+
+## 통합
+
+### 데이터베이스
+
+- [Azure Synapse](https://docs.digna.ai/ko/databases/azure_synapse_connector_guide/): 네이티브 Python 드라이버 또는 ODBC 드라이버를 사용하여 digna가 Azure Synapse Analytics에 연결하도록 구성하는 방법입니다. 서버리스 및 전용 SQL 풀을 모두 지원합니다.
+- [Databricks](https://docs.digna.ai/ko/databases/databricks_connector_guide/): digna를 Unity Catalog가 있는 Databricks에 네이티브 Python 커넥터 또는 ODBC 드라이버를 사용해 연결하도록 구성합니다. 토큰 기반 인증과 유연한 연결 방식을 지원합니다.
+- [Databricks Legacy](https://docs.digna.ai/ko/databases/databricks_legacy_connector_guide/): 네이티브 Python 커넥터 또는 Simba Spark ODBC 드라이버를 사용하여 Unity Catalog 없이 Databricks에 연결하도록 digna를 구성하는 방법입니다. 토큰 기반 인증 및 유연한 연결 방식을 지원합니다.
+- [Hive](https://docs.digna.ai/ko/databases/hive_connector_guide/): 네이티브 PyHive 드라이버 또는 Cloudera ODBC 드라이버를 사용해 digna를 Apache Hive에 연결하도록 구성하는 방법입니다. 비밀번호 기반 인증과 DSN 또는 DSN-less 설정을 지원합니다.
+- [Netezza](https://docs.digna.ai/ko/databases/netezza_connector_guide/): NetezzaSQL ODBC 드라이버를 사용하여 digna가 Netezza에 연결하도록 구성하는 방법입니다. DSN 기반 또는 DSN-less 설정을 통한 비밀번호 기반 인증을 지원하여 유연한 연결을 제공합니다.
+- [Oracle](https://docs.digna.ai/ko/databases/oracle_connector_guide/): python-oracledb 드라이버 또는 Oracle ODBC 드라이버를 사용하여 digna가 Oracle에 연결하도록 구성하는 방법입니다. DSN 또는 DSN-less 설정으로 비밀번호 기반 인증을 지원합니다.
+- [PostgreSQL](https://docs.digna.ai/ko/databases/postgres_connector_guide/): psycopg Python 드라이버 또는 PostgreSQL ODBC 드라이버를 사용하여 digna를 PostgreSQL에 연결하도록 구성하는 방법입니다. DSN 또는 DSN-less 설정에서 암호 기반 인증을 지원합니다.
+- [Snowflake](https://docs.digna.ai/ko/databases/snowflake_connector_guide/): Python 커넥터 또는 Snowflake ODBC 드라이버를 사용하여 digna를 Snowflake에 연결하도록 구성하는 방법입니다. DSN 또는 DSN-less 설정을 사용한 암호 기반 인증을 지원합니다.
+- [MS SQL Server](https://docs.digna.ai/ko/databases/sqlserver_connector_guide/): pymssql Python 드라이버 또는 SQL Server ODBC 드라이버를 사용해 digna가 Microsoft SQL Server에 연결하도록 구성하는 방법입니다. DSN 기반 또는 DSN-less 설정으로 암호 기반 인증을 지원합니다.
+- [Teradata](https://docs.digna.ai/ko/databases/teradata_connector_guide/): digna를 teradatasql Python 드라이버 또는 Teradata ODBC 드라이버를 사용하여 Teradata에 연결하도록 구성합니다. DSN 또는 DSN-less 설정에서 비밀번호 기반 인증을 지원합니다.
+
+## CLI 참고 문서
+
+- [소개](https://docs.digna.ai/ko/cli/Introduction/): digna 명령줄 인터페이스(CLI) 소개 — digna 리소스를 자동화하고 관리하는 텍스트 기반 도구이며, Windows 설치 기본 사항도 포함합니다.
+- [Release 2026.04](https://docs.digna.ai/ko/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
+- [Release 2026.01](https://docs.digna.ai/ko/cli/Command_Line_Interface_202601/): digna CLI 릴리스 2026.01에 대한 완전한 참조입니다. add-user, check-config, check-repo-connection, inspect, inspect-async 등과 같은 명령어로 사용자, 리포지토리 및 데이터를 관리하는 방법을 알아보세요.
+- [Release 2025.09](https://docs.digna.ai/ko/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
+- [Release 2025.04](https://docs.digna.ai/ko/cli/Command_Line_Interface_202504/): digna CLI 릴리스 2025.04의 전체 참조입니다. add-user, check-repo-connection, upgrade-repo, inspect 등 사용자, 저장소 및 데이터를 관리하는 방법을 명령어와 예제로 확인하세요.
+- [Release 2024.12](https://docs.digna.ai/ko/cli/Command_Line_Interface_202412/): digna CLI 릴리스 2024.12에 대한 완전한 참조입니다. add-user, check-repo-connection, upgrade-repo, inspect 등 사용자, 리포지토리 및 데이터를 관리하는 방법을 명령어 예제와 함께 설명합니다.
+- [Release 2024.11](https://docs.digna.ai/ko/cli/Command_Line_Interface_202411/): Complete reference for digna CLI release 2024.11. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
+- [Release 2024.09](https://docs.digna.ai/ko/cli/Command_Line_Interface_202409/): digna CLI 릴리스 2024.09에 대한 완전한 참조입니다. add-user, check-repo-connection, upgrade-repo, inspect, tls-status 등 사용자를 관리하고 저장소 및 데이터를 조작하는 방법을 알아보세요.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/ko/changelog/Release_202606/): digna 릴리스 2026.06의 변경사항을 확인하세요. 이번 버전은 새로운 digna Python SDK, Docker 배포 지원, 새로워진 대시보드 경험, 그리고 검증 규칙 관리의 향상된 이식성을 도입합니다.
+- [Release 2026.04](https://docs.digna.ai/ko/changelog/Release_202604/): digna 릴리스 2026.04의 신규 기능을 확인하세요. 이번 버전은 고급 시계열 분석(Analytics Chart), 재사용 가능한 검증 규칙 템플릿, 허용 값 표준화(Enumerations) 및 컬럼 수준 관련성 조건을 도입합니다.
+- [Release 2026.01](https://docs.digna.ai/ko/changelog/Release_202601/): digna 릴리스 2026.01의 주요 변경사항을 확인하세요. 이번 버전은 글로벌 데이터베이스 연결, 논리적 데이터 소스, 이상 관련성 조건, CSV 내보내기 및 참조 무결성 검사를 포함한 고급 데이터 검증을 도입합니다.
+- [Release 2025.09](https://docs.digna.ai/ko/changelog/Release_202509/): digna 릴리스 2025.09의 신규 사항을 확인하세요. 이번 버전에서는 모듈형 아키텍처, 다섯 개의 전문 모듈, OIDC 기반 다중 요소 인증(MFA), 모듈별 알림 기능이 도입되었습니다.
+- [Release 2025.04](https://docs.digna.ai/ko/changelog/Release_202504/): digna 릴리스 2025.04의 새로운 기능을 확인하세요. 이번 버전에서는 Inspection Hub, 다국어 지원(영어, 독일어, 폴란드어), dignacli를 통한 데이터 소스의 가져오기/내보내기, Module Analytics의 첫 릴리스, 그리고 개선된 대시보드 경험이 도입됩니다.
+- [Release 2024.12](https://docs.digna.ai/ko/changelog/Release_202412/): digna 릴리스 2024.12의 새로운 기능을 확인하세요. 이번 버전은 내장 스케줄러, PDF 보고서, 유연한 커스텀 컬럼, 동적 스냅샷 쿼리 플레이스홀더, 그리고 이상 탐지와 데이터 품질 모니터링을 개선하는 스마트한 임계값 최적화를 도입합니다.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.

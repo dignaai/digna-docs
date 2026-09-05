@@ -1,0 +1,89 @@
+# digna Documentation
+
+> Descoperiți *digna*, platforma europeană bazată pe AI pentru Calitatea Datelor și Observabilitate. Creată pentru on-premises și private cloud, *digna* monitorizează calitatea datelor direct în bazele dvs. de date — asigurând conformitate, performanță și suveranitate a datelor.
+
+## Platformă
+
+- [Overview](https://docs.digna.ai/ro/platform/overview/): Explorează modulele de bază ale digna — platforma europeană AI pentru Calitatea Datelor și Observabilitate. Află cum fiecare modul îmbunătățește calitatea, observabilitatea și fiabilitatea datelor în mediul tău on-premises sau private cloud.
+
+### digna Data Anomalies
+
+- [Introducere](https://docs.digna.ai/ro/platform/data_anomalies/Introduction/): Află cum modulul digna Data Anomalies detectează automat scăderi de volum, valori lipsă, deplasări de distribuție și tipare neașteptate fără scrierea manuală de reguli. Îmbunătățește calitatea și observabilitatea fluxurilor de date cu detecție de anomalii bazată pe AI.
+
+### digna Data Analytics
+
+- [Introducere](https://docs.digna.ai/ro/platform/data_analytics/Introduction/): Aflați cum digna Data Analytics dezvăluie tendințe pe termen lung, volatilitate și stabilitate a datelor în cadrul KPI-urilor. Detectați schimbările în calitatea și observabilitatea datelor, descoperiți anomalii ascunse și transformați statisticile în insight-uri acționabile.
+
+### digna Data Validation
+
+- [Introducere](https://docs.digna.ai/ro/platform/data_validation/Introduction/): Descoperiți cum digna Data Validation impune verificări deterministe, bazate pe reguli, cu praguri, intervale și liste de referință. Asigurați conformitatea, auditabilitatea și raportarea pentru reglementări în finanțe, sănătate și alte industrii sensibile la date.
+
+### digna Timeliness
+
+- [Introducere](https://docs.digna.ai/ro/platform/data_timeliness/Introduction/): Află cum Data Timeliness de la digna asigură că datele sosesc la momentul așteptat. Detectează livrările întârziate sau lipsă, monitorizează SLA-urile și protejează procesele de business de întârzieri silențioase. Detectare asistată de AI pentru îmbunătățirea calității datelor și observabilității pipeline-urilor.
+
+### digna Schema Tracker
+
+- [Introducere](https://docs.digna.ai/ro/platform/schema_tracker/Introduction/): Aflați cum digna Data Schema Tracker monitorizează modificările coloanelor, actualizările tipurilor de date și derivația schemei. Detectați și primiți alerte pentru modificările intenționate sau neintenționate ale schemei pentru a preveni eșecuri ETL, dashboard-uri nefuncționale și pierderea observabilității datelor.
+
+## Instalare și implementare
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/ro/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Ghid pas cu pas pentru instalarea digna Release 2026.06 pe Windows — cerințe de sistem, configurare PostgreSQL, configurare web server, configurare backend și dashboard, rularea digna ca serviciu Windows și actualizarea la o versiune nouă.
+- [Cum să configurezi autentificarea unică](https://docs.digna.ai/ro/installation_deployment/sso_integration_guide/): Ghid pas cu pas pentru configurarea Single Sign-On (SSO) pentru digna folosind OpenID Connect (OIDC). Acoperă configurarea în dashboard și backend, testarea, depanarea și furnizorii de identitate compatibili, inclusiv Microsoft Entra ID, Google Workspace și Okta.
+
+## Noțiuni de bază
+
+### Primii pași
+
+- [Cum să creezi un proiect de date](https://docs.digna.ai/ro/getting_started/how_to_create_project/): Ghid pas cu pas pentru crearea unui proiect nou în digna. Aflați cum să deschideți secțiunea de proiecte, să introduceți detaliile și să salvați proiectele cu un demo interactiv.
+- [Cum să conectezi o bază de date la un proiect de date](https://docs.digna.ai/ro/getting_started/how_to_connect_database_to_data_project/): Ghid pas cu pas pentru conectarea unei baze de date la un proiect existent în digna. Aflați cum să configurați conexiunile, să furnizați credențiale și să activați accesul securizat.
+- [Cum să adaugi o sursă de date la un proiect](https://docs.digna.ai/ro/getting_started/how_to_add_a_datasource_to_project/): Ghid pas cu pas pentru conectarea unei baze de date la un proiect existent în digna. Aflați cum să alegeți o conexiune, să configurați setările și să activați accesul securizat.
+
+### Programare
+
+- [Cum să programezi o sarcină zilnică](https://docs.digna.ai/ro/getting_started/how_to_schedule_a_daily_job/): Află cum să programezi un job de inspectare zilnic în digna folosind dashboard-ul.
+- [Cum să folosești o definiție crontab](https://docs.digna.ai/ro/getting_started/how_to_use_crontab/): Află cum să programezi un job în *digna* folosind expresii crontab pentru programări avansate.
+
+## Integrare
+
+### Baze de date
+
+- [Azure Synapse](https://docs.digna.ai/ro/databases/azure_synapse_connector_guide/): Configurați digna pentru a se conecta la Azure Synapse Analytics folosind fie driverul nativ Python, fie driverul ODBC. Suportă atât pool-urile SQL serverless, cât și cele dedicate.
+- [Databricks](https://docs.digna.ai/ro/databases/databricks_connector_guide/): Configurează digna pentru a se conecta la Databricks cu Unity Catalog folosind conectorul Python nativ sau driverul ODBC. Suportă autentificare bazată pe token și conectivitate flexibilă.
+- [Databricks Legacy](https://docs.digna.ai/ro/databases/databricks_legacy_connector_guide/): Configurează digna pentru a se conecta la Databricks fără Unity Catalog folosind conectorul nativ Python sau driverul Simba Spark ODBC. Suportă autentificare bazată pe token și conectivitate flexibilă.
+- [Hive](https://docs.digna.ai/ro/databases/hive_connector_guide/): Configurează digna pentru a se conecta la Apache Hive folosind driverul nativ PyHive sau driverul ODBC Cloudera. Suportă autentificare pe bază de parolă și configurații cu DSN sau fără DSN.
+- [Netezza](https://docs.digna.ai/ro/databases/netezza_connector_guide/): Configurează digna pentru a se conecta la Netezza folosind driverul ODBC NetezzaSQL. Suportă autentificare pe bază de parolă cu configurări DSN sau DSN-less pentru conectivitate flexibilă.
+- [Oracle](https://docs.digna.ai/ro/databases/oracle_connector_guide/): Configurează digna pentru a se conecta la Oracle folosind driverul python-oracledb sau driverul Oracle ODBC. Suportă autentificare pe bază de parolă cu configurații DSN sau fără DSN.
+- [PostgreSQL](https://docs.digna.ai/ro/databases/postgres_connector_guide/): Configurați digna pentru a se conecta la PostgreSQL folosind driverul Python psycopg sau driverul ODBC pentru PostgreSQL. Suportă autentificare pe bază de parolă cu configurații DSN sau fără DSN.
+- [Snowflake](https://docs.digna.ai/ro/databases/snowflake_connector_guide/): Configurează digna pentru a se conecta la Snowflake folosind connectorul Python sau driverul ODBC Snowflake. Suportă autentificare pe bază de parolă cu configurări DSN sau fără DSN.
+- [MS SQL Server](https://docs.digna.ai/ro/databases/sqlserver_connector_guide/): Configurează digna pentru a se conecta la Microsoft SQL Server folosind driverul Python pymssql sau driverul ODBC pentru SQL Server. Suportă autentificare bazată pe parolă cu configurații DSN sau fără DSN.
+- [Teradata](https://docs.digna.ai/ro/databases/teradata_connector_guide/): Configurați *digna* pentru a se conecta la Teradata folosind driverul Python `teradatasql` sau driverul ODBC Teradata. Suportă autentificare pe bază de parolă cu configurații DSN sau fără DSN.
+
+## Referință CLI
+
+- [Introducere](https://docs.digna.ai/ro/cli/Introduction/): Introducere în interfața în linie de comandă (CLI) digna — un instrument textual pentru automatizarea și gestionarea resurselor digna, inclusiv noțiunile de bază ale instalării pe Windows.
+- [Release 2026.04](https://docs.digna.ai/ro/cli/Command_Line_Interface_202604/): Referință completă pentru digna CLI versiunea 2026.04
+- [Release 2026.01](https://docs.digna.ai/ro/cli/Command_Line_Interface_202601/): Referință completă pentru digna CLI release 2026.01. Aflați cum să gestionați utilizatori, repository-uri și date cu comenzi precum add-user, check-config, check-repo-connection, inspect, inspect-async și altele.
+- [Release 2025.09](https://docs.digna.ai/ro/cli/Command_Line_Interface_202509/): Referință completă pentru digna CLI release 2025.109 Aflați cum să gestionați utilizatorii, repository-urile și datele cu comenzi precum add-user, check-config, check-repo-connection, inspect, inspect-async și altele.
+- [Release 2025.04](https://docs.digna.ai/ro/cli/Command_Line_Interface_202504/): Complete reference for digna CLI release 2025.04. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, and more.
+- [Release 2024.12](https://docs.digna.ai/ro/cli/Command_Line_Interface_202412/): Referință completă pentru digna CLI release 2024.12. Aflați cum să gestionați utilizatorii, depozitele și datele cu comenzi precum add-user, check-repo-connection, upgrade-repo, inspect și altele.
+- [Release 2024.11](https://docs.digna.ai/ro/cli/Command_Line_Interface_202411/): Referință completă pentru release-ul digna CLI 2024.11. Aflați cum să gestionați utilizatorii, repo-urile și datele cu comenzi precum add-user, check-repo-connection, upgrade-repo, inspect, tls-status și altele.
+- [Release 2024.09](https://docs.digna.ai/ro/cli/Command_Line_Interface_202409/): Referință completă pentru digna CLI release 2024.09. Aflați cum să gestionați utilizatorii, repository-urile și datele cu comenzi precum add-user, check-repo-connection, upgrade-repo, inspect, tls-status și altele.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/ro/changelog/Release_202606/): Afla noutățile din digna Release 2026.06. Această versiune introduce noul **digna Python SDK**, suport oficial pentru **Docker deployment**, o experiență de dashboard reproiectată și capabilități extinse de import/export pentru regulile de validare a datelor.
+- [Release 2026.04](https://docs.digna.ai/ro/changelog/Release_202604/): Află noutățile din digna Versiunea 2026.04. Această versiune introduce analiză avansată de serii temporale cu Analytics Chart, șabloane reutilizabile pentru reguli de validare, enumerations pentru valori permise și condiții de relevanță la nivel de coloană.
+- [Release 2026.01](https://docs.digna.ai/ro/changelog/Release_202601/): Află noutățile din digna Release 2026.01. Această versiune introduce conexiuni globale la baze de date, surse de date logice, condiții de relevanță pentru anomalii, exporturi CSV și validare avansată a datelor, inclusiv verificări de integritate referențială.
+- [Release 2025.09](https://docs.digna.ai/ro/changelog/Release_202509/): Aflați noutățile din lansarea digna 2025.09. Această versiune introduce o arhitectură modulară, cinci module noi, MFA prin OIDC și notificări per modul.
+- [Release 2025.04](https://docs.digna.ai/ro/changelog/Release_202504/): Află noutățile din digna Lansare 2025.04. Această versiune introduce Inspection Hub, suport multi-limbă (engleză, germană, poloneză), import/export de surse de date prin dignacli, prima versiune a Module Analytics și o experiență de dashboard îmbunătățită.
+- [Release 2024.12](https://docs.digna.ai/ro/changelog/Release_202412/): Descoperiți noutățile din digna Lansare 2024.12. Această versiune introduce un scheduler încorporat, rapoarte PDF, coloane personalizate flexibile, placeholder-e dinamice pentru interogările snapshot și optimizare inteligentă a pragurilor pentru a îmbunătăți detectarea anomaliilor și monitorizarea calității datelor.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.

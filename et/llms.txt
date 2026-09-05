@@ -1,0 +1,89 @@
+# digna Documentation
+
+> Tutvuge digna-ga, Euroopa AI-platvormiga andmekvaliteedi ja jälgitavuse jaoks. Mõeldud kohapealseks ja privaatpilve kasutuseks, digna jälgib andmete kvaliteeti otse teie andmebaasides — tagades vastavuse, jõudluse ja andmete suveräänsuse.
+
+## Platvorm
+
+- [Overview](https://docs.digna.ai/et/platform/overview/): Tutvu digna põhimoodulitega — Euroopa AI-platvorm andmekvaliteedi ja andmete jälgitavuse jaoks. Õpi, kuidas iga moodul parandab andmete kvaliteeti, jälgitavust ja usaldusväärsust sinu kohapealses või privaatpilve keskkonnas.
+
+### digna Data Anomalies
+
+- [Sissejuhatus](https://docs.digna.ai/et/platform/data_anomalies/Introduction/): Tutvu, kuidas digna Data Anomalies tuvastab automaatselt mahu langusi, puuduvad väärtused, jaotuse nihked ja ootamatud mustrid ilma käsitsi reegleid kirjutamata. Paranda andmete kvaliteeti ja andmepülve nähtavust AI-põhise anomaaliatuvastusega.
+
+### digna Data Analytics
+
+- [Sissejuhatus](https://docs.digna.ai/et/platform/data_analytics/Introduction/): Learn how digna Data Analytics reveals long-term trends, volatility, and data stability across KPIs. Detect shifts in the quality and observability of data, uncover hidden anomalies, and turn statistics into actionable insights.
+
+### digna Data Validation
+
+- [Sissejuhatus](https://docs.digna.ai/et/platform/data_validation/Introduction/): Avastage, kuidas digna Data Validation rakendab deterministlikke reeglipõhiseid kontrolle koos lävendite, vahemike ja viitenimekirjadega. Tagage vastavus, auditeeritavus ja regulatiivne aruandlus finants-, tervishoiu- ja teistes andmetundlikes valdkondades.
+
+### digna Timeliness
+
+- [Sissejuhatus](https://docs.digna.ai/et/platform/data_timeliness/Introduction/): Saa teada, kuidas digna Data Timeliness tagab andmete õigeaegse saabumise. Tuvasta hilinenud või puuduvad kohaletoimetamised, jälgi SLA-sid ja kaitse äriprotsesse vaikselt esinevate viivituste eest. AI-põhine tuvastus andmete kvaliteedi ja torustike nähtavuse parandamiseks.
+
+### digna Schema Tracker
+
+- [Sissejuhatus](https://docs.digna.ai/et/platform/schema_tracker/Introduction/): Saa teada, kuidas digna Data Schema Tracker jälgib veergude muutusi, andmetüüpide uuendusi ja skeemi nihet. Tuvasta ja teavita nii kavandatud kui ka soovimatuid skeemimuutusi, et vältida ETL-i tõrkeid, katkiseid armatuurlaudu ja andmete observatsiooni kaotust.
+
+## Paigaldamine ja juurutamine
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/et/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Step-by-step guide to installing digna Release 2026.06 on Windows — system requirements, PostgreSQL setup, web server configuration, backend and dashboard configuration, running digna as a Windows service, and upgrading to a new release.
+- [Kuidas konfigureerida ühekordset sisselogimist](https://docs.digna.ai/et/installation_deployment/sso_integration_guide/): Samm-sammult juhend Single Sign-On (SSO) konfigureerimiseks digna jaoks, kasutades OpenID Connect (OIDC). Käsitleb juhtpaneeli ja backend'i seadistust, testimist, tõrkeotsingut ning toetatud identiteedipakkujaid nagu Microsoft Entra ID, Google Workspace ja Okta.
+
+## Alustamine
+
+### Esimesed sammud
+
+- [Kuidas luua andmeprojekt](https://docs.digna.ai/et/getting_started/how_to_create_project/): Samm-sammult juhend uue projekti loomiseks digna keskkonnas. Õpi, kuidas avada projektide sektsioon, sisestada üksikasjad ja salvestada projekt interaktiivse demo abil.
+- [Kuidas ühendada andmebaas andmeprojektiga](https://docs.digna.ai/et/getting_started/how_to_connect_database_to_data_project/): Samm-sammuline juhend andmebaasi ühendamiseks olemasoleva projektiga dignas. Õpi, kuidas konfigureerida ühendusi, esitada mandaate ja lubada turvaline juurdepääs.
+- [Kuidas lisada andmeallikas projekti](https://docs.digna.ai/et/getting_started/how_to_add_a_datasource_to_project/): Samm-sammuline juhend andmebaasi ühendamiseks olemasoleva projektiga digna-s. Õpi, kuidas valida ühendus, seadistada seadeid ja lubada turvaline juurdepääs.
+
+### Ajastamine
+
+- [Kuidas ajastada igapäevast tööülesannet](https://docs.digna.ai/et/getting_started/how_to_schedule_a_daily_job/): Õpi, kuidas ajastada igapäevane kontrollitöö dignas, kasutades juhtpaneeli.
+- [Kuidas kasutada crontab määratlust](https://docs.digna.ai/et/getting_started/how_to_use_crontab/): Õpi, kuidas *digna*-s tööd ajastada, kasutades crontab expressions täpsemaks ajastuseks.
+
+## Integratsioon
+
+### Andmebaasid
+
+- [Azure Synapse](https://docs.digna.ai/et/databases/azure_synapse_connector_guide/): Seadista digna ühenduma Azure Synapse Analyticsiga kas natiivse Pythoni draiveri või ODBC-draiveri kaudu. Toetab nii serverless kui ka pühendatud SQL-poolide kasutamist.
+- [Databricks](https://docs.digna.ai/et/databases/databricks_connector_guide/): Konfigureeri *digna* ühenduma Databricksiga, kasutades Unity Catalogut kas natiivse Pythoni konnektori või ODBC draiveri kaudu. Toetab token-põhist autentimist ja paindlikku ühenduvust.
+- [Databricks Legacy](https://docs.digna.ai/et/databases/databricks_legacy_connector_guide/): Konfigureeri digna ühenduma Databricksiga ilma Unity Catalogita, kasutades natiivset Python-ühendajat või Simba Spark ODBC-draiverit. Toetab tokenipõhist autentimist ja paindlikku ühenduvust.
+- [Hive](https://docs.digna.ai/et/databases/hive_connector_guide/): Konfigureerige digna ühenduma Apache Hive'iga, kasutades natiivset PyHive draiverit või Cloudera ODBC draiverit. Toetab paroolipõhist autentimist ning DSN- ja DSN-vabu seadistusi.
+- [Netezza](https://docs.digna.ai/et/databases/netezza_connector_guide/): Konfigureerige digna ühendamaks Netezzaga, kasutades NetezzaSQL ODBC-draiverit. Toetab paroolipõhist autentimist nii DSN- kui DSN-vabade seadistuste puhul paindlikuks ühenduseks.
+- [Oracle](https://docs.digna.ai/et/databases/oracle_connector_guide/): Konfigureerige digna ühenduma Oracle'iga, kasutades python-oracledb draiverit või Oracle ODBC draiverit. Toetab paroolipõhist autentimist DSN-iga või DSN-ita seadistustes.
+- [PostgreSQL](https://docs.digna.ai/et/databases/postgres_connector_guide/): Konfigureeri *digna* ühenduma PostgreSQL-iga, kasutades psycopg Python-draiverit või PostgreSQL ODBC-draiverit. Toetab paroolipõhist autentimist nii DSN-iga kui DSN-ita seadistustes.
+- [Snowflake](https://docs.digna.ai/et/databases/snowflake_connector_guide/): Konfigureerige digna ühenduma Snowflake'iga, kasutades Python-konnektorit või Snowflake ODBC draiverit. Toetab paroolipõhist autentimist DSN-iga või DSN-vaba seadistusega.
+- [MS SQL Server](https://docs.digna.ai/et/databases/sqlserver_connector_guide/): Configure digna to connect to Microsoft SQL Server using the pymssql Python driver or the SQL Server ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
+- [Teradata](https://docs.digna.ai/et/databases/teradata_connector_guide/): Konfigureerige digna ühenduma Teradataga, kasutades teradatasql Pythoni draiverit või Teradata ODBC-draiverit. Toetab paroolipõhist autentimist DSN-iga või ilma DSN-ita seadistustes.
+
+## CLI viide
+
+- [Sissejuhatus](https://docs.digna.ai/et/cli/Introduction/): Sissejuhatus digna käsurealiidesesse (CLI) — tekstipõhine tööriist digna ressursside automatiseerimiseks ja haldamiseks, sealhulgas Windowsi paigalduse alused.
+- [Release 2026.04](https://docs.digna.ai/et/cli/Command_Line_Interface_202604/): Täielik viide digna CLI väljaandele 2026.04
+- [Release 2026.01](https://docs.digna.ai/et/cli/Command_Line_Interface_202601/): Täielik viide digna CLI väljalaske 2026.01 kohta. Õpi, kuidas hallata kasutajaid, hoidlaid ja andmeid käskudega nagu add-user, check-config, check-repo-connection, inspect, inspect-async ja palju muud.
+- [Release 2025.09](https://docs.digna.ai/et/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
+- [Release 2025.04](https://docs.digna.ai/et/cli/Command_Line_Interface_202504/): Täielik viide digna CLI väljalaske 2025.04 kohta. Õppige, kuidas hallata kasutajaid, reposiitoreid ja andmeid käskudega nagu add-user, check-repo-connection, upgrade-repo, inspect ja teised.
+- [Release 2024.12](https://docs.digna.ai/et/cli/Command_Line_Interface_202412/): Täielik viide digna CLI versioonile 2024.12. Õpi, kuidas hallata kasutajaid, repositooriume ja andmeid käskudega nagu add-user, check-repo-connection, upgrade-repo, inspect ja teised.
+- [Release 2024.11](https://docs.digna.ai/et/cli/Command_Line_Interface_202411/): Complete reference for digna CLI release 2024.11. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
+- [Release 2024.09](https://docs.digna.ai/et/cli/Command_Line_Interface_202409/): Täielik viide digna CLI väljalaskeversioonile 2024.09. Õpi, kuidas hallata kasutajaid, repositooriume ja andmeid käskudega nagu add-user, check-repo-connection, upgrade-repo, inspect, tls-status ja teised.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/et/changelog/Release_202606/): Tutvuge, mis on uut digna väljalases 2026.06. See versioon toob kaasa uue digna Python SDK, ametliku Docker‑deploy toe, ümberkujundatud dashboardi kasutajakogemuse ja laiendatud import/eksport võimalused valideerimisreeglite haldamiseks.
+- [Release 2026.04](https://docs.digna.ai/et/changelog/Release_202604/): Tutvu, mis on uut digna väljalases 2026.04. See versioon lisab täiustatud ajaseeriate analüüsi Analytics Chartiga, taaskasutatavad valideerimisreeglite mallid, enumeratsioonid lubatud väärtuste jaoks ja veerutasemel asjakohasuskonditsioonid.
+- [Release 2026.01](https://docs.digna.ai/et/changelog/Release_202601/): Saa teada, mis on uut digna väljalases 2026.01. See versioon lisab globaalsed andmebaasiühendused, loogilised andmeallikad, anomaaliate asjakohasuse tingimused, CSV-eksporti ning täiustatud andmevalideerimise koos viitelise terviklikkuse kontrollidega.
+- [Release 2025.09](https://docs.digna.ai/et/changelog/Release_202509/): Uuri, mis on uut digna väljalaskes 2025.09. See versioon toob kaasa mooduli-põhise arhitektuuri, viis uusi mooduleid, MFA OIDC kaudu ja moodulipõhised teavitused.
+- [Release 2025.04](https://docs.digna.ai/et/changelog/Release_202504/): Loe, mis on uut digna versioonis 2025.04. See versioon toob kaasa Inspection Hubi, mitmekeelsuse (inglise, saksa, poola), andmeallikate importimise/ekspordimise dignacli kaudu, Module Analyticsi esialgse väljaande ja täiustatud armatuurlaua kasutuskogemuse.
+- [Release 2024.12](https://docs.digna.ai/et/changelog/Release_202412/): Uuri, mis on uut digna väljalases 2024.12. See versioon toob kaasa sisseehitatud ajastaja, PDF-aruanded, paindlikud kohandatud veerud, dünaamilised snapshot-päringu kohatäitjad ja targema künniste optimeerimise anomaaliate tuvastuse ja andmekvaliteedi jälgimise parandamiseks.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.

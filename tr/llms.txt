@@ -1,0 +1,89 @@
+# digna Documentation
+
+> digna'yı keşfedin — Veri Kalitesi ve Gözlemlenebilirlik için Avrupa yapay zeka platformu. Yerinde veya özel bulut için tasarlanmış olan digna, veritabanlarınız içinde verinin kalitesini doğrudan izleyerek uyumluluk, performans ve veri egemenliği sağlar.
+
+## Platform
+
+- [Overview](https://docs.digna.ai/tr/platform/overview/): digna — Veri Kalitesi ve Gözlemlenebilirlik için Avrupa yapımı AI platformunun çekirdek modüllerini keşfedin. Her modülün on-premises veya özel bulut ortamınızdaki verinin kalitesini, gözlemlenebilirliğini ve güvenilirliğini nasıl iyileştirdiğini öğrenin.
+
+### digna Data Anomalies
+
+- [Giriş](https://docs.digna.ai/tr/platform/data_anomalies/Introduction/): digna Data Anomalies, manuel kural yazımı olmadan veri hacmi düşüşlerini, eksik değerleri, dağılım değişikliklerini ve beklenmeyen desenleri otomatik olarak tespit eder. AI tabanlı anomali tespiti ile veri kalitesini ve veri boru hatlarının gözlemlenebilirliğini iyileştirin.
+
+### digna Data Analytics
+
+- [Giriş](https://docs.digna.ai/tr/platform/data_analytics/Introduction/): digna Data Analytics, KPI'larda uzun vadeli eğilimleri, oynaklığı ve veri kararlılığını ortaya çıkarır. Verinin kalitesindeki ve gözlemlenebilirliğindeki değişimleri tespit edin, gizli anomalileri keşfedin ve istatistikleri eyleme dönüştürülebilir içgörülere çevirin.
+
+### digna Data Validation
+
+- [Giriş](https://docs.digna.ai/tr/platform/data_validation/Introduction/): digna Data Validation'in eşikler, aralıklar ve referans listeleri ile deterministik, kural tabanlı kontrolleri nasıl uyguladığını keşfedin. Finans, sağlık ve diğer veri hassasiyeti yüksek sektörlerde uyumluluğu, denetlenebilirliği ve düzenleyici raporlamayı sağlayın.
+
+### digna Timeliness
+
+- [Giriş](https://docs.digna.ai/tr/platform/data_timeliness/Introduction/): digna Data Timeliness'in verinin beklendiği zamanda gelmesini nasıl sağladığını öğrenin. Geciken veya eksik teslimatları tespit edin, SLA'ları izleyin ve iş süreçlerini sessiz gecikmelerden koruyun. Geliştirilmiş veri kalitesi ve veri boru hatlarının gözlemlenebilirliği için AI destekli tespit.
+
+### digna Schema Tracker
+
+- [Giriş](https://docs.digna.ai/tr/platform/schema_tracker/Introduction/): digna Data Schema Tracker sütun değişikliklerini, veri tipi güncellemelerini ve şema driftini izler. Hem kasıtlı hem de kasıtsız şema değişikliklerini tespit edip uyarılar göndererek ETL hatalarını, bozuk dashboard'ları ve veri gözlemlenebilirliğinin kaybını önleyin.
+
+## Kurulum ve dağıtım
+
+### Windows
+
+- [Release 2026.06](https://docs.digna.ai/tr/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): digna Sürüm 2026.06'i Windows'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, PostgreSQL kurulumu, web sunucusu yapılandırması, backend ve dashboard yapılandırması, digna'yı Windows hizmeti olarak çalıştırma ve yeni sürüme yükseltme.
+- [Çoklu oturum açmayı yapılandırma](https://docs.digna.ai/tr/installation_deployment/sso_integration_guide/): digna için OpenID Connect (OIDC) kullanarak Tek Oturum Açma (SSO) yapılandırmasına ilişkin adım adım kılavuz. Panel ve arka uç yapılandırması, test, sorun giderme ve Microsoft Entra ID, Google Workspace ve Okta dahil desteklenen kimlik sağlayıcıları ele alınır.
+
+## Başlarken
+
+### İlk adımlar
+
+- [Bir veri projesi oluşturma](https://docs.digna.ai/tr/getting_started/how_to_create_project/): digna'da yeni bir proje oluşturma adım adım rehberi. Proje bölümünü nasıl açacağınızı, ayrıntıları nasıl gireceğinizi ve etkileşimli bir demo ile projeleri nasıl kaydedeceğinizi öğrenin.
+- [Bir veritabanını veri projesine bağlama](https://docs.digna.ai/tr/getting_started/how_to_connect_database_to_data_project/): digna içinde mevcut bir projeye bir veritabanı bağlama adım adım kılavuzu. Bağlantıları nasıl yapılandıracağınızı, kimlik bilgilerini nasıl sağlayacağınızı ve güvenli erişimi nasıl etkinleştireceğinizi öğrenin.
+- [Bir projeye veri kaynağı ekleme](https://docs.digna.ai/tr/getting_started/how_to_add_a_datasource_to_project/): Mevcut bir projeye digna'da veritabanı bağlama adım adım rehberi. Bir bağlantı seçmeyi, ayarları yapılandırmayı ve güvenli erişimi etkinleştirmeyi öğrenin.
+
+### Zamanlama
+
+- [Günlük bir işi zamanlama](https://docs.digna.ai/tr/getting_started/how_to_schedule_a_daily_job/): Dashboard'u kullanarak digna'da günlük bir denetim işini nasıl zamanlayacağınızı öğrenin.
+- [Bir crontab tanımını kullanma](https://docs.digna.ai/tr/getting_started/how_to_use_crontab/): Crontab ifadeleri kullanarak digna'da bir görevi zamanlamayı öğrenin.
+
+## Entegrasyon
+
+### Veritabanları
+
+- [Azure Synapse](https://docs.digna.ai/tr/databases/azure_synapse_connector_guide/): digna'yı, yerel Python sürücüsü veya ODBC sürücüsü kullanarak Azure Synapse Analytics'e bağlanacak şekilde yapılandırın. Hem sunucusuz hem de özel SQL havuzlarını destekler.
+- [Databricks](https://docs.digna.ai/tr/databases/databricks_connector_guide/): digna'yı Databricks ile Unity Catalog kullanarak, yerel Python connector veya ODBC sürücüsü aracılığıyla bağlanacak şekilde yapılandırma. Token tabanlı kimlik doğrulamayı ve esnek bağlantı seçeneklerini destekler.
+- [Databricks Legacy](https://docs.digna.ai/tr/databases/databricks_legacy_connector_guide/): Native Python bağlayıcısı veya Simba Spark ODBC sürücüsü kullanarak Unity Catalog olmadan Databricks'e bağlanmak için digna'yı yapılandırın. Token tabanlı kimlik doğrulamayı ve esnek bağlantı seçeneklerini destekler.
+- [Hive](https://docs.digna.ai/tr/databases/hive_connector_guide/): digna'yı yerel PyHive sürücüsü veya Cloudera ODBC sürücüsünü kullanarak Apache Hive'a bağlanacak şekilde yapılandırın. Parola tabanlı kimlik doğrulamayı ve DSN veya DSN-less kurulumlarını destekler.
+- [Netezza](https://docs.digna.ai/tr/databases/netezza_connector_guide/): digna'yı NetezzaSQL ODBC sürücüsünü kullanarak Netezza'ya bağlanacak şekilde yapılandırın. Esnek bağlantı için DSN veya DSN-less kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
+- [Oracle](https://docs.digna.ai/tr/databases/oracle_connector_guide/): digna'yı python-oracledb sürücüsü veya Oracle ODBC sürücüsü kullanarak Oracle'a bağlanacak şekilde yapılandırın. DSN veya DSN'siz kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
+- [PostgreSQL](https://docs.digna.ai/tr/databases/postgres_connector_guide/): digna'yı psycopg Python sürücüsü veya PostgreSQL ODBC sürücüsünü kullanarak PostgreSQL'e bağlanacak şekilde yapılandırın. DSN veya DSN'siz kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
+- [Snowflake](https://docs.digna.ai/tr/databases/snowflake_connector_guide/): digna'yı Snowflake'e Python bağlayıcısı veya Snowflake ODBC sürücüsü kullanarak bağlanacak şekilde yapılandırın. DSN veya DSN'siz kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
+- [MS SQL Server](https://docs.digna.ai/tr/databases/sqlserver_connector_guide/): pymssql Python sürücüsü veya SQL Server ODBC sürücüsü kullanarak digna'yı Microsoft SQL Server'a bağlanacak şekilde yapılandırın. DSN veya DSN'siz kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
+- [Teradata](https://docs.digna.ai/tr/databases/teradata_connector_guide/): digna'yı teradatasql Python sürücüsü veya Teradata ODBC sürücüsü kullanarak Teradata'ya bağlanacak şekilde yapılandırın. DSN veya DSN'siz kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
+
+## CLI referansı
+
+- [Giriş](https://docs.digna.ai/tr/cli/Introduction/): digna komut satırı arayüzüne (CLI) giriş — digna kaynaklarını otomatikleştirmek ve yönetmek için metin tabanlı bir araç; Windows kurulumunun temellerini de içerir.
+- [Release 2026.04](https://docs.digna.ai/tr/cli/Command_Line_Interface_202604/): digna CLI sürümü 2026.04 için eksiksiz başvuru
+- [Release 2026.01](https://docs.digna.ai/tr/cli/Command_Line_Interface_202601/): digna CLI 2026.01 sürümü için eksiksiz referans. add-user, check-config, check-repo-connection, inspect, inspect-async ve diğer komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
+- [Release 2025.09](https://docs.digna.ai/tr/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
+- [Release 2025.04](https://docs.digna.ai/tr/cli/Command_Line_Interface_202504/): Complete reference for digna CLI release 2025.04. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, and more.
+- [Release 2024.12](https://docs.digna.ai/tr/cli/Command_Line_Interface_202412/): digna CLI sürümü 2024.12 için eksiksiz referans. add-user, check-repo-connection, upgrade-repo, inspect ve diğer komutlarla kullanıcıları, repository'leri ve veriyi nasıl yöneteceğinizi öğrenin.
+- [Release 2024.11](https://docs.digna.ai/tr/cli/Command_Line_Interface_202411/): digna CLI sürümü 2024.11 için eksiksiz başvuru. add-user, check-repo-connection, upgrade-repo, inspect, tls-status ve daha fazlası gibi komutlarla kullanıcıları, repository'leri ve verileri nasıl yöneteceğinizi öğrenin.
+- [Release 2024.09](https://docs.digna.ai/tr/cli/Command_Line_Interface_202409/): digna CLI sürümü 2024.09 için eksiksiz başvuru. add-user, check-repo-connection, upgrade-repo, inspect, tls-status ve daha fazlası gibi komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
+
+## Changelog
+
+- [Release 2026.06](https://docs.digna.ai/tr/changelog/Release_202606/): digna Sürüm 2026.06'da neler yenilendi öğrenin. Bu sürüm yeni digna Python SDK'sını, Docker dağıtım desteğini, yenilenmiş bir dashboard deneyimini ve doğrulama kuralı yönetimi için genişletilmiş içe/dışa aktarma yeteneklerini tanıtıyor.
+- [Release 2026.04](https://docs.digna.ai/tr/changelog/Release_202604/): digna Sürüm 2026.04 ile gelen yenilikleri öğrenin. Bu sürüm, Analytics Chart ile gelişmiş zaman serisi analizi, yeniden kullanılabilir doğrulama kuralı şablonları, enumerations ile izin verilen değerlerin merkezi standardizasyonunu ve sütun düzeyinde alaka koşullarını tanıtıyor.
+- [Release 2026.01](https://docs.digna.ai/tr/changelog/Release_202601/): digna Sürüm 2026.01'de nelerin yeni olduğunu öğrenin. Bu sürüm küresel veritabanı bağlantıları, mantıksal veri kaynakları, anomali önem koşulları, CSV dışa aktarımları ve referans bütünlüğü kontrollerini içeren gelişmiş veri doğrulamayı tanıtır.
+- [Release 2025.09](https://docs.digna.ai/tr/changelog/Release_202509/): digna Sürüm 2025.09'daki yenilikleri öğrenin. Bu sürüm modüler bir mimari, beş yeni modül, MFA via OIDC ve modül başına bildirimler sunuyor.
+- [Release 2025.04](https://docs.digna.ai/tr/changelog/Release_202504/): digna Sürüm 2025.04'te neler yeni öğrenin. Bu sürüm Inspection Hub'ı, çok dil desteğini (İngilizce, Almanca, Lehçe), dignacli ile veri kaynaklarının içe/dışa aktarımını, Module Analytics'in ilk sürümünü ve geliştirilmiş bir gösterge paneli deneyimini tanıtıyor.
+- [Release 2024.12](https://docs.digna.ai/tr/changelog/Release_202412/): digna Sürüm 2024.12'te nelerin yeni olduğunu keşfedin. Bu sürüm dahili bir zamanlayıcı, PDF raporlama, esnek özel sütunlar, dinamik snapshot sorgu yer tutucuları ve anomali tespiti ile veri kalitesi izlemeyi iyileştirmek için daha akıllı eşik optimizasyonu sunar.
+
+## Notes
+
+- Every page is also available as raw Markdown: append `.md` to its URL, e.g. `https://docs.digna.ai/platform/overview.md`.
+- `llms-full.txt` beside this file carries the full text of every page in one request.
+- This documentation is published in 27 languages under a locale prefix (`/de/`, `/fr/`, `/es/`, `/it/`, `/pl/`, `/pt/`, `/sv/`, `/nb/`, `/da/`, `/fi/`, `/et/`, `/lt/`, `/lv/`, `/nl/`, `/cs/`, `/hu/`, `/tr/`, `/ro/`, `/sl/`, `/el/`, `/uk/`, `/ru/`, `/ja/`, `/ko/`, `/hi/`, `/ar/`). Each locale has its own `llms.txt`. The sitemap at https://docs.digna.ai/sitemap.xml lists every URL.
+- The marketing site at https://www.digna.ai covers use cases, industry applications and company information not duplicated here.
