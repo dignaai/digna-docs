@@ -555,13 +555,14 @@ html .md-footer-meta.md-typeset a:hover {
    previous one. Scoped to the second level, so it catches the groups inside
    a tab without touching the tab's own title. */
 .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link[for] {
-  margin-top: 0.9rem;
-  padding-top: 0.7rem;
-  border-top: 1px solid var(--md-default-fg-color--lightest);
-  color: var(--md-default-fg-color--light);
-  font-size: 0.56rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.35rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--md-default-fg-color--lighter);
+  color: var(--md-default-fg-color);
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: default;
 }
@@ -578,6 +579,15 @@ html .md-footer-meta.md-typeset a:hover {
    nothing. */
 .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link[for] .md-nav__icon {
   display: none;
+}
+
+/* A heading alone still leaves the pages beneath it looking like siblings of
+   the heading rather than its contents. Indent them so each group reads as a
+   block. (A hairline down the left was tried here and is not worth it: at the
+   lightest token it is invisible, and at the next step up it competes with
+   the divider between groups.) */
+.md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav > .md-nav__list {
+  margin-inline-start: 0.35rem;
 }
 
 .md-nav--secondary .md-nav__link--active {
