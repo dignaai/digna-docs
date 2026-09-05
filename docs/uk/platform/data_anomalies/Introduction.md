@@ -2,6 +2,24 @@
 title: Data Anomalies – Автоматичне виявлення | digna документація
 description: Дізнайтеся, як digna Data Anomalies автоматично виявляє спади обсягу, пропущені значення, зсуви розподілів і неочікувані патерни без ручних правил. Покращте якість даних за допомогою виявлення аномалій на базі ШІ.
 image: /assets/logo_square.png
+keywords:
+  - data anomalies
+  - ai anomaly detection
+  - data quality monitoring
+  - quality of data
+  - observability of data
+  - missing data detection
+  - data volume monitoring
+  - distribution drift
+  - data reliability
+  - digna data anomalies
+lang: uk
+robots: index, follow
+og_title: Data Anomalies – Автоматичне виявлення | digna документація
+og_description: Дізнайтеся, як digna Data Anomalies автоматично виявляє спади обсягу, пропущені значення, зсуви розподілів і неочікувані патерни без ручних правил. Покращте якість даних за допомогою виявлення аномалій на базі ШІ.
+og_image: /assets/logo_square.png
+og_type: article
+twitter_card: summary_large_image
 ---
 
 # Data Anomalies – Автоматичне виявлення

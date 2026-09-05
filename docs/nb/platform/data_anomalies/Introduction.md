@@ -2,6 +2,24 @@
 title: Data Anomalies – Automatisk deteksjon | digna dokumentasjon
 description: Oppdag hvordan digna Data Anomalies automatisk oppdager volumfall, manglende verdier, forskyvninger i fordelinger og uventede mønstre uten manuelle regler. Forbedre datakvaliteten med AI-drevet anomalideteksjon.
 image: /assets/logo_square.png
+keywords:
+  - data anomalies
+  - ai anomaly detection
+  - data quality monitoring
+  - quality of data
+  - observability of data
+  - missing data detection
+  - data volume monitoring
+  - distribution drift
+  - data reliability
+  - digna data anomalies
+lang: nb
+robots: index, follow
+og_title: Data Anomalies – Automatisk deteksjon | digna dokumentasjon
+og_description: Oppdag hvordan digna Data Anomalies automatisk oppdager volumfall, manglende verdier, forskyvninger i fordelinger og uventede mønstre uten manuelle regler. Forbedre datakvaliteten med AI-drevet anomalideteksjon.
+og_image: /assets/logo_square.png
+og_type: article
+twitter_card: summary_large_image
 ---
 
 # Data Anomalies – Automatisk deteksjon
