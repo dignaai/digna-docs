@@ -13,6 +13,33 @@
 {% endblock %}
 
 {#-
+  Announcement bar pointing at the newest release. Both halves of the label
+  are nav titles, which mkdocs-static-i18n has already translated, so this
+  introduces no new strings to maintain in 26 languages. It finds the
+  changelog by URL rather than by title for the same reason — paths are
+  identical across locales, titles are not.
+-#}
+{% block announce %}
+  {% set ns = namespace(section=none, latest=none) %}
+  {% for item in nav %}
+    {% if ns.latest is none and item.children %}
+      {% set first = item.children[0] %}
+      {% if first.url and "changelog/" in first.url %}
+        {% set ns.section = item %}
+        {% set ns.latest = first %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% if ns.latest %}
+    <a href="{{ ns.latest.url | url }}" class="dg-announce">
+      <span class="dg-announce__badge">{{ ns.latest.title }}</span>
+      <span class="dg-announce__text">{{ ns.section.title }}</span>
+      {% include ".icons/material/arrow-right.svg" %}
+    </a>
+  {% endif %}
+{% endblock %}
+
+{#-
   The homepage gets a landing-page treatment (hero + section cards +
   the usual prose underneath) instead of the stock article layout.
   See partials/home.html — it is driven entirely by the nav and the
@@ -31,6 +58,7 @@
   {% if page and page.is_index and "/" not in page.url.strip("/") %}
     {% include "partials/home.html" %}
   {% else %}
+    {% include "partials/breadcrumbs.html" %}
     {{ super() }}
   {% endif %}
 {% endblock %}
@@ -70,6 +98,22 @@
   {% set og_image_path = meta.og_image or meta.image %}
   {% set og_type = meta.og_type or "website" %}
 
+  {#- The social plugin, when enabled, appends a complete Open Graph and
+      Twitter set (title, description, url, card image and dimensions) to
+      page.meta.meta, which base.html renders earlier in the head. Emitting
+      ours as well would duplicate every one of those tags and leave
+      crawlers to pick. So when the plugin has spoken, this block stands
+      down for OG/Twitter and keeps only what the plugin does not cover:
+      keywords, robots, locale, hreflang and the JSON-LD below. -#}
+  {% set ns_card = namespace(found=false) %}
+  {% for tag in (meta.meta or []) %}
+    {% if tag.property is defined and tag.property == "og:image" %}
+      {% set ns_card.found = true %}
+    {% endif %}
+  {% endfor %}
+
+  {% if not ns_card.found %}
+
   {% if og_title %}
     <meta property="og:title" content="{{ og_title }}">
   {% endif %}
@@ -98,6 +142,8 @@
   {% if og_image_path %}
     <meta name="twitter:image" content="{{ og_image_url }}">
   {% endif %}
+
+  {% endif %}{#- /not ns_card.found -#}
 
   {% if meta.keywords %}
     <meta name="keywords" content="{{ meta.keywords if meta.keywords is string else meta.keywords | join(', ') }}">

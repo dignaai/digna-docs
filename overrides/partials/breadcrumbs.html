@@ -1,0 +1,52 @@
+{#-
+  Visible breadcrumb trail.
+
+  `navigation.path` is listed in mkdocs.yml, but breadcrumbs are an Insiders
+  feature: the community package ships no partials/path.html and never
+  references the flag, so that line renders nothing. This partial supplies
+  the trail instead, walking the same page.parent chain that the
+  BreadcrumbList JSON-LD in main.html already reports to search engines —
+  so what crawlers are told and what readers see finally agree.
+
+  Titles come from the nav, which mkdocs-static-i18n translates per locale,
+  so this needs no per-language content. Sections have no URL of their own;
+  where navigation.indexes has given one an index page we link to that,
+  otherwise the crumb is plain text.
+-#}
+{% macro section_url(item) %}
+  {%- if item.url -%}
+    {{- item.url -}}
+  {%- elif item.children and item.children[0].is_page and item.children[0].is_index -%}
+    {{- item.children[0].url -}}
+  {%- endif -%}
+{% endmacro %}
+
+{% set ns = namespace(node=page.parent, crumbs=[]) %}
+{% for _ in range(8) %}
+  {% if ns.node %}
+    {% if ns.node.title %}
+      {% set ns.crumbs = [ns.node] + ns.crumbs %}
+    {% endif %}
+    {% set ns.node = ns.node.parent %}
+  {% endif %}
+{% endfor %}
+
+{% if ns.crumbs %}
+  <nav class="dg-breadcrumbs" aria-label="{{ lang.t('nav') | d('Navigation', true) }}">
+    <ol class="dg-breadcrumbs__list">
+      <li class="dg-breadcrumbs__item">
+        <a href="{{ config.extra.homepage | d(base_url, true) }}">{{ config.site_name }}</a>
+      </li>
+      {% for crumb in ns.crumbs %}
+        {% set target = section_url(crumb) | trim %}
+        <li class="dg-breadcrumbs__item">
+          {% if target %}
+            <a href="{{ target | url }}">{{ crumb.title }}</a>
+          {% else %}
+            <span>{{ crumb.title }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+{% endif %}

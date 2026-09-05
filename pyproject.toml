@@ -7,7 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-mkdocs-material = "^9.6.19"
+# The "imaging" extra (cairosvg + pillow) powers the social-card plugin.
+# It also needs system libraries: see .github/workflows for CI, and
+# `brew install cairo freetype libffi libjpeg libpng` for local previews.
+mkdocs-material = {version = "^9.6.19", extras = ["imaging"]}
 mkdocs-ultralytics-plugin = "^0.1.30"
 mkdocs-static-i18n = "^1.3.0"
 openai = "^2.6.0"

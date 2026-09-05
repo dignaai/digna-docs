@@ -28,7 +28,10 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky  # keep the section tabs visible while scrolling
     - navigation.sections
-    - navigation.path         # breadcrumbs (Insiders gives extra options, but not required)
+    # NB: navigation.path (breadcrumbs) is Insiders-only — the community
+    # package ships no partials/path.html and ignores the flag entirely.
+    # Breadcrumbs come from overrides/partials/breadcrumbs.html instead.
+    - announce.dismiss        # let readers close the release banner
     - navigation.top          # back-to-top button
     - navigation.tracking     # reflect the active anchor in the address bar
     - navigation.footer       # next/previous page links
@@ -66,7 +69,7 @@ nav:
           - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
       - How to configure Single Sign-on: installation_deployment/sso_integration_guide.md
   - Getting Started:
-      - First steps:
+      - First Steps:
           - How to create a data project: getting_started/how_to_create_project.md
           - How to connect a database to data project: getting_started/how_to_connect_database_to_data_project.md
           - How to add a datasource to project: getting_started/how_to_add_a_datasource_to_project.md
@@ -75,7 +78,7 @@ nav:
           - How to use crontab definition: getting_started/how_to_use_crontab.md
   - Integration:
       - Databases:
-          - Azure Synaps: databases/azure_synapse_connector_guide.md
+          - Azure Synapse: databases/azure_synapse_connector_guide.md
           - Databricks: databases/databricks_connector_guide.md
           - Databricks Legacy: databases/databricks_legacy_connector_guide.md
           - Hive: databases/hive_connector_guide.md
@@ -165,9 +168,28 @@ markdown_extensions:
 extra_css:
   - style/extra.css
 
+# Emits per-page .md, llms.txt and llms-full.txt for every locale.
+hooks:
+  - hooks/ai_exports.py
+
 # --- SEO & Performance ---
 plugins:
   - search
+
+  # Generates a branded Open Graph card per page, so a shared link previews
+  # with the page's own title rather than one static logo across 1,000+ pages.
+  #
+  # Gated on CI because cairosvg needs system libraries (libcairo et al.)
+  # that a plain `poetry install` does not provide. GitHub Actions sets
+  # CI=true and installs them; locally the plugin stays off unless you
+  # export CI=true after `brew install cairo freetype libffi libjpeg libpng`.
+  - social:
+      enabled: !ENV [CI, false]
+      cards_layout_options:
+        background_color: "#0B1626"
+        color: "#FFFFFF"
+        font_family: Inter
+
   - minify:
       minify_html: true
       minify_js: true
