@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trendy, stabilność i długoterminowe wnioski | Dokumentacja digna
 description: Dowiedz się, jak Data Analytics w digna ujawnia długoterminowe trendy, zmienność i stabilność danych w odniesieniu do KPI. Wykrywaj zmiany w jakości i obserwowalności danych, odkrywaj ukryte anomalie i przekształcaj statystyki w praktyczne wnioski.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data analytics

@@ -142,9 +142,9 @@ usePassword = true
 - Ühtegi kasutajanime/parooli välja ei kuvata
 - Aineteid ainult OIDC autentimine on võimalik
 
-> **Näpunäide**
->
-> Paroolipõhine sisselogimine on saadaval ainult kasutajatele, kes loodi parooliga kasutades käsku `digna user add` või läbi juhtpaneeli.
+!!! tip "Näpunäide"
+
+    Paroolipõhine sisselogimine on saadaval ainult kasutajatele, kes loodi parooliga kasutades käsku `digna user add` või läbi juhtpaneeli.
 
 ### Täielik näide
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Tagasi suunamise URL pärast autentimist | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC konfiguratsiooni lõpp-punkt | `https://login.microsoftonline.com/...` |
 
-> **Tähtis**
->
-> Asenda kohatäited (`<client_id>`, `<client_secret>`, `<tenant_id>`) tegelike volitustega, mis saadakse sinu identiteedipakkuja arendajapaneelilt.
+!!! warning "Tähtis"
+
+    Asenda kohatäited (`<client_id>`, `<client_secret>`, `<tenant_id>`) tegelike volitustega, mis saadakse sinu identiteedipakkuja arendajapaneelilt.
 
 ### Redirect URI
 

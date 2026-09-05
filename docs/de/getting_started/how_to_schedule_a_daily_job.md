@@ -2,6 +2,7 @@
 title: So erstellen Sie einen Job, der täglich ausgeführt wird
 description: Erfahren Sie, wie Sie über das Dashboard in digna einen täglichen Inspektions-Job planen.
 keywords: digna scheduling, datenqualitäts-automatisierung, täglicher job
+image: /assets/logo_square.png
 ---
 
 # So planen Sie einen täglichen Job

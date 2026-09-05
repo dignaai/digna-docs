@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – On-Time Delivery Monitoring | digna Documentation
 description: Learn how digna Data Timeliness ensures data arrives when expected. Detect late or missing deliveries, monitor SLAs, and protect business processes from silent delays. AI-powered detection for improved data quality and observability of data pipelines.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - data timeliness

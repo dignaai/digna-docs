@@ -1,6 +1,7 @@
 ---
 title: Yhdistä tietokanta | digna-dokumentaatio
 description: Askel askeleelta -opas tietokannan yhdistämiseen olemassa olevaan projektiin dignassa. Opi konfiguroimaan yhteydet, antamaan tunnistetiedot ja ottamaan käyttöön turvallinen pääsy.
+image: /assets/logo_square.png
 ---
 
 # Yhdistä tietokanta

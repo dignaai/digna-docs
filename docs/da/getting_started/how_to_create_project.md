@@ -1,6 +1,7 @@
 ---
 title: Opret et projekt | digna Dokumentation
 description: Trin-for-trin guide til at oprette et nyt projekt i digna. Lær hvordan du åbner projektsektionen, indtaster oplysninger og gemmer projekter med en interaktiv demo.
+image: /assets/logo_square.png
 ---
 
 

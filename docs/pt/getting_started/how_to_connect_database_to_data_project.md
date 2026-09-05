@@ -1,6 +1,7 @@
 ---
 title: Conectar um Banco de Dados | digna Documentation
 description: Guia passo a passo para conectar um banco de dados a um projeto existente no digna. Aprenda a configurar conexões, fornecer credenciais e habilitar acesso seguro.
+image: /assets/logo_square.png
 ---
 
 # Conectar um Banco de Dados

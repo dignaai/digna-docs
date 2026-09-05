@@ -1,7 +1,6 @@
 ---
 title: digna CLI Referansı 2024.12 – Komutlar ve Örnekler | digna Dokümantasyonu
 description: digna CLI sürümü 2024.12 için eksiksiz referans. add-user, check-repo-connection, upgrade-repo, inspect ve diğer komutlarla kullanıcıları, repository'leri ve veriyi nasıl yöneteceğinizi öğrenin.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 
@@ -32,6 +31,7 @@ Bu sayfa, ***digna*** CLI sürümü **2024.12**'de kullanılabilir tüm komutlar
     `--help` öğesini ***digna*** anahtar kelimesinden hemen sonra kullanın  
    ```bash
    dignacli --help
+   ```
 
 3.  **Belirli Komutlar İçin Yardım Alma:**  
   

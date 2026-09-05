@@ -1,7 +1,6 @@
 ---
 title: digna CLI リファレンス 2025.09 – コマンドと例 | digna ドキュメント
 description: digna CLI リリース 2025.09 の完全リファレンス。add-user、check-config、check-repo-connection、inspect、inspect-async などのコマンドを使ってユーザー、リポジトリ、データを管理する方法を解説します。
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

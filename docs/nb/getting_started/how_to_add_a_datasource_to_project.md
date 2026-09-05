@@ -1,6 +1,7 @@
 ---
 title: Koble til en database | digna-dokumentasjon
 description: Trinnvis veiledning for å koble en database til et eksisterende prosjekt i digna. Lær hvordan du velger en tilkobling, konfigurerer innstillinger og aktiverer sikker tilgang.
+image: /assets/logo_square.png
 ---
 
 # Legg til Datasource (Table) i et prosjekt

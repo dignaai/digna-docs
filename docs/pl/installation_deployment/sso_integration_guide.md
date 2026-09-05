@@ -142,9 +142,9 @@ usePassword = true
 - Brak pól nazwy użytkownika/hasła
 - Dostępne jest wyłącznie uwierzytelnianie OIDC
 
-> **Wskazówka**
->
-> Logowanie za pomocą hasła jest dostępne tylko dla użytkowników utworzonych z hasłem przy użyciu polecenia `digna user add` lub poprzez dashboard.
+!!! tip "Wskazówka"
+
+    Logowanie za pomocą hasła jest dostępne tylko dla użytkowników utworzonych z hasłem przy użyciu polecenia `digna user add` lub poprzez dashboard.
 
 ### Pełny przykład
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | URL przekierowania po uwierzytelnieniu | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | Punkt końcowy konfiguracji OIDC | `https://login.microsoftonline.com/...` |
 
-> **Ważne**
->
-> Zastąp wartości zastępcze (`<client_id>`, `<client_secret>`, `<tenant_id>`) rzeczywistymi danymi z panelu deweloperskiego Twojego dostawcy tożsamości.
+!!! warning "Ważne"
+
+    Zastąp wartości zastępcze (`<client_id>`, `<client_secret>`, `<tenant_id>`) rzeczywistymi danymi z panelu deweloperskiego Twojego dostawcy tożsamości.
 
 ### Redirect URI
 

@@ -2,7 +2,6 @@
 title: digna Sürüm 2025.04 | Inspection Hub, Çok Dilli, Module Analytics
 description: digna Sürüm 2025.04'te neler yeni öğrenin. Bu sürüm Inspection Hub'ı, çok dil desteğini (İngilizce, Almanca, Lehçe), dignacli ile veri kaynaklarının içe/dışa aktarımını, Module Analytics'in ilk sürümünü ve geliştirilmiş bir gösterge paneli deneyimini tanıtıyor.
 keywords: digna Sürüm 2025.04, digna değişiklik günlüğü, digna inspection hub, digna çoklu dil desteği, digna module analytics, digna içe dışa aktarma, digna CLI, sürüm notları, veri gözlemlenebilirliği, veri kalite izleme
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

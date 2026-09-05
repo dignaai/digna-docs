@@ -1,6 +1,7 @@
 ---
 title: Pianificazione avanzata con Crontab
 description: Scopri come pianificare un job in *digna* usando espressioni crontab per una temporizzazione avanzata.
+image: /assets/logo_square.png
 ---
 
 # Pianificazione avanzata con Crontab

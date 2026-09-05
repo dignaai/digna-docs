@@ -1,6 +1,7 @@
 ---
 title: Vytvoření projektu | digna Dokumentace
 description: Krok za krokem návod na vytvoření nového projektu v digna. Naučte se, jak otevřít sekci projektů, zadat údaje a uložit projekt s interaktivní ukázkou.
+image: /assets/logo_square.png
 ---
 
 

@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Seuraa skeeman kehitystä | digna Documentation
 description: Tutustu siihen, miten digna Data Schema Tracker seuraa sarakkeiden muutoksia, tietotyyppipäivityksiä ja skeeman liukumista. Tunnista ja hälytä sekä tarkoituksellisista että tahattomista skeemamuutoksista estääksesi ETL-virheet, rikkinäiset raportit ja observabiliteetin heikentymisen.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - skeeman seuranta

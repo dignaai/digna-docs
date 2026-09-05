@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2024.12 – Commands & Examples | digna Documentation
 description: Fullstendig referanse for digna CLI-utgivelsen 2024.12. Lær hvordan du administrerer brukere, repositories og data med kommandoer som add-user, check-repo-connection, upgrade-repo, inspect og mer.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 
@@ -32,6 +31,7 @@ Denne siden dokumenterer hele settet med kommandoer tilgjengelig i ***digna*** C
     Bruk --help umiddelbart etter kommandoen `dignacli`  
    ```bash
    dignacli --help
+   ```
 
 3.  **Få hjelp for spesifikke kommandoer:**  
   

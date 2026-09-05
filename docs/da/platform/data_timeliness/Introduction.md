@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Overvågning af rettidig levering | digna Dokumentation
 description: Lær, hvordan digna Data Timeliness sikrer, at data ankommer til forventet tid. Opdag forsinkede eller manglende leverancer, overvåg SLA'er, og beskyt forretningsprocesser mod skjulte forsinkelser. AI-drevet detektion for forbedret datakvalitet og observabilitet af datapipelines.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - data rettidighed

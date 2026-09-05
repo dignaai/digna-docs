@@ -1,6 +1,7 @@
 ---
 title: 데이터베이스 연결 | digna 문서
 description: 기존 digna 프로젝트에 데이터베이스를 연결하는 단계별 가이드입니다. 연결 구성, 자격 증명 제공 및 보안 액세스 활성화 방법을 알아보세요.
+image: /assets/logo_square.png
 ---
 
 # 데이터베이스 연결

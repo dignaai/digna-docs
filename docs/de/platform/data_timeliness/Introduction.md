@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Überwachung der termingerechten Lieferung | digna Dokumentation
 description: Erfahren Sie, wie digna Data Timeliness sicherstellt, dass Daten zum erwarteten Zeitpunkt ankommen. Erkennen Sie verspätete oder fehlende Lieferungen, überwachen Sie SLAs und schützen Sie Geschäftsprozesse vor stillen Verzögerungen. KI-gestützte Erkennung für verbesserte Datenqualität und Observability von Datenpipelines.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - daten pünktlichkeit

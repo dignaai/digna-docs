@@ -1,6 +1,7 @@
 ---
 title: Luo projekti | digna-dokumentaatio
 description: Askeltainen ohje uuden projektin luomiseen digna:ssa. Opi avaamaan projektiosio, syöttämään tiedot ja tallentamaan projektit interaktiivisen demon avulla.
+image: /assets/logo_square.png
 ---
 
 

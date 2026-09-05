@@ -2,7 +2,6 @@
 title: digna Lansare 2025.04 | Inspection Hub, Suport multi-limbă, Module Analytics
 description: Află noutățile din digna Lansare 2025.04. Această versiune introduce Inspection Hub, suport multi-limbă (engleză, germană, poloneză), import/export de surse de date prin dignacli, prima versiune a Module Analytics și o experiență de dashboard îmbunătățită.
 keywords: digna Lansare 2025.04, digna changelog, digna inspection hub, digna suport multi-limbă, digna module analytics, digna import export, digna CLI, note de lansare, observabilitatea datelor, monitorizarea calității datelor
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

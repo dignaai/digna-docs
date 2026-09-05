@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Komennot & Esimerkit | digna-dokumentaatio
 description: Täydellinen viite digna CLI -versiolle 2025.04. Opi hallitsemaan käyttäjiä, repositorioita ja dataa komennoilla kuten add-user, check-repo-connection, upgrade-repo, inspect ja muilla.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 

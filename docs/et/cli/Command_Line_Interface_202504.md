@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Käsud ja näited | digna Dokumentatsioon
 description: Täielik viide digna CLI väljalaske 2025.04 kohta. Õppige, kuidas hallata kasutajaid, reposiitoreid ja andmeid käskudega nagu add-user, check-repo-connection, upgrade-repo, inspect ja teised.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ Valik `--help` kuvab teavet saadaolevate käskude ja nende kasutuse kohta. Selle
     Kasutage `--help` kohe pärast märksõna ***dignacli***  
    ```bash
    dignacli --help
+   ```
 
 2. **Abi saamine konkreetse käsu kohta:**  
   

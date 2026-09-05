@@ -142,9 +142,9 @@ usePassword = true
 - Ingen brugernavn-/adgangskodefelter
 - Kun OIDC-godkendelse er tilgængelig
 
-> **Tip**
->
-> Login med adgangskode er kun tilgængeligt for brugere, der blev oprettet med adgangskoder ved hjælp af `digna user add`-kommandoen eller via dashboardet.
+!!! tip "Tip"
+
+    Login med adgangskode er kun tilgængeligt for brugere, der blev oprettet med adgangskoder ved hjælp af `digna user add`-kommandoen eller via dashboardet.
 
 ### Complete Example
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback-URL efter autentificering | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC-konfigurations-endpoint | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> Erstat pladsholder-værdierne (`<client_id>`, `<client_secret>`, `<tenant_id>`) med faktiske legitimationsoplysninger fra din identitetsudbyders developer-portal.
+!!! warning "Important"
+
+    Erstat pladsholder-værdierne (`<client_id>`, `<client_secret>`, `<tenant_id>`) med faktiske legitimationsoplysninger fra din identitetsudbyders developer-portal.
 
 ### Redirect URI
 

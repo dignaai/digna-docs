@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – 時間通りの配信監視 | digna ドキュメント
 description: digna Data Timeliness はデータが期待どおりの時間に到着することを保証します。遅延や欠落を検出し、SLA を監視し、サイレントな遅延からビジネスプロセスを保護します。AI による検出でデータ品質とパイプラインの可観測性を向上させます。
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - data timeliness

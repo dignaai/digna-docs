@@ -2,6 +2,7 @@
 title: Jak utworzyć zadanie uruchamiane codziennie | Dokumentacja digna
 description: Dowiedz się, jak zaplanować dzienne zadanie inspekcji w digna za pomocą dashboardu.
 keywords: digna scheduling, automatyzacja jakości danych, zadanie dzienne
+image: /assets/logo_square.png
 ---
 
 # Jak zaplanować zadanie wykonywane codziennie

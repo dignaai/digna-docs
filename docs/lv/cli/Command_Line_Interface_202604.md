@@ -1,7 +1,6 @@
 ---
 title: digna CLI atsauce 2026.04 – Komandas un piemēri | digna dokumentācija
 description: Pilna atsauce par digna CLI laidienu 2026.04
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

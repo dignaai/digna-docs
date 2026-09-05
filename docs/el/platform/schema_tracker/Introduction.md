@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Παρακολούθηση της Εξέλιξης του Σχήματος | Τεκμηρίωση digna
 description: Μάθετε πώς το digna Data Schema Tracker παρακολουθεί αλλαγές στηλών, ενημερώσεις τύπων δεδομένων και schema drift. Εντοπίστε και λαμβάνετε ειδοποιήσεις για σκόπιμες ή ακούσιες αλλαγές σχήματος ώστε να αποφεύγετε σφάλματα ETL, κατεστραμμένα dashboards και απώλεια παρατηρησιμότητας δεδομένων.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - παρακολούθηση σχήματος δεδομένων

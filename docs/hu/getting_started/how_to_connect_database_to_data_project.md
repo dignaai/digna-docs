@@ -1,6 +1,7 @@
 ---
 title: Adatbázis csatlakoztatása | digna dokumentáció
 description: Lépésről lépésre útmutató egy adatbázis csatlakoztatásához egy meglévő projekthez a digna rendszerben. Ismerd meg a kapcsolat konfigurálását, a hitelesítő adatok megadását és a biztonságos hozzáférés engedélyezését.
+image: /assets/logo_square.png
 ---
 
 # Adatbázis csatlakoztatása

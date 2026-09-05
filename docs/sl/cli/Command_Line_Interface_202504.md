@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Ukazi in primeri | digna Dokumentacija
 description: Popolna referenca za digna CLI izdajo 2025.04. Naučite se upravljati uporabnike, repozitorije in podatke z ukazi, kot so add-user, check-repo-connection, upgrade-repo, inspect in drugi.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ Možnost `--help` zagotavlja informacije o razpoložljivih ukazih in njihovi upo
     Uporabite --help takoj za ključno besedo ***digna***cl  
    ```bash
    dignacli --help
+   ```
 
 2. **Pridobitev pomoči za določene ukaze:**  
   

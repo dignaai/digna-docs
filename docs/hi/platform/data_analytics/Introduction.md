@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trends, Stability & Long-Term Insights | digna Documentation
 description: Learn how digna Data Analytics reveals long-term trends, volatility, and data stability across KPIs. Detect shifts in the quality and observability of data, uncover hidden anomalies, and turn statistics into actionable insights.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data analytics

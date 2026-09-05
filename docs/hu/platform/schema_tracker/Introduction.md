@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Séma evolúciójának nyomon követése | digna Dokumentáció
 description: Ismerje meg, hogyan figyeli a digna Data Schema Tracker az oszlopváltozásokat, adattípus-frissítéseket és a séma driftet. Észlelje és riasztson szándékos és szándékolatlan sémaváltozások esetén, hogy megelőzze az ETL-hibákat, törött dashboardokat és az adatok megfigyelhetőségének elvesztését.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - adat séma követés

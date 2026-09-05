@@ -1,6 +1,7 @@
 ---
 title: Utwórz projekt | Dokumentacja digna
 description: Przewodnik krok po kroku tworzenia nowego projektu w digna. Dowiedz się, jak otworzyć sekcję projektów, wprowadzić dane i zapisać projekt wraz z interaktywną prezentacją.
+image: /assets/logo_square.png
 ---
 
 

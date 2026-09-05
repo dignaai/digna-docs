@@ -1,6 +1,7 @@
 ---
 title: Planificare avansată cu Crontab
 description: Află cum să programezi un job în *digna* folosind expresii crontab pentru programări avansate.
+image: /assets/logo_square.png
 ---
 
 # Planificare Avansată cu Crontab

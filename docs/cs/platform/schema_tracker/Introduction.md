@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Monitorování evoluce schématu | digna Dokumentace
 description: Zjistěte, jak digna Data Schema Tracker monitoruje změny sloupců, aktualizace datových typů a drift schématu. Detekujte a upozorněte na úmyslné i neúmyslné změny schématu, aby nedošlo k selhání ETL, rozbitým dashboardům nebo ztrátě observability dat.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - data schema tracker

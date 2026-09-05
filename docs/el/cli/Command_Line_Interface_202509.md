@@ -1,7 +1,6 @@
 ---
 title: Αναφορά digna CLI 2025.09 – Εντολές & Παραδείγματα | digna Documentation
 description: Πλήρης αναφορά για το digna CLI έκδοση 2025.109. Μάθετε πώς να διαχειρίζεστε χρήστες, αποθετήρια και δεδομένα με εντολές όπως add-user, check-config, check-repo-connection, inspect, inspect-async και άλλες.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

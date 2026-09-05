@@ -2,7 +2,6 @@
 title: Azure Synapse savienotājs – datubāzu integrācija | digna dokumentācija
 description: Konfigurējiet *digna*, lai izveidotu savienojumu ar Azure Synapse Analytics, izmantojot vai nu vietējo Python draiveri, vai ODBC draiveri. Atbalsta gan serverless, gan dedicated SQL poolus.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

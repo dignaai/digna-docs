@@ -16,11 +16,10 @@ keywords:
 lang: ro
 robots: index, follow
 og_title: Platforma *digna* – Calitate și Observabilitate a Datelor bazate pe AI
-og_description: *digna* monitorizează calitatea și observabilitatea datelor direct în mediul dvs. Alimentată de AI, complet on-premises sau în private cloud, asigurând control, conformitate și performanță.
+og_description: "*digna* monitorizează calitatea și observabilitatea datelor direct în mediul dvs. Alimentată de AI, complet on-premises sau în private cloud, asigurând control, conformitate și performanță."
 og_image: /assets/logo_square.png
 og_type: website
 twitter_card: summary_large_image
-canonical_url: https://docs.digna.ai/
 ---
 
 # *digna* Platform

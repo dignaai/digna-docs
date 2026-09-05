@@ -1,6 +1,7 @@
 ---
 title: Geavanceerde planning met Crontab
 description: Leer hoe je een taak plant in digna met crontab-expressies voor geavanceerde timing.
+image: /assets/logo_square.png
 ---
 
 # Geavanceerde planning met Crontab

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Tendenser, Stabilitet & Langsigtede Indsigter | digna Dokumentation
 description: Lær hvordan digna Data Analytics afslører langsigtede tendenser, volatilitet og datastabilitet på tværs af KPI'er. Registrer ændringer i datakvalitet og observability, find skjulte anomalier, og omsæt statistik til handling.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - dataanalyse

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trendi, stabilnost in dolgoročni vpogledi | digna Dokumentacija
 description: Izvedite, kako digna Data Analytics razkriva dolgoročne trende, nihajnost in stabilnost podatkov preko KPI-jev. Zaznajte premike v kakovosti in opazljivosti podatkov, odkrijte skrite anomalije in spremenite statistiko v uporabne vpoglede.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - analiza podatkov

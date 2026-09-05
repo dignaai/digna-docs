@@ -142,9 +142,9 @@ usePassword = true
 - Nav lietotājvārda/paroles lauku
 - Pieejama tikai OIDC autentifikācija
 
-> **Padoms**
->
-> Pieteikšanās ar paroli ir pieejama tikai tiem lietotājiem, kuri tika izveidoti ar parolēm, izmantojot komandu `digna user add` vai caur informācijas paneli.
+!!! tip "Padoms"
+
+    Pieteikšanās ar paroli ir pieejama tikai tiem lietotājiem, kuri tika izveidoti ar parolēm, izmantojot komandu `digna user add` vai caur informācijas paneli.
 
 ### Pilns piemērs
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Jā | Pāradresācijas (callback) URL pēc autentifikācijas | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Jā | OIDC konfigurācijas beigu punkts | `https://login.microsoftonline.com/...` |
 
-> **Svarīgi**
->
-> Aizstājiet vietturu vērtības (`<client_id>`, `<client_secret>`, `<tenant_id>`) ar reālām akreditācijām no jūsu identitātes sniedzēja izstrādātāju paneļa.
+!!! warning "Svarīgi"
+
+    Aizstājiet vietturu vērtības (`<client_id>`, `<client_secret>`, `<tenant_id>`) ar reālām akreditācijām no jūsu identitātes sniedzēja izstrādātāju paneļa.
 
 ### Redirect URI
 

@@ -1,6 +1,7 @@
 ---
 title: Projekt létrehozása | digna Dokumentáció
 description: Lépésről lépésre útmutató új projekt létrehozásához a digna-ban. Ismerd meg, hogyan nyisd meg a projekt szekciót, add meg a részleteket, és mentsd el a projektet egy interaktív demó segítségével.
+image: /assets/logo_square.png
 ---
 
 

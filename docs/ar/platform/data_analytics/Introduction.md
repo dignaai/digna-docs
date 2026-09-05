@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – الاتجاهات والثبات والرؤى الطويلة الأمد | توثيق digna
 description: تعرّف على كيفية كشف digna Data Analytics للاتجاهات الطويلة الأمد، والتقلب، واستقرار البيانات عبر مؤشرات الأداء. اكتشف كيفية اكتشاف التحولات في جودة وقابلية ملاحظة البيانات، وكشف الشذوذ المخفي، وتحويل الإحصاءات إلى رؤى قابلة للتنفيذ.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - تحليلات البيانات

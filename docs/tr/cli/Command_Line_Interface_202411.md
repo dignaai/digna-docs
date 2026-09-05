@@ -1,7 +1,6 @@
 ---
 title: digna CLI Başvuru 2024.11 – Komutlar & Örnekler | digna Dokümantasyonu
 description: digna CLI sürümü 2024.11 için eksiksiz başvuru. add-user, check-repo-connection, upgrade-repo, inspect, tls-status ve daha fazlası gibi komutlarla kullanıcıları, repository'leri ve verileri nasıl yöneteceğinizi öğrenin.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ Bu sayfa, ***digna*** CLI sürümü **2024.11**'de kullanılabilen tüm komutlar
     `--help`'i ***dignacli*** anahtar kelimesinden hemen sonra kullanın.  
    ```bash
    dignacli --help
+   ```
 
 3.  **Belirli Komutlar İçin Yardım Alma:**  
   

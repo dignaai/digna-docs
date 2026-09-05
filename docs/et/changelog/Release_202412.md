@@ -2,7 +2,6 @@
 title: digna väljalase 2024.12 | Muudatuste logi ja uued funktsioonid
 description: Uuri, mis on uut digna väljalases 2024.12. See versioon toob kaasa sisseehitatud ajastaja, PDF-aruanded, paindlikud kohandatud veerud, dünaamilised snapshot-päringu kohatäitjad ja targema künniste optimeerimise anomaaliate tuvastuse ja andmekvaliteedi jälgimise parandamiseks.
 keywords: digna väljalase 2024.12, digna muudatuste logi, väljalasete märkmed, sisseehitatud ajastaja, PDF-aruanded, kohandatud veeru tüüp, snapshot-päringu kohatäitjad, künniste optimeerimine, andmevaatlus, andmekvaliteedi jälgimine, anomaaliate tuvastamine
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

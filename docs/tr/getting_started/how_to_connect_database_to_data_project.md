@@ -1,6 +1,7 @@
 ---
 title: Bir Veritabanını Bağlama | digna Dokümantasyonu
 description: digna içinde mevcut bir projeye bir veritabanı bağlama adım adım kılavuzu. Bağlantıları nasıl yapılandıracağınızı, kimlik bilgilerini nasıl sağlayacağınızı ve güvenli erişimi nasıl etkinleştireceğinizi öğrenin.
+image: /assets/logo_square.png
 ---
 
 # Bir Veritabanını Bağlama

@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Команди та приклади | digna Documentation
 description: Повний довідник для digna CLI релізу 2025.04. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-repo-connection, upgrade-repo, inspect та інших.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ image: /assets/logo_square.png
     Використовуйте --help одразу після ключового слова ***digna***cl  
    ```bash
    dignacli --help
+   ```
 
 2. **Отримання допомоги для конкретних команд:**  
   

@@ -1,7 +1,6 @@
 ---
 title: مرجع digna CLI 2024.12 – الأوامر والأمثلة | توثيق digna
 description: المرجع الكامل لإصدار digna CLI 2024.12. تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-repo-connection و upgrade-repo و inspect والمزيد.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

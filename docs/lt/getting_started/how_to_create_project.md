@@ -1,6 +1,7 @@
 ---
 title: Sukurti projektą | digna dokumentacija
 description: Žingsnis po žingsnio vadovas, kaip sukurti naują projektą digna. Sužinokite, kaip atidaryti projektų skiltį, įvesti duomenis ir išsaugoti projektus su interaktyvia demonstracija.
+image: /assets/logo_square.png
 ---
 
 

@@ -1,6 +1,7 @@
 ---
 title: Programación avanzada con crontab
 description: Aprende cómo programar un trabajo en *digna* usando expresiones crontab para una planificación avanzada.
+image: /assets/logo_square.png
 ---
 
 # Programación avanzada con crontab

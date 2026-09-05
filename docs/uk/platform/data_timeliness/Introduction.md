@@ -1,6 +1,7 @@
 ---
 title: Data Timeliness – Моніторинг вчасної доставки | digna Documentation
 description: Дізнайтеся, як digna Data Timeliness гарантує надходження даних у очікуваний час. Виявляйте запізнення доставок, моніторте SLAs та захищайте бізнес-процеси від прихованих затримок і відсутності даних.
+image: /assets/logo_square.png
 ---
 
 # Data Timeliness – Моніторинг вчасної доставки

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Тренды, стабильность и долгосрочные инсайты | Документация digna
 description: Узнайте, как digna Data Analytics выявляет долгосрочные тренды, волатильность и стабильность данных по KPI. Обнаруживайте сдвиги в качестве и наблюдаемости данных, выявляйте скрытые аномалии и превращайте статистику в практические инсайты.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - аналитика данных

@@ -1,6 +1,7 @@
 ---
 title: Skapa ett projekt | digna-dokumentation
 description: Steg-för-steg-guide för att skapa ett nytt projekt i digna. Lär dig hur du öppnar projektavsnittet, anger information och sparar projekt med en interaktiv demo.
+image: /assets/logo_square.png
 ---
 
 

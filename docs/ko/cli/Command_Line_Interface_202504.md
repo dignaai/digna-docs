@@ -1,7 +1,6 @@
 ---
 title: digna CLI 참조 2025.04 – 명령어 및 예제 | digna 문서
 description: digna CLI 릴리스 2025.04의 전체 참조입니다. add-user, check-repo-connection, upgrade-repo, inspect 등 사용자, 저장소 및 데이터를 관리하는 방법을 명령어와 예제로 확인하세요.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 

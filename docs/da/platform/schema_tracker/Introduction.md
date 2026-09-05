@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Overvåg skemaudvikling | digna Dokumentation
 description: Lær hvordan digna Data Schema Tracker overvåger kolonneændringer, datatypeopdateringer og schema drift. Opdag og alarmer om både tilsigtede og utilsigtede skemaændringer for at forhindre ETL-fejl, ødelagte dashboards og tab af dataobservability.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - data schema tracker

@@ -65,12 +65,12 @@ digna складається з двох основних компонентів
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **Recommended Specifications**
->
-> - **Memory**: 32 GB RAM (замість 16 GB)
-> - **Disk Space**: 50 GB available storage (замість 10 GB)
->
-> Ці підвищені характеристики враховують одночасну роботу digna та PostgreSQL на одній машині.
+!!! info "Recommended Specifications"
+
+    - **Memory**: 32 GB RAM (замість 16 GB)
+    - **Disk Space**: 50 GB available storage (замість 10 GB)
+
+    Ці підвищені характеристики враховують одночасну роботу digna та PostgreSQL на одній машині.
 
 ---
 
@@ -122,9 +122,9 @@ digna складається з двох основних компонентів
 
 Стандартний порт PostgreSQL — `5432`. Можете використовувати значення за замовчуванням або вказати інший порт за потреби.
 
-> **Tip**
->
-> Якщо порт 5432 вже використовується, виберіть альтернативний порт і зафіксуйте його для подальшої конфігурації.
+!!! tip "Tip"
+
+    Якщо порт 5432 вже використовується, виберіть альтернативний порт і зафіксуйте його для подальшої конфігурації.
 
 #### Step 7: Choose Locale
 
@@ -200,9 +200,9 @@ IIS вимагає компонент URL Rewrite. Завантажте та в�
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Important**
->
-> Без цієї настройки `.md` файли можуть не віддаватися коректно.
+!!! warning "Important"
+
+    Без цієї настройки `.md` файли можуть не віддаватися коректно.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat — відкрите середовище для виконанн�
    - Перейдіть на `http://localhost:8080`
    - Ви повинні побачити сторінку привітання Apache Tomcat
 
-> **Tip**
->
-> Зазвичай Apache Tomcat запускається автоматично після встановлення. Якщо ні, відкрийте папку `bin` і запустіть `startup.bat`.
+!!! tip "Tip"
+
+    Зазвичай Apache Tomcat запускається автоматично після встановлення. Якщо ні, відкрийте папку `bin` і запустіть `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Best Practice**
->
-> Використовуйте сильні, складні паролі для користувачів бази даних. Уникайте легко вгадуваних облікових даних.
+!!! tip "Best Practice"
+
+    Використовуйте сильні, складні паролі для користувачів бази даних. Уникайте легко вгадуваних облікових даних.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **Important**
->
-> Файл ліцензії **не** входить до пакета встановлення і надається окремо компанією digna.
+!!! warning "Important"
+
+    Файл ліцензії **не** входить до пакета встановлення і надається окремо компанією digna.
 
 1. Знайдіть файл `license.toml`, наданий вам
 2. Скопіюйте його в кореневий каталог встановлення digna (там, де знаходяться `config.toml` та виконуваний файл `digna`)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Приклад:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Це створить користувача з повними адміністративними правами.
 
-> **Best Practice**
->
-> Використовуйте сильний пароль із комбінацією великих і малих літер, цифр та спеціальних символів.
+!!! tip "Best Practice"
+
+    Використовуйте сильний пароль із комбінацією великих і малих літер, цифр та спеціальних символів.
 
 ---
 
@@ -545,9 +545,9 @@ digna user add "Admin User" AdminPassword123! --su
 - `start_service.bat` — запуск служби
 - `stop_service.bat` — зупинка служби
 
-> **Administrator Required**
->
-> Усі батч‑файли повинні виконуватись з правами Адміністратора.
+!!! warning "Administrator Required"
+
+    Усі батч‑файли повинні виконуватись з правами Адміністратора.
 
 ### Installing the Service
 
@@ -587,9 +587,9 @@ digna user add "Admin User" AdminPassword123! --su
    stop_service.bat
    ```
 
-> **Tip**
->
-> Завжди зупиняйте службу перед оновленням файлів застосунку.
+!!! tip "Tip"
+
+    Завжди зупиняйте службу перед оновленням файлів застосунку.
 
 ### Moving the Service to a New Directory
 
@@ -671,9 +671,9 @@ ren dashboard dashboard_old
 2. Скопіюйте новий виконуваний файл `digna`, папку `dashboard` у ваш каталог встановлення
 
 
-> **Important**
->
-> Файл `config.toml` **ніколи** не включається до ZIP‑пакета інсталяції. Ваша існуюча конфігурація залишається безпечною.
+!!! warning "Important"
+
+    Файл `config.toml` **ніколи** не включається до ZIP‑пакета інсталяції. Ваша існуюча конфігурація залишається безпечною.
 
 ### Step 4: Restore Your Configuration Files
 

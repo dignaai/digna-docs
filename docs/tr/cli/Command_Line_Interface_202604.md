@@ -1,7 +1,6 @@
 ---
 title: digna CLI Başvuru 2026.04 – Komutlar & Örnekler | digna Belgeleri
 description: digna CLI sürümü 2026.04 için eksiksiz başvuru
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

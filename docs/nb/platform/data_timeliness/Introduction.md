@@ -1,6 +1,7 @@
 ---
 title: Data Timeliness – Overvåking av rettidig levering | digna-dokumentasjon
 description: Lær hvordan digna Data Timeliness sikrer at dataene kommer frem som forventet. Oppdag sene leveranser, overvåk SLA-er, og beskytt forretningsprosesser mot skjulte forsinkelser og manglende data.
+image: /assets/logo_square.png
 ---
 
 # Data Timeliness – Overvåking av rettidig levering

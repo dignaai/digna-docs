@@ -1,7 +1,6 @@
 ---
 title: digna CLI nuoroda 2026.04 – komandos ir pavyzdžiai | digna dokumentacija
 description: Pilnas digna CLI leidimo 2026.04 komandas aprašantis vadovas
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

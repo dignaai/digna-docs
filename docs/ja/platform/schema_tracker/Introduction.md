@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – スキーマの進化を監視 | digna Documentation
 description: digna Data Schema Tracker がカラムの変更、データ型の更新、スキーマドリフトをどのように監視するかを学びます。ETL の失敗、ダッシュボードの破損、データ可観測性の喪失を防ぐために、意図的・非意図的なスキーマ変更の検出とアラートを行います。
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - データスキーマトラッカー

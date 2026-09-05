@@ -1,6 +1,7 @@
 ---
 title: Crearea unui proiect | Documentația digna
 description: Ghid pas cu pas pentru crearea unui proiect nou în digna. Aflați cum să deschideți secțiunea de proiecte, să introduceți detaliile și să salvați proiectele cu un demo interactiv.
+image: /assets/logo_square.png
 ---
 
 

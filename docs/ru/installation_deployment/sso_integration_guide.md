@@ -142,9 +142,9 @@ usePassword = true
 - Поля для имени пользователя/пароля отсутствуют
 - Доступна только OIDC-аутентификация
 
-> **Совет**
->
-> Вход по паролю доступен только для пользователей, созданных с паролями с помощью команды `digna user add` или через dashboard.
+!!! tip "Совет"
+
+    Вход по паролю доступен только для пользователей, созданных с паролями с помощью команды `digna user add` или через dashboard.
 
 ### Полный пример
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | URL обратного вызова после аутентификации | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | Точка конфигурации OIDC | `https://login.microsoftonline.com/...` |
 
-> **Важно**
->
-> Замените значения-заполнители (`<client_id>`, `<client_secret>`, `<tenant_id>`) реальными учётными данными из портала разработчика вашего провайдера удостоверений.
+!!! warning "Важно"
+
+    Замените значения-заполнители (`<client_id>`, `<client_secret>`, `<tenant_id>`) реальными учётными данными из портала разработчика вашего провайдера удостоверений.
 
 ### Redirect URI
 

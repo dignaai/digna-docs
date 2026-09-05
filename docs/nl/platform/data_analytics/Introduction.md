@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trends, Stabiliteit & Langetermijninzichten | digna Documentatie
 description: Leer hoe digna Data Analytics langetermijntrends, volatiliteit en datastabiliteit over KPI's onthult. Detecteer verschuivingen in de kwaliteit en observeerbaarheid van data, ontdek verborgen anomalieën en zet statistieken om in bruikbare inzichten.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data-analyse

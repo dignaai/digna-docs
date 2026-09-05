@@ -1,6 +1,7 @@
 ---
 title: Fejlett ütemezés crontab használatával
 description: Tanuld meg, hogyan ütemezhetsz feladatot a *digna*-ban crontab-kifejezések segítségével összetettebb időzítésekhez.
+image: /assets/logo_square.png
 ---
 
 # Fejlett ütemezés crontab használatával

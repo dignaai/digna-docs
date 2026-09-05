@@ -2,7 +2,6 @@
 title: digna Έκδοση 2025.04 | Inspection Hub, Πολυγλωσσική Υποστήριξη, Module Analytics
 description: Μάθετε τι νέο φέρνει η digna Έκδοση 2025.04. Αυτή η έκδοση εισάγει το Inspection Hub, πολυγλωσσική υποστήριξη (English, German, Polish), εισαγωγή/εξαγωγή πηγών δεδομένων μέσω dignacli, την πρώτη έκδοση του Module Analytics και βελτιωμένη εμπειρία στο dashboard.
 keywords: digna Έκδοση 2025.04, digna changelog, digna inspection hub, digna πολυγλωσσική υποστήριξη, digna module analytics, digna import export, digna CLI, release notes, παρατηρησιμότητα δεδομένων, παρακολούθηση ποιότητας δεδομένων
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

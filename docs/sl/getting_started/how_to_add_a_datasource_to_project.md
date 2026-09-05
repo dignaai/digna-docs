@@ -1,6 +1,7 @@
 ---
 title: Povezava podatkovne baze | digna dokumentacija
 description: Vodnik po korakih za povezavo podatkovne baze z obstoječim projektom v digna. Naučite se, kako izbrati povezavo, konfigurirati nastavitve in omogočiti varen dostop.
+image: /assets/logo_square.png
 ---
 
 # Dodaj Datasource (Table) v projekt

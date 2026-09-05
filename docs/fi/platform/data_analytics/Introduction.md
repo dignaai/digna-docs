@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trendit, vakaus & pitkän aikavälin näkemykset | digna-dokumentaatio
 description: Opi, kuinka digna Data Analytics paljastaa pitkän aikavälin trendejä, volatiliteettia ja datan vakautta KPI:issä. Havaitse muutokset datan laadussa ja havaittavuudessa, löydä piilevät anomaliat ja muunna tilastot käyttökelpoisiksi oivalluksiksi.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data-analytiikka

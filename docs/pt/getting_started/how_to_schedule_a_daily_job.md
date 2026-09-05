@@ -2,6 +2,7 @@
 title: Como criar um job que roda diariamente
 description: Aprenda como agendar um job de inspeção diário no digna usando o dashboard.
 keywords: digna scheduling, automação da qualidade de dados, job diário
+image: /assets/logo_square.png
 ---
 
 # Como agendar um job diário

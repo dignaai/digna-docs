@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Monitorování včasného doručení | digna Documentation
 description: Zjistěte, jak modul digna Data Timeliness zajišťuje, že data přicházejí v očekávaném čase. Detekujte opožděná nebo chybějící doručení, sledujte SLA a chraňte obchodní procesy před tichými zpožděními. AI-poháněné detekce pro lepší kvalitu dat a observabilitu datových pipeline.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - data timeliness

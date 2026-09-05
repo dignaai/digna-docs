@@ -1,7 +1,6 @@
 ---
 title: Referência do CLI digna 2026.01 – Comandos & Exemplos | Documentação digna
 description: Referência completa para o digna CLI release 2026.01. Aprenda a gerenciar usuários, repositórios e dados com comandos como add-user, check-config, check-repo-connection, inspect, inspect-async e outros.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: digna CLI -viite 2025.09 – Komennot & esimerkit | digna-dokumentaatio
 description: Täydellinen viite digna CLI -julkaisulle 2025.109. Opas käyttäjien, repositorion ja datan hallintaan komennoilla kuten add-user, check-config, check-repo-connection, inspect, inspect-async ja muut.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

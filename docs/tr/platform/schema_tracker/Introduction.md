@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Şema Evrimini İzleyin | digna Dokümantasyonu
 description: digna Data Schema Tracker sütun değişikliklerini, veri tipi güncellemelerini ve şema driftini izler. Hem kasıtlı hem de kasıtsız şema değişikliklerini tespit edip uyarılar göndererek ETL hatalarını, bozuk dashboard'ları ve veri gözlemlenebilirliğinin kaybını önleyin.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - veri şeması izleme

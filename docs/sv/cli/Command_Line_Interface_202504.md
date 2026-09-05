@@ -1,7 +1,6 @@
 ---
 title: digna CLI-referens 2025.04 – Kommandon & Exempel | digna-dokumentation
 description: Komplett referens för digna CLI-version 2025.04. Lär dig hur du hanterar användare, repositories och data med kommandon som add-user, check-repo-connection, upgrade-repo, inspect med flera.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ Alternativet `--help` ger information om tillgängliga kommandon och deras anvä
     Använd --help direkt efter nyckelordet ***digna***cl  
    ```bash
    dignacli --help
+   ```
 
 2. **Få hjälp för specifika kommandon:**  
   

@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Registro de cambios y nuevas funciones
 description: Descubre las novedades de digna Release 2024.12. Esta versión introduce un programador integrado, informes en PDF, columnas personalizadas flexibles, marcadores dinámicos en consultas snapshot y una optimización más inteligente de umbrales para mejorar la detección de anomalías y la monitorización de la calidad de los datos.
 keywords: digna Release 2024.12, digna changelog, notas de la versión, programador integrado, informes PDF, tipo de columna CUSTOM, marcadores en consultas snapshot, optimización de umbrales, observabilidad de datos, monitorización de la calidad de datos, detección de anomalías
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

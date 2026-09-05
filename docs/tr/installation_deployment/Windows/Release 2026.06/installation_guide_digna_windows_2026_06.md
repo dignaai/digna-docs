@@ -65,12 +65,12 @@ Mevcut PostgreSQL sunucunuza digna için yeni bir veritabanı ekleyebilirsiniz.
 
 **PostgreSQL'i digna ile aynı makineye kuruyorsanız:**
 
-> **Önerilen Özellikler**
->
-> - **Bellek**: 32 GB RAM (16 GB yerine)
-> - **Disk Alanı**: 50 GB kullanılabilir depolama (10 GB yerine)
->
-> Bu daha yüksek özellikler, digna ile PostgreSQL veritabanının aynı anda çalışmasını rahatlıkla karşılayacak şekilde önerilir.
+!!! info "Önerilen Özellikler"
+
+    - **Bellek**: 32 GB RAM (16 GB yerine)
+    - **Disk Alanı**: 50 GB kullanılabilir depolama (10 GB yerine)
+
+    Bu daha yüksek özellikler, digna ile PostgreSQL veritabanının aynı anda çalışmasını rahatlıkla karşılayacak şekilde önerilir.
 
 ---
 
@@ -122,9 +122,9 @@ PostgreSQL süper kullanıcısı (`postgres`) için bir parola girip doğrulayı
 
 Varsayılan PostgreSQL portu `5432`'dir. İster varsayılanı kullanın ister gerekirse farklı bir port belirleyin.
 
-> **İpucu**
->
-> Eğer 5432 portu zaten kullanımdaysa, alternatif bir port seçin ve ilerideki yapılandırmalar için not edin.
+!!! tip "İpucu"
+
+    Eğer 5432 portu zaten kullanımdaysa, alternatif bir port seçin ve ilerideki yapılandırmalar için not edin.
 
 #### Adım 7: Yerel Ayarı (Locale) Seçin
 
@@ -200,9 +200,9 @@ IIS'in Markdown dosyalarını (`.md`) doğru şekilde servis edebilmesi için:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Önemli**
->
-> Bu ayar olmadan `.md` dosyaları doğru şekilde servis edilmeyebilir.
+!!! warning "Önemli"
+
+    Bu ayar olmadan `.md` dosyaları doğru şekilde servis edilmeyebilir.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat, Java servlet container ve web sunucusu olarak kullanılan açık 
    - `http://localhost:8080` adresine gidin
    - Apache Tomcat karşılama sayfasını görmelisiniz
 
-> **İpucu**
->
-> Apache Tomcat genellikle kurulumdan sonra otomatik olarak başlar. Başlamazsa, `bin` klasörüne gidip `startup.bat` dosyasını çalıştırın.
+!!! tip "İpucu"
+
+    Apache Tomcat genellikle kurulumdan sonra otomatik olarak başlar. Başlamazsa, `bin` klasörüne gidip `startup.bat` dosyasını çalıştırın.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **En İyi Uygulama**
->
-> Veritabanı kullanıcıları için güçlü, karmaşık parolalar kullanın. Kolay tahmin edilebilir kimlik bilgilerini kullanmaktan kaçının.
+!!! tip "En İyi Uygulama"
+
+    Veritabanı kullanıcıları için güçlü, karmaşık parolalar kullanın. Kolay tahmin edilebilir kimlik bilgilerini kullanmaktan kaçının.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Adım 3: Lisans Dosyasını Yükleyin
 
-> **Önemli**
->
-> Lisans dosyası kurulum paketine dahil değildir ve digna tarafından ayrı olarak sağlanacaktır.
+!!! warning "Önemli"
+
+    Lisans dosyası kurulum paketine dahil değildir ve digna tarafından ayrı olarak sağlanacaktır.
 
 1. Size sağlanan `license.toml` dosyasını bulun
 2. Bunu digna kurulum dizininin köküne kopyalayın (`config.toml` ve `digna` yürütülebilir dosyasının bulunduğu dizin)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Örnek:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Bu komut tam idari ayrıcalıklara sahip bir kullanıcı oluşturur.
 
-> **En İyi Uygulama**
->
-> Büyük küçük harf, sayı ve özel karakter içeren güçlü bir parola kullanın.
+!!! tip "En İyi Uygulama"
+
+    Büyük küçük harf, sayı ve özel karakter içeren güçlü bir parola kullanın.
 
 ---
 
@@ -545,9 +545,9 @@ Mevcut batch (.bat) dosyaları:
 - `start_service.bat` — hizmeti başlatır
 - `stop_service.bat` — hizmeti durdurur
 
-> **Yönetici Gereklidir**
->
-> Tüm batch dosyaları Yönetici (Administrator) ayrıcalıklarıyla çalıştırılmalıdır.
+!!! warning "Yönetici Gereklidir"
+
+    Tüm batch dosyaları Yönetici (Administrator) ayrıcalıklarıyla çalıştırılmalıdır.
 
 ### Hizmeti Yükleme
 
@@ -587,9 +587,9 @@ digna sunucusu artık otomatik başlatma etkinleştirilmiş bir Windows hizmeti 
    stop_service.bat
    ```
 
-> **İpucu**
->
-> Uygulama dosyalarını güncellemeden önce hizmeti her zaman durdurun.
+!!! tip "İpucu"
+
+    Uygulama dosyalarını güncellemeden önce hizmeti her zaman durdurun.
 
 ### Hizmeti Yeni Bir Dizin Altına Taımak
 
@@ -671,9 +671,9 @@ ren dashboard dashboard_old
 2. Yeni `digna` yürütülebilir dosyasını ve `dashboard` klasörünü kurulum dizinine kopyalayın
 
 
-> **Önemli**
->
-> `config.toml` dosyası asla kurulum ZIP'ine dahil edilmez. Mevcut yapılandırmanız korunur.
+!!! warning "Önemli"
+
+    `config.toml` dosyası asla kurulum ZIP'ine dahil edilmez. Mevcut yapılandırmanız korunur.
 
 ### Adım 4: Yapılandırma Dosyalarınızı Geri Yükleyin
 

@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – 스키마 변화 모니터링 | digna 문서
 description: digna Data Schema Tracker가 컬럼 변경, 데이터 타입 업데이트 및 스키마 드리프트를 어떻게 모니터링하는지 알아보세요. 의도적이든 비의도적이든 스키마 변경을 감지하고 경고하여 ETL 실패, 깨진 대시보드 및 관찰성 상실을 방지합니다.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - 데이터 스키마 트래커

@@ -1,6 +1,7 @@
 ---
 title: Napredno razporejanje s crontab
 description: Naučite se, kako v digna razporediti opravilo z uporabo crontab izrazov za napredno časovno nastavljanje.
+image: /assets/logo_square.png
 ---
 
 # Napredno razporejanje s crontab

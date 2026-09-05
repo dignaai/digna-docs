@@ -1,6 +1,7 @@
 ---
 title: Täpsem ajastamine Crontabi abil
 description: Õpi, kuidas *digna*-s tööd ajastada, kasutades crontab expressions täpsemaks ajastuseks.
+image: /assets/logo_square.png
 ---
 
 # Advanced Scheduling with Crontab

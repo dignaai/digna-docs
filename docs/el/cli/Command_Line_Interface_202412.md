@@ -1,7 +1,6 @@
 ---
 title: Αναφορά CLI digna 2024.12 – Εντολές & Παραδείγματα | τεκμηρίωση digna
 description: Πλήρης αναφορά για το digna CLI έκδοσης 2024.12. Μάθετε πώς να διαχειρίζεστε χρήστες, αποθετήρια και δεδομένα με εντολές όπως add-user, check-repo-connection, upgrade-repo, inspect και άλλες.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

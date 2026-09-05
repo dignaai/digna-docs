@@ -1,6 +1,7 @@
 ---
 title: Išplėstinis planavimas su crontab
 description: Sužinokite, kaip digna suplanuoti užduotį naudodami crontab išraiškas pažangiam laiko nustatymui.
+image: /assets/logo_square.png
 ---
 
 # Išplėstinis planavimas su Crontab

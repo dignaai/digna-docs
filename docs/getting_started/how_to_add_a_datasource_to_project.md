@@ -1,6 +1,7 @@
 ---
 title: Connect a Database | digna Documentation
 description: Step-by-step guide to connecting a database to an existing project in digna. Learn how to choose a connection, configure settings, and enable secure access.
+image: /assets/logo_square.png
 ---
 
 # Add Datasource (Table) to a Project

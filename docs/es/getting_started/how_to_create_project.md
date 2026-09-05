@@ -1,6 +1,7 @@
 ---
 title: Crear un proyecto | Documentación de digna
 description: Guía paso a paso para crear un nuevo proyecto en digna. Aprende cómo abrir la sección de proyectos, ingresar los detalles y guardar proyectos con una demostración interactiva.
+image: /assets/logo_square.png
 ---
 
 

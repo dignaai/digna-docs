@@ -2,6 +2,7 @@
 title: Kuinka luoda päivittäin ajettava tehtävä
 description: Opi ajastamaan päivittäinen tarkastustehtävä dignan hallintapaneelissa.
 keywords: digna-ajastus, datalaadun automaatio, päivittäinen tehtävä
+image: /assets/logo_square.png
 ---
 
 # Kuinka ajastaa päivittäinen tehtävä

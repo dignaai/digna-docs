@@ -2,6 +2,7 @@
 title: Hogyan hozzunk létre naponta futó jobot
 description: Ismerd meg, hogyan ütemezz egy napi ellenőrző jobot a digna dashboardján.
 keywords: digna ütemezés, adatminőség-automatizálás, napi job
+image: /assets/logo_square.png
 ---
 
 # Hogyan ütemezzünk egy napi jobot

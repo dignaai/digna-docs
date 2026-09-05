@@ -1,6 +1,7 @@
 ---
 title: Ühenda andmebaas | digna dokumentatsioon
 description: Samm-sammuline juhend andmebaasi ühendamiseks olemasoleva projektiga dignas. Õpi, kuidas konfigureerida ühendusi, esitada mandaate ja lubada turvaline juurdepääs.
+image: /assets/logo_square.png
 ---
 
 # Ühenda andmebaas

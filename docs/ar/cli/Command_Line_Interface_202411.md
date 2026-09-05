@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2024.11 – Commands & Examples | digna Documentation
 description: مرجع كامل لأوامر واجهة الأوامر digna إصدار 2024.11. تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-repo-connection و upgrade-repo و inspect و tls-status والمزيد.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
 image: /assets/logo_square.png
 ---
 

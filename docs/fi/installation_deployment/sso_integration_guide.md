@@ -142,9 +142,9 @@ usePassword = true
 - Ei käyttäjätunnus/salasana-kenttiä
 - Vain OIDC-autentikointi on käytettävissä
 
-> **Vinkki**
->
-> Salasanapohjainen kirjautuminen on käytettävissä vain käyttäjille, jotka on luotu salasanoilla `digna user add` -komennolla tai dashboardin kautta.
+!!! tip "Vinkki"
+
+    Salasanapohjainen kirjautuminen on käytettävissä vain käyttäjille, jotka on luotu salasanoilla `digna user add` -komennolla tai dashboardin kautta.
 
 ### Täydellinen esimerkki
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback-URL autentikoinnin jälkeen | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC-konfiguraatio-päätepiste | `https://login.microsoftonline.com/...` |
 
-> **Tärkeää**
->
-> Korvaa paikkamerkkien arvot (`<client_id>`, `<client_secret>`, `<tenant_id>`) todellisilla tunnuksilla identiteetin tarjoajan kehittäjäportaalista.
+!!! warning "Tärkeää"
+
+    Korvaa paikkamerkkien arvot (`<client_id>`, `<client_secret>`, `<tenant_id>`) todellisilla tunnuksilla identiteetin tarjoajan kehittäjäportaalista.
 
 ### Redirect URI
 

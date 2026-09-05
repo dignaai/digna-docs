@@ -13,7 +13,6 @@ keywords:
   - Eiropas datu kvalitāte
   - lokālā izvietošana
   - privātā mākonā datu platforma
-canonical_url: https://docs.digna.ai/
 lang: lv
 robots: index, follow
 og_title: digna platforma – AI vadīta datu kvalitāte un datu novērojamība

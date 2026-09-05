@@ -1,7 +1,6 @@
 ---
 title: digna CLI Referentie 2025.04 – Commando's & Voorbeelden | digna Documentatie
 description: Volledige referentie voor digna CLI release 2025.04. Leer hoe u gebruikers, repositories en data kunt beheren met commando's zoals add-user, check-repo-connection, upgrade-repo, inspect en meer.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ De `--help` optie geeft informatie over beschikbare commando's en hun gebruik. E
     Gebruik --help direct na het commando ***dignacli***  
    ```bash
    dignacli --help
+   ```
 
 2. **Hulp voor specifieke commando's opvragen:**  
   

@@ -1,6 +1,7 @@
 ---
 title: Anslut en databas | digna dokumentation
 description: Steg-för-steg-guide för att ansluta en databas till ett befintligt projekt i digna. Lär dig hur du konfigurerar anslutningar, anger behörighetsuppgifter och möjliggör säker åtkomst.
+image: /assets/logo_square.png
 ---
 
 # Anslut en databas

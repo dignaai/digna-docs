@@ -2,7 +2,6 @@
 title: digna izdaja 2024.12 | Dnevnik sprememb in nove funkcije
 description: Odkrijte, kaj je novega v digna izdaji 2024.12. Ta različica uvaja vgrajen Scheduler, poročila v PDF, prilagodljive CUSTOM stolpce, dinamične nadomestne tokene v snapshot poizvedbah in pametnejšo optimizacijo pragov za izboljšanje zaznavanja anomalij in nadzora kakovosti podatkov.
 keywords: digna izdaja 2024.12, digna dnevnik sprememb, opombe ob izdaji, vgrajeni Scheduler, PDF poročila, CUSTOM tip stolpca, nadomestni tokeni v snapshot poizvedbah, optimizacija pragov, opazovanje podatkov, nadzor kakovosti podatkov, zaznavanje anomalij
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

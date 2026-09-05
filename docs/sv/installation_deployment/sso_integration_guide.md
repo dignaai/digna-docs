@@ -142,9 +142,9 @@ usePassword = true
 - Inga användarnamn-/lösenordsfält visas
 - Endast OIDC-autentisering är tillgänglig
 
-> **Tip**
->
-> Lösenordsbaserad inloggning är endast tillgänglig för användare som skapats med lösenord via kommandot `digna user add` eller via dashboarden.
+!!! tip "Tip"
+
+    Lösenordsbaserad inloggning är endast tillgänglig för användare som skapats med lösenord via kommandot `digna user add` eller via dashboarden.
 
 ### Komplett exempel
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback-URL efter autentisering | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC-konfigurationsendpoint | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> Ersätt platshållarvärden (`<client_id>`, `<client_secret>`, `<tenant_id>`) med verkliga referenser från din identitetsleverantörs utvecklarportal.
+!!! warning "Important"
+
+    Ersätt platshållarvärden (`<client_id>`, `<client_secret>`, `<tenant_id>`) med verkliga referenser från din identitetsleverantörs utvecklarportal.
 
 ### Redirect URI
 

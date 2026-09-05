@@ -1,6 +1,7 @@
 ---
 title: Połącz bazę danych | Dokumentacja digna
 description: Przewodnik krok po kroku, jak podłączyć bazę danych do istniejącego projektu w digna. Dowiedz się, jak wybrać połączenie, skonfigurować ustawienia i włączyć bezpieczny dostęp.
+image: /assets/logo_square.png
 ---
 
 # Dodaj źródło danych (tabela) do projektu

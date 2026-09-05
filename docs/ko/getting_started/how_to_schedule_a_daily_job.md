@@ -2,6 +2,7 @@
 title: 매일 실행되는 작업 생성 방법
 description: digna 대시보드를 사용해 일일 검사 작업을 예약하는 방법을 알아보세요.
 keywords: digna 스케줄링, 데이터 품질 자동화, 일일 작업
+image: /assets/logo_square.png
 ---
 
 # 매일 실행되는 작업 예약 방법

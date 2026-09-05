@@ -1,7 +1,6 @@
 ---
 title: digna CLI リファレンス 2026.04 – コマンドと例 | digna ドキュメント
 description: digna CLI リリース 2026.04 の完全リファレンス
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

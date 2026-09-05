@@ -1,7 +1,6 @@
 ---
 title: مرجع واجهة سطر الأوامر digna 2026.04 – أوامر وأمثلة | وثائق digna
 description: مرجع كامل لإصدار digna CLI 2026.04
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

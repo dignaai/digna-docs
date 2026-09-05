@@ -1,6 +1,7 @@
 ---
 title: Een project aanmaken | digna Documentatie
 description: Stapsgewijze handleiding voor het aanmaken van een nieuw project in digna. Leer hoe je de projectsectie opent, gegevens invoert en projecten opslaat met een interactieve demo.
+image: /assets/logo_square.png
 ---
 
 

@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Monitorización de la evolución del esquema | Documentación de digna
 description: Aprende cómo digna Data Schema Tracker supervisa los cambios en columnas, actualizaciones de tipos de datos y la deriva de esquemas. Detecta y alerta sobre cambios de esquema intencionados o no intencionados para prevenir fallos de ETL, dashboards rotos y pérdida de observabilidad de datos.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - data schema tracker

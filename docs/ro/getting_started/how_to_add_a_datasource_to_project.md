@@ -1,6 +1,7 @@
 ---
 title: Conectează o bază de date | Documentația digna
 description: Ghid pas cu pas pentru conectarea unei baze de date la un proiect existent în digna. Aflați cum să alegeți o conexiune, să configurați setările și să activați accesul securizat.
+image: /assets/logo_square.png
 ---
 
 # Adăugarea unui Datasource (Table) într-un proiect

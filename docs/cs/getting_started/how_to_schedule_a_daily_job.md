@@ -2,6 +2,7 @@
 title: Jak vytvořit úlohu, která běží denně
 description: Naučte se, jak v digna pomocí dashboardu naplánovat denní inspekční úlohu.
 keywords: digna scheduling, automatizace kvality dat, denní úloha
+image: /assets/logo_square.png
 ---
 
 # Jak naplánovat denní úlohu

@@ -1,7 +1,6 @@
 ---
 title: digna CLI संदर्भ 2024.12 – कमांड्स और उदाहरण | digna Documentation
 description: digna CLI रिलीज 2024.12 के लिए पूर्ण संदर्भ। जानें कि add-user, check-repo-connection, upgrade-repo, inspect जैसे कमांड्स का उपयोग करके उपयोगकर्ताओं, रिपॉज़िटरीज़ और डेटा को कैसे प्रबंधित करें।
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 
@@ -32,6 +31,7 @@ image: /assets/logo_square.png
     `--help` को कीवर्ड ***dignacli*** के तुरंत बाद उपयोग करें।  
    ```bash
    dignacli --help
+   ```
 
 3.  **विशिष्ट कमांड्स के लिए सहायता प्राप्त करना:**  
   

@@ -1,6 +1,7 @@
 ---
 title: Erweiterte Planung mit Crontab
 description: Erfahren Sie, wie Sie in digna einen Job mithilfe von Crontab-Ausdrücken für erweiterte Zeitplanung planen.
+image: /assets/logo_square.png
 ---
 
 # Erweiterte Planung mit Crontab

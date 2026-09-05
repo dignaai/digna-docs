@@ -1,6 +1,7 @@
 ---
 title: Povežite bazo podatkov | digna Dokumentacija
 description: Korak za korakom vodič za povezavo baze podatkov z obstoječim projektom v digna. Naučite se, kako konfigurirati povezave, vnesti poverilnice in omogočiti varen dostop.
+image: /assets/logo_square.png
 ---
 
 # Povežite bazo podatkov

@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Laiku pristatymo stebėjimas | digna dokumentacija
 description: Sužinokite, kaip digna Data Timeliness užtikrina, kad duomenys atvyksta laiku. Aptinka vėlavimus ar trūkstamus pristatymus, stebi SLA ir apsaugo verslo procesus nuo tylinių delsimų. AI pagrįstas aptikimas geresnei duomenų kokybei ir duomenų srautų stebimumui.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - duomenų laiku pristatymas

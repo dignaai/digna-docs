@@ -142,9 +142,9 @@ usePassword = true
 - Nu există câmpuri pentru nume de utilizator/parolă
 - Este disponibilă doar autentificarea OIDC
 
-> **Sfat**
->
-> Autentificarea pe bază de parolă este disponibilă doar pentru utilizatorii creați cu parole folosind comanda `digna user add` sau prin dashboard.
+!!! tip "Sfat"
+
+    Autentificarea pe bază de parolă este disponibilă doar pentru utilizatorii creați cu parole folosind comanda `digna user add` sau prin dashboard.
 
 ### Exemplu complet
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Da | URL-ul de callback după autentificare | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Da | Endpoint-ul de configurare OIDC | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> Înlocuiți valorile placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) cu acreditările reale din portalul dezvoltatorului furnizorului vostru de identitate.
+!!! warning "Important"
+
+    Înlocuiți valorile placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) cu acreditările reale din portalul dezvoltatorului furnizorului vostru de identitate.
 
 ### Redirect URI
 

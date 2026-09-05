@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – 추세 및 안정성 | digna 문서
 description: digna Data Analytics가 KPI 전반에서 장기 추세, 변동성 및 데이터 안정성을 어떻게 드러내는지 알아보세요. 데이터 품질과 관찰성의 변화를 감지하고 숨겨진 이상을 발견하여 통계 정보를 실행 가능한 인사이트로 전환하는 방법을 설명합니다.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - 데이터 분석

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Tendințe, Stabilitate și Insight-uri pe Termen Lung | digna Documentation
 description: Aflați cum digna Data Analytics dezvăluie tendințe pe termen lung, volatilitate și stabilitate a datelor în cadrul KPI-urilor. Detectați schimbările în calitatea și observabilitatea datelor, descoperiți anomalii ascunse și transformați statisticile în insight-uri acționabile.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data analytics

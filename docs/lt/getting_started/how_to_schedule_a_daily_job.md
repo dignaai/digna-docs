@@ -2,6 +2,7 @@
 title: Kaip sukurti užduotį, kuri vykdoma kasdien
 description: Sužinokite, kaip naudodami digna dashboard suplanuoti kasdienę patikrinimo užduotį.
 keywords: digna scheduling, duomenų kokybės automatizavimas, kasdienė užduotis
+image: /assets/logo_square.png
 ---
 
 # Kaip suplanuoti kasdienę užduotį

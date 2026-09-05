@@ -1,7 +1,6 @@
 ---
 title: digna CLI Başvuru 2024.09 – Komutlar & Örnekler | digna Belgeleri
 description: digna CLI sürümü 2024.09 için eksiksiz başvuru. add-user, check-repo-connection, upgrade-repo, inspect, tls-status ve daha fazlası gibi komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202408/
 image: /assets/logo_square.png
 ---
 

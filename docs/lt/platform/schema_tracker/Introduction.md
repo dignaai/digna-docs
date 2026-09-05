@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Stebėkite schemų evoliuciją | digna dokumentacija
 description: Sužinokite, kaip digna Data Schema Tracker stebi stulpelių pasikeitimus, duomenų tipų atnaujinimus ir schemos dreifą. Aptikite ir gaukite įspėjimus apie tiek tyčinius, tiek netyčinius schemos pakeitimus, kad išvengtumėte ETL gedimų, sulaužytų ataskaitų ir duomenų stebimumo praradimo.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - duomenų schemos stebėjimas

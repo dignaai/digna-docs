@@ -1,7 +1,6 @@
 ---
 title: digna CLI-referentie 2024.11 – Commands & Examples | digna Documentatie
 description: Volledige referentie voor digna CLI release 2024.11. Leer hoe u gebruikers, repositories en data beheert met commando's zoals add-user, check-repo-connection, upgrade-repo, inspect, tls-status en meer.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
 image: /assets/logo_square.png
 ---
 

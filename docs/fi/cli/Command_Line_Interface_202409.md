@@ -1,7 +1,6 @@
 ---
 title: digna CLI - Viite 2024.09 – Komennot & Esimerkit | digna Dokumentaatio
 description: Täydellinen viite digna CLI -julkaisulle 2024.09. Opi hallitsemaan käyttäjiä, repositorioita ja dataa komennoilla kuten add-user, check-repo-connection, upgrade-repo, inspect, tls-status ja lisää.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202408/
 image: /assets/logo_square.png
 ---
 

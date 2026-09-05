@@ -1,7 +1,6 @@
 ---
 title: digna CLI viide 2026.01 – käsud ja näited | digna dokumentatsioon
 description: Täielik viide digna CLI väljalaske 2026.01 kohta. Õpi, kuidas hallata kasutajaid, hoidlaid ja andmeid käskudega nagu add-user, check-config, check-repo-connection, inspect, inspect-async ja palju muud.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

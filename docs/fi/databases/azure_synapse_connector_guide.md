@@ -2,7 +2,6 @@
 title: Azure Synapse -liitin – Tietokantaintegraatio | digna-dokumentaatio
 description: Konfiguroi digna yhdistämään Azure Synapse Analyticsiin joko natiivilla Python-ajurilla tai ODBC-ajurilla. Tukee sekä serverless- että dedikoituja SQL-pooloja.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Monitorizarea livrărilor la timp | digna Documentation
 description: Află cum Data Timeliness de la digna asigură că datele sosesc la momentul așteptat. Detectează livrările întârziate sau lipsă, monitorizează SLA-urile și protejează procesele de business de întârzieri silențioase. Detectare asistată de AI pentru îmbunătățirea calității datelor și observabilității pipeline-urilor.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - data timeliness

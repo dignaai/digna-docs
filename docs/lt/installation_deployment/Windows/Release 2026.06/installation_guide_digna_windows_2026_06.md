@@ -65,12 +65,12 @@ Galite pridėti naują duomenų bazę digna prie esančio PostgreSQL serverio.
 
 **Jei diegiate PostgreSQL toje pačioje mašinoje kaip digna:**
 
-> **Rekomenduojama specifikacija**
->
-> - **Atmintis**: 32 GB RAM (vietoje 16 GB)
-> - **Disko vieta**: 50 GB laisvos vietos (vietoje 10 GB)
->
-> Šios didesnės specifikacijos leidžia sklandžiai veikti tiek digna, tiek PostgreSQL duomenų bazei vienu metu.
+!!! info "Rekomenduojama specifikacija"
+
+    - **Atmintis**: 32 GB RAM (vietoje 16 GB)
+    - **Disko vieta**: 50 GB laisvos vietos (vietoje 10 GB)
+
+    Šios didesnės specifikacijos leidžia sklandžiai veikti tiek digna, tiek PostgreSQL duomenų bazei vienu metu.
 
 ---
 
@@ -122,9 +122,9 @@ Standartiniam diegimui palikite numatytus komponentus.
 
 Numatytasis PostgreSQL prievadas yra `5432`. Galite naudoti numatytąjį arba nurodyti kitą prievadą, jei reikia.
 
-> **Patarimas**
->
-> Jei prievadas 5432 jau užimtas, pasirinkite alternatyvų prievadą ir užsirašykite jį vėlesnei konfigūracijai.
+!!! tip "Patarimas"
+
+    Jei prievadas 5432 jau užimtas, pasirinkite alternatyvų prievadą ir užsirašykite jį vėlesnei konfigūracijai.
 
 #### 7 žingsnis: Pasirinkite lokalę
 
@@ -200,9 +200,9 @@ Kad Markdown failai (`.md`) būtų teisingai aptarnauti IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Svarbu**
->
-> Be šio nustatymo `.md` failai gali būti netinkamai aptarnaujami.
+!!! warning "Svarbu"
+
+    Be šio nustatymo `.md` failai gali būti netinkamai aptarnaujami.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat yra atviro kodo Java servlet konteineris ir žiniatinklio serveris
    - Nueikite į `http://localhost:8080`
    - Turėtumėte matyti Apache Tomcat pasveikinimo puslapį
 
-> **Patarimas**
->
-> Apache Tomcat paprastai paleidžiamas automatiškai po diegimo. Jei ne, eikite į `bin` katalogą ir paleiskite `startup.bat`.
+!!! tip "Patarimas"
+
+    Apache Tomcat paprastai paleidžiamas automatiškai po diegimo. Jei ne, eikite į `bin` katalogą ir paleiskite `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Gera praktika**
->
-> Naudokite stiprius, sudėtingus slaptažodžius duomenų bazės vartotojams. Venkite lengvai atspėjamų kredencialų.
+!!! tip "Gera praktika"
+
+    Naudokite stiprius, sudėtingus slaptažodžius duomenų bazės vartotojams. Venkite lengvai atspėjamų kredencialų.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### 3 žingsnis: Įdiekite licencijos failą
 
-> **Svarbu**
->
-> Licencijos failas **neįtrauktas** į diegimo paketą ir bus pateiktas atskirai iš digna.
+!!! warning "Svarbu"
+
+    Licencijos failas **neįtrauktas** į diegimo paketą ir bus pateiktas atskirai iš digna.
 
 1. Raskite jums suteiktą `license.toml` failą
 2. Nukopijuokite jį į pagrindinį digna diegimo katalogą (ten, kur yra `config.toml` ir `digna` vykdomasis failas)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Pavyzdys:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Tai sukurs vartotoją su pilnomis administravimo teisėmis.
 
-> **Gera praktika**
->
-> Naudokite stiprų slaptažodį su didžiosiomis, mažosiomis raidėmis, skaičiais ir specialiaisiais simboliais.
+!!! tip "Gera praktika"
+
+    Naudokite stiprų slaptažodį su didžiosiomis, mažosiomis raidėmis, skaičiais ir specialiaisiais simboliais.
 
 ---
 
@@ -545,9 +545,9 @@ Visi reikalingi failai yra digna diegimo kataloge, po: `bin/`
 - `start_service.bat` — paleidžia paslaugą
 - `stop_service.bat` — sustabdo paslaugą
 
-> **Reikalingos administratoriaus teisės**
->
-> Visi batch failai turi būti vykdomi su Administrator privilegijomis.
+!!! warning "Reikalingos administratoriaus teisės"
+
+    Visi batch failai turi būti vykdomi su Administrator privilegijomis.
 
 ### Paslaugos įdiegimas
 
@@ -587,9 +587,9 @@ Digna serveris dabar užregistruotas kaip Windows paslauga su **automatinio pale
    stop_service.bat
    ```
 
-> **Patarimas**
->
-> Visada sustabdykite paslaugą prieš atnaujinant programos failus.
+!!! tip "Patarimas"
+
+    Visada sustabdykite paslaugą prieš atnaujinant programos failus.
 
 ### Perkėlimas paslaugos į naują katalogą
 
@@ -671,9 +671,9 @@ ren dashboard dashboard_old
 2. Nukopijuokite naują `digna` vykdomąjį failą ir `dashboard` katalogą į savo diegimo katalogą
 
 
-> **Svarbu**
->
-> `config.toml` failas **niekada** neįtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka saugi.
+!!! warning "Svarbu"
+
+    `config.toml` failas **niekada** neįtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka saugi.
 
 ### 4 žingsnis: Atkurkite konfigūracijos failus
 

@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – स्कीमा विकास की निगरानी | digna दस्तावेज़ीकरण
 description: जानें कि digna Data Schema Tracker कैसे कॉलम परिवर्तनों, datatype अपडेट्स और स्कीमा ड्रिफ्ट की निगरानी करता है। नियत या अनियोजित स्कीमा परिवर्तनों का पता लगाएँ और अलर्ट प्राप्त करें ताकि ETL विफलताओं, टूटे हुए डैशबोर्ड और डेटा ऑब्ज़रवेबिलिटी की हानि से बचा जा सके।
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - data schema tracker

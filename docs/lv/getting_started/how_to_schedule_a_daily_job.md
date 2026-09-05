@@ -2,6 +2,7 @@
 title: Kā izveidot uzdevumu, kas tiek izpildīts katru dienu
 description: Uzziniet, kā ieplānot ikdienas pārbaudes uzdevumu digna, izmantojot dashboard.
 keywords: digna scheduling, datu kvalitātes automatizācija, ikdienas uzdevums
+image: /assets/logo_square.png
 ---
 
 # Kā ieplānot ikdienas uzdevumu

@@ -142,9 +142,9 @@ usePassword = true
 - Ni polj za uporabniško ime/geslo
 - Na voljo je samo OIDC avtentikacija
 
-> **Nasvet**
->
-> Prijava z geslom je na voljo samo za uporabnike, ki so bili ustvarjeni z gesli z ukazom `digna user add` ali prek nadzorne plošče.
+!!! tip "Nasvet"
+
+    Prijava z geslom je na voljo samo za uporabnike, ki so bili ustvarjeni z gesli z ukazom `digna user add` ali prek nadzorne plošče.
 
 ### Celoten primer
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL po avtentikaciji | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC konfiguracijska točka | `https://login.microsoftonline.com/...` |
 
-> **Pomembno**
->
-> Zamenjajte nadomestne vrednosti (`<client_id>`, `<client_secret>`, `<tenant_id>`) z dejavnimi poverilnicami iz razvijalskega konzola vašega ponudnika identitete.
+!!! warning "Pomembno"
+
+    Zamenjajte nadomestne vrednosti (`<client_id>`, `<client_secret>`, `<tenant_id>`) z dejavnimi poverilnicami iz razvijalskega konzola vašega ponudnika identitete.
 
 ### Redirect URI
 

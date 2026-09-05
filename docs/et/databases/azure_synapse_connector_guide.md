@@ -2,7 +2,6 @@
 title: Azure Synapse Connector – andmebaasi integreerimine | digna dokumentatsioon
 description: Seadista digna ühenduma Azure Synapse Analyticsiga kas natiivse Pythoni draiveri või ODBC-draiveri kaudu. Toetab nii serverless kui ka pühendatud SQL-poolide kasutamist.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

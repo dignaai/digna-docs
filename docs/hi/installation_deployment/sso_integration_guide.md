@@ -142,9 +142,9 @@ usePassword = true
 - कोई यूजरनेम/पासवर्ड फ़ील्ड नहीं होगा
 - केवल OIDC प्रमाणीकरण उपलब्ध होगा
 
-> **Tip**
->
-> पासवर्ड-आधारित लॉगिन केवल उन उपयोगकर्ताओं के लिए उपलब्ध है जिन्हें `digna user add` कमांड या डैशबोर्ड के माध्यम से पासवर्ड के साथ बनाया गया हो।
+!!! tip "Tip"
+
+    पासवर्ड-आधारित लॉगिन केवल उन उपयोगकर्ताओं के लिए उपलब्ध है जिन्हें `digna user add` कमांड या डैशबोर्ड के माध्यम से पासवर्ड के साथ बनाया गया हो।
 
 ### Complete Example
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | प्रमाणीकरण के बाद कॉलबैक URL | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC कॉन्फ़िगरेशन एंडपॉइंट | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> प्लेसहोल्डर वैल्यूज़ (`<client_id>`, `<client_secret>`, `<tenant_id>`) को अपने पहचान प्रदाता के डेवलपर पोर्टल से प्राप्त वास्तविक क्रेडेंशियल से बदलें।
+!!! warning "Important"
+
+    प्लेसहोल्डर वैल्यूज़ (`<client_id>`, `<client_secret>`, `<tenant_id>`) को अपने पहचान प्रदाता के डेवलपर पोर्टल से प्राप्त वास्तविक क्रेडेंशियल से बदलें।
 
 ### Redirect URI
 

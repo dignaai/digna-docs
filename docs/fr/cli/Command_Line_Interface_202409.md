@@ -1,7 +1,6 @@
 ---
 title: Référence CLI digna 2024.09 – Commandes et exemples | Documentation digna
 description: Référence complète pour la CLI digna version 2024.09. Apprenez à gérer les utilisateurs, les dépôts et les données avec des commandes telles que add-user, check-repo-connection, upgrade-repo, inspect, tls-status, et plus encore.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202408/
 image: /assets/logo_square.png
 ---
 

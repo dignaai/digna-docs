@@ -1,6 +1,7 @@
 ---
 title: Opret forbindelse til en database | digna-dokumentation
 description: Trin-for-trin guide til at tilslutte en database til et eksisterende projekt i digna. Lær, hvordan du konfigurerer forbindelser, angiver legitimationsoplysninger og aktiverer sikker adgang.
+image: /assets/logo_square.png
 ---
 
 # Opret forbindelse til en database

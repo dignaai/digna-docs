@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Journal des modifications et nouvelles fonctionnalités
 description: Découvrez les nouveautés de digna Release 2024.12. Cette version introduit un scheduler intégré, des rapports PDF, des colonnes personnalisées flexibles, des placeholders dynamiques pour les requêtes snapshot et une optimisation intelligente des seuils pour améliorer la détection d'anomalies et la surveillance de la qualité des données.
 keywords: digna Release 2024.12, journal des modifications digna, notes de version, scheduler intégré, rapports PDF, type de colonne personnalisé, placeholders de requête snapshot, optimisation des seuils, observabilité des données, surveillance de la qualité des données, détection d'anomalies
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

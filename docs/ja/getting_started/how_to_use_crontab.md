@@ -1,6 +1,7 @@
 ---
 title: Crontabを使った高度なスケジューリング
 description: crontab 式を使って *digna* で高度なタイミングのジョブをスケジュールする方法を学びます。
+image: /assets/logo_square.png
 ---
 
 # Crontabを使った高度なスケジューリング

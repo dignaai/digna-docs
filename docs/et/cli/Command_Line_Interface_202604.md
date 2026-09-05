@@ -1,7 +1,6 @@
 ---
 title: digna CLI viide 2026.04 – käsud ja näited | digna Dokumentatsioon
 description: Täielik viide digna CLI väljaandele 2026.04
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

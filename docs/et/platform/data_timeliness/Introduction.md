@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Õigeaegse kohaletoimetamise jälgimine | digna Documentation
 description: Saa teada, kuidas digna Data Timeliness tagab andmete õigeaegse saabumise. Tuvasta hilinenud või puuduvad kohaletoimetamised, jälgi SLA-sid ja kaitse äriprotsesse vaikselt esinevate viivituste eest. AI-põhine tuvastus andmete kvaliteedi ja torustike nähtavuse parandamiseks.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - Data Timeliness

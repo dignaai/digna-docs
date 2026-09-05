@@ -142,9 +142,9 @@ usePassword = true
 - Aucun champ nom d'utilisateur/mot de passe
 - Seule l'authentification OIDC est disponible
 
-> **Astuce**
->
-> La connexion par mot de passe n'est disponible que pour les utilisateurs créés avec un mot de passe via la commande `digna user add` ou via le tableau de bord.
+!!! tip "Astuce"
+
+    La connexion par mot de passe n'est disponible que pour les utilisateurs créés avec un mot de passe via la commande `digna user add` ou via le tableau de bord.
 
 ### Exemple complet
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Oui | URL de rappel après authentification | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Oui | Endpoint de configuration OIDC | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> Remplacez les valeurs factices (`<client_id>`, `<client_secret>`, `<tenant_id>`) par les identifiants réels depuis le portail développeur de votre fournisseur d'identité.
+!!! warning "Important"
+
+    Remplacez les valeurs factices (`<client_id>`, `<client_secret>`, `<tenant_id>`) par les identifiants réels depuis le portail développeur de votre fournisseur d'identité.
 
 ### URI de redirection
 

@@ -1,6 +1,7 @@
 ---
 title: Data Schema Tracker – Моніторинг еволюції схем | документація digna
 description: Дізнайтеся, як digna Data Schema Tracker відстежує зміни стовпців, оновлення типів даних та дрейф схеми. Отримуйте сповіщення про умисні та ненавмисні зміни, щоб запобігти збоям ETL та помилкам на дашбордах.
+image: /assets/logo_square.png
 ---
 
 # Data Schema Tracker – Моніторинг еволюції схем

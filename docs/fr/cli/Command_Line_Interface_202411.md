@@ -1,7 +1,6 @@
 ---
 title: Référence de digna CLI 2024.11 – Commandes & Exemples | documentation digna
 description: Référence complète de la CLI digna version 2024.11. Apprenez à gérer les utilisateurs, les dépôts et les données avec des commandes telles que add-user, check-repo-connection, upgrade-repo, inspect, tls-status, et plus.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ L’option `--help` fournit des informations sur les commandes disponibles et le
     Utilisez `--help` immédiatement après le mot-clé `dignacli`  
    ```bash
    dignacli --help
+   ```
 
 3.  **Obtenir de l’aide pour des commandes spécifiques :**  
   

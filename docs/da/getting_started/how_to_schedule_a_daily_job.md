@@ -2,6 +2,7 @@
 title: Sådan opretter du et job, der kører dagligt
 description: Lær hvordan du planlægger et dagligt inspektionsjob i digna ved hjælp af dashboardet.
 keywords: digna planlægning, automatisering af datakvalitet, dagligt job
+image: /assets/logo_square.png
 ---
 
 # Sådan planlægger du et dagligt job

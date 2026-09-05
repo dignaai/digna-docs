@@ -142,9 +142,9 @@ usePassword = true
 - Ingen brukernavn-/passordfelt
 - Kun OIDC-autentisering er tilgjengelig
 
-> **Tips**
->
-> Passordbasert innlogging er kun tilgjengelig for brukere som ble opprettet med passord ved hjelp av `digna user add`-kommandoen eller via dashboardet.
+!!! tip "Tips"
+
+    Passordbasert innlogging er kun tilgjengelig for brukere som ble opprettet med passord ved hjelp av `digna user add`-kommandoen eller via dashboardet.
 
 ### Fullstendig eksempel
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL etter autentisering | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-konfigurasjonsendepunkt | `https://login.microsoftonline.com/...` |
 
-> **Viktig**
->
-> Erstatt plassholderverdier (`<client_id>`, `<client_secret>`, `<tenant_id>`) med faktiske legitimasjoner fra identitetsleverandørens developer-portal.
+!!! warning "Viktig"
+
+    Erstatt plassholderverdier (`<client_id>`, `<client_secret>`, `<tenant_id>`) med faktiske legitimasjoner fra identitetsleverandørens developer-portal.
 
 ### Redirect URI
 

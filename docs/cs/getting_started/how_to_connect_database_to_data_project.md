@@ -1,6 +1,7 @@
 ---
 title: Připojení databáze | Dokumentace digna
 description: Krok za krokem návod, jak připojit databázi k existujícímu projektu v digna. Naučte se, jak nakonfigurovat připojení, zadat přihlašovací údaje a zajistit bezpečný přístup.
+image: /assets/logo_square.png
 ---
 
 # Připojení databáze

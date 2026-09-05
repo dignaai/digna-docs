@@ -1,7 +1,6 @@
 ---
 title: digna CLI Referansı 2026.01 – Komutlar & Örnekler | digna Dokümantasyonu
 description: digna CLI 2026.01 sürümü için eksiksiz referans. add-user, check-config, check-repo-connection, inspect, inspect-async ve diğer komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

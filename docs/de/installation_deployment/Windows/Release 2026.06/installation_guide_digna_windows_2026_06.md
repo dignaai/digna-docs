@@ -65,12 +65,12 @@ Sie können Ihrer bestehenden PostgreSQL-Instanz eine neue Datenbank für digna 
 
 **Falls PostgreSQL auf derselben Maschine wie digna installiert werden soll:**
 
-> **Empfohlene Spezifikationen**
->
-> - **Arbeitsspeicher**: 32 GB RAM (statt 16 GB)
-> - **Festplattenspeicher**: 50 GB verfügbarer Speicher (statt 10 GB)
->
-> Diese höheren Spezifikationen berücksichtigen sowohl digna als auch die gleichzeitig laufende PostgreSQL-Datenbank.
+!!! info "Empfohlene Spezifikationen"
+
+    - **Arbeitsspeicher**: 32 GB RAM (statt 16 GB)
+    - **Festplattenspeicher**: 50 GB verfügbarer Speicher (statt 10 GB)
+
+    Diese höheren Spezifikationen berücksichtigen sowohl digna als auch die gleichzeitig laufende PostgreSQL-Datenbank.
 
 ---
 
@@ -122,9 +122,9 @@ Geben Sie ein Passwort für den PostgreSQL-Superuser (`postgres`) ein und bestä
 
 Der Standardport von PostgreSQL ist `5432`. Sie können den Standard verwenden oder bei Bedarf einen anderen Port angeben.
 
-> **Tipp**
->
-> Wenn Port 5432 bereits belegt ist, wählen Sie einen alternativen Port und merken Sie ihn für spätere Konfigurationen.
+!!! tip "Tipp"
+
+    Wenn Port 5432 bereits belegt ist, wählen Sie einen alternativen Port und merken Sie ihn für spätere Konfigurationen.
 
 #### Schritt 7: Gebietsschema (Locale) auswählen
 
@@ -200,9 +200,9 @@ Damit Markdown-Dateien (`.md`) korrekt von IIS ausgeliefert werden, gehen Sie wi
    - **Dateinamenerweiterung**: `.md`
    - **MIME-Typ**: `text/markdown`
 
-> **Wichtig**
->
-> Ohne diese Einstellung werden `.md`-Dateien möglicherweise nicht korrekt ausgeliefert.
+!!! warning "Wichtig"
+
+    Ohne diese Einstellung werden `.md`-Dateien möglicherweise nicht korrekt ausgeliefert.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat ist ein Open-Source Java Servlet-Container und Webserver.
    - Navigieren Sie zu `http://localhost:8080`
    - Sie sollten die Apache Tomcat-Willkommensseite sehen
 
-> **Tipp**
->
-> Apache Tomcat startet normalerweise nach der Installation automatisch. Falls nicht, wechseln Sie in den `bin`-Ordner und führen Sie `startup.bat` aus.
+!!! tip "Tipp"
+
+    Apache Tomcat startet normalerweise nach der Installation automatisch. Falls nicht, wechseln Sie in den `bin`-Ordner und führen Sie `startup.bat` aus.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Best Practice**
->
-> Verwenden Sie starke, komplexe Passwörter für Datenbankbenutzer. Vermeiden Sie leicht zu erratende Anmeldedaten.
+!!! tip "Best Practice"
+
+    Verwenden Sie starke, komplexe Passwörter für Datenbankbenutzer. Vermeiden Sie leicht zu erratende Anmeldedaten.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Schritt 3: Lizenzdatei installieren
 
-> **Wichtig**
->
-> Die Lizenzdatei ist **nicht** im Installationspaket enthalten und wird separat von digna bereitgestellt.
+!!! warning "Wichtig"
+
+    Die Lizenzdatei ist **nicht** im Installationspaket enthalten und wird separat von digna bereitgestellt.
 
 1. Suchen Sie die Ihnen bereitgestellte `license.toml`
 2. Kopieren Sie sie in das Stammverzeichnis der digna-Installation (dort, wo `config.toml` und die `digna`-Executable liegen)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Beispiel:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Dies erstellt einen Benutzer mit vollständigen Administratorrechten.
 
-> **Best Practice**
->
-> Verwenden Sie ein starkes Passwort mit einer Mischung aus Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen.
+!!! tip "Best Practice"
+
+    Verwenden Sie ein starkes Passwort mit einer Mischung aus Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen.
 
 ---
 
@@ -545,9 +545,9 @@ Folgende Batch-Dateien sind vorhanden:
 - `start_service.bat` — startet den Dienst
 - `stop_service.bat` — stoppt den Dienst
 
-> **Administratorrechte erforderlich**
->
-> Alle Batch-Dateien müssen mit Administratorrechten ausgeführt werden.
+!!! warning "Administratorrechte erforderlich"
+
+    Alle Batch-Dateien müssen mit Administratorrechten ausgeführt werden.
 
 ### Dienst installieren
 
@@ -587,9 +587,9 @@ Der digna-Server ist nun als Windows-Dienst mit **automatischem Start** registri
    stop_service.bat
    ```
 
-> **Tipp**
->
-> Stoppen Sie den Dienst immer, bevor Sie Anwendungsdateien aktualisieren.
+!!! tip "Tipp"
+
+    Stoppen Sie den Dienst immer, bevor Sie Anwendungsdateien aktualisieren.
 
 ### Dienst in ein neues Verzeichnis verschieben
 
@@ -670,9 +670,9 @@ ren dashboard dashboard_old
 2. Kopieren Sie die neue `digna`-Executable und den `dashboard`-Ordner in Ihr Installationsverzeichnis
 
 
-> **Wichtig**
->
-> Die `config.toml` ist **niemals** im Installations-ZIP enthalten. Ihre bestehende Konfiguration bleibt erhalten.
+!!! warning "Wichtig"
+
+    Die `config.toml` ist **niemals** im Installations-ZIP enthalten. Ihre bestehende Konfiguration bleibt erhalten.
 
 ### Schritt 4: Konfigurationsdateien wiederherstellen
 

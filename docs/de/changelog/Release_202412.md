@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Änderungsprotokoll & Neue Funktionen
 description: Entdecken Sie, was neu ist in digna Release 2024.12. Diese Version führt einen integrierten Scheduler, PDF-Berichte, flexible Custom-Spalten, dynamische Snapshot-Query-Platzhalter und eine intelligentere Schwellenwertoptimierung ein, um Anomalieerkennung und Datenqualitätsüberwachung zu verbessern.
 keywords: digna Release 2024.12, digna Änderungsprotokoll, Release Notes, built-in scheduler, PDF-Berichte, custom column type, snapshot query placeholders, threshold optimization, Datenobservability, Datenqualitätsüberwachung, Anomalieerkennung
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: الجدولة المتقدمة باستخدام Crontab
 description: تعلّم كيفية جدولة مهمة في digna باستخدام تعابير crontab لتوقيت متقدم.
+image: /assets/logo_square.png
 ---
 
 # الجدولة المتقدمة باستخدام Crontab

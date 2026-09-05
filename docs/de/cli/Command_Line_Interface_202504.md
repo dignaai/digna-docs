@@ -1,7 +1,6 @@
 ---
 title: digna CLI Referenz 2025.04 – Befehle & Beispiele | digna Dokumentation
 description: Vollständige Referenz für die digna CLI-Version 2025.04. Erfahren Sie, wie Sie Benutzer, Repositories und Daten mit Befehlen wie add-user, check-repo-connection, upgrade-repo, inspect und mehr verwalten.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ Die Option `--help` liefert Informationen über verfügbare Befehle und deren Ve
     Verwenden Sie --help unmittelbar nach dem Befehl ***dignacli***  
    ```bash
    dignacli --help
+   ```
 
 2. **Hilfe für bestimmte Befehle erhalten:**  
   

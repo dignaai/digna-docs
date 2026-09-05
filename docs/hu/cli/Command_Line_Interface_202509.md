@@ -1,7 +1,6 @@
 ---
 title: digna CLI Referencia 2025.09 – Parancsok & Példák | digna dokumentáció
 description: Teljes referencia a digna CLI 2025.109 kiadásához. Ismerje meg, hogyan kezelhet felhasználókat, repository-kat és adatokat olyan parancsokkal, mint add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

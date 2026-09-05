@@ -2,6 +2,7 @@
 title: Hoe maak je een job die dagelijks draait
 description: Leer hoe je een dagelijkse inspectie-job in digna plant via het dashboard.
 keywords: digna scheduling, data quality automation, daily job
+image: /assets/logo_square.png
 ---
 
 # Hoe plan je een dagelijkse job

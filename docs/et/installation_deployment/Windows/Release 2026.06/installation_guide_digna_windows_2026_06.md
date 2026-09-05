@@ -65,12 +65,12 @@ Võite lisada digna jaoks uue andmebaasi olemasolevasse PostgreSQL serverisse.
 
 **Kui paigaldate PostgreSQL-i samasse masinasse, kus jookseb digna:**
 
-> **Soovitatud spetsifikatsioonid**
->
-> - **Mälu**: 32 GB RAM (16 GB asemel)
-> - **Kettaruum**: 50 GB vaba salvestusruumi (10 GB asemel)
->
-> Need kõrgemad nõuded arvestavad nii digna kui ka PostgreSQL-i samaaegset käivitamist.
+!!! info "Soovitatud spetsifikatsioonid"
+
+    - **Mälu**: 32 GB RAM (16 GB asemel)
+    - **Kettaruum**: 50 GB vaba salvestusruumi (10 GB asemel)
+
+    Need kõrgemad nõuded arvestavad nii digna kui ka PostgreSQL-i samaaegset käivitamist.
 
 ---
 
@@ -122,9 +122,9 @@ Sisestage ja kinnitage parool PostgreSQL superkasutajale (`postgres`). **Salvest
 
 Vaikeport PostgreSQL-ile on `5432`. Võite kasutada vaikeseadet või määrata vajadusel teise pordi.
 
-> **Näpunäide**
->
-> Kui port 5432 on juba kasutusel, valige alternatiivne port ja pidage seda meeles edasiseks konfiguratsiooniks.
+!!! tip "Näpunäide"
+
+    Kui port 5432 on juba kasutusel, valige alternatiivne port ja pidage seda meeles edasiseks konfiguratsiooniks.
 
 #### 7. samm: Valige lokaal
 
@@ -200,9 +200,9 @@ Et tagada Markdown-failide (`.md`) korrektne serveerimine IIS-is:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Oluline**
->
-> Ilma selle seadeteta ei pruugi `.md` failid korralikult teenindatavad olla.
+!!! warning "Oluline"
+
+    Ilma selle seadeteta ei pruugi `.md` failid korralikult teenindatavad olla.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat on avatud lähtekoodiga Java servlet konteiner ja veebiserver.
    - Navigeerige `http://localhost:8080`
    - Peaksite nägema Apache Tomcat tervitussaiti
 
-> **Näpunäide**
->
-> Apache Tomcat tavaliselt käivitub automaatselt pärast paigaldust. Kui see ei käivitu, minge `bin` kausta ja käivitage `startup.bat`.
+!!! tip "Näpunäide"
+
+    Apache Tomcat tavaliselt käivitub automaatselt pärast paigaldust. Kui see ei käivitu, minge `bin` kausta ja käivitage `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Parim tava**
->
-> Kasutage tugevaid, keerukaid paroole andmebaasi kasutajatele. Vältige kergesti äraarvatavaid mandaate.
+!!! tip "Parim tava"
+
+    Kasutage tugevaid, keerukaid paroole andmebaasi kasutajatele. Vältige kergesti äraarvatavaid mandaate.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### 3. samm: Paigaldage litsentsifail
 
-> **Oluline**
->
-> Litsentsifail ei ole paigalduspaketis kaasas ja seda antakse eraldi digna poolt.
+!!! warning "Oluline"
+
+    Litsentsifail ei ole paigalduspaketis kaasas ja seda antakse eraldi digna poolt.
 
 1. Leidke teile antud `license.toml` fail
 2. Kopeerige see digna paigalduskataloogi (samasse kohta, kus asuvad `config.toml` ja `digna` käivitatav fail)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Näide:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 See loob kasutaja täielike administraatoriõigustega.
 
-> **Parim tava**
->
-> Kasutage tugevat parooli, mis sisaldab suuri ja väikesi tähti, numbreid ja erimärke.
+!!! tip "Parim tava"
+
+    Kasutage tugevat parooli, mis sisaldab suuri ja väikesi tähti, numbreid ja erimärke.
 
 ---
 
@@ -543,9 +543,9 @@ Järgnevad batch-failid on saadaval:
 - `start_service.bat` — käivitab teenuse
 - `stop_service.bat` — peatab teenuse
 
-> **Administraatori õigused vajalikud**
->
-> Kõiki batch-faile tuleb käivitada administraatori õigustes.
+!!! warning "Administraatori õigused vajalikud"
+
+    Kõiki batch-faile tuleb käivitada administraatori õigustes.
 
 ### Teenuse paigaldamine
 
@@ -585,9 +585,9 @@ digna server on nüüd registreeritud Windowsi teenusena automaatse käivitusega
    stop_service.bat
    ```
 
-> **Näpunäide**
->
-> Enne rakenduse failide uuendamist peatage teenus alati.
+!!! tip "Näpunäide"
+
+    Enne rakenduse failide uuendamist peatage teenus alati.
 
 ### Teenuse liigutamine uude kataloogi
 
@@ -667,9 +667,9 @@ ren dashboard dashboard_old
 1. Ekstraktige uus digna paigaldus ZIP-fail
 2. Kopeerige uus `digna` käivitatav fail ja `dashboard` kaust oma paigalduskataloogi
 
-> **Oluline**
->
-> `config.toml` faili EI OLE kunagi kaasas paigaldus-ZIP-is. Teie olemasolev konfiguratsioon jääb samaks.
+!!! warning "Oluline"
+
+    `config.toml` faili EI OLE kunagi kaasas paigaldus-ZIP-is. Teie olemasolev konfiguratsioon jääb samaks.
 
 ### 4. samm: Taastage konfiguratsioonifailid
 

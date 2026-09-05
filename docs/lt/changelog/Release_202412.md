@@ -2,7 +2,6 @@
 title: digna Leidimas 2024.12 | Pakeitimų žurnalas ir naujos funkcijos
 description: Sužinokite, kas naujo digna leidime 2024.12. Ši versija pristato integruotą planuotoją, PDF ataskaitas, lanksčias pasirinktines stulpelių tipus, dinamiškus snapshot užklausų vietos žymeklius ir protingesnę ribų optimizaciją, kad pagerintų anomalijų aptikimą ir duomenų kokybės stebėseną.
 keywords: digna leidimas 2024.12, digna pakeitimų žurnalas, leidimo pastabos, integruotas planuotojas, PDF ataskaitos, custom column type, snapshot query placeholders, threshold optimization, data observability, data quality monitoring, anomaly detection
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

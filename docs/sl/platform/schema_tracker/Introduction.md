@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Spremljanje razvoja shem | digna Dokumentacija
 description: Spoznajte, kako digna Data Schema Tracker spremlja spremembe stolpcev, posodobitve podatkovnih tipov in drift shem. Odkrijte in opozorite na namerne in nenamerne spremembe sheme, da preprečite napake ETL, pokvarjene nadzorne plošče in izgubo opazljivosti podatkov.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - sledenje shem podatkov

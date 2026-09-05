@@ -1,6 +1,7 @@
 ---
 title: Agendamento Avançado com Crontab
 description: Aprenda a agendar um job no digna usando expressões crontab para agendamento avançado.
+image: /assets/logo_square.png
 ---
 
 # Agendamento Avançado com Crontab

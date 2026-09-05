@@ -142,9 +142,9 @@ usePassword = true
 - No hay campos de usuario/contraseña
 - Solo está disponible la autenticación OIDC
 
-> **Consejo**
->
-> El inicio de sesión basado en contraseña solo está disponible para usuarios que fueron creados con contraseñas usando el comando `digna user add` o a través del panel.
+!!! tip "Consejo"
+
+    El inicio de sesión basado en contraseña solo está disponible para usuarios que fueron creados con contraseñas usando el comando `digna user add` o a través del panel.
 
 ### Ejemplo Completo
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Sí | URL de callback después de la autenticación | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Sí | Endpoint de configuración OIDC | `https://login.microsoftonline.com/...` |
 
-> **Importante**
->
-> Reemplaza los valores de marcador de posición (`<client_id>`, `<client_secret>`, `<tenant_id>`) con las credenciales reales desde el portal de desarrolladores de tu proveedor de identidad.
+!!! warning "Importante"
+
+    Reemplaza los valores de marcador de posición (`<client_id>`, `<client_secret>`, `<tenant_id>`) con las credenciales reales desde el portal de desarrolladores de tu proveedor de identidad.
 
 ### Redirect URI
 

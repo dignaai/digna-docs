@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2026.01 – Příkazy a příklady | digna Dokumentace
 description: Kompletní reference pro digna CLI verzi 2026.01. Naučte se spravovat uživatele, repozitáře a data pomocí příkazů jako add-user, check-config, check-repo-connection, inspect, inspect-async a dalších.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

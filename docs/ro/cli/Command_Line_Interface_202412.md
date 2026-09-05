@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2024.12 – Commands & Examples | digna Documentation
 description: Referință completă pentru digna CLI release 2024.12. Aflați cum să gestionați utilizatorii, depozitele și datele cu comenzi precum add-user, check-repo-connection, upgrade-repo, inspect și altele.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 
@@ -32,6 +31,7 @@ Opțiunea `--help` oferă informații despre comenzile disponibile și modul lor
     Folosiți --help imediat după cuvântul cheie ***digna***cl  
    ```bash
    dignacli --help
+   ```
 
 3.  **Obținerea de ajutor pentru comenzi specifice:**  
   

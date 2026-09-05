@@ -1,6 +1,7 @@
 ---
 title: Crontab के साथ उन्नत शेड्यूलिंग
 description: सीखें कि digna में crontab अभिव्यक्तियों का उपयोग करके एक जॉब को उन्नत समय निर्धारण के लिए कैसे शेड्यूल करें।
+image: /assets/logo_square.png
 ---
 
 # Crontab के साथ उन्नत शेड्यूलिंग

@@ -1,7 +1,6 @@
 ---
 title: digna CLI referencija 2025.04 – komandos ir pavyzdžiai | digna dokumentacija
 description: Išsami digna CLI versijos 2025.04 referencija. Sužinokite, kaip valdyti vartotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-repo-connection, upgrade-repo, inspect ir kt.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ Parinktis `--help` pateikia informaciją apie prieinamas komandas ir jų naudoji
     Naudokite --help iškart po komandos raktažodžio dignacli  
    ```bash
    dignacli --help
+   ```
 
 2. **Pagalbos gavimas konkrečioms komandoms:**  
   

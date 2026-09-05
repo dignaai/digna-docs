@@ -2,7 +2,6 @@
 title: Konektor Azure Synapse – Integrace databáze | dokumentace digna
 description: Nakonfigurujte digna pro připojení k Azure Synapse Analytics pomocí nativního Python konektoru nebo ODBC ovladače. Podporuje jak serverless, tak dedikované SQL pooly.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

@@ -2,6 +2,7 @@
 title: Cómo crear un trabajo que se ejecute diariamente
 description: Aprende a programar un trabajo de inspección diario en digna usando el dashboard.
 keywords: programación digna, automatización de calidad de datos, trabajo diario
+image: /assets/logo_square.png
 ---
 
 # Cómo programar un trabajo diario

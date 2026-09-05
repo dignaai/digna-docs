@@ -1,6 +1,7 @@
 ---
 title: Crontab ile Gelişmiş Zamanlama
 description: Crontab ifadeleri kullanarak digna'da bir görevi zamanlamayı öğrenin.
+image: /assets/logo_square.png
 ---
 
 # Crontab ile Gelişmiş Zamanlama

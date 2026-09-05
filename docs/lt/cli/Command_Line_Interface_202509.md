@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.09 – Komandos ir Pavyzdžiai | digna Dokumentacija
 description: Išsamus digna CLI leidimo 2025.109 nuorodinis vadovas. Sužinokite, kaip valdyti naudotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-config, check-repo-connection, inspect, inspect-async ir kt.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

@@ -2,7 +2,6 @@
 title: digna izlaidums 2024.12 | Izmaiņu žurnāls un jaunas funkcijas
 description: Uzziniet, kas jauns digna izlaidumā 2024.12. Šī versija ievieš iebūvētu scheduler, PDF atskaites, elastīgas pielāgotas kolonnas, dinamiskas snapshot vaicājumu vietturas un gudrāku sliekšņu optimizāciju, lai uzlabotu anomāliju noteikšanu un datu kvalitātes uzraudzību.
 keywords: digna izlaidums 2024.12, digna izmaiņu žurnāls, release notes, iebūvēts scheduler, PDF atskaites, pielāgota kolonnas tips, snapshot vaicājumu vietturas, sliekšņu optimizācija, datu novērojamība, datu kvalitātes uzraudzība, anomāliju noteikšana
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

@@ -142,9 +142,9 @@ usePassword = true
 - Kullanıcı adı/parola alanı yoktur
 - Sadece OIDC ile kimlik doğrulama kullanılabilir
 
-> **İpucu**
->
-> Parola tabanlı giriş, yalnızca `digna user add` komutuyla veya panel üzerinden parola ile oluşturulmuş kullanıcılar için kullanılabilir.
+!!! tip "İpucu"
+
+    Parola tabanlı giriş, yalnızca `digna user add` komutuyla veya panel üzerinden parola ile oluşturulmuş kullanıcılar için kullanılabilir.
 
 ### Tam Örnek
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Evet | Kimlik doğrulama sonrası geri çağırma (callback) URL'si | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Evet | OIDC yapılandırma uç noktası | `https://login.microsoftonline.com/...` |
 
-> **Önemli**
->
-> Yer tutucu değerleri (`<client_id>`, `<client_secret>`, `<tenant_id>`) kimlik sağlayıcınızın geliştirici portalından alınan gerçek kimlik bilgileriyle değiştirin.
+!!! warning "Önemli"
+
+    Yer tutucu değerleri (`<client_id>`, `<client_secret>`, `<tenant_id>`) kimlik sağlayıcınızın geliştirici portalından alınan gerçek kimlik bilgileriyle değiştirin.
 
 ### Redirect URI
 

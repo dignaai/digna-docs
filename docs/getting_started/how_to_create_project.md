@@ -1,6 +1,7 @@
 ---
 title: Create a Project | digna Documentation
 description: Step-by-step guide to creating a new project in digna. Learn how to open the project section, enter details, and save projects with an interactive demo.
+image: /assets/logo_square.png
 ---
 
 

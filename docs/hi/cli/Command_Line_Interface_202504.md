@@ -1,7 +1,6 @@
 ---
 title: digna CLI संदर्भ 2025.04 – कमांड और उदाहरण | digna Documentation
 description: digna CLI रिलीज 2025.04 के लिए पूर्ण संदर्भ। जानें कि add-user, check-repo-connection, upgrade-repo, inspect और अन्य कमांड्स का उपयोग करके उपयोगकर्ताओं, रिपॉज़िटरीज़ और डेटा का प्रबंधन कैसे करें।
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 

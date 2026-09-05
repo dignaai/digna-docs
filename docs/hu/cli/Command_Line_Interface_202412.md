@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2024.12 – Commands & Examples | digna Documentation
 description: Teljes referencia a digna CLI 2024.12 kiadásához. Ismerje meg, hogyan kezelhet felhasználókat, tárolókat és adatokat olyan parancsokkal, mint az add-user, check-repo-connection, upgrade-repo, inspect és továbbiak.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

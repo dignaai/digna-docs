@@ -142,9 +142,9 @@ usePassword = true
 - Nincsenek felhasználónév/jelszó mezők
 - Csak OIDC hitelesítés érhető el
 
-> **Tipp**
->
-> A jelszó alapú bejelentkezés csak azoknál a felhasználóknál érhető el, akiket jelszóval hoztak létre a `digna user add` parancs segítségével vagy a dashboardon keresztül.
+!!! tip "Tipp"
+
+    A jelszó alapú bejelentkezés csak azoknál a felhasználóknál érhető el, akiket jelszóval hoztak létre a `digna user add` parancs segítségével vagy a dashboardon keresztül.
 
 ### Teljes példa
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Igen | Visszahívási URL hitelesítés után | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Igen | Az OIDC konfigurációs végpont | `https://login.microsoftonline.com/...` |
 
-> **Fontos**
->
-> Cserélje ki a helykitöltő értékeket (`<client_id>`, `<client_secret>`, `<tenant_id>`) a szolgáltatójától kapott valós adatokra a fejlesztői/konzolos felületen.
+!!! warning "Fontos"
+
+    Cserélje ki a helykitöltő értékeket (`<client_id>`, `<client_secret>`, `<tenant_id>`) a szolgáltatójától kapott valós adatokra a fejlesztői/konzolos felületen.
 
 ### Redirect URI
 

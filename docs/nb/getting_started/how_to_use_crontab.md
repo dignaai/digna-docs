@@ -1,6 +1,7 @@
 ---
 title: Avansert planlegging med crontab
 description: Lær hvordan du planlegger en jobb i digna ved hjelp av crontab-uttrykk for avanserte tidspunkter.
+image: /assets/logo_square.png
 ---
 
 # Avansert planlegging med crontab

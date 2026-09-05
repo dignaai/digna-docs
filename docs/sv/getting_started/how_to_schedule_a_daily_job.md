@@ -2,6 +2,7 @@
 title: Hur du skapar ett jobb som körs dagligen
 description: Lär dig hur du schemalägger ett dagligt inspektionsjobb i digna med hjälp av dashboarden.
 keywords: digna schemaläggning, automatisering av datakvalitet, dagligt jobb
+image: /assets/logo_square.png
 ---
 
 # Hur du schemalägger ett dagligt jobb

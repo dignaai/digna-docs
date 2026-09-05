@@ -1,6 +1,7 @@
 ---
 title: Loo projekt | digna dokumentatsioon
 description: Samm-sammult juhend uue projekti loomiseks digna keskkonnas. Õpi, kuidas avada projektide sektsioon, sisestada üksikasjad ja salvestada projekt interaktiivse demo abil.
+image: /assets/logo_square.png
 ---
 
 

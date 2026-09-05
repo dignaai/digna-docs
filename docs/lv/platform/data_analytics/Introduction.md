@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Tendences, stabilitāte un ilgtermiņa ieskati | digna dokumentācija
 description: Uzziniet, kā digna Data Analytics atklāj ilgtermiņa tendences, svārstīgumu un datu stabilitāti KPIs. Atklājiet izmaiņas datu kvalitātē un novērojamībā, atrodiet slēptas anomālijas un pārvērtiet statistiku par rīcībspējīgiem ieskatiem.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - datu analītika

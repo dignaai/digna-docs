@@ -65,12 +65,12 @@ Możesz dodać nową bazę danych dla digna do istniejącego serwera PostgreSQL.
 
 **Jeśli instalujesz PostgreSQL na tej samej maszynie co digna:**
 
-> **Zalecane specyfikacje**
->
-> - **Pamięć**: 32 GB RAM (zamiast 16 GB)
-> - **Miejsce na dysku**: 50 GB dostępnego miejsca (zamiast 10 GB)
->
-> Te wyższe specyfikacje uwzględniają równoczesne działanie digna oraz serwera PostgreSQL.
+!!! info "Zalecane specyfikacje"
+
+    - **Pamięć**: 32 GB RAM (zamiast 16 GB)
+    - **Miejsce na dysku**: 50 GB dostępnego miejsca (zamiast 10 GB)
+
+    Te wyższe specyfikacje uwzględniają równoczesne działanie digna oraz serwera PostgreSQL.
 
 ---
 
@@ -122,9 +122,9 @@ Wprowadź i potwierdź hasło dla superużytkownika PostgreSQL (`postgres`). **Z
 
 Domyślny port PostgreSQL to `5432`. Możesz użyć domyślnego lub wskazać inny port, jeśli zajdzie taka potrzeba.
 
-> **Wskazówka**
->
-> Jeśli port 5432 jest już zajęty, wybierz alternatywny port i zapamiętaj go do późniejszej konfiguracji.
+!!! tip "Wskazówka"
+
+    Jeśli port 5432 jest już zajęty, wybierz alternatywny port i zapamiętaj go do późniejszej konfiguracji.
 
 #### Krok 7: Wybierz locale
 
@@ -200,9 +200,9 @@ Aby upewnić się, że pliki Markdown (`.md`) będą serwowane poprawnie przez I
    - **Rozszerzenie pliku**: `.md`
    - **Typ MIME**: `text/markdown`
 
-> **Ważne**
->
-> Bez tego ustawienia pliki `.md` mogą nie być serwowane poprawnie.
+!!! warning "Ważne"
+
+    Bez tego ustawienia pliki `.md` mogą nie być serwowane poprawnie.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat to open-source’owy kontener servletów Java i serwer WWW.
    - Przejdź do `http://localhost:8080`
    - Powinieneś zobaczyć stronę powitalną Apache Tomcat
 
-> **Wskazówka**
->
-> Apache Tomcat zwykle uruchamia się automatycznie po instalacji. Jeśli tak się nie stanie, przejdź do folderu `bin` i uruchom `startup.bat`.
+!!! tip "Wskazówka"
+
+    Apache Tomcat zwykle uruchamia się automatycznie po instalacji. Jeśli tak się nie stanie, przejdź do folderu `bin` i uruchom `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Dobra praktyka**
->
-> Używaj silnych, złożonych haseł dla użytkowników bazy danych. Unikaj łatwych do odgadnięcia danych uwierzytelniających.
+!!! tip "Dobra praktyka"
+
+    Używaj silnych, złożonych haseł dla użytkowników bazy danych. Unikaj łatwych do odgadnięcia danych uwierzytelniających.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Krok 3: Zainstaluj plik licencji
 
-> **Ważne**
->
-> Plik licencji **nie** jest dołączony do pakietu instalacyjnego i zostanie dostarczony oddzielnie przez digna.
+!!! warning "Ważne"
+
+    Plik licencji **nie** jest dołączony do pakietu instalacyjnego i zostanie dostarczony oddzielnie przez digna.
 
 1. Znajdź plik `license.toml` przekazany Ci przez dostawcę
 2. Skopiuj go do głównego katalogu instalacyjnego digna (tam, gdzie znajdują się `config.toml` i plik wykonywalny `digna`)
@@ -468,9 +468,9 @@ digna user add "Admin User" AdminPassword123! --su
 
 To utworzy użytkownika z pełnymi uprawnieniami administracyjnymi.
 
-> **Dobra praktyka**
->
-> Używaj silnego hasła z kombinacją wielkich liter, małych liter, cyfr i znaków specjalnych.
+!!! tip "Dobra praktyka"
+
+    Używaj silnego hasła z kombinacją wielkich liter, małych liter, cyfr i znaków specjalnych.
 
 ---
 
@@ -545,9 +545,9 @@ Dostępne pliki wsadowe:
 - `start_service.bat` — uruchamia zarejestrowaną usługę
 - `stop_service.bat` — zatrzymuje uruchomioną usługę
 
-> **Wymagane uprawnienia administratora**
->
-> Wszystkie pliki wsadowe muszą być uruchamiane z uprawnieniami Administratora.
+!!! warning "Wymagane uprawnienia administratora"
+
+    Wszystkie pliki wsadowe muszą być uruchamiane z uprawnieniami Administratora.
 
 ### Instalacja usługi
 
@@ -587,9 +587,9 @@ Serwer digna jest teraz zarejestrowany jako usługa Windows z ustawionym **autom
    stop_service.bat
    ```
 
-> **Wskazówka**
->
-> Zawsze zatrzymaj usługę przed aktualizacją plików aplikacji.
+!!! tip "Wskazówka"
+
+    Zawsze zatrzymaj usługę przed aktualizacją plików aplikacji.
 
 ### Przenoszenie usługi do nowego katalogu
 
@@ -671,9 +671,9 @@ ren dashboard dashboard_old
 2. Skopiuj nowy plik wykonywalny `digna` oraz folder `dashboard` do katalogu instalacyjnego
 
 
-> **Ważne**
->
-> Plik `config.toml` **nigdy** nie jest dołączany do pliku ZIP instalacji. Twoja istniejąca konfiguracja pozostaje nienaruszona.
+!!! warning "Ważne"
+
+    Plik `config.toml` **nigdy** nie jest dołączany do pliku ZIP instalacji. Twoja istniejąca konfiguracja pozostaje nienaruszona.
 
 ### Krok 4: Przywróć pliki konfiguracyjne
 

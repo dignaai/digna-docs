@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Időben történő kézbesítés figyelése | digna Dokumentáció
 description: Ismerje meg, hogyan biztosítja a digna Data Timeliness, hogy az adatok a vártnak megfelelően érkezzenek. Észlelje a késői vagy hiányzó kézbesítéseket, figyelje az SLA-kat, és védje az üzleti folyamatokat a néma késésektől. MI-alapú észlelés a jobb adatminőségért és a csővezetékek megfigyelhetőségéért.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - adatok időszerűsége

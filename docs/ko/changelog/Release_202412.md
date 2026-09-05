@@ -2,7 +2,6 @@
 title: digna 릴리스 2024.12 | 변경 로그 및 새로운 기능
 description: digna 릴리스 2024.12의 새로운 기능을 확인하세요. 이번 버전은 내장 스케줄러, PDF 보고서, 유연한 커스텀 컬럼, 동적 스냅샷 쿼리 플레이스홀더, 그리고 이상 탐지와 데이터 품질 모니터링을 개선하는 스마트한 임계값 최적화를 도입합니다.
 keywords: digna 릴리스 2024.12, digna 변경 로그, 릴리스 노트, 내장 스케줄러, PDF 보고서, 커스텀 컬럼 타입, 스냅샷 쿼리 플레이스홀더, 임계값 최적화, 데이터 관측성, 데이터 품질 모니터링, 이상 탐지
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

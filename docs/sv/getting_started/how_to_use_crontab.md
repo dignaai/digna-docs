@@ -1,6 +1,7 @@
 ---
 title: Avancerad schemaläggning med Crontab
 description: Lär dig hur du schemalägger ett jobb i digna med crontab-uttryck för avancerad tidsinställning.
+image: /assets/logo_square.png
 ---
 
 # Avancerad schemaläggning med Crontab

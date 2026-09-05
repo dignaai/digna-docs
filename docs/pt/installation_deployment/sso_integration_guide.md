@@ -142,9 +142,9 @@ usePassword = true
 - Não há campos de nome de usuário/senha
 - Apenas autenticação OIDC está disponível
 
-> **Dica**
->
-> O login por senha só está disponível para usuários que foram criados com senha usando o comando `digna user add` ou via dashboard.
+!!! tip "Dica"
+
+    O login por senha só está disponível para usuários que foram criados com senha usando o comando `digna user add` ou via dashboard.
 
 ### Exemplo Completo
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Sim | URL de callback após autenticação | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Sim | Endpoint de configuração OIDC | `https://login.microsoftonline.com/...` |
 
-> **Importante**
->
-> Substitua os valores de placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) pelas credenciais reais do portal do provedor de identidade.
+!!! warning "Importante"
+
+    Substitua os valores de placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) pelas credenciais reais do portal do provedor de identidade.
 
 ### Redirect URI
 

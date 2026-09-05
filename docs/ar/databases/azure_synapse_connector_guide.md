@@ -2,7 +2,6 @@
 title: موصل Azure Synapse – تكامل قاعدة البيانات | توثيق digna
 description: قم بتكوين digna للاتصال بـ Azure Synapse Analytics باستخدام إما الموصل الأصلي لـ Python أو برنامج تشغيل ODBC. يدعم كلًا من SQL pools بدون خادم والمخصصة.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

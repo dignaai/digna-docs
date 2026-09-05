@@ -142,9 +142,9 @@ usePassword = true
 - 사용자 이름/비밀번호 필드가 없습니다.
 - OIDC 인증만 사용할 수 있습니다.
 
-> **팁**
->
-> 비밀번호 기반 로그인은 `digna user add` 명령어 또는 대시보드를 통해 비밀번호로 생성된 사용자에게만 제공됩니다.
+!!! tip "팁"
+
+    비밀번호 기반 로그인은 `digna user add` 명령어 또는 대시보드를 통해 비밀번호로 생성된 사용자에게만 제공됩니다.
 
 ### 전체 예시
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | 인증 후 콜백 URL | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC 구성 엔드포인트 | `https://login.microsoftonline.com/...` |
 
-> **중요**
->
-> 플레이스홀더 값(`<client_id>`, `<client_secret>`, `<tenant_id>`)을 아이덴티티 제공자 개발자 포털에서 발급받은 실제 자격 증명으로 바꾸세요.
+!!! warning "중요"
+
+    플레이스홀더 값(`<client_id>`, `<client_secret>`, `<tenant_id>`)을 아이덴티티 제공자 개발자 포털에서 발급받은 실제 자격 증명으로 바꾸세요.
 
 ### Redirect URI
 

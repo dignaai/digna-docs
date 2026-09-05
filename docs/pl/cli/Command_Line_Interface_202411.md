@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2024.11 – Polecenia i przykłady | digna Documentation
 description: Kompletny przewodnik po digna CLI w wersji 2024.11. Dowiedz się, jak zarządzać użytkownikami, repozytoriami i danymi za pomocą poleceń takich jak add-user, check-repo-connection, upgrade-repo, inspect, tls-status i innych.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
 image: /assets/logo_square.png
 ---
 

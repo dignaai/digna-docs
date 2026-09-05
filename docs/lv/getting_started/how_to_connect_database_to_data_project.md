@@ -1,6 +1,7 @@
 ---
 title: Savienot datubāzi | digna dokumentācija
 description: Soli pa solim ceļvedis, kā savienot datubāzi ar esošu projektu digna. Uzziniet, kā konfigurēt savienojumus, norādīt akreditācijas datus un iespējot drošu piekļuvi.
+image: /assets/logo_square.png
 ---
 
 # Savienot datubāzi

@@ -2,6 +2,7 @@
 title: Cum să creezi un job care rulează zilnic
 description: Află cum să programezi un job de inspectare zilnic în digna folosind dashboard-ul.
 keywords: programare digna, automatizare calitate date, job zilnic
+image: /assets/logo_square.png
 ---
 
 # Cum să programezi un job zilnic

@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Schema‑Evolution überwachen | digna Dokumentation
 description: Erfahren Sie, wie digna Data Schema Tracker Spaltenänderungen, Datentyp‑Updates und Schema‑Drift überwacht. Erkennen und alarmieren Sie bei absichtlichen und unbeabsichtigten Schemaänderungen, um ETL‑Ausfälle, fehlerhafte Dashboards und Verlust der Daten‑Observability zu verhindern.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - data schema tracker

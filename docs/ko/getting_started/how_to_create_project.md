@@ -1,6 +1,7 @@
 ---
 title: 프로젝트 생성 | digna 문서
 description: digna에서 새 프로젝트를 만드는 단계별 가이드. 프로젝트 섹션 열기, 세부 정보 입력, 대화형 데모로 프로젝트 저장 방법을 알아보세요.
+image: /assets/logo_square.png
 ---
 
 

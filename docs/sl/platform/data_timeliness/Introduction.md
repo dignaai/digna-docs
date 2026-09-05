@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Spremljanje pravočasne dostave | digna Dokumentacija
 description: Izvedite, kako digna Data Timeliness zagotavlja, da podatki prispejo pravočasno. Zaznajte zamude ali manjkajoče dostave, spremljajte SLA in zaščitite poslovne procese pred tihimi zamudami. AI-podprta zaznava za izboljšano kakovost podatkov in opaznost podatkovnih tokov.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - časovna pravočasnost podatkov

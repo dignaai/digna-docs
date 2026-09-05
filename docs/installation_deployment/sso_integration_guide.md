@@ -142,9 +142,9 @@ usePassword = true
 - No username/password fields
 - Only OIDC authentication is available
 
-> **Tip**
->
-> Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
+!!! tip "Tip"
+
+    Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
 
 ### Complete Example
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
+!!! warning "Important"
+
+    Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
 
 ### Redirect URI
 

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Tendências, Estabilidade e Insights de Longo Prazo | Documentação digna
 description: Saiba como o Data Analytics da digna revela tendências de longo prazo, volatilidade e estabilidade dos dados em KPIs. Detecte mudanças na qualidade e observabilidade dos dados, descubra anomalias ocultas e transforme estatísticas em insights acionáveis.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data analytics

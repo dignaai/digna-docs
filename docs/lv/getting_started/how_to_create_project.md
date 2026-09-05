@@ -1,6 +1,7 @@
 ---
 title: Izveidot projektu | digna dokumentācija
 description: Soli pa solim ceļvedis, kā izveidot jaunu projektu digna. Uzziniet, kā atvērt projektu sadaļu, ievadīt detaļas un saglabāt projektus ar interaktīvu demonstrāciju.
+image: /assets/logo_square.png
 ---
 
 

@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Ändringslogg & Nya funktioner
 description: Upptäck nyheterna i digna Release 2024.12. Denna version introducerar en inbyggd schemaläggare, PDF-rapportering, flexibla anpassade kolumntyper, dynamiska platshållare i snapshot-frågor och smartare tröskeloptimering för bättre anomaliupptäckt och datakvalitetsövervakning.
 keywords: digna Release 2024.12, digna ändringslogg, release notes, inbyggd schemaläggare, PDF-rapporter, custom column type, snapshot query placeholders, tröskeloptimering, data observability, datakvalitetsövervakning, anomaliupptäckt
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

@@ -2,7 +2,6 @@
 title: digna-versio 2024.12 | Muutospäiväkirja ja uudet ominaisuudet
 description: Tutustu, mitä uutta digna-versiossa 2024.12 on. Tämä versio tuo sisäänrakennetun ajastimen, PDF-raportoinnin, joustavat mukautetut sarakkeet, dynaamiset snapshot-kyselyn paikkamerkit ja älykkäämmän kynnysarvojen optimoinnin poikkeamien havaitsemisen ja datan laadun valvonnan parantamiseksi.
 keywords: digna Release 2024.12, digna changelog, release notes, built-in scheduler, PDF reports, custom column type, snapshot query placeholders, threshold optimization, data observability, data quality monitoring, anomaly detection
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

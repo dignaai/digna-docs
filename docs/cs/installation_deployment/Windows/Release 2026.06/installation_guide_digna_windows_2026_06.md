@@ -65,12 +65,12 @@ Můžete přidat novou databázi pro digna na váš existující PostgreSQL serv
 
 **Pokud instalujete PostgreSQL na stejný stroj jako digna:**
 
-> **Doporučené specifikace**
->
-> - **Paměť**: 32 GB RAM (místo 16 GB)
-> - **Volné místo na disku**: 50 GB dostupného úložiště (místo 10 GB)
->
-> Tyto vyšší specifikace zohledňují běh jak digna, tak PostgreSQL současně.
+!!! info "Doporučené specifikace"
+
+    - **Paměť**: 32 GB RAM (místo 16 GB)
+    - **Volné místo na disku**: 50 GB dostupného úložiště (místo 10 GB)
+
+    Tyto vyšší specifikace zohledňují běh jak digna, tak PostgreSQL současně.
 
 ---
 
@@ -122,9 +122,9 @@ Zadejte a potvrďte heslo pro superuživatele PostgreSQL (`postgres`). **Uložte
 
 Výchozí port PostgreSQL je `5432`. Můžete použít výchozí nebo specifikovat jiný port podle potřeby.
 
-> **Tip**
->
-> Pokud je port 5432 již obsazen, zvolte alternativní port a poznamenejte si ho pro pozdější konfiguraci.
+!!! tip "Tip"
+
+    Pokud je port 5432 již obsazen, zvolte alternativní port a poznamenejte si ho pro pozdější konfiguraci.
 
 #### Krok 7: Vyberte locale
 
@@ -200,9 +200,9 @@ Aby byly Markdown soubory (`.md`) správně obsluhovány IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Důležité**
->
-> Bez tohoto nastavení nemusí být `.md` soubory správně obsluhovány.
+!!! warning "Důležité"
+
+    Bez tohoto nastavení nemusí být `.md` soubory správně obsluhovány.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat je open-source kontejner pro Java servlety a webový server.
    - Přejděte na `http://localhost:8080`
    - Měli byste vidět uvítací stránku Apache Tomcat
 
-> **Tip**
->
-> Apache Tomcat se obvykle spustí automaticky po instalaci. Pokud se nespustí, přejděte do složky `bin` a spusťte `startup.bat`.
+!!! tip "Tip"
+
+    Apache Tomcat se obvykle spustí automaticky po instalaci. Pokud se nespustí, přejděte do složky `bin` a spusťte `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Nejlepší postup**
->
-> Používejte silná, komplexní hesla pro databázové uživatele. Vyvarujte se snadno uhodnutelných přihlašovacích údajů.
+!!! tip "Nejlepší postup"
+
+    Používejte silná, komplexní hesla pro databázové uživatele. Vyvarujte se snadno uhodnutelných přihlašovacích údajů.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Krok 3: Instalace licenčního souboru
 
-> **Důležité**
->
-> Licenční soubor **není** součástí instalačního balíku a bude vám poskytnut samostatně společností digna.
+!!! warning "Důležité"
+
+    Licenční soubor **není** součástí instalačního balíku a bude vám poskytnut samostatně společností digna.
 
 1. Najděte poskytnutý soubor `license.toml`
 2. Zkopírujte jej do kořenového adresáře instalace digna (tam, kde se nachází `config.toml` a spustitelný soubor `digna`)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Příklad:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Tím se vytvoří uživatel s plnými administrátorskými právy.
 
-> **Nejlepší postup**
->
-> Používejte silné heslo obsahující kombinaci velkých a malých písmen, čísel a speciálních znaků.
+!!! tip "Nejlepší postup"
+
+    Používejte silné heslo obsahující kombinaci velkých a malých písmen, čísel a speciálních znaků.
 
 ---
 
@@ -545,9 +545,9 @@ K dispozici jsou tyto dávkové soubory:
 - `start_service.bat` — Spustí registrovanou službu
 - `stop_service.bat` — Zastaví běžící službu
 
-> **Vyžadováno oprávnění správce**
->
-> Všechny dávkové soubory musí být spuštěny s oprávněními Administrátora.
+!!! warning "Vyžadováno oprávnění správce"
+
+    Všechny dávkové soubory musí být spuštěny s oprávněními Administrátora.
 
 ### Instalace služby
 
@@ -587,9 +587,9 @@ digna server je nyní zaregistrován jako Windows služba s povoleným automatic
    stop_service.bat
    ```
 
-> **Tip**
->
-> Vždy službu zastavte před aktualizací souborů aplikace.
+!!! tip "Tip"
+
+    Vždy službu zastavte před aktualizací souborů aplikace.
 
 ### Přesunutí služby do nového adresáře
 
@@ -671,9 +671,9 @@ ren dashboard dashboard_old
 2. Zkopírujte nový spustitelný soubor `digna` a složku `dashboard` do instalačního adresáře
 
 
-> **Důležité**
->
-> Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše existující konfigurace zůstane zachována.
+!!! warning "Důležité"
+
+    Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše existující konfigurace zůstane zachována.
 
 ### Krok 4: Obnovte konfigurační soubory
 

@@ -1,7 +1,6 @@
 ---
 title: digna CLI Atsauce 2025.09 – Komandas un piemēri | digna Dokumentācija
 description: Pilna atsauce par digna CLI izlaidumu 2025.09. Uzziniet, kā pārvaldīt lietotājus, repozitorijus un datus ar komandām, piemēram, add-user, check-config, check-repo-connection, inspect, inspect-async un citām.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

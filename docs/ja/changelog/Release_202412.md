@@ -2,7 +2,6 @@
 title: digna リリース 2024.12 | 変更履歴と新機能
 description: digna リリース 2024.12 の新機能をご紹介します。本バージョンでは組み込みスケジューラ、PDF レポート、柔軟なカスタム列、動的スナップショットクエリプレースホルダ、より賢い閾値最適化を導入し、異常検知とデータ品質監視を改善します。
 keywords: digna リリース 2024.12, digna 変更履歴, リリースノート, built-in scheduler, PDF レポート, custom column type, snapshot query placeholders, threshold optimization, データオブザーバビリティ, データ品質監視, 異常検知
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

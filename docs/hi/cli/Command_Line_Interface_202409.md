@@ -1,7 +1,6 @@
 ---
 title: digna CLI संदर्भ 2024.09 – आदेश और उदाहरण | digna दस्तावेज़
 description: digna CLI रिलीज 2024.09 के लिए संपूर्ण संदर्भ। जानें कि add-user, check-repo-connection, upgrade-repo, inspect, tls-status और अन्य जैसे आदेशों के साथ उपयोगकर्ताओं, रिपॉज़िटरी और डेटा का प्रबंधन कैसे करें।
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202408/
 image: /assets/logo_square.png
 ---
 

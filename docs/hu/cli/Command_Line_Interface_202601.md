@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2026.01 – Parancsok és példák | digna Dokumentáció
 description: Teljes referencia a digna CLI kiadásról 2026.01. Ismerje meg a felhasználók, adattárak és adatok kezelését olyan parancsokkal, mint az add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

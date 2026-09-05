@@ -2,6 +2,7 @@
 title: Comment créer un job qui s'exécute quotidiennement
 description: Apprenez à planifier un job d'inspection quotidien dans digna via le tableau de bord.
 keywords: planification digna, automatisation de la qualité des données, tâche quotidienne
+image: /assets/logo_square.png
 ---
 
 # Comment planifier une tâche quotidienne

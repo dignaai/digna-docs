@@ -1,7 +1,6 @@
 ---
 title: digna CLI リファレンス 2024.12 – コマンドと例 | digna ドキュメント
 description: digna CLI リリース 2024.12 の完全なリファレンス。add-user、check-repo-connection、upgrade-repo、inspect などのコマンドでユーザー、リポジトリ、データを管理する方法を解説します。
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

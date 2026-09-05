@@ -65,12 +65,12 @@ digna는 두 가지 주요 구성요소로 이루어져 있습니다:
 
 **digna와 동일한 머신에 PostgreSQL을 설치하는 경우:**
 
-> **권장 사양**
->
-> - **메모리**: 32 GB RAM (16 GB 대신)
-> - **디스크 공간**: 50 GB 사용 가능한 저장공간 (10 GB 대신)
->
-> 이 높은 사양은 digna와 PostgreSQL 데이터베이스가 동시에 실행될 때를 대비한 것입니다.
+!!! info "권장 사양"
+
+    - **메모리**: 32 GB RAM (16 GB 대신)
+    - **디스크 공간**: 50 GB 사용 가능한 저장공간 (10 GB 대신)
+
+    이 높은 사양은 digna와 PostgreSQL 데이터베이스가 동시에 실행될 때를 대비한 것입니다.
 
 ---
 
@@ -122,9 +122,9 @@ PostgreSQL 슈퍼유저(`postgres`)의 암호를 입력하고 확인합니다. *
 
 기본 PostgreSQL 포트는 `5432`입니다. 기본값을 사용하거나 필요한 경우 다른 포트를 지정할 수 있습니다.
 
-> **팁**
->
-> 포트 5432가 이미 사용 중인 경우 대체 포트를 선택하고 이후 구성에 참고하세요.
+!!! tip "팁"
+
+    포트 5432가 이미 사용 중인 경우 대체 포트를 선택하고 이후 구성에 참고하세요.
 
 #### 7단계: 로케일 선택
 
@@ -200,9 +200,9 @@ IIS에서 Markdown 파일(`.md`)이 올바르게 서빙되도록 하려면:
    - **파일 이름 확장자(File name extension)**: `.md`
    - **MIME 타입(MIME type)**: `text/markdown`
 
-> **중요**
->
-> 이 설정이 없으면 `.md` 파일이 제대로 서빙되지 않을 수 있습니다.
+!!! warning "중요"
+
+    이 설정이 없으면 `.md` 파일이 제대로 서빙되지 않을 수 있습니다.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat은 오픈소스 Java 서블릿 컨테이너이자 웹 서버입니
    - `http://localhost:8080`로 이동합니다.
    - Apache Tomcat 환영 페이지가 표시되어야 합니다.
 
-> **팁**
->
-> Apache Tomcat은 일반적으로 설치 후 자동으로 시작됩니다. 시작되지 않는 경우 `bin` 폴더로 이동하여 `startup.bat`를 실행하세요.
+!!! tip "팁"
+
+    Apache Tomcat은 일반적으로 설치 후 자동으로 시작됩니다. 시작되지 않는 경우 `bin` 폴더로 이동하여 `startup.bat`를 실행하세요.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **권장사항**
->
-> 데이터베이스 사용자에 대해 강력하고 복잡한 암호를 사용하세요. 쉽게 추측 가능한 자격증명은 피하십시오.
+!!! tip "권장사항"
+
+    데이터베이스 사용자에 대해 강력하고 복잡한 암호를 사용하세요. 쉽게 추측 가능한 자격증명은 피하십시오.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### 3단계: 라이선스 파일 설치
 
-> **중요**
->
-> 라이선스 파일은 설치 패키지에 **포함되어 있지 않으며** digna에서 별도로 제공됩니다.
+!!! warning "중요"
+
+    라이선스 파일은 설치 패키지에 **포함되어 있지 않으며** digna에서 별도로 제공됩니다.
 
 1. 제공받은 `license.toml` 파일을 찾습니다.
 2. `config.toml` 및 `digna` 실행 파일이 있는 digna 설치 루트 디렉터리에 복사합니다.
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **예시:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 이 명령은 전체 관리 권한을 가진 사용자를 만듭니다.
 
-> **권장사항**
->
-> 대문자, 소문자, 숫자 및 특수문자를 혼합한 강력한 암호를 사용하세요.
+!!! tip "권장사항"
+
+    대문자, 소문자, 숫자 및 특수문자를 혼합한 강력한 암호를 사용하세요.
 
 ---
 
@@ -545,9 +545,9 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
 - `start_service.bat` — 서비스를 시작
 - `stop_service.bat` — 서비스를 중지
 
-> **관리자 권한 필요**
->
-> 모든 배치 파일은 관리자 권한으로 실행해야 합니다.
+!!! warning "관리자 권한 필요"
+
+    모든 배치 파일은 관리자 권한으로 실행해야 합니다.
 
 ### 서비스 설치
 
@@ -587,9 +587,9 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
    stop_service.bat
    ```
 
-> **팁**
->
-> 애플리케이션 파일을 업데이트하기 전에 항상 서비스를 중지하세요.
+!!! tip "팁"
+
+    애플리케이션 파일을 업데이트하기 전에 항상 서비스를 중지하세요.
 
 ### 서비스를 새 디렉터리로 이동하기
 
@@ -669,9 +669,9 @@ ren dashboard dashboard_old
 1. 새 digna 설치 ZIP 파일의 압축을 풉니다.
 2. 새 `digna` 실행 파일과 `dashboard` 폴더를 설치 디렉터리에 복사합니다.
 
-> **중요**
->
-> `config.toml` 파일은 설치 ZIP에 **절대** 포함되지 않습니다. 기존 구성은 안전하게 유지됩니다.
+!!! warning "중요"
+
+    `config.toml` 파일은 설치 ZIP에 **절대** 포함되지 않습니다. 기존 구성은 안전하게 유지됩니다.
 
 ### 4단계: 구성 파일 복원
 

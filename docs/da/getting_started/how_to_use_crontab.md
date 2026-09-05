@@ -1,6 +1,7 @@
 ---
 title: Avanceret planlægning med Crontab
 description: Lær, hvordan du planlægger et job i *digna* ved hjælp af crontab-udtryk til avanceret planlægning.
+image: /assets/logo_square.png
 ---
 
 # Avanceret planlægning med Crontab

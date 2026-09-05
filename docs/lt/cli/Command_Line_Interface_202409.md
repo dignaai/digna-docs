@@ -1,7 +1,6 @@
 ---
 title: digna CLI nuoroda 2024.09 – Komandos ir pavyzdžiai | digna dokumentacija
 description: Pilnas digna CLI 2024.09 leidimo žinynas. Sužinokite, kaip valdyti vartotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-repo-connection, upgrade-repo, inspect, tls-status ir kt.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202408/
 image: /assets/logo_square.png
 ---
 

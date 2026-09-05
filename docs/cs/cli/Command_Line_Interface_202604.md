@@ -1,7 +1,6 @@
 ---
 title: Reference CLI digna 2026.04 – Příkazy a příklady | dokumentace digna
 description: Kompletní reference pro digna CLI verzi 2026.04
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

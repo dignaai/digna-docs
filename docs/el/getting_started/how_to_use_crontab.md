@@ -1,6 +1,7 @@
 ---
 title: Προχωρημένος Προγραμματισμός με Crontab
 description: Μάθετε πώς να προγραμματίζετε μια εργασία στο digna χρησιμοποιώντας crontab expressions για προχωρημένο χρονισμό.
+image: /assets/logo_square.png
 ---
 
 # Προχωρημένος Προγραμματισμός με Crontab

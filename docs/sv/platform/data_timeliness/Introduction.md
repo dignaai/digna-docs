@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Övervakning av punktlig leverans | digna Dokumentation
 description: Läs hur digna Data Timeliness säkerställer att data anländer när det förväntas. Upptäck sena eller saknade leveranser, övervaka SLA:er och skydda affärsprocesser från tysta förseningar. AI-driven detektion för förbättrad datakvalitet och observability av datapipelines.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - data timeliness

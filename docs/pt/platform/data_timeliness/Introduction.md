@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Monitoramento de Entrega Pontual | digna Documentation
 description: Saiba como o Data Timeliness da digna garante que os dados cheguem quando esperado. Detecte entregas atrasadas ou ausentes, monitore SLAs e proteja processos de negócio contra atrasos silenciosos. Detecção com IA para melhorar a qualidade e a observabilidade dos pipelines de dados.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - pontualidade de dados

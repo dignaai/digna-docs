@@ -1,6 +1,7 @@
 ---
 title: Veritabanı Bağlama | digna Belgeleri
 description: Mevcut bir projeye digna'da veritabanı bağlama adım adım rehberi. Bir bağlantı seçmeyi, ayarları yapılandırmayı ve güvenli erişimi etkinleştirmeyi öğrenin.
+image: /assets/logo_square.png
 ---
 
 # Bir Projeye Datasource (Table) Ekle

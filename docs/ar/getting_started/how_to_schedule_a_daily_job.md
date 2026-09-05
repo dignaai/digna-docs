@@ -2,6 +2,7 @@
 title: كيفية إنشاء مهمة تعمل يوميًا
 description: تعرّف على كيفية جدولة مهمة فحص يومية في digna باستخدام لوحة التحكم.
 keywords: digna scheduling, data quality automation, مهمة يومية
+image: /assets/logo_square.png
 ---
 
 # كيفية جدولة مهمة يومية

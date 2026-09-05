@@ -1,7 +1,6 @@
 ---
 title: digna CLI nuoroda 2026.01 – Komandos ir pavyzdžiai | digna dokumentacija
 description: Išsami digna CLI versijos 2026.01 nuoroda. Sužinokite, kaip valdyti vartotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-config, check-repo-connection, inspect, inspect-async ir kt.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

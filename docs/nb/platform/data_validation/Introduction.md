@@ -1,6 +1,7 @@
 ---
 title: Data Validation – Regelbaserte sjekker | digna Dokumentasjon
 description: Oppdag hvordan digna Data Validation håndhever deterministiske, regelbaserte sjekker med terskler, intervaller og referanselister. Sikre etterlevelse, sporbarhet og regulatorisk rapportering innen finans, helsetjenester og andre bransjer.
+image: /assets/logo_square.png
 ---
 
 # Data Validation – Regelbaserte sjekker

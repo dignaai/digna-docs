@@ -2,7 +2,6 @@
 title: digna Išleidimas 2025.04 | Inspection Hub, kelių kalbų palaikymas, Module Analytics
 description: Sužinokite, kas naujo digna Išleidime 2025.04. Ši versija pristato Inspection Hub, kelių kalbų palaikymą (anglų, vokiečių, lenkų), duomenų šaltinių importą/eksportą per dignacli, pirmąją Module Analytics versiją ir patobulintą prietaisų skydelio patirtį.
 keywords: digna Išleidimas 2025.04, digna pakeitimų žurnalas, digna inspection hub, digna kelių kalbų palaikymas, digna module analytics, digna import export, digna CLI, leidimo pastabos, duomenų stebėsena, duomenų kokybės stebėjimas
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

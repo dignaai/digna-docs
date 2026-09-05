@@ -2,7 +2,6 @@
 title: digna Julkaisu 2025.04 | Inspection Hub, Monikielisyys, Module Analytics
 description: Tutustu uutuuksiin digna Julkaisu 2025.04:ssa. Tämä versio esittelee Inspection Hubin, monikielituen (englanti, saksa, puola), datalähteiden tuonnin/viennin dignacli:n kautta, ensimmäisen julkaisun Module Analytics -osiosta ja parannetun kojelaudan käyttökokemuksen.
 keywords: digna Julkaisu 2025.04, digna muutosloki, digna inspection hub, digna monikielisyys, digna module analytics, digna import export, digna CLI, julkaisumuistiinpanot, data observability, data quality monitoring
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

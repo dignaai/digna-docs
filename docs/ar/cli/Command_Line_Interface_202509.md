@@ -1,7 +1,6 @@
 ---
 title: دليل واجهة سطر الأوامر digna 2025.09 – الأوامر والأمثلة | توثيق digna
 description: مرجع كامل لإصدار digna CLI 2025.109 — تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-config و check-repo-connection و inspect و inspect-async والمزيد.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: Ühenda andmebaas | digna dokumentatsioon
 description: Samm-sammuline juhend andmebaasi ühendamiseks olemasoleva projektiga digna-s. Õpi, kuidas valida ühendus, seadistada seadeid ja lubada turvaline juurdepääs.
+image: /assets/logo_square.png
 ---
 
 # Lisa Datasource (Table) projekti

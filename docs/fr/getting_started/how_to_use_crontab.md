@@ -1,6 +1,7 @@
 ---
 title: Planification avancée avec Crontab
 description: Apprenez à planifier un job dans digna en utilisant des expressions crontab pour des horaires avancés.
+image: /assets/logo_square.png
 ---
 
 # Planification avancée avec Crontab

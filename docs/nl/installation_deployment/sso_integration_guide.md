@@ -142,9 +142,9 @@ usePassword = true
 - Geen gebruikersnaam/wachtwoordvelden
 - Alleen OIDC-authenticatie is beschikbaar
 
-> **Tip**
->
-> Wachtwoordgebaseerde login is alleen beschikbaar voor gebruikers die zijn aangemaakt met wachtwoorden via het `digna user add` commando of via het dashboard.
+!!! tip "Tip"
+
+    Wachtwoordgebaseerde login is alleen beschikbaar voor gebruikers die zijn aangemaakt met wachtwoorden via het `digna user add` commando of via het dashboard.
 
 ### Volledig voorbeeld
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL na authenticatie | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-configuratie-eindpunt | `https://login.microsoftonline.com/...` |
 
-> **Belangrijk**
->
-> Vervang placeholder-waarden (`<client_id>`, `<client_secret>`, `<tenant_id>`) door echte gegevens uit het developer- of app-portaal van je identity provider.
+!!! warning "Belangrijk"
+
+    Vervang placeholder-waarden (`<client_id>`, `<client_secret>`, `<tenant_id>`) door echte gegevens uit het developer- of app-portaal van je identity provider.
 
 ### Redirect URI
 

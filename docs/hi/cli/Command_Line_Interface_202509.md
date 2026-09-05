@@ -1,7 +1,6 @@
 ---
 title: digna CLI संदर्भ 2025.09 – Commands & Examples | digna Documentation
 description: digna CLI रिलीज 2025.109 के लिए पूर्ण संदर्भ। सीखें कि add-user, check-config, check-repo-connection, inspect, inspect-async और अन्य कमांड्स का उपयोग करके उपयोगकर्ताओं, रिपॉज़िटरीज़ और डेटा का प्रबंधन कैसे करें।
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

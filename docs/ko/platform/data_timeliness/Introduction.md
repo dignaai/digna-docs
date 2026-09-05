@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – 정시 전달 모니터링 | digna 문서
 description: digna Data Timeliness가 데이터가 예상 시점에 도착하는지 어떻게 보장하는지 알아보세요. 지연되거나 누락된 전달을 감지하고 SLA를 모니터링하며 비즈니스 프로세스를 은밀한 지연으로부터 보호합니다. 향상된 데이터 품질과 파이프라인 관찰을 위한 AI 기반 감지.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - 데이터 적시성

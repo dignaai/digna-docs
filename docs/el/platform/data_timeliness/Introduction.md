@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Παρακολούθηση Έγκαιρης Παράδοσης | Τεκμηρίωση digna
 description: Μάθετε πώς το digna Data Timeliness διασφαλίζει ότι τα δεδομένα φτάνουν όταν αναμένονται. Εντοπίστε καθυστερημένες ή ελλείπουσες παραδόσεις, παρακολουθήστε SLA και προστατέψτε τις επιχειρησιακές διαδικασίες από σιωπηλές καθυστερήσεις. Ανίχνευση με AI για βελτιωμένη ποιότητα δεδομένων και παρατηρησιμότητα των data pipelines.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - έγκαιρη παράδοση δεδομένων

@@ -1,6 +1,7 @@
 ---
 title: Data Schema Tracker – Overvåk skjemaendringer | digna-dokumentasjon
 description: Lær hvordan digna Data Schema Tracker overvåker kolonneendringer, oppdateringer av datatyper og skjemadrift. Få varsler om tilsiktede og utilsiktede endringer for å forhindre ETL-feil og feil i dashbord.
+image: /assets/logo_square.png
 ---
 
 # Data Schema Tracker – Overvåk skjemaendringer

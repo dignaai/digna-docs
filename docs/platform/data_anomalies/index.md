@@ -13,6 +13,7 @@ tags:
 hide:
   - toc                # optional: hide the small top-level TOC if you use inline nav
   - navigation         # optional: hide side navigation for standalone pages
+image: /assets/logo_square.png
 ---
 
 

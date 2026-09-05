@@ -1,6 +1,7 @@
 ---
 title: Ustvarjanje projekta | digna Dokumentacija
 description: Vodnik korak za korakom za ustvarjanje novega projekta v digna. Naučite se, kako odpreti razdelek projektov, vnesti podatke in shraniti projekte z interaktivno predstavitvijo.
+image: /assets/logo_square.png
 ---
 
 

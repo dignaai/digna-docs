@@ -1,7 +1,6 @@
 ---
 title: digna CLI 참조 2026.01 – 명령어 및 예제 | digna 문서
 description: digna CLI 릴리스 2026.01에 대한 완전한 참조입니다. add-user, check-config, check-repo-connection, inspect, inspect-async 등과 같은 명령어로 사용자, 리포지토리 및 데이터를 관리하는 방법을 알아보세요.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

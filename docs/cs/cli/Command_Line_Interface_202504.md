@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Příkazy & Příklady | digna Dokumentace
 description: Kompletní referenční přehled pro digna CLI verzi 2025.04. Naučte se spravovat uživatele, repozitáře a data pomocí příkazů jako add-user, check-repo-connection, upgrade-repo, inspect a dalších.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 

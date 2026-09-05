@@ -1,6 +1,7 @@
 ---
 title: Edistynyt ajastus Crontabilla
 description: Opi ajastamaan tehtävä dignassa käyttämällä crontab-ilmaisuja edistyneisiin ajoituksiin.
+image: /assets/logo_square.png
 ---
 
 # Edistynyt ajastus Crontabilla

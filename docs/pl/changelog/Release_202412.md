@@ -2,7 +2,6 @@
 title: digna Wydanie 2024.12 | Zmiany i nowe funkcje
 description: Odkryj nowości w digna Wydanie 2024.12. W tej wersji wprowadzono wbudowany scheduler, raportowanie do PDF, elastyczne niestandardowe kolumny, dynamiczne placeholdery w zapytaniach snapshot oraz inteligentniejszą optymalizację progów, aby poprawić wykrywanie anomalii i monitorowanie jakości danych.
 keywords: digna Wydanie 2024.12, digna dziennik zmian, informacje o wydaniu, wbudowany scheduler, raporty PDF, typ kolumny CUSTOM, placeholdery w zapytaniach snapshot, optymalizacja progów, obserwowalność danych, monitorowanie jakości danych, wykrywanie anomalii
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

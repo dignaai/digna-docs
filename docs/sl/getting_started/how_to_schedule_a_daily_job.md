@@ -2,6 +2,7 @@
 title: Kako ustvariti opravilo, ki se izvaja dnevno
 description: Naučite se, kako v nadzorni plošči digna razporediti dnevno opravilo za pregled.
 keywords: digna razporejanje, avtomatizacija kakovosti podatkov, dnevno opravilo
+image: /assets/logo_square.png
 ---
 
 # Kako razporediti dnevno opravilo

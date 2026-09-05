@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Changelog & New Features
 description: Objevte novinky v digna Release 2024.12. Tato verze přináší vestavěný plánovač, PDF reporty, flexibilní vlastní sloupce, dynamické zástupné symboly pro snapshot dotazy a chytřejší optimalizaci prahů pro lepší detekci anomálií a monitorování kvality dat.
 keywords: digna Release 2024.12, digna changelog, release notes, built-in scheduler, PDF reports, custom column type, snapshot query placeholders, threshold optimization, data observability, data quality monitoring, anomaly detection
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

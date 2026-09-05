@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Polecenia i przykłady | dokumentacja digna
 description: Kompletny przewodnik po wydaniu digna CLI 2025.04. Dowiedz się, jak zarządzać użytkownikami, repozytoriami i danymi za pomocą poleceń takich jak add-user, check-repo-connection, upgrade-repo, inspect i innych.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 

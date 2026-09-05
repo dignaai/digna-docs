@@ -2,6 +2,7 @@
 title: Kuidas luua töö, mis käivitub iga päev
 description: Õpi, kuidas ajastada igapäevane kontrollitöö dignas, kasutades juhtpaneeli.
 keywords: digna ajastamine, andmete kvaliteedi automatiseerimine, igapäevane töö
+image: /assets/logo_square.png
 ---
 
 # Kuidas ajastada igapäevane töö

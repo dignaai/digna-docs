@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2024.11 – Ukazi in primeri | digna Dokumentacija
 description: Celovit priročnik za digna CLI izdajo 2024.11. Naučite se upravljati uporabnike, repozitorije in podatke z ukazi, kot so add-user, check-repo-connection, upgrade-repo, inspect, tls-status in drugi.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202411/
 image: /assets/logo_square.png
 ---
 

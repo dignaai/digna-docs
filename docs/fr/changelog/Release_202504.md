@@ -2,7 +2,6 @@
 title: digna Release 2025.04 | Inspection Hub, Multilingue, Module Analytics
 description: Découvrez les nouveautés de digna Release 2025.04. Cette version introduit l'Inspection Hub, la prise en charge multilingue (anglais, allemand, polonais), l'import/export de sources de données via dignacli, la première version de Module Analytics, et une expérience de tableau de bord améliorée.
 keywords: digna Release 2025.04, digna changelog, digna inspection hub, digna prise en charge multilingue, digna module analytics, digna import export, digna CLI, notes de version, observabilité des données, surveillance de la qualité des données
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

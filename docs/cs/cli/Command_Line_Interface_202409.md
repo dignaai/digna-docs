@@ -1,7 +1,6 @@
 ---
 title: Referenční příručka digna CLI 2024.09 – Příkazy a příklady | Dokumentace digna
 description: Kompletní reference pro vydání digna CLI 2024.09. Naučte se spravovat uživatele, repozitáře a data pomocí příkazů jako add-user, check-repo-connection, upgrade-repo, inspect, tls-status a dalších.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202408/
 image: /assets/logo_square.png
 ---
 

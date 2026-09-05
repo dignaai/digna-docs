@@ -1,6 +1,7 @@
 ---
 title: データベースを接続する | digna ドキュメント
 description: digna に既存プロジェクトのデータベースを接続するためのステップバイステップガイド。接続の選択、設定の構成、セキュアなアクセスの有効化方法を解説します。
+image: /assets/logo_square.png
 ---
 
 # プロジェクトに Datasource（Table）を追加する

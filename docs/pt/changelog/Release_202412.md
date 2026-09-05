@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Changelog e Novos Recursos
 description: Descubra o que há de novo na release digna 2024.12. Esta versão introduz um agendador embutido, relatórios em PDF, colunas customizadas flexíveis, placeholders dinâmicos para consultas de snapshot e otimização de limiares mais inteligente para melhorar a detecção de anomalias e o monitoramento da qualidade de dados.
 keywords: digna Release 2024.12, digna changelog, notas de versão, agendador embutido, relatórios PDF, tipo de coluna CUSTOM, placeholders em consultas snapshot, otimização de limiares, observabilidade de dados, monitoramento da qualidade de dados, detecção de anomalias
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

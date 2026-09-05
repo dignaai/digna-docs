@@ -142,9 +142,9 @@ usePassword = true
 - Nėra naudotojo vardo/slaptažodžio laukų
 - Galima tik OIDC autentifikacija
 
-> **Patarimas**
->
-> Slaptažodžiu pagrįstas prisijungimas yra prieinamas tik vartotojams, kurie buvo sukurti su slaptažodžiais naudojant komandą `digna user add` arba per dashboard.
+!!! tip "Patarimas"
+
+    Slaptažodžiu pagrįstas prisijungimas yra prieinamas tik vartotojams, kurie buvo sukurti su slaptažodžiais naudojant komandą `digna user add` arba per dashboard.
 
 ### Pilnas pavyzdys
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Taip | Atgalinio kvietimo (callback) URL po autentifikacijos | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Taip | OIDC konfigūracijos galinė vieta | `https://login.microsoftonline.com/...` |
 
-> **Svarbu**
->
-> Pakeiskite vietos užpildo reikšmes (`<client_id>`, `<client_secret>`, `<tenant_id>`) tikromis kredencialų reikšmėmis iš jūsų identiteto tiekėjo kūrėjo portalo.
+!!! warning "Svarbu"
+
+    Pakeiskite vietos užpildo reikšmes (`<client_id>`, `<client_secret>`, `<tenant_id>`) tikromis kredencialų reikšmėmis iš jūsų identiteto tiekėjo kūrėjo portalo.
 
 ### Redirect URI
 

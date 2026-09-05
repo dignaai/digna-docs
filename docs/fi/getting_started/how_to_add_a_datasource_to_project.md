@@ -1,6 +1,7 @@
 ---
 title: Yhdistä tietokanta | digna-dokumentaatio
 description: Askel askeleelta -opas tietokannan yhdistämiseen olemassa olevaan projektiin dignassa. Opit valitsemaan yhteyden, konfiguroimaan asetuksia ja mahdollistamaan turvallisen pääsyn.
+image: /assets/logo_square.png
 ---
 
 # Lisää Datasource (Table) projektiin

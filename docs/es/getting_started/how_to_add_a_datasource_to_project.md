@@ -1,6 +1,7 @@
 ---
 title: Conectar una base de datos | Documentación de digna
 description: Guía paso a paso para conectar una base de datos a un proyecto existente en digna. Aprenda a elegir una conexión, configurar ajustes y habilitar el acceso seguro.
+image: /assets/logo_square.png
 ---
 
 # Agregar Datasource (Tabla) a un Proyecto

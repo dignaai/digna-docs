@@ -1,6 +1,7 @@
 ---
 title: Розширене планування за допомогою crontab
 description: Дізнайтеся, як планувати завдання в digna за допомогою crontab expressions для розширеного налаштування часу.
+image: /assets/logo_square.png
 ---
 
 # Розширене планування за допомогою crontab

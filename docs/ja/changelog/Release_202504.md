@@ -2,7 +2,6 @@
 title: digna リリース 2025.04 | Inspection Hub、マルチランゲージ、Module Analytics
 description: digna リリース 2025.04 の新機能をご紹介します。本バージョンでは Inspection Hub、マルチランゲージ対応（英語・ドイツ語・ポーランド語）、dignacli によるデータソースのインポート/エクスポート、Module Analytics の初回リリース、およびダッシュボード体験の改善を導入しています。
 keywords: digna リリース 2025.04, digna チェンジログ, digna inspection hub, digna マルチランゲージ対応, digna module analytics, digna インポート エクスポート, digna CLI, リリースノート, データオブザーバビリティ, データ品質モニタリング
-canonical_url: https://docs.digna.ai/changelog/Release_202504/
 image: /assets/logo_square.png
 ---
 

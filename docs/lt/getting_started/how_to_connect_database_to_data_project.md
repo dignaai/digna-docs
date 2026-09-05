@@ -1,6 +1,7 @@
 ---
 title: Prijungti duomenų bazę | digna dokumentacija
 description: Žingsnis po žingsnio vadovas, kaip prijungti duomenų bazę prie esamo projekto digna. Sužinokite, kaip sukonfigūruoti ryšius, pateikti prisijungimo duomenis ir užtikrinti saugų prieigą.
+image: /assets/logo_square.png
 ---
 
 # Prijungti duomenų bazę

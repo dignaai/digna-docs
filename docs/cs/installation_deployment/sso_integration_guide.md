@@ -142,9 +142,9 @@ usePassword = true
 - Žádná pole pro uživatelské jméno/heslo
 - K dispozici je pouze OIDC autentizace
 
-> **Tip**
->
-> Přihlášení pomocí hesla je dostupné pouze pro uživatele, kteří byli vytvořeni s hesly pomocí příkazu `digna user add` nebo přes dashboard.
+!!! tip "Tip"
+
+    Přihlášení pomocí hesla je dostupné pouze pro uživatele, kteří byli vytvořeni s hesly pomocí příkazu `digna user add` nebo přes dashboard.
 
 ### Kompletní příklad
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ano | Callback URL po autentizaci | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ano | OIDC konfigurační endpoint | `https://login.microsoftonline.com/...` |
 
-> **Důležité**
->
-> Nahraďte zástupné hodnoty (`<client_id>`, `<client_secret>`, `<tenant_id>`) skutečnými údaji z vývojářského portálu vašeho identity providera.
+!!! warning "Důležité"
+
+    Nahraďte zástupné hodnoty (`<client_id>`, `<client_secret>`, `<tenant_id>`) skutečnými údaji z vývojářského portálu vašeho identity providera.
 
 ### Redirect URI
 

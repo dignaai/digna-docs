@@ -1,6 +1,7 @@
 ---
 title: Papildu plānošana ar Crontab
 description: Uzziniet, kā plānot darbu digna, izmantojot crontab izteiksmes sarežģītākai laika konfigurācijai.
+image: /assets/logo_square.png
 ---
 
 # Papildu plānošana ar Crontab

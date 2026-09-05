@@ -1,7 +1,6 @@
 ---
 title: digna CLI atsauce 2026.01 – Komandas un piemēri | digna dokumentācija
 description: Pilna atsauce par digna CLI izlaidumu 2026.01. Uzziniet, kā pārvaldīt lietotājus, repozitorijus un datus ar komandām, piemēram, add-user, check-config, check-repo-connection, inspect, inspect-async un citām.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

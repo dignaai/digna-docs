@@ -1,7 +1,6 @@
 ---
 title: digna CLI viide 2024.12 – käsud ja näited | digna dokumentatsioon
 description: Täielik viide digna CLI versioonile 2024.12. Õpi, kuidas hallata kasutajaid, repositooriume ja andmeid käskudega nagu add-user, check-repo-connection, upgrade-repo, inspect ja teised.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: Connecter une base de données | Documentation de digna
 description: Guide étape par étape pour connecter une base de données à un projet existant dans digna. Apprenez à configurer les connexions, fournir les identifiants et activer un accès sécurisé.
+image: /assets/logo_square.png
 ---
 
 # Connecter une base de données

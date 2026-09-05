@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – Uzraudzīt shēmas evolūciju | digna Dokumentācija
 description: Uzziniet, kā digna Data Schema Tracker uzrauga kolonnu izmaiņas, datu tipu atjauninājumus un shēmas driftu. Atklājiet un saņemiet brīdinājumus par gan mērķtiecīgām, gan nejaušām shēmas izmaiņām, lai novērstu ETL kļūmes, bojātus paneļus un datu novērojamības zudumu.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - datu shēmas sekotājs

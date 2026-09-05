@@ -2,7 +2,6 @@
 title: digna Sürüm 2024.12 | Değişiklik Günlüğü & Yeni Özellikler
 description: digna Sürüm 2024.12'te nelerin yeni olduğunu keşfedin. Bu sürüm dahili bir zamanlayıcı, PDF raporlama, esnek özel sütunlar, dinamik snapshot sorgu yer tutucuları ve anomali tespiti ile veri kalitesi izlemeyi iyileştirmek için daha akıllı eşik optimizasyonu sunar.
 keywords: digna Sürüm 2024.12, digna değişiklik günlüğü, sürüm notları, dahili zamanlayıcı, PDF raporları, özel sütun türü, snapshot sorgu yer tutucuları, eşik optimizasyonu, veri gözlemlenebilirliği, veri kalitesi izleme, anomali tespiti
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

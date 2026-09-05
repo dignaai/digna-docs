@@ -65,12 +65,12 @@ Jūs varat pievienot jaunu datubāzi digna savam esošajam PostgreSQL serverim.
 
 **Ja instalējat PostgreSQL uz tā paša datora kā digna:**
 
-> **Ieteicamās specifikācijas**
->
-> - **Atmiņa**: 32 GB RAM (nevis 16 GB)
-> - **Diska vieta**: 50 GB brīvas atmiņas (nevis 10 GB)
->
-> Šīs palielinātās specifikācijas nodrošina pietiekamus resursus gan digna, gan PostgreSQL darbināšanai vienlaikus.
+!!! info "Ieteicamās specifikācijas"
+
+    - **Atmiņa**: 32 GB RAM (nevis 16 GB)
+    - **Diska vieta**: 50 GB brīvas atmiņas (nevis 10 GB)
+
+    Šīs palielinātās specifikācijas nodrošina pietiekamus resursus gan digna, gan PostgreSQL darbināšanai vienlaikus.
 
 ---
 
@@ -122,9 +122,9 @@ Ievadiet un apstipriniet paroli PostgreSQL superlietotājam (`postgres`). **Sagl
 
 Noklusējuma PostgreSQL ports ir `5432`. Varat izmantot noklusējumu vai norādīt citu portu, ja nepieciešams.
 
-> **Padoms**
->
-> Ja ports 5432 jau tiek izmantots, izvēlieties alternatīvu portu un pierakstiet to vēlākai konfigurācijai.
+!!! tip "Padoms"
+
+    Ja ports 5432 jau tiek izmantots, izvēlieties alternatīvu portu un pierakstiet to vēlākai konfigurācijai.
 
 #### 7. solis: Izvēlieties lokalizāciju
 
@@ -200,9 +200,9 @@ Lai nodrošinātu, ka Markdown faili (`.md`) tiek apkalpoti pareizi ar IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Svarīgi**
->
-> Bez šī iestatījuma `.md` faili var netikt apkalpoti pareizi.
+!!! warning "Svarīgi"
+
+    Bez šī iestatījuma `.md` faili var netikt apkalpoti pareizi.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat ir atvērtā koda Java servlet konteiners un tīmekļa serveris.
    - Dodieties uz `http://localhost:8080`
    - Jums jāredz Apache Tomcat sveiciena lapa
 
-> **Padoms**
->
-> Apache Tomcat parasti tiek startēts automātiski pēc instalācijas. Ja tas netiek startēts, dodieties uz `bin` mapi un palaidiet `startup.bat`.
+!!! tip "Padoms"
+
+    Apache Tomcat parasti tiek startēts automātiski pēc instalācijas. Ja tas netiek startēts, dodieties uz `bin` mapi un palaidiet `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Labā prakse**
->
-> Izmantojiet spēcīgas, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamām akreditācijām.
+!!! tip "Labā prakse"
+
+    Izmantojiet spēcīgas, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamām akreditācijām.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### 3. solis: Instalējiet licences failu
 
-> **Svarīgi**
->
-> Licences fails **NAV** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
+!!! warning "Svarīgi"
+
+    Licences fails **NAV** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
 
 1. Atrodiet jums piegādāto `license.toml` failu
 2. Kopējiet to uz digna instalācijas saknes direktoriju (tur, kur atrodas `config.toml` un `digna` izpildāmais fails)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Piemērs:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Šī komanda izveido lietotāju ar pilnīgām administratīvām tiesībām.
 
-> **Labā prakse**
->
-> Izmantojiet spēcīgu paroli ar lielajiem un mazajiem burtiem, cipariem un speciālajiem simboliem.
+!!! tip "Labā prakse"
+
+    Izmantojiet spēcīgu paroli ar lielajiem un mazajiem burtiem, cipariem un speciālajiem simboliem.
 
 ---
 
@@ -545,9 +545,9 @@ Pieejamie batch faili:
 - `start_service.bat` — palaiž servisu
 - `stop_service.bat` — apstādināt servisu
 
-> **Nepieciešamas administratora tiesības**
->
-> Visus batch failus jāizpilda ar Administratora tiesībām.
+!!! warning "Nepieciešamas administratora tiesības"
+
+    Visus batch failus jāizpilda ar Administratora tiesībām.
 
 ### Servisa instalēšana
 
@@ -587,9 +587,9 @@ digna serveris tagad reģistrēts kā Windows serviss ar **automātisku startē�
    stop_service.bat
    ```
 
-> **Padoms**
->
-> Vienmēr apturiet servisu pirms lietotnes failu atjaunināšanas.
+!!! tip "Padoms"
+
+    Vienmēr apturiet servisu pirms lietotnes failu atjaunināšanas.
 
 ### Pārvietošana uz jaunu direktoriju
 
@@ -669,9 +669,9 @@ ren dashboard dashboard_old
 1. Izpakojiet jauno digna instalācijas ZIP failu
 2. Kopējiet jauno `digna` izpildāmo failu un `dashboard` mapi uz savu instalācijas direktoriju
 
-> **Svarīgi**
->
-> `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek neskarta.
+!!! warning "Svarīgi"
+
+    `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek neskarta.
 
 ### 4. solis: Atjaunojiet konfigurācijas failus
 

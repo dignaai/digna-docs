@@ -2,6 +2,7 @@
 title: Come creare un job che viene eseguito giornalmente
 description: Scopri come pianificare un job di ispezione giornaliero in digna usando la dashboard.
 keywords: digna scheduling, automazione della qualità dei dati, job giornaliero
+image: /assets/logo_square.png
 ---
 
 # Come pianificare un job giornaliero

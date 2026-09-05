@@ -1,6 +1,7 @@
 ---
 title: Pokročilé plánování pomocí crontab
 description: Naučte se plánovat úlohu v *digna* pomocí výrazů crontab pro pokročilé časování.
+image: /assets/logo_square.png
 ---
 
 # Pokročilé plánování pomocí crontab

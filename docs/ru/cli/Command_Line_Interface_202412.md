@@ -1,7 +1,6 @@
 ---
 title: Справочник digna CLI 2024.12 — команды и примеры | документация digna
 description: Полный справочник для релиза digna CLI 2024.12. Узнайте, как управлять пользователями, репозиториями и данными с помощью команд, таких как add-user, check-repo-connection, upgrade-repo, inspect и других.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

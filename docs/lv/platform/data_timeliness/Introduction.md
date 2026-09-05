@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Savlaicīgas piegādes uzraudzība | digna Dokumentācija
 description: Uzziniet, kā digna Data Timeliness nodrošina, ka dati ierodas noteiktajā laikā. Atklājiet aizkavētas vai trūkstošas piegādes, uzraugiet SLA un aizsargājiet biznesa procesus no klusām kavēšanām. AI darbināta detektēšana labākai datu kvalitātei un datu kanālu novērojamībai.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - datu savlaicīgums

@@ -142,9 +142,9 @@ usePassword = true
 - Δεν εμφανίζονται πεδία username/password
 - Διαθέσιμη μόνο η OIDC αυθεντικοποίηση
 
-> **Tip**
->
-> Η σύνδεση με κωδικό είναι διαθέσιμη μόνο για χρήστες που δημιουργήθηκαν με κωδικούς χρησιμοποιώντας την εντολή `digna user add` ή μέσω του dashboard.
+!!! tip "Tip"
+
+    Η σύνδεση με κωδικό είναι διαθέσιμη μόνο για χρήστες που δημιουργήθηκαν με κωδικούς χρησιμοποιώντας την εντολή `digna user add` ή μέσω του dashboard.
 
 ### Complete Example
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
 
-> **Important**
->
-> Αντικαταστήστε τις τιμές placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) με τα πραγματικά διαπιστευτήρια από το developer portal του παρόχου ταυτότητας.
+!!! warning "Important"
+
+    Αντικαταστήστε τις τιμές placeholder (`<client_id>`, `<client_secret>`, `<tenant_id>`) με τα πραγματικά διαπιστευτήρια από το developer portal του παρόχου ταυτότητας.
 
 ### Redirect URI
 

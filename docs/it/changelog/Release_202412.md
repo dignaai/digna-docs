@@ -2,7 +2,6 @@
 title: digna Rilascio 2024.12 | Changelog e Novità
 description: Scopri le novità di digna Rilascio 2024.12. Questa versione introduce uno scheduler integrato, report in PDF, colonne personalizzate flessibili, segnaposto dinamici per le query snapshot e un'ottimizzazione più intelligente delle soglie per migliorare il rilevamento delle anomalie e il monitoraggio della qualità dei dati.
 keywords: digna Release 2024.12, digna changelog, note di rilascio, scheduler integrato, report PDF, tipo di colonna personalizzata, segnaposti query snapshot, ottimizzazione delle soglie, osservabilità dei dati, monitoraggio della qualità dei dati, rilevamento delle anomalie
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

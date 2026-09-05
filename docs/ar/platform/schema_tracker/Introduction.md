@@ -1,7 +1,6 @@
 ---
 title: Data Schema Tracker – مراقبة تطور المخططات | وثائق digna
 description: تعرّف على كيفية قيام digna Data Schema Tracker بمراقبة تغييرات الأعمدة، تحديثات أنواع البيانات، وانحراف المخطط. اكتشف ونبه بشأن التغييرات المقصودة وغير المقصودة في المخطط لمنع فشل مهام ETL، تحطّم اللوحات المعلوماتية، وفقدان قابلية الملاحظة للبيانات.
-canonical_url: https://docs.digna.ai/platform/data_schema_tracker/
 image: /assets/logo_square.png
 keywords:
   - متتبع مخطط البيانات

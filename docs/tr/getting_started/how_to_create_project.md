@@ -1,6 +1,7 @@
 ---
 title: Proje Oluşturma | digna Dokümantasyonu
 description: digna'da yeni bir proje oluşturma adım adım rehberi. Proje bölümünü nasıl açacağınızı, ayrıntıları nasıl gireceğinizi ve etkileşimli bir demo ile projeleri nasıl kaydedeceğinizi öğrenin.
+image: /assets/logo_square.png
 ---
 
 

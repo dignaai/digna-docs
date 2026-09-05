@@ -1,7 +1,6 @@
 ---
 title: Data Timeliness – Zamanında Teslimat İzleme | digna Dokümantasyonu
 description: digna Data Timeliness'in verinin beklendiği zamanda gelmesini nasıl sağladığını öğrenin. Geciken veya eksik teslimatları tespit edin, SLA'ları izleyin ve iş süreçlerini sessiz gecikmelerden koruyun. Geliştirilmiş veri kalitesi ve veri boru hatlarının gözlemlenebilirliği için AI destekli tespit.
-canonical_url: https://docs.digna.ai/platform/data_timeliness/
 image: /assets/logo_square.png
 keywords:
   - veri zamanlılığı

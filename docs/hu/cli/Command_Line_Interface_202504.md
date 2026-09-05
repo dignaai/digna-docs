@@ -1,7 +1,6 @@
 ---
 title: digna CLI Reference 2025.04 – Parancsok és példák | digna Dokumentáció
 description: Teljes referencia a digna CLI 2025.04 kiadáshoz. Ismerje meg a felhasználók, tárolók és adatok kezelését olyan parancsokkal, mint add-user, check-repo-connection, upgrade-repo, inspect és továbbiak.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 

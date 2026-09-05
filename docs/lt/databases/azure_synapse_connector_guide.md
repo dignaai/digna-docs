@@ -2,7 +2,6 @@
 title: Azure Synapse jungtis – Duomenų bazės integracija | digna dokumentacija
 description: Konfigūruokite *digna* prisijungimui prie Azure Synapse Analytics naudodami arba natyvų Python tvarkyklę, arba ODBC tvarkyklę. Palaikomi tiek serverless, tiek dedicated SQL baseinai.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

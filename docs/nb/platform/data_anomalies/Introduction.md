@@ -1,6 +1,7 @@
 ---
 title: Data Anomalies – Automatisk deteksjon | digna dokumentasjon
 description: Oppdag hvordan digna Data Anomalies automatisk oppdager volumfall, manglende verdier, forskyvninger i fordelinger og uventede mønstre uten manuelle regler. Forbedre datakvaliteten med AI-drevet anomalideteksjon.
+image: /assets/logo_square.png
 ---
 
 # Data Anomalies – Automatisk deteksjon

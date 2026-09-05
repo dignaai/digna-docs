@@ -65,12 +65,12 @@ Puoi aggiungere un nuovo database per digna al tuo PostgreSQL esistente.
 
 **Se installi PostgreSQL sulla stessa macchina di digna:**
 
-> **Specifiche Consigliate**
->
-> - **Memoria**: 32 GB RAM (invece di 16 GB)
-> - **Spazio su Disco**: 50 GB di spazio disponibile (invece di 10 GB)
->
-> Queste specifiche più elevate permettono l'esecuzione simultanea di digna e del database PostgreSQL.
+!!! info "Specifiche Consigliate"
+
+    - **Memoria**: 32 GB RAM (invece di 16 GB)
+    - **Spazio su Disco**: 50 GB di spazio disponibile (invece di 10 GB)
+
+    Queste specifiche più elevate permettono l'esecuzione simultanea di digna e del database PostgreSQL.
 
 ---
 
@@ -122,9 +122,9 @@ Inserisci e conferma una password per il superutente PostgreSQL (`postgres`). **
 
 La porta predefinita di PostgreSQL è `5432`. Puoi usare la porta predefinita o specificarne una diversa se necessario.
 
-> **Suggerimento**
->
-> Se la porta 5432 è già in uso, scegli una porta alternativa e annotala per la configurazione successiva.
+!!! tip "Suggerimento"
+
+    Se la porta 5432 è già in uso, scegli una porta alternativa e annotala per la configurazione successiva.
 
 #### Passo 7: Scegli il Locale
 
@@ -200,9 +200,9 @@ Per garantire che i file Markdown (`.md`) vengano serviti correttamente da IIS:
    - **Estensione nome file**: `.md`
    - **Tipo MIME**: `text/markdown`
 
-> **Importante**
->
-> Senza questa impostazione, i file `.md` potrebbero non essere serviti correttamente.
+!!! warning "Importante"
+
+    Senza questa impostazione, i file `.md` potrebbero non essere serviti correttamente.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat è un contenitore di servlet Java open-source e un web server.
    - Vai su `http://localhost:8080`
    - Dovresti vedere la pagina di benvenuto di Apache Tomcat
 
-> **Suggerimento**
->
-> Apache Tomcat di solito si avvia automaticamente dopo l'installazione. Se non lo fa, vai nella cartella `bin` ed esegui `startup.bat`.
+!!! tip "Suggerimento"
+
+    Apache Tomcat di solito si avvia automaticamente dopo l'installazione. Se non lo fa, vai nella cartella `bin` ed esegui `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Migliore Pratica**
->
-> Usa password forti e complesse per gli utenti del database. Evita credenziali facilmente indovinabili.
+!!! tip "Migliore Pratica"
+
+    Usa password forti e complesse per gli utenti del database. Evita credenziali facilmente indovinabili.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Passo 3: Installare il File di Licenza
 
-> **Importante**
->
-> Il file di licenza **non** è incluso nel pacchetto di installazione e verrà fornito separatamente da digna.
+!!! warning "Importante"
+
+    Il file di licenza **non** è incluso nel pacchetto di installazione e verrà fornito separatamente da digna.
 
 1. Individua il file `license.toml` fornito a parte
 2. Copialo nella directory principale di installazione di digna (dove si trovano `config.toml` e l'eseguibile `digna`)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Esempio:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Questo crea un utente con privilegi amministrativi completi.
 
-> **Migliore Pratica**
->
-> Usa una password forte con una combinazione di maiuscole, minuscole, numeri e caratteri speciali.
+!!! tip "Migliore Pratica"
+
+    Usa una password forte con una combinazione di maiuscole, minuscole, numeri e caratteri speciali.
 
 ---
 
@@ -545,9 +545,9 @@ I seguenti file batch sono disponibili:
 - `start_service.bat` — Avvia il servizio
 - `stop_service.bat` — Ferma il servizio
 
-> **Privilegi di Amministratore Richiesti**
->
-> Tutti gli script batch devono essere eseguiti con privilegi di Amministratore.
+!!! warning "Privilegi di Amministratore Richiesti"
+
+    Tutti gli script batch devono essere eseguiti con privilegi di Amministratore.
 
 ### Installazione del Servizio
 
@@ -587,9 +587,9 @@ Il server digna è ora registrato come servizio Windows con avvio **automatico**
    stop_service.bat
    ```
 
-> **Suggerimento**
->
-> Ferma sempre il servizio prima di aggiornare i file dell'applicazione.
+!!! tip "Suggerimento"
+
+    Ferma sempre il servizio prima di aggiornare i file dell'applicazione.
 
 ### Spostare il Servizio in una Nuova Directory
 
@@ -670,9 +670,9 @@ ren dashboard dashboard_old
 1. Estrai il nuovo file ZIP di installazione di digna
 2. Copia il nuovo eseguibile `digna` e la cartella `dashboard` nella directory di installazione
 
-> **Importante**
->
-> Il file `config.toml` **non** è mai incluso nel file ZIP di installazione. La tua configurazione esistente rimane al sicuro.
+!!! warning "Importante"
+
+    Il file `config.toml` **non** è mai incluso nel file ZIP di installazione. La tua configurazione esistente rimane al sicuro.
 
 ### Passo 4: Ripristina i Tuoi File di Configurazione
 

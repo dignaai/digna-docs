@@ -1,6 +1,7 @@
 ---
 title: Crontab을 이용한 고급 스케줄링
 description: crontab 표현식을 사용해 digna에서 고급 타이밍으로 작업을 예약하는 방법을 알아보세요.
+image: /assets/logo_square.png
 ---
 
 # Advanced Scheduling with Crontab

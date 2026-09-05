@@ -1,7 +1,6 @@
 ---
 title: digna CLI -viite 2026.04 – Komennot & Esimerkit | digna-dokumentaatio
 description: Täydellinen viite digna CLI -julkaisusta 2026.04
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202604/
 image: /assets/logo_square.png
 ---
 

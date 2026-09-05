@@ -1,7 +1,6 @@
 ---
 title: مرجع واجهة سطر الأوامر digna 2025.04 – الأوامر والأمثلة | توثيق digna
 description: مرجع كامل لإصدار digna CLI 2025.04. تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-repo-connection و upgrade-repo و inspect والمزيد.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ image: /assets/logo_square.png
     استخدم –help مباشرة بعد الكلمة المفتاحية ***digna***cl  
    ```bash
    dignacli --help
+   ```
 
 2. **الحصول على مساعدة لأمر محدد:**  
   

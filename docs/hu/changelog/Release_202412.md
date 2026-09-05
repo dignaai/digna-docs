@@ -2,7 +2,6 @@
 title: digna Kiadás 2024.12 | Változásnapló és új funkciók
 description: Tudja meg, mi újság a digna 2024.12-es kiadásában. Ez a verzió beépített ütemezőt, PDF-jelentéseket, rugalmas egyéni oszlopokat, dinamikus snapshot lekérdezéshelyettesítőket és okosabb küszöboptimalizálást hoz az anomáliaészlelés és az adatminőség-ellenőrzés javítására.
 keywords: digna Kiadás 2024.12, digna változásnapló, kiadási megjegyzések, beépített ütemező, PDF jelentések, egyéni oszloptípus, snapshot lekérdezés helyettesítők, küszöb optimalizálás, adat megfigyelhetőség, adatminőség-ellenőrzés, anomáliaészlelés
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

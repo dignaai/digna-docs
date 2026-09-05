@@ -2,6 +2,7 @@
 title: Günlük Çalışan Bir İş Nasıl Oluşturulur
 description: Dashboard'u kullanarak digna'da günlük bir denetim işini nasıl zamanlayacağınızı öğrenin.
 keywords: digna zamanlama, veri kalite otomasyonu, günlük iş
+image: /assets/logo_square.png
 ---
 
 # Günlük bir işi nasıl zamanlarsınız

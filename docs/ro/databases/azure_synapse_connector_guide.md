@@ -2,7 +2,6 @@
 title: Azure Synapse Connector – Integrare Bază de Date | digna Documentation
 description: Configurați digna pentru a se conecta la Azure Synapse Analytics folosind fie driverul nativ Python, fie driverul ODBC. Suportă atât pool-urile SQL serverless, cât și cele dedicate.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

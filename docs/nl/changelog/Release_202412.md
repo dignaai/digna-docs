@@ -2,7 +2,6 @@
 title: digna Release 2024.12 | Wijzigingen & Nieuwe functies
 description: Ontdek wat nieuw is in digna Release 2024.12. Deze versie introduceert een ingebouwde scheduler, PDF-rapportage, flexibele aangepaste kolommen, dynamische snapshot-query-plaatsaanduiders en slimme drempeloptimalisatie om anomaliedetectie en monitoring van datakwaliteit te verbeteren.
 keywords: digna Release 2024.12, digna changelog, release-opmerkingen, ingebouwde scheduler, PDF-rapporten, aangepast kolomtype, snapshot-query-plaatsaanduiders, drempeloptimalisatie, data observability, monitoring van datakwaliteit, anomaliedetectie
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

@@ -2,7 +2,6 @@
 title: Azure Synapse Connector – Integracija baze podatkov | digna Dokumentacija
 description: Konfigurirajte digna, da se poveže z Azure Synapse Analytics z uporabo bodisi izvornega Python gonilnika ali ODBC gonilnika. Podpira tako serverless kot dedicated SQL poole.
 image: /assets/logo_square.png
-canonical_url: https://docs.digna.ai/databases/azure_synapse_connector_guide/
 ---
 
 

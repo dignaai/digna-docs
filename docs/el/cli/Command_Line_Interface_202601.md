@@ -1,7 +1,6 @@
 ---
 title: Αναφορά CLI του digna 2026.01 – Εντολές & Παραδείγματα | Τεκμηρίωση digna
 description: Πλήρης αναφορά για την έκδοση digna CLI 2026.01. Μάθετε πώς να διαχειρίζεστε χρήστες, αποθετήρια και δεδομένα με εντολές όπως add-user, check-config, check-repo-connection, inspect, inspect-async και άλλες.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202601/
 image: /assets/logo_square.png
 ---
 

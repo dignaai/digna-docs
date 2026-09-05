@@ -2,7 +2,6 @@
 title: digna Lansare 2024.12 | Jurnal de modificări & Funcționalități noi
 description: Descoperiți noutățile din digna Lansare 2024.12. Această versiune introduce un scheduler încorporat, rapoarte PDF, coloane personalizate flexibile, placeholder-e dinamice pentru interogările snapshot și optimizare inteligentă a pragurilor pentru a îmbunătăți detectarea anomaliilor și monitorizarea calității datelor.
 keywords: digna Release 2024.12, digna jurnal modificări, note de lansare, scheduler încorporat, rapoarte PDF, tip coloană personalizată, snapshot query placeholders, optimizare praguri, observabilitatea datelor, monitorizarea calității datelor, detectarea anomaliilor
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trendek, Stabilitás & Hosszú távú betekintés | digna Dokumentáció
 description: Tudja meg, hogyan tárja fel a digna Data Analytics a hosszú távú trendeket, volatilitást és az adatok stabilitását KPI-kon keresztül. Észlelje az adatminőség és megfigyelhetőség változásait, fedezze fel a rejtett anomáliákat, és alakítsa a statisztikákat cselekvésre váltható betekintésekké.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data analytics

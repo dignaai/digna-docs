@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Trendy, stabilita a dlouhodobé přehledy | digna dokumentace
 description: Zjistěte, jak modul Data Analytics od digna odhaluje dlouhodobé trendy, volatilitou a stabilitu dat napříč KPI. Detekujte změny v kvalitě a observabilitě dat, odhalte skryté anomálie a přeměňte statistiky na akční poznatky.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - data analytics

@@ -2,7 +2,6 @@
 title: digna Έκδοση 2024.12 | Ιστορικό αλλαγών & Νέες δυνατότητες
 description: Ανακαλύψτε τι νέο υπάρχει στο digna Release 2024.12. Αυτή η έκδοση εισάγει ενσωματωμένο scheduler, αναφορές PDF, ευέλικτες προσαρμοσμένες στήλες, δυναμικά placeholders σε snapshot queries και πιο έξυπνη βελτιστοποίηση thresholds για βελτίωση της ανίχνευσης ανωμαλιών και της παρακολούθησης ποιότητας δεδομένων.
 keywords: digna Έκδοση 2024.12, digna changelog, release notes, built-in scheduler, PDF reports, custom column type, snapshot query placeholders, threshold optimization, data observability, data quality monitoring, anomaly detection
-canonical_url: https://docs.digna.ai/changelog/Release_202412/
 image: /assets/logo_square.png
 ---
 

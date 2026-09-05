@@ -1,6 +1,7 @@
 ---
 title: Projekt erstellen | digna Dokumentation
 description: Schritt-für-Schritt-Anleitung zum Erstellen eines neuen Projekts in digna. Erfahren Sie, wie Sie den Projektbereich öffnen, Details eingeben und Projekte mit einer interaktiven Demo speichern.
+image: /assets/logo_square.png
 ---
 
 

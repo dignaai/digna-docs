@@ -142,9 +142,9 @@ usePassword = true
 - Keine Benutzername-/Passwortfelder
 - Nur OIDC-Authentifizierung ist verfügbar
 
-> **Tipp**
->
-> Die passwortbasierte Anmeldung ist nur für Benutzer verfügbar, die mit Passwörtern über den Befehl `digna user add` oder über das Dashboard erstellt wurden.
+!!! tip "Tipp"
+
+    Die passwortbasierte Anmeldung ist nur für Benutzer verfügbar, die mit Passwörtern über den Befehl `digna user add` oder über das Dashboard erstellt wurden.
 
 ### Komplettes Beispiel
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL nach der Authentifizierung | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-Konfigurationsendpunkt | `https://login.microsoftonline.com/...` |
 
-> **Wichtig**
->
-> Ersetzen Sie Platzhalterwerte (`<client_id>`, `<client_secret>`, `<tenant_id>`) durch tatsächliche Anmeldeinformationen aus dem Entwicklerportal Ihres Identitätsanbieters.
+!!! warning "Wichtig"
+
+    Ersetzen Sie Platzhalterwerte (`<client_id>`, `<client_secret>`, `<tenant_id>`) durch tatsächliche Anmeldeinformationen aus dem Entwicklerportal Ihres Identitätsanbieters.
 
 ### Redirect URI
 

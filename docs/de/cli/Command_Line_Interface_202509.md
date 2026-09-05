@@ -1,7 +1,6 @@
 ---
 title: digna CLI Referenz 2025.09 – Befehle & Beispiele | digna Dokumentation
 description: Vollständige Referenz für die digna CLI-Version 2025.09. Lernen Sie, wie Sie Benutzer, Repositories und Daten mit Befehlen wie add-user, check-config, check-repo-connection, inspect, inspect-async und weiteren verwalten.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202509/
 image: /assets/logo_square.png
 ---
 

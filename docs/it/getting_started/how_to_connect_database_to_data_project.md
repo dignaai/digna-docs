@@ -1,6 +1,7 @@
 ---
 title: Connettere un Database | digna Documentation
 description: Guida passo passo per collegare un database a un progetto esistente in digna. Scopri come configurare le connessioni, fornire le credenziali e abilitare l'accesso sicuro.
+image: /assets/logo_square.png
 ---
 
 # Connettere un Database

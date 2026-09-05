@@ -1,6 +1,7 @@
 ---
 title: Tilslut en database | digna-dokumentation
 description: Trin-for-trin guide til at tilslutte en database til et eksisterende projekt i digna. Lær, hvordan du vælger en forbindelse, konfigurerer indstillinger og aktiverer sikker adgang.
+image: /assets/logo_square.png
 ---
 
 # Tilføj Datasource (Table) til et projekt

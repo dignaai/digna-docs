@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Eğilimler ve Kararlılık | digna Dokümantasyonu
 description: digna Data Analytics, KPI'larda uzun vadeli eğilimleri, oynaklığı ve veri kararlılığını ortaya çıkarır. Verinin kalitesindeki ve gözlemlenebilirliğindeki değişimleri tespit edin, gizli anomalileri keşfedin ve istatistikleri eyleme dönüştürülebilir içgörülere çevirin.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - veri analitiği

@@ -1,7 +1,6 @@
 ---
 title: Data Analytics – Τάσεις, Σταθερότητα & Μακροπρόθεσμες Συστάσεις | digna Documentation
 description: Μάθετε πώς το digna Data Analytics αποκαλύπτει μακροχρόνιες τάσεις, μεταβλητότητα και σταθερότητα δεδομένων σε KPIs. Εντοπίστε μεταβολές στην ποιότητα και την παρατηρησιμότητα των δεδομένων, αποκαλύψτε κρυφές ανωμαλίες και μετατρέψτε στατιστικά σε επιχειρησιακά, εφαρμόσιμα συμπεράσματα.
-canonical_url: https://docs.digna.ai/platform/data_analytics/
 image: /assets/logo_square.png
 keywords:
   - ανάλυση δεδομένων

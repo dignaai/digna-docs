@@ -65,12 +65,12 @@ Du kan lägga till en ny databas för digna i din befintliga PostgreSQL-server.
 
 **If installing PostgreSQL on the same machine as digna:**
 
-> **Recommended Specifications**
->
-> - **Memory**: 32 GB RAM (istället för 16 GB)
-> - **Disk Space**: 50 GB ledigt lagringsutrymme (istället för 10 GB)
->
-> Dessa högre specifikationer rymmer både digna och PostgreSQL-databasen som körs samtidigt.
+!!! info "Recommended Specifications"
+
+    - **Memory**: 32 GB RAM (istället för 16 GB)
+    - **Disk Space**: 50 GB ledigt lagringsutrymme (istället för 10 GB)
+
+    Dessa högre specifikationer rymmer både digna och PostgreSQL-databasen som körs samtidigt.
 
 ---
 
@@ -122,9 +122,9 @@ Ange och bekräfta ett lösenord för PostgreSQL-superanvändaren (`postgres`). 
 
 Standardporten för PostgreSQL är `5432`. Du kan använda standardporten eller ange en annan port vid behov.
 
-> **Tip**
->
-> Om port 5432 redan används, välj en alternativ port och notera den för senare konfiguration.
+!!! tip "Tip"
+
+    Om port 5432 redan används, välj en alternativ port och notera den för senare konfiguration.
 
 #### Step 7: Choose Locale
 
@@ -200,9 +200,9 @@ För att säkerställa att Markdown-filer (`.md`) serveras korrekt av IIS:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-> **Important**
->
-> Utan denna inställning kan `.md`-filerna inte serveras korrekt.
+!!! warning "Important"
+
+    Utan denna inställning kan `.md`-filerna inte serveras korrekt.
 
 ---
 
@@ -227,9 +227,9 @@ Apache Tomcat är en öppen källkods Java-servlet-container och webbserver.
    - Navigera till `http://localhost:8080`
    - Du bör se Apache Tomcat välkomstsida
 
-> **Tip**
->
-> Apache Tomcat startar vanligtvis automatiskt efter installation. Om det inte gör det, gå till `bin`-mappen och kör `startup.bat`.
+!!! tip "Tip"
+
+    Apache Tomcat startar vanligtvis automatiskt efter installation. Om det inte gör det, gå till `bin`-mappen och kör `startup.bat`.
 
 ---
 
@@ -267,9 +267,9 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-> **Best Practice**
->
-> Använd starka, komplexa lösenord för databas-användare. Undvik lätta att gissa-credentialer.
+!!! tip "Best Practice"
+
+    Använd starka, komplexa lösenord för databas-användare. Undvik lätta att gissa-credentialer.
 
 ---
 
@@ -285,9 +285,9 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 ### Step 3: Install the License File
 
-> **Important**
->
-> Licensfilen ingår **inte** i installationspaketet och kommer att tillhandahållas separat av digna.
+!!! warning "Important"
+
+    Licensfilen ingår **inte** i installationspaketet och kommer att tillhandahållas separat av digna.
 
 1. Lokalisera `license.toml`-filen som tillhandahållits till dig
 2. Kopiera den till root i digna-installationskatalogen (där `config.toml` och den körbara `digna`-filen finns)
@@ -463,14 +463,14 @@ digna user add <username> "<full_name>" <password> --su
 **Exempel:**
 
 ```bash
-digna user add "Admin User" AdminPassword123! --su
+digna user add admin "Admin User" AdminPassword123! --su
 ```
 
 Detta skapar en användare med fullständiga administrativa privilegier.
 
-> **Best Practice**
->
-> Använd ett starkt lösenord med en mix av versaler, gemener, siffror och specialtecken.
+!!! tip "Best Practice"
+
+    Använd ett starkt lösenord med en mix av versaler, gemener, siffror och specialtecken.
 
 ---
 
@@ -545,9 +545,9 @@ Följande batch-filer finns tillgängliga:
 - `start_service.bat` — Startar den registrerade tjänsten
 - `stop_service.bat` — Stoppar den registrerade tjänsten
 
-> **Administrator Required**
->
-> Alla batch-filer måste köras med Administratörsrättigheter.
+!!! warning "Administrator Required"
+
+    Alla batch-filer måste köras med Administratörsrättigheter.
 
 ### Installing the Service
 
@@ -587,9 +587,9 @@ Digna-servern är nu registrerad som en Windows-tjänst med **automatisk start**
    stop_service.bat
    ```
 
-> **Tip**
->
-> Stoppa alltid tjänsten innan du uppdaterar applikationsfiler.
+!!! tip "Tip"
+
+    Stoppa alltid tjänsten innan du uppdaterar applikationsfiler.
 
 ### Moving the Service to a New Directory
 
@@ -671,9 +671,9 @@ ren dashboard dashboard_old
 2. Kopiera den nya `digna`-exekverbara filen och `dashboard`-mappen till din installationskatalog
 
 
-> **Important**
->
-> Filen `config.toml` ingår **aldrig** i installations-ZIP:en. Din befintliga konfiguration förblir säker.
+!!! warning "Important"
+
+    Filen `config.toml` ingår **aldrig** i installations-ZIP:en. Din befintliga konfiguration förblir säker.
 
 ### Step 4: Restore Your Configuration Files
 

@@ -142,9 +142,9 @@ usePassword = true
 - لا توجد حقول اسم المستخدم/كلمة المرور
 - المصادقة تكون متاحة فقط عبر OIDC
 
-> **تلميح**
->
-> تسجيل الدخول باستخدام كلمة المرور متاح فقط للمستخدمين الذين تم إنشاؤهم بكلمات مرور عبر أمر `digna user add` أو عبر لوحة التحكم.
+!!! tip "تلميح"
+
+    تسجيل الدخول باستخدام كلمة المرور متاح فقط للمستخدمين الذين تم إنشاؤهم بكلمات مرور عبر أمر `digna user add` أو عبر لوحة التحكم.
 
 ### مثال مكتمل
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | نعم | عنوان الاستدعاء بعد المصادقة | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | نعم | نقطة تكوين OIDC | `https://login.microsoftonline.com/...` |
 
-> **هام**
->
-> استبدل القيم النائبة (`<client_id>`, `<client_secret>`, `<tenant_id>`) بالبيانات الفعلية من بوابة مطوري مزود الهوية الخاص بك.
+!!! warning "هام"
+
+    استبدل القيم النائبة (`<client_id>`, `<client_secret>`, `<tenant_id>`) بالبيانات الفعلية من بوابة مطوري مزود الهوية الخاص بك.
 
 ### عنوان الاستدعاء (Redirect URI)
 

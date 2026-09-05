@@ -1,6 +1,7 @@
 ---
 title: Připojení databáze | digna Documentation
 description: Krok za krokem průvodce připojením databáze k existujícímu projektu v digna. Naučte se, jak vybrat připojení, nakonfigurovat nastavení a povolit zabezpečený přístup.
+image: /assets/logo_square.png
 ---
 
 # Přidání datového zdroje (Table) do projektu

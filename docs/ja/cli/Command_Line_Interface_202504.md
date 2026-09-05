@@ -1,7 +1,6 @@
 ---
 title: digna CLI リファレンス 2025.04 – コマンドと例 | digna ドキュメント
 description: digna CLI リリース 2025.04 の完全リファレンス。add-user、check-repo-connection、upgrade-repo、inspect などのコマンドでユーザー、リポジトリ、データを管理する方法を解説します。
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202504/
 image: /assets/logo_square.png
 ---
 
@@ -25,6 +24,7 @@ image: /assets/logo_square.png
    キーワード ***digna*** の直後に --help を指定します。  
    ```bash
    dignacli --help
+   ```
 
 2. **特定コマンドのヘルプ取得:**  
   

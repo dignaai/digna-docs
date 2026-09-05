@@ -1,7 +1,6 @@
 ---
 title: digna CLI -viite 2024.12 – Komennot ja esimerkit | digna-dokumentaatio
 description: Täydellinen viite digna CLI -versiolle 2024.12. Opas käyttäjien, repositorion ja datan hallintaan komennoilla kuten add-user, check-repo-connection, upgrade-repo, inspect ja muilla.
-canonical_url: https://docs.digna.ai/cli/Command_Line_Interface_202412/
 image: /assets/logo_square.png
 ---
 

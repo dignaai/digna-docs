@@ -1,6 +1,7 @@
 ---
 title: Data Analytics – Trender og stabilitet | digna Documentation
 Description: Lær hvordan digna Data Analytics avslører langsiktige trender, volatilitet og datastabilitet på tvers av KPI-er. Oppdag anomalier i manglende verdier, sammenlign perioder med stabilitet, og gjør statistikk om til handlingsrettet innsikt.
+image: /assets/logo_square.png
 ---
 
 

@@ -2,6 +2,7 @@
 title: 毎日実行されるジョブの作成方法
 description: digna のダッシュボードを使って毎日実行される検査ジョブをスケジュールする方法を学びます。
 keywords: digna スケジューリング, データ品質自動化, 毎日ジョブ
+image: /assets/logo_square.png
 ---
 
 # 毎日実行されるジョブをスケジュールする方法

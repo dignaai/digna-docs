@@ -1,6 +1,7 @@
 ---
 title: Zaawansowane planowanie z Crontab | Dokumentacja digna
 description: Dowiedz się, jak zaplanować zadanie w digna za pomocą wyrażeń crontab, aby uzyskać bardziej zaawansowane ustawienia czasowe.
+image: /assets/logo_square.png
 ---
 
 # Zaawansowane planowanie z Crontab
