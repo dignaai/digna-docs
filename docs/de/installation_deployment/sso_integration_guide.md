@@ -1,21 +1,21 @@
 ---
 title: Single Sign-On (SSO) Integrationsanleitung | digna Dokumentation
-description: Schritt-für-Schritt-Anleitung zur Konfiguration von Single Sign-On (SSO) für digna mit OpenID Connect (OIDC). Behandelt Dashboard- und Backend-Konfiguration, Tests, Fehlerbehebung und unterstützte Identitätsanbieter wie Microsoft Entra ID, Google Workspace und Okta.
+description: Schritt-für-Schritt-Anleitung zur Konfiguration von Single Sign-On (SSO) für digna mit OpenID Connect (OIDC). Behandelt Dashboard- und Backend-Konfiguration, Tests, Fehlerbehebung und unterstützte Identity Provider wie Microsoft Entra ID, Google Workspace und Okta.
 image: /assets/logo_square.png
 keywords:
   - digna sso
-  - single sign-on
-  - oidc integration
-  - openid connect
-  - microsoft entra id
-  - azure ad sso
-  - google workspace sso
-  - okta integration
-  - enterprise authentication
+  - Single Sign-On
+  - OIDC-Integration
+  - OpenID Connect
+  - Microsoft Entra ID
+  - Azure AD SSO
+  - Google Workspace SSO
+  - Okta-Integration
+  - Unternehmensauthentifizierung
 lang: en
 robots: index, follow
-og_title: digna Single Sign-On (SSO) Integrationsanleitung
-og_description: Konfigurieren Sie Single Sign-On für digna mit OpenID Connect. Schritt-für-Schritt-Einrichtung für Microsoft Entra ID, Google Workspace, Okta und andere OIDC-kompatible Identitätsanbieter.
+og_title: digna Single Sign-On (SSO) Integration Guide
+og_description: Configure Single Sign-On for digna using OpenID Connect. Step-by-step setup for Microsoft Entra ID, Google Workspace, Okta, and other OIDC-compliant identity providers.
 og_image: /assets/logo_square.png
 og_type: article
 twitter_card: summary_large_image
@@ -27,85 +27,85 @@ twitter_card: summary_large_image
 
 ## Inhaltsverzeichnis
 
-1. [Einführung und Übersicht](#introduction-and-overview)
+1. [Einführung und Überblick](#introduction-and-overview)
 2. [Konfigurationsschritte](#configuration-steps)
 3. [Dashboard-Konfiguration](#dashboard-configuration)
 4. [Backend-Konfiguration](#backend-configuration)
 5. [Login testen](#testing-login)
 6. [Fehlerbehebung](#troubleshooting)
-7. [Unterstützte Anbieter](#supported-providers)
+7. [Unterstützte Provider](#supported-providers)
 
 ---
 
-## Einführung und Übersicht {: #introduction-and-overview }
+## Einführung und Überblick {: #introduction-and-overview }
 
-Dieses Dokument bietet eine Schritt-für-Schritt-Anleitung zur Integration von Single Sign-On (SSO) in die digna-Plattform mithilfe von **OpenID Connect (OIDC)**.
+Diese Anleitung beschreibt Schritt für Schritt, wie Single Sign-On (SSO) in der digna-Plattform mithilfe von **OpenID Connect (OIDC)** integriert wird.
 
 ### Was ist SSO?
 
-Single Sign-On ermöglicht es Benutzern, sich sicher bei digna mit ihren Unternehmensanmeldeinformationen über externe Identitätsanbieter anzumelden. Benutzer authentifizieren sich mit ihren Firmenanmeldeinformationen, anstatt separate digna-Passwörter zu verwalten.
+Single Sign-On ermöglicht es Benutzern, sich mit ihren Unternehmensanmeldedaten sicher bei digna anzumelden, indem externe Identity Provider verwendet werden. Nutzer können sich mit ihren Firmenanmeldedaten authentifizieren, anstatt separate digna-Passwörter zu verwalten.
 
-### Wie funktioniert es
+### Wie funktioniert es?
 
-SSO in digna wird über das OIDC-Protokoll implementiert. Mehrere Identitätsanbieter können parallel konfiguriert werden, indem zwei wichtige Konfigurationsdateien angepasst werden:
+SSO in digna wird über das OIDC-Protokoll umgesetzt. Mehrere Identity Provider können parallel konfiguriert werden, indem zwei zentrale Konfigurationsdateien angepasst werden:
 
-- **`dashboard_config.toml`** — Steuert die Login-Oberfläche des Frontends
-- **`config.toml`** — Konfiguriert die OIDC-Verbindungen des Backends
+- **`dashboard_config.toml`** — Steuert die Frontend-Anmeldeschnittstelle
+- **`config.toml`** — Konfiguriert die Backend-OIDC-Verbindungen
 
-### Unterstützte Anbieter {: #supported-providers-overview }
+### Unterstützte Provider {: #supported-providers-overview }
 
-Beispiele in diesem Leitfaden verwenden **Microsoft** und **Google**, aber **jeder OIDC-kompatible Anbieter** kann nach derselben Struktur integriert werden.
+Beispiele in dieser Anleitung verwenden **Microsoft** und **Google**, aber **jeder OIDC-konforme Provider** kann nach demselben Schema integriert werden.
 
-Gängige OIDC-Anbieter sind:
+Gängige OIDC-Provider sind:
 - Microsoft Entra ID (Azure AD)
 - Google Workspace
 - Okta
 - Auth0
 - Keycloak
-- Andere OIDC-kompatible Identitätsanbieter
+- Weitere OIDC-konforme Identity Provider
 
 ---
 
 ## Konfigurationsschritte {: #configuration-steps }
 
-Die SSO-Konfiguration erfordert Änderungen an zwei Dateien. Dieser Abschnitt erklärt, wie jede Datei konfiguriert wird.
+Die SSO-Konfiguration erfordert Änderungen an zwei Dateien. Dieser Abschnitt erklärt, wie jede Datei zu konfigurieren ist.
 
 ### Übersicht der Konfigurationsdateien
 
-| File | Location | Purpose |
+| Datei | Speicherort | Zweck |
 |---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend Login-Oberfläche |
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend-Anmeldeschnittstelle |
 | **config.toml** | `/config.toml` | Backend OIDC-Verbindungen |
 
-Beide Dateien müssen konfiguriert sein, damit SSO ordnungsgemäß funktioniert.
+Beide Dateien müssen konfiguriert werden, damit SSO korrekt funktioniert.
 
 ---
 
 ## Dashboard-Konfiguration {: #dashboard-configuration }
 
-### Dateipfad
+### Dateispeicherort
 
 ```
 dashboard/dashboard_config.toml
 ```
 
-### Schritt 1: OIDC-Anbieter hinzufügen
+### Schritt 1: OIDC-Provider hinzufügen
 
-Fügen Sie Einträge unter dem Array `[[login.oidc]]` für jeden Identitätsanbieter hinzu, den Sie unterstützen möchten.
+Fügen Sie Einträge unter dem Array `[[login.oidc]]` für jeden Identity Provider hinzu, den Sie unterstützen möchten.
 
 **Beispiel mit Microsoft und Google:**
 
 ```toml
 [[login.oidc]]
 key = "microsoft"
-label = "Mit Microsoft anmelden"
+label = "Login with Microsoft"
 
 [[login.oidc]]
 key = "google"
-label = "Mit Google anmelden"
+label = "Login with Google"
 ```
 
-### Schritt 2: Login-Optionen konfigurieren
+### Schritt 2: Anmeldeoptionen konfigurieren
 
 Geben Sie an, ob passwortbasierte Anmeldung erlaubt sein soll:
 
@@ -120,31 +120,31 @@ usePassword = true
 
 | Parameter | Typ | Erforderlich | Beschreibung |
 |---|---|---|---|
-| `key` | string | Ja | Eindeutiger Bezeichner für die OIDC-Verbindung (muss mit dem Schlüssel in config.toml übereinstimmen) |
-| `label` | string | Ja | Text, der auf der Login-Schaltfläche angezeigt wird (z. B. "Mit Microsoft anmelden") |
+| `key` | string | Ja | Eindeutiger Bezeichner für die OIDC-Verbindung (muss mit dem Key in config.toml übereinstimmen) |
+| `label` | string | Ja | Text, der auf der Anmelde-Schaltfläche angezeigt wird (z. B. "Login with Microsoft") |
 
 #### `[login]` Abschnitt
 
 | Parameter | Typ | Standard | Beschreibung |
 |---|---|---|---|
-| `usePassword` | boolean | false | Passwortbasierte Anmeldung zusätzlich zu SSO erlauben |
+| `usePassword` | boolean | false | Erlaubt passwortbasierte Anmeldung zusätzlich zu SSO |
 
-### Verständnis von usePassword
+### Bedeutung von usePassword
 
 **Wenn `usePassword = true`:**
-- Auf dem Login-Bildschirm werden SSO-Schaltflächen angezeigt (z. B. "Mit Microsoft anmelden")
-- Der Login-Bildschirm zeigt zusätzlich Benutzername- und Passwortfelder
+- Der Anmeldebildschirm zeigt SSO-Schaltflächen (z. B. "Login with Microsoft")
+- Der Anmeldebildschirm zeigt zusätzlich Felder für Benutzername und Passwort
 - Benutzer können sich mit einer der beiden Methoden authentifizieren
 - Ermöglicht hybride Setups, in denen einige Benutzer SSO und andere Passwörter verwenden
 
 **Wenn `usePassword = false` (oder weggelassen):**
-- Der Login-Bildschirm zeigt nur SSO-Schaltflächen
-- Keine Benutzername-/Passwortfelder
+- Der Anmeldebildschirm zeigt nur SSO-Schaltflächen
+- Keine Benutzername-/Passwort-Felder
 - Nur OIDC-Authentifizierung ist verfügbar
 
 !!! tip "Tipp"
 
-    Die passwortbasierte Anmeldung ist nur für Benutzer verfügbar, die mit Passwörtern über den Befehl `digna user add` oder über das Dashboard erstellt wurden.
+    Die passwortbasierte Anmeldung ist nur für Benutzer verfügbar, die mit Passwörtern erstellt wurden (z. B. mittels des Befehls `digna user add` oder über das Dashboard).
 
 ### Komplettes Beispiel
 
@@ -154,22 +154,22 @@ usePassword = true
 
 [[login.oidc]]
 key = "microsoft"
-label = "Mit Microsoft anmelden"
+label = "Login with Microsoft"
 
 [[login.oidc]]
 key = "google"
-label = "Mit Google anmelden"
+label = "Login with Google"
 
 [[login.oidc]]
 key = "okta"
-label = "Mit Okta anmelden"
+label = "Login with Okta"
 ```
 
 ---
 
 ## Backend-Konfiguration {: #backend-configuration }
 
-### Dateipfad
+### Dateispeicherort
 
 ```
 /config.toml
@@ -177,9 +177,9 @@ label = "Mit Okta anmelden"
 
 (Root-Verzeichnis der digna-Installation)
 
-### Schritt 1: OIDC-Anbieterabschnitte hinzufügen
+### Schritt 1: OIDC-Provider-Abschnitte hinzufügen
 
-Jeder Anbieter benötigt einen eigenen Abschnitt `[oidc.<key>]`. Der Schlüssel muss mit dem `key` in `dashboard_config.toml` übereinstimmen.
+Jeder Provider benötigt einen eigenen Abschnitt `[oidc.<key>]`. Der Key muss mit dem `key` in `dashboard_config.toml` übereinstimmen.
 
 ### Microsoft-Konfiguration
 
@@ -205,24 +205,24 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 | Parameter | Typ | Erforderlich | Beschreibung | Beispiel |
 |---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Ja | Client-ID vom Identitätsanbieter | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Ja | Client-Secret vom Identitätsanbieter | `secret_xyz789abc123` |
+| `DIGNA_OIDC_CLIENT_ID` | string | Ja | Client-ID vom Identity Provider | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Ja | Client-Secret vom Identity Provider | `secret_xyz789abc123` |
 | `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL nach der Authentifizierung | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-Konfigurationsendpunkt | `https://login.microsoftonline.com/...` |
 
 !!! warning "Wichtig"
 
-    Ersetzen Sie Platzhalterwerte (`<client_id>`, `<client_secret>`, `<tenant_id>`) durch tatsächliche Anmeldeinformationen aus dem Entwicklerportal Ihres Identitätsanbieters.
+    Ersetzen Sie Platzhalterwerte (`<client_id>`, `<client_secret>`, `<tenant_id>`) durch die tatsächlichen Zugangsdaten aus dem Entwicklerportal Ihres Identity Providers.
 
 ### Redirect URI
 
-Die Redirect-URI muss in der Konfiguration Ihres Identitätsanbieters identisch sein:
+Die Redirect-URI muss mit der in der Identity-Provider-Konfiguration registrierten URI übereinstimmen:
 
 ```
 http://localhost:5173/oidc/callback
 ```
 
-Wenn digna unter einer anderen Domain gehostet wird, passen Sie sie entsprechend an:
+Wenn digna unter einer anderen Domain gehostet wird, passen Sie die URI entsprechend an:
 - Lokal: `http://localhost:5173/oidc/callback`
 - Produktion: `https://digna.yourdomain.com/oidc/callback`
 
@@ -246,40 +246,40 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ## Login testen {: #testing-login }
 
-Nachdem Sie die Konfiguration abgeschlossen haben, überprüfen Sie, ob SSO korrekt funktioniert.
+Nach Abschluss der Konfiguration prüfen Sie, ob SSO korrekt funktioniert.
 
-### Pre-Testing-Checkliste
+### Vorbereitungs-Checkliste
 
-Stellen Sie vor dem Test sicher:
+Bevor Sie testen, vergewissern Sie sich:
 
-- [ ] `dashboard_config.toml` wurde mit OIDC-Anbietern aktualisiert
-- [ ] `config.toml` wurde mit OIDC-Anmeldeinformationen aktualisiert
+- [ ] `dashboard_config.toml` wurde mit OIDC-Providern aktualisiert
+- [ ] `config.toml` wurde mit OIDC-Zugangsdaten aktualisiert
 - [ ] Beide Dateien wurden gespeichert
-- [ ] Anmeldeinformationen sind korrekt (Client-ID, Client-Secret)
+- [ ] Zugangsdaten sind korrekt (Client ID, Client Secret)
 - [ ] Redirect-URI stimmt mit Ihrer Deployment-URL überein
-- [ ] Die Anwendung im Identitätsanbieter ist mit der Redirect-URI konfiguriert
+- [ ] Die Anwendung im Identity Provider ist mit der Redirect-URI konfiguriert
 
 ### Testschritte
 
 #### Schritt 1: Dienste neu starten
 
-Starten Sie das digna-Backend und den Webserver neu, um Änderungen zu übernehmen.
+Starten Sie das digna-Backend und den Webserver neu, damit die Änderungen wirksam werden.
 
-**Falls als Windows-Dienst ausgeführt:**
+**Wenn als Windows-Dienst ausgeführt:**
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 start_service.bat
 ```
 
-**Falls manuell ausgeführt:**
+**Wenn manuell ausgeführt:**
 ```bash
 cd C:\path\to\digna
 digna serve --address localhost --port 8082
 ```
 
 **Bei Verwendung von IIS oder Tomcat:**
-Starten Sie Ihren Webserver-Dienst neu.
+Starten Sie den Webserver-Dienst neu.
 
 #### Schritt 2: Dashboard öffnen
 
@@ -291,95 +291,95 @@ http://localhost:5173
 
 (oder Ihre konfigurierte Dashboard-URL)
 
-#### Schritt 3: Login-Schaltflächen prüfen
+#### Schritt 3: Anmelde-Schaltflächen prüfen
 
-Überprüfen Sie, ob Login-Schaltflächen für jeden konfigurierten Anbieter angezeigt werden:
+Stellen Sie sicher, dass für jeden konfigurierten Provider eine Anmelde-Schaltfläche angezeigt wird:
 
-- Sie sollten die Schaltfläche "Mit Microsoft anmelden" sehen
-- Sie sollten die Schaltfläche "Mit Google anmelden" sehen
-- (Wenn usePassword = true) Sie sollten Benutzername-/Passwortfelder sehen
+- Es sollte eine Schaltfläche "Login with Microsoft" sichtbar sein
+- Es sollte eine Schaltfläche "Login with Google" sichtbar sein
+- (Wenn usePassword = true) Es sollten Benutzername-/Passwort-Felder sichtbar sein
 
-Wenn Schaltflächen nicht angezeigt werden:
+Wenn Schaltflächen nicht erscheinen:
 - Prüfen Sie, ob `dashboard_config.toml` gespeichert wurde
 - Prüfen Sie, ob der Dashboard-Dienst neu gestartet wurde
-- Prüfen Sie die Browserkonsole (F12) auf Fehler
+- Prüfen Sie die Browser-Konsole (F12) auf Fehler
 
-#### Schritt 4: SSO-Login testen
+#### Schritt 4: SSO-Anmeldung testen
 
-Klicken Sie auf eine der SSO-Schaltflächen (z. B. "Mit Microsoft anmelden"):
+Klicken Sie auf eine der SSO-Schaltflächen (z. B. "Login with Microsoft"):
 
-1. Sie sollten zur Login-Seite des Identitätsanbieters weitergeleitet werden
-2. Melden Sie sich mit Ihren Unternehmensanmeldeinformationen an
+1. Sie sollten zur Login-Seite des Identity Providers weitergeleitet werden
+2. Melden Sie sich mit Ihren Unternehmensanmeldedaten an
 3. Sie sollten zurück zu digna weitergeleitet werden
-4. Sie sollten in digna eingeloggt sein
+4. Sie sollten in digna angemeldet sein
 
 #### Schritt 5: Benutzererstellung prüfen
 
-Nach erfolgreichem SSO-Login:
+Nach erfolgreicher SSO-Anmeldung:
 
 - Der Benutzer sollte automatisch in digna angelegt werden
-- Der Benutzer sollte eingeloggt sein
-- Das Benutzerprofil sollte Ihre Identitätsanbieterangaben anzeigen
+- Der Benutzer sollte angemeldet sein
+- Das Benutzerprofil sollte Informationen des Identity Providers anzeigen
 - Sie sollten das digna-Dashboard sehen
 
-#### Schritt 6: Passwort-Login testen (falls aktiviert)
+#### Schritt 6: Passwort-Anmeldung testen (falls aktiviert)
 
 Wenn `usePassword = true`:
 
-1. Melden Sie sich bei digna ab
-2. Geben Sie auf der Login-Seite Benutzernamen und Passwort ein
-3. Sie sollten sich mit Passwort-Anmeldedaten einloggen können
+1. Melden Sie sich von digna ab
+2. Geben Sie auf der Anmeldeseite Benutzername und Passwort ein
+3. Sie sollten sich mit Passwortanmeldeinformationen anmelden können
 
 ---
 
 ## Fehlerbehebung {: #troubleshooting }
 
-### Login-Schaltflächen werden nicht angezeigt
+### Anmelde-Schaltflächen erscheinen nicht
 
 **Symptome:**
-- OIDC-Login-Schaltflächen sind auf der Login-Seite nicht sichtbar
+- OIDC-Anmelde-Schaltflächen sind auf der Anmeldeseite nicht sichtbar
 - Sie sehen nur Passwortfelder (wenn usePassword = true)
 
 **Ursachen & Lösungen:**
 1. Prüfen Sie, ob `dashboard_config.toml` im Verzeichnis `dashboard/` liegt
 2. Vergewissern Sie sich, dass `[[login.oidc]]`-Abschnitte mit korrekter Syntax vorhanden sind
 3. Starten Sie den Dashboard-Dienst neu
-4. Leeren Sie den Browser-Cache (Strg+Umschalt+Entf oder Cmd+Umschalt+Entf)
-5. Prüfen Sie die Browserkonsole (F12 → Console) auf Fehler
+4. Leeren Sie den Browser-Cache (Strg+Umschalt+Entf oder Cmd+Shift+Delete)
+5. Prüfen Sie die Browser-Konsole (F12 → Konsole) auf Fehler
 
 ---
 
 ### Redirect-URI Mismatch-Fehler
 
 **Symptome:**
-- Nach dem Klick auf die SSO-Schaltfläche Fehler bezüglich "redirect_uri mismatch"
-- "The redirect URI is not registered"-Fehler
+- Nach Klick auf die SSO-Schaltfläche erscheint ein Fehler zu "redirect_uri mismatch"
+- Fehler "The redirect URI is not registered"
 
 **Ursachen & Lösungen:**
-1. Überprüfen Sie `DIGNA_OIDC_REDIRECT_URI` in `config.toml`
-2. Stellen Sie sicher, dass die Redirect-URI in den Einstellungen des Identitätsanbieters registriert ist
-3. Achten Sie darauf, dass beide URLs identisch sind (inkl. Protokoll, Domain, Pfad)
+1. Prüfen Sie `DIGNA_OIDC_REDIRECT_URI` in `config.toml` auf Korrektheit
+2. Vergewissern Sie sich, dass die Redirect-URI im Identity Provider registriert ist
+3. Stellen Sie sicher, dass beide URLs identisch sind (inklusive Protokoll, Domain, Pfad)
 4. Prüfen Sie auf Tippfehler in der Redirect-URI
 5. Wenn HTTPS verwendet wird, stellen Sie sicher, dass das Zertifikat gültig ist
 
 ---
 
-### Ungültige Client-Anmeldeinformationen
+### Ungültige Client-Zugangsdaten
 
 **Symptome:**
-- "Invalid client ID or secret"-Fehler
-- Authentifizierung schlägt mit Anmeldeinformationsfehler fehl
+- Fehler "Invalid client ID or secret"
+- Authentifizierung schlägt mit Zugangsdatenfehler fehl
 
 **Ursachen & Lösungen:**
-1. Überprüfen Sie `DIGNA_OIDC_CLIENT_ID` und `DIGNA_OIDC_CLIENT_SECRET`
-2. Achten Sie auf keine zusätzlichen Leerzeichen oder unerwünschte Zeichen
-3. Prüfen Sie, ob die Anmeldeinformationen abgelaufen oder widerrufen wurden
-4. Starten Sie das Backend neu, nachdem Sie die Konfiguration aktualisiert haben
-5. Prüfen Sie im Identitätsanbieter-Portal, ob die Anmeldeinformationen aktiv sind
+1. Prüfen Sie `DIGNA_OIDC_CLIENT_ID` und `DIGNA_OIDC_CLIENT_SECRET` auf Richtigkeit
+2. Achten Sie auf keine zusätzlichen Leerzeichen oder ungewollte Sonderzeichen
+3. Prüfen Sie, ob die Zugangsdaten abgelaufen oder widerrufen wurden
+4. Starten Sie den Backend-Dienst nach dem Aktualisieren der Konfiguration neu
+5. Prüfen Sie im Identity Provider-Portal, ob die Zugangsdaten aktiv sind
 
 ---
 
-### Login hängt oder läuft in Timeout
+### Anmeldung bleibt hängen oder läuft ins Timeout
 
 **Symptome:**
 - Klick auf SSO-Schaltfläche bewirkt nichts
@@ -387,78 +387,78 @@ Wenn `usePassword = true`:
 - Browser zeigt "Failed to connect" oder ähnliches
 
 **Ursachen & Lösungen:**
-1. Vergewissern Sie sich, dass das digna-Backend läuft: `digna repo check`
-2. Prüfen Sie die Netzwerkverbindung zum Identitätsanbieter
-3. Überprüfen Sie, ob `DIGNA_OIDC_CONFIGURATION_URL` erreichbar ist
+1. Prüfen Sie, ob das digna-Backend läuft: `digna repo check`
+2. Prüfen Sie die Netzwerkverbindung zum Identity Provider
+3. Vergewissern Sie sich, dass `DIGNA_OIDC_CONFIGURATION_URL` erreichbar ist
 4. Prüfen Sie Firewall-Regeln, die ausgehende HTTPS-Verbindungen blockieren könnten
-5. Stellen Sie sicher, dass Backend und Dashboard sich gegenseitig erreichen können
+5. Prüfen Sie, ob Backend und Dashboard sich gegenseitig erreichen können
 
 ---
 
 ### Benutzer werden nicht automatisch erstellt
 
 **Symptome:**
-- SSO-Login ist erfolgreich, aber Benutzer wird nicht in digna angelegt
-- Nach SSO-Login tritt ein Berechtigungsfehler auf
+- SSO-Anmeldung gelingt, aber der Benutzer wird nicht in digna angelegt
+- Nach SSO-Anmeldung tritt ein Berechtigungsfehler auf
 
 **Ursachen & Lösungen:**
-1. Überprüfen Sie die OIDC-Konfiguration
+1. Prüfen Sie die OIDC-Konfiguration auf Korrektheit
 2. Prüfen Sie, ob Benutzerberechtigungen korrekt eingerichtet sind
-3. Lesen Sie die digna-Logs auf Fehlermeldungen
-4. Starten Sie das Backend neu
-5. Kontaktieren Sie support@digna.ai, wenn das Problem bestehen bleibt
+3. Überprüfen Sie die digna-Logs auf Fehlermeldungen
+4. Starten Sie den Backend-Dienst neu
+5. Kontaktieren Sie support@digna.ai, falls das Problem bestehen bleibt
 
 ---
 
-## Unterstützte Anbieter {: #supported-providers }
+## Unterstützte Provider {: #supported-providers }
 
 ### Getestet & Unterstützt
 
-Die folgenden OIDC-Anbieter wurden getestet und funktionieren:
+Die folgenden OIDC-Provider wurden getestet und sind bekannt funktionsfähig:
 
-| Provider | Configuration URL | Setup Guide |
+| Provider | Konfigurations-URL | Einrichtungshilfe |
 |---|---|---|
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft Doc](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google Doc](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta Doc](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft-Dokumentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google-Dokumentation](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta-Dokumentation](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
 
-### Andere OIDC-Anbieter
+### Andere OIDC-Provider
 
-Jeder Anbieter, der OpenID Connect unterstützt, kann integriert werden. Erforderliche Informationen:
+Jeder Provider, der OpenID Connect unterstützt, kann integriert werden. Benötigte Informationen:
 
-- Client-ID
-- Client-Secret
+- Client ID
+- Client Secret
 - OpenID-Konfigurations-URL (in der Regel unter `/.well-known/openid-configuration`)
 - Unterstützte Scopes (typischerweise `openid profile email`)
 
-Kontaktieren Sie support@digna.ai, wenn Sie Hilfe bei der Integration eines bestimmten Anbieters benötigen.
+Kontaktieren Sie support@digna.ai, wenn Sie Hilfe bei der Integration eines bestimmten Providers benötigen.
 
 ---
 
-## Beste Vorgehensweisen
+## Best Practices
 
-EMPFEHLUNGEN:
-- Verwenden Sie in Produktion HTTPS (nicht HTTP)
-- Speichern Sie Client-Secrets sicher (verwenden Sie wenn möglich Umgebungsvariablen)
+**TUNEN SIE:**
+- Verwenden Sie in der Produktion HTTPS (nicht HTTP)
+- Speichern Sie Client-Secrets sicher (verwenden Sie nach Möglichkeit Umgebungsvariablen)
 - Rotieren Sie Secrets regelmäßig
 - Testen Sie zuerst in einer Nicht-Produktionsumgebung
-- Dokumentieren Sie, welche Anbieter konfiguriert sind
-- Überwachen Sie Login-Logs auf ungewöhnliche Aktivitäten
-- Halten Sie die Konfiguration des Identitätsanbieters synchron mit der digna-Konfiguration
+- Dokumentieren Sie, welche Provider konfiguriert sind
+- Überwachen Sie Anmeldeprotokolle auf ungewöhnliche Aktivitäten
+- Halten Sie die Konfiguration des Identity Providers und die digna-Konfiguration synchron
 
-NICHT:
-- Speichern Sie Client-Secrets im Versionskontrollsystem
+**NIE:**
+- Speichern Sie Client-Secrets in Versionskontrolle
 - Verwenden Sie HTTP-Redirect-URIs in der Produktion
-- Konfigurieren Sie mehrere Anbieter mit demselben Schlüssel
-- Lassen Sie Standard-/Testanmeldeinformationen in der Produktion
+- Konfigurieren Sie mehrere Provider mit demselben Key
+- Belassen Sie Standard-/Test-Zugangsdaten in der Produktion
 - Legen Sie Konfigurationsdateien mit Secrets offen
-- Mischen Sie Entwicklungs- und Produktionsanmeldeinformationen
+- Mischen Sie Entwicklungs- und Produktionszugangsdaten
 
 ---
 
 ## Support
 
-Brauchen Sie Hilfe bei der SSO-Konfiguration?
+Benötigen Sie Hilfe bei der SSO-Konfiguration?
 
 - **E-Mail:** support@digna.ai
 - **Dokumentation:** https://docs.digna.ai
@@ -466,6 +466,6 @@ Brauchen Sie Hilfe bei der SSO-Konfiguration?
 
 ---
 
-**Zuletzt aktualisiert:** August 30, 2026  
+**Zuletzt aktualisiert:** 30. August 2026  
 **Release:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
