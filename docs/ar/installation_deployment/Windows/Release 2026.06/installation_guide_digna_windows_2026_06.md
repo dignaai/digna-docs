@@ -97,7 +97,7 @@ digna هي منصة شاملة مدفوعة بالذكاء الاصطناعي م
 
 #### الخطوة 1: تنزيل PostgreSQL
 
-1. زر صفحة التنزيلات الخاصة بـ PostgreSQL: https://www.postgresql.org/download/
+1. زر [صفحة تنزيلات PostgreSQL](https://www.postgresql.org/download/)
 2. اختر **Windows**
 3. حمّل أحدث برنامج التثبيت
 
@@ -187,7 +187,7 @@ Internet Information Services (IIS) هو خادم الويب من Microsoft لا
 
 #### مطلوب: مكوّن URL Rewrite
 
-يتطلب IIS مكوّن URL Rewrite. حمّله وثبته من صفحة Microsoft الرسمية: https://www.iis.net/downloads/microsoft/url-rewrite
+يتطلب IIS مكوّن URL Rewrite. حمّله وثبته من [صفحة Microsoft الرسمية](https://www.iis.net/downloads/microsoft/url-rewrite).
 
 #### مطلوب: نوع MIME لملفات Markdown
 
@@ -215,7 +215,7 @@ Apache Tomcat هو حاوية Java Servlet وخادم ويب مفتوح المص
 #### التثبيت
 
 1. **تنزيل Apache Tomcat**
-   - زر صفحة تنزيلات Apache Tomcat: https://tomcat.apache.org/download-90.cgi
+   - زر [صفحة تنزيلات Apache Tomcat](https://tomcat.apache.org/download-90.cgi)
    - حمّل توزيعة ZIP الخاصة بنظام Windows
 
 2. **فك ضغط الأرشيف**

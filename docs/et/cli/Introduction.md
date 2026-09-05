@@ -1,3 +1,10 @@
+---
+title: digna CLI viide – Sissejuhatus | digna dokumentatsioon
+description: Sissejuhatus digna käsurealiidesesse (CLI) — tekstipõhine tööriist digna ressursside automatiseerimiseks ja haldamiseks, sealhulgas Windowsi paigalduse alused.
+keywords: digna cli, digna käsurida, digna automatiseerimine, digna skriptimine, cli viide, dignacli paigaldus
+image: /assets/logo_square.png
+---
+
 ## Käsurealiidese (CLI) eesmärk
 
 ***digna*** Command Line Interface (CLI) on võimas tööriist, mis on loodud sujuvdama suhtlust ***digna*** platvormiga. See pakub tekstipõhist liidest, mis võimaldab kasutajatel tõhusalt sooritada mitmesuguseid ülesandeid ilma graafilise kasutajaliideseta.

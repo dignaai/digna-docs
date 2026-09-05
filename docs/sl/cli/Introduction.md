@@ -1,3 +1,10 @@
+---
+title: Referenca digna CLI – Uvod | digna Dokumentacija
+description: Uvod v vmesnik ukazne vrstice (CLI) digna — besedilno orodje za avtomatizacijo in upravljanje virov digna, vključno z osnovami namestitve v sistemu Windows.
+keywords: digna cli, ukazna vrstica digna, avtomatizacija digna, skriptiranje digna, referenca cli, namestitev dignacli
+image: /assets/logo_square.png
+---
+
 ## Namen ukazne vrstice (CLI)
 
 Ukazna vrstica ***digna*** (CLI) je zmogljivo orodje, zasnovano za poenostavitev interakcij s platformo ***digna***. Nudi besedilni vmesnik, ki uporabnikom omogoča učinkovito izvajanje širokega nabora opravil, brez potrebe po grafičnem uporabniškem vmesniku.

@@ -1,3 +1,10 @@
+---
+title: Referência da CLI digna – Introdução | Documentação digna
+description: Introdução à interface de linha de comando (CLI) do digna — uma ferramenta textual para automatizar e gerir recursos do digna, incluindo os fundamentos da instalação no Windows.
+keywords: digna cli, linha de comando digna, automação digna, scripting digna, referência cli, instalação dignacli
+image: /assets/logo_square.png
+---
+
 ## Propósito da Interface de Linha de Comando (CLI)
 
 A ***digna*** Interface de Linha de Comando (CLI) é uma ferramenta poderosa projetada para simplificar as interações com a plataforma ***digna***. Ela fornece uma interface baseada em texto que permite aos usuários executar uma ampla gama de tarefas de forma eficiente, sem a necessidade de uma interface gráfica.

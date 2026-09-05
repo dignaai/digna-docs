@@ -1,3 +1,10 @@
+---
+title: digna CLI atsauce – Ievads | digna dokumentācija
+description: Ievads digna komandrindas saskarnē (CLI) — teksta rīks digna resursu automatizēšanai un pārvaldīšanai, tostarp instalēšanas pamati operētājsistēmā Windows.
+keywords: digna cli, digna komandrinda, digna automatizācija, digna skriptēšana, cli atsauce, dignacli instalēšana
+image: /assets/logo_square.png
+---
+
 ## Komandu rindas interfeisa (CLI) mērķis
 
 The ***digna*** Command Line Interface (CLI) ir jaudīgs rīks, kas izstrādāts, lai vienkāršotu mijiedarbību ar ***digna*** platformu. Tas nodrošina teksta saskarni, kas ļauj lietotājiem efektīvi veikt plašu uzdevumu spektru, bez nepieciešamības pēc grafiskas lietotāja saskarnes.

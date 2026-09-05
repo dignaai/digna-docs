@@ -27,13 +27,13 @@ twitter_card: summary_large_image
 
 ## Tabla de Contenidos
 
-1. [Introducción y Resumen](#introducción-y-resumen)
-2. [Pasos de Configuración](#pasos-de-configuración)
-3. [Configuración del Panel (Dashboard)](#configuración-del-panel-dashboard)
-4. [Configuración del Backend](#configuración-del-backend)
-5. [Probar el Inicio de Sesión](#probar-el-inicio-de-sesión)
-6. [Resolución de Problemas](#resolución-de-problemas)
-7. [Proveedores Compatibles](#proveedores-compatibles)
+1. [Introducción y Resumen](#introduction-and-overview)
+2. [Pasos de Configuración](#configuration-steps)
+3. [Configuración del Panel (Dashboard)](#dashboard-configuration)
+4. [Configuración del Backend](#backend-configuration)
+5. [Probar el Inicio de Sesión](#testing-login)
+6. [Resolución de Problemas](#troubleshooting)
+7. [Proveedores Compatibles](#supported-providers)
 
 ---
 

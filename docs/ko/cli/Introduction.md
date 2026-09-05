@@ -1,3 +1,10 @@
+---
+title: digna CLI 참조 – 소개 | digna 문서
+description: digna 명령줄 인터페이스(CLI) 소개 — digna 리소스를 자동화하고 관리하는 텍스트 기반 도구이며, Windows 설치 기본 사항도 포함합니다.
+keywords: digna cli, digna 명령줄, digna 자동화, digna 스크립팅, cli 참조, dignacli 설치
+image: /assets/logo_square.png
+---
+
 ## 명령줄 인터페이스 (CLI)의 목적
 
 ***digna*** 명령줄 인터페이스(CLI)는 ***digna*** 플랫폼과의 상호작용을 간소화하도록 설계된 강력한 도구입니다. 그래픽 사용자 인터페이스가 필요 없이 텍스트 기반 인터페이스를 제공하여 사용자가 다양한 작업을 효율적으로 수행할 수 있게 합니다.

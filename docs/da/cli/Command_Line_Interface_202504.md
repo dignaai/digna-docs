@@ -1,3 +1,9 @@
+---
+title: digna CLI-reference 2025.04 – Kommandoer og eksempler | digna Dokumentation
+description: Komplet reference til digna CLI version 2025.04. Lær at administrere brugere, repositories og data med kommandoer som add-user, check-repo-connection, upgrade-repo, inspect og flere.
+image: /assets/logo_square.png
+---
+
 # digna CLI Reference 2025.04
 **2025-04-01**
 

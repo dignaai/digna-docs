@@ -1,3 +1,10 @@
+---
+title: Reference digna CLI – Úvod | digna Documentation
+description: Úvod do rozhraní příkazové řádky (CLI) digna — textového nástroje pro automatizaci a správu zdrojů digna, včetně základů instalace ve Windows.
+keywords: digna cli, příkazová řádka digna, automatizace digna, skriptování digna, reference cli, instalace dignacli
+image: /assets/logo_square.png
+---
+
 ## Účel rozhraní příkazového řádku (CLI)
 
 Příkazové rozhraní (CLI) ***digna*** je výkonný nástroj navržený ke zjednodušení interakcí s platformou ***digna***. Poskytuje textové rozhraní, které uživatelům umožňuje efektivně provádět širokou škálu úkolů, aniž by bylo potřeba grafické uživatelské rozhraní.

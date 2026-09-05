@@ -1,3 +1,10 @@
+---
+title: digna CLI リファレンス – はじめに | digna ドキュメント
+description: digna コマンドラインインターフェース (CLI) の概要 — digna リソースの自動化と管理を行うテキストベースのツールで、Windows へのインストールの基本も含みます。
+keywords: digna cli, digna コマンドライン, digna 自動化, digna スクリプティング, cli リファレンス, dignacli インストール
+image: /assets/logo_square.png
+---
+
 ## コマンドラインインターフェース（CLI）の目的
 
 ***digna*** コマンドラインインターフェース（CLI）は、***digna*** プラットフォームとのやり取りを効率化するために設計された強力なツールです。GUI を必要とせず、テキストベースのインターフェースを通じて幅広い作業を効率的に実行できます。

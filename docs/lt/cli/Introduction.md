@@ -1,3 +1,10 @@
+---
+title: digna CLI žinynas – Įvadas | digna dokumentacija
+description: Įvadas į digna komandų eilutės sąsają (CLI) — tekstinį įrankį digna ištekliams automatizuoti ir valdyti, įskaitant diegimo Windows sistemoje pagrindus.
+keywords: digna cli, digna komandų eilutė, digna automatizavimas, digna skriptavimas, cli žinynas, dignacli diegimas
+image: /assets/logo_square.png
+---
+
 ## Komandinės eilutės sąsajos (CLI) paskirtis
 
 ***digna*** Komandinės eilutės sąsaja (CLI) yra galingas įrankis, skirtas supaprastinti sąveiką su ***digna*** platforma. Ji suteikia teksto pagrindu veikiančią sąsają, leidžiančią vartotojams efektyviai atlikti įvairias užduotis be grafinės vartotojo sąsajos.

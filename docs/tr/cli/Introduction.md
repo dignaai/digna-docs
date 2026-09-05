@@ -1,3 +1,10 @@
+---
+title: digna CLI Referansı – Giriş | digna Dokümantasyonu
+description: digna komut satırı arayüzüne (CLI) giriş — digna kaynaklarını otomatikleştirmek ve yönetmek için metin tabanlı bir araç; Windows kurulumunun temellerini de içerir.
+keywords: digna cli, digna komut satırı, digna otomasyon, digna betik yazımı, cli referansı, dignacli kurulumu
+image: /assets/logo_square.png
+---
+
 ## Komut Satırı Arayüzü (CLI) Amacı
 
 ***digna*** Komut Satırı Arayüzü (CLI), ***digna*** platformuyla etkileşimleri kolaylaştırmak için tasarlanmış güçlü bir araçtır. Grafiksel bir kullanıcı arayüzüne ihtiyaç duymadan, kullanıcıların çok çeşitli görevleri verimli bir şekilde gerçekleştirmesine olanak tanıyan metin tabanlı bir arayüz sağlar.

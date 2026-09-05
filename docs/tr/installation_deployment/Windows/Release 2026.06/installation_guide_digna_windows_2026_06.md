@@ -187,7 +187,7 @@ Internet Information Services (IIS), Microsoft'un web siteleri ve web uygulamala
 
 #### Gerekli: URL Rewrite Modülü
 
-IIS, URL Rewrite bileşeni gerektirir. Resmi Microsoft sayfasından indirin ve yükleyin: https://www.iis.net/downloads/microsoft/url-rewrite
+IIS, URL Rewrite bileşeni gerektirir. [Resmi Microsoft sayfasından](https://www.iis.net/downloads/microsoft/url-rewrite) indirin ve yükleyin.
 
 #### Gerekli: Markdown Dosyaları için MIME Türü
 

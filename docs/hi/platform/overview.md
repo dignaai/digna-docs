@@ -1,3 +1,27 @@
+---
+title: digna मॉड्यूल – AI-संचालित Data Quality और Observability का तकनीकी अवलोकन
+description: digna के मुख्य मॉड्यूल जानें — Data Quality और Observability के लिए यूरोपीय AI प्लेटफ़ॉर्म। जानें कि प्रत्येक मॉड्यूल आपके on-premises या private cloud वातावरण में डेटा की गुणवत्ता, observability और विश्वसनीयता को कैसे बेहतर बनाता है।
+image: /assets/logo_square.png
+keywords:
+  - data quality modules
+  - data observability
+  - ai anomaly detection
+  - quality of data
+  - observability of data
+  - data validation
+  - data timeliness
+  - data schema monitoring
+  - in-database execution
+  - digna modules overview
+lang: hi
+robots: index, follow
+og_title: digna मॉड्यूल – Data Quality और Observability का तकनीकी अवलोकन
+og_description: Data Quality और Data Observability के लिए digna मॉड्यूल का अवलोकन — anomaly detection से लेकर validation, timeliness, analytics और schema tracking तक।
+og_image: /assets/logo_square.png
+og_type: article
+twitter_card: summary_large_image
+---
+
 # *digna* मॉड्यूल — तकनीकी अवलोकन
 
 *digna* एक AI-संचालित **Data Quality & Observability Platform** है।  
@@ -14,3 +38,50 @@
 | **Data Validation**     | नियम-आधारित जाँचें       | सटीक मान, थ्रेशहोल्ड, रेंज, सूचियाँ लागू करता है — ऑडिट ट्रेल के साथ |
 | **Data Timeliness**     | डिलीवरी निगरानी         | AI द्वारा सीखे गए आगमन समय + उपयोगकर्ता शेड्यूल, देरी वाले डेटा का पता लगाता है |
 | **Data Schema Tracker** | संरचनात्मक निगरानी      | स्कीमा ड्रिफ्ट का पता लगाता है: नए/हटाए गए कॉलम, डेटा प्रकार में बदलाव |
+
+---
+
+## मॉड्यूल एक साथ कैसे काम करते हैं
+
+प्रत्येक digna मॉड्यूल **डेटा की गुणवत्ता** और **डेटा सिस्टम की observability** के एक विशिष्ट पहलू को संबोधित करता है, फिर भी वे सभी एक ही प्लेटफ़ॉर्म में सहजता से एकीकृत होते हैं।
+
+- **Data Anomalies** और **Data Analytics** AI-संचालित अंतर्दृष्टि और रुझानों की जानकारी देते हैं।  
+- **Data Validation** नियम लागू करके शुद्धता सुनिश्चित करता है।  
+- **Timeliness** डेटा डिलीवरी और ताज़गी की रक्षा करता है।  
+- **Schema Tracker** संरचना और मेटाडेटा की अखंडता की रक्षा करता है।  
+
+मिलकर ये एक संपूर्ण **Data Observability and Quality Control Framework** बनाते हैं, जो पूरी तरह आपके वातावरण में — **on-premises या private cloud** में — काम करता है।
+
+---
+
+## मॉड्यूलर दृष्टिकोण के लाभ
+
+- **स्केलेबल** – एक मॉड्यूल से शुरू करें और आवश्यकतानुसार विस्तार करें  
+- **एकीकृत इंटरफ़ेस** – सभी मॉड्यूल के लिए समान UI और API  
+- **AI-सहायता प्राप्त कॉन्फ़िगरेशन** – न्यूनतम सेटअप प्रयास, तेज़ ऑनबोर्डिंग  
+- **क्रॉस-मॉड्यूल अंतर्दृष्टि** – timeliness, schema drift और anomalies के बीच संबंधों का पता लगाएँ  
+- **एंटरप्राइज़ एकीकरण** – Teradata, Snowflake, Databricks और अन्य एंटरप्राइज़ डेटा प्लेटफ़ॉर्म के साथ काम करता है  
+
+---
+
+**digna** **Data Quality और Data Observability के लिए एक मॉड्यूलर, AI-संचालित फ़्रेमवर्क** प्रदान करता है —  
+जो यूरोप में उन संगठनों के लिए बनाया गया है जिन्हें **डेटा संप्रभुता**, **प्रदर्शन** और **भरोसे** की आवश्यकता है।  
+सभी मॉड्यूल मिलकर आपके डेटा इकोसिस्टम में पूर्ण दृश्यता प्रदान करते हैं, जिससे हर अंतर्दृष्टि **सटीक, व्याख्या-योग्य और विश्वसनीय** बनती है।
+
+---
+
+## अक्सर पूछे जाने वाले प्रश्न
+
+**क्या शुरू करने के लिए मुझे सभी मॉड्यूल चाहिए?**  
+नहीं — प्रत्येक मॉड्यूल को स्वतंत्र रूप से लाइसेंस और तैनात किया जा सकता है।
+
+**digna अनियमितताओं का पता कैसे लगाता है?**  
+AI मॉडल के माध्यम से, जो डेटा वॉल्यूम, वितरण और मान श्रेणियों के ऐतिहासिक पैटर्न से सीखते हैं।
+
+**क्या digna तकनीकी और व्यावसायिक दोनों प्रकार के नियमों को मान्य कर सकता है?**  
+हाँ — Data Validation मॉड्यूल ऑडिट-रेडी रिपोर्ट के साथ दोनों प्रकार की जाँचों का समर्थन करता है।
+
+**क्या digna को बाहरी सेवाओं या SaaS की आवश्यकता है?**  
+नहीं। सभी digna मॉड्यूल पूर्ण डेटा नियंत्रण और अनुपालन के लिए आपके अपने बुनियादी ढाँचे के भीतर काम करते हैं।
+
+---

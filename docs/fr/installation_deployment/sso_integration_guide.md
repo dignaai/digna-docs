@@ -27,13 +27,13 @@ twitter_card: summary_large_image
 
 ## Table des matières
 
-1. [Introduction et aperçu](#introduction-et-aperçu)
-2. [Étapes de configuration](#étapes-de-configuration)
-3. [Configuration du tableau de bord](#configuration-du-tableau-de-bord)
-4. [Configuration du backend](#configuration-du-backend)
-5. [Test de connexion](#test-de-connexion)
-6. [Dépannage](#dépannage)
-7. [Fournisseurs pris en charge](#fournisseurs-pris-en-charge)
+1. [Introduction et aperçu](#introduction-and-overview)
+2. [Étapes de configuration](#configuration-steps)
+3. [Configuration du tableau de bord](#dashboard-configuration)
+4. [Configuration du backend](#backend-configuration)
+5. [Test de connexion](#testing-login)
+6. [Dépannage](#troubleshooting)
+7. [Fournisseurs pris en charge](#supported-providers)
 
 ---
 

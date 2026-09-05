@@ -142,9 +142,9 @@ usePassword = true
 - ユーザー名/パスワード入力欄は表示されない
 - OIDC 認証のみが使用可能
 
-> ヒント
->
-> パスワードベースのログインは、`digna user add` コマンドやダッシュボードを使ってパスワードで作成されたユーザーのみ利用できます。
+!!! tip "ヒント"
+
+    パスワードベースのログインは、`digna user add` コマンドやダッシュボードを使ってパスワードで作成されたユーザーのみ利用できます。
 
 ### 完全な例
 
@@ -210,9 +210,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 | `DIGNA_OIDC_REDIRECT_URI` | string | はい | 認証後のコールバック URL | `http://localhost:5173/oidc/callback` |
 | `DIGNA_OIDC_CONFIGURATION_URL` | string | はい | OIDC の構成エンドポイント | `https://login.microsoftonline.com/...` |
 
-> 重要
->
-> プレースホルダ（`<client_id>`, `<client_secret>`, `<tenant_id>`）は、アイデンティティプロバイダの開発者ポータルから取得した実際の値に置き換えてください。
+!!! warning "重要"
+
+    プレースホルダ（`<client_id>`, `<client_secret>`, `<tenant_id>`）は、アイデンティティプロバイダの開発者ポータルから取得した実際の値に置き換えてください。
 
 ### リダイレクト URI
 

@@ -1,3 +1,10 @@
+---
+title: digna CLI-referanse – Introduksjon | digna-dokumentasjon
+description: Introduksjon til digna kommandolinjegrensesnitt (CLI) — et tekstbasert verktøy for å automatisere og administrere digna-ressurser, inkludert grunnleggende installasjon på Windows.
+keywords: digna cli, digna kommandolinje, digna automatisering, digna skripting, cli-referanse, dignacli installasjon
+image: /assets/logo_square.png
+---
+
 ## Formål med kommandolinjegrensesnittet (CLI)
 
 Kommandolinjegrensesnittet (CLI) for ***digna*** er et kraftig verktøy utviklet for å effektivisere interaksjoner med ***digna***-plattformen. Det gir et tekstbasert grensesnitt som lar brukere utføre et bredt spekter av oppgaver effektivt, uten behov for et grafisk brukergrensesnitt.

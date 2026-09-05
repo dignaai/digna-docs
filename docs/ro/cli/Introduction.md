@@ -1,3 +1,10 @@
+---
+title: Referință CLI digna – Introducere | digna Documentation
+description: Introducere în interfața în linie de comandă (CLI) digna — un instrument textual pentru automatizarea și gestionarea resurselor digna, inclusiv noțiunile de bază ale instalării pe Windows.
+keywords: digna cli, linie de comandă digna, automatizare digna, scripting digna, referință cli, instalare dignacli
+image: /assets/logo_square.png
+---
+
 ## Scopul Interfeței în linia de comandă (CLI)
 
 CLI-ul ***digna*** este un instrument puternic conceput pentru a simplifica interacțiunile cu platforma ***digna***. Oferă o interfață bazată pe text care permite utilizatorilor să execute o gamă largă de sarcini eficient, fără a fi nevoie de o interfață grafică.

@@ -186,7 +186,7 @@ Internet Information Services (IIS) は Microsoft の Web サーバーで、Web 
 
 #### 必須: URL Rewrite モジュール
 
-IIS では URL Rewrite コンポーネントが必要です。公式 Microsoft ページからダウンロードしてインストールしてください: https://www.iis.net/downloads/microsoft/url-rewrite
+IIS では URL Rewrite コンポーネントが必要です。[公式 Microsoft ページ](https://www.iis.net/downloads/microsoft/url-rewrite)からダウンロードしてインストールしてください。
 
 #### 必須: Markdown ファイルの MIME タイプ
 

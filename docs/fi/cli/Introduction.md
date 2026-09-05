@@ -1,3 +1,10 @@
+---
+title: digna CLI -referenssi – Johdanto | digna-dokumentaatio
+description: Johdanto digna-komentoriviliittymään (CLI) — tekstipohjainen työkalu digna-resurssien automatisointiin ja hallintaan, mukaan lukien Windows-asennuksen perusteet.
+keywords: digna cli, digna komentorivi, digna automatisointi, digna skriptaus, cli-referenssi, dignacli asennus
+image: /assets/logo_square.png
+---
+
 ## Komentorivikäyttöliittymän (CLI) tarkoitus
 
 The ***digna*** Command Line Interface (CLI) on tehokas työkalu, joka on suunniteltu sujuvoittamaan vuorovaikutusta ***digna***-alustan kanssa. Se tarjoaa tekstipohjaisen käyttöliittymän, jonka avulla käyttäjät voivat suorittaa laajan valikoiman tehtäviä tehokkaasti ilman graafista käyttöliittymää.

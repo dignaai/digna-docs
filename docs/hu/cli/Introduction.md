@@ -1,3 +1,10 @@
+---
+title: digna CLI referencia – Bevezetés | digna Dokumentáció
+description: Bevezetés a digna parancssori felületébe (CLI) — szöveges eszköz a digna erőforrások automatizálásához és kezeléséhez, beleértve a Windows-telepítés alapjait.
+keywords: digna cli, digna parancssor, digna automatizálás, digna szkriptelés, cli referencia, dignacli telepítés
+image: /assets/logo_square.png
+---
+
 ## A parancssori felület (CLI) célja
 
 A ***digna*** parancssori felülete (CLI) egy erőteljes eszköz, amelyet az ***digna*** platformal való interakciók egyszerűsítésére terveztek. Szöveges felületet biztosít, amely lehetővé teszi a felhasználók számára, hogy grafikus felület nélkül hatékonyan végezzenek el széles körű feladatokat.
