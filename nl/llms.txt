@@ -85,6 +85,7 @@
 ## CLI-referentie
 
 - [Inleiding](https://docs.digna.ai/nl/cli/Introduction/): Introductie tot de digna command line interface (CLI) — een tekstgebaseerd hulpmiddel om digna-resources te automatiseren en te beheren, inclusief de basis van installatie op Windows.
+- [Release 2026.06](https://docs.digna.ai/nl/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/nl/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
 - [Release 2026.01](https://docs.digna.ai/nl/cli/Command_Line_Interface_202601/): Volledige referentie voor digna CLI release 2026.01. Leer hoe je gebruikers, repositories en data beheert met commando's zoals add-user, check-config, check-repo-connection, inspect, inspect-async en meer.
 - [Release 2025.09](https://docs.digna.ai/nl/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.

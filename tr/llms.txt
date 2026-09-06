@@ -85,6 +85,7 @@
 ## CLI referansı
 
 - [Giriş](https://docs.digna.ai/tr/cli/Introduction/): digna komut satırı arayüzüne (CLI) giriş — digna kaynaklarını otomatikleştirmek ve yönetmek için metin tabanlı bir araç; Windows kurulumunun temellerini de içerir.
+- [Release 2026.06](https://docs.digna.ai/tr/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/tr/cli/Command_Line_Interface_202604/): digna CLI sürümü 2026.04 için eksiksiz başvuru
 - [Release 2026.01](https://docs.digna.ai/tr/cli/Command_Line_Interface_202601/): digna CLI 2026.01 sürümü için eksiksiz referans. add-user, check-config, check-repo-connection, inspect, inspect-async ve diğer komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
 - [Release 2025.09](https://docs.digna.ai/tr/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.

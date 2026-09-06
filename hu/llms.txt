@@ -85,6 +85,7 @@
 ## CLI-referencia
 
 - [Bevezetés](https://docs.digna.ai/hu/cli/Introduction/): Bevezetés a digna parancssori felületébe (CLI) — szöveges eszköz a digna erőforrások automatizálásához és kezeléséhez, beleértve a Windows-telepítés alapjait.
+- [Release 2026.06](https://docs.digna.ai/hu/cli/Command_Line_Interface_202606/): Teljes referencia a digna CLI 2026.06 kiadásához
 - [Release 2026.04](https://docs.digna.ai/hu/cli/Command_Line_Interface_202604/): Teljes referencia a digna CLI kiadásról 2026.04
 - [Release 2026.01](https://docs.digna.ai/hu/cli/Command_Line_Interface_202601/): Teljes referencia a digna CLI kiadásról 2026.01. Ismerje meg a felhasználók, adattárak és adatok kezelését olyan parancsokkal, mint az add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.
 - [Release 2025.09](https://docs.digna.ai/hu/cli/Command_Line_Interface_202509/): Teljes referencia a digna CLI 2025.109 kiadásához. Ismerje meg, hogyan kezelhet felhasználókat, repository-kat és adatokat olyan parancsokkal, mint add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.

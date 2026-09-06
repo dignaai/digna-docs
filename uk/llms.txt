@@ -85,6 +85,7 @@
 ## Довідник CLI
 
 - [Вступ](https://docs.digna.ai/uk/cli/Introduction/): Вступ до інтерфейсу командного рядка (CLI) digna — текстового інструмента для автоматизації та керування ресурсами digna, включно з основами встановлення у Windows.
+- [Release 2026.06](https://docs.digna.ai/uk/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/uk/cli/Command_Line_Interface_202604/): Повний довідник для digna CLI випуску 2026.04
 - [Release 2026.01](https://docs.digna.ai/uk/cli/Command_Line_Interface_202601/): Повний довідник для digna CLI випуску 2026.01. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-config, check-repo-connection, inspect, inspect-async та інших.
 - [Release 2025.09](https://docs.digna.ai/uk/cli/Command_Line_Interface_202509/): Повний довідник для digna CLI релізу 2025.09. Дізнайтеся, як керувати користувачами, репозиторіями та даними за допомогою команд, таких як add-user, check-config, check-repo-connection, inspect, inspect-async та ін.

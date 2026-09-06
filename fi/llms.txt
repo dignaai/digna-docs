@@ -85,6 +85,7 @@
 ## CLI-viite
 
 - [Johdanto](https://docs.digna.ai/fi/cli/Introduction/): Johdanto digna-komentoriviliittymään (CLI) — tekstipohjainen työkalu digna-resurssien automatisointiin ja hallintaan, mukaan lukien Windows-asennuksen perusteet.
+- [Release 2026.06](https://docs.digna.ai/fi/cli/Command_Line_Interface_202606/): Täydellinen referenssi digna CLI -julkaisulle 2026.06
 - [Release 2026.04](https://docs.digna.ai/fi/cli/Command_Line_Interface_202604/): Täydellinen viite digna CLI -julkaisusta 2026.04
 - [Release 2026.01](https://docs.digna.ai/fi/cli/Command_Line_Interface_202601/): Täydellinen viite digna CLI -julkaisuun 2026.01. Ohjeet käyttäjien, repositorion ja datan hallintaan komennoilla kuten add-user, check-config, check-repo-connection, inspect, inspect-async ja muilla.
 - [Release 2025.09](https://docs.digna.ai/fi/cli/Command_Line_Interface_202509/): Täydellinen viite digna CLI -julkaisulle 2025.109. Opas käyttäjien, repositorion ja datan hallintaan komennoilla kuten add-user, check-config, check-repo-connection, inspect, inspect-async ja muut.

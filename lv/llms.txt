@@ -85,6 +85,7 @@
 ## CLI atsauce
 
 - [Ievads](https://docs.digna.ai/lv/cli/Introduction/): Ievads digna komandrindas saskarnē (CLI) — teksta rīks digna resursu automatizēšanai un pārvaldīšanai, tostarp instalēšanas pamati operētājsistēmā Windows.
+- [Release 2026.06](https://docs.digna.ai/lv/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/lv/cli/Command_Line_Interface_202604/): Pilna atsauce par digna CLI laidienu 2026.04
 - [Release 2026.01](https://docs.digna.ai/lv/cli/Command_Line_Interface_202601/): Pilna atsauce par digna CLI izlaidumu 2026.01. Uzziniet, kā pārvaldīt lietotājus, repozitorijus un datus ar komandām, piemēram, add-user, check-config, check-repo-connection, inspect, inspect-async un citām.
 - [Release 2025.09](https://docs.digna.ai/lv/cli/Command_Line_Interface_202509/): Pilna atsauce par digna CLI izlaidumu 2025.09. Uzziniet, kā pārvaldīt lietotājus, repozitorijus un datus ar komandām, piemēram, add-user, check-config, check-repo-connection, inspect, inspect-async un citām.

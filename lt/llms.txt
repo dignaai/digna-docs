@@ -85,6 +85,7 @@
 ## CLI nuoroda
 
 - [Įvadas](https://docs.digna.ai/lt/cli/Introduction/): Įvadas į digna komandų eilutės sąsają (CLI) — tekstinį įrankį digna ištekliams automatizuoti ir valdyti, įskaitant diegimo Windows sistemoje pagrindus.
+- [Release 2026.06](https://docs.digna.ai/lt/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/lt/cli/Command_Line_Interface_202604/): Pilnas digna CLI leidimo 2026.04 komandas aprašantis vadovas
 - [Release 2026.01](https://docs.digna.ai/lt/cli/Command_Line_Interface_202601/): Išsami digna CLI versijos 2026.01 nuoroda. Sužinokite, kaip valdyti vartotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-config, check-repo-connection, inspect, inspect-async ir kt.
 - [Release 2025.09](https://docs.digna.ai/lt/cli/Command_Line_Interface_202509/): Išsamus digna CLI leidimo 2025.109 nuorodinis vadovas. Sužinokite, kaip valdyti naudotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-config, check-repo-connection, inspect, inspect-async ir kt.

@@ -85,6 +85,7 @@
 ## مرجع CLI
 
 - [المقدمة](https://docs.digna.ai/ar/cli/Introduction/): مقدمة إلى واجهة سطر الأوامر (CLI) الخاصة بـ digna — أداة نصية لأتمتة موارد digna وإدارتها، بما في ذلك أساسيات التثبيت على Windows.
+- [Release 2026.06](https://docs.digna.ai/ar/cli/Command_Line_Interface_202606/): مرجع كامل لإصدار digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/ar/cli/Command_Line_Interface_202604/): مرجع كامل لإصدار digna CLI 2026.04
 - [Release 2026.01](https://docs.digna.ai/ar/cli/Command_Line_Interface_202601/): Complete reference for digna CLI release 2026.01 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
 - [Release 2025.09](https://docs.digna.ai/ar/cli/Command_Line_Interface_202509/): مرجع كامل لإصدار digna CLI 2025.109 — تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-config و check-repo-connection و inspect و inspect-async والمزيد.

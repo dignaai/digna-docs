@@ -4080,7 +4080,7 @@ dignacli plan-import-ds ProjectB my_export.json
 
 ---
 
-# digna CLI Reference 2026.06 – Commands & Examples | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/uk/cli/Command_Line_Interface_202606/
 
 # digna CLI Reference 2026.06

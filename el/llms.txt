@@ -85,6 +85,7 @@
 ## Αναφορά CLI
 
 - [Εισαγωγή](https://docs.digna.ai/el/cli/Introduction/): Εισαγωγή στη διεπαφή γραμμής εντολών (CLI) του digna — ένα εργαλείο κειμένου για την αυτοματοποίηση και διαχείριση πόρων digna, συμπεριλαμβανομένων των βασικών εγκατάστασης σε Windows.
+- [Release 2026.06](https://docs.digna.ai/el/cli/Command_Line_Interface_202606/): Πλήρης οδηγός αναφοράς για την έκδοση digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/el/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
 - [Release 2026.01](https://docs.digna.ai/el/cli/Command_Line_Interface_202601/): Πλήρης αναφορά για την έκδοση digna CLI 2026.01. Μάθετε πώς να διαχειρίζεστε χρήστες, αποθετήρια και δεδομένα με εντολές όπως add-user, check-config, check-repo-connection, inspect, inspect-async και άλλες.
 - [Release 2025.09](https://docs.digna.ai/el/cli/Command_Line_Interface_202509/): Πλήρης αναφορά για το digna CLI έκδοση 2025.109. Μάθετε πώς να διαχειρίζεστε χρήστες, αποθετήρια και δεδομένα με εντολές όπως add-user, check-config, check-repo-connection, inspect, inspect-async και άλλες.

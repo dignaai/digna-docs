@@ -4075,7 +4075,7 @@ Denne kommandoen viser kun en importplan over objekter som vil bli importert og 
 
 ---
 
-# digna CLI Reference 2026.06 – Commands & Examples | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/nb/cli/Command_Line_Interface_202606/
 
 # digna CLI Reference 2026.06

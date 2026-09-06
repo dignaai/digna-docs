@@ -85,6 +85,7 @@
 ## Referencia CLI
 
 - [Introducción](https://docs.digna.ai/es/cli/Introduction/): Introducción a la interfaz de línea de comandos (CLI) de digna — una herramienta de texto para automatizar y gestionar recursos de digna, incluidos los aspectos básicos de instalación en Windows.
+- [Release 2026.06](https://docs.digna.ai/es/cli/Command_Line_Interface_202606/): Referencia completa de la versión 2026.06 de la CLI de digna
 - [Release 2026.04](https://docs.digna.ai/es/cli/Command_Line_Interface_202604/): Referencia completa de la CLI digna release 2026.04
 - [Release 2026.01](https://docs.digna.ai/es/cli/Command_Line_Interface_202601/): Referencia completa para la CLI digna release 2026.01. Aprende a gestionar usuarios, repositorios y datos con comandos como add-user, check-config, check-repo-connection, inspect, inspect-async y más.
 - [Release 2025.09](https://docs.digna.ai/es/cli/Command_Line_Interface_202509/): Referencia completa para la CLI de digna versión 2025.09. Aprende a gestionar usuarios, repositorios y datos con comandos como add-user, check-config, check-repo-connection, inspect, inspect-async y más.

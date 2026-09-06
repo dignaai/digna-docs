@@ -4074,162 +4074,154 @@ Ez a parancs csak egy importtervet jelenít meg az importálandó és kihagyand�
 
 ---
 
-# digna CLI Reference 2026.06 – Commands & Examples | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/hu/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# digna CLI referencia 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Ez az oldal a ***digna*** CLI **2026.06** kiadásában elérhető parancsok teljes körét dokumentálja, használati példákkal és beállításokkal együtt.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+A futtatható állomány neve `digna`.
 
 ---
 
-### Overview & Syntax
+## A CLI alapjai
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Áttekintés és szintaxis
+
+A **2026.06** kiadás CLI-je strukturált, kategóriaalapú parancshierarchiát használ:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+A `version` és a `serve` önálló parancsok, alparancs nélkül:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Globális beállítások
 
-The following global options apply across all commands:
+A következő globális beállítások minden parancsra érvényesek:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Súgóinformációt jelenít meg a CLI-ről vagy egy adott parancskategóriáról, illetve alparancsról.
+- `--stacktrace`: Hiba esetén a teljes hibaláncot jeleníti meg a legfelső szintű üzenet helyett.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+A `--stacktrace` szigorú értelemben globális beállítás: a parancskategória **elé** kell írni, nem utána.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Nincs `--version` kapcsoló. Használja helyette a [`version`](#version) parancsot.
 
-### Prerequisites
+### Előfeltételek
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+A legtöbb parancshoz olvasható, érvényes `config.toml` szükséges; egyeseknek ezen felül érvényes licenc is kell.
+Az alábbi táblázat rögzíti, hogy az egyes parancskategóriák mit töltenek be, mielőtt bármit is tennének:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Parancskategória | Szükséges hozzá a `config.toml` | Szükséges hozzá érvényes licenc |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | nem | nem |
+| `config check` | nem (éppen ez az, amiről a parancs jelentést ad) | nem |
+| `license check` | nem | ez *maga* az ellenőrzés |
+| `crypt` | igen | nem |
+| `serve` | igen | nem |
+| `project` | igen | nem |
+| `user` | igen | igen |
+| `inspection` | igen | igen |
+| `repo` | igen | igen |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Ahol licenc szükséges, ott az aláírását és a lejárati dátumát egyaránt ellenőrzi a rendszer, és a parancs még azelőtt megszakad, hogy hozzányúlna a tárolóhoz, ha bármelyik ellenőrzés sikertelen.
 
-### Exit Codes
+### Kilépési kódok
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: a parancs sikeres volt.
+- `1`: a parancs meghiúsult. A hibaüzenet a stderr kimenetre kerül, `Error: ` előtaggal.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+A `--help` beállítás az elérhető parancskategóriákról, alparancsokról és beállításokról nyújt információt:
 
-1. **Displaying General Help:**
+1. **Általános súgó megjelenítése:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Súgó lekérése adott kategóriákhoz és parancsokhoz:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **A kimenet tartalmazza:**
+   - **A parancs leírását:** A parancs céljának összefoglalását.
+   - **A szintaxist:** A kötelező és opcionális argumentumokat.
+   - **A beállításokat:** A parancsra jellemző kapcsolókat és paramétereket.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+A `version` parancs kiírja a telepített ***digna*** kiadást. Nem olvas be konfigurációt és nem ellenőriz licencet, így olyan telepítésen is működik, amelynek a `config.toml` fájlja vagy licence hiányzik, illetve érvénytelen.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+A kiadás verziója független a tároló sémájának verziójától, amelyet a [`repo check`](#repo-check) jelent.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Konfigurációkezelés
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+A `config check` parancs ellenőrzi a konfigurációs fájlt (`config.toml`), meggyőződve arról, hogy minden kötelező szakasz és beállítás jelen van és megfelelően formázott. Minden szakasz külön kerül ellenőrzésre, így egy hibás `[app]` szakasz nem fedi el a `[repo]` állapotát.
 
-The sections reported are:
+A jelentésben szereplő szakaszok:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — opcionális; a hiányzó kulcs átmegy az ellenőrzésen, a jelen lévő, de hibás formátumú lista viszont megbukik
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+A parancs szándékosan nem úgy tölti be az alkalmazás konfigurációját, ahogyan a többi parancs, hogy olyan `config.toml` fájlt is diagnosztizálni tudjon, amely a ***digna*** elindulását teljesen megakadályozná.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Beállítások
+- `--configpath`, `-c`: A konfigurációs fájl vagy a `config.toml` fájlt tartalmazó könyvtár elérési útja (alapértelmezés: `./config.toml`).
+- `--json`: Az ellenőrzési jelentést JSON formátumban adja ki. Elsőbbséget élvez a `--quiet` beállítással szemben.
+- `--quiet`, `-q`: Elnyomja a jelentést, és kizárólag a kilépési kódra hagyatkozik.
 
-#### Example
+#### Példa
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Adott konfigurációs fájl ellenőrzése és a kimenet JSON formátumban:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4243,49 +4235,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+A hiányzó fájl vagy a TOML szintaktikai hiba nem hagy semmit, amit szakaszonként ellenőrizni lehetne, ezért egyetlen hibaként jelenik meg jelentés helyett, függetlenül a `--quiet` vagy `--json` beállítástól.
 
 ---
 
-## Repository Management
+## Tárolókezelés
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+A `repo check` parancs teszteli az adatbázis-kapcsolatot, és ellenőrzi a tároló telepítését és verzióját. Meghiúsul, ha a beállított séma nem létezik, vagy ha létezik ugyan, de nem tartalmaz ***digna*** tárolót.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+A jelentett verzió a tároló sémájának verziója, amely a [`version`](#version) által kiírt ***digna*** kiadástól függetlenül van verziózva.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+A `repo install` parancs új ***digna*** tárolót telepít a `config.toml` fájlban beállított sémába, létrehozva minden szükséges szekvenciát, táblát, indexet, megszorítást és kezdeti rekordot.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Magát a sémát ez a parancs **nem** hozza létre — annak előzetesen léteznie kell. A parancs továbbá megtagadja a futást, ha az adott sémában már van telepített tároló, és a [`repo upgrade`](#repo-upgrade) parancsra irányít, ha a telepített verzió régebbi.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4297,19 +4282,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+A `repo upgrade` parancs adatbázisséma-migrációkat alkalmaz, hogy a meglévő tárolót a telepített kiadás által elvárt verzióra emelje. A frissítések rögzített frissítési útvonal mentén, egyszerre egy verzióugrással kerülnek alkalmazásra, és minden befejezett ugrás rögzül a tárolóban.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Ha a tároló már az elvárt verzión van, a parancs jelzi, hogy nincs szükség frissítésre, és nem hajt végre változtatást.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4318,112 +4300,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Titkosításkezelés
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+A `crypt gen-key` parancs új AES-GCM titkosítókulcsot állít elő, amelyet a `config.toml` fájlban titkosítókulcsként lehet használni. Betölthető `config.toml` fájlnak már léteznie kell, még akkor is, ha az előállított kulcs nem függ tőle.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+A `crypt encrypt` parancs egy karakterláncot (például adatbázisjelszót) titkosít a `config.toml` fájlban beállított AES-GCM kulccsal, és kiírja a titkosított szöveget.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argumentumok
+- **VALUE**: A titkosítandó nyílt szöveges karakterlánc (kötelező).
 
-#### Example
+#### Példa
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+A `crypt decrypt` parancs egy AES-GCM titkosítású karakterláncot fejt vissza a `config.toml` fájlban beállított kulccsal, és kiírja a nyílt szöveget.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argumentumok
+- **VALUE**: A visszafejtendő titkosított karakterlánc (kötelező).
 
-#### Example
+#### Példa
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Felhasználókezelés
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+A `user add` parancs új felhasználói fiókot hoz létre a ***digna*** tárolóban. A parancs meghiúsul, ha a megadott e-mail-címmel már létezik felhasználó.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argumentumok
+- **EMAIL**: A felhasználó e-mail-címe (kötelező).
+- **PASSWORD**: A felhasználó kezdeti jelszava (kötelező).
+- **DISPLAY_NAME**: A felhasználó teljes megjelenítendő neve (kötelező).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Beállítások
+- `--admin`, `-a`: A felhasználót rendszergazdai (superuser) jogosultságokkal hozza létre.
 
-#### Example
+#### Példa
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Rendszergazdai fiók létrehozása:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+A `user list` parancs táblázatos formában felsorolja az összes regisztrált felhasználót az azonosítóval, az e-mail-címmel, a megjelenítendő névvel és a rendszergazdai jelzővel.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4433,88 +4409,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+A `user modify` parancs egy meglévő, e-mail-cím alapján azonosított felhasználói fiók megjelenítendő nevét és rendszergazdai jogosultságait frissíti.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+A megjelenítendő nevet és a rendszergazdai jelzőt a rendszer mindig egyszerre írja. Az `--admin` kapcsoló, nem érték: **elhagyása visszavonja a rendszergazdai jogosultságokat**, ezért adja meg minden olyan esetben, amikor a felhasználónak meg kell tartania vagy meg kell szereznie azokat.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argumentumok
+- **EMAIL**: A módosítandó felhasználó e-mail-címe (kötelező).
+- **DISPLAY_NAME**: A frissített megjelenítendő név (kötelező).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Beállítások
+- `--admin`, `-a`: Rendszergazdai jogosultságokat ad. Hagyja el a visszavonásukhoz.
+- `--valid-until`, `-v`: Kompatibilitási okokból elfogadott, de **jelenleg nem érvényesül**. Megadása figyelmeztetést ír ki, és semmit sem változtat.
 
-#### Example
+#### Példa
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+A `user modify-pwd` parancs egy meglévő felhasználói fiók jelszavát frissíti.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argumentumok
+- **EMAIL**: Annak a felhasználónak az e-mail-címe, akinek a jelszavát frissíteni kell (kötelező).
+- **PASSWORD**: Az új jelszó (kötelező).
 
-#### Example
+#### Példa
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+A `user delete` parancs eltávolít egy felhasználói fiókot a rendszerből.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argumentumok
+- **EMAIL**: A törlendő felhasználó e-mail-címe (kötelező).
 
-#### Example
+#### Példa
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Projektek és adatforrások kezelése
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+A `project list` parancs felsorolja a tárolóban elérhető összes projektet, megjelenítve azonosítójukat, nevüket és leírásukat.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4524,23 +4496,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+A `project list-ds` parancs felsorolja az adott projekthez tartozó összes adatforrást, megjelenítve azonosítójukat, nevüket, típusukat, sémájukat és táblanevüket.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argumentumok
+- **PROJECT_NAME**: Annak a projektnek a neve, amelynek az adatforrásait fel kell sorolni (kötelező). A névnek pontosan egyeznie kell.
 
-#### Example
+#### Példa
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4550,149 +4521,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+A `project export-ds` parancs egy projekt adatforrásait JSON dokumentumba exportálja.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Ha sem a `--table-name`, sem a `--table-id` nincs megadva, a projekt összes adatforrása exportálásra kerül.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argumentumok
+- **PROJECT_NAME**: Annak a projektnek a neve, amelyből az adatforrásokat exportálni kell (kötelező).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Beállítások
+- `--table-name`, `-n`: Az exportálandó adatforrások nevei. Több név is megadható szóközzel elválasztva.
+- `--table-id`, `-i`: Az exportálandó adatforrások azonosítói. Több azonosító is megadható szóközzel elválasztva.
+- `--exportfile`, `-f`: Az az elérési út, ahová az exportált adatforrások mentésre kerülnek (alapértelmezés: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Példa
+A `ProjectA` összes adatforrásának exportálása:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Adott táblák exportálása:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+A `project import-ds` parancs adatforrásokat importál egy exportfájlból a célprojektbe, és objektumonként jelenti, mi jött létre, mi frissült és mi maradt ki.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argumentumok
+- **PROJECT_NAME**: A célprojekt neve, amelybe az importálás történik (kötelező).
+- **EXPORT_FILE**: A JSON exportfájl elérési útja (kötelező).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Beállítások
+- `--output-file`, `-o`: Az a fájl, amelybe az importjelentés íródik. Nélküle a jelentés a stdout kimenetre kerül.
+- `--output-format`, `-f`: Az importjelentés formátuma — `table`, `json` vagy `csv` (alapértelmezés: `table`).
 
-#### Example
+#### Példa
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Géppel olvasható jelentés rögzítése:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+A jelentés négy objektumszintet fed le — adatforrás, adathalmaz-definíció, attribútum és érvényesítési szabály —, mindegyiket az importművelettel, az eredménnyel, a létrejött objektum azonosítójával és az esetleges további információkkal együtt.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+A `project plan-import-ds` parancs előnézetet ad az adatforrások célprojektbe történő importálásáról, megmutatva, mely objektumok jönnének létre, frissülnének vagy maradnának ki, anélkül hogy bármit megváltoztatna. Ugyanazt az exportfájlt és ugyanazokat a jelentési beállításokat fogadja el, mint a [`project import-ds`](#project-import-ds), és tervezett objektumonként lépésszámmal egészíti ki.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argumentumok
+- **PROJECT_NAME**: A célprojekt neve (kötelező).
+- **EXPORT_FILE**: Az exportfájl elérési útja (kötelező).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Beállítások
+- `--output-file`, `-o`: Az a fájl, amelybe az importterv íródik. Nélküle a terv a stdout kimenetre kerül.
+- `--output-format`, `-f`: Az importterv formátuma — `table`, `json` vagy `csv` (alapértelmezés: `table`).
 
-#### Example
+#### Példa
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Ellenőrzések kezelése
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Az `inspection run` parancs ellenőrzési kérést hoz létre egy projekthez és egy dátumtartományhoz, majd — a megadott beállításoktól függően — vagy megvárja, vagy azonnal visszatér, vagy saját folyamatán belül futtatja le.
 
-The three execution modes are:
+A három végrehajtási mód:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Alapértelmezett (kapcsoló nélkül)**: a kérés a háttérrendszer várólistájára kerül, a CLI pedig kétmásodpercenként lekérdezi, és kiírja a feladatok haladását, amíg az ellenőrzés végállapotba nem jut. Futó `digna serve` szükséges, különben senki sem veszi fel a kérést.
+- **`--async-mode`**: a kérés várólistára kerül, azonosítóját pedig a rendszer azonnal kiírja. A követéséhez használja az [`inspection status`](#inspection-status) parancsot.
+- **`--bypass-backend`**: az ellenőrzést maga a CLI folyamat hajtja végre, és nem kerül várólistára, így nincs szükség futó kiszolgálóra.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+Az `--async-mode` és a `--bypass-backend` kölcsönösen kizárják egymást.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+Minden módban a parancs nem nulla kilépési kóddal zárul, ha az ellenőrzés nem fejeződött be sikeresen.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argumentumok
+- **PROJECT_NAME**: A célprojekt neve (kötelező). A névnek pontosan egyeznie kell.
+- **START_DATE**: A dátumtartomány kezdődátuma `YYYY-MM-DD` formátumban (kötelező).
+- **END_DATE**: A dátumtartomány záródátuma `YYYY-MM-DD` formátumban (kötelező).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Beállítások
+- `--table-name`: Az ellenőrzést a projekt egyetlen adatforrására korlátozza, amelyet az adatforrás neve határoz meg. Nélküle a projekt összes adatforrása ellenőrzésre kerül.
+- `--async-mode`: Várólistára teszi az ellenőrzést, és kiírja a kérés azonosítóját ahelyett, hogy megvárná. Nem kombinálható a `--bypass-backend` beállítással.
+- `--bypass-backend`: Az ellenőrzést közvetlenül a CLI folyamatában futtatja ahelyett, hogy a háttérrendszer várólistájára tenné. Nem kombinálható az `--async-mode` beállítással.
 
-#### Example
+#### Példa
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Aszinkron ellenőrzés beküldése:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Egyetlen adatforrás ellenőrzése:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Példakimenet
+Alapértelmezett mód:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4701,30 +4665,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Aszinkron mód:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Az `inspection status` parancs egy ellenőrzési kérés állapotát és feladathaladását kérdezi le a kérés azonosítója alapján.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argumentumok
+- **INSPECTION_REQUEST_ID**: Az ellenőrzési kérés numerikus azonosítója (kötelező).
 
-#### Example
+#### Példa
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4735,92 +4698,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Az `inspection abort` parancs a futó vagy függőben lévő ellenőrzési kérések megszakítását kéri. Minden érintett kéréshez leállítási eseményt rögzít; ez alapján a háttérrendszer jár el, így a megszakítás leállítási kérés, nem pedig azonnali kilövés.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argumentumok
+- **INSPECTION_REQUEST_ID**: A megszakítandó ellenőrzési kérés azonosítója. Kötelező, hacsak nincs megadva a `--killall`.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Beállítások
+- `--killall`: Megszakítja az összes jelenleg futó és függőben lévő ellenőrzési kérést. Elsőbbséget élvez a mellette megadott kérésazonosítóval szemben.
 
-#### Example
-To abort a specific request:
+#### Példa
+Adott kérés megszakítása:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Az összes aktív és várólistán lévő ellenőrzés megszakítása:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Példakimenet
+A `--killall` jelenti, mit tett; egyetlen kérés megszakítása nem ad kimenetet, és a sikerről a kilépési kódjával számol be.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Licenckezelés
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+A `license check` parancs ellenőrzi a `license.toml` fájlt: aláírását a telepítéssel szállított nyilvános kulccsal veti össze, és megvizsgálja, hogy nem járt-e le. Nem olvas alkalmazáskonfigurációt, ezért még a `config.toml` beállítása előtt is működik.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Az érvénytelen aláírás és a lejárt licenc külön hibaként jelenik meg, mindkettő 1-es kilépési kóddal.
 
 ---
 
-## Server & Background Services
+## Kiszolgáló és háttérszolgáltatások
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+A `serve` parancs elindítja a ***digna*** REST API kiszolgálót a háttérben futó ellenőrzésütemezővel és ellenőrzéskezelővel együtt. Indításkor sikertelenné nyilvánít minden olyan ellenőrzést is, amelyet a tároló még futóként tart nyilván, mivel egy korábbi folyamatból semmi sem maradhatott fenn.
 
-The command runs in the foreground until it is stopped.
+A parancs előtérben fut, amíg le nem állítják.
 
-#### Command Usage
+#### A parancs használata
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Beállítások
+- `--address`: Az a hálózati cím, amelyhez az API-kiszolgáló kötődik (alapértelmezés: `127.0.0.1`).
+- `--port`: A figyelt port száma (alapértelmezés: `8000`).
 
-#### Example
+#### Példa
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Példakimenet
 ```text
 Server running on http://0.0.0.0:8000
 ```

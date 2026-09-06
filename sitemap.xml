@@ -42049,6 +42049,38 @@
         <xhtml:link rel="alternate" hreflang="uk" href="https://docs.digna.ai/uk/cli/Command_Line_Interface_202604/"/>
     </url>
     <url>
+        <loc>https://docs.digna.ai/ar/cli/Command_Line_Interface_202606/</loc>
+        <lastmod>2026-09-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ar" href="https://docs.digna.ai/ar/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="cs" href="https://docs.digna.ai/cs/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="da" href="https://docs.digna.ai/da/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://docs.digna.ai/de/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="el" href="https://docs.digna.ai/el/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://docs.digna.ai/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://docs.digna.ai/es/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="et" href="https://docs.digna.ai/et/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="fi" href="https://docs.digna.ai/fi/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://docs.digna.ai/fr/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="hi" href="https://docs.digna.ai/hi/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="hu" href="https://docs.digna.ai/hu/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://docs.digna.ai/it/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://docs.digna.ai/ja/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://docs.digna.ai/ko/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="lt" href="https://docs.digna.ai/lt/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="lv" href="https://docs.digna.ai/lv/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="nb" href="https://docs.digna.ai/nb/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="nl" href="https://docs.digna.ai/nl/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://docs.digna.ai/pl/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://docs.digna.ai/pt/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://docs.digna.ai/ro/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://docs.digna.ai/ru/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="sl" href="https://docs.digna.ai/sl/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="sv" href="https://docs.digna.ai/sv/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://docs.digna.ai/tr/cli/Command_Line_Interface_202606/"/>
+        <xhtml:link rel="alternate" hreflang="uk" href="https://docs.digna.ai/uk/cli/Command_Line_Interface_202606/"/>
+    </url>
+    <url>
         <loc>https://docs.digna.ai/ar/cli/Introduction/</loc>
         <lastmod>2026-09-06</lastmod>
         <changefreq>daily</changefreq>
@@ -43167,37 +43199,5 @@
         <xhtml:link rel="alternate" hreflang="sv" href="https://docs.digna.ai/sv/sso/pingone_sso_guide/"/>
         <xhtml:link rel="alternate" hreflang="tr" href="https://docs.digna.ai/tr/sso/pingone_sso_guide/"/>
         <xhtml:link rel="alternate" hreflang="uk" href="https://docs.digna.ai/uk/sso/pingone_sso_guide/"/>
-    </url>
-    <url>
-        <loc>https://docs.digna.ai/ar/cli/Command_Line_Interface_202606/</loc>
-        <lastmod>2026-09-06</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="ar" href="https://docs.digna.ai/ar/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="cs" href="https://docs.digna.ai/cs/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="da" href="https://docs.digna.ai/da/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="de" href="https://docs.digna.ai/de/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="el" href="https://docs.digna.ai/el/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://docs.digna.ai/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="es" href="https://docs.digna.ai/es/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="et" href="https://docs.digna.ai/et/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="fi" href="https://docs.digna.ai/fi/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="fr" href="https://docs.digna.ai/fr/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="hi" href="https://docs.digna.ai/hi/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="hu" href="https://docs.digna.ai/hu/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="it" href="https://docs.digna.ai/it/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="ja" href="https://docs.digna.ai/ja/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="ko" href="https://docs.digna.ai/ko/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="lt" href="https://docs.digna.ai/lt/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="lv" href="https://docs.digna.ai/lv/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="nb" href="https://docs.digna.ai/nb/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="nl" href="https://docs.digna.ai/nl/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="pl" href="https://docs.digna.ai/pl/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="pt" href="https://docs.digna.ai/pt/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="ro" href="https://docs.digna.ai/ro/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="ru" href="https://docs.digna.ai/ru/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="sl" href="https://docs.digna.ai/sl/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="sv" href="https://docs.digna.ai/sv/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="tr" href="https://docs.digna.ai/tr/cli/Command_Line_Interface_202606/"/>
-        <xhtml:link rel="alternate" hreflang="uk" href="https://docs.digna.ai/uk/cli/Command_Line_Interface_202606/"/>
     </url>
 </urlset>

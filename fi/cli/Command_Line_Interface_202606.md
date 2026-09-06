@@ -1,156 +1,148 @@
-# digna CLI Reference 2026.06
+# digna CLI -referenssi 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Tämä sivu dokumentoi kaikki komennot, jotka ovat käytettävissä ***digna*** CLI -julkaisussa **2026.06**, mukaan lukien käyttöesimerkit ja valitsimet.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Suoritettavan tiedoston nimi on `digna`.
 
 ---
 
-### Overview & Syntax
+## CLI:n perusteet
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Yleiskatsaus ja syntaksi
+
+Julkaisun **2026.06** CLI käyttää jäsenneltyä, luokkiin perustuvaa komentohierarkiaa:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` ja `serve` ovat yksittäisiä komentoja ilman alikomentoa:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Yleiset valitsimet
 
-The following global options apply across all commands:
+Seuraavat yleiset valitsimet koskevat kaikkia komentoja:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Näyttää ohjetiedot CLI:stä tai tietystä komentoluokasta tai alikomennosta.
+- `--stacktrace`: Näyttää virhetilanteessa koko virheketjun pelkän ylimmän tason viestin sijaan.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` on yleinen valitsin varsinaisessa merkityksessä: se on annettava **ennen** komentoluokkaa, ei sen jälkeen.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+`--version`-lippua ei ole. Käytä sen sijaan komentoa [`version`](#version).
 
-### Prerequisites
+### Edellytykset
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+Useimmat komennot tarvitsevat luettavan ja kelvollisen `config.toml`-tiedoston; jotkin vaativat lisäksi voimassa olevan lisenssin.
+Seuraava taulukko kertoo, mitä kukin komentoluokka lataa ennen kuin se tekee mitään:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Komentoluokka | Tarvitsee `config.toml`-tiedoston | Tarvitsee voimassa olevan lisenssin |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | ei | ei |
+| `config check` | ei (se on juuri se, mistä komento raportoi) | ei |
+| `license check` | ei | se *on* itse tarkistus |
+| `crypt` | kyllä | ei |
+| `serve` | kyllä | ei |
+| `project` | kyllä | ei |
+| `user` | kyllä | kyllä |
+| `inspection` | kyllä | kyllä |
+| `repo` | kyllä | kyllä |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Kun lisenssi vaaditaan, tarkistetaan sekä sen allekirjoitus että voimassaolon päättymispäivä, ja komento keskeytyy ennen tietovaraston koskettamista, jos jompikumpi epäonnistuu.
 
-### Exit Codes
+### Paluukoodit
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: komento onnistui.
+- `1`: komento epäonnistui. Virheilmoitus kirjoitetaan stderr-virtaan etuliitteellä `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Valitsin `--help` antaa tietoa käytettävissä olevista komentoluokista, alikomennoista ja valitsimista:
 
-1. **Displaying General Help:**
+1. **Yleisen ohjeen näyttäminen:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Ohjeen hakeminen tietyille luokille ja komennoille:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Tuloste sisältää:**
+   - **Komennon kuvauksen:** Yhteenvedon komennon tarkoituksesta.
+   - **Syntaksin:** Pakolliset ja valinnaiset argumentit.
+   - **Valitsimet:** Komennolle ominaiset liput ja parametrit.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Komento `version` tulostaa asennetun ***digna***-julkaisun. Se ei lue mitään asetuksia eikä vahvista lisenssiä, joten se toimii myös asennuksessa, jonka `config.toml` tai lisenssi puuttuu tai on virheellinen.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Julkaisun versio on riippumaton tietovaraston skeeman versiosta, jonka [`repo check`](#repo-check) raportoi.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Asetusten hallinta
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Komento `config check` vahvistaa asetustiedoston (`config.toml`) tarkistamalla, että kaikki pakolliset osiot ja asetukset ovat olemassa ja oikein muotoiltuja. Kukin osio vahvistetaan erikseen, joten rikkinäinen `[app]`-osio ei peitä `[repo]`-osion tilaa.
 
-The sections reported are:
+Raportoitavat osiot ovat:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — valinnainen; puuttuva avain läpäisee tarkistuksen, mutta olemassa oleva mutta virheellisesti muotoiltu luettelo epäonnistuu
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Komento ei tarkoituksella lataa sovelluksen asetuksia samalla tavalla kuin muut komennot, jotta se voi diagnosoida `config.toml`-tiedoston, joka estäisi ***digna***-ohjelmistoa käynnistymästä lainkaan.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Valitsimet
+- `--configpath`, `-c`: Polku asetustiedostoon tai hakemistoon, joka sisältää `config.toml`-tiedoston (oletus `./config.toml`).
+- `--json`: Tulostaa vahvistusraportin JSON-muodossa. Ohittaa valitsimen `--quiet`.
+- `--quiet`, `-q`: Piilottaa raportin ja luottaa yksinomaan paluukoodiin.
 
-#### Example
+#### Esimerkki
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Tietyn asetustiedoston vahvistaminen ja tulosteen muotoilu JSON-muotoon:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -164,49 +156,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Puuttuva tiedosto tai TOML-syntaksivirhe ei jätä mitään osioittain vahvistettavaa, ja siitä raportoidaan yhtenä virheenä raportin sijaan riippumatta valitsimista `--quiet` tai `--json`.
 
 ---
 
-## Repository Management
+## Tietovaraston hallinta
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Komento `repo check` testaa tietokantayhteyden ja varmistaa tietovaraston asennuksen ja version. Se epäonnistuu, jos määritettyä skeemaa ei ole olemassa tai jos se on olemassa mutta ei sisällä ***digna***-tietovarastoa.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Raportoitava versio on tietovaraston skeeman versio, jonka versiointi on erillinen [`version`](#version)-komennon tulostamasta ***digna***-julkaisusta.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Komento `repo install` asentaa uuden ***digna***-tietovaraston `config.toml`-tiedostossa määritettyyn skeemaan luoden kaikki tarvittavat sekvenssit, taulut, indeksit, rajoitteet ja alkutietueet.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Tämä komento **ei** luo itse skeemaa — sen on oltava olemassa etukäteen. Komento myös kieltäytyy suorittumasta, jos kyseiseen skeemaan on jo asennettu tietovarasto, ja ohjaa komentoon [`repo upgrade`](#repo-upgrade), jos asennettu versio on vanhempi.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -218,19 +203,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Komento `repo upgrade` soveltaa tietokantaskeeman migraatioita nostaakseen olemassa olevan tietovaraston versioon, jota asennettu julkaisu odottaa. Päivitykset sovelletaan yksi versioaskel kerrallaan kiinteää päivityspolkua pitkin, ja jokainen valmistunut askel kirjataan tietovarastoon.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Jos tietovarasto on jo odotetussa versiossa, komento ilmoittaa, ettei päivitystä tarvita, eikä tee muutoksia.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -239,112 +221,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Salauksen hallinta
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Komento `crypt gen-key` luo uuden AES-GCM-salausavaimen käytettäväksi salausavaimena `config.toml`-tiedostossa. Ladattavan `config.toml`-tiedoston on oltava jo olemassa, vaikka luotu avain ei riipu siitä.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Komento `crypt encrypt` salaa merkkijonon (kuten tietokannan salasanan) `config.toml`-tiedostossa määritetyllä AES-GCM-avaimella ja tulostaa salatun tekstin.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argumentit
+- **VALUE**: Salattava selkokielinen merkkijono (pakollinen).
 
-#### Example
+#### Esimerkki
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Komento `crypt decrypt` purkaa AES-GCM-salatun merkkijonon `config.toml`-tiedostossa määritetyllä avaimella ja tulostaa selkokielisen tekstin.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argumentit
+- **VALUE**: Purettava salattu merkkijono (pakollinen).
 
-#### Example
+#### Esimerkki
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Käyttäjien hallinta
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Komento `user add` luo uuden käyttäjätilin ***digna***-tietovarastoon. Komento epäonnistuu, jos annetulla sähköpostiosoitteella on jo käyttäjä.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argumentit
+- **EMAIL**: Käyttäjän sähköpostiosoite (pakollinen).
+- **PASSWORD**: Käyttäjän alkuperäinen salasana (pakollinen).
+- **DISPLAY_NAME**: Käyttäjän täydellinen näyttönimi (pakollinen).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Valitsimet
+- `--admin`, `-a`: Luo käyttäjän pääkäyttäjän (superuser) oikeuksin.
 
-#### Example
+#### Esimerkki
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Pääkäyttäjätilin luominen:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Komento `user list` luettelee kaikki rekisteröidyt käyttäjät taulukkomuodossa tunnisteen, sähköpostiosoitteen, näyttönimen ja pääkäyttäjälipun kera.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -354,88 +330,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Komento `user modify` päivittää olemassa olevan, sähköpostiosoitteella yksilöidyn käyttäjätilin näyttönimen ja pääkäyttäjäoikeudet.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Sekä näyttönimi että pääkäyttäjälippu kirjoitetaan aina. `--admin` on kytkin, ei arvo: **sen pois jättäminen poistaa pääkäyttäjäoikeudet**, joten anna se aina, kun käyttäjän on säilytettävä ne tai saatava ne.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argumentit
+- **EMAIL**: Muokattavan käyttäjän sähköpostiosoite (pakollinen).
+- **DISPLAY_NAME**: Päivitetty näyttönimi (pakollinen).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Valitsimet
+- `--admin`, `-a`: Myöntää pääkäyttäjäoikeudet. Jätä pois poistaaksesi ne.
+- `--valid-until`, `-v`: Hyväksytään yhteensopivuuden vuoksi, mutta **sitä ei tällä hetkellä sovelleta**. Sen antaminen tulostaa varoituksen eikä muuta mitään.
 
-#### Example
+#### Esimerkki
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Komento `user modify-pwd` päivittää olemassa olevan käyttäjätilin salasanan.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argumentit
+- **EMAIL**: Sen käyttäjän sähköpostiosoite, jonka salasana päivitetään (pakollinen).
+- **PASSWORD**: Uusi salasana (pakollinen).
 
-#### Example
+#### Esimerkki
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Komento `user delete` poistaa käyttäjätilin järjestelmästä.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argumentit
+- **EMAIL**: Poistettavan käyttäjän sähköpostiosoite (pakollinen).
 
-#### Example
+#### Esimerkki
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Projektien ja tietolähteiden hallinta
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Komento `project list` luettelee kaikki tietovarastossa saatavilla olevat projektit näyttäen niiden tunnisteen, nimen ja kuvauksen.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -445,23 +417,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Komento `project list-ds` luettelee kaikki tiettyyn projektiin liitetyt tietolähteet näyttäen niiden tunnisteen, nimen, tyypin, skeeman ja taulun nimen.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argumentit
+- **PROJECT_NAME**: Sen projektin nimi, jonka tietolähteet luetellaan (pakollinen). Nimen on täsmättävä täsmälleen.
 
-#### Example
+#### Esimerkki
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -471,149 +442,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Komento `project export-ds` vie projektin tietolähteet JSON-dokumenttiin.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Jos kumpaakaan valitsinta `--table-name` tai `--table-id` ei anneta, viedään kaikki projektin tietolähteet.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argumentit
+- **PROJECT_NAME**: Sen projektin nimi, josta tietolähteet viedään (pakollinen).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Valitsimet
+- `--table-name`, `-n`: Vietävien tietolähteiden nimet. Useita nimiä voi antaa välilyönnein eroteltuina.
+- `--table-id`, `-i`: Vietävien tietolähteiden tunnisteet. Useita tunnisteita voi antaa välilyönnein eroteltuina.
+- `--exportfile`, `-f`: Polku, johon viedyt tietolähteet tallennetaan (oletus: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Esimerkki
+Kaikkien tietolähteiden vieminen projektista `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Tiettyjen taulujen vieminen:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Komento `project import-ds` tuo tietolähteet vientitiedostosta kohdeprojektiin ja raportoi objektikohtaisesti, mitä luotiin, päivitettiin tai ohitettiin.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argumentit
+- **PROJECT_NAME**: Kohdeprojektin nimi, johon tuodaan (pakollinen).
+- **EXPORT_FILE**: Polku JSON-vientitiedostoon (pakollinen).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Valitsimet
+- `--output-file`, `-o`: Tiedosto, johon tuontiraportti kirjoitetaan. Ilman sitä raportti menee stdout-virtaan.
+- `--output-format`, `-f`: Tuontiraportin muoto — `table`, `json` tai `csv` (oletus: `table`).
 
-#### Example
+#### Esimerkki
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Koneluettavan raportin tallentaminen:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Raportti kattaa neljä objektitasoa — tietolähde, tietojoukon määrittely, attribuutti ja validointisääntö — kunkin osalta tuontitoimenpiteen, tuloksen, syntyneen objektin tunnisteen ja mahdolliset lisätiedot.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Komento `project plan-import-ds` esikatselee tietolähteiden tuontia kohdeprojektiin näyttäen, mitkä objektit luotaisiin, päivitettäisiin tai ohitettaisiin, muuttamatta mitään. Se ottaa saman vientitiedoston ja samat raportointivalitsimet kuin [`project import-ds`](#project-import-ds) ja lisää askelnumeron kutakin suunniteltua objektia kohti.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argumentit
+- **PROJECT_NAME**: Kohdeprojektin nimi (pakollinen).
+- **EXPORT_FILE**: Polku vientitiedostoon (pakollinen).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Valitsimet
+- `--output-file`, `-o`: Tiedosto, johon tuontisuunnitelma kirjoitetaan. Ilman sitä suunnitelma menee stdout-virtaan.
+- `--output-format`, `-f`: Tuontisuunnitelman muoto — `table`, `json` tai `csv` (oletus: `table`).
 
-#### Example
+#### Esimerkki
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Tarkastusten hallinta
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Komento `inspection run` luo tarkastuspyynnön projektille ja päivämääräväliä varten ja — annettujen valitsimien mukaan — joko odottaa sitä, palaa välittömästi tai suorittaa sen omassa prosessissaan.
 
-The three execution modes are:
+Kolme suoritustilaa ovat:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Oletus (ei lippua)**: pyyntö asetetaan taustajärjestelmän jonoon, ja CLI kysyy sen tilaa kahden sekunnin välein tulostaen tehtävien edistymisen, kunnes tarkastus saavuttaa lopputilan. Käynnissä oleva `digna serve` vaaditaan, muuten kukaan ei poimi pyyntöä.
+- **`--async-mode`**: pyyntö asetetaan jonoon ja sen tunniste tulostetaan välittömästi. Seuraa sitä komennolla [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: tarkastuksen suorittaa CLI-prosessi itse eikä sitä aseteta jonoon, joten käynnissä olevaa palvelinta ei tarvita.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` ja `--bypass-backend` sulkevat toisensa pois.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+Kaikissa tiloissa komento päättyy nollasta poikkeavaan paluukoodiin, jos tarkastus ei valmistunut onnistuneesti.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argumentit
+- **PROJECT_NAME**: Kohdeprojektin nimi (pakollinen). Nimen on täsmättävä täsmälleen.
+- **START_DATE**: Päivämäärävälin alkupäivä muodossa `YYYY-MM-DD` (pakollinen).
+- **END_DATE**: Päivämäärävälin loppupäivä muodossa `YYYY-MM-DD` (pakollinen).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Valitsimet
+- `--table-name`: Rajaa tarkastuksen projektin yhteen tietolähteeseen, joka annetaan tietolähteen nimellä. Ilman sitä tarkastetaan kaikki projektin tietolähteet.
+- `--async-mode`: Asettaa tarkastuksen jonoon ja tulostaa pyynnön tunnisteen sen sijaan, että odottaisi sitä. Ei voi yhdistää valitsimeen `--bypass-backend`.
+- `--bypass-backend`: Suorittaa tarkastuksen suoraan CLI-prosessissa sen sijaan, että asettaisi sen taustajärjestelmän jonoon. Ei voi yhdistää valitsimeen `--async-mode`.
 
-#### Example
+#### Esimerkki
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Asynkronisen tarkastuksen lähettäminen:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Yhden tietolähteen tarkastaminen:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Esimerkkituloste
+Oletustila:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -622,30 +586,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Asynkroninen tila:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Komento `inspection status` kysyy tarkastuspyynnön tilaa ja tehtävien edistymistä pyynnön tunnisteen perusteella.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argumentit
+- **INSPECTION_REQUEST_ID**: Tarkastuspyynnön numeerinen tunniste (pakollinen).
 
-#### Example
+#### Esimerkki
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -656,92 +619,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Komento `inspection abort` pyytää käynnissä olevien tai odottavien tarkastuspyyntöjen peruuttamista. Se kirjaa pysäytystapahtuman jokaiselle kyseessä olevalle pyynnölle; taustajärjestelmä toimii sen perusteella, joten keskeytys on pysäytyspyyntö eikä välitön lopetus.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argumentit
+- **INSPECTION_REQUEST_ID**: Keskeytettävän tarkastuspyynnön tunniste. Pakollinen, ellei valitsinta `--killall` anneta.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Valitsimet
+- `--killall`: Keskeyttää kaikki parhaillaan käynnissä olevat ja odottavat tarkastuspyynnöt. Ohittaa samalla annetun pyyntötunnisteen.
 
-#### Example
-To abort a specific request:
+#### Esimerkki
+Tietyn pyynnön keskeyttäminen:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Kaikkien aktiivisten ja jonossa olevien tarkastusten keskeyttäminen:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Esimerkkituloste
+`--killall` raportoi, mitä se teki; yksittäisen pyynnön keskeyttäminen ei tuota tulostetta ja ilmoittaa onnistumisesta paluukoodillaan.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Lisenssien hallinta
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Komento `license check` vahvistaa `license.toml`-tiedoston tarkistamalla sen allekirjoituksen asennuksen mukana toimitettua julkista avainta vasten ja varmistamalla, ettei se ole vanhentunut. Se ei lue sovelluksen asetuksia, joten se toimii myös ennen kuin `config.toml` on määritetty.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Virheellisestä allekirjoituksesta ja vanhentuneesta lisenssistä raportoidaan erillisinä virheinä, molemmista paluukoodilla 1.
 
 ---
 
-## Server & Background Services
+## Palvelin- ja taustapalvelut
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Komento `serve` käynnistää ***digna***-REST-API-palvelimen sekä taustalla toimivan tarkastusten ajastimen ja tarkastusten hallinnan. Käynnistyessään se myös merkitsee epäonnistuneeksi jokaisen tarkastuksen, jonka tietovarasto edelleen kirjaa käynnissä olevaksi, koska mikään ei ole voinut säilyä aiemmasta prosessista.
 
-The command runs in the foreground until it is stopped.
+Komento toimii edustalla, kunnes se pysäytetään.
 
-#### Command Usage
+#### Komennon käyttö
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Valitsimet
+- `--address`: Verkko-osoite, johon API-palvelin sidotaan (oletus: `127.0.0.1`).
+- `--port`: Portin numero, jota kuunnellaan (oletus: `8000`).
 
-#### Example
+#### Esimerkki
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Esimerkkituloste
 ```text
 Server running on http://0.0.0.0:8000
 ```

@@ -85,6 +85,7 @@
 ## CLI viide
 
 - [Sissejuhatus](https://docs.digna.ai/et/cli/Introduction/): Sissejuhatus digna käsurealiidesesse (CLI) — tekstipõhine tööriist digna ressursside automatiseerimiseks ja haldamiseks, sealhulgas Windowsi paigalduse alused.
+- [Release 2026.06](https://docs.digna.ai/et/cli/Command_Line_Interface_202606/): Täielik teatmik digna CLI versiooni 2026.06 kohta
 - [Release 2026.04](https://docs.digna.ai/et/cli/Command_Line_Interface_202604/): Täielik viide digna CLI väljaandele 2026.04
 - [Release 2026.01](https://docs.digna.ai/et/cli/Command_Line_Interface_202601/): Täielik viide digna CLI väljalaske 2026.01 kohta. Õpi, kuidas hallata kasutajaid, hoidlaid ja andmeid käskudega nagu add-user, check-config, check-repo-connection, inspect, inspect-async ja palju muud.
 - [Release 2025.09](https://docs.digna.ai/et/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.

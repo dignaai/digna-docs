@@ -85,6 +85,7 @@
 ## Referenční příručka CLI
 
 - [Úvod](https://docs.digna.ai/cs/cli/Introduction/): Úvod do rozhraní příkazové řádky (CLI) digna — textového nástroje pro automatizaci a správu zdrojů digna, včetně základů instalace ve Windows.
+- [Release 2026.06](https://docs.digna.ai/cs/cli/Command_Line_Interface_202606/): Kompletní referenční příručka k vydání digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/cs/cli/Command_Line_Interface_202604/): Kompletní reference pro digna CLI verzi 2026.04
 - [Release 2026.01](https://docs.digna.ai/cs/cli/Command_Line_Interface_202601/): Kompletní reference pro digna CLI verzi 2026.01. Naučte se spravovat uživatele, repozitáře a data pomocí příkazů jako add-user, check-config, check-repo-connection, inspect, inspect-async a dalších.
 - [Release 2025.09](https://docs.digna.ai/cs/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.

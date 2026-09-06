@@ -85,6 +85,7 @@
 ## CLI-referens
 
 - [Introduktion](https://docs.digna.ai/sv/cli/Introduction/): Introduktion till digna kommandoradsgränssnitt (CLI) — ett textbaserat verktyg för att automatisera och hantera digna-resurser, inklusive grunderna för installation på Windows.
+- [Release 2026.06](https://docs.digna.ai/sv/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/sv/cli/Command_Line_Interface_202604/): Komplett referens för digna CLI-versionen 2026.04
 - [Release 2026.01](https://docs.digna.ai/sv/cli/Command_Line_Interface_202601/): Komplett referens för digna CLI-release 2026.01. Lär dig hur du hanterar användare, repositories och data med kommandon som add-user, check-config, check-repo-connection, inspect, inspect-async med flera.
 - [Release 2025.09](https://docs.digna.ai/sv/cli/Command_Line_Interface_202509/): Komplett referens för digna CLI version 2025.09. Lär dig hur du hanterar användare, repository och data med kommandon som add-user, check-config, check-repo-connection, inspect, inspect-async med flera.

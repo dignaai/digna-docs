@@ -4080,7 +4080,7 @@ Această comandă va afișa doar un plan de import al obiectelor care ar fi impo
 
 ---
 
-# digna CLI Reference 2026.06 – Commands & Examples | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/ro/cli/Command_Line_Interface_202606/
 
 # digna CLI Reference 2026.06

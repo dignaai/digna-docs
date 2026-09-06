@@ -1,156 +1,148 @@
-# digna CLI Reference 2026.06
+# Referenční příručka digna CLI 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Tato stránka dokumentuje úplnou sadu příkazů dostupných ve vydání ***digna*** CLI **2026.06**, včetně příkladů použití a voleb.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Spustitelný soubor se jmenuje `digna`.
 
 ---
 
-### Overview & Syntax
+## Základy CLI
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Přehled a syntaxe
+
+CLI vydání **2026.06** používá strukturovanou hierarchii příkazů založenou na kategoriích:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+Příkazy `version` a `serve` jsou samostatné příkazy bez podpříkazu:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Globální volby
 
-The following global options apply across all commands:
+Následující globální volby platí pro všechny příkazy:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Zobrazí nápovědu k CLI nebo ke konkrétní kategorii příkazů či podpříkazu.
+- `--stacktrace`: Při selhání zobrazí celý řetězec chyb místo pouhé zprávy nejvyšší úrovně.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+Volba `--stacktrace` je globální v úzkém slova smyslu: musí být uvedena **před** kategorií příkazu, nikoli za ní.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Přepínač `--version` neexistuje. Použijte místo něj příkaz [`version`](#version).
 
-### Prerequisites
+### Předpoklady
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+Většina příkazů potřebuje čitelný a platný soubor `config.toml`; některé navíc vyžadují platnou licenci.
+Následující tabulka zaznamenává, co každá kategorie příkazů načte, než cokoli udělá:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Kategorie příkazu | Potřebuje `config.toml` | Potřebuje platnou licenci |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | ne | ne |
+| `config check` | ne (je právě tím, o čem příkaz podává zprávu) | ne |
+| `license check` | ne | *je* tou kontrolou |
+| `crypt` | ano | ne |
+| `serve` | ano | ne |
+| `project` | ano | ne |
+| `user` | ano | ano |
+| `inspection` | ano | ano |
+| `repo` | ano | ano |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Tam, kde je licence vyžadována, se kontroluje jak její podpis, tak datum expirace, a pokud kterákoli z kontrol selže, příkaz se ukončí dříve, než se dotkne repozitáře.
 
-### Exit Codes
+### Návratové kódy
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: příkaz uspěl.
+- `1`: příkaz selhal. Chybová zpráva se zapisuje na stderr s předponou `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Volba `--help` poskytuje informace o dostupných kategoriích příkazů, podpříkazech a volbách:
 
-1. **Displaying General Help:**
+1. **Zobrazení obecné nápovědy:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Získání nápovědy ke konkrétním kategoriím a příkazům:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Výstup obsahuje:**
+   - **Popis příkazu:** Shrnutí účelu příkazu.
+   - **Syntaxe:** Povinné a volitelné argumenty.
+   - **Volby:** Přepínače a parametry specifické pro daný příkaz.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Příkaz `version` vypíše nainstalované vydání ***digna***. Nenačítá žádnou konfiguraci ani neověřuje licenci, takže funguje i na instalaci, jejíž `config.toml` nebo licence chybí nebo je neplatná.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Verze vydání je nezávislá na verzi schématu repozitáře, kterou hlásí [`repo check`](#repo-check).
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Správa konfigurace
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Příkaz `config check` ověřuje konfigurační soubor (`config.toml`) a kontroluje, zda jsou všechny povinné sekce a nastavení přítomné a správně naformátované. Každá sekce se ověřuje samostatně, takže poškozená sekce `[app]` nezakryje stav sekce `[repo]`.
 
-The sections reported are:
+Hlášené sekce jsou:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — volitelné; chybějící klíč projde, přítomný, ale chybně zapsaný seznam selže
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Příkaz záměrně nenačítá konfiguraci aplikace stejným způsobem jako ostatní příkazy, aby dokázal diagnostikovat `config.toml`, který by ***digna*** vůbec zabránil ve spuštění.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Volby
+- `--configpath`, `-c`: Cesta ke konfiguračnímu souboru nebo k adresáři obsahujícímu `config.toml` (výchozí `./config.toml`).
+- `--json`: Vypíše ověřovací zprávu ve formátu JSON. Má přednost před `--quiet`.
+- `--quiet`, `-q`: Potlačí zprávu a spoléhá pouze na návratový kód.
 
-#### Example
+#### Příklad
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Ověření konkrétního konfiguračního souboru a výstup ve formátu JSON:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -164,49 +156,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Chybějící soubor nebo syntaktická chyba v TOML nezanechá nic, co by šlo ověřovat sekci po sekci, a je hlášena jako jediná chyba místo zprávy, bez ohledu na `--quiet` či `--json`.
 
 ---
 
-## Repository Management
+## Správa repozitáře
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Příkaz `repo check` otestuje připojení k databázi a ověří instalaci a verzi repozitáře. Selže, pokud nakonfigurované schéma neexistuje, nebo pokud existuje, ale neobsahuje žádný repozitář ***digna***.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Hlášená verze je verze schématu repozitáře, které je verzováno odděleně od vydání ***digna***, jež vypisuje [`version`](#version).
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Příkaz `repo install` nainstaluje nový repozitář ***digna*** do schématu nakonfigurovaného v `config.toml` a vytvoří všechny potřebné sekvence, tabulky, indexy, omezení a počáteční záznamy.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Samotné schéma tento příkaz **nevytváří** — musí existovat předem. Příkaz se rovněž odmítne spustit, pokud je v daném schématu repozitář již nainstalován, a odkáže na [`repo upgrade`](#repo-upgrade), je-li nainstalovaná verze starší.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -218,19 +203,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Příkaz `repo upgrade` aplikuje migrace databázového schématu, aby povýšil existující repozitář na verzi očekávanou nainstalovaným vydáním. Povýšení se aplikují po jednom verzním kroku podél pevně dané cesty a každý dokončený krok se zaznamenává do repozitáře.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Pokud je repozitář již na očekávané verzi, příkaz oznámí, že povýšení není potřeba, a neprovede žádné změny.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -239,112 +221,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Správa šifrování
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Příkaz `crypt gen-key` vygeneruje nový šifrovací klíč AES-GCM určený k použití jako šifrovací klíč v `config.toml`. Načitatelný soubor `config.toml` už musí existovat, přestože na něm vygenerovaný klíč nezávisí.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Příkaz `crypt encrypt` zašifruje řetězec (například heslo k databázi) pomocí klíče AES-GCM nakonfigurovaného v `config.toml` a vypíše šifrový text.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argumenty
+- **VALUE**: Otevřený text, který se má zašifrovat (povinné).
 
-#### Example
+#### Příklad
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Příkaz `crypt decrypt` dešifruje řetězec zašifrovaný algoritmem AES-GCM pomocí klíče nakonfigurovaného v `config.toml` a vypíše otevřený text.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argumenty
+- **VALUE**: Zašifrovaný řetězec, který se má dešifrovat (povinné).
 
-#### Example
+#### Příklad
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Správa uživatelů
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Příkaz `user add` vytvoří v repozitáři ***digna*** nový uživatelský účet. Příkaz selže, pokud uživatel se zadanou e-mailovou adresou již existuje.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argumenty
+- **EMAIL**: E-mailová adresa uživatele (povinné).
+- **PASSWORD**: Počáteční heslo uživatele (povinné).
+- **DISPLAY_NAME**: Celé zobrazované jméno uživatele (povinné).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Volby
+- `--admin`, `-a`: Vytvoří uživatele s právy administrátora (superuživatele).
 
-#### Example
+#### Příklad
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Vytvoření účtu administrátora:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Příkaz `user list` vypíše všechny registrované uživatele v tabulkové podobě s ID, e-mailem, zobrazovaným jménem a příznakem administrátora.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -354,88 +330,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Příkaz `user modify` aktualizuje zobrazované jméno a práva administrátora u existujícího uživatelského účtu určeného e-mailovou adresou.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Zobrazované jméno i příznak administrátora se zapisují vždy oba. `--admin` je přepínač, nikoli hodnota: **jeho vynechání administrátorská práva odebere**, uvádějte jej tedy vždy, když si má uživatel práva ponechat nebo je získat.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argumenty
+- **EMAIL**: E-mail uživatele, který se má změnit (povinné).
+- **DISPLAY_NAME**: Aktualizované zobrazované jméno (povinné).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Volby
+- `--admin`, `-a`: Udělí práva administrátora. Vynechejte pro jejich odebrání.
+- `--valid-until`, `-v`: Přijímán kvůli kompatibilitě, ale **aktuálně se neuplatňuje**. Jeho předání vypíše varování a nic nezmění.
 
-#### Example
+#### Příklad
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Příkaz `user modify-pwd` aktualizuje heslo existujícího uživatelského účtu.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argumenty
+- **EMAIL**: E-mail uživatele, jehož heslo se má aktualizovat (povinné).
+- **PASSWORD**: Nové heslo (povinné).
 
-#### Example
+#### Příklad
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Příkaz `user delete` odstraní uživatelský účet ze systému.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argumenty
+- **EMAIL**: E-mail uživatele, který se má smazat (povinné).
 
-#### Example
+#### Příklad
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Správa projektů a zdrojů dat
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Příkaz `project list` vypíše všechny projekty dostupné v repozitáři a zobrazí jejich ID, název a popis.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -445,23 +417,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Příkaz `project list-ds` vypíše všechny zdroje dat přiřazené danému projektu a zobrazí jejich ID, název, druh, schéma a název tabulky.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argumenty
+- **PROJECT_NAME**: Název projektu, jehož zdroje dat se mají vypsat (povinné). Název musí přesně odpovídat.
 
-#### Example
+#### Příklad
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -471,149 +442,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Příkaz `project export-ds` exportuje zdroje dat z projektu do dokumentu JSON.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Pokud není zadáno ani `--table-name`, ani `--table-id`, exportují se všechny zdroje dat projektu.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argumenty
+- **PROJECT_NAME**: Název projektu, ze kterého se mají zdroje dat exportovat (povinné).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Volby
+- `--table-name`, `-n`: Názvy zdrojů dat k exportu. Více názvů lze zadat oddělených mezerami.
+- `--table-id`, `-i`: ID zdrojů dat k exportu. Více ID lze zadat oddělených mezerami.
+- `--exportfile`, `-f`: Cesta pro uložení exportovaných zdrojů dat (výchozí: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Příklad
+Export všech zdrojů dat z projektu `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Export konkrétních tabulek:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Příkaz `project import-ds` importuje zdroje dat z exportního souboru do cílového projektu a u každého objektu hlásí, co bylo vytvořeno, aktualizováno nebo přeskočeno.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argumenty
+- **PROJECT_NAME**: Název cílového projektu, do kterého se importuje (povinné).
+- **EXPORT_FILE**: Cesta k exportnímu souboru JSON (povinné).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Volby
+- `--output-file`, `-o`: Soubor, do kterého se zapíše zpráva o importu. Bez něj jde zpráva na stdout.
+- `--output-format`, `-f`: Formát zprávy o importu — `table`, `json` nebo `csv` (výchozí: `table`).
 
-#### Example
+#### Příklad
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Získání strojově čitelné zprávy:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Zpráva pokrývá čtyři úrovně objektů — zdroj dat, definici datové sady, atribut a validační pravidlo — u každé s importní akcí, výsledkem, ID výsledného objektu a případnými doplňujícími informacemi.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Příkaz `project plan-import-ds` zobrazí náhled importu zdrojů dat do cílového projektu a ukáže, které objekty by byly vytvořeny, aktualizovány nebo přeskočeny, aniž by cokoli změnil. Přijímá stejný exportní soubor a stejné volby výstupu jako [`project import-ds`](#project-import-ds) a přidává číslo kroku ke každému plánovanému objektu.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argumenty
+- **PROJECT_NAME**: Název cílového projektu (povinné).
+- **EXPORT_FILE**: Cesta k exportnímu souboru (povinné).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Volby
+- `--output-file`, `-o`: Soubor, do kterého se zapíše plán importu. Bez něj jde plán na stdout.
+- `--output-format`, `-f`: Formát plánu importu — `table`, `json` nebo `csv` (výchozí: `table`).
 
-#### Example
+#### Příklad
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Správa inspekcí
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Příkaz `inspection run` vytvoří požadavek na inspekci pro projekt a rozsah dat a poté — podle zadaných voleb — buď na něj čeká, ihned se vrátí, nebo jej provede přímo ve vlastním procesu.
 
-The three execution modes are:
+Tři režimy provádění jsou:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Výchozí (bez přepínače)**: požadavek se zařadí do fronty pro backend a CLI jej každé dvě sekundy dotazuje a vypisuje průběh úloh, dokud inspekce nedosáhne konečného stavu. Je nutné běžící `digna serve`, jinak požadavek nikdo nepřevezme.
+- **`--async-mode`**: požadavek se zařadí do fronty a jeho ID se ihned vypíše. Pro sledování použijte [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: inspekci provede samotný proces CLI a do fronty se nezařazuje, takže není potřeba běžící server.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+Volby `--async-mode` a `--bypass-backend` se vzájemně vylučují.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+Ve všech režimech končí příkaz nenulovým návratovým kódem, pokud inspekce neproběhla úspěšně.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argumenty
+- **PROJECT_NAME**: Název cílového projektu (povinné). Název musí přesně odpovídat.
+- **START_DATE**: Počáteční datum rozsahu ve formátu `YYYY-MM-DD` (povinné).
+- **END_DATE**: Koncové datum rozsahu ve formátu `YYYY-MM-DD` (povinné).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Volby
+- `--table-name`: Omezí inspekci na jediný zdroj dat projektu zadaný jeho názvem. Bez této volby se kontrolují všechny zdroje dat projektu.
+- `--async-mode`: Zařadí inspekci do fronty a vypíše ID požadavku místo čekání na dokončení. Nelze kombinovat s `--bypass-backend`.
+- `--bypass-backend`: Provede inspekci přímo v procesu CLI místo zařazení do fronty pro backend. Nelze kombinovat s `--async-mode`.
 
-#### Example
+#### Příklad
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Odeslání asynchronní inspekce:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Kontrola jediného zdroje dat:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Ukázkový výstup
+Výchozí režim:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -622,30 +586,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Asynchronní režim:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Příkaz `inspection status` zjišťuje stav a průběh úloh požadavku na inspekci podle jeho ID.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argumenty
+- **INSPECTION_REQUEST_ID**: Číselné ID požadavku na inspekci (povinné).
 
-#### Example
+#### Příklad
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -656,92 +619,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Příkaz `inspection abort` požaduje zrušení běžících nebo čekajících požadavků na inspekci. Pro každý dotčený požadavek zaznamená událost zastavení; jedná na jejím základě backend, takže přerušení je žádostí o zastavení, nikoli okamžitým ukončením.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argumenty
+- **INSPECTION_REQUEST_ID**: ID požadavku na inspekci, který se má přerušit. Povinné, pokud není zadáno `--killall`.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Volby
+- `--killall`: Přeruší všechny aktuálně běžící a čekající požadavky na inspekci. Má přednost před ID požadavku zadaným zároveň s ním.
 
-#### Example
-To abort a specific request:
+#### Příklad
+Přerušení konkrétního požadavku:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Přerušení všech aktivních a zařazených inspekcí:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Ukázkový výstup
+`--killall` hlásí, co provedl; přerušení jediného požadavku nevypíše nic a úspěch hlásí návratovým kódem.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Správa licencí
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Příkaz `license check` ověřuje soubor `license.toml`, kontroluje jeho podpis proti veřejnému klíči dodanému s instalací a ověřuje, že licence nevypršela. Nenačítá žádnou konfiguraci aplikace, takže funguje i dříve, než je `config.toml` nastaven.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Neplatný podpis a vypršelá licence jsou hlášeny jako dvě odlišné chyby, obě s návratovým kódem 1.
 
 ---
 
-## Server & Background Services
+## Server a služby na pozadí
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Příkaz `serve` spustí server REST API ***digna*** spolu s plánovačem inspekcí na pozadí a správcem inspekcí. Při startu rovněž označí za neúspěšnou každou inspekci, kterou repozitář stále eviduje jako běžící, protože z dřívějšího procesu nemohlo nic přežít.
 
-The command runs in the foreground until it is stopped.
+Příkaz běží v popředí, dokud není zastaven.
 
-#### Command Usage
+#### Použití příkazu
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Volby
+- `--address`: Síťová adresa, na kterou se má server API navázat (výchozí: `127.0.0.1`).
+- `--port`: Číslo portu, na kterém se naslouchá (výchozí: `8000`).
 
-#### Example
+#### Příklad
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Ukázkový výstup
 ```text
 Server running on http://0.0.0.0:8000
 ```

@@ -4079,162 +4079,154 @@ dignacli plan-import-ds ProjectB my_export.json
 
 ---
 
-# digna CLI Reference 2026.06 – Commands & Examples | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/el/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# Οδηγός αναφοράς digna CLI 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Αυτή η σελίδα τεκμηριώνει το πλήρες σύνολο εντολών που είναι διαθέσιμες στην έκδοση **2026.06** του ***digna*** CLI, μαζί με παραδείγματα χρήσης και επιλογές.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Το εκτελέσιμο αρχείο ονομάζεται `digna`.
 
 ---
 
-### Overview & Syntax
+## Βασικά στοιχεία του CLI
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Επισκόπηση και σύνταξη
+
+Το CLI της έκδοσης **2026.06** χρησιμοποιεί μια δομημένη ιεραρχία εντολών βασισμένη σε κατηγορίες:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+Οι εντολές `version` και `serve` είναι μεμονωμένες εντολές χωρίς υποεντολή:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Καθολικές επιλογές
 
-The following global options apply across all commands:
+Οι ακόλουθες καθολικές επιλογές ισχύουν για όλες τις εντολές:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Εμφανίζει πληροφορίες βοήθειας για το CLI ή για συγκεκριμένη κατηγορία εντολών ή υποεντολή.
+- `--stacktrace`: Εμφανίζει ολόκληρη την αλυσίδα σφαλμάτων σε περίπτωση αποτυχίας, αντί μόνο για το μήνυμα ανώτατου επιπέδου.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+Η επιλογή `--stacktrace` είναι καθολική με την αυστηρή έννοια: πρέπει να δίνεται **πριν** από την κατηγορία της εντολής και όχι μετά.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Δεν υπάρχει σημαία `--version`. Χρησιμοποιήστε την εντολή [`version`](#version) αντ' αυτού.
 
-### Prerequisites
+### Προϋποθέσεις
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+Οι περισσότερες εντολές χρειάζονται ένα αναγνώσιμο, έγκυρο αρχείο `config.toml`· ορισμένες απαιτούν επιπλέον έγκυρη άδεια χρήσης.
+Ο ακόλουθος πίνακας καταγράφει τι φορτώνει κάθε κατηγορία εντολών πριν κάνει οτιδήποτε:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Κατηγορία εντολών | Χρειάζεται `config.toml` | Χρειάζεται έγκυρη άδεια |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | όχι | όχι |
+| `config check` | όχι (είναι ακριβώς αυτό για το οποίο αναφέρει η εντολή) | όχι |
+| `license check` | όχι | *είναι* ο ίδιος ο έλεγχος |
+| `crypt` | ναι | όχι |
+| `serve` | ναι | όχι |
+| `project` | ναι | όχι |
+| `user` | ναι | ναι |
+| `inspection` | ναι | ναι |
+| `repo` | ναι | ναι |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Όπου απαιτείται άδεια, ελέγχονται τόσο η υπογραφή της όσο και η ημερομηνία λήξης της, και η εντολή ματαιώνεται πριν αγγίξει το αποθετήριο αν αποτύχει οποιοδήποτε από τα δύο.
 
-### Exit Codes
+### Κωδικοί εξόδου
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: η εντολή ολοκληρώθηκε επιτυχώς.
+- `1`: η εντολή απέτυχε. Το μήνυμα σφάλματος γράφεται στο stderr με το πρόθεμα `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Η επιλογή `--help` παρέχει πληροφορίες για τις διαθέσιμες κατηγορίες εντολών, υποεντολές και επιλογές:
 
-1. **Displaying General Help:**
+1. **Εμφάνιση γενικής βοήθειας:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Λήψη βοήθειας για συγκεκριμένες κατηγορίες και εντολές:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Η έξοδος περιλαμβάνει:**
+   - **Περιγραφή εντολής:** Σύνοψη του σκοπού της εντολής.
+   - **Σύνταξη:** Υποχρεωτικά και προαιρετικά ορίσματα.
+   - **Επιλογές:** Σημαίες και παράμετροι ειδικές για την εντολή.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Η εντολή `version` εκτυπώνει την εγκατεστημένη έκδοση του ***digna***. Δεν διαβάζει καμία διαμόρφωση και δεν επικυρώνει καμία άδεια, οπότε λειτουργεί και σε εγκατάσταση όπου το `config.toml` ή η άδεια λείπει ή είναι άκυρη.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Η έκδοση του προϊόντος είναι ανεξάρτητη από την έκδοση του σχήματος αποθετηρίου που αναφέρει η [`repo check`](#repo-check).
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Διαχείριση διαμόρφωσης
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Η εντολή `config check` επικυρώνει το αρχείο διαμόρφωσης (`config.toml`), επαληθεύοντας ότι όλες οι υποχρεωτικές ενότητες και ρυθμίσεις υπάρχουν και είναι σωστά μορφοποιημένες. Κάθε ενότητα επικυρώνεται χωριστά, ώστε μια χαλασμένη ενότητα `[app]` να μην κρύβει την κατάσταση της `[repo]`.
 
-The sections reported are:
+Οι ενότητες που αναφέρονται είναι:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — προαιρετικό· ένα κλειδί που απουσιάζει περνά τον έλεγχο, ενώ μια λίστα που υπάρχει αλλά είναι κακοδιατυπωμένη αποτυγχάνει
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Η εντολή σκόπιμα δεν φορτώνει τη διαμόρφωση της εφαρμογής όπως κάνουν οι υπόλοιπες εντολές, ώστε να μπορεί να διαγνώσει ένα `config.toml` που θα εμπόδιζε το ***digna*** ακόμη και να ξεκινήσει.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Επιλογές
+- `--configpath`, `-c`: Διαδρομή προς το αρχείο διαμόρφωσης ή προς κατάλογο που περιέχει το `config.toml` (προεπιλογή `./config.toml`).
+- `--json`: Εξάγει την αναφορά επικύρωσης σε μορφή JSON. Υπερισχύει της `--quiet`.
+- `--quiet`, `-q`: Αποκρύπτει την αναφορά και βασίζεται αποκλειστικά στον κωδικό εξόδου.
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Επικύρωση συγκεκριμένου αρχείου διαμόρφωσης και μορφοποίηση της εξόδου ως JSON:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4248,49 +4240,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Ένα αρχείο που λείπει ή ένα συντακτικό σφάλμα TOML δεν αφήνει τίποτα να επικυρωθεί ενότητα προς ενότητα και αναφέρεται ως ένα μεμονωμένο σφάλμα αντί για αναφορά, ανεξάρτητα από τις `--quiet` ή `--json`.
 
 ---
 
-## Repository Management
+## Διαχείριση αποθετηρίου
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Η εντολή `repo check` ελέγχει τη σύνδεση με τη βάση δεδομένων και επαληθεύει την εγκατάσταση και την έκδοση του αποθετηρίου. Αποτυγχάνει αν το διαμορφωμένο σχήμα δεν υπάρχει ή αν υπάρχει αλλά δεν περιέχει αποθετήριο ***digna***.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Η έκδοση που αναφέρεται είναι η έκδοση του σχήματος αποθετηρίου, το οποίο εκδίδεται ξεχωριστά από την έκδοση του ***digna*** που εκτυπώνει η [`version`](#version).
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Η εντολή `repo install` εγκαθιστά ένα νέο αποθετήριο ***digna*** στο σχήμα που έχει διαμορφωθεί στο `config.toml`, δημιουργώντας όλες τις απαιτούμενες ακολουθίες, πίνακες, ευρετήρια, περιορισμούς και αρχικές εγγραφές.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Το ίδιο το σχήμα **δεν** δημιουργείται από αυτή την εντολή — πρέπει να υπάρχει εκ των προτέρων. Η εντολή επίσης αρνείται να εκτελεστεί αν υπάρχει ήδη εγκατεστημένο αποθετήριο σε εκείνο το σχήμα και παραπέμπει στην [`repo upgrade`](#repo-upgrade) αν η εγκατεστημένη έκδοση είναι παλαιότερη.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4302,19 +4287,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Η εντολή `repo upgrade` εφαρμόζει μεταναστεύσεις σχήματος βάσης δεδομένων ώστε να φέρει ένα υπάρχον αποθετήριο στην έκδοση που αναμένει η εγκατεστημένη έκδοση. Οι αναβαθμίσεις εφαρμόζονται ένα βήμα έκδοσης τη φορά κατά μήκος μιας σταθερής διαδρομής αναβάθμισης, και κάθε ολοκληρωμένο βήμα καταγράφεται στο αποθετήριο.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Αν το αποθετήριο βρίσκεται ήδη στην αναμενόμενη έκδοση, η εντολή αναφέρει ότι δεν χρειάζεται αναβάθμιση και δεν κάνει καμία αλλαγή.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4323,112 +4305,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Διαχείριση κρυπτογράφησης
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Η εντολή `crypt gen-key` δημιουργεί ένα νέο κλειδί κρυπτογράφησης AES-GCM, για χρήση ως κλειδί κρυπτογράφησης στο `config.toml`. Πρέπει ήδη να υπάρχει ένα `config.toml` που να μπορεί να φορτωθεί, παρότι το παραγόμενο κλειδί δεν εξαρτάται από αυτό.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Η εντολή `crypt encrypt` κρυπτογραφεί μια συμβολοσειρά (όπως έναν κωδικό πρόσβασης βάσης δεδομένων) χρησιμοποιώντας το κλειδί AES-GCM που έχει διαμορφωθεί στο `config.toml` και εκτυπώνει το κρυπτογράφημα.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Ορίσματα
+- **VALUE**: Η συμβολοσειρά απλού κειμένου προς κρυπτογράφηση (υποχρεωτικό).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Η εντολή `crypt decrypt` αποκρυπτογραφεί μια συμβολοσειρά κρυπτογραφημένη με AES-GCM χρησιμοποιώντας το κλειδί που έχει διαμορφωθεί στο `config.toml` και εκτυπώνει το απλό κείμενο.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Ορίσματα
+- **VALUE**: Η κρυπτογραφημένη συμβολοσειρά προς αποκρυπτογράφηση (υποχρεωτικό).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Διαχείριση χρηστών
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Η εντολή `user add` δημιουργεί έναν νέο λογαριασμό χρήστη στο αποθετήριο ***digna***. Η εντολή αποτυγχάνει αν υπάρχει ήδη χρήστης με τη δοθείσα διεύθυνση ηλεκτρονικού ταχυδρομείου.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Ορίσματα
+- **EMAIL**: Η διεύθυνση ηλεκτρονικού ταχυδρομείου του χρήστη (υποχρεωτικό).
+- **PASSWORD**: Ο αρχικός κωδικός πρόσβασης του χρήστη (υποχρεωτικό).
+- **DISPLAY_NAME**: Το πλήρες εμφανιζόμενο όνομα του χρήστη (υποχρεωτικό).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Επιλογές
+- `--admin`, `-a`: Δημιουργεί τον χρήστη με δικαιώματα διαχειριστή (υπερχρήστη).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Για τη δημιουργία λογαριασμού διαχειριστή:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Η εντολή `user list` παραθέτει όλους τους εγγεγραμμένους χρήστες σε μορφή πίνακα με το αναγνωριστικό, το ηλεκτρονικό ταχυδρομείο, το εμφανιζόμενο όνομα και τη σημαία διαχειριστή.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4438,88 +4414,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Η εντολή `user modify` ενημερώνει το εμφανιζόμενο όνομα και τα δικαιώματα διαχειριστή ενός υπάρχοντος λογαριασμού χρήστη, ο οποίος προσδιορίζεται από τη διεύθυνση ηλεκτρονικού ταχυδρομείου.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Τόσο το εμφανιζόμενο όνομα όσο και η σημαία διαχειριστή γράφονται πάντοτε. Η `--admin` είναι διακόπτης, όχι τιμή: **η παράλειψή της αφαιρεί τα δικαιώματα διαχειριστή**, οπότε δώστε την κάθε φορά που ο χρήστης πρέπει να τα διατηρήσει ή να τα αποκτήσει.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Ορίσματα
+- **EMAIL**: Το ηλεκτρονικό ταχυδρομείο του χρήστη προς τροποποίηση (υποχρεωτικό).
+- **DISPLAY_NAME**: Το ενημερωμένο εμφανιζόμενο όνομα (υποχρεωτικό).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Επιλογές
+- `--admin`, `-a`: Παραχωρεί δικαιώματα διαχειριστή. Παραλείψτε την για να τα αφαιρέσετε.
+- `--valid-until`, `-v`: Γίνεται δεκτή για λόγους συμβατότητας αλλά **δεν εφαρμόζεται προς το παρόν**. Η χρήση της εμφανίζει προειδοποίηση και δεν αλλάζει τίποτα.
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Η εντολή `user modify-pwd` ενημερώνει τον κωδικό πρόσβασης ενός υπάρχοντος λογαριασμού χρήστη.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Ορίσματα
+- **EMAIL**: Το ηλεκτρονικό ταχυδρομείο του χρήστη του οποίου ο κωδικός πρόσβασης θα ενημερωθεί (υποχρεωτικό).
+- **PASSWORD**: Ο νέος κωδικός πρόσβασης (υποχρεωτικό).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Η εντολή `user delete` αφαιρεί έναν λογαριασμό χρήστη από το σύστημα.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Ορίσματα
+- **EMAIL**: Το ηλεκτρονικό ταχυδρομείο του χρήστη προς διαγραφή (υποχρεωτικό).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Διαχείριση έργων και πηγών δεδομένων
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Η εντολή `project list` παραθέτει όλα τα διαθέσιμα έργα στο αποθετήριο, εμφανίζοντας το αναγνωριστικό, το όνομα και την περιγραφή τους.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4529,23 +4501,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Η εντολή `project list-ds` παραθέτει όλες τις πηγές δεδομένων που σχετίζονται με ένα δεδομένο έργο, εμφανίζοντας το αναγνωριστικό, το όνομα, το είδος, το σχήμα και το όνομα πίνακα.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Ορίσματα
+- **PROJECT_NAME**: Το όνομα του έργου του οποίου οι πηγές δεδομένων θα παρατεθούν (υποχρεωτικό). Το όνομα πρέπει να ταιριάζει ακριβώς.
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4555,149 +4526,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Η εντολή `project export-ds` εξάγει πηγές δεδομένων από ένα έργο σε ένα έγγραφο JSON.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Αν δεν δοθεί ούτε `--table-name` ούτε `--table-id`, εξάγονται όλες οι πηγές δεδομένων του έργου.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Ορίσματα
+- **PROJECT_NAME**: Το όνομα του έργου από το οποίο θα εξαχθούν οι πηγές δεδομένων (υποχρεωτικό).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Επιλογές
+- `--table-name`, `-n`: Ονόματα πηγών δεδομένων προς εξαγωγή. Μπορούν να δοθούν πολλά ονόματα χωρισμένα με κενά.
+- `--table-id`, `-i`: Αναγνωριστικά πηγών δεδομένων προς εξαγωγή. Μπορούν να δοθούν πολλά αναγνωριστικά χωρισμένα με κενά.
+- `--exportfile`, `-f`: Διαδρομή αποθήκευσης των εξαγόμενων πηγών δεδομένων (προεπιλογή: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Παράδειγμα
+Για την εξαγωγή όλων των πηγών δεδομένων από το `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Για την εξαγωγή συγκεκριμένων πινάκων:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Η εντολή `project import-ds` εισάγει πηγές δεδομένων από ένα αρχείο εξαγωγής σε ένα έργο προορισμού και αναφέρει ανά αντικείμενο τι δημιουργήθηκε, ενημερώθηκε ή παραλείφθηκε.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Ορίσματα
+- **PROJECT_NAME**: Το όνομα του έργου προορισμού στο οποίο γίνεται η εισαγωγή (υποχρεωτικό).
+- **EXPORT_FILE**: Διαδρομή προς το αρχείο εξαγωγής JSON (υποχρεωτικό).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Επιλογές
+- `--output-file`, `-o`: Αρχείο στο οποίο γράφεται η αναφορά εισαγωγής. Χωρίς αυτό, η αναφορά πηγαίνει στο stdout.
+- `--output-format`, `-f`: Μορφή της αναφοράς εισαγωγής — `table`, `json` ή `csv` (προεπιλογή: `table`).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Για τη λήψη αναφοράς αναγνώσιμης από μηχανή:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Η αναφορά καλύπτει τέσσερα επίπεδα αντικειμένων — πηγή δεδομένων, ορισμό συνόλου δεδομένων, χαρακτηριστικό και κανόνα επικύρωσης — καθένα με την ενέργεια εισαγωγής, το αποτέλεσμα, το αναγνωριστικό του προκύπτοντος αντικειμένου και τυχόν πρόσθετες πληροφορίες.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Η εντολή `project plan-import-ds` προεπισκοπεί μια εισαγωγή πηγών δεδομένων σε ένα έργο προορισμού, δείχνοντας ποια αντικείμενα θα δημιουργούνταν, θα ενημερώνονταν ή θα παραλείπονταν, χωρίς να αλλάζει τίποτα. Δέχεται το ίδιο αρχείο εξαγωγής και τις ίδιες επιλογές αναφοράς με την [`project import-ds`](#project-import-ds) και προσθέτει έναν αριθμό βήματος ανά προγραμματισμένο αντικείμενο.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Ορίσματα
+- **PROJECT_NAME**: Το όνομα του έργου προορισμού (υποχρεωτικό).
+- **EXPORT_FILE**: Διαδρομή προς το αρχείο εξαγωγής (υποχρεωτικό).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Επιλογές
+- `--output-file`, `-o`: Αρχείο στο οποίο γράφεται το σχέδιο εισαγωγής. Χωρίς αυτό, το σχέδιο πηγαίνει στο stdout.
+- `--output-format`, `-f`: Μορφή του σχεδίου εισαγωγής — `table`, `json` ή `csv` (προεπιλογή: `table`).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Διαχείριση επιθεωρήσεων
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Η εντολή `inspection run` δημιουργεί ένα αίτημα επιθεώρησης για ένα έργο και ένα εύρος ημερομηνιών και στη συνέχεια — ανάλογα με τις επιλογές που δόθηκαν — είτε περιμένει το αποτέλεσμα, είτε επιστρέφει αμέσως, είτε το εκτελεί εντός της ίδιας διεργασίας.
 
-The three execution modes are:
+Οι τρεις τρόποι εκτέλεσης είναι:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Προεπιλογή (χωρίς σημαία)**: το αίτημα τοποθετείται σε ουρά για το backend και το CLI το ελέγχει κάθε δύο δευτερόλεπτα, εκτυπώνοντας την πρόοδο των εργασιών μέχρι η επιθεώρηση να φτάσει σε τελική κατάσταση. Απαιτείται ένα `digna serve` σε εκτέλεση, διαφορετικά κανείς δεν παραλαμβάνει το αίτημα.
+- **`--async-mode`**: το αίτημα τοποθετείται σε ουρά και το αναγνωριστικό του εκτυπώνεται αμέσως. Χρησιμοποιήστε την [`inspection status`](#inspection-status) για να το παρακολουθήσετε.
+- **`--bypass-backend`**: η επιθεώρηση εκτελείται από την ίδια τη διεργασία του CLI και δεν τοποθετείται σε ουρά, οπότε δεν απαιτείται διακομιστής σε εκτέλεση.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+Οι `--async-mode` και `--bypass-backend` είναι αμοιβαία αποκλειόμενες.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+Σε κάθε τρόπο λειτουργίας, η εντολή τερματίζει με μη μηδενικό κωδικό εξόδου αν η επιθεώρηση δεν ολοκληρώθηκε επιτυχώς.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Ορίσματα
+- **PROJECT_NAME**: Το όνομα του έργου προορισμού (υποχρεωτικό). Το όνομα πρέπει να ταιριάζει ακριβώς.
+- **START_DATE**: Ημερομηνία έναρξης του εύρους σε μορφή `YYYY-MM-DD` (υποχρεωτικό).
+- **END_DATE**: Ημερομηνία λήξης του εύρους σε μορφή `YYYY-MM-DD` (υποχρεωτικό).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Επιλογές
+- `--table-name`: Περιορίζει την επιθεώρηση σε μία μόνο πηγή δεδομένων του έργου, δοσμένη με το όνομα της πηγής δεδομένων. Χωρίς αυτήν, επιθεωρούνται όλες οι πηγές δεδομένων του έργου.
+- `--async-mode`: Τοποθετεί την επιθεώρηση σε ουρά και εκτυπώνει το αναγνωριστικό του αιτήματος αντί να την περιμένει. Δεν συνδυάζεται με την `--bypass-backend`.
+- `--bypass-backend`: Εκτελεί την επιθεώρηση απευθείας στη διεργασία του CLI αντί να την τοποθετήσει σε ουρά για το backend. Δεν συνδυάζεται με την `--async-mode`.
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Για την υποβολή ασύγχρονης επιθεώρησης:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Για την επιθεώρηση μίας μόνο πηγής δεδομένων:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Παράδειγμα εξόδου
+Προεπιλεγμένος τρόπος:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4706,30 +4670,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Ασύγχρονος τρόπος:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Η εντολή `inspection status` ζητά την κατάσταση και την πρόοδο εργασιών ενός αιτήματος επιθεώρησης με βάση το αναγνωριστικό του αιτήματος.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Ορίσματα
+- **INSPECTION_REQUEST_ID**: Το αριθμητικό αναγνωριστικό του αιτήματος επιθεώρησης (υποχρεωτικό).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4740,92 +4703,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Η εντολή `inspection abort` ζητά την ακύρωση αιτημάτων επιθεώρησης που εκτελούνται ή εκκρεμούν. Καταγράφει ένα συμβάν διακοπής για κάθε επηρεαζόμενο αίτημα· το backend ενεργεί βάσει αυτού, οπότε η ματαίωση είναι αίτημα διακοπής και όχι άμεσος τερματισμός.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Ορίσματα
+- **INSPECTION_REQUEST_ID**: Το αναγνωριστικό του αιτήματος επιθεώρησης προς ματαίωση. Υποχρεωτικό εκτός αν δοθεί η `--killall`.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Επιλογές
+- `--killall`: Ματαιώνει όλα τα αιτήματα επιθεώρησης που εκτελούνται και εκκρεμούν αυτή τη στιγμή. Υπερισχύει έναντι αναγνωριστικού αιτήματος που δίνεται παράλληλα.
 
-#### Example
-To abort a specific request:
+#### Παράδειγμα
+Για τη ματαίωση συγκεκριμένου αιτήματος:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Για τη ματαίωση όλων των ενεργών και σε ουρά επιθεωρήσεων:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Παράδειγμα εξόδου
+Η `--killall` αναφέρει τι έκανε· η ματαίωση μεμονωμένου αιτήματος δεν παράγει έξοδο και δηλώνει την επιτυχία μέσω του κωδικού εξόδου της.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Διαχείριση αδειών
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Η εντολή `license check` επικυρώνει το `license.toml`, επαληθεύοντας την υπογραφή του έναντι του δημόσιου κλειδιού που συνοδεύει την εγκατάσταση και ελέγχοντας ότι δεν έχει λήξει. Δεν διαβάζει καμία διαμόρφωση εφαρμογής, οπότε λειτουργεί και πριν ρυθμιστεί το `config.toml`.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Μια άκυρη υπογραφή και μια ληγμένη άδεια αναφέρονται ως διακριτά σφάλματα, αμφότερα με κωδικό εξόδου 1.
 
 ---
 
-## Server & Background Services
+## Διακομιστής και υπηρεσίες παρασκηνίου
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Η εντολή `serve` εκκινεί τον διακομιστή REST API του ***digna*** μαζί με τον χρονοπρογραμματιστή επιθεωρήσεων παρασκηνίου και τον διαχειριστή επιθεωρήσεων. Κατά την εκκίνηση, θέτει επίσης σε κατάσταση αποτυχίας κάθε επιθεώρηση που το αποθετήριο εξακολουθεί να καταγράφει ως εκτελούμενη, καθώς τίποτα δεν μπορεί να έχει επιβιώσει από προηγούμενη διεργασία.
 
-The command runs in the foreground until it is stopped.
+Η εντολή εκτελείται στο προσκήνιο μέχρι να διακοπεί.
 
-#### Command Usage
+#### Χρήση εντολής
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Επιλογές
+- `--address`: Διεύθυνση δικτύου στην οποία δεσμεύεται ο διακομιστής API (προεπιλογή: `127.0.0.1`).
+- `--port`: Αριθμός θύρας ακρόασης (προεπιλογή: `8000`).
 
-#### Example
+#### Παράδειγμα
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Παράδειγμα εξόδου
 ```text
 Server running on http://0.0.0.0:8000
 ```
