@@ -117,6 +117,7 @@ nav:
           - PingOne: sso/pingone_sso_guide.md
   - CLI Reference:
           - Introduction: cli/Introduction.md
+          - Release 2026.06: cli/Command_Line_Interface_202606.md
           - Release 2026.04: cli/Command_Line_Interface_202604.md
           - Release 2026.01: cli/Command_Line_Interface_202601.md
           - Release 2025.09: cli/Command_Line_Interface_202509.md
