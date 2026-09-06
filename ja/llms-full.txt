@@ -4079,159 +4079,151 @@ dignacli plan-import-ds ProjectB my_export.json
 # Release 2026.06
 Source: https://docs.digna.ai/ja/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# digna CLI リファレンス 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+このページでは、***digna*** CLI リリース **2026.06** で利用できるコマンドの全体像を、使用例とオプションを含めて説明します。
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+実行ファイルの名前は `digna` です。
 
 ---
 
-### Overview & Syntax
+## CLI の基本
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### 概要と構文
+
+リリース **2026.06** の CLI は、カテゴリに基づく構造化されたコマンド階層を使用します。
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` と `serve` はサブコマンドを持たない単独のコマンドです。
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### グローバルオプション
 
-The following global options apply across all commands:
+以下のグローバルオプションはすべてのコマンドに適用されます。
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`、`-h`: CLI 全体、または特定のコマンドカテゴリやサブコマンドのヘルプ情報を表示します。
+- `--stacktrace`: 失敗時に、最上位のメッセージだけでなくエラーチェーン全体を表示します。
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` は厳密な意味でのグローバルオプションです。コマンドカテゴリの **前** に指定する必要があり、後ろに置くことはできません。
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+`--version` フラグはありません。代わりに [`version`](#version) コマンドを使用してください。
 
-### Prerequisites
+### 前提条件
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+ほとんどのコマンドは、読み取り可能で有効な `config.toml` を必要とします。一部のコマンドはさらに有効なライセンスを必要とします。
+次の表は、各コマンドカテゴリが処理を始める前に読み込むものを示しています。
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| コマンドカテゴリ | `config.toml` が必要 | 有効なライセンスが必要 |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | いいえ | いいえ |
+| `config check` | いいえ（コマンドが報告する対象そのものです） | いいえ |
+| `license check` | いいえ | それ *自体* が検査です |
+| `crypt` | はい | いいえ |
+| `serve` | はい | いいえ |
+| `project` | はい | いいえ |
+| `user` | はい | はい |
+| `inspection` | はい | はい |
+| `repo` | はい | はい |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+ライセンスが必要な場合は、署名と有効期限の両方が検査され、いずれかが失敗するとコマンドはリポジトリに触れる前に中止されます。
 
-### Exit Codes
+### 終了コード
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: コマンドは成功しました。
+- `1`: コマンドは失敗しました。エラーメッセージは接頭辞 `Error: ` を付けて stderr に書き出されます。
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+`--help` オプションは、利用可能なコマンドカテゴリ、サブコマンド、オプションに関する情報を提供します。
 
-1. **Displaying General Help:**
+1. **全般的なヘルプの表示:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **特定のカテゴリやコマンドのヘルプの取得:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **出力に含まれる内容:**
+   - **コマンドの説明:** コマンドの目的の要約。
+   - **構文:** 必須および任意の引数。
+   - **オプション:** そのコマンド固有のフラグとパラメーター。
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+`version` コマンドはインストールされている ***digna*** のリリースを出力します。構成を読み込まず、ライセンスの検証も行わないため、`config.toml` やライセンスが欠落していたり無効であったりするインストールでも動作します。
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+リリースのバージョンは、[`repo check`](#repo-check) が報告するリポジトリスキーマのバージョンとは独立しています。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna version
 ```
 
-#### Example Output
+#### 出力例
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## 構成管理
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+`config check` コマンドは構成ファイル（`config.toml`）を検証し、必須のセクションと設定がすべて存在し、正しく書式化されていることを確認します。各セクションは個別に検証されるため、壊れた `[app]` セクションが `[repo]` の状態を隠してしまうことはありません。
 
-The sections reported are:
+報告されるセクションは次のとおりです。
 
-- `App config` (`[app]`)
-- `Repository config` (`[repo]`)
-- `Base config` (`[base]`)
-- `Logging config` (`[logging]`)
-- `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `App config`（`[app]`）
+- `Repository config`（`[repo]`）
+- `Base config`（`[base]`）
+- `Logging config`（`[logging]`）
+- `Encryption config`（`[encryption]`）
+- `OIDC config(s)`（`oidc_clients`）— 任意。キーが存在しない場合は合格し、存在するが不正な形式のリストは失敗します
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+このコマンドは他のコマンドのようには意図的にアプリケーション構成を読み込みません。そのため、***digna*** の起動そのものを妨げるような `config.toml` も診断できます。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### オプション
+- `--configpath`、`-c`: 構成ファイルへのパス、または `config.toml` を含むディレクトリへのパス（既定値は `./config.toml`）。
+- `--json`: 検証レポートを JSON として出力します。`--quiet` より優先されます。
+- `--quiet`、`-q`: レポートを抑制し、終了コードのみに依存します。
 
-#### Example
+#### 例
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+特定の構成ファイルを検証し、出力を JSON 形式にする場合:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4245,49 +4237,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+ファイルが存在しない場合や TOML の構文エラーがある場合は、セクションごとに検証する対象が残らないため、`--quiet` や `--json` の指定にかかわらず、レポートではなく単一のエラーとして報告されます。
 
 ---
 
-## Repository Management
+## リポジトリ管理
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+`repo check` コマンドはデータベース接続をテストし、リポジトリのインストール状況とバージョンを確認します。構成されたスキーマが存在しない場合、または存在しても ***digna*** リポジトリが含まれていない場合は失敗します。
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+報告されるバージョンはリポジトリスキーマのバージョンであり、[`version`](#version) が出力する ***digna*** のリリースとは別に管理されています。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+`repo install` コマンドは、`config.toml` で構成されたスキーマに新しい ***digna*** リポジトリをインストールし、必要なシーケンス、テーブル、インデックス、制約、初期レコードをすべて作成します。
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+スキーマ自体はこのコマンドでは作成 **されません** — 事前に存在している必要があります。また、そのスキーマにリポジトリが既にインストールされている場合、コマンドは実行を拒否し、インストール済みのバージョンが古い場合は [`repo upgrade`](#repo-upgrade) を案内します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4299,19 +4284,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+`repo upgrade` コマンドはデータベーススキーマのマイグレーションを適用し、既存のリポジトリをインストール済みリリースが想定するバージョンまで引き上げます。アップグレードは決められたアップグレード経路に沿って一度に 1 バージョンずつ適用され、完了した各段階はリポジトリに記録されます。
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+リポジトリが既に想定どおりのバージョンである場合、コマンドはアップグレードが不要である旨を報告し、変更を行いません。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4320,112 +4302,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## 暗号化管理
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+`crypt gen-key` コマンドは、`config.toml` の暗号化キーとして使用するための新しい AES-GCM 暗号化キーを生成します。生成されるキー自体は `config.toml` に依存しませんが、読み込み可能な `config.toml` が既に存在している必要があります。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+`crypt encrypt` コマンドは、`config.toml` で構成された AES-GCM キーを使用して文字列（データベースのパスワードなど）を暗号化し、暗号文を出力します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### 引数
+- **VALUE**: 暗号化する平文の文字列（必須）。
 
-#### Example
+#### 例
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+`crypt decrypt` コマンドは、`config.toml` で構成されたキーを使用して AES-GCM で暗号化された文字列を復号し、平文を出力します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### 引数
+- **VALUE**: 復号する暗号文の文字列（必須）。
 
-#### Example
+#### 例
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## ユーザー管理
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+`user add` コマンドは ***digna*** リポジトリに新しいユーザーアカウントを作成します。指定されたメールアドレスのユーザーが既に存在する場合、コマンドは失敗します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### 引数
+- **EMAIL**: ユーザーのメールアドレス（必須）。
+- **PASSWORD**: ユーザーの初期パスワード（必須）。
+- **DISPLAY_NAME**: ユーザーの完全な表示名（必須）。
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### オプション
+- `--admin`、`-a`: 管理者（スーパーユーザー）権限を持つユーザーとして作成します。
 
-#### Example
+#### 例
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+管理者アカウントを作成する場合:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### 出力例
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+`user list` コマンドは、登録済みのすべてのユーザーを、ID、メールアドレス、表示名、管理者フラグとともに表形式で一覧表示します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### 出力例
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4435,88 +4411,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+`user modify` コマンドは、メールアドレスで識別される既存のユーザーアカウントの表示名と管理者権限を更新します。
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+表示名と管理者フラグは常に両方とも書き込まれます。`--admin` は値ではなくスイッチです。**省略すると管理者権限が取り消される** ため、ユーザーが権限を維持または取得する必要がある場合は必ず指定してください。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### 引数
+- **EMAIL**: 変更対象ユーザーのメールアドレス（必須）。
+- **DISPLAY_NAME**: 更新後の表示名（必須）。
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### オプション
+- `--admin`、`-a`: 管理者権限を付与します。取り消す場合は省略します。
+- `--valid-until`、`-v`: 互換性のために受け付けられますが、**現在は適用されません**。指定すると警告が表示され、何も変更されません。
 
-#### Example
+#### 例
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### 出力例
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+`user modify-pwd` コマンドは、既存のユーザーアカウントのパスワードを更新します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### 引数
+- **EMAIL**: パスワードを更新するユーザーのメールアドレス（必須）。
+- **PASSWORD**: 新しいパスワード（必須）。
 
-#### Example
+#### 例
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+`user delete` コマンドは、システムからユーザーアカウントを削除します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### 引数
+- **EMAIL**: 削除するユーザーのメールアドレス（必須）。
 
-#### Example
+#### 例
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## プロジェクトとデータソースの管理
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+`project list` コマンドは、リポジトリ内で利用できるすべてのプロジェクトを、ID、名前、説明とともに一覧表示します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### 出力例
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4526,23 +4498,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+`project list-ds` コマンドは、指定したプロジェクトに関連付けられたすべてのデータソースを、ID、名前、種類、スキーマ、テーブル名とともに一覧表示します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### 引数
+- **PROJECT_NAME**: データソースを一覧表示するプロジェクトの名前（必須）。名前は完全に一致している必要があります。
 
-#### Example
+#### 例
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### 出力例
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4552,149 +4523,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+`project export-ds` コマンドは、プロジェクトのデータソースを JSON ドキュメントにエクスポートします。
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+`--table-name` と `--table-id` のいずれも指定しない場合、プロジェクトのすべてのデータソースがエクスポートされます。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### 引数
+- **PROJECT_NAME**: データソースのエクスポート元となるプロジェクトの名前（必須）。
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### オプション
+- `--table-name`、`-n`: エクスポートするデータソースの名前。複数の名前をスペース区切りで指定できます。
+- `--table-id`、`-i`: エクスポートするデータソースの ID。複数の ID をスペース区切りで指定できます。
+- `--exportfile`、`-f`: エクスポートしたデータソースの保存先パス（既定値: `data_sources_export.json`）。
 
-#### Example
-To export all data sources from `ProjectA`:
+#### 例
+`ProjectA` からすべてのデータソースをエクスポートする場合:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+特定のテーブルをエクスポートする場合:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+`project import-ds` コマンドは、エクスポートファイルから対象プロジェクトへデータソースをインポートし、オブジェクトごとに作成・更新・スキップの結果を報告します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### 引数
+- **PROJECT_NAME**: インポート先となる対象プロジェクトの名前（必須）。
+- **EXPORT_FILE**: JSON エクスポートファイルへのパス（必須）。
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### オプション
+- `--output-file`、`-o`: インポートレポートの書き出し先ファイル。指定しない場合、レポートは stdout に出力されます。
+- `--output-format`、`-f`: インポートレポートの形式 — `table`、`json`、`csv`（既定値: `table`）。
 
-#### Example
+#### 例
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+機械可読なレポートを取得する場合:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+レポートは 4 つのオブジェクト階層 — データソース、データセット定義、属性、検証ルール — を対象とし、それぞれについてインポート操作、結果、生成されたオブジェクト ID、追加情報を示します。
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+`project plan-import-ds` コマンドは、対象プロジェクトへのデータソースのインポートをプレビューし、どのオブジェクトが作成・更新・スキップされるかを、何も変更せずに表示します。[`project import-ds`](#project-import-ds) と同じエクスポートファイルおよび同じレポートオプションを受け付け、計画された各オブジェクトにステップ番号を付与します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### 引数
+- **PROJECT_NAME**: 対象プロジェクトの名前（必須）。
+- **EXPORT_FILE**: エクスポートファイルへのパス（必須）。
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### オプション
+- `--output-file`、`-o`: インポート計画の書き出し先ファイル。指定しない場合、計画は stdout に出力されます。
+- `--output-format`、`-f`: インポート計画の形式 — `table`、`json`、`csv`（既定値: `table`）。
 
-#### Example
+#### 例
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## 検査管理
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+`inspection run` コマンドは、プロジェクトと日付範囲に対する検査リクエストを作成し、その後、指定されたオプションに応じて、完了を待機するか、直ちに制御を返すか、自プロセス内で実行します。
 
-The three execution modes are:
+3 つの実行モードは次のとおりです。
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **既定（フラグなし）**: リクエストはバックエンド向けにキューへ入れられ、CLI は 2 秒ごとにポーリングしてタスクの進捗を出力し、検査が最終状態に達するまで続けます。実行中の `digna serve` が必要であり、それがないとリクエストを引き取るものがありません。
+- **`--async-mode`**: リクエストはキューへ入れられ、その ID が直ちに出力されます。追跡には [`inspection status`](#inspection-status) を使用してください。
+- **`--bypass-backend`**: 検査は CLI プロセス自身によって実行され、キューには入りません。そのため実行中のサーバーは不要です。
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` と `--bypass-backend` は同時に指定できません。
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+いずれのモードでも、検査が正常に完了しなかった場合、コマンドは 0 以外の終了コードで終了します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### 引数
+- **PROJECT_NAME**: 対象プロジェクトの名前（必須）。名前は完全に一致している必要があります。
+- **START_DATE**: 日付範囲の開始日。形式は `YYYY-MM-DD`（必須）。
+- **END_DATE**: 日付範囲の終了日。形式は `YYYY-MM-DD`（必須）。
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### オプション
+- `--table-name`: 検査をプロジェクト内の単一のデータソースに限定します。データソース名で指定します。指定しない場合、プロジェクトのすべてのデータソースが検査されます。
+- `--async-mode`: 検査をキューに入れ、完了を待たずにリクエスト ID を出力します。`--bypass-backend` とは併用できません。
+- `--bypass-backend`: バックエンド向けにキューへ入れる代わりに、CLI プロセス内で直接検査を実行します。`--async-mode` とは併用できません。
 
-#### Example
+#### 例
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+非同期の検査を送信する場合:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+単一のデータソースを検査する場合:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### 出力例
+既定モード:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4703,30 +4667,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+非同期モード:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+`inspection status` コマンドは、リクエスト ID を指定して検査リクエストの状態とタスクの進捗を照会します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### 引数
+- **INSPECTION_REQUEST_ID**: 検査リクエストの数値 ID（必須）。
 
-#### Example
+#### 例
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4737,92 +4700,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+`inspection abort` コマンドは、実行中または保留中の検査リクエストの取り消しを要求します。対象となる各リクエストについて停止イベントを記録し、それに基づいてバックエンドが動作します。したがって中止は即時終了ではなく、停止の要求です。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### 引数
+- **INSPECTION_REQUEST_ID**: 中止する検査リクエストの ID。`--killall` を指定しない限り必須です。
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### オプション
+- `--killall`: 現在実行中および保留中のすべての検査リクエストを中止します。同時に指定されたリクエスト ID より優先されます。
 
-#### Example
-To abort a specific request:
+#### 例
+特定のリクエストを中止する場合:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+実行中およびキュー内のすべての検査を中止する場合:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### 出力例
+`--killall` は実行内容を報告します。単一のリクエストの中止は出力を生成せず、終了コードで成功を示します。
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## ライセンス管理
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+`license check` コマンドは `license.toml` を検証し、インストールに同梱された公開鍵に対して署名を確認するとともに、有効期限が切れていないことを検査します。アプリケーション構成を読み込まないため、`config.toml` の設定前でも動作します。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### 出力例
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+無効な署名と期限切れのライセンスは、いずれも終了コード 1 で、それぞれ別のエラーとして報告されます。
 
 ---
 
-## Server & Background Services
+## サーバーとバックグラウンドサービス
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+`serve` コマンドは、***digna*** の REST API サーバーを、バックグラウンドの検査スケジューラおよび検査マネージャーとともに起動します。起動時には、リポジトリが依然として実行中として記録している検査をすべて失敗として扱います。以前のプロセスから残っているものはあり得ないためです。
 
-The command runs in the foreground until it is stopped.
+コマンドは停止されるまでフォアグラウンドで実行されます。
 
-#### Command Usage
+#### コマンドの使い方
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### オプション
+- `--address`: API サーバーをバインドするネットワークアドレス（既定値: `127.0.0.1`）。
+- `--port`: 待ち受けるポート番号（既定値: `8000`）。
 
-#### Example
+#### 例
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### 出力例
 ```text
 Server running on http://0.0.0.0:8000
 ```

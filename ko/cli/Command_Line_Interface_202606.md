@@ -1,156 +1,148 @@
-# digna CLI Reference 2026.06
+# digna CLI 참조 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+이 페이지는 ***digna*** CLI 릴리스 **2026.06**에서 사용할 수 있는 전체 명령을 사용 예시와 옵션과 함께 설명합니다.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+실행 파일의 이름은 `digna`입니다.
 
 ---
 
-### Overview & Syntax
+## CLI 기본 사항
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### 개요 및 구문
+
+릴리스 **2026.06**의 CLI는 범주 기반의 구조화된 명령 계층을 사용합니다.
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version`과 `serve`는 하위 명령이 없는 단일 명령입니다.
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### 전역 옵션
 
-The following global options apply across all commands:
+다음 전역 옵션은 모든 명령에 적용됩니다.
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: CLI 전체 또는 특정 명령 범주나 하위 명령에 대한 도움말 정보를 표시합니다.
+- `--stacktrace`: 실패 시 최상위 메시지만이 아니라 전체 오류 체인을 표시합니다.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace`는 엄밀한 의미의 전역 옵션입니다. 명령 범주 **앞에** 지정해야 하며, 뒤에 둘 수 없습니다.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+`--version` 플래그는 없습니다. 대신 [`version`](#version) 명령을 사용하십시오.
 
-### Prerequisites
+### 전제 조건
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+대부분의 명령은 읽을 수 있고 유효한 `config.toml`이 필요하며, 일부는 추가로 유효한 라이선스를 요구합니다.
+다음 표는 각 명령 범주가 어떤 작업을 하기 전에 무엇을 로드하는지 기록한 것입니다.
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| 명령 범주 | `config.toml` 필요 | 유효한 라이선스 필요 |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | 아니요 | 아니요 |
+| `config check` | 아니요(명령이 보고하는 대상 자체입니다) | 아니요 |
+| `license check` | 아니요 | 그것 *자체가* 검사입니다 |
+| `crypt` | 예 | 아니요 |
+| `serve` | 예 | 아니요 |
+| `project` | 예 | 아니요 |
+| `user` | 예 | 예 |
+| `inspection` | 예 | 예 |
+| `repo` | 예 | 예 |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+라이선스가 필요한 경우 서명과 만료일이 모두 검사되며, 둘 중 하나라도 실패하면 명령은 저장소에 접근하기 전에 중단됩니다.
 
-### Exit Codes
+### 종료 코드
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: 명령이 성공했습니다.
+- `1`: 명령이 실패했습니다. 오류 메시지는 `Error: ` 접두사와 함께 stderr에 기록됩니다.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+`--help` 옵션은 사용 가능한 명령 범주, 하위 명령, 옵션에 대한 정보를 제공합니다.
 
-1. **Displaying General Help:**
+1. **일반 도움말 표시:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **특정 범주 및 명령에 대한 도움말 확인:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **출력에 포함되는 내용:**
+   - **명령 설명:** 명령의 목적 요약.
+   - **구문:** 필수 및 선택 인수.
+   - **옵션:** 해당 명령 고유의 플래그와 매개변수.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+`version` 명령은 설치된 ***digna*** 릴리스를 출력합니다. 어떤 구성도 읽지 않고 라이선스도 검증하지 않으므로, `config.toml`이나 라이선스가 없거나 유효하지 않은 설치에서도 동작합니다.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+릴리스 버전은 [`repo check`](#repo-check)가 보고하는 저장소 스키마 버전과 별개입니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna version
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## 구성 관리
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+`config check` 명령은 구성 파일(`config.toml`)을 검증하여 모든 필수 섹션과 설정이 존재하고 올바른 형식인지 확인합니다. 각 섹션은 개별적으로 검증되므로 손상된 `[app]` 섹션이 `[repo]`의 상태를 가리지 않습니다.
 
-The sections reported are:
+보고되는 섹션은 다음과 같습니다.
 
-- `App config` (`[app]`)
-- `Repository config` (`[repo]`)
-- `Base config` (`[base]`)
-- `Logging config` (`[logging]`)
-- `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `App config`(`[app]`)
+- `Repository config`(`[repo]`)
+- `Base config`(`[base]`)
+- `Logging config`(`[logging]`)
+- `Encryption config`(`[encryption]`)
+- `OIDC config(s)`(`oidc_clients`) — 선택 사항이며, 키가 없으면 통과하고 존재하지만 형식이 잘못된 목록은 실패합니다
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+이 명령은 다른 명령과 달리 애플리케이션 구성을 의도적으로 로드하지 않습니다. 그렇기 때문에 ***digna***가 아예 시작되지 못하게 만드는 `config.toml`도 진단할 수 있습니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### 옵션
+- `--configpath`, `-c`: 구성 파일 경로 또는 `config.toml`이 들어 있는 디렉터리 경로(기본값 `./config.toml`).
+- `--json`: 검증 보고서를 JSON으로 출력합니다. `--quiet`보다 우선합니다.
+- `--quiet`, `-q`: 보고서를 표시하지 않고 종료 코드에만 의존합니다.
 
-#### Example
+#### 예시
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+특정 구성 파일을 검증하고 출력을 JSON 형식으로 지정:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -164,49 +156,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+파일이 없거나 TOML 구문 오류가 있으면 섹션별로 검증할 대상이 남지 않으므로, `--quiet`나 `--json` 지정과 무관하게 보고서가 아닌 단일 오류로 보고됩니다.
 
 ---
 
-## Repository Management
+## 저장소 관리
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+`repo check` 명령은 데이터베이스 연결을 테스트하고 저장소의 설치 상태와 버전을 확인합니다. 구성된 스키마가 존재하지 않거나, 존재하더라도 ***digna*** 저장소가 들어 있지 않으면 실패합니다.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+보고되는 버전은 저장소 스키마의 버전이며, 이는 [`version`](#version)이 출력하는 ***digna*** 릴리스와 별도로 관리됩니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+`repo install` 명령은 `config.toml`에 구성된 스키마에 새로운 ***digna*** 저장소를 설치하며, 필요한 모든 시퀀스, 테이블, 인덱스, 제약 조건, 초기 레코드를 생성합니다.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+스키마 자체는 이 명령으로 생성되지 **않습니다** — 미리 존재해야 합니다. 또한 해당 스키마에 이미 저장소가 설치되어 있으면 명령은 실행을 거부하며, 설치된 버전이 더 낮은 경우 [`repo upgrade`](#repo-upgrade)를 안내합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -218,19 +203,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+`repo upgrade` 명령은 데이터베이스 스키마 마이그레이션을 적용하여 기존 저장소를 설치된 릴리스가 요구하는 버전으로 끌어올립니다. 업그레이드는 정해진 업그레이드 경로를 따라 한 번에 한 버전씩 적용되며, 완료된 각 단계는 저장소에 기록됩니다.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+저장소가 이미 요구 버전이라면, 명령은 업그레이드가 필요 없다고 보고하고 아무것도 변경하지 않습니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -239,112 +221,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## 암호화 관리
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+`crypt gen-key` 명령은 `config.toml`의 암호화 키로 사용할 새 AES-GCM 암호화 키를 생성합니다. 생성되는 키가 `config.toml`에 의존하지는 않지만, 로드 가능한 `config.toml`이 이미 존재해야 합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+`crypt encrypt` 명령은 `config.toml`에 구성된 AES-GCM 키로 문자열(예: 데이터베이스 비밀번호)을 암호화하고 암호문을 출력합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### 인수
+- **VALUE**: 암호화할 평문 문자열(필수).
 
-#### Example
+#### 예시
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+`crypt decrypt` 명령은 `config.toml`에 구성된 키로 AES-GCM으로 암호화된 문자열을 복호화하고 평문을 출력합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### 인수
+- **VALUE**: 복호화할 암호문 문자열(필수).
 
-#### Example
+#### 예시
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## 사용자 관리
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+`user add` 명령은 ***digna*** 저장소에 새 사용자 계정을 만듭니다. 지정한 이메일 주소를 가진 사용자가 이미 있으면 명령은 실패합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### 인수
+- **EMAIL**: 사용자의 이메일 주소(필수).
+- **PASSWORD**: 사용자의 초기 비밀번호(필수).
+- **DISPLAY_NAME**: 사용자의 전체 표시 이름(필수).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### 옵션
+- `--admin`, `-a`: 관리자(슈퍼유저) 권한으로 사용자를 만듭니다.
 
-#### Example
+#### 예시
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+관리자 계정을 만들려면:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+`user list` 명령은 등록된 모든 사용자를 ID, 이메일, 표시 이름, 관리자 플래그와 함께 표 형식으로 나열합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -354,88 +330,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+`user modify` 명령은 이메일 주소로 식별되는 기존 사용자 계정의 표시 이름과 관리자 권한을 갱신합니다.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+표시 이름과 관리자 플래그는 항상 함께 기록됩니다. `--admin`은 값이 아니라 스위치입니다. **생략하면 관리자 권한이 회수되므로**, 사용자가 권한을 유지하거나 새로 받아야 할 때는 반드시 지정하십시오.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### 인수
+- **EMAIL**: 수정할 사용자의 이메일(필수).
+- **DISPLAY_NAME**: 갱신된 표시 이름(필수).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### 옵션
+- `--admin`, `-a`: 관리자 권한을 부여합니다. 회수하려면 생략하십시오.
+- `--valid-until`, `-v`: 호환성을 위해 허용되지만 **현재 적용되지 않습니다**. 지정하면 경고가 출력되고 아무것도 변경되지 않습니다.
 
-#### Example
+#### 예시
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+`user modify-pwd` 명령은 기존 사용자 계정의 비밀번호를 갱신합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### 인수
+- **EMAIL**: 비밀번호를 갱신할 사용자의 이메일(필수).
+- **PASSWORD**: 새 비밀번호(필수).
 
-#### Example
+#### 예시
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+`user delete` 명령은 시스템에서 사용자 계정을 제거합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### 인수
+- **EMAIL**: 삭제할 사용자의 이메일(필수).
 
-#### Example
+#### 예시
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## 프로젝트 및 데이터 소스 관리
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+`project list` 명령은 저장소에서 사용할 수 있는 모든 프로젝트를 ID, 이름, 설명과 함께 나열합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -445,23 +417,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+`project list-ds` 명령은 지정한 프로젝트에 연결된 모든 데이터 소스를 ID, 이름, 종류, 스키마, 테이블 이름과 함께 나열합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### 인수
+- **PROJECT_NAME**: 데이터 소스를 나열할 프로젝트의 이름(필수). 이름은 정확히 일치해야 합니다.
 
-#### Example
+#### 예시
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -471,149 +442,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+`project export-ds` 명령은 프로젝트의 데이터 소스를 JSON 문서로 내보냅니다.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+`--table-name`과 `--table-id`를 모두 지정하지 않으면 프로젝트의 모든 데이터 소스를 내보냅니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### 인수
+- **PROJECT_NAME**: 데이터 소스를 내보낼 프로젝트의 이름(필수).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### 옵션
+- `--table-name`, `-n`: 내보낼 데이터 소스의 이름. 공백으로 구분하여 여러 이름을 지정할 수 있습니다.
+- `--table-id`, `-i`: 내보낼 데이터 소스의 ID. 공백으로 구분하여 여러 ID를 지정할 수 있습니다.
+- `--exportfile`, `-f`: 내보낸 데이터 소스를 저장할 경로(기본값: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### 예시
+`ProjectA`의 모든 데이터 소스를 내보내려면:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+특정 테이블을 내보내려면:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+`project import-ds` 명령은 내보내기 파일에서 대상 프로젝트로 데이터 소스를 가져오고, 객체별로 생성·갱신·건너뜀 여부를 보고합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### 인수
+- **PROJECT_NAME**: 가져올 대상 프로젝트 이름(필수).
+- **EXPORT_FILE**: JSON 내보내기 파일 경로(필수).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### 옵션
+- `--output-file`, `-o`: 가져오기 보고서를 기록할 파일. 지정하지 않으면 보고서는 stdout으로 출력됩니다.
+- `--output-format`, `-f`: 가져오기 보고서의 형식 — `table`, `json`, `csv`(기본값: `table`).
 
-#### Example
+#### 예시
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+기계가 읽을 수 있는 보고서를 얻으려면:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+보고서는 네 가지 객체 수준 — 데이터 소스, 데이터 세트 정의, 속성, 검증 규칙 — 을 다루며, 각각에 대해 가져오기 작업, 결과, 생성된 객체 ID, 추가 정보를 포함합니다.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+`project plan-import-ds` 명령은 대상 프로젝트로의 데이터 소스 가져오기를 미리 보여 주며, 어떤 객체가 생성·갱신·건너뜀 처리될지를 아무것도 변경하지 않고 표시합니다. [`project import-ds`](#project-import-ds)와 동일한 내보내기 파일 및 동일한 보고 옵션을 받아들이며, 계획된 각 객체에 단계 번호를 추가합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### 인수
+- **PROJECT_NAME**: 대상 프로젝트 이름(필수).
+- **EXPORT_FILE**: 내보내기 파일 경로(필수).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### 옵션
+- `--output-file`, `-o`: 가져오기 계획을 기록할 파일. 지정하지 않으면 계획은 stdout으로 출력됩니다.
+- `--output-format`, `-f`: 가져오기 계획의 형식 — `table`, `json`, `csv`(기본값: `table`).
 
-#### Example
+#### 예시
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## 검사 관리
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+`inspection run` 명령은 프로젝트와 날짜 범위에 대한 검사 요청을 생성한 다음, 지정된 옵션에 따라 완료를 기다리거나, 즉시 반환하거나, 자체 프로세스에서 실행합니다.
 
-The three execution modes are:
+세 가지 실행 모드는 다음과 같습니다.
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **기본값(플래그 없음)**: 요청이 백엔드용 큐에 등록되고, CLI가 2초마다 상태를 조회하면서 작업 진행 상황을 출력하다가 검사가 최종 상태에 도달하면 종료됩니다. 실행 중인 `digna serve`가 필요하며, 그렇지 않으면 요청을 가져가는 주체가 없습니다.
+- **`--async-mode`**: 요청이 큐에 등록되고 해당 ID가 즉시 출력됩니다. 추적하려면 [`inspection status`](#inspection-status)를 사용하십시오.
+- **`--bypass-backend`**: 검사가 CLI 프로세스 자체에서 실행되며 큐에 등록되지 않으므로 실행 중인 서버가 필요하지 않습니다.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode`와 `--bypass-backend`는 함께 사용할 수 없습니다.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+모든 모드에서 검사가 성공적으로 완료되지 않으면 명령은 0이 아닌 종료 코드로 끝납니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### 인수
+- **PROJECT_NAME**: 대상 프로젝트 이름(필수). 이름은 정확히 일치해야 합니다.
+- **START_DATE**: 날짜 범위의 시작일. 형식은 `YYYY-MM-DD`(필수).
+- **END_DATE**: 날짜 범위의 종료일. 형식은 `YYYY-MM-DD`(필수).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### 옵션
+- `--table-name`: 검사를 프로젝트의 단일 데이터 소스로 제한하며, 데이터 소스 이름으로 지정합니다. 지정하지 않으면 프로젝트의 모든 데이터 소스를 검사합니다.
+- `--async-mode`: 검사를 큐에 등록하고 완료를 기다리는 대신 요청 ID를 출력합니다. `--bypass-backend`와 함께 사용할 수 없습니다.
+- `--bypass-backend`: 백엔드용 큐에 등록하는 대신 CLI 프로세스에서 직접 검사를 실행합니다. `--async-mode`와 함께 사용할 수 없습니다.
 
-#### Example
+#### 예시
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+비동기 검사를 제출하려면:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+단일 데이터 소스를 검사하려면:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### 출력 예시
+기본 모드:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -622,30 +586,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+비동기 모드:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+`inspection status` 명령은 요청 ID로 검사 요청의 상태와 작업 진행 상황을 조회합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### 인수
+- **INSPECTION_REQUEST_ID**: 검사 요청의 숫자 ID(필수).
 
-#### Example
+#### 예시
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -656,92 +619,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+`inspection abort` 명령은 실행 중이거나 대기 중인 검사 요청의 취소를 요청합니다. 영향을 받는 각 요청에 대해 중지 이벤트를 기록하며, 이에 따라 백엔드가 동작하므로 중단은 즉시 종료가 아니라 중지 요청입니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### 인수
+- **INSPECTION_REQUEST_ID**: 중단할 검사 요청의 ID. `--killall`을 지정하지 않는 한 필수입니다.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### 옵션
+- `--killall`: 현재 실행 중이거나 대기 중인 모든 검사 요청을 중단합니다. 함께 지정된 요청 ID보다 우선합니다.
 
-#### Example
-To abort a specific request:
+#### 예시
+특정 요청을 중단하려면:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+활성 및 대기 중인 모든 검사를 중단하려면:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### 출력 예시
+`--killall`은 수행한 작업을 보고합니다. 단일 요청의 중단은 출력을 생성하지 않으며 종료 코드로 성공 여부를 알립니다.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## 라이선스 관리
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+`license check` 명령은 `license.toml`을 검증하여, 설치와 함께 제공된 공개 키로 서명을 확인하고 만료되지 않았는지 검사합니다. 애플리케이션 구성을 읽지 않으므로 `config.toml`을 설정하기 전에도 동작합니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+유효하지 않은 서명과 만료된 라이선스는 서로 다른 오류로 보고되며, 둘 다 종료 코드 1을 사용합니다.
 
 ---
 
-## Server & Background Services
+## 서버 및 백그라운드 서비스
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+`serve` 명령은 ***digna*** REST API 서버를 백그라운드 검사 스케줄러 및 검사 관리자와 함께 시작합니다. 시작 시점에는 저장소가 여전히 실행 중으로 기록하고 있는 검사를 모두 실패 처리합니다. 이전 프로세스에서 살아남은 것이 있을 수 없기 때문입니다.
 
-The command runs in the foreground until it is stopped.
+명령은 중지될 때까지 포그라운드에서 실행됩니다.
 
-#### Command Usage
+#### 명령 사용법
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### 옵션
+- `--address`: API 서버를 바인딩할 네트워크 주소(기본값: `127.0.0.1`).
+- `--port`: 수신 대기할 포트 번호(기본값: `8000`).
 
-#### Example
+#### 예시
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### 출력 예시
 ```text
 Server running on http://0.0.0.0:8000
 ```

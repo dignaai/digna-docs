@@ -4080,159 +4080,151 @@ dignacli plan-import-ds ProjectB my_export.json
 # Release 2026.06
 Source: https://docs.digna.ai/lv/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# digna CLI rokasgrāmata 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Šajā lapā ir dokumentēts pilns komandu kopums, kas pieejams ***digna*** CLI **2026.06** laidienā, tostarp lietošanas piemēri un opcijas.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Izpildāmais fails saucas `digna`.
 
 ---
 
-### Overview & Syntax
+## CLI pamati
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Pārskats un sintakse
+
+**2026.06** laidiena CLI izmanto strukturētu, uz kategorijām balstītu komandu hierarhiju:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` un `serve` ir atsevišķas komandas bez apakškomandas:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Globālās opcijas
 
-The following global options apply across all commands:
+Turpmāk minētās globālās opcijas attiecas uz visām komandām:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Parāda palīdzības informāciju par CLI vai par konkrētu komandu kategoriju vai apakškomandu.
+- `--stacktrace`: Kļūmes gadījumā parāda visu kļūdu ķēdi, nevis tikai augšējā līmeņa ziņojumu.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` ir globāla opcija šaurā nozīmē: tā jānorāda **pirms** komandu kategorijas, nevis pēc tās.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Karodziņa `--version` nav. Tā vietā izmantojiet komandu [`version`](#version).
 
-### Prerequisites
+### Priekšnosacījumi
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+Lielākajai daļai komandu ir nepieciešams nolasāms, derīgs `config.toml`; dažām papildus nepieciešama derīga licence.
+Nākamajā tabulā ir atspoguļots, ko katra komandu kategorija ielādē, pirms tā vispār kaut ko dara:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Komandu kategorija | Nepieciešams `config.toml` | Nepieciešama derīga licence |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | nē | nē |
+| `config check` | nē (tieši par to komanda arī ziņo) | nē |
+| `license check` | nē | tā *ir* pati pārbaude |
+| `crypt` | jā | nē |
+| `serve` | jā | nē |
+| `project` | jā | nē |
+| `user` | jā | jā |
+| `inspection` | jā | jā |
+| `repo` | jā | jā |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Kur licence ir nepieciešama, tiek pārbaudīts gan tās paraksts, gan derīguma termiņš, un komanda tiek pārtraukta pirms pieskaršanās repozitorijam, ja kāda no pārbaudēm neizdodas.
 
-### Exit Codes
+### Iziešanas kodi
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: komanda izdevās.
+- `1`: komanda neizdevās. Kļūdas ziņojums tiek ierakstīts stderr plūsmā ar priedēkli `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Opcija `--help` sniedz informāciju par pieejamajām komandu kategorijām, apakškomandām un opcijām:
 
-1. **Displaying General Help:**
+1. **Vispārīgās palīdzības parādīšana:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Palīdzības iegūšana par konkrētām kategorijām un komandām:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Izvadē ietilpst:**
+   - **Komandas apraksts:** Komandas mērķa kopsavilkums.
+   - **Sintakse:** Obligātie un neobligātie argumenti.
+   - **Opcijas:** Konkrētajai komandai raksturīgie karodziņi un parametri.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Komanda `version` izvada instalēto ***digna*** laidienu. Tā nelasa nekādu konfigurāciju un nepārbauda licenci, tāpēc darbojas arī tādā instalācijā, kurai `config.toml` vai licence trūkst vai ir nederīga.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Laidiena versija ir neatkarīga no repozitorija shēmas versijas, par kuru ziņo [`repo check`](#repo-check).
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Konfigurācijas pārvaldība
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Komanda `config check` pārbauda konfigurācijas failu (`config.toml`), pārliecinoties, ka visas obligātās sadaļas un iestatījumi ir klāt un pareizi formatēti. Katra sadaļa tiek pārbaudīta atsevišķi, tāpēc bojāta sadaļa `[app]` neaizsedz sadaļas `[repo]` stāvokli.
 
-The sections reported are:
+Pārskatā iekļautās sadaļas ir:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — neobligāta; trūkstoša atslēga pārbaudi iztur, bet esošs, taču nepareizi veidots saraksts to neiztur
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Komanda apzināti neielādē lietojumprogrammas konfigurāciju tāpat kā pārējās komandas, lai tā spētu diagnosticēt `config.toml`, kas ***digna*** vispār neļautu startēt.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Opcijas
+- `--configpath`, `-c`: Ceļš līdz konfigurācijas failam vai līdz mapei, kurā atrodas `config.toml` (noklusējums `./config.toml`).
+- `--json`: Izvada pārbaudes pārskatu JSON formātā. Tai ir priekšroka pār `--quiet`.
+- `--quiet`, `-q`: Slēpj pārskatu un paļaujas vienīgi uz iziešanas kodu.
 
-#### Example
+#### Piemērs
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Pārbaudīt konkrētu konfigurācijas failu un formatēt izvadi kā JSON:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4246,49 +4238,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Trūkstošs fails vai TOML sintakses kļūda neatstāj neko, ko pārbaudīt pa sadaļām, un par to tiek ziņots kā par vienu kļūdu, nevis pārskatu, neatkarīgi no `--quiet` vai `--json`.
 
 ---
 
-## Repository Management
+## Repozitorija pārvaldība
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Komanda `repo check` pārbauda datubāzes savienojumu un apstiprina repozitorija instalāciju un versiju. Tā neizdodas, ja konfigurētā shēma neeksistē vai ja tā eksistē, bet nesatur ***digna*** repozitoriju.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Ziņotā versija ir repozitorija shēmas versija, kas tiek versionēta atsevišķi no ***digna*** laidiena, kuru izvada [`version`](#version).
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Komanda `repo install` instalē jaunu ***digna*** repozitoriju `config.toml` failā konfigurētajā shēmā, izveidojot visas nepieciešamās sekvences, tabulas, indeksus, ierobežojumus un sākotnējos ierakstus.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Pašu shēmu šī komanda **neizveido** — tai jāpastāv iepriekš. Komanda arī atsakās darboties, ja šajā shēmā jau ir instalēts repozitorijs, un norāda uz [`repo upgrade`](#repo-upgrade), ja instalētā versija ir vecāka.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4300,19 +4285,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Komanda `repo upgrade` piemēro datubāzes shēmas migrācijas, lai esošu repozitoriju paceltu līdz versijai, ko sagaida instalētais laidiens. Jauninājumi tiek piemēroti pa vienam versijas solim pa noteiktu jaunināšanas ceļu, un katrs pabeigtais solis tiek reģistrēts repozitorijā.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Ja repozitorijs jau ir sagaidāmajā versijā, komanda ziņo, ka jauninājums nav vajadzīgs, un neveic nekādas izmaiņas.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4321,112 +4303,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Šifrēšanas pārvaldība
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Komanda `crypt gen-key` ģenerē jaunu AES-GCM šifrēšanas atslēgu, ko izmantot kā šifrēšanas atslēgu failā `config.toml`. Ielādējamam `config.toml` jau jāpastāv, kaut arī ģenerētā atslēga no tā nav atkarīga.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Komanda `crypt encrypt` šifrē virkni (piemēram, datubāzes paroli), izmantojot failā `config.toml` konfigurēto AES-GCM atslēgu, un izvada šifrēto tekstu.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argumenti
+- **VALUE**: Šifrējamā atklātā teksta virkne (obligāts).
 
-#### Example
+#### Piemērs
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Komanda `crypt decrypt` atšifrē ar AES-GCM šifrētu virkni, izmantojot failā `config.toml` konfigurēto atslēgu, un izvada atklāto tekstu.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argumenti
+- **VALUE**: Atšifrējamā šifrētā teksta virkne (obligāts).
 
-#### Example
+#### Piemērs
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Lietotāju pārvaldība
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Komanda `user add` izveido jaunu lietotāja kontu ***digna*** repozitorijā. Komanda neizdodas, ja lietotājs ar norādīto e-pasta adresi jau pastāv.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argumenti
+- **EMAIL**: Lietotāja e-pasta adrese (obligāts).
+- **PASSWORD**: Lietotāja sākotnējā parole (obligāts).
+- **DISPLAY_NAME**: Pilnais lietotāja attēlojamais vārds (obligāts).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Opcijas
+- `--admin`, `-a`: Izveido lietotāju ar administratora (superlietotāja) tiesībām.
 
-#### Example
+#### Piemērs
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Lai izveidotu administratora kontu:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Komanda `user list` tabulas veidā uzskaita visus reģistrētos lietotājus ar ID, e-pastu, attēlojamo vārdu un administratora karogu.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4436,88 +4412,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Komanda `user modify` atjaunina esoša lietotāja konta, kas identificēts pēc e-pasta adreses, attēlojamo vārdu un administratora tiesības.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Gan attēlojamais vārds, gan administratora karogs vienmēr tiek ierakstīti. `--admin` ir slēdzis, nevis vērtība: **tās izlaišana atsauc administratora tiesības**, tāpēc norādiet to ikreiz, kad lietotājam tās jāpatur vai jāiegūst.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argumenti
+- **EMAIL**: Maināmā lietotāja e-pasts (obligāts).
+- **DISPLAY_NAME**: Atjauninātais attēlojamais vārds (obligāts).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Opcijas
+- `--admin`, `-a`: Piešķir administratora tiesības. Izlaidiet, lai tās atsauktu.
+- `--valid-until`, `-v`: Tiek pieņemta saderības dēļ, taču **pašlaik netiek piemērota**. Tās norādīšana izvada brīdinājumu un neko nemaina.
 
-#### Example
+#### Piemērs
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Komanda `user modify-pwd` atjaunina esoša lietotāja konta paroli.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argumenti
+- **EMAIL**: Tā lietotāja e-pasts, kura parole jāatjaunina (obligāts).
+- **PASSWORD**: Jaunā parole (obligāts).
 
-#### Example
+#### Piemērs
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Komanda `user delete` noņem lietotāja kontu no sistēmas.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argumenti
+- **EMAIL**: Dzēšamā lietotāja e-pasts (obligāts).
 
-#### Example
+#### Piemērs
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Projektu un datu avotu pārvaldība
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Komanda `project list` uzskaita visus repozitorijā pieejamos projektus, parādot to ID, nosaukumu un aprakstu.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4527,23 +4499,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Komanda `project list-ds` uzskaita visus ar konkrētu projektu saistītos datu avotus, parādot to ID, nosaukumu, veidu, shēmu un tabulas nosaukumu.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argumenti
+- **PROJECT_NAME**: Tā projekta nosaukums, kura datu avoti jāuzskaita (obligāts). Nosaukumam jāsakrīt precīzi.
 
-#### Example
+#### Piemērs
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4553,149 +4524,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Komanda `project export-ds` eksportē projekta datu avotus JSON dokumentā.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Ja nav norādīts ne `--table-name`, ne `--table-id`, tiek eksportēti visi projekta datu avoti.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argumenti
+- **PROJECT_NAME**: Tā projekta nosaukums, no kura eksportēt datu avotus (obligāts).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Opcijas
+- `--table-name`, `-n`: Eksportējamo datu avotu nosaukumi. Vairākus nosaukumus var norādīt, atdalot ar atstarpēm.
+- `--table-id`, `-i`: Eksportējamo datu avotu ID. Vairākus ID var norādīt, atdalot ar atstarpēm.
+- `--exportfile`, `-f`: Ceļš, kurā saglabāt eksportētos datu avotus (noklusējums: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Piemērs
+Lai eksportētu visus datu avotus no `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Lai eksportētu konkrētas tabulas:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Komanda `project import-ds` importē datu avotus no eksporta faila mērķa projektā un par katru objektu ziņo, kas tika izveidots, atjaunināts vai izlaists.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argumenti
+- **PROJECT_NAME**: Mērķa projekta nosaukums, kurā importēt (obligāts).
+- **EXPORT_FILE**: Ceļš līdz JSON eksporta failam (obligāts).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Opcijas
+- `--output-file`, `-o`: Fails, kurā ierakstīt importa pārskatu. Bez tā pārskats tiek novirzīts uz stdout.
+- `--output-format`, `-f`: Importa pārskata formāts — `table`, `json` vai `csv` (noklusējums: `table`).
 
-#### Example
+#### Piemērs
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Lai iegūtu mašīnlasāmu pārskatu:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Pārskats aptver četrus objektu līmeņus — datu avotu, datu kopas definīciju, atribūtu un validācijas noteikumu — katru ar tā importa darbību, rezultātu, iegūtā objekta ID un jebkādu papildu informāciju.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Komanda `project plan-import-ds` parāda datu avotu importa priekšskatījumu mērķa projektā, norādot, kuri objekti tiktu izveidoti, atjaunināti vai izlaisti, neko nemainot. Tā pieņem to pašu eksporta failu un tās pašas pārskata opcijas kā [`project import-ds`](#project-import-ds) un katram plānotajam objektam pievieno soļa numuru.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argumenti
+- **PROJECT_NAME**: Mērķa projekta nosaukums (obligāts).
+- **EXPORT_FILE**: Ceļš līdz eksporta failam (obligāts).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Opcijas
+- `--output-file`, `-o`: Fails, kurā ierakstīt importa plānu. Bez tā plāns tiek novirzīts uz stdout.
+- `--output-format`, `-f`: Importa plāna formāts — `table`, `json` vai `csv` (noklusējums: `table`).
 
-#### Example
+#### Piemērs
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Pārbaužu pārvaldība
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Komanda `inspection run` izveido pārbaudes pieprasījumu projektam un datumu diapazonam un pēc tam — atkarībā no norādītajām opcijām — vai nu gaida to, vai atgriežas nekavējoties, vai izpilda to savā procesā.
 
-The three execution modes are:
+Trīs izpildes režīmi ir:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Noklusējums (bez karodziņa)**: pieprasījums tiek ievietots aizmugursistēmas rindā, un CLI to aptaujā ik pēc divām sekundēm, izvadot uzdevumu norisi, līdz pārbaude sasniedz galīgo stāvokli. Nepieciešams darbojošs `digna serve`, citādi pieprasījumu neviens nepaņem.
+- **`--async-mode`**: pieprasījums tiek ievietots rindā, un tā ID tiek izvadīts nekavējoties. Lai to izsekotu, izmantojiet [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: pārbaudi izpilda pats CLI process, un tā netiek ievietota rindā, tāpēc darbojošs serveris nav nepieciešams.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` un `--bypass-backend` viena otru izslēdz.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+Ikvienā režīmā komanda beidzas ar iziešanas kodu, kas nav nulle, ja pārbaude netika sekmīgi pabeigta.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argumenti
+- **PROJECT_NAME**: Mērķa projekta nosaukums (obligāts). Nosaukumam jāsakrīt precīzi.
+- **START_DATE**: Datumu diapazona sākuma datums formātā `YYYY-MM-DD` (obligāts).
+- **END_DATE**: Datumu diapazona beigu datums formātā `YYYY-MM-DD` (obligāts).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Opcijas
+- `--table-name`: Ierobežo pārbaudi ar vienu projekta datu avotu, kas norādīts pēc datu avota nosaukuma. Bez tās tiek pārbaudīti visi projekta datu avoti.
+- `--async-mode`: Ievieto pārbaudi rindā un izvada pieprasījuma ID, nevis gaida tās pabeigšanu. Nevar apvienot ar `--bypass-backend`.
+- `--bypass-backend`: Izpilda pārbaudi tieši CLI procesā, nevis ievieto to aizmugursistēmas rindā. Nevar apvienot ar `--async-mode`.
 
-#### Example
+#### Piemērs
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Lai iesniegtu asinhronu pārbaudi:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Lai pārbaudītu vienu datu avotu:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Izvades piemērs
+Noklusējuma režīms:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4704,30 +4668,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Asinhronais režīms:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Komanda `inspection status` pēc pieprasījuma ID noskaidro pārbaudes pieprasījuma stāvokli un uzdevumu norisi.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argumenti
+- **INSPECTION_REQUEST_ID**: Pārbaudes pieprasījuma skaitliskais ID (obligāts).
 
-#### Example
+#### Piemērs
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4738,92 +4701,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Komanda `inspection abort` pieprasa atcelt notiekošos vai gaidošos pārbaudes pieprasījumus. Tā katram skartajam pieprasījumam reģistrē apturēšanas notikumu; pēc tā rīkojas aizmugursistēma, tāpēc pārtraukšana ir lūgums apstāties, nevis tūlītēja izbeigšana.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argumenti
+- **INSPECTION_REQUEST_ID**: Pārtraucamā pārbaudes pieprasījuma ID. Obligāts, ja vien nav norādīts `--killall`.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Opcijas
+- `--killall`: Pārtrauc visus pašlaik notiekošos un gaidošos pārbaudes pieprasījumus. Tai ir priekšroka pār līdzās norādītu pieprasījuma ID.
 
-#### Example
-To abort a specific request:
+#### Piemērs
+Lai pārtrauktu konkrētu pieprasījumu:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Lai pārtrauktu visas aktīvās un rindā esošās pārbaudes:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Izvades piemērs
+`--killall` ziņo par paveikto; atsevišķa pieprasījuma pārtraukšana izvadi nerada un par sekmēm ziņo ar savu iziešanas kodu.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Licenču pārvaldība
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Komanda `license check` pārbauda failu `license.toml`, salīdzinot tā parakstu ar instalācijai pievienoto publisko atslēgu un pārliecinoties, ka tas nav beidzies. Tā nelasa nekādu lietojumprogrammas konfigurāciju, tāpēc darbojas arī pirms `config.toml` iestatīšanas.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Par nederīgu parakstu un par beigušos licenci tiek ziņots kā par atsevišķām kļūdām, abos gadījumos ar iziešanas kodu 1.
 
 ---
 
-## Server & Background Services
+## Servera un fona pakalpojumi
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Komanda `serve` palaiž ***digna*** REST API serveri kopā ar fona pārbaužu plānotāju un pārbaužu pārvaldnieku. Startējot tā arī atzīmē par neizdevušos ikvienu pārbaudi, kuru repozitorijs joprojām reģistrē kā notiekošu, jo no agrāka procesa nekas nav varējis saglabāties.
 
-The command runs in the foreground until it is stopped.
+Komanda darbojas priekšplānā, līdz tā tiek apturēta.
 
-#### Command Usage
+#### Komandas lietojums
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Opcijas
+- `--address`: Tīkla adrese, kurai piesaistīt API serveri (noklusējums: `127.0.0.1`).
+- `--port`: Porta numurs, kurā klausīties (noklusējums: `8000`).
 
-#### Example
+#### Piemērs
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Izvades piemērs
 ```text
 Server running on http://0.0.0.0:8000
 ```

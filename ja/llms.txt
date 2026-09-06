@@ -85,7 +85,7 @@
 ## CLI リファレンス
 
 - [イントロダクション](https://docs.digna.ai/ja/cli/Introduction/): digna コマンドラインインターフェース (CLI) の概要 — digna リソースの自動化と管理を行うテキストベースのツールで、Windows へのインストールの基本も含みます。
-- [Release 2026.06](https://docs.digna.ai/ja/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
+- [Release 2026.06](https://docs.digna.ai/ja/cli/Command_Line_Interface_202606/): digna CLI リリース 2026.06 の完全なリファレンス
 - [Release 2026.04](https://docs.digna.ai/ja/cli/Command_Line_Interface_202604/): digna CLI リリース 2026.04 の完全リファレンス
 - [Release 2026.01](https://docs.digna.ai/ja/cli/Command_Line_Interface_202601/): digna CLI リリース 2026.01 の完全リファレンス。add-user、check-config、check-repo-connection、inspect、inspect-async などのコマンドでユーザー、リポジトリ、データを管理する方法を解説します。
 - [Release 2025.09](https://docs.digna.ai/ja/cli/Command_Line_Interface_202509/): digna CLI リリース 2025.09 の完全リファレンス。add-user、check-config、check-repo-connection、inspect、inspect-async などのコマンドを使ってユーザー、リポジトリ、データを管理する方法を解説します。

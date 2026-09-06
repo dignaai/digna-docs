@@ -85,7 +85,7 @@
 ## CLI 참고 문서
 
 - [소개](https://docs.digna.ai/ko/cli/Introduction/): digna 명령줄 인터페이스(CLI) 소개 — digna 리소스를 자동화하고 관리하는 텍스트 기반 도구이며, Windows 설치 기본 사항도 포함합니다.
-- [Release 2026.06](https://docs.digna.ai/ko/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
+- [Release 2026.06](https://docs.digna.ai/ko/cli/Command_Line_Interface_202606/): digna CLI 릴리스 2026.06의 전체 참조 문서
 - [Release 2026.04](https://docs.digna.ai/ko/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
 - [Release 2026.01](https://docs.digna.ai/ko/cli/Command_Line_Interface_202601/): digna CLI 릴리스 2026.01에 대한 완전한 참조입니다. add-user, check-config, check-repo-connection, inspect, inspect-async 등과 같은 명령어로 사용자, 리포지토리 및 데이터를 관리하는 방법을 알아보세요.
 - [Release 2025.09](https://docs.digna.ai/ko/cli/Command_Line_Interface_202509/): Complete reference for digna CLI release 2025.109 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
