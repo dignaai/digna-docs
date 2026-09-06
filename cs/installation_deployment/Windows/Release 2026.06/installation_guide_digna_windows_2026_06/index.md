@@ -1,8 +1,8 @@
-# Průvodce instalací na Windows pro digna Release 2026.06
+# Průvodce instalací pro Windows pro digna Release 2026.06
 
-**Release:** 2026.06
+**Verze:** 2026.06
 
-**Naposledy aktualizováno:** 30. srpna 2026
+**Poslední aktualizace:** 30. srpna 2026
 
 
 ---
@@ -18,7 +18,7 @@
 7. [Konfigurace backendu](#backend-configuration)
 8. [Konfigurace dashboardu](#dashboard-configuration)
 9. [Spuštění digna jako služby Windows](#running-digna-as-a-windows-service)
-10. [Upgrade na novou verzi](#upgrading-to-a-new-release)
+10. [Upgrade na nové vydání](#upgrading-to-a-new-release)
 
 ---
 
@@ -26,16 +26,20 @@
 
 ### O digna
 
-digna je komplexní platforma poháněná umělou inteligencí navržená pro optimalizaci správy kvality dat napříč různými datovými prostředími, jako jsou datové sklady, datová jezera a lakehouse řešení. Je navržena tak, aby byla vysoce škálovatelná a přizpůsobitelná, přičemž řeší moderní datové výzvy prostřednictvím automatizace, monitoringu v reálném čase a detekce anomálií.
+digna je komplexní platforma řízená umělou inteligencí navržená pro optimalizaci správy kvality dat napříč různými datovými prostředími, jako jsou datové sklady, datová jezera a lakehousy. Je navržena tak, aby byla vysoce škálovatelná a přizpůsobitelná, a řeší moderní datové výzvy pomocí automatizace, monitoringu v reálném čase a detekce anomálií.
 
 digna se skládá ze dvou hlavních komponent:
 
-- **dignabackend**: Jádro aplikace, odpovědné za zpracování dat a provádění kontrol kvality.
-- **dignadashboard**: Webové rozhraní hostované na webovém serveru, poskytující uživatelsky přívětivý způsob interakce s platformou digna a vizualizaci metrik kvality dat.
+- **dignabackend**: Jádro aplikace zodpovědné za zpracování dat a provádění kontrol kvality.
+- **dignadashboard**: Webové rozhraní hostované na webovém serveru, které poskytuje uživatelsky přívětivý způsob interakce s platformou digna a vizualizace metrik kvality dat.
 
-### Co je nového v Release 2026.06
+### Co je nového ve vydání 2026.06
 
-Tato verze přináší možnosti data observability přímo do vašeho kódu, což umožňuje vývojářům sledovat kvalitu dat přímo u zdroje. Kompletní podrobnosti najdete v [release notes](http://docs.digna.ai/changelog/Release_202606/).
+Toto vydání přináší možnosti pozorovatelnosti dat přímo do vašeho kódu, což umožňuje vývojářům sledovat kvalitu dat u zdroje. Kompletní podrobnosti najdete v [release notes](http://docs.digna.ai/changelog/Release_202606/).
+
+### Hledáte macOS nebo Linux?
+
+Tento průvodce pokrývá Windows. Pro jiné platformy viz [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) nebo [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
@@ -46,72 +50,72 @@ Než začnete instalaci, ujistěte se, že váš systém splňuje následující
 | Požadavek | Specifikace |
 |---|---|
 | **Operační systém** | Windows Server nebo Windows 10/11 |
-| **Paměť (minimální instalace)** | 16 GB RAM |
+| **Paměť (minimální konfigurace)** | 16 GB RAM |
 | **Volné místo na disku** | 10 GB dostupného úložiště |
-| **Databáze** | PostgreSQL Server 12 nebo novější |
+| **Databáze** | PostgreSQL Server 12 nebo vyšší |
 | **Webový server** | IIS, Apache Tomcat nebo ekvivalent |
 
 ### Možnosti instalace databáze
 
 **Pokud je PostgreSQL již nainstalován:**
-Můžete přidat novou databázi pro digna na váš existující PostgreSQL server.
+Můžete do stávajícího PostgreSQL serveru přidat novou databázi pro digna.
 
 **Pokud instalujete PostgreSQL na stejný stroj jako digna:**
 
 !!! info "Doporučené specifikace"
 
-    - **Paměť**: 32 GB RAM (místo 16 GB)
-    - **Volné místo na disku**: 50 GB dostupného úložiště (místo 10 GB)
+    - **Paměť**: 32 GB RAM (namísto 16 GB)
+    - **Volné místo na disku**: 50 GB dostupného úložiště (namísto 10 GB)
 
-    Tyto vyšší specifikace zohledňují běh jak digna, tak PostgreSQL současně.
+    Tyto vyšší specifikace umožní současný provoz digna a PostgreSQL databáze.
 
 ---
 
 ## Předinstalační nastavení {: #pre-installation-setup }
 
-Než nainstalujete digna, ujistěte se, že jsou splněny dva klíčové předpoklady:
+Než nainstalujete digna, ujistěte se, že máte připraveny dvě klíčové předpoklady:
 
-1. **PostgreSQL Server** – pro ukládání vypočítaných metrik a výkonových dat
+1. **PostgreSQL Server** – pro ukládání vypočtených metrik a výkonových dat
 2. **Webový server** – pro hostování digna Dashboardu
 
-Pokud tyto komponenty ještě nejsou nastaveny, postupujte podle níže uvedených sekcí k jejich instalaci a konfiguraci.
+Pokud tyto komponenty nejsou nastaveny, následujte níže uvedené sekce pro jejich instalaci a konfiguraci.
 
 ---
 
 ## Nastavení PostgreSQL serveru {: #postgresql-server-setup }
 
-### Pokud již máte PostgreSQL
+### Pokud už máte PostgreSQL
 
-Pokud je PostgreSQL již nainstalovaný a běží na vašem lokálním stroji nebo používáte spravovaný vzdálený PostgreSQL server, můžete přejít k [další sekci](#web-server-configuration).
+Pokud je PostgreSQL nainstalovaný a spuštěný na vašem lokálním stroji nebo pokud používáte spravovaný vzdálený PostgreSQL server, můžete přeskočit do [následující sekce](#web-server-configuration).
 
 ### Instalace PostgreSQL
 
 Postupujte podle těchto kroků pro instalaci PostgreSQL na Windows:
 
-#### Krok 1: Stáhněte PostgreSQL
+#### Krok 1: Stažení PostgreSQL
 
-1. Navštivte stránku [PostgreSQL Downloads](https://www.postgresql.org/download/)
-2. Zvolte **Windows**
-3. Stáhněte nejnovější instalační program
+1. Navštivte [PostgreSQL Downloads page](https://www.postgresql.org/download/)
+2. Vyberte **Windows**
+3. Stáhněte si nejnovější instalační program
 
-#### Krok 2: Spusťte instalační program
+#### Krok 2: Spuštění instalátoru
 
-1. Dvojklikem otevřete stažený instalační soubor
-2. Postupujte podle pokynů průvodce instalací
+1. Dvakrát klikněte na stažený instalační soubor
+2. Postupujte podle pokynů v průvodci instalací
 
-#### Krok 3: Zvolte instalační adresář
+#### Krok 3: Volba instalačního adresáře
 
-Vyberte adresář, kam bude PostgreSQL nainstalován. Výchozí umístění je obvykle vhodné.
+Zvolte adresář, kam bude PostgreSQL nainstalován. Výchozí umístění je obvykle vhodné.
 
-#### Krok 4: Vyberte komponenty
+#### Krok 4: Výběr komponent
 
 Pro standardní instalaci ponechte výchozí volby komponent.
 
-#### Krok 5: Nastavte heslo superuživatele PostgreSQL
+#### Krok 5: Nastavení hesla superuživatele PostgreSQL
 
-Zadejte a potvrďte heslo pro superuživatele PostgreSQL (`postgres`). **Uložte toto heslo bezpečně** — později ho budete potřebovat.
+Zadejte a potvrďte heslo pro superuživatele PostgreSQL (`postgres`). **Uložte toto heslo bezpečně** — budete ho později potřebovat.
 
-#### Krok 6: Nakonfigurujte číslo portu
+#### Krok 6: Konfigurace portu
 
 Výchozí port PostgreSQL je `5432`. Můžete použít výchozí nebo specifikovat jiný port podle potřeby.
 
@@ -119,15 +123,15 @@ Výchozí port PostgreSQL je `5432`. Můžete použít výchozí nebo specifikov
 
     Pokud je port 5432 již obsazen, zvolte alternativní port a poznamenejte si ho pro pozdější konfiguraci.
 
-#### Krok 7: Vyberte locale
+#### Krok 7: Volba locale
 
-Zvolte locale pro vaši databázi. Výchozí hodnota je obvykle vhodná pro většinu instalací.
+Vyberte locale pro vaši databázi. Výchozí nastavení je obvykle vhodné pro většinu instalací.
 
-#### Krok 8: Dokončete instalaci
+#### Krok 8: Dokončení instalace
 
-Klikněte na **Next** v zbývajících krocích a poté na **Finish**.
+Klikněte na **Next** v posledních krocích, poté klikněte na **Finish**.
 
-#### Krok 9: Ověřte instalaci
+#### Krok 9: Ověření instalace
 
 Otevřete Příkazový řádek a ověřte, že je PostgreSQL nainstalován:
 
@@ -135,58 +139,58 @@ Otevřete Příkazový řádek a ověřte, že je PostgreSQL nainstalován:
 psql --version
 ```
 
-Pokud byla instalace úspěšná, zobrazí se verze PostgreSQL.
+Měli byste vidět verzi PostgreSQL, pokud byla instalace úspěšná.
 
 ---
 
 ## Konfigurace webového serveru {: #web-server-configuration }
 
-digna vyžaduje webový server pro hostování dashboardu. Vyberte jednu z následujících možností:
+digna vyžaduje webový server pro hostování dashboardu. Zvolte jednu z následujících možností:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-Je potřeba nainstalovat a nakonfigurovat pouze **jeden** z těchto serverů.
+Stačí nainstalovat a nakonfigurovat **jeden** z těchto serverů.
 
 ### Nastavení IIS {: #iis-setup }
 
 #### Přehled
 
-Internet Information Services (IIS) je webový server od Microsoftu pro hostování webových stránek a webových aplikací.
+Internet Information Services (IIS) je Microsoftův webový server pro hostování webových stránek a webových aplikací.
 
 #### Povolení IIS
 
 1. **Otevřete Ovládací panely**
    - Stiskněte `Win + R`
-   - Zadejte `control` a stiskněte Enter
+   - Napište `control` a stiskněte Enter
 
 2. **Přejděte na Windows Features**
    - Klikněte na **Programs**
    - Vyberte **Turn Windows features on or off**
 
 3. **Povolte Internet Information Services**
-   - Najděte **Internet Information Services (IIS)**
+   - Sjeďte dolů a najděte **Internet Information Services (IIS)**
    - Zaškrtněte políčko pro jeho povolení
-   - Klikněte na **+**, rozbalte a ověřte, že jsou vybrány tyto podkomponenty:
+   - Klikněte na **+** pro rozbalení a ověřte, že jsou vybrány tyto podkomponenty:
      - **Web Management Tools**
      - **World Wide Web Services**
 
-4. **Klikněte na OK** pro aplikaci změn
+4. **Klikněte OK** pro použití změn
 
 5. **Ověřte instalaci IIS**
    - Otevřete prohlížeč
    - Přejděte na `http://localhost`
-   - Měli byste vidět IIS Welcome stránku
+   - Měli byste vidět uvítací stránku IIS
 
-#### Povinné: URL Rewrite Module
+#### Požadováno: URL Rewrite Module
 
-IIS vyžaduje komponentu URL Rewrite. Stáhněte a nainstalujte ji z [oficiální stránky Microsoftu](https://www.iis.net/downloads/microsoft/url-rewrite).
+IIS vyžaduje komponentu URL Rewrite. Stáhněte a nainstalujte ji z [oficiální Microsoft stránky](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Povinné: MIME typ pro Markdown soubory
+#### Požadováno: MIME typ pro Markdown soubory
 
-Aby byly Markdown soubory (`.md`) správně obsluhovány IIS:
+Aby byly Markdown soubory (`.md`) správně servírovány IIS:
 
-1. Otevřete **IIS Manager** (stiskněte `Win + R`, zadejte `inetmgr`, stiskněte Enter)
+1. Otevřete **IIS Manager** (stiskněte `Win + R`, napište `inetmgr`, stiskněte Enter)
 2. Přejděte na **Your Site > MIME Types**
 3. Klikněte **Add...**
 4. Nakonfigurujte:
@@ -195,7 +199,7 @@ Aby byly Markdown soubory (`.md`) správně obsluhovány IIS:
 
 !!! warning "Důležité"
 
-    Bez tohoto nastavení nemusí být `.md` soubory správně obsluhovány.
+    Bez tohoto nastavení nemusí být soubory `.md` správně servírovány.
 
 ---
 
@@ -203,7 +207,7 @@ Aby byly Markdown soubory (`.md`) správně obsluhovány IIS:
 
 #### Přehled
 
-Apache Tomcat je open-source kontejner pro Java servlety a webový server.
+Apache Tomcat je open-source kontejner pro Java servlet a webový server.
 
 #### Instalace
 
@@ -212,7 +216,7 @@ Apache Tomcat je open-source kontejner pro Java servlety a webový server.
    - Stáhněte Windows ZIP distribuci
 
 2. **Rozbalte archiv**
-   - Rozbalte ZIP soubor do adresáře na vašem systému
+   - Rozbalte ZIP soubor do adresáře ve vašem systému
    - Příklad: `C:\Program Files\Apache Tomcat`
 
 3. **Ověřte, že Tomcat běží**
@@ -222,19 +226,19 @@ Apache Tomcat je open-source kontejner pro Java servlety a webový server.
 
 !!! tip "Tip"
 
-    Apache Tomcat se obvykle spustí automaticky po instalaci. Pokud se nespustí, přejděte do složky `bin` a spusťte `startup.bat`.
+    Apache Tomcat se obvykle po instalaci spustí automaticky. Pokud ne, přejděte do složky `bin` a spusťte `startup.bat`.
 
 ---
 
 ## Počáteční instalace {: #initial-installation }
 
-### Krok 1: Nastavení digna repository
+### Krok 1: Nastavení repozitáře digna
 
-Repository digna ukládá všechny metriky vypočítané digna. Slouží jako centrální databáze pro analytická a výkonová data.
+Repozitář digna ukládá všechny metriky vypočtené dignou. Funguje jako centrální databáze pro analytická a výkonová data.
 
-#### Vytvoření schématu a uživatele repository
+#### Vytvoření schématu repozitáře a uživatele
 
-Otevřete váš PostgreSQL klient (pgAdmin, psql nebo podobný) a spusťte následující SQL příkazy:
+Otevřete svůj PostgreSQL klient (pgAdmin, psql nebo podobně) a spusťte následující SQL příkazy:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -246,8 +250,8 @@ GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 
 **Nahraďte následující zástupné hodnoty:**
 
-- `<digna_repo_schema>` — Vámi zvolené jméno schématu (např. `dignarepo`)
-- `<digna_repo_user>` — Vámi zvolené uživatelské jméno (např. `digna_user`)
+- `<digna_repo_schema>` — Název schématu podle vašeho výběru (např. `dignarepo`)
+- `<digna_repo_user>` — Uživatelské jméno podle vašeho výběru (např. `digna_user`)
 - `<digna_repo_password>` — Silné heslo pro tohoto uživatele
 
 **Příklad:**
@@ -260,43 +264,43 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Nejlepší postup"
+!!! tip "Doporučené postupy"
 
-    Používejte silná, komplexní hesla pro databázové uživatele. Vyvarujte se snadno uhodnutelných přihlašovacích údajů.
+    Používejte silná, komplexní hesla pro databázové uživatele. Vyhněte se snadno uhodnutelným přihlašovacím údajům.
 
 ---
 
-### Krok 2: Rozbalení instalačního balíku digna
+### Krok 2: Rozbalení instalačního balíčku digna
 
 1. Najděte ZIP soubor s instalací digna, který vám byl poskytnut
 2. Rozbalte ho do požadovaného instalačního umístění
 3. Po rozbalení byste měli vidět následující položky:
    - `dashboard/` — Webové rozhraní dashboardu
-   - `digna` — Hlavní spustitelný soubor (backend + CLI v jednom)
+   - `digna` — Hlavní spustitelný soubor (backend + CLI dohromady)
    - `config.toml` — Konfigurační soubor
-   - `license.toml` — Licenční soubor (sem zkopírujte svůj)
+   - `license.toml` — Licenční soubor (sem zkopírujte váš soubor)
 
 ### Krok 3: Instalace licenčního souboru
 
 !!! warning "Důležité"
 
-    Licenční soubor **není** součástí instalačního balíku a bude vám poskytnut samostatně společností digna.
+    Licenční soubor **není** součástí instalačního balíčku a bude vám dodán samostatně společností digna.
 
-1. Najděte poskytnutý soubor `license.toml`
-2. Zkopírujte jej do kořenového adresáře instalace digna (tam, kde se nachází `config.toml` a spustitelný soubor `digna`)
+1. Najděte soubor `license.toml`, který vám byl poskytnut
+2. Zkopírujte ho do kořenového instalačního adresáře digna (tam, kde jsou `config.toml` a spustitelný soubor `digna`)
 
 **Proč je to důležité:**
-Licenční soubor obsahuje informace o zákazníkovi, datum vypršení licence a digitální podpis. **Neměňte tento soubor** — jakékoliv úpravy ho zneplatní.
+Licenční soubor obsahuje informace o zákazníkovi, datum vypršení licence a digitální podpis. **Neměňte tento soubor** — jakákoli úprava ho zneplatní.
 
 **Struktura adresářů po nastavení:**
 
 ```
 digna_installation/
-├── config.toml         (konfigurační soubor)
-├── license.toml        (VÁŠ LICENČNÍ SOUBOR - sem ho zkopírujte)
-├── digna               (hlavní spustitelný soubor)
-└── dashboard/          (webové rozhraní)
-    └── (soubory dashboardu)
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+└── dashboard/          (web interface)
+    └── (dashboard files)
 ```
 
 ---
@@ -305,15 +309,15 @@ digna_installation/
 
 ### Krok 1: Vytvoření a úprava konfiguračního souboru
 
-Soubor `config_template.toml` je dodán ve vaší instalační složce digna. Stačí jej přejmenovat na `config.toml`.
+Soubor `config_template.toml` je součástí instalačního adresáře digna. Stačí jej přejmenovat na `config.toml`.
 
 **Umístění:** `digna_installation/config.toml`
 
-Otevřete `config.toml` v textovém editoru a nakonfigurujte každou z níže uvedených sekcí.
+Otevřete `config.toml` v textovém editoru a nakonfigurujte jednotlivé sekce níže.
 
 #### Sekce [app]
 
-Tato sekce konfiguruje nastavení backend aplikace digna:
+Tato sekce konfiguruje nastavení aplikačního backendu digna:
 
 ```toml
 [app]
@@ -327,10 +331,10 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametr | Hodnota | Poznámky |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` nebo IP adresa | Hostname nebo IP, kde je hostován dignabackend |
-| `digna_APP_PORT` | `8082` (výchozí) | Port pro REST API koncové body |
-| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontendu | Pokud je dashboard na jiném serveru, přidejte jeho URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Požadováno pro CORS s přihlašovacími údaji |
+| `digna_APP_HOST` | `localhost` nebo IP adresa | Hostname nebo IP, kde je nasazen dignabackend |
+| `digna_APP_PORT` | `8082` (výchozí) | Port pro REST API endpointy |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Pokud je dashboard na jiném serveru, přidejte jeho URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Požadováno pro CORS s credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Povolit všechny HTTP metody |
 | `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Povolit všechny hlavičky |
 
@@ -350,9 +354,9 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 | Parametr | Hodnota | Poznámky |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` nebo IP | Host PostgreSQL serveru / IP |
+| `digna_REPO_HOST` | `localhost` nebo IP | Hostname/IP PostgreSQL serveru |
 | `digna_REPO_PORT` | `5432` (výchozí) | Port PostgreSQL |
-| `digna_REPO_DB` | `postgres` | Jméno databáze |
+| `digna_REPO_DB` | `postgres` | Název databáze |
 | `digna_REPO_SCHEMA` | `dignarepo` | Dříve vytvořené schéma |
 | `digna_REPO_USER` | `digna_user` | Uživatel vytvořený v PostgreSQL |
 | `digna_REPO_PASSWORD` | Vaše heslo | Heslo nastavené při vytváření uživatele |
@@ -375,13 +379,13 @@ digna_MAX_WORKERS = 4
 
 | Parametr | Hodnota | Poznámky |
 |---|---|---|
-| `digna_FERNET_KEY` | Šifrovací klíč | Používá se k šifrování tokenů a cookies (výchozí je poskytnut) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Odpovídejte doméně vašeho frontendu |
-| `digna_COOKIE_SECURE` | `false` (lokálně) / `true` (produkce) | Použijte `true` pro HTTPS připojení |
+| `digna_FERNET_KEY` | Šifrovací klíč | Používá se pro šifrování tokenů a cookie (výchozí je poskytnut) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Musí odpovídat doméně frontendu |
+| `digna_COOKIE_SECURE` | `false` (lokálně) / `true` (produkce) | Pro HTTPS použijte `true` |
 | `digna_COOKIE_HTTPONLY` | `true` | Vždy povoleno z bezpečnostních důvodů |
 | `digna_COOKIE_SAME_SITE` | `lax` | Zabraňuje CSRF útokům |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 hodin) | Vypršení relace v sekundách |
-| `digna_MAX_WORKERS` | Počet CPU jader - 1 | Počet paralelních inspekčních úloh |
+| `digna_MAX_WORKERS` | Počet jader CPU - 1 | Počet paralelních inspekčních úloh |
 
 #### Sekce [logging]
 
@@ -395,24 +399,24 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 | Parametr | Hodnota | Poznámky |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` nebo `DEBUG` | `INFO` pro produkci, `DEBUG` pro řešení problémů |
+| `digna_LOGGING_MODE` | `INFO` nebo `DEBUG` | `INFO` pro produkci, `DEBUG` pro ladění |
 | `digna_LOGGING_BACKUP_COUNT` | `10` | Počet denních záloh logů, které se uchovávají |
 
 ---
 
-### Krok 3: Inicializace repository
+### Krok 3: Inicializace repozitáře
 
 1. Otevřete Příkazový řádek
-2. Přejděte do instalačního adresáře digna (kam jste umístili `config.toml` a spustitelný soubor `digna`)
+2. Přejděte do instalačního adresáře digna (tam, kde jsou `config.toml` a spustitelný soubor `digna`)
 3. Spusťte test připojení:
 
 ```bash
 digna repo check
 ```
 
-Měli byste vidět potvrzení, že je připojení navázáno (samotné repository ještě nebylo inicializováno).
+Měli byste obdržet potvrzení, že připojení bylo navázáno (repozitář samotný zatím nebyl inicializován).
 
-### Krok 4: Instalace schématu repository
+### Krok 4: Instalace schématu repozitáře
 
 Ve stejném adresáři spusťte:
 
@@ -422,9 +426,9 @@ digna repo install
 
 Tento příkaz nainstaluje potřebné tabulky a schéma ve vaší PostgreSQL databázi.
 
-### Krok 5: Spuštění digna serveru
+### Krok 5: Spuštění serveru digna
 
-V instalačním adresáři digna spusťte server:
+V instalačním adresáři digna spusťte server pomocí:
 
 ```bash
 digna serve --address <host> --port <port>
@@ -434,7 +438,7 @@ digna serve --address <host> --port <port>
 - `--address` — Hostname/IP serveru
 - `--port` — Port serveru 
 
-Měli byste vidět startovací hlášky potvrzující, že server běží:
+Měli byste vidět úvodní zprávy potvrzující, že server běží:
 
 ```
 INFO:     Started server process [1234]
@@ -447,7 +451,7 @@ INFO:     Uvicorn running on http://localhost:8082
 
 1. Otevřete **nové** okno Příkazového řádku
 2. Přejděte do instalačního adresáře digna
-3. Spusťte následující příkaz pro vytvoření administrátorského uživatele:
+3. Spusťte následující příkaz pro vytvoření admin uživatele:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -459,11 +463,11 @@ digna user add <username> "<full_name>" <password> --su
 digna user add admin "Admin User" AdminPassword123! --su
 ```
 
-Tím se vytvoří uživatel s plnými administrátorskými právy.
+Tím vytvoříte uživatele s plnými administrátorskými právy.
 
-!!! tip "Nejlepší postup"
+!!! tip "Doporučené postupy"
 
-    Používejte silné heslo obsahující kombinaci velkých a malých písmen, čísel a speciálních znaků.
+    Používejte silné heslo kombinující velká a malá písmena, číslice a speciální znaky.
 
 ---
 
@@ -471,44 +475,44 @@ Tím se vytvoří uživatel s plnými administrátorskými právy.
 
 ### Krok 1: Nasazení dashboardu na webový server
 
-Dashboard digna má vlastní samostatný soubor `config.toml` uložený v adresáři `dashboard/`. Tato konfigurace je již dodána a obvykle nevyžaduje změny při počátečním nastavení. Je třeba ji upravovat pouze tehdy, pokud potřebujete přizpůsobit připojení na backend (např. při nasazení více instancí).
+Dashboard digna má vlastní konfigurační soubor `config.toml` umístěný ve složce `dashboard/`. Tento konfigurační soubor je již poskytnut a během počátečního nastavení obvykle není nutné jej měnit. Pokud potřebujete přizpůsobit připojení na backend, upravte jej podle potřeby.
 
-Pokud potřebujete upravit konfiguraci dashboardu, nahlédněte do dokumentace dashboardu.
+Pokud potřebujete upravit konfiguraci dashboardu (např. pro nasazení více instancí), nahlédněte do dokumentace dashboardu.
 
-Vyberte webový server a postupujte podle příslušných kroků pro nasazení.
+Zvolte svůj webový server a postupujte podle odpovídajících kroků nasazení.
 
 #### Nasazení do IIS
 
 1. **Otevřete IIS Manager**
-   - Stiskněte `Win + R`, zadejte `inetmgr`, stiskněte Enter
+   - Stiskněte `Win + R`, napište `inetmgr`, stiskněte Enter
 
-2. **Vytvořte novou webovou stránku**
+2. **Vytvořte nový web**
    - V levém panelu klikněte pravým tlačítkem na **Sites**
-   - Zvolte **Add Website...**
+   - Vyberte **Add Website...**
 
-3. **Nakonfigurujte web**
+3. **Konfigurujte web**
    - **Site Name**: Zadejte název (např. "dignaDashboard")
    - **Physical Path**: Klikněte na Browse a vyberte složku `dashboard`
    - **Binding**: Nastavte IP adresu a port (výchozí port 80 pro HTTP, 443 pro HTTPS)
 
 4. **Spusťte web**
    - Klikněte **OK** pro vytvoření webu
-   - Klikněte pravým tlačítkem na nově vytvořený web a vyberte **Start**
+   - Klikněte pravým tlačítkem na nový web a vyberte **Start**
 
-5. **Ověřte instalaci**
+5. **Otestujte instalaci**
    - Otevřete prohlížeč
-   - Přejděte na `http://localhost` (nebo vaši nakonfigurovanou URL)
+   - Přejděte na `http://localhost` (nebo na vámi nakonfigurovanou URL)
    - Měli byste vidět přihlašovací stránku dashboardu digna
 
 #### Nasazení do Apache Tomcat
 
-1. **Zkopírujte dashboard do Tomcat**
-   - Zkopírujte složku `dashboard` do adresáře `webapps` Tomcatu
+1. **Zkopírujte dashboard do Tomcatu**
+   - Zkopírujte složku `dashboard` do adresáře `webapps` ve vašem Tomcatu
    - Přejmenujte ji podle potřeby (např. na `digna`)
    - Příklad: `C:\Program Files\Apache Tomcat\webapps\digna`
 
 2. **Ověřte nasazení**
-   - Obnovte nebo znovu načtěte Tomcat management stránku (http://localhost:8080)
+   - Obnovte nebo znovu načtěte stránku správy Tomcatu (http://localhost:8080)
    - Měli byste vidět "digna" (nebo zvolené jméno) v seznamu nasazených aplikací
 
 3. **Přístup k dashboardu**
@@ -522,31 +526,31 @@ Vyberte webový server a postupujte podle příslušných kroků pro nasazení.
 
 ### Proč používat službu Windows?
 
-Spuštění backendu digna jako Windows služby zajistí, že:
-- se spustí automaticky při startu serveru
-- běží na pozadí bez otevřeného Příkazového řádku
-- se automaticky restartuje v případě pádu
-- je možné ji spravovat přes Windows Services
+Spuštění backendu digna jako služby Windows zajistí, že:
+- se automaticky spustí při startu serveru
+- poběží na pozadí bez otevřeného okna Příkazového řádku
+- se automaticky restartuje v případě selhání
+- lze ji spravovat přes správu služeb Windows
 
 ### Soubory pro správu služby
 
-Všechny potřebné soubory jsou umístěny v instalačním adresáři digna pod: `bin/`
+Všechny potřebné soubory se nacházejí v instalačním adresáři digna ve složce: `bin/`
 
-K dispozici jsou tyto dávkové soubory:
-- `install_service.bat` — Zaregistruje digna jako Windows službu
-- `uninstall_service.bat` — Odstraní registraci služby
-- `start_service.bat` — Spustí registrovanou službu
+Následující batch soubory jsou k dispozici:
+- `install_service.bat` — Registruje digna jako službu Windows
+- `uninstall_service.bat` — Odregistrovává službu
+- `start_service.bat` — Spustí běžící službu
 - `stop_service.bat` — Zastaví běžící službu
 
 !!! warning "Vyžadováno oprávnění správce"
 
-    Všechny dávkové soubory musí být spuštěny s oprávněními Administrátora.
+    Všechny batch soubory musí být spuštěny s oprávněními administrátora.
 
 ### Instalace služby
 
-1. **Otevřete Příkazový řádek jako Administrátor**
+1. **Otevřete Příkazový řádek jako administrátor**
    - Klikněte pravým tlačítkem na Příkazový řádek
-   - Vyberte "Run as Administrator"
+   - Vyberte "Spustit jako správce"
 
 2. **Přejděte do složky bin**
    ```bash
@@ -558,13 +562,13 @@ K dispozici jsou tyto dávkové soubory:
    install_service.bat
    ```
 
-digna server je nyní zaregistrován jako Windows služba s povoleným automatickým spuštěním. Služba se však nespustí okamžitě — viz následující sekci pro její spuštění.
+Server digna je nyní registrován jako služba Windows s povoleným **automatickým spuštěním**. Služba se však nespustí okamžitě — viz následující sekci pro spuštění.
 
 ### Spuštění a zastavení služby
 
 #### Pro spuštění služby
 
-1. Otevřete Příkazový řádek jako Administrátor
+1. Otevřete Příkazový řádek jako administrátor
 2. Přejděte do `digna\bin`
 3. Spusťte:
    ```bash
@@ -573,7 +577,7 @@ digna server je nyní zaregistrován jako Windows služba s povoleným automatic
 
 #### Pro zastavení služby
 
-1. Otevřete Příkazový řádek jako Administrátor
+1. Otevřete Příkazový řádek jako administrátor
 2. Přejděte do `digna\bin`
 3. Spusťte:
    ```bash
@@ -582,20 +586,20 @@ digna server je nyní zaregistrován jako Windows služba s povoleným automatic
 
 !!! tip "Tip"
 
-    Vždy službu zastavte před aktualizací souborů aplikace.
+    Před aktualizací souborů aplikace vždy službu zastavte.
 
 ### Přesunutí služby do nového adresáře
 
-Pokud potřebujete přesunout instalaci digna:
+Pokud je potřeba přesunout instalaci digna:
 
-1. **Odinstalujte současnou službu**
+1. **Odinštalujte současnou službu**
    ```bash
    cd C:\old\path\digna\bin
    uninstall_service.bat
    ```
 
 2. **Přesuňte soubory aplikace**
-   - Přesuňte celou instalační složku digna na nové místo
+   - Přesuňte celý instalační adresář digna na nové místo
 
 3. **Znovu nainstalujte službu**
    ```bash
@@ -608,7 +612,7 @@ Pokud potřebujete přesunout instalaci digna:
    start_service.bat
    ```
 
-### Odinstalování služby
+### Odinštalování služby
 
 1. **Zastavte běžící službu**
    ```bash
@@ -616,29 +620,29 @@ Pokud potřebujete přesunout instalaci digna:
    stop_service.bat
    ```
 
-2. **Odinstalujte službu**
+2. **Odinštalujte službu**
    ```bash
    uninstall_service.bat
    ```
 
-digna server je nyní zrušen jako Windows služba.
+Server digna je nyní odregistrován jako služba Windows.
 
 ---
 
-## Upgrade na novou verzi {: #upgrading-to-a-new-release }
+## Upgrade na nové vydání {: #upgrading-to-a-new-release }
 
 ### Před upgradem
 
-**Vytvoření zálohy digna repository je POVINNÉ**
+**Vytvoření zálohy repozitáře digna je povinné**
 
-Před upgradem digna zálohujte svoje repository (PostgreSQL), abyste předešli ztrátě dat.
-Záloha zajistí možnost obnovy, pokud by během upgradu nastaly neočekávané problémy.
+Před upgradem digna zálohujte svůj repozitář (PostgreSQL), abyste se ochránili před ztrátou dat.
+Záloha zaručí, že v případě neočekávaných problémů s upgradem můžete obnovit data.
 
 ### Proces upgradu
 
 #### Krok 1: Zastavte službu digna
 
-Pokud běží digna jako Windows služba, nejprve ji zastavte:
+Pokud běží digna jako služba Windows, nejprve ji zastavte:
 
 ```bash
 cd C:\path\to\digna\bin
@@ -650,30 +654,30 @@ stop_service.bat
 Ve vašem instalačním adresáři digna:
 
 ```bash
-# Přejmenujte složku obsahující dignabackend
+# Rename folder containing dignabackend
 ren dignabackend dignabackend_old
 ```
 ```bash
-# Přejmenujte dashboard
+# Rename dashboard
 ren dashboard dashboard_old
 ```
 
 #### Krok 3: Rozbalte a nasadte novou verzi
 
-1. Rozbalte nový instalační ZIP soubor digna
-2. Zkopírujte nový spustitelný soubor `digna` a složku `dashboard` do instalačního adresáře
+1. Rozbalte nový ZIP soubor s instalací digna
+2. Zkopírujte nový spustitelný soubor `digna` a složku `dashboard` do vašeho instalačního adresáře
 
 
 !!! warning "Důležité"
 
-    Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše existující konfigurace zůstane zachována.
+    Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše stávající konfigurace zůstane nedotčena.
 
-### Krok 4: Obnovte konfigurační soubory
+### Krok 4: Obnovení konfiguračních souborů
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Krok 5: Upgradujte schéma repository
+### Krok 5: Upgrade schématu repozitáře
 
 Přejděte do instalačního adresáře digna a spusťte:
 
@@ -681,18 +685,18 @@ Přejděte do instalačního adresáře digna a spusťte:
 digna repo upgrade
 ```
 
-Tento příkaz aktualizuje PostgreSQL schéma na nejnovější verzi při zachování veškerých existujících dat.
+Tím se aktualizuje PostgreSQL schéma na nejnovější verzi při zachování všech existujících dat.
 
-### Krok 6: Restartujte služby
+### Krok 6: Restart služeb
 
-Pokud běží jako Windows služba:
+Pokud běží jako služba Windows:
 
 ```bash
 cd C:\path\to\digna\bin
 start_service.bat
 ```
 
-Pokud běžíte ručně, restartujte server:
+Pokud běží ručně, restartujte server:
 
 ```bash
 cd C:\path\to\digna
@@ -701,8 +705,8 @@ digna serve --address <address> --port <port>
 
 Pokud používáte IIS nebo Tomcat, restartujte příslušný webový server.
 
-#### Krok 7: Ověřte upgrade
+#### Krok 7: Ověření upgradu
 
-1. Přistupte k digna dashboardu
+1. Přistupte k dashboardu digna
 2. Ověřte, že se rozhraní načítá správně
-3. Zkontrolujte serverové logy na případné chyby
+3. Zkontrolujte logy serveru, zda se nezobrazují chyby

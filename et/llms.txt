@@ -28,10 +28,19 @@
 
 ## Paigaldamine ja juurutamine
 
+### Operatsioonisüsteemid
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/et/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Samm-sammuline juhend digna väljalase 2026.06 paigaldamiseks Linuxis — süsteeminõuded, PostgreSQL seadistus, nginx või Apache konfiguratsioon, backendi ja dashboardi seadistamine, digna käivitamine systemd teenusena ning uuendamine uude versiooni.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/et/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Juhend samm-sammult digna väljalase 2026.06 paigaldamiseks macOS-ile — süsteeminõuded, Homebrew ja PostgreSQL seadistus, nginx või Apache konfiguratsioon, backend'i ja armatuurlaua seadistus, digna käivitamine taustateenusena ning uuendamine uuele versioonile.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/et/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Step-by-step guide to installing digna Release 2026.06 on Windows — system requirements, PostgreSQL setup, web server configuration, backend and dashboard configuration, running digna as a Windows service, and upgrading to a new release.
-- [Kuidas konfigureerida ühekordset sisselogimist](https://docs.digna.ai/et/installation_deployment/sso_integration_guide/): Samm-sammult juhend Single Sign-On (SSO) konfigureerimiseks digna jaoks, kasutades OpenID Connect (OIDC). Käsitleb juhtpaneeli ja backend'i seadistust, testimist, tõrkeotsingut ning toetatud identiteedipakkujaid nagu Microsoft Entra ID, Google Workspace ja Okta.
+- [Release 2026.06](https://docs.digna.ai/et/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Samm-sammuline juhend digna väljalaske 2026.06 installimiseks Windowsis — süsteeminõuded, PostgreSQL seadistus, veebiserveri konfiguratsioon, backendi ja juhtpaneeli konfiguratsioon, digna käivitamine Windowsi teenusena ja uuendamine uuele versioonile.
 
 ## Alustamine
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/et/databases/snowflake_connector_guide/): Konfigureerige digna ühenduma Snowflake'iga, kasutades Python-konnektorit või Snowflake ODBC draiverit. Toetab paroolipõhist autentimist DSN-iga või DSN-vaba seadistusega.
 - [MS SQL Server](https://docs.digna.ai/et/databases/sqlserver_connector_guide/): Configure digna to connect to Microsoft SQL Server using the pymssql Python driver or the SQL Server ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
 - [Teradata](https://docs.digna.ai/et/databases/teradata_connector_guide/): Konfigureerige digna ühenduma Teradataga, kasutades teradatasql Pythoni draiverit või Teradata ODBC-draiverit. Toetab paroolipõhist autentimist DSN-iga või ilma DSN-ita seadistustes.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/et/sso/overview/): Kuidas Single Sign-On töötab dignas, kasutades OpenID Connecti (OIDC). Katab juhtpaneeli ja backend'i seadistuse, testimise, tõrkeotsingu ning lingid iga-pakkuja juhenditele Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne ja AD FS jaoks.
+- [AD FS](https://docs.digna.ai/et/sso/adfs_sso_guide/): Konfigureerige digna jaoks ühekordne sisselogimine (SSO) Active Directory Federation Servicesiga kasutades OpenID Connecti — rakenduste grupp, serverirakendus, jagatud salajane võti, lubatud skoopid ja vastav digna konfiguratsioon.
+- [Auth0](https://docs.digna.ai/et/sso/auth0_sso_guide/): Seadista digna jaoks Single Sign-On Auth0 abil kasutades OpenID Connecti — regulaarsed veebirakenduse seaded, lubatud callback URL-id, kliendi mandaadid, tenant'i domeen ja vastav digna konfiguratsioon.
+- [Google Workspace](https://docs.digna.ai/et/sso/google_workspace_sso_guide/): Seadistage digna jaoks Single Sign-On Google Workspace'i abil, kasutades OpenID Connecti — OAuth nõusoleku ekraan, OAuth kliendi ID, lubatud suunamis-URI-d ja vastav digna konfiguratsioon.
+- [Keycloak](https://docs.digna.ai/et/sso/keycloak_sso_guide/): Konfigureeri digna jaoks Single Sign-On Keycloakiga kasutades OpenID Connecti — realm ja kliendi seadistus, kliendi autentimine, kehtivad redirect URI-d, kliendi saladus ja vastav digna konfiguratsioon.
+- [Microsoft Entra ID](https://docs.digna.ai/et/sso/microsoft_entra_id_sso_guide/): Seadista Single Sign-On digna jaoks Microsoft Entra ID-ga (endine Azure AD) kasutades OpenID Connecti — rakenduse registreerimine, redirect URI, kliendisaladus, tenant ID ja vastav digna konfiguratsioon.
+- [Okta](https://docs.digna.ai/et/sso/okta_sso_guide/): Seadista digna jaoks Single Sign-On Okta abil kasutades OpenID Connecti — rakenduse integratsioon, sisselogimise ümbersuunamise URI-d, kliendi mandaadid, autoriseerimiserveri valik ja vastav digna konfiguratsioon.
+- [OneLogin](https://docs.digna.ai/et/sso/onelogin_sso_guide/): Seadistage digna jaoks OneLogini kaudu ühekordne sisselogimine (Single Sign-On) kasutades OpenID Connecti — OIDC-rakenduse loomine, ümbersuunamise URI-d, kliendi mandaadid, tokeni lõpp-punkti autentimine ja vastav digna konfiguratsioon.
+- [PingOne](https://docs.digna.ai/et/sso/pingone_sso_guide/): Konfigureeri Single Sign-On (SSO) digna jaoks kasutades PingOne'i ja OpenID Connecti — OIDC veebirakenduse seadistus, ümbersuunamise URI-d, kliendi mandaadid, environment ID, piirkondlikud domeenid ja vastav digna konfiguratsioon.
 
 ## CLI viide
 

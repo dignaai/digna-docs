@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# Průvodce instalací na macOS pro digna Release 2026.06
 
 **Release:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Poslední aktualizace:** 5. září 2026
 
 
 ---
 
-## Table of Contents
+## Obsah
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
-
----
-
-## Introduction {: #introduction }
-
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+1. [Úvod](#introduction)
+2. [Systémové požadavky](#system-requirements)
+3. [Předinstalační nastavení](#pre-installation-setup)
+4. [Nastavení PostgreSQL serveru](#postgresql-server-setup)
+5. [Konfigurace webového serveru](#web-server-configuration)
+6. [Počáteční instalace](#initial-installation)
+7. [Konfigurace backendu](#backend-configuration)
+8. [Konfigurace dashboardu](#dashboard-configuration)
+9. [Spuštění digna jako služby na pozadí](#running-digna-as-a-background-service)
+10. [Upgrade na novou verzi](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Úvod {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### O digna
 
-| Requirement | Specification |
+digna je komplexní platforma poháněná AI navržená k optimalizaci řízení kvality dat v různých datových prostředích jako datové sklady, datová jezera a lakehouse. Je navržena pro vysokou škálovatelnost a přizpůsobivost a řeší moderní problémy s daty pomocí automatizace, monitorování v reálném čase a detekce anomálií.
+
+digna se skládá ze dvou hlavních komponent:
+
+- **dignabackend**: Jádro aplikace zodpovědné za zpracování dat a provádění kontrol kvality.
+- **dignadashboard**: Webové rozhraní hostované na webovém serveru, poskytující uživatelsky přívětivé prostředí pro práci s platformou digna a vizualizaci metrik kvality dat.
+
+### Co je nového ve verzi 2026.06
+
+Tato verze přináší schopnosti datové observability přímo do vašeho kódu, což umožňuje vývojářům sledovat kvalitu dat u zdroje. Kompletní podrobnosti najdete v [release notes](http://docs.digna.ai/changelog/Release_202606/).
+
+### Hledáte Windows nebo Linux?
+
+Tento průvodce pokrývá macOS. Pro jiné platformy viz [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) nebo [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Systémové požadavky {: #system-requirements }
+
+Než začnete s instalací, ověřte, že váš systém splňuje následující minimální požadavky:
+
+| Požadavek | Specifikace |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **Operační systém** | macOS 13 (Ventura) nebo novější |
+| **Architektura** | Apple Silicon (arm64) nebo Intel (x86_64) |
+| **Paměť (minimální nasazení)** | 16 GB RAM |
+| **Místo na disku** | 10 GB volného místa |
+| **Databáze** | PostgreSQL Server 12 nebo vyšší |
+| **Webový server** | nginx, Apache httpd nebo ekvivalent |
+| **Nástroje příkazové řádky** | Xcode Command Line Tools (vyžadováno pro Homebrew) |
 
-### Database Installation Options
+### Možnosti instalace databáze
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Pokud je PostgreSQL již nainstalovaný:**
+Můžete do existujícího PostgreSQL serveru přidat novou databázi pro digna.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Pokud instalujete PostgreSQL na stejný stroj jako digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Doporučené specifikace"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Paměť**: 32 GB RAM (místo 16 GB)
+    - **Místo na disku**: 50 GB volného místa (místo 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Tyto vyšší specifikace umožňují současný provoz digna i PostgreSQL databáze.
 
-### Checking Your Architecture
+### Kontrola architektury
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Několik cest v tomto návodu se liší mezi Apple Silicon a Intel Macy. Pro zjištění spusťte v **Terminálu**:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew instaluje do `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew instaluje do `/usr/local`.
 
 !!! tip "Tip"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    Místo tvrdého kódování jedné z cest tento průvodce používá `$(brew --prefix)`, který se rozbalí na správné umístění pro obě architektury. Můžete příkazy zkopírovat přesně tak, jak jsou.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Předinstalační nastavení {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Před instalací digna se ujistěte, že jsou splněny tři klíčové předpoklady:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – správce balíčků používaný k instalaci komponent níže
+2. **PostgreSQL Server** – pro ukládání vypočítaných metrik a výkonových dat
+3. **Webový server** – pro hostování digna Dashboardu
 
-If these components are not already set up, follow the sections below to install and configure them.
+Pokud tyto komponenty ještě nejsou nastaveny, postupujte podle níže uvedených sekcí pro jejich instalaci a konfiguraci.
 
-### Installing Homebrew
+### Instalace Homebrew
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew je standardní správce balíčků pro macOS a je používán v celém tomto průvodci k instalaci PostgreSQL a nginx.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### Krok 1: Zkontrolujte, zda je Homebrew již nainstalovaný
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Otevřete **Terminál** (stiskněte `Cmd + Space`, napište `Terminal`, stiskněte Enter) a spusťte:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Pokud se objeví číslo verze, přeskočte na sekci [Nastavení PostgreSQL serveru](#postgresql-server-setup).
 
-#### Step 2: Install Homebrew
+#### Krok 2: Nainstalujte Homebrew
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Pokud příkaz nebyl nalezen, nainstalujte Homebrew podle pokynů na [oficiálních stránkách Homebrew](https://brew.sh). Instalátor také nainstaluje Xcode Command Line Tools, pokud již nejsou přítomny.
 
-#### Step 3: Add Homebrew to Your PATH
+#### Krok 3: Přidejte Homebrew do PATH
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Na Apple Silicon vypíše instalátor dva příkazy pro přidání Homebrew do vašeho shellového prostředí. Spusťte je podle pokynů a pak ověřte:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+To by mělo vypsat `/opt/homebrew` na Apple Silicon nebo `/usr/local` na Intel.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Nastavení PostgreSQL serveru {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Pokud již máte PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Pokud je PostgreSQL již nainstalovaný a běžící na lokálním stroji nebo používáte spravovaný vzdálený PostgreSQL server, můžete přejít na [další sekci](#web-server-configuration).
 
-### Installation Options
+### Možnosti instalace
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS nabízí dvě jednoduché možnosti instalace PostgreSQL. Vyberte **jednu**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — instalace z příkazové řádky, doporučeno pro servery
+- [Postgres.app](#postgresql-app) — grafická instalace, pohodlné pro lokální vyhodnocení
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Instalace PostgreSQL přes Homebrew {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### Krok 1: Nainstalujte verzi PostgreSQL
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### Krok 2: Přidejte PostgreSQL do PATH
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+Verzované formule PostgreSQL jsou *keg-only*, což znamená, že Homebrew automaticky nelinkuje jejich příkazy do PATH. Přidejte je sami:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Poznámka"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Toto předpokládá výchozí shell `zsh` používaný v macOS. Pokud používáte `bash`, přidejte stejný řádek do `~/.bash_profile`.
 
-#### Step 3: Start the PostgreSQL Service
+#### Krok 3: Spusťte službu PostgreSQL
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+Tím se PostgreSQL spustí ihned a zároveň se nastaví, aby se spouštěl automaticky při přihlášení.
 
-#### Step 4: Verify the Installation
+#### Krok 4: Ověřte instalaci
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Měli byste vidět verzi PostgreSQL, pokud byla instalace úspěšná.
 
-#### Step 5: Connect to the Server
+#### Krok 5: Připojte se k serveru
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Důležité — macOS se tady liší od Windows"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Windows instalátor vás vyzve k vytvoření superuživatele `postgres` a k zadání hesla. Homebrew to nedělá. Místo toho vytvoří superuživatele pojmenovaného podle vašeho **macOS účtu**, bez hesla, přístupného pouze z lokálního stroje.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    To znamená, že na čerstvé Homebrew instalaci neexistuje role `postgres`. Při potřebě superuživatele použijte své vlastní jméno macOS účtu a vytvořte explicitního uživatele digna, jak je popsáno v sekci [Počáteční instalace](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### Krok 6: Potvrďte port
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Výchozí port PostgreSQL je `5432`. Pro potvrzení, na jakém portu server naslouchá:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Zapamatujte si hodnotu — budete ji potřebovat při konfiguraci digna backendu.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Instalace PostgreSQL pomocí Postgres.app {: #postgresql-app }
 
-If you prefer a graphical installation:
+Pokud preferujete grafickou instalaci:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Stáhněte [Postgres.app](https://postgresapp.com) a přetáhněte jej do složky **Applications**
+2. Otevřete aplikaci a klikněte na **Initialize** pro vytvoření nového serveru
+3. Postupujte podle pokynů aplikace pro přidání jejích příkazových nástrojů do PATH
+4. Ověřte instalaci:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Postgres.app také vytvoří superuživatele pojmenovaného podle vašeho macOS účtu.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Konfigurace webového serveru {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna vyžaduje webový server pro hostování dashboardu. Vyberte jednu z následujících možností:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — instalovaný přes Homebrew, doporučeno
+- [Apache httpd](#apache-setup) — součást macOS
 
-You only need to install and configure **one** of these servers.
+Stačí nainstalovat a konfigurovat **jeden** z těchto serverů.
 
-Both sections configure two things the dashboard depends on:
+Obě sekce nastavují dvě věci, na kterých dashboard závisí:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Fallback pro single-page aplikaci**, aby obnovení URL dashboardu v prohlížeči nevracelo 404
+- **MIME typ pro `.md`**, aby byly Markdown soubory servírovány správně
 
-### nginx Setup {: #nginx-setup }
+### Nastavení nginx {: #nginx-setup }
 
-#### Overview
+#### Přehled
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx je lehký, výkonný webový server vhodný pro servírování statického digna dashboardu.
 
-#### Installation
+#### Instalace
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### Spuštění nginx
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Ověření instalace
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Otevřete prohlížeč
+2. Přejděte na `http://localhost:8080`
+3. Měli byste vidět uvítací stránku nginx
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Poznámka — výchozí port je 8080, nikoli 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew konfiguruje nginx tak, aby naslouchal na portu `8080`, aby mohl běžet bez oprávnění administrátora. Na macOS vyžaduje vázání na port `80` nebo jiný port pod 1024 práva root.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    Chcete-li servírovat dashboard na portu 80, změňte `listen 8080;` na `listen 80;` v níže uvedené konfiguraci a spusťte nginx pomocí `sudo brew services start nginx`.
 
-#### Configuring a Site for the Dashboard
+#### Konfigurace webu pro dashboard
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Konfigurace Homebrew nginx zahrnuje všechny soubory ve složce `servers`. Vytvořte věnovaný konfigurační soubor pro digna tam:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Vložte následující, nahraďte `/path/to/digna/dashboard` skutečnou cestou k rozbalené složce `dashboard`:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Důležité"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Bez direktivy `try_files` při obnově jakékoli stránky dashboardu kromě kořenové URL dojde k 404. Toto je ekvivalent URL Rewrite modulu v IIS na Windows.
 
-#### Apply the Configuration
+#### Aplikujte konfiguraci
 
-Test the configuration for syntax errors, then reload nginx:
+Otestujte syntaxi konfigurace, pak reloadujte nginx:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Nastavení Apache httpd {: #apache-setup }
 
-#### Overview
+#### Přehled
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS obsahuje Apache httpd, takže instalace není nutná. Ve výchozím stavu je vypnutý.
 
-#### Starting Apache
+#### Spuštění Apache
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Ověření instalace
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Otevřete prohlížeč
+2. Přejděte na `http://localhost`
+3. Měli byste vidět hlášku "It works!"
 
-#### Required: Enable mod_rewrite
+#### Povinné: povolit mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+Dashboard vyžaduje přepisování URL. Otevřete Apache konfiguraci:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Najděte následující řádek a odstraňte počáteční `#`, aby byl odkomentován:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Povinné: povolit .htaccess Overrides
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+Ve stejném souboru najděte blok `<Directory "/Library/WebServer/Documents">` a změňte:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+na:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Povinné: MIME typ pro Markdown soubory
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Stále v `httpd.conf` přidejte následující řádek, aby byly Markdown soubory servírovány správně:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Důležité"
 
-    Without this setting, `.md` files may not be served properly.
+    Bez tohoto nastavení nemusí být `.md` soubory servírovány správně.
 
-#### Apply the Configuration
+#### Aplikujte konfiguraci
 
-Check the configuration for syntax errors, then restart Apache:
+Zkontrolujte konfiguraci na syntaktické chyby a restartujte Apache:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Počáteční instalace {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Krok 1: Nastavte repozitář digna
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Repozitář digna uchovává všechny metriky vypočtené digna. Slouží jako centrální databáze pro analytická a výkonová data.
 
-#### Create Repository Schema and User
+#### Vytvoření schématu a uživatele repozitáře
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Otevřete svůj PostgreSQL klient (psql, pgAdmin nebo podobně) a spusťte následující SQL příkazy:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Nahraďte následující zástupné hodnoty:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — Vámi zvolené jméno schématu (např. `dignarepo`)
+- `<digna_repo_user>` — Vámi zvolené uživatelské jméno (např. `digna_user`)
+- `<digna_repo_password>` — Bezpečné heslo pro tohoto uživatele
 
-**Example:**
+**Příklad:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,103 +410,103 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+Pro spuštění z Terminálu v jednom kroku:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Poté vložte příkazy na promptu `postgres=#` a zadejte `\q` pro ukončení.
 
-!!! tip "Best Practice"
+!!! tip "Doporučení"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Používejte silná, složitá hesla pro databázové uživatele. Vyhněte se snadno odhadnutelným přihlašovacím údajům.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Krok 2: Rozbalte instalační balík digna
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+1. Najděte ZIP soubor instalačního balíku digna, který jste obdrželi
+2. Rozbalte jej do vámi zvoleného instalačního umístění — například `/opt/digna` nebo `~/digna`
+3. Po rozbalení byste měli vidět následující položky:
+   - `dashboard/` — webové rozhraní dashboardu
+   - `digna` — hlavní spustitelný soubor (backend + CLI v jednom)
+   - `config.toml` — konfigurační soubor
+   - `license.toml` — licenční soubor (zkopírujte sem svůj)
 
-To extract from the Terminal:
+Pro rozbalení z Terminálu:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Nastavte spustitelné oprávnění
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+V závislosti na způsobu přenosu může spustitelný bit po rozbalení chybět. Nastavte jej explicitně:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Pokud macOS blokuje aplikaci
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Soubory stažené přes prohlížeč nebo e-mailový klient jsou označeny karanténním atributem. Pokud macOS ohlásí, že aplikaci *"nelze otevřít, protože vývojáře nelze ověřit"*, odstraňte atribut z instalační složky:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Alternativně otevřete **System Settings → Privacy & Security**, najděte zablokovanou položku u spodní části stránky a klikněte **Open Anyway**.
 
-!!! note "Note"
+!!! note "Poznámka"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Tento krok je nutný pouze pokud macOS skutečně zablokuje spustitelný soubor. Balíčky přenesené přes SSH nebo z interních sdílených úložišť obvykle nejsou v karanténě.
 
-### Step 3: Install the License File
+### Krok 3: Nainstalujte licenční soubor
 
-!!! warning "Important"
+!!! warning "Důležité"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Licenční soubor není součástí instalačního balíku a bude vám poskytnut zvlášť společností digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Najděte soubor `license.toml`, který jste obdrželi
+2. Zkopírujte jej do kořenového instalačního adresáře digna (tam, kde jsou `config.toml` a spustitelný soubor `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Proč je to důležité:**
+Licenční soubor obsahuje informace o zákazníkovi, datum vypršení licence a digitální podpis. **Neměňte tento soubor** — jakákoli úprava jej zneplatní.
 
-**Directory structure after setup:**
+**Struktura adresářů po nastavení:**
 
 ```
 /opt/digna/
-├── config.toml         (configuration file)
-├── license.toml        (YOUR LICENSE FILE - copy here)
-├── digna               (main executable)
-├── bin/                (service management scripts)
-└── dashboard/          (web interface)
-    └── (dashboard files)
+├── config.toml         (konfigurační soubor)
+├── license.toml        (VÁŠ LICENČNÍ SOUBOR - zkopírujte sem)
+├── digna               (hlavní spustitelný soubor)
+├── bin/                (skripty pro správu služby)
+└── dashboard/          (webové rozhraní)
+    └── (soubory dashboardu)
 ```
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Konfigurace backendu {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Krok 1: Vytvořte a upravte konfigurační soubor
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+Soubor `config_template.toml` je dodán ve vaší instalační složce digna. Stačí jej přejmenovat na `config.toml`.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Umístění:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Otevřete `config.toml` v textovém editoru a nakonfigurujte každou sekci níže.
 
-#### [app] Section
+#### Sekce [app]
 
-This section configures the digna backend application settings:
+Tato sekce konfiguruje nastavení backendu digna:
 
 ```toml
 [app]
@@ -518,22 +518,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Hodnota | Poznámky |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` nebo IP adresa | Hostname nebo IP, kde běží dignabackend |
+| `digna_APP_PORT` | `8082` (výchozí) | Port pro REST API endpointy |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontendu | Pokud je dashboard na jiném serveru, zahrňte jeho URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Vyžadováno pro CORS s credentials |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Povolit všechny HTTP metody |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Povolit všechny hlavičky |
 
-!!! note "Note"
+!!! note "Poznámka"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Pokud servírujete dashboard z Homebrew nginx na jeho výchozím portu, origin, který je třeba povolit, je `http://localhost:8080`.
 
-#### [repo] Section
+#### Sekce [repo]
 
-This section configures the connection to the PostgreSQL database:
+Tato sekce konfiguruje připojení k PostgreSQL databázi:
 
 ```toml
 [repo]
@@ -545,18 +545,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Hodnota | Poznámky |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` nebo IP | Hostname/IP PostgreSQL serveru |
+| `digna_REPO_PORT` | `5432` (výchozí) | Port PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Název databáze |
+| `digna_REPO_SCHEMA` | `dignarepo` | Dříve vytvořené schéma |
+| `digna_REPO_USER` | `digna_user` | Uživatel vytvořený v PostgreSQL |
+| `digna_REPO_PASSWORD` | Vaše heslo | Heslo nastavené při tvorbě uživatele |
 
-#### [base] Section
+#### Sekce [base]
 
-This section contains security and cookie settings:
+Tato sekce obsahuje bezpečnostní a cookie nastavení:
 
 ```toml
 [base]
@@ -570,23 +570,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Hodnota | Poznámky |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | Šifrovací klíč | Používá se k šifrování tokenů a cookies (je zde výchozí) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Odpovídá vaší doméně frontendu |
+| `digna_COOKIE_SECURE` | `false` (lokálně) / `true` (produkce) | Použijte `true` pro HTTPS připojení |
+| `digna_COOKIE_HTTPONLY` | `true` | Vždy povoleno pro bezpečnost |
+| `digna_COOKIE_SAME_SITE` | `lax` | Pomáhá předcházet CSRF útokům |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hodin) | Doba platnosti relace v sekundách |
+| `digna_MAX_WORKERS` | Počet CPU jader - 1 | Počet paralelních inspekčních úloh |
 
 !!! tip "Tip"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Pro zjištění počtu CPU jader na vašem Macu spusťte `sysctl -n hw.ncpu`.
 
-#### [logging] Section
+#### Sekce [logging]
 
-This section configures logging behavior:
+Tato sekce konfiguruje chování logování:
 
 ```toml
 [logging]
@@ -594,58 +594,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Hodnota | Poznámky |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` nebo `DEBUG` | `INFO` pro produkci, `DEBUG` pro ladění |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Počet denních záloh logů, které se uchovávají |
 
 ---
 
-### Step 2: Initialize the Repository
+### Krok 2: Inicializujte repozitář
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Otevřete **Terminál**
+2. Přejděte do instalačního adresáře digna (kde jsou `config.toml` a spustitelný soubor `digna`)
+3. Spusťte test připojení:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Měli byste vidět potvrzení, že je připojení navázáno (samo repozitář ještě nebyl inicializován).
 
-!!! note "Note"
+!!! note "Poznámka"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    Na macOS nejsou příkazy v aktuálním adresáři na PATH, takže spustitelný soubor voláte jako `./digna` místo `digna`. Chcete-li používat kratší zápis všude, přidejte instalační složku do PATH:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### Krok 3: Nainstalujte schéma repozitáře
 
-In the same directory, run:
+Ve stejném adresáři spusťte:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Tento příkaz nainstaluje potřebné tabulky a schéma ve vaší PostgreSQL databázi.
 
-### Step 4: Start the digna Server
+### Krok 4: Spusťte digna server
 
-In the digna installation directory, start the server with:
+V instalačním adresáři digna spusťte server:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+Parametry:
+- `--address` — hostname/IP serveru
+- `--port` — port serveru
 
-You should see startup messages confirming the server is running:
+Měli byste vidět zprávy o spuštění potvrzující běh serveru:
 
 ```
 INFO:     Started server process [1234]
@@ -656,55 +656,55 @@ INFO:     Uvicorn running on http://localhost:8082
 
 !!! tip "Tip"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    Při prvním spuštění vás macOS může požádat, zda chcete aplikaci povolit příchozí síťová připojení. Klikněte **Allow**, jinak dashboard nebude moci komunikovat s backendem.
 
-### Step 5: Create an Admin User
+### Krok 5: Vytvořte administrátorského uživatele
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. Otevřete nové okno Terminálu
+2. Přejděte do instalačního adresáře digna
+3. Spusťte následující příkaz pro vytvoření admin uživatele:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**Příklad:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+Tím se vytvoří uživatel s uživatelským jménem `admin` a plnými administrátorskými právy.
 
 !!! tip "Tip"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Zabalte heslo do jednoduchých uvozovek. `zsh` zachází se znaky jako `!`, `$` a `*` speciálně, a neuváděné heslo je s těmito znaky nebude správně předáno.
 
-!!! tip "Best Practice"
+!!! tip "Doporučení"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Používejte silné heslo kombinující velká a malá písmena, čísla a speciální znaky.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Konfigurace dashboardu {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Krok 1: Nasazení dashboardu na webový server
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+Digna dashboard má svůj vlastní soubor `config.toml` umístěný ve složce `dashboard/`. Tato konfigurace je již dodána a během počátečního nastavení ji obvykle není potřeba měnit. Měníte ji pouze v případě, že potřebujete upravit připojení na backend nebo jiné pokročilé nastavení.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Pokud potřebujete dashboard nakonfigurovat (např. pro nasazení ve více instancích), přečtěte si dokumentaci dashboardu.
 
-Choose your web server and follow the corresponding deployment steps.
+Vyberte svůj webový server a postupujte podle odpovídajících kroků.
 
-#### Deploying to nginx
+#### Nasazení na nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Pokud jste postupovali podle sekce [nginx Setup](#nginx-setup), server block již směřuje na vaši složku `dashboard` a žádné kopírování není potřeba.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Potvrďte cestu**
+   - Otevřete `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Ověřte, že `root` ukazuje na rozbalenou složku `dashboard`
 
-2. **Ensure the folder is readable**
+2. **Ujistěte se, že složka je čitelná**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
@@ -715,27 +715,27 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Ověřte instalaci**
+   - Otevřete prohlížeč
+   - Přejděte na `http://localhost:8080` (nebo na vaši nakonfigurovanou URL)
+   - Měli byste vidět přihlašovací stránku digna dashboardu
 
-#### Deploying to Apache httpd
+#### Nasazení na Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Zkopírujte dashboard do document root**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Přidejte Rewrite pravidla**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Vytvořte soubor `.htaccess` ve deployed složce, aby se při obnovení v prohlížeči nezobrazovala 404:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Vložte následující:
 
    ```apache
    RewriteEngine On
@@ -750,177 +750,177 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Restartujte Apache**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Přístup k dashboardu**
+   - Otevřete prohlížeč
+   - Přejděte na `http://localhost/digna`
+   - Měli byste vidět přihlašovací stránku digna dashboardu
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## Spuštění digna jako služby na pozadí {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### Proč spouštět digna jako službu?
 
-Running the digna backend as a background service ensures it:
+Spuštění backendu digna jako služby na pozadí zajistí, že:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Se automaticky spustí při startu stroje
+- Běží na pozadí bez otevřeného okna Terminálu
+- Automaticky se restartuje při pádu
+- Lze jej spravovat přes `launchctl`, správce služeb macOS
 
-### Service Management Files
+### Soubory pro správu služby
 
-All necessary files are located in the digna installation directory under: `bin/`
+Všechny potřebné soubory jsou umístěny v instalačním adresáři digna pod: `bin/`
 
-The following shell scripts are available:
+Následující shell skripty jsou k dispozici:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — zaregistruje digna v launchd
+- `uninstall_service.sh` — odregistruje službu
+- `start_service.sh` — spustí registrovanou službu
+- `stop_service.sh` — zastaví běžící službu
 
-!!! warning "Administrator Required"
+!!! warning "Vyžadována práva administrátora"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Všechny skripty musí být spuštěny s `sudo`, protože registrace služby, která se spouští při startu, zapisuje do `/Library/LaunchDaemons`.
 
-### Making the Scripts Executable
+### Nastavení spustitelnosti skriptů
 
-Extraction may not preserve the executable bit. Before first use:
+Při rozbalení se spustitelný bit nemusí zachovat. Před prvním použitím:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### Instalace služby
 
-1. **Open Terminal**
+1. **Otevřete Terminál**
 
-2. **Navigate to the bin Folder**
+2. **Přejděte do složky bin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Spusťte instalační skript**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Digna server je nyní zaregistrován v launchd s povoleným **automatickým spuštěním**. Služba se tímto nezapne okamžitě — viz další sekci pro její spuštění.
 
-### Starting and Stopping the Service
+### Spuštění a zastavení služby
 
-#### To Start the Service
+#### Chcete-li službu spustit
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Otevřete Terminál
+2. Přejděte do `/opt/digna/bin`
+3. Spusťte:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Chcete-li službu zastavit
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Otevřete Terminál
+2. Přejděte do `/opt/digna/bin`
+3. Spusťte:
    ```bash
    sudo ./stop_service.sh
    ```
 
 !!! tip "Tip"
 
-    Always stop the service before updating application files.
+    Vždy před aktualizací souborů aplikace službu zastavte.
 
-### Verifying the Service
+### Ověření služby
 
-To confirm that the service is registered and running:
+Pro potvrzení, že je služba zaregistrovaná a běží:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+Řádek začínající PIDem značí, že služba běží. `-` v prvním sloupci znamená, že je zaregistrovaná, ale zastavená.
 
-### Moving the Service to a New Directory
+### Přesunutí služby do nového adresáře
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd ukládá absolutní cestu ke spustitelnému souboru, takže při přesunu instalace je nutné službu znovu zaregistrovat:
 
-1. **Uninstall the Current Service**
+1. **Odinstalujte aktuální službu**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Přesuňte soubory aplikace**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Znovu nainstalujte službu**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Spusťte službu**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Odinstalování služby
 
-1. **Stop the Running Service**
+1. **Zastavte běžící službu**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Odinstalujte službu**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+Digna server je nyní odregistrován z launchd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Upgrade na novou verzi {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Před upgradem
 
-**Creating a digna Repository Backup is Mandatory**
+Vytvoření zálohy repozitáře digna je POVINNÉ
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Před upgradem digna zálohujte svůj repozitář (PostgreSQL), abyste se chránili proti ztrátě dat.
+Záloha vám umožní obnovit data v případě nečekaných problémů během upgradu.
 
-To create a backup from the Terminal:
+Pro vytvoření zálohy z Terminálu:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Postup upgradu
 
-#### Step 1: Stop the digna Service
+#### Krok 1: Zastavte službu digna
 
-If digna is running as a background service, stop it first:
+Pokud digna běží jako služba na pozadí, nejprve ji zastavte:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Pokud běží v popředí, stiskněte v jeho Terminálu `Ctrl + C`.
 
-#### Step 2: Backup Current Backend Installation
+#### Krok 2: Zálohujte aktuální backendovou instalaci
 
-In your digna installation directory:
+Ve vašem instalačním adresáři digna:
 
 ```bash
 cd /opt/digna
@@ -930,55 +930,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### Krok 3: Rozbalte a nasazení nové verze
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Rozbalte nový instalační ZIP soubor digna
+2. Zkopírujte nový `digna` spustitelný soubor a složku `dashboard` do instalačního adresáře
+3. Obnovte spustitelný bit a v případě potřeby odstraňte karanténní atribut:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Důležité"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše stávající konfigurace zůstane zachována.
 
-### Step 4: Restore Your Configuration Files
+### Krok 4: Obnovte konfigurační soubory
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### Krok 5: Upgradujte schéma repozitáře
 
-Navigate to your digna installation directory and run:
+Přejděte do instalačního adresáře digna a spusťte:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Tím se aktualizuje PostgreSQL schéma na nejnovější verzi při zachování všech existujících dat.
 
-### Step 6: Restart Services
+### Krok 6: Restartujte služby
 
-If running as a background service:
+Pokud běží jako služba na pozadí:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Pokud běžíte ručně, restartujte server:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Pokud používáte nginx nebo Apache, restartujte příslušný webový server:
 
 ```bash
 brew services restart nginx
@@ -987,8 +987,8 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### Krok 7: Ověřte upgrade
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. Přistupte k digna dashboardu
+2. Ověřte, že se rozhraní načítá správně
+3. Zkontrolujte serverové logy na případné chyby

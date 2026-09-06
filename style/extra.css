@@ -546,6 +546,51 @@ html .md-footer-meta.md-typeset a:hover {
   background-color: rgba(1, 107, 255, 0.12);
 }
 
+/* Group headings — "Databases", "Single Sign-On", "Operating Systems".
+   Material marks these as --section but styles them almost exactly like the
+   pages they contain, and at the 0.65rem set above the difference disappears
+   entirely: a reader sees one flat list of twenty links with no sign that
+   ten of them are databases.
+
+   Sentence case, bold, a step larger than the links, with a hairline above.
+   Deliberately not tracked-out uppercase: the item labels are acronym-heavy
+   and mixed-case (MS SQL Server, PostgreSQL, AD FS, PingOne), so caps blur
+   the heading into them instead of separating it — weight and shape do that
+   better. The rule matters because the groups are long; by the time you
+   scroll to Teradata the heading is gone, and the line is what marks the
+   start of the next group.
+
+   Scoped to the second level, so it catches the groups inside a tab without
+   touching the tab's own title. */
+.md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link[for] {
+  margin-top: 1.5rem;
+  margin-bottom: 0.3rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+/* The first group sits directly under the tab title, which already separates
+   it — a second rule there reads as a stray line. */
+.md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section:first-child > .md-nav__link[for] {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Sections are always expanded, so the chevron suggests a control that does
+   nothing. */
+.md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item--section > .md-nav__link[for] .md-nav__icon {
+  display: none;
+}
+
+/* NB: a group's pages are deliberately left flush rather than indented.
+   Indenting them, with and without a hairline down the left, was tried and
+   only added clutter once the heading itself carried enough weight. */
+
 .md-nav--secondary .md-nav__link--active {
   background-color: transparent;
   border-inline-start: 3px solid var(--md-primary-fg-color);

@@ -6313,484 +6313,1188 @@ Lai plānotu darbu, kas tiek veikts katru **sestdienu un svētdienu pulksten 10:
 
 ---
 
-# Kā konfigurēt vienreizēju pierakstīšanos
-Source: https://docs.digna.ai/lv/installation_deployment/sso_integration_guide/
+# Release 2026.06
+Source: https://docs.digna.ai/lv/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/
 
-# Single Sign-On integrācijas rokasgrāmata
+# Linux Installation Guide for digna Release 2026.06
 
----
+**Release:** 2026.06
 
-## Saturs
+**Last Updated:** September 5, 2026
 
-1. [Ievads un pārskats](#introduction-and-overview)
-2. [Konfigurācijas soļi](#configuration-steps)
-3. [Informācijas paneļa konfigurācija](#dashboard-configuration)
-4. [Backenda konfigurācija](#backend-configuration)
-5. [Pieteikšanās testēšana](#testing-login)
-6. [Problēmu novēršana](#troubleshooting)
-7. [Atbalstītie sniedzēji](#supported-providers)
 
 ---
 
-## Ievads un pārskats {: #introduction-and-overview }
+## Table of Contents
 
-Šī rokasgrāmata sniedz soli pa solim norādījumus Single Sign-On (SSO) integrēšanai ar digna platformu, izmantojot **OpenID Connect (OIDC)**.
-
-### Kas ir SSO?
-
-Single Sign-On ļauj lietotājiem droši pierakstīties digna, izmantojot viņu uzņēmuma akreditācijas datus caur ārējiem identitātes sniedzējiem. Lietotāji var autentizēties ar korporatīvajiem akreditācijas datiem, nevis pārvaldīt atsevišķas digna paroles.
-
-### Kā tas darbojas
-
-SSO digna tiek īstenots, izmantojot OIDC protokolu. Var konfigurēt vairākus identitātes sniedzējus paralēli, pielāgojot divus galvenos konfigurācijas failus:
-
-- **`dashboard_config.toml`** — Kontrolē frontend pieteikšanās saskarni
-- **`config.toml`** — Konfigurē backenda OIDC savienojumus
-
-### Atbalstītie sniedzēji {: #supported-providers-overview }
-
-Piemēri šajā rokasgrāmatā izmanto **Microsoft** un **Google**, taču **jebkuru OIDC-saderīgu sniedzēju** var integrēt, sekojot tai pašai struktūrai.
-
-Bieži izmantotie OIDC sniedzēji:
-- Microsoft Entra ID (Azure AD)
-- Google Workspace
-- Okta
-- Auth0
-- Keycloak
-- Citi OIDC-saderīgi identitātes sniedzēji
+1. [Introduction](#introduction)
+2. [System Requirements](#system-requirements)
+3. [Pre-Installation Setup](#pre-installation-setup)
+4. [PostgreSQL Server Setup](#postgresql-server-setup)
+5. [Web Server Configuration](#web-server-configuration)
+6. [Initial Installation](#initial-installation)
+7. [Backend Configuration](#backend-configuration)
+8. [Dashboard Configuration](#dashboard-configuration)
+9. [Running digna as a systemd Service](#running-digna-as-a-systemd-service)
+10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Konfigurācijas soļi {: #configuration-steps }
+## Introduction {: #introduction }
 
-SSO konfigurācija prasa izmaiņas divos failos. Šī sadaļa paskaidro, kā konfigurēt katru no tiem.
+### About digna
 
-### Konfigurācijas failu pārskats
+digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
 
-| File | Location | Purpose |
-|---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend pieteikšanās saskarne |
-| **config.toml** | `/config.toml` | Backenda OIDC savienojumi |
+digna consists of two main components:
 
-Abiem failiem jābūt konfigurētiem, lai SSO darbotos pareizi.
+- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
+- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
 
----
+### What's New in Release 2026.06
 
-## Informācijas paneļa konfigurācija {: #dashboard-configuration }
+This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
 
-### Faila atrašanās vieta
+### Looking for Windows or macOS?
 
-```
-dashboard/dashboard_config.toml
-```
+This guide covers Linux. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
 
-### 1. solis: Pievienot OIDC sniedzējus
+### Which Distribution Does This Guide Cover?
 
-Pievienojiet ierakstus zem masīva `[[login.oidc]]` katram identitātes sniedzējam, kuru vēlaties atbalstīt.
+The instructions are written for the two most common server families. Where the two differ, both commands are given:
 
-**Piemērs ar Microsoft un Google:**
+- **Debian family** — Debian, Ubuntu. Package manager: `apt`.
+- **RHEL family** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Package manager: `dnf`.
 
-```toml
-[[login.oidc]]
-key = "microsoft"
-label = "Pierakstīties ar Microsoft"
-
-[[login.oidc]]
-key = "google"
-label = "Pierakstīties ar Google"
-```
-
-### 2. solis: Konfigurēt pieteikšanās opcijas
-
-Norādiet, vai jāļauj pieteikšanās, izmantojot paroli:
-
-```toml
-[login]
-usePassword = true
-```
-
-### Konfigurācijas parametri
-
-#### `[[login.oidc]]` sadaļa
-
-| Parametrs | Tips | Obligāts | Apraksts |
-|---|---|---|---|
-| `key` | string | Jā | Unikāls identificētājs OIDC savienojumam (jāsakrīt ar atslēgu config.toml) |
-| `label` | string | Jā | Teksts, kas tiek parādīts uz pieteikšanās pogas (piem., "Pierakstīties ar Microsoft") |
-
-#### `[login]` sadaļa
-
-| Parametrs | Tips | Noklusējums | Apraksts |
-|---|---|---|---|
-| `usePassword` | boolean | false | Ļaut pieteikšanos, izmantojot paroli papildus SSO |
-
-### Izpratne par usePassword
-
-**Ja `usePassword = true`:**
-- Pieteikšanās ekrānā tiek rādītas SSO pogas (piem., "Pierakstīties ar Microsoft")
-- Pieteikšanās ekrānā tiek rādīti arī lietotājvārda un paroles lauki
-- Lietotāji var autentizēties ar jebkuru no metodēm
-- Iespējams hibrīda režīms, kur daži lietotāji izmanto SSO un citi paroles
-
-**Ja `usePassword = false` (vai netiek norādīts):**
-- Pieteikšanās ekrānā tiek rādītas tikai SSO pogas
-- Nav lietotājvārda/paroles lauku
-- Pieejama tikai OIDC autentifikācija
-
-!!! tip "Padoms"
-
-    Pieteikšanās ar paroli ir pieejama tikai tiem lietotājiem, kuri tika izveidoti ar parolēm, izmantojot komandu `digna user add` vai caur informācijas paneli.
-
-### Pilns piemērs
-
-```toml
-[login]
-usePassword = true
-
-[[login.oidc]]
-key = "microsoft"
-label = "Pierakstīties ar Microsoft"
-
-[[login.oidc]]
-key = "google"
-label = "Pierakstīties ar Google"
-
-[[login.oidc]]
-key = "okta"
-label = "Pierakstīties ar Okta"
-```
+Any modern distribution with `systemd` will work; only the package names and a few configuration paths change.
 
 ---
 
-## Backenda konfigurācija {: #backend-configuration }
+## System Requirements {: #system-requirements }
 
-### Faila atrašanās vieta
+Before you begin the installation, ensure that your system meets the following minimum requirements:
 
-```
-/config.toml
-```
+| Requirement | Specification |
+|---|---|
+| **Operating System** | Ubuntu 22.04 LTS or later, Debian 12 or later, RHEL 9 / Rocky 9 / AlmaLinux 9 or later |
+| **Architecture** | x86_64 (amd64) or arm64 |
+| **Init System** | systemd |
+| **Memory (Minimal Setup)** | 16 GB RAM |
+| **Disk Space** | 10 GB available storage |
+| **Database** | PostgreSQL Server 12 or higher |
+| **Web Server** | nginx, Apache httpd, or equivalent |
 
-(Root digna instalācijas direktorija)
+### Database Installation Options
 
-### 1. solis: Pievienot OIDC sniedzēju sadaļas
+**If PostgreSQL is already installed:**
+You can add a new database for digna to your existing PostgreSQL Server.
 
-Katram sniedzējam jābūt atsevišķai `[oidc.<key>]` sadaļai. Atslēgai jāatkārto `key`, kas definēts `dashboard_config.toml`.
+**If installing PostgreSQL on the same machine as digna:**
 
-### Microsoft konfigurācija
+!!! info "Recommended Specifications"
 
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
-```
+    - **Memory**: 32 GB RAM (instead of 16 GB)
+    - **Disk Space**: 50 GB available storage (instead of 10 GB)
 
-### Google konfigurācija
+    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
 
-```toml
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
-```
+### Checking Your Distribution and Architecture
 
-### Konfigurācijas parametri
+Several commands in this guide differ between the Debian and RHEL families. To check which you are on, run:
 
-| Parametrs | Tips | Obligāts | Apraksts | Piemērs |
-|---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Jā | Klienta ID no identitātes sniedzēja | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Jā | Klienta noslēpums no identitātes sniedzēja | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Jā | Pāradresācijas (callback) URL pēc autentifikācijas | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Jā | OIDC konfigurācijas beigu punkts | `https://login.microsoftonline.com/...` |
-
-!!! warning "Svarīgi"
-
-    Aizstājiet vietturu vērtības (`<client_id>`, `<client_secret>`, `<tenant_id>`) ar reālām akreditācijām no jūsu identitātes sniedzēja izstrādātāju paneļa.
-
-### Redirect URI
-
-Pāradresācijas URI jābūt vienādai arī jūsu identitātes sniedzēja konfigurācijā:
-
-```
-http://localhost:5173/oidc/callback
-```
-
-Ja digna tiek hostēta citā domēnā, atjauniniet atbilstoši:
-- Lokāli: `http://localhost:5173/oidc/callback`
-- Ražošanā: `https://digna.yourdomain.com/oidc/callback`
-
-### Pilns piemērs
-
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
-
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
-DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
-```
-
----
-
-## Pieteikšanās testēšana {: #testing-login }
-
-Pēc konfigurācijas pabeigšanas pārliecinieties, ka SSO darbojas pareizi.
-
-### Pārbaudes iepriekšējā kontrolsaraksta punkts
-
-Pirms testēšanas pārliecinieties:
-
-- [ ] `dashboard_config.toml` ir atjaunināts ar OIDC sniedzējiem
-- [ ] `config.toml` ir atjaunināts ar OIDC akreditācijām
-- [ ] Abi faili ir saglabāti
-- [ ] Akreditācijas dati ir pareizi (client ID, client secret)
-- [ ] Redirect URI atbilst jūsu izvietošanas URL
-- [ ] Identitātes sniedzēja lietotne ir konfigurēta ar redirect URI
-
-### Testēšanas soļi
-
-#### 1. solis: Restartēt servisus
-
-Restartējiet digna backend un web serveri, lai piemērotu izmaiņas.
-
-**Ja darbojas kā Windows serviss:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cat /etc/os-release
+uname -m
 ```
 
-**Ja darbojat manuāli:**
+- `ID=ubuntu` or `ID=debian` — use the `apt` commands.
+- `ID=rhel`, `rocky`, `almalinux` or `fedora` — use the `dnf` commands.
+- `x86_64` or `aarch64` — the architecture of the installation package you need.
+
+---
+
+## Pre-Installation Setup {: #pre-installation-setup }
+
+Before installing digna, ensure that two key prerequisites are in place:
+
+1. **PostgreSQL Server** – for storing calculated metrics and performance data
+2. **Web Server** – for hosting the digna Dashboard
+
+If these components are not already set up, follow the sections below to install and configure them.
+
+### Refreshing the Package Index
+
+Update your package lists before installing anything:
+
 ```bash
-cd C:\path\to\digna
-digna serve --address localhost --port 8082
+sudo apt update
+```
+```bash
+sudo dnf check-update
 ```
 
-**Ja izmantojat IIS vai Tomcat:**
-Restartējiet attiecīgo web servera servisu.
+!!! note "Note"
 
-#### 2. solis: Atvērt informācijas paneli
+    Throughout this guide, the first command in a pair is for the **Debian family** and the second for the **RHEL family**. Run only the one that matches your system.
 
-Atveriet digna informācijas paneli pārlūkprogrammā:
+---
+
+## PostgreSQL Server Setup {: #postgresql-server-setup }
+
+### If You Already Have PostgreSQL
+
+If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+
+### Installing PostgreSQL
+
+#### Step 1: Install the Server Package
+
+```bash
+sudo apt install -y postgresql postgresql-contrib
+```
+```bash
+sudo dnf install -y postgresql-server postgresql-contrib
+```
+
+!!! tip "Tip"
+
+    Distribution packages may lag behind the current PostgreSQL release. If you need a specific newer version, use the official [PostgreSQL apt or yum repository](https://www.postgresql.org/download/linux/) instead.
+
+#### Step 2: Initialize the Database Cluster
+
+On the **Debian family**, the package creates and starts a cluster automatically — skip to the next step.
+
+On the **RHEL family**, the cluster must be created explicitly:
+
+```bash
+sudo postgresql-setup --initdb
+```
+
+#### Step 3: Start and Enable the Service
+
+```bash
+sudo systemctl enable --now postgresql
+```
+
+This starts PostgreSQL immediately and configures it to start again automatically at boot.
+
+#### Step 4: Verify the Installation
+
+```bash
+psql --version
+sudo systemctl status postgresql
+```
+
+You should see the PostgreSQL version and an `active (running)` service.
+
+#### Step 5: Connect to the Server
+
+A Linux PostgreSQL package creates a `postgres` system account that owns the cluster. Connect through it:
+
+```bash
+sudo -u postgres psql
+```
+
+!!! note "Note — Linux Differs From Windows Here"
+
+    The Windows installer prompts you to set a password for the `postgres` superuser during setup. Linux packages do not. Instead, local connections are authenticated by **peer authentication**: the `postgres` operating-system user is allowed to connect as the `postgres` database user without a password.
+
+    This is why the command above uses `sudo -u postgres`. The digna backend connects over TCP with a username and password, so you will create an explicit digna user in [Initial Installation](#initial-installation).
+
+#### Step 6: Confirm the Port
+
+The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+
+```bash
+sudo -u postgres psql -c "SHOW port;"
+```
+
+Note the value — you will need it when configuring the digna backend.
+
+#### Step 7: Enable Password Authentication for the digna User
+
+digna connects to PostgreSQL over TCP as `digna_user`, which requires password authentication rather than peer authentication. Check that your `pg_hba.conf` permits it.
+
+Locate the file:
+
+```bash
+sudo -u postgres psql -c "SHOW hba_file;"
+```
+
+Open it in an editor and confirm that the local TCP lines use `scram-sha-256` (or `md5` on older servers) rather than `ident`:
 
 ```
-http://localhost:5173
+# TYPE  DATABASE  USER  ADDRESS         METHOD
+host    all       all   127.0.0.1/32    scram-sha-256
+host    all       all   ::1/128         scram-sha-256
 ```
 
-( vai jūsu konfigurētais informācijas paneļa URL )
+Reload PostgreSQL after any change:
 
-#### 3. solis: Pārbaudīt pieteikšanās pogas
+```bash
+sudo systemctl reload postgresql
+```
 
-Pārliecinieties, ka pieteikšanās pogas parādās katram konfigurētajam sniedzējam:
+!!! warning "Important"
 
-- Jāredz poga "Pierakstīties ar Microsoft"
-- Jāredz poga "Pierakstīties ar Google"
-- (Ja usePassword = true) Jāredz lietotājvārda/paroles lauki
+    If digna reports `FATAL: Ident authentication failed for user "digna_user"`, this setting is the cause.
 
-Ja pogas neparādās:
-- Pārbaudiet, vai `dashboard_config.toml` ir saglabāts
-- Pārbaudiet, vai dashboard serviss ir restartēts
-- Pārbaudiet pārlūkprogrammas konsoli (F12) kļūdu ziņojumiem
+#### Step 8: If PostgreSQL Runs on Another Machine
 
-#### 4. solis: Pārbaudīt SSO pieteikšanos
+To accept connections from a different host, set `listen_addresses` in `postgresql.conf` and add a matching `host` line for your network in `pg_hba.conf`:
 
-Noklikšķiniet uz vienas no SSO pogām (piem., "Pierakstīties ar Microsoft"):
+```
+listen_addresses = '*'
+```
 
-1. Jums jābūt pāradresētam uz identitātes sniedzēja pieteikšanās lapu
-2. Pierakstieties ar saviem uzņēmuma akreditācijas datiem
-3. Jums jābūt pāradresētam atpakaļ uz digna
-4. Jums jābūt pieteikušamies digna
+Then open the port in the firewall and restart the service:
 
-#### 5. solis: Pārbaudīt lietotāja izveidi
-
-Pēc veiksmīgas SSO pieteikšanās:
-
-- Lietotājs jāizveido automātiski digna sistēmā
-- Lietotājs jābūt pieteiktam
-- Lietotāja profilā jābūt parādītiem identitātes sniedzēja datiem
-- Jums jāredz digna informācijas panelis
-
-#### 6. solis: Pārbaudīt pieteikšanos ar paroli (ja ieslēgta)
-
-Ja `usePassword = true`:
-
-1. Atslēdzieties no digna
-2. Pieteikšanās lapā ievadiet lietotājvārdu un paroli
-3. Jums jāspēj pieteikties, izmantojot paroli
+```bash
+sudo ufw allow 5432/tcp
+```
+```bash
+sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
+```
+```bash
+sudo systemctl restart postgresql
+```
 
 ---
 
-## Problēmu novēršana {: #troubleshooting }
+## Web Server Configuration {: #web-server-configuration }
 
-### Pieteikšanās pogas neparādās
+digna requires a web server to host the dashboard. Choose one of the following options:
 
-**Simptomi:**
-- OIDC pieteikšanās pogas neredzamas pieteikšanās lapā
-- Redzami tikai paroles lauki (ja usePassword = true)
+- [nginx](#nginx-setup) — lightweight and recommended
+- [Apache httpd](#apache-setup) — widely deployed alternative
 
-**Cēloņi un risinājumi:**
-1. Pārbaudiet, vai `dashboard_config.toml` atrodas `dashboard/` direktorijā
-2. Pārliecinieties, ka `[[login.oidc]]` sadaļas ir klāt un sintakse pareiza
-3. Restartējiet dashboard servisu
-4. Notīriet pārlūkprogrammas kešu (Ctrl+Shift+Delete vai Cmd+Shift+Delete)
-5. Pārbaudiet pārlūkprogrammas konsoli (F12 → Console) kļūdām
+You only need to install and configure **one** of these servers.
+
+Both sections configure two things the dashboard depends on:
+
+- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
+- **A `.md` MIME type**, so that Markdown files are served correctly
+
+### nginx Setup {: #nginx-setup }
+
+#### Overview
+
+nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+
+#### Installation
+
+```bash
+sudo apt install -y nginx
+```
+```bash
+sudo dnf install -y nginx
+```
+
+#### Starting nginx
+
+```bash
+sudo systemctl enable --now nginx
+```
+
+#### Verify the Installation
+
+1. Open your browser
+2. Navigate to `http://localhost`
+3. You should see the nginx welcome page
+
+#### Opening the Firewall
+
+If the server is reached from other machines, allow HTTP traffic:
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+```bash
+sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
+```
+
+#### Configuring a Site for the Dashboard
+
+nginx includes every file in its `conf.d` directory on both distribution families. Create a dedicated configuration file for digna there:
+
+```bash
+sudo nano /etc/nginx/conf.d/digna.conf
+```
+
+Paste the following, replacing `/opt/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+
+```nginx
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+
+    root   /opt/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "Important"
+
+    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+
+#### Disable the Default Site
+
+Only one server block may be the `default_server` for a port. On the **Debian family**, remove the packaged default so it does not conflict:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+```
+
+On the **RHEL family**, comment out or delete the `server { ... }` block inside `/etc/nginx/nginx.conf`.
+
+#### Apply the Configuration
+
+Test the configuration for syntax errors, then reload nginx:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
 ---
 
-### Redirect URI neatbilstības kļūda
+### Apache httpd Setup {: #apache-setup }
 
-**Simptomi:**
-- Pēc SSO pogas nospiešanas kļūda par "redirect_uri mismatch"
-- "The redirect URI is not registered" kļūda
+#### Overview
 
-**Cēloņi un risinājumi:**
-1. Pārbaudiet `DIGNA_OIDC_REDIRECT_URI` `config.toml` — vai tā ir pareiza
-2. Pārbaudiet, vai redirect URI ir reģistrēts identitātes sniedzēja iestatījumos
-3. Pārliecinieties, ka abi URL ir identiski (īpaši protokols, domēns, ceļš)
-4. Pārbaudiet, vai nav rakstības kļūdu redirect URI
-5. Ja izmantojat HTTPS, pārliecinieties, ka sertifikāts ir derīgs
+Apache httpd is available in the default repositories of every supported distribution. The package is named `apache2` on the Debian family and `httpd` on the RHEL family.
+
+#### Installation
+
+```bash
+sudo apt install -y apache2
+```
+```bash
+sudo dnf install -y httpd
+```
+
+#### Starting Apache
+
+```bash
+sudo systemctl enable --now apache2
+```
+```bash
+sudo systemctl enable --now httpd
+```
+
+#### Verify the Installation
+
+1. Open your browser
+2. Navigate to `http://localhost`
+3. You should see the distribution's default Apache page
+
+#### Required: Enable mod_rewrite
+
+The dashboard requires URL rewriting.
+
+On the **Debian family**, enable the module and restart:
+
+```bash
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
+
+On the **RHEL family**, `mod_rewrite` is loaded by default. Confirm it:
+
+```bash
+httpd -M | grep rewrite
+```
+
+#### Required: Allow .htaccess Overrides
+
+Open the configuration file for your document root:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
+```
+
+Locate the `<Directory>` block covering your document root (`/var/www/html` on both families) and change:
+
+```apache
+AllowOverride None
+```
+
+to:
+
+```apache
+AllowOverride All
+```
+
+#### Required: MIME Type for Markdown Files
+
+In the same file, add the following line so that Markdown files are served correctly:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "Important"
+
+    Without this setting, `.md` files may not be served properly.
+
+#### Apply the Configuration
+
+Check the configuration for syntax errors, then restart Apache:
+
+```bash
+sudo apachectl configtest
+sudo systemctl restart apache2
+```
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
 
 ---
 
-### Nepareizas klienta akreditācijas kļūda
+## Initial Installation {: #initial-installation }
 
-**Simptomi:**
-- "Invalid client ID or secret" kļūda
-- Autentifikācija neizdodas akreditāciju kļūdas dēļ
+### Step 1: Set Up the digna Repository
 
-**Cēloņi un risinājumi:**
-1. Pārbaudiet, vai `DIGNA_OIDC_CLIENT_ID` un `DIGNA_OIDC_CLIENT_SECRET` ir pareizi
-2. Pārliecinieties, ka nav papildu atstarpju vai nevēlamu simbolu
-3. Pārbaudiet, vai akreditācijas nav beigušās vai atceltas
-4. Restartējiet backenda servisu pēc konfigurācijas atjaunināšanas
-5. Pārbaudiet identitātes sniedzēja konsoli, lai pārliecinātos, ka akreditācijas ir aktīvas
+The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+
+#### Create Repository Schema and User
+
+Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**Replace the following placeholders:**
+
+- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
+- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
+- `<digna_repo_password>` — A secure password for this user
+
+**Example:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+To run these from the shell in a single step:
+
+```bash
+sudo -u postgres psql
+```
+
+Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+
+!!! tip "Best Practice"
+
+    Use strong, complex passwords for database users. Avoid easily guessable credentials.
 
 ---
 
-### Pieteikšanās karājas vai notiek taimauts
+### Step 2: Extract the digna Installation Package
 
-**Simptomi:**
-- Noklikšķinot uz SSO pogas, nekas nenotiek
-- Pēc dažām sekundēm notiek taimauts
-- Pārlūkprogramma rāda "Failed to connect" vai līdzīgu paziņojumu
+1. Locate the digna installation ZIP file provided to you
+2. Extract it to your desired installation location — for example `/opt/digna`
+3. After extraction, you should see the following items:
+   - `dashboard/` — Web dashboard interface
+   - `digna` — Main executable (backend + CLI combined)
+   - `config.toml` — Configuration file
+   - `license.toml` — License file (copy yours here)
 
-**Cēloņi un risinājumi:**
-1. Pārbaudiet, vai digna backend darbojas: `digna repo check`
-2. Pārbaudiet tīkla savienojumu līdz identitātes sniedzējam
-3. Pārliecinieties, ka `DIGNA_OIDC_CONFIGURATION_URL` ir pieejams
-4. Pārbaudiet, vai ugunsmūris ļauj iziet ārā uz HTTPS
-5. Pārliecinieties, ka backend un dashboard var savstarpēji sazvanīties
+To extract from the shell:
+
+```bash
+sudo mkdir -p /opt/digna
+sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
+```
+
+!!! note "Note"
+
+    If `unzip` is not installed, add it with `sudo apt install -y unzip` or `sudo dnf install -y unzip`.
+
+#### Make the Executable Runnable
+
+Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+
+```bash
+cd /opt/digna
+sudo chmod +x digna
+```
+
+#### Create a Service Account
+
+Running the backend as a dedicated unprivileged user is recommended for production deployments:
+
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! note "Note"
+
+    On the RHEL family the equivalent shell path is `/sbin/nologin`.
+
+### Step 3: Install the License File
+
+!!! warning "Important"
+
+    The license file is **not** included in the installation package and will be provided separately by digna.
+
+1. Locate the `license.toml` file provided to you
+2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+
+**Why this matters:**
+The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+
+**Directory structure after setup:**
+
+```
+/opt/digna/
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+├── bin/                (service management scripts)
+└── dashboard/          (web interface)
+    └── (dashboard files)
+```
 
 ---
 
-### Lietotāji netiek izveidoti automātiski
+## Backend Configuration {: #backend-configuration }
 
-**Simptomi:**
-- SSO pieteikšanās izdodas, bet lietotājs netiek izveidots digna
-- Pēc SSO pieteikšanās rodas piekļuves tiesību kļūda
+### Step 1: Create and Edit the Configuration File
 
-**Cēloņi un risinājumi:**
-1. Pārbaudiet OIDC konfigurācijas pareizību
-2. Pārbaudiet lietotāju atļauju iestatījumus
-3. Pārskatiet digna žurnālus kļūdu ziņojumiem
-4. Restartējiet backenda servisu
-5. Ja problēma saglabājas, sazinieties: support@digna.ai
+The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
 
----
+```bash
+cd /opt/digna
+sudo mv config_template.toml config.toml
+```
 
-## Atbalstītie sniedzēji {: #supported-providers }
+**Location:** `/opt/digna/config.toml`
 
-### Testēti un atbalstīti
+Open `config.toml` in a text editor and configure each section below.
 
-Šie OIDC sniedzēji ir testēti un zināmi kā darbojošies:
+#### [app] Section
 
-| Provider | Configuration URL | Setup Guide |
+This section configures the digna backend application settings:
+
+```toml
+[app]
+digna_APP_HOST = "localhost"
+digna_APP_PORT = 8082
+digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+digna_APP_CORS_ALLOW_CREDENTIALS = true
+digna_APP_CORS_ALLOW_METHODS = ["*"]
+digna_APP_CORS_ALLOW_HEADERS = ["*"]
+```
+
+| Parameter | Value | Notes |
 |---|---|---|
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft dokumentācija](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google dokumentācija](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta dokumentācija](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
+| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
+| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
 
-### Citi OIDC sniedzēji
+!!! note "Note"
 
-Jebkurš sniedzējs, kas atbalsta OpenID Connect, var tikt integrēts. Nepieciešamā informācija:
+    If you serve the dashboard from nginx or Apache on the default HTTP port, the origin to allow is `http://localhost` — or the server's public URL when the dashboard is reached from other machines.
 
-- Client ID
-- Client secret
-- OpenID konfigurācijas URL (parasti pie `/.well-known/openid-configuration`)
-- Atbalstītās scopes (parasti `openid profile email`)
+#### [repo] Section
 
-Sazinieties ar support@digna.ai, ja nepieciešama palīdzība ar konkrēta sniedzēja integrāciju.
+This section configures the connection to the PostgreSQL database:
+
+```toml
+[repo]
+digna_REPO_HOST = "localhost"
+digna_REPO_PORT = 5432
+digna_REPO_DB = "postgres"
+digna_REPO_SCHEMA = "dignarepo"
+digna_REPO_USER = "digna_user"
+digna_REPO_PASSWORD = "YourSecurePassword123!"
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
+| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
+| `digna_REPO_DB` | `postgres` | Database name |
+| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
+| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
+| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+
+!!! tip "Best Practice"
+
+    `config.toml` contains a database password in plain text. Restrict its permissions so that only the service account can read it:
+
+    ```bash
+    sudo chown digna:digna /opt/digna/config.toml
+    sudo chmod 600 /opt/digna/config.toml
+    ```
+
+#### [base] Section
+
+This section contains security and cookie settings:
+
+```toml
+[base]
+digna_FERNET_KEY = "your-fernet-key"
+digna_COOKIE_DOMAIN = "localhost"
+digna_COOKIE_PATH = "/"
+digna_COOKIE_SECURE = false
+digna_COOKIE_HTTPONLY = true
+digna_COOKIE_SAME_SITE = "lax"
+digna_TOKEN_EXPIRES_IN = 86400
+digna_MAX_WORKERS = 4
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
+| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
+| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
+| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
+| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+
+!!! tip "Tip"
+
+    To find the number of CPU cores available on your server, run `nproc`.
+
+#### [logging] Section
+
+This section configures logging behavior:
+
+```toml
+[logging]
+digna_LOGGING_MODE = "INFO"
+digna_LOGGING_BACKUP_COUNT = 10
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
 
 ---
 
-## Labākās prakses
+### Step 2: Initialize the Repository
 
-DARĪT:
-- Izmantojiet HTTPS ražošanā (nevis HTTP)
-- Glabājiet klienta noslēpumus droši (ja iespējams, izmantojiet vides mainīgos)
-- Periodiski mainiet noslēpumus
-- Testējiet vispirms neto ražošanas vidē
-- Dokumentējiet, kuri sniedzēji ir konfigurēti
-- Uzraugiet pieteikšanās žurnālus, lai noteiktu neparastu aktivitāti
-- Sinhronizējiet identitātes sniedzēja konfigurāciju ar digna konfigurāciju
+1. Open a terminal
+2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
+3. Run the connection test:
 
-NEDARĪT:
-- Glabāt klienta noslēpumus versiju kontrolē
-- Izmantot HTTP redirect URI ražošanā
-- Konfigurēt vairākus sniedzējus ar vienādu atslēgu
-- Atstāt noklusējuma/testa akreditācijas ražošanā
-- Izpaust konfigurācijas failus, kas satur noslēpumus
-- Sajaukt izstrādes un ražošanas akreditācijas
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+
+!!! note "Note"
+
+    On Linux, the current directory is not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add a symbolic link:
+
+    ```bash
+    sudo ln -s /opt/digna/digna /usr/local/bin/digna
+    ```
+
+### Step 3: Install the Repository Schema
+
+In the same directory, run:
+
+```bash
+./digna repo install
+```
+
+This command installs the necessary tables and schema in your PostgreSQL database.
+
+### Step 4: Start the digna Server
+
+In the digna installation directory, start the server with:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**Parameters:**
+- `--address` — Server hostname/IP
+- `--port` — Server port
+
+You should see startup messages confirming the server is running:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "Tip"
+
+    If the dashboard is served from a different machine than the backend, open the API port in the firewall as well:
+
+    ```bash
+    sudo ufw allow 8082/tcp
+    ```
+    ```bash
+    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
+    ```
+
+### Step 5: Create an Admin User
+
+1. Open a **new** terminal window
+2. Navigate to your digna installation directory
+3. Run the following command to create an admin user:
+
+```bash
+./digna user add <username> "<full_name>" <password> --su
+```
+
+**Example:**
+
+```bash
+./digna user add admin "Admin User" 'AdminPassword123!' --su
+```
+
+This creates a user with username `admin` and full administrative privileges.
+
+!!! tip "Tip"
+
+    Wrap the password in single quotes. `bash` and `zsh` treat characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+
+!!! tip "Best Practice"
+
+    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
 
 ---
 
-## Atbalsts
+## Dashboard Configuration {: #dashboard-configuration }
 
-Nepieciešama palīdzība SSO konfigurācijā?
+### Step 1: Deploy Dashboard to Web Server
 
-- **E-pasts:** support@digna.ai
-- **Dokumentācija:** https://docs.digna.ai
-- **Tīmeklis:** https://www.digna.ai
+The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+
+If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+
+Choose your web server and follow the corresponding deployment steps.
+
+#### Deploying to nginx
+
+If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+
+1. **Confirm the path**
+   - Open `/etc/nginx/conf.d/digna.conf`
+   - Verify that `root` points at your extracted `dashboard` folder
+
+2. **Ensure the folder is readable**
+   ```bash
+   sudo chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **Reload nginx**
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+4. **Test the Installation**
+   - Open your browser
+   - Navigate to `http://localhost` (or your configured URL)
+   - You should see the digna dashboard login page
+
+#### Deploying to Apache httpd
+
+1. **Copy the Dashboard to the Document Root**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /var/www/html/digna
+   ```
+
+2. **Add the Rewrite Rules**
+
+   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+
+   ```bash
+   sudo nano /var/www/html/digna/.htaccess
+   ```
+
+   Paste the following:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **Restart Apache**
+   ```bash
+   sudo systemctl restart apache2
+   ```
+   ```bash
+   sudo systemctl restart httpd
+   ```
+
+4. **Access the Dashboard**
+   - Open your browser
+   - Navigate to `http://localhost/digna`
+   - You should see the digna dashboard login page
+
+### Step 2: SELinux (RHEL Family Only)
+
+On RHEL, Rocky, AlmaLinux and Fedora, SELinux is enforcing by default and will block the web server from reading files outside its expected locations. Check whether it is active:
+
+```bash
+getenforce
+```
+
+If the result is `Enforcing` and you are serving the dashboard from `/opt/digna/dashboard`, label the directory so the web server may read it:
+
+```bash
+sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+!!! note "Note"
+
+    If `semanage` is not found, install it with `sudo dnf install -y policycoreutils-python-utils`.
+
+!!! warning "Important"
+
+    A dashboard that returns **403 Forbidden** on a freshly configured RHEL server is almost always an SELinux labelling problem rather than a file-permission one. Confirm with `sudo ausearch -m avc -ts recent`.
 
 ---
 
-**Pēdējo reizi atjaunināts:** 30. augusts, 2026  
-**Izlaidums:** 2026.04  
-**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+## Running digna as a systemd Service {: #running-digna-as-a-systemd-service }
+
+### Why Run digna as a Service?
+
+Running the digna backend as a systemd service ensures it:
+
+- Starts automatically when the machine boots
+- Runs in the background without an open terminal window
+- Restarts automatically if it crashes
+- Can be managed through `systemctl`, the standard Linux service manager
+
+### Service Management Files
+
+All necessary files are located in the digna installation directory under: `bin/`
+
+The following shell scripts are available:
+
+- `install_service.sh` — Registers digna with systemd
+- `uninstall_service.sh` — Unregisters the service
+- `start_service.sh` — Starts the registered service
+- `stop_service.sh` — Stops the running service
+
+!!! warning "Root Privileges Required"
+
+    All scripts must be executed with `sudo`, because registering a service that starts at boot writes a unit file to `/etc/systemd/system`.
+
+### Making the Scripts Executable
+
+Extraction may not preserve the executable bit. Before first use:
+
+```bash
+cd /opt/digna/bin
+sudo chmod +x *.sh
+```
+
+### Installing the Service
+
+1. **Open a terminal**
+
+2. **Navigate to the bin Folder**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **Run the Installation Script**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+The digna server is now registered with systemd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+
+### Starting and Stopping the Service
+
+#### To Start the Service
+
+1. Open a terminal
+2. Navigate to `/opt/digna/bin`
+3. Run:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### To Stop the Service
+
+1. Open a terminal
+2. Navigate to `/opt/digna/bin`
+3. Run:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "Tip"
+
+    Always stop the service before updating application files.
+
+### Managing the Service with systemctl
+
+Once registered, the service can also be controlled with the standard systemd commands from any directory:
+
+```bash
+sudo systemctl start digna
+sudo systemctl stop digna
+sudo systemctl restart digna
+sudo systemctl status digna
+```
+
+### Verifying the Service
+
+To confirm that the service is registered and running:
+
+```bash
+systemctl is-enabled digna
+systemctl is-active digna
+```
+
+`enabled` means the service starts at boot; `active` means it is running now.
+
+### Viewing the Service Logs
+
+systemd captures everything the backend writes to the console. To read it:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+To follow the log live while reproducing a problem:
+
+```bash
+sudo journalctl -u digna -f
+```
+
+!!! tip "Tip"
+
+    This is the fastest way to diagnose a service that starts and immediately stops. A repository connection failure or a missing `license.toml` is reported here.
+
+### Moving the Service to a New Directory
+
+The unit file stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+
+1. **Uninstall the Current Service**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **Move the Application Files**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **Reinstall the Service**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **Start the Service**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### Uninstalling the Service
+
+1. **Stop the Running Service**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **Uninstall the Service**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+The digna server is now unregistered from systemd.
+
+---
+
+## Upgrading to a New Release {: #upgrading-to-a-new-release }
+
+### Before You Upgrade
+
+**Creating a digna Repository Backup is Mandatory**
+
+Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
+A backup ensures you can recover if the upgrade encounters unexpected issues.
+
+To create a backup from the shell:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+### Upgrade Process
+
+#### Step 1: Stop the digna Service
+
+If digna is running as a systemd service, stop it first:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+If digna is running in the foreground, press `Ctrl + C` in its terminal window.
+
+#### Step 2: Backup Current Backend Installation
+
+In your digna installation directory:
+
+```bash
+cd /opt/digna
+sudo mv digna digna_old
+```
+```bash
+sudo mv dashboard dashboard_old
+```
+
+#### Step 3: Extract and Deploy New Version
+
+1. Extract the new digna installation ZIP file
+2. Copy the new `digna` executable and `dashboard` folder to your installation directory
+3. Restore the executable bit and the ownership of the service account:
+
+```bash
+sudo chmod +x /opt/digna/digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! warning "Important"
+
+    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+
+### Step 4: Restore Your Configuration Files
+
+```bash
+sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+### Step 5: Upgrade the Repository Schema
+
+Navigate to your digna installation directory and run:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+This updates the PostgreSQL schema to the latest version while preserving all existing data.
+
+### Step 6: Restart Services
+
+If running as a systemd service:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+If running manually, restart the server:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+If using nginx or Apache, reload the respective web server:
+
+```bash
+sudo systemctl reload nginx
+```
+```bash
+sudo systemctl restart apache2
+```
+
+On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory was replaced:
+
+```bash
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+#### Step 7: Verify the Upgrade
+
+1. Access the digna dashboard
+2. Verify that the interface loads correctly
+3. Check the server logs for any errors:
+
+```bash
+sudo journalctl -u digna -n 100
+```
 
 ---
 
 # Release 2026.06
 Source: https://docs.digna.ai/lv/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/
 
-# Windows uzstādīšanas ceļvedis digna Release 2026.06
+# Windows instalācijas ceļvedis digna Release 2026.06
 
-**Release:** 2026.06
+**Izlaidums:** 2026.06
 
-**Pēdējā atjaunināšana:** 2026. gada 30. augusts
+**Pēdējais atjauninājums:** 2026. gada 30. augusts
 
 
 ---
 
-## Saturu rādītājs
+## Saturs
 
 1. [Ievads](#introduction)
 2. [Sistēmas prasības](#system-requirements)
-3. [Priekšuzstādīšanas sagatavošana](#pre-installation-setup)
+3. [Priekšinstalācijas sagatavošana](#pre-installation-setup)
 4. [PostgreSQL servera iestatīšana](#postgresql-server-setup)
 5. [Tīmekļa servera konfigurācija](#web-server-configuration)
-6. [Sākotnējā instalēšana](#initial-installation)
+6. [Sākotnējā instalācija](#initial-installation)
 7. [Backend konfigurācija](#backend-configuration)
-8. [Dashboard konfigurācija](#dashboard-configuration)
+8. [Paneļa konfigurācija](#dashboard-configuration)
 9. [digna palaide kā Windows serviss](#running-digna-as-a-windows-service)
-10. [Pāreja uz jaunu izlaidumu](#upgrading-to-a-new-release)
+10. [Jaunināšana uz jaunu izlaidumu](#upgrading-to-a-new-release)
 
 ---
 
@@ -6798,55 +7502,59 @@ Source: https://docs.digna.ai/lv/installation_deployment/Windows/Release%202026.
 
 ### Par digna
 
-digna ir visaptveroša ar mākslīgo intelektu darbināta platforma, kas paredzēta datu kvalitātes pārvaldības optimizācijai dažādās datu vidēs, piemēram, datu noliktavās, datu ezeros un lakehouse risinājumos. Izstrādāta, lai būtu ļoti mērogojama un pielāgojama, digna risina mūsdienu datu izaicinājumus, izmantojot automatizāciju, reāllaika uzraudzību un anomaliju noteikšanu.
+digna ir visaptveroša ar mākslīgo intelektu balstīta platforma, kas paredzēta datu kvalitātes pārvaldības optimizēšanai dažādās datu vidēs, piemēram, noliktavās, ezeros un lakehouse risinājumos. Izstrādāta kā mērogojama un pielāgojama sistēma, digna risina mūsdienu datu izaicinājumus, izmantojot automatizāciju, reāllaika uzraudzību un anomāliju atklāšanu.
 
 digna sastāv no divām galvenajām komponentēm:
 
-- **dignabackend**: lietotnes kodols, atbildīgs par datu apstrādi un kvalitātes pārbaudēm.
-- **dignadashboard**: tīmekļa saskarne, kas hostēta tīmekļa serverī, nodrošinot lietotājam draudzīgu veidu, kā mijiedarboties ar digna platformu un vizualizēt datu kvalitātes metrikas.
+- **dignabackend**: lietojumprogrammas kodols, kas atbild par datu apstrādi un kvalitātes pārbaudēm.
+- **dignadashboard**: tīmekļa saskarne, kas izvietota uz tīmekļa servera un nodrošina lietotājam draudzīgu veidu, kā mijiedarboties ar digna platformu un vizualizēt datu kvalitātes metrikas.
 
-### Kas jauns Release 2026.06
+### Kas jauns izlaidumā 2026.06
 
-Šajā izlaidumā datu novērojamības iespējas tiek ieviestas tieši jūsu kodā, ļaujot izstrādātājiem uzraudzīt datu kvalitāti pie avota. Pilnu informāciju skatiet [release notes](http://docs.digna.ai/changelog/Release_202606/).
+Šajā izlaidumā datu novērošanas iespējas ir integrētas tieši jūsu kodā, ļaujot izstrādātājiem uzraudzīt datu kvalitāti pie avota. Pilnas detaļas skatiet [izlaiduma piezīmēs](http://docs.digna.ai/changelog/Release_202606/).
+
+### Meklējat macOS vai Linux?
+
+Šis ceļvedis attiecas uz Windows. Citu platformu instalācijas skaidrojumu skatiet [macOS instalācijas ceļvedī](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) vai [Linux instalācijas ceļvedī](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
 ## Sistēmas prasības {: #system-requirements }
 
-Pirms sākat instalāciju, pārliecinieties, ka jūsu sistēma atbilst šādām minimālajām prasībām:
+Pirms instalācijas pārliecinieties, ka jūsu sistēma atbilst šādām minimālajām prasībām:
 
 | Prasība | Specifikācija |
 |---|---|
 | **Operētājsistēma** | Windows Server vai Windows 10/11 |
-| **Atmiņa (minimāli)** | 16 GB RAM |
-| **Diska vieta** | 10 GB brīvas atmiņas |
+| **Atmiņa (minimālā konfigurācija)** | 16 GB RAM |
+| **Diskā nepieciešamā vieta** | 10 GB brīvas vietas |
 | **Datubāze** | PostgreSQL Server 12 vai jaunāks |
-| **Tīmekļa serveris** | IIS, Apache Tomcat vai līdzvērtīgs |
+| **Tīmekļa serveris** | IIS, Apache Tomcat vai ekvivalents |
 
-### Datubāzes uzstādīšanas iespējas
+### Datubāzes instalācijas iespējas
 
 **Ja PostgreSQL jau ir instalēts:**
-Jūs varat pievienot jaunu datubāzi digna savam esošajam PostgreSQL serverim.
+Jūs varat pievienot jaunu datubāzi digna esošajam PostgreSQL serverim.
 
 **Ja instalējat PostgreSQL uz tā paša datora kā digna:**
 
 !!! info "Ieteicamās specifikācijas"
 
     - **Atmiņa**: 32 GB RAM (nevis 16 GB)
-    - **Diska vieta**: 50 GB brīvas atmiņas (nevis 10 GB)
+    - **Diskā nepieciešamā vieta**: 50 GB brīvas vietas (nevis 10 GB)
 
-    Šīs palielinātās specifikācijas nodrošina pietiekamus resursus gan digna, gan PostgreSQL darbināšanai vienlaikus.
+    Šīs augstākās specifikācijas nodrošina pietiekamus resursus vienlaicīgai digna un PostgreSQL datubāzes darbībai.
 
 ---
 
-## Priekšuzstādīšanas sagatavošana {: #pre-installation-setup }
+## Priekšinstalācijas sagatavošana {: #pre-installation-setup }
 
-Pirms instalēt digna, pārliecinieties, ka ir nodrošinātas divas galvenās priekšnosacījumu komponentes:
+Pirms digna instalēšanas pārliecinieties, ka ir izpildīti divi galvenie priekšnosacījumi:
 
 1. **PostgreSQL Server** – aprēķināto metrikas un veiktspējas datu glabāšanai
-2. **Tīmekļa serveris** – digna Dashboard hostēšanai
+2. **Tīmekļa serveris** – digna paneļa izvietošanai
 
-Ja šīs komponentes vēl nav uzstādītas, sekojiet zemāk norādītajiem norādījumiem, lai tās instalētu un konfigurētu.
+Ja šīs sastāvdaļas vēl nav iestatītas, izpildiet tālāk norādītās sadaļas, lai tās instalētu un konfigurētu.
 
 ---
 
@@ -6854,54 +7562,54 @@ Ja šīs komponentes vēl nav uzstādītas, sekojiet zemāk norādītajiem norā
 
 ### Ja PostgreSQL jau ir pieejams
 
-Ja PostgreSQL jau darbojas uz jūsu lokālā datora vai izmantojat pārvaldītu attālo PostgreSQL serveri, varat pāriet uz [nākamo sadaļu](#web-server-configuration).
+Ja PostgreSQL jau ir instalēts un darbojas uz jūsu lokālā datora vai ja izmantojat pārvaldītu attālo PostgreSQL serveri, varat pāriet uz [nākamo sadaļu](#web-server-configuration).
 
 ### PostgreSQL instalēšana
 
-Izpildiet šīs darbības, lai instalētu PostgreSQL uz Windows:
+Izpildiet šos soļus, lai instalētu PostgreSQL uz Windows:
 
-#### 1. solis: Lejupielādējiet PostgreSQL
+#### 1. solis: Lejupielādēt PostgreSQL
 
-1. Apmeklējiet [PostgreSQL Downloads lapu](https://www.postgresql.org/download/)
+1. Apmeklējiet [PostgreSQL lejupielādes lapu](https://www.postgresql.org/download/)
 2. Izvēlieties **Windows**
-3. Lejupielādējiet jaunāko instalētāju
+3. Lejupielādējiet jaunāko instalatoru
 
-#### 2. solis: Palaidiet instalētāju
+#### 2. solis: Palaist instalatoru
 
-1. Veiciet dubultklikšķi uz lejupielādētā instalētāja faila
-2. Sekojiet vedņa norādījumiem
+1. Veiciet dubultklikšķi uz lejupielādētā instalatora faila
+2. Sekojiet norādījumiem instalācijas vednī
 
-#### 3. solis: Izvēlieties instalācijas direktoriju
+#### 3. solis: Izvēlēties instalācijas direktoriju
 
-Izvēlieties direktoriju, kur PostgreSQL tiks instalēts. Parasti noklusējuma vieta ir piemērota.
+Izvēlieties mapi, kur PostgreSQL tiks instalēts. Parasti noklusējuma atrašanās vieta ir piemērota.
 
-#### 4. solis: Izvēlieties komponentes
+#### 4. solis: Izvēlēties komponentes
 
-Standarta uzstādīšanai atstājiet noklusējuma komponentes izvēlētas.
+Standarta uzstādīšanai atstājiet noklusējuma komponentes atlasītas.
 
-#### 5. solis: Iestatiet PostgreSQL superlietotāja paroli
+#### 5. solis: Iestatīt PostgreSQL superlietotāja paroli
 
 Ievadiet un apstipriniet paroli PostgreSQL superlietotājam (`postgres`). **Saglabājiet šo paroli drošā vietā** — tā būs nepieciešama vēlāk.
 
-#### 6. solis: Konfigurējiet porta numuru
+#### 6. solis: Konfigurēt porta numuru
 
-Noklusējuma PostgreSQL ports ir `5432`. Varat izmantot noklusējumu vai norādīt citu portu, ja nepieciešams.
+Noklusējuma PostgreSQL ports ir `5432`. Varat izmantot noklusējumu vai norādīt citu portu pēc vajadzības.
 
 !!! tip "Padoms"
 
-    Ja ports 5432 jau tiek izmantots, izvēlieties alternatīvu portu un pierakstiet to vēlākai konfigurācijai.
+    Ja ports 5432 jau ir aizņemts, izvēlieties citu portu un atcerieties to turpmākajai konfigurācijai.
 
-#### 7. solis: Izvēlieties lokalizāciju
+#### 7. solis: Izvēlēties lokalizāciju
 
-Izvēlieties datubāzes lokalizāciju. Noklusējums parasti ir piemērots lielākajai daļai instalāciju.
+Izvēlieties datubāzes lokalizāciju. Parasti noklusējums ir piemērots lielākajai daļai instalāciju.
 
-#### 8. solis: Pabeidziet instalāciju
+#### 8. solis: Pabeigt instalāciju
 
-Noklikšķiniet **Next** cauri atliekošajiem soļiem, pēc tam noklikšķiniet **Finish**.
+Noklikšķiniet **Next** cauri atlikušajiem soļiem, pēc tam noklikšķiniet **Finish**.
 
-#### 9. solis: Pārbaudiet instalāciju
+#### 9. solis: Pārbaudīt instalāciju
 
-Atveriet Command Prompt un pārbaudiet, vai PostgreSQL ir uzstādīts:
+Atveriet Command Prompt un pārbaudiet, vai PostgreSQL ir instalēts:
 
 ```bash
 psql --version
@@ -6913,18 +7621,18 @@ Ja instalācija bija veiksmīga, tiks parādīta PostgreSQL versija.
 
 ## Tīmekļa servera konfigurācija {: #web-server-configuration }
 
-digna nepieciešams tīmekļa serveris dashboard hostēšanai. Izvēlieties vienu no šīm opcijām:
+digna prasa tīmekļa serveri paneļa izvietošanai. Izvēlieties vienu no šīm iespējām:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-Jums nepieciešams uzstādīt un konfigurēt tikai vienu no šiem serveriem.
+Nepieciešams instalēt un konfigurēt tikai vienu no šiem serveriem.
 
-### IIS uzstādīšana {: #iis-setup }
+### IIS iestatīšana {: #iis-setup }
 
 #### Pārskats
 
-Internet Information Services (IIS) ir Microsoft tīmekļa serveris vietņu un tīmekļa lietotņu hostēšanai.
+Internet Information Services (IIS) ir Microsoft tīmekļa serveris vietņu un tīmekļa lietotņu mitināšanai.
 
 #### IIS ieslēgšana
 
@@ -6932,79 +7640,79 @@ Internet Information Services (IIS) ir Microsoft tīmekļa serveris vietņu un t
    - Nospiediet `Win + R`
    - Ierakstiet `control` un nospiediet Enter
 
-2. **Dodieties uz Windows funkcijām**
-   - Klikšķiniet uz **Programs**
+2. **Pārejiet uz Windows funkcijām**
+   - Noklikšķiniet **Programs**
    - Izvēlieties **Turn Windows features on or off**
 
 3. **Ieslēdziet Internet Information Services**
-   - Ritiniet sarakstu un atrodiet **Internet Information Services (IIS)**
+   - Ritiniet un atrodiet **Internet Information Services (IIS)**
    - Atzīmējiet izvēles rūtiņu, lai to ieslēgtu
-   - Noklikšķiniet uz **+**, lai izvērstu un pārliecinātos, ka ir atlasītas šādas apakškomponentes:
+   - Noklikšķiniet uz **+**, lai izvērstu un pārbaudītu, vai ir atlasītas šādas apakškomponentes:
      - **Web Management Tools**
      - **World Wide Web Services**
 
 4. **Noklikšķiniet OK**, lai piemērotu izmaiņas
 
-5. **Pārbaudiet IIS instalāciju**
+5. **Pārbaudīt IIS instalāciju**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost`
    - Jums jāredz IIS sveiciena lapa
 
-#### Nepieciešams: URL Rewrite modulis
+#### Obligāti: URL Rewrite modulis
 
 IIS prasa URL Rewrite komponenti. Lejupielādējiet un instalējiet to no [oficiālās Microsoft lapas](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Nepieciešams: MIME tips Markdown failiem
+#### Obligāti: MIME tips Markdown failiem
 
-Lai nodrošinātu, ka Markdown faili (`.md`) tiek apkalpoti pareizi ar IIS:
+Lai nodrošinātu, ka Markdown faili (`.md`) tiek pareizi servēti ar IIS:
 
 1. Atveriet **IIS Manager** (nospiediet `Win + R`, ierakstiet `inetmgr`, nospiediet Enter)
-2. Dodieties uz **Your Site > MIME Types**
-3. Klikšķiniet **Add...**
+2. Pārejiet uz **Your Site > MIME Types**
+3. Noklikšķiniet **Add...**
 4. Konfigurējiet:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
 !!! warning "Svarīgi"
 
-    Bez šī iestatījuma `.md` faili var netikt apkalpoti pareizi.
+    Bez šī iestatījuma `.md` faili var netikt pareizi servēti.
 
 ---
 
-### Apache Tomcat uzstādīšana {: #apache-tomcat-setup }
+### Apache Tomcat iestatīšana {: #apache-tomcat-setup }
 
 #### Pārskats
 
-Apache Tomcat ir atvērtā koda Java servlet konteiners un tīmekļa serveris.
+Apache Tomcat ir atvērtā koda Java servleta konteiners un tīmekļa serveris.
 
 #### Instalēšana
 
-1. **Lejupielādējiet Apache Tomcat**
+1. **Lejupielādēt Apache Tomcat**
    - Apmeklējiet [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
    - Lejupielādējiet Windows ZIP izplatījumu
 
 2. **Izpakot arhīvu**
-   - Izpakojiet ZIP failu izvēlētā direktorijā
+   - Izpakojiet ZIP failu direktorijā uz jūsu sistēmas
    - Piemērs: `C:\Program Files\Apache Tomcat`
 
-3. **Pārbaudiet, vai Tomcat darbojas**
+3. **Pārbaudīt, vai Tomcat darbojas**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost:8080`
    - Jums jāredz Apache Tomcat sveiciena lapa
 
 !!! tip "Padoms"
 
-    Apache Tomcat parasti tiek startēts automātiski pēc instalācijas. Ja tas netiek startēts, dodieties uz `bin` mapi un palaidiet `startup.bat`.
+    Apache Tomcat parasti sāk darboties automātiski pēc instalācijas. Ja tas nenotiek, atveriet `bin` mapi un palaidiet `startup.bat`.
 
 ---
 
-## Sākotnējā instalēšana {: #initial-installation }
+## Sākotnējā instalācija {: #initial-installation }
 
-### 1. solis: Izveidojiet digna repositāriju
+### 1. solis: Iestatīt digna repozitoriju
 
-digna repositārijs glabā visas digna aprēķinātās metrikas. Tas darbojas kā centrālā datubāze analītiskajiem un veiktspējas datiem.
+digna repozitorijs glabā visas ar digna aprēķinātās metrikas. Tas darbojas kā centrālā datubāze analītiskajiem un veiktspējas datiem.
 
-#### Izveidojiet shēmu un lietotāju repositārijam
+#### Izveidot repozitorija shēmu un lietotāju
 
 Atveriet savu PostgreSQL klientu (pgAdmin, psql vai līdzīgu) un izpildiet šādas SQL komandas:
 
@@ -7016,10 +7724,10 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Aizstājiet šādus vietturi:**
+**Aizvietojiet šādus aizstājējvārdus:**
 
-- `<digna_repo_schema>` — Jūsu izvēlētais shēmas nosaukums (piem., `dignarepo`)
-- `<digna_repo_user>` — Jūsu izvēlētais lietotājvārds (piem., `digna_user`)
+- `<digna_repo_schema>` — Vēlamais shēmas nosaukums (piem., `dignarepo`)
+- `<digna_repo_user>` — Vēlamais lietotājvārds (piem., `digna_user`)
 - `<digna_repo_password>` — Droša parole šim lietotājam
 
 **Piemērs:**
@@ -7032,60 +7740,60 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Labā prakse"
+!!! tip "Laba prakse"
 
-    Izmantojiet spēcīgas, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamām akreditācijām.
+    Lietojiet stipras, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamiem akreditācijas datiem.
 
 ---
 
 ### 2. solis: Izpakot digna instalācijas pakotni
 
 1. Atrodiet jums nodoto digna instalācijas ZIP failu
-2. Izpakojiet to uz vēlamo instalācijas direktoriju
-3. Pēc izpakotnes vajadzētu redzēt šādas vienības:
-   - `dashboard/` — tīmekļa dashboard saskarne
+2. Izpakojiet to vēlamajā instalācijas vietā
+3. Pēc izpakošanas jums jāredz sekojošas vienības:
+   - `dashboard/` — tīmekļa paneļa saskarne
    - `digna` — galvenais izpildāmais fails (backend + CLI apvienots)
    - `config.toml` — konfigurācijas fails
-   - `license.toml` — licences fails (kopējiet savu šeit)
+   - `license.toml` — licences fails (ielīmējiet savu šeit)
 
-### 3. solis: Instalējiet licences failu
+### 3. solis: Instalēt licences failu
 
 !!! warning "Svarīgi"
 
-    Licences fails **NAV** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
+    Licences fails **nav** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
 
-1. Atrodiet jums piegādāto `license.toml` failu
-2. Kopējiet to uz digna instalācijas saknes direktoriju (tur, kur atrodas `config.toml` un `digna` izpildāmais fails)
+1. Atrodiet jums nodoto `license.toml` failu
+2. Kopējiet to uz digna instalācijas saknes direktoriju (tur, kur atrodas `config.toml` un izpildāmais `digna`)
 
 **Kāpēc tas ir svarīgi:**
-Licences fails satur jūsu klienta informāciju, licences derīguma termiņu un digitālo parakstu. **Nemodificējiet šo failu** — jebkuras izmaiņas to padarīs nederīgu.
+Licences fails satur jūsu klienta informāciju, licences derīguma termiņu un digitālo parakstu. **Nemainiet šo failu** — jebkuras izmaiņas to inaktivizēs.
 
-**Direktorijas struktūra pēc uzstādīšanas:**
+**Direktorijas struktūra pēc iestatīšanas:**
 
 ```
 digna_installation/
-├── config.toml         (konfigurācijas fails)
-├── license.toml        (JŪSU LICENCES FAILS - kopējiet šeit)
-├── digna               (galvenais izpildāmais fails)
-└── dashboard/          (tīmekļa saskarne)
-    └── (dashboard faili)
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+└── dashboard/          (web interface)
+    └── (dashboard files)
 ```
 
 ---
 
 ## Backend konfigurācija {: #backend-configuration }
 
-### 1. solis: Izveidojiet un rediģējiet konfigurācijas failu
+### 1. solis: Izveidot un rediģēt konfigurācijas failu
 
-`config_template.toml` fails tiek piegādāts jūsu digna instalācijas direktorijā. Jums tas vienkārši jāpārdēvē uz `config.toml`.
+`config_template.toml` fails ir iekļauts jūsu digna instalācijas direktorijā. Pietiek to pārdēvēt par `config.toml`.
 
 **Atrašanās vieta:** `digna_installation/config.toml`
 
-Atveriet `config.toml` teksta redaktorā un konfigurējiet katru zemāk norādīto sadaļu.
+Atveriet `config.toml` teksta redaktorā un konfigurējiet katru sadaļu zemāk.
 
 #### [app] sadaļa
 
-Šī sadaļa konfigurē dignabackend lietotnes iestatījumus:
+Šī sadaļa konfigurē digna backend lietojumprogrammas iestatījumus:
 
 ```toml
 [app]
@@ -7099,12 +7807,12 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vai IP adrese | Hostname vai IP, kur tiek hostēts dignabackend |
-| `digna_APP_PORT` | `8082` (noklusējums) | Ports REST API endpointiem |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ja dashboard atrodas citā serverī, iekļaujiet tā URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijām |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļauj visus HTTP metodus |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Atļauj visus header laukus |
+| `digna_APP_HOST` | `localhost` vai IP adrese | Hostname vai IP, kur tiek mitināts dignabackend |
+| `digna_APP_PORT` | `8082` (noklusējums) | Ports REST API galapunktiem |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontenda URL | Ja panelis atrodas citā serverī, iekļaujiet tā URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijas datiem |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļaut visus HTTP metodus |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Atļaut visus header laukus |
 
 #### [repo] sadaļa
 
@@ -7126,8 +7834,8 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 | `digna_REPO_PORT` | `5432` (noklusējums) | PostgreSQL ports |
 | `digna_REPO_DB` | `postgres` | Datubāzes nosaukums |
 | `digna_REPO_SCHEMA` | `dignarepo` | Iepriekš izveidotā shēma |
-| `digna_REPO_USER` | `digna_user` | Lietotājs, izveidots PostgreSQL iestatīšanā |
-| `digna_REPO_PASSWORD` | Jūsu parole | Parole, kas iestatīta shēmas izveidē |
+| `digna_REPO_USER` | `digna_user` | Lietotājs izveidots PostgreSQL iestatīšanā |
+| `digna_REPO_PASSWORD` | Jūsu parole | Parole, iestatīta shēmas izveidē |
 
 #### [base] sadaļa
 
@@ -7147,17 +7855,17 @@ digna_MAX_WORKERS = 4
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_FERNET_KEY` | Šifrēšanas atslēga | Tiek izmantota tokenu un sīkfailu šifrēšanai (noklusējuma atslēga tiek nodrošināta) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontend domēnam |
-| `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcija) | Lietojiet `true` HTTPS savienojumiem |
-| `digna_COOKIE_HTTPONLY` | `true` | Vienmēr ieslēgts drošībai |
-| `digna_COOKIE_SAME_SITE` | `lax` | Aizsargā pret CSRF uzbrukumiem |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma termiņš sekundēs |
-| `digna_MAX_WORKERS` | CPU kodoli - 1 | Paralēlo pārbaudes uzdevumu skaits |
+| `digna_FERNET_KEY` | Šifrēšanas atslēga | Izmanto, lai šifrētu tokenus un sīkfailus (noklusējums iekļauts) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontenda domēnam |
+| `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcijā) | Lietojiet `true` HTTPS savienojumiem |
+| `digna_COOKIE_HTTPONLY` | `true` | Vienmēr iespējots drošībai |
+| `digna_COOKIE_SAME_SITE` | `lax` | Novērš CSRF uzbrukumus |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma laiks sekundēs |
+| `digna_MAX_WORKERS` | Skaitlis: CPU kodolu skaits - 1 | Paralēlo inspekciju uzdevumu skaits |
 
 #### [logging] sadaļa
 
-Šī sadaļa konfigurē žurnālu (logging) uzvedību:
+Šī sadaļa konfigurē žurnālu (logu) uzvedību:
 
 ```toml
 [logging]
@@ -7168,23 +7876,23 @@ digna_LOGGING_BACKUP_COUNT = 10
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
 | `digna_LOGGING_MODE` | `INFO` vai `DEBUG` | `INFO` produkcijai, `DEBUG` problēmu novēršanai |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Saglabājamo dienas žurnālu rezerves kopiju skaits |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Cik dienu žurnālu dublējumu saglabāt |
 
 ---
 
-### 3. solis: Inicializējiet repositāriju
+### 3. solis: Inicializēt repozitoriju
 
 1. Atveriet Command Prompt
-2. Pārejiet uz savu digna instalācijas direktoriju (tur, kur atrodas `config.toml` un `digna` izpildāmais fails)
+2. Pārejiet uz jūsu digna instalācijas direktoriju (tur, kur atrodas `config.toml` un izpildāmais `digna`)
 3. Palaidiet savienojuma pārbaudi:
 
 ```bash
 digna repo check
 ```
 
-Jums jāredz apstiprinājums, ka savienojums ir izveidots (repositārijs pats par sevi vēl nav instalēts).
+Jums jāsaņem apstiprinājums, ka savienojums ir izveidots (repozitārijs pats par sevi vēl nav inicializēts).
 
-### 4. solis: Instalējiet repositārija shēmu
+### 4. solis: Instalēt repozitorija shēmu
 
 Tajā pašā direktorijā palaidiet:
 
@@ -7194,19 +7902,19 @@ digna repo install
 
 Šī komanda instalē nepieciešamās tabulas un shēmu jūsu PostgreSQL datubāzē.
 
-### 5. solis: Startējiet digna serveri
+### 5. solis: Palaist digna serveri
 
-digna instalācijas direktorijā startējiet serveri ar:
+Digna instalācijas direktorijā palaidiet serveri ar:
 
 ```bash
 digna serve --address <host> --port <port>
 ```
 
 **Parametri:**
-- `--address` — Servera hostname/IP
-- `--port` — Servera ports
+- `--address` — servera hostname/IP
+- `--port` — servera ports 
 
-Jums jāredz startēšanas ziņojumi, kas apstiprina servera darbību:
+Jums jāredz startēšanas ziņas, kas apstiprina, ka serveris darbojas:
 
 ```
 INFO:     Started server process [1234]
@@ -7215,11 +7923,11 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### 6. solis: Izveidojiet administratīvo lietotāju
+### 6. solis: Izveidot administratora lietotāju
 
 1. Atveriet **jaunu** Command Prompt logu
-2. Pārejiet uz savu digna instalācijas direktoriju
-3. Palaidiet šādu komandu, lai izveidotu admin lietotāju:
+2. Pārejiet uz jūsu digna instalācijas direktoriju
+3. Palaidiet šādu komandu, lai izveidotu administratora lietotāju:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -7231,93 +7939,93 @@ digna user add <username> "<full_name>" <password> --su
 digna user add admin "Admin User" AdminPassword123! --su
 ```
 
-Šī komanda izveido lietotāju ar pilnīgām administratīvām tiesībām.
+Šī komanda izveido lietotāju ar pilnām administratīvām tiesībām.
 
-!!! tip "Labā prakse"
+!!! tip "Laba prakse"
 
-    Izmantojiet spēcīgu paroli ar lielajiem un mazajiem burtiem, cipariem un speciālajiem simboliem.
+    Izmantojiet stipru paroli ar lielajiem un maziem burtiem, cipariem un speciālajām zīmēm.
 
 ---
 
-## Dashboard konfigurācija {: #dashboard-configuration }
+## Paneļa konfigurācija {: #dashboard-configuration }
 
-### 1. solis: Ievietojiet dashboard tīmekļa serverī
+### 1. solis: Izvietot paneli uz tīmekļa servera
 
-digna dashboard satur savu atsevišķu `config.toml` failu, kas atrodas `dashboard/` direktorijā. Šī konfigurācija tiek nodrošināta un parasti nav jāmaina sākotnējā uzstādīšanas laikā. Jāmaina tikai tad, ja nepieciešams pielāgot backend savienojumu vai konfigurēt daudzinstanču izvietojumu.
+digna panelim ir atsevišķs `config.toml` fails, kas atrodas `dashboard/` direktorijā. Šī konfigurācija parasti jau ir nodrošināta un sākotnējā iestatīšanā nav jāmaina. Jāveic izmaiņas tikai tad, ja nepieciešams pielāgot backend savienojumu.
 
-Ja nepieciešams modificēt dashboard konfigurāciju, skatiet dashboard dokumentāciju.
+Ja nepieciešams modificēt paneļa konfigurāciju (piem., daudzinstanču izvietošanai), skatiet paneļa dokumentāciju.
 
-Izvēlieties tīmekļa serveri un sekojiet attiecīgajām izvietošanas darbībām.
+Izvēlieties jūsu tīmekļa serveri un izpildiet atbilstošos izvietošanas soļus.
 
-#### Izvietošana IIS
+#### Izvietošana uz IIS
 
 1. **Atveriet IIS Manager**
    - Nospiediet `Win + R`, ierakstiet `inetmgr`, nospiediet Enter
 
-2. **Izveidojiet jaunu vietni**
-   - Kreisajā rūtī ar peles labo pogu klikšķiniet uz **Sites**
+2. **Izveidot jaunu vietni**
+   - Kreisajā panelī ar peles labo pogu klikšķiniet uz **Sites**
    - Izvēlieties **Add Website...**
 
-3. **Konfigurējiet vietni**
+3. **Konfigurēt vietni**
    - **Site Name**: Ievadiet nosaukumu (piem., "dignaDashboard")
    - **Physical Path**: Noklikšķiniet Browse un izvēlieties jūsu `dashboard` mapi
    - **Binding**: Iestatiet IP adresi un portu (noklusējuma ports HTTP — 80, HTTPS — 443)
 
-4. **Startējiet vietni**
+4. **Startēt vietni**
    - Noklikšķiniet **OK**, lai izveidotu vietni
-   - Ar peles labo pogu klikšķiniet uz jaunās vietnes un izvēlieties **Start**
+   - Ar peles labo pogu klikšķiniet uz jaunizveidotās vietnes un izvēlieties **Start**
 
-5. **Pārbaudiet instalāciju**
+5. **Pārbaudīt instalāciju**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost` (vai jūsu konfigurēto URL)
-   - Jums jāredz digna dashboard pieslēgšanās lapa
+   - Jums jāredz digna paneļa pieteikšanās lapa
 
-#### Izvietošana Apache Tomcat
+#### Izvietošana uz Apache Tomcat
 
-1. **Kopējiet dashboard uz Tomcat**
-   - Kopējiet `dashboard` mapi uz jūsu Tomcat `webapps` direktoriju
+1. **Kopēt paneli uz Tomcat**
+   - Nokopējiet `dashboard` mapi uz jūsu Tomcat `webapps` direktoriju
    - Pārdēvējiet to pēc vajadzības (piem., uz `digna`)
    - Piemērs: `C:\Program Files\Apache Tomcat\webapps\digna`
 
-2. **Pārbaudiet izvietojumu**
-   - Atsvaidziniet vai pārlādējiet Tomcat pārvaldības lapu (http://localhost:8080)
+2. **Pārbaudīt izvietojumu**
+   - Atsvaidziniet vai ielādējiet Tomcat pārvaldības lapu (http://localhost:8080)
    - Jums jāredz "digna" (vai jūsu izvēlētais nosaukums) sarakstā ar izvietotajām lietotnēm
 
-3. **Piekļūstiet dashboard**
+3. **Piekļūt panelim**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost:8080/digna`
-   - Jums jāredz digna dashboard pieslēgšanās lapa
+   - Jums jāredz digna paneļa pieteikšanās lapa
 
 ---
 
-## digna palaišana kā Windows serviss {: #running-digna-as-a-windows-service }
+## digna palaide kā Windows serviss {: #running-digna-as-a-windows-service }
 
 ### Kāpēc izmantot Windows servisu?
 
-dignabackend palaišana kā Windows serviss nodrošina:
-- Automātisku startēšanu servera iedarbināšanas brīdī
-- Darbību fonā bez atvērtas Command Prompt loga
-- Automātisku restartēšanu avārijas gadījumā
-- Pārvaldību caur Windows Services
+digna backend darbināšana kā Windows serviss nodrošina, ka tas:
+- Automātiski startējas sistēmas boot laikā
+- Darbojas fonā bez atvērtas Command Prompt loga
+- Automātiski restartējas, ja notiek avārija
+- To var pārvaldīt caur Windows Services rīku
 
 ### Servisa pārvaldības faili
 
 Visi nepieciešamie faili atrodas digna instalācijas direktorijā zem: `bin/`
 
-Pieejamie batch faili:
+Sekojošas batch skripti ir pieejami:
 - `install_service.bat` — reģistrē digna kā Windows servisu
-- `uninstall_service.bat` — noņem servisu no reģistra
+- `uninstall_service.bat` — atreģistrē servisu
 - `start_service.bat` — palaiž servisu
-- `stop_service.bat` — apstādināt servisu
+- `stop_service.bat` — aptur servisu
 
-!!! warning "Nepieciešamas administratora tiesības"
+!!! warning "Nepieciešamas administratīvās tiesības"
 
     Visus batch failus jāizpilda ar Administratora tiesībām.
 
 ### Servisa instalēšana
 
 1. **Atveriet Command Prompt kā administrators**
-   - Ar peles labo pogu klikšķiniet Command Prompt
+   - Ar peles labo pogu klikšķiniet uz Command Prompt
    - Izvēlieties "Run as Administrator"
 
 2. **Pārejiet uz bin mapi**
@@ -7330,7 +8038,7 @@ Pieejamie batch faili:
    install_service.bat
    ```
 
-digna serveris tagad reģistrēts kā Windows serviss ar **automātisku startēšanu**. Serviss nekavējoties nesāk darboties — skatiet nākamo sadaļu, lai to palaistu.
+digna serveris tagad ir reģistrēts kā Windows serviss ar **automātisku startēšanu**. Serviss netiek sāknēts uzreiz — skatiet nākamo sadaļu, lai to palaistu.
 
 ### Servisa palaišana un apturēšana
 
@@ -7354,60 +8062,60 @@ digna serveris tagad reģistrēts kā Windows serviss ar **automātisku startē�
 
 !!! tip "Padoms"
 
-    Vienmēr apturiet servisu pirms lietotnes failu atjaunināšanas.
+    Vienmēr apturiet servisu, pirms atjaunināt lietojumprogrammas failus.
 
-### Pārvietošana uz jaunu direktoriju
+### Pārvietot servisu uz jaunu direktoriju
 
 Ja nepieciešams pārvietot digna instalāciju:
 
-1. **Atinstalējiet esošo servisu**
+1. **Atinstalēt esošo servisu**
    ```bash
    cd C:\old\path\digna\bin
    uninstall_service.bat
    ```
 
-2. **Pārvietojiet lietotnes failus**
-   - Pārvietojiet visu digna instalācijas mapes saturu uz jauno atrašanās vietu
+2. **Pārvietot aplikācijas failus**
+   - Pārvietojiet visu digna instalācijas mapi uz jauno atrašanās vietu
 
-3. **Pārliecinieties, ka serviss atkal ir instalēts**
+3. **Pārinstalēt servisu**
    ```bash
    cd C:\new\path\digna\bin
    install_service.bat
    ```
 
-4. **Palaidiet servisu**
+4. **Palaist servisu**
    ```bash
    start_service.bat
    ```
 
 ### Servisa atinstalēšana
 
-1. **Apturiet darbojošo servisu**
+1. **Apturēt darbojošos servisu**
    ```bash
    cd C:\path\to\digna\bin
    stop_service.bat
    ```
 
-2. **Atinstalējiet servisu**
+2. **Atinstalēt servisu**
    ```bash
    uninstall_service.bat
    ```
 
-digna serveris tagad ir noņemts no Windows servisu reģistra.
+digna serveris tagad vairs nav reģistrēts kā Windows serviss.
 
 ---
 
-## Pāreja uz jaunu izlaidumu {: #upgrading-to-a-new-release }
+## Jaunināšana uz jaunu izlaidumu {: #upgrading-to-a-new-release }
 
-### Pirms pārejas
+### Pirms jaunināšanas
 
-**digna repositārija rezerves kopijas izveide ir obligāta**
+**Repozitārija (PostgreSQL) rezerves kopijas izveide ir obligāta**
 
-Pirms digna atjaunināšanas, izveidojiet rezerves kopiju savam repositārijam (PostgreSQL), lai aizsargātu pret datu zudumu. Rezerves kopija nodrošina atjaunošanu, ja atjaunināšanas laikā rodas negaidītas problēmas.
+Pirms digna jaunināšanas veiciet rezerves kopiju sava repozitorija (PostgreSQL), lai izvairītos no datu zuduma. Rezerves kopija nodrošina atjaunošanas iespēju, ja jaunināšanas laikā rodas neparedzētas problēmas.
 
-### Atjaunināšanas process
+### Jaunināšanas process
 
-#### 1. solis: Apturiet digna servisu
+#### 1. solis: Apturēt digna servisu
 
 Ja digna darbojas kā Windows serviss, vispirms to apturiet:
 
@@ -7416,54 +8124,54 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### 2. solis: Rezervējiet pašreizējo backend instalāciju
+#### 2. solis: Rezerves kopija esošajai backend instalācijai
 
 Jūsu digna instalācijas direktorijā:
 
 ```bash
-# Pārdēvējiet mapi, kas satur dignabackend
+# Rename folder containing dignabackend
 ren dignabackend dignabackend_old
 ```
 ```bash
-# Pārdēvējiet dashboard
+# Rename dashboard
 ren dashboard dashboard_old
 ```
 
 #### 3. solis: Izpakot un izvietot jauno versiju
 
 1. Izpakojiet jauno digna instalācijas ZIP failu
-2. Kopējiet jauno `digna` izpildāmo failu un `dashboard` mapi uz savu instalācijas direktoriju
+2. Kopējiet jauno `digna` izpildāmo failu un `dashboard` mapi uz jūsu instalācijas direktoriju
+
 
 !!! warning "Svarīgi"
 
-    `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek neskarta.
+    `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek droša.
 
-### 4. solis: Atjaunojiet konfigurācijas failus
+### 4. solis: Atjaunot jūsu konfigurācijas failus
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
+### 5. solis: Jaunināt repozitorija shēmu
 
-### 5. solis: Atjauniniet repositārija shēmu
-
-Pārejiet uz savu digna instalācijas direktoriju un palaidiet:
+Pārejiet uz jūsu digna instalācijas direktoriju un palaidiet:
 
 ```bash
 digna repo upgrade
 ```
 
-Šī komanda atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visus esošos datus.
+Tas atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visu esošo datu integritāti.
 
-### 6. solis: Restartējiet servisus
+### 6. solis: Restartēt servisus
 
-Ja tiek izmantots Windows serviss:
+Ja darbināt kā Windows servisu:
 
 ```bash
 cd C:\path\to\digna\bin
 start_service.bat
 ```
 
-Ja serveris tiek palaists manuāli, restartējiet to:
+Ja darbināt manuāli, restartējiet serveri:
 
 ```bash
 cd C:\path\to\digna
@@ -7472,15 +8180,15 @@ digna serve --address <address> --port <port>
 
 Ja izmantojat IIS vai Tomcat, restartējiet attiecīgo tīmekļa serveri.
 
-#### 7. solis: Pārbaudiet atjaunināšanu
+#### 7. solis: Pārbaudīt jaunināšanu
 
-1. Piekļūstiet digna dashboard
-2. Pārliecinieties, ka saskarne ielādējas pareizi
-3. Pārbaudiet servera žurnālus, vai nav kļūdu
+1. Piekļūstiet digna panelim
+2. Pārbaudiet, vai saskarne ielādējas pareizi
+3. Pārskatiet servera žurnālus, vai nav kļūdu
 
 ---
 
-# macOS Installation Guide – digna Release 2026.06 | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/lv/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/
 
 # macOS Installation Guide for digna Release 2026.06
@@ -7522,9 +8230,9 @@ digna consists of two main components:
 
 This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
 
-### Looking for Windows?
+### Looking for Windows or Linux?
 
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+This guide covers macOS. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
@@ -8626,6 +9334,127 @@ Tas ļauj proaktīvi atklāt *lēnas novirzes* vai *pakāpenisku degradāciju* d
 
 ---
 
+# digna Data Anomalies | Ar MI darbināta datu novērojamība
+Source: https://docs.digna.ai/lv/platform/data_anomalies/
+
+# digna Data Anomalies – uz MI balstīta datu kvalitātes problēmu noteikšana
+
+**Ar MI darbināta novērojamība pastāvīgai uzticībai datiem**
+
+digna Data Anomalies ir daļa no **digna datu novērojamības platformas** — modulāra risinājuma, kas uzlabo **datu kvalitāti**, nepārtraukti analizējot, kā datu kopas uzvedas laika gaitā.
+
+Tas automātiski apgūst, kas jūsu datiem ir “normāli”, un brīdina jūs, kad uzvedība mainās — bez statisku sliekšņu definēšanas vai kaut vienas kārtulas rakstīšanas.  
+Modulis darbojas tieši jūsu datubāzē, tāpēc dati nekad neatstāj jūsu vidi.
+
+---
+
+## digna Data Anomalies mērķis
+
+**digna Data Anomalies** modulis nodrošina nepārtrauktu **datu novērojamību**, aprēķinot un izsekojot iepriekš definētus statistiskos rādītājus, piemēram:
+
+- Datu apjoms un ierakstu skaits  
+- Trūkstošo vērtību īpatsvars  
+- Vērtību sadalījumi un histogrammas  
+- Skaitliskie diapazoni un vidējās vērtības  
+- Kolonnu unikalitāte un teksta garums  
+
+Šie rādītāji tiek automātiski apkopoti katrai datu kopai.  
+Izmantojot tos, digna izveido modeļus, kas atspoguļo katra rādītāja tipisko uzvedību — apgūstot dienas, nedēļas vai sezonālas likumsakarības.  
+Pēc apmācības modulis prognozē jauno datu sagaidāmās vērtības un atklāj novirzes, kas var liecināt par kvalitātes problēmām, procesu kļūmēm vai izmaiņām augšpusē.
+
+---
+
+## Galvenās iespējas
+
+- Automātiski apgūst sagaidāmo datu uzvedību, izmantojot MI — bez sliekšņu konfigurēšanas.  
+- Atklāj pēkšņus kritumus, lēcienus vai novirzes datu apjomā un sadalījumos.  
+- Identificē samainītas kolonnas vai nepareizu atribūtu savstarpējo atbilstību.  
+- Izceļ negaidītas kategoriskās vērtības (piemēram, jaunus reģionus vai kodus).  
+- Atbalsta visus kolonnu tipus: skaitliskus, kategoriskus vai nenorādītus.  
+- Darbojas pilnībā klienta vidē — bez datu pārvietošanas.  
+- Integrējas ar **digna Data Analytics** ilgtermiņa tendenču analīzei.
+
+---
+
+## Kā tas darbojas
+
+### 1. solis – rādītāju aprēķināšana
+digna aprēķina profila rādītāju kopu katrai tabulai un kolonnai.  
+Šie rādītāji apraksta jūsu datu struktūru un statistisko uzvedību un tiek saglabāti turpmākai analīzei.
+
+### 2. solis – modeļu apmācība
+Pamatojoties uz vēsturiskajām rādītāju vērtībām, digna apmāca kompaktus mašīnmācīšanās modeļus (parakstu modeļus), kas aptver katra rādītāja normālo diapazonu.
+
+### 3. solis – automātiska sliekšņu noteikšana
+Izmantojot *konformālo secināšanu*, digna aprēķina adaptīvus ticamības intervālus (automātiskos sliekšņus), kas attīstās līdz ar jūsu datiem.  
+Ja jaunās rādītāju vērtības iekrīt ārpus prognozētā diapazona, tās tiek atzīmētas kā anomālijas.
+
+Šī nepārtrauktā atgriezeniskās saites cilpa nodrošina, ka uzraudzība paliek aktuāla pat tad, kad datu apjomi vai likumsakarības dabiski pieaug.
+
+---
+
+## Piemēru scenāriji
+
+### Negaidīts ierakstu apjoma kritums
+Datu kopa parasti satur aptuveni 500 000 ierakstu dienā.  
+Kad jauna piegāde ietver tikai 50 000 ierakstu, digna atzīmē anomāliju un parāda, cik tālu vērtība novirzās no apgūtā diapazona.
+
+### Atklātas samainītas kolonnas
+Vidējais `last_name` virknes garums pēkšņi sakrīt ar `first_name` garumu.  
+digna atpazīst novirzi rādītāju likumsakarībās un signalizē par iespējamu kolonnu samainīšanu.
+
+### Atklāta negaidīta kategorija
+Kolonna, kurā uzskaitītas Austrijas pilsētas, pēkšņi satur “Cīrihe”.  
+Pamatojoties uz vēsturiskajiem sadalījumiem, digna atzīmē jauno vērtību kā negaidītu un brīdina lietotāju.
+
+---
+
+## Integrācija ar citiem moduļiem
+
+- **digna Data Analytics** — apkopo anomāliju vēsturi un svārstīguma rādītājus, lai atklātu ilgtermiņa tendences.  
+- **digna Data Validation** — piemēro skaidri definētas biznesa kārtulas deterministiskām kvalitātes pārbaudēm.  
+- **digna Data Timeliness** — uzrauga datu pienākšanas laikus un sasaista kavējumus ar anomāliju rašanos.  
+- **digna Data Schema Tracker** — atklāj strukturālas izmaiņas, kas var izskaidrot jaunas anomālijas.
+
+---
+
+## Tipiski lietošanas gadījumi
+
+- Trūkstošu vai dublētu datu ielāžu atklāšana.  
+- Samainītu vai apcirstu kolonnu identificēšana.  
+- Sadalījuma novirzes atklāšana skaitliskās vai kategoriskās pazīmēs.  
+- Negaidītu atsauces vērtību vai kodu atrašana.  
+- Nepārtrauktu datu uzņemšanas konveijeru uzraudzība attiecībā uz neatbilstībām.  
+- Kopējās **datu kvalitātes un novērojamības** izsekošana visās jomās.
+
+---
+
+## Ieguvumi
+
+- Tūlītēja neparastas datu uzvedības atklāšana.  
+- Novērš manuālu sliekšņu pieregulēšanu.  
+- Samazina darbības izmaksas lielās datu vidēs.  
+- Vairo uzticību analītikas un pārskatu sistēmām.  
+- Stiprina **datu kvalitāti** un pilnu **datu novērojamību**.
+
+---
+
+## Saistītie digna moduļi
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — tendenču un svārstīguma rādītāji.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — uz kārtulām balstīta datu pārbaude.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — datu piegādes grafiku uzraudzība.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — shēmas izmaiņu noteikšana.
+
+---
+
+## Kopsavilkums
+
+**digna Data Anomalies** modulis veido digna MI vadītās **datu novērojamības platformas** kodolu.  
+Nepārtraukti uzraugot galvenos rādītājus, apgūstot likumsakarības un identificējot novirzes, tas palīdz organizācijām nodrošināt, ka **datu kvalitāte** paliek uzticama, stabila un izskaidrojama — bez manuālas konfigurēšanas.
+
+---
+
 # Ievads
 Source: https://docs.digna.ai/lv/platform/data_anomalies/Introduction/
 
@@ -8971,121 +9800,1775 @@ Nodrošinot pārredzamību shēmas evolūcijā, digna palīdz organizācijām sa
 
 ---
 
-# digna Data Anomalies | AI-Powered Observability of Data
-Source: https://docs.digna.ai/lv/platform/data_anomalies/
+# Google Workspace
+Source: https://docs.digna.ai/lv/sso/google_workspace_sso_guide/
 
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# Iestatīt SSO ar Google Workspace
 
-**AI-powered observability for always-on data trust**
+Google identitātes platforma atbilst OIDC un izmanto vienu, labi zināmu atklāšanas (discovery) URL visiem klientiem, tāpēc vienīgās organizācijai specifiskās vērtības ir klienta ID un slepenā atslēga.
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
-
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
+Šis ceļvedis aptver **Google pusi**: OAuth klienta izveidi un vērtību vākšanu, kas nepieciešamas digna. digna puse — `dashboard_config.toml`, testēšana un problēmu novēršana — ir vienāda visiem sniedzējiem un aprakstīta [Single Sign-On pārskats](overview.md).
 
 ---
 
-## Purpose of digna Data Anomalies
+## Pirms sākat
 
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+| Prasība | Piezīmes |
+|---|---|
+| **Google Cloud project** | Jebkurš projekts tajā pašā organizācijā, kurā atrodas jūsu Workspace domēns |
+| **Role** | Editor vai Owner projektā |
+| **digna redirect URI** | URL, uz kuru lietotāji tiek atgriezti pēc pieslēgšanās, piemēram `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Key capabilities
+## 1. solis: Konfigurēt OAuth piekrišanas ekrānu
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+Google neizsniegs akreditācijas datus, kamēr piekrišanas ekrāns nebūs izveidots.
 
----
+1. Atveriet [Google Cloud konsoli](https://console.cloud.google.com) un izvēlieties savu projektu
+2. Dodieties uz **APIs & Services → OAuth consent screen**
+3. Izvēlieties lietotāja tipu:
+   - **Internal** — pieslēgties var tikai konti jūsu Workspace domēnā. Ieteicams.
+   - **External** — mēģināt pieslēgties var jebkurš Google konts.
+4. Aizpildiet lietotnes nosaukumu, lietotāju atbalsta e-pastu un izstrādātāja kontaktu e-pastu
+5. Sadaļā **Scopes** pievienojiet `openid`, `.../auth/userinfo.email` un `.../auth/userinfo.profile`
+6. Saglabāt
 
-## How it works
+!!! warning "Ārējām lietotnēm jābūt publicētām"
 
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+    **External** piekrišanas ekrāns sāk darbību *Testing* statusā, kur tikai konti, kas tieši pievienoti testlietotāju sarakstam, var pabeigt pieslēgšanos. Pārējiem tiek rādīts "digna has not completed the Google verification process". Vai nu pārslēdziet lietotni uz **In production** zem **Publishing status**, vai izmantojiet **Internal** — tam nav šāda ierobežojuma un tas ir pareizā izvēle, ja izvietojums ir tikai Workspace organizācijai.
 
 ---
 
-## Example scenarios
+## 2. solis: Izveidot OAuth klientu
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
+1. Dodieties uz **APIs & Services → Credentials**
+2. Noklikšķiniet **Create Credentials → OAuth client ID**
+3. Iestatiet **Application type** uz **Web application**
+4. Piešķiriet nosaukumu, piem., `digna`
+5. Sadaļā **Authorized redirect URIs** noklikšķiniet **Add URI** un ievadiet:
 
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
+```
+https://digna.yourdomain.com/oidc/callback
+```
 
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+6. Noklikšķiniet **Create**
 
----
+!!! note "Authorized JavaScript Origins nav nepieciešami"
 
-## Integration with other modules
-
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+    digna apmaina autorizācijas kodu no backend puses, nevis pārlūkprogrammas, tāpēc lauku **Authorized JavaScript origins** var atstāt tukšu. Svarīgs ir tikai redirect URI.
 
 ---
 
-## Typical use cases
+## 3. solis: Savākt akreditācijas datus
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+Dialoglodziņš, kas parādās pēc izveides, rāda:
 
----
+- **Client ID** — beidzas ar `.apps.googleusercontent.com` → kļūs par `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → kļūs par `DIGNA_OIDC_CLIENT_SECRET`
 
-## Benefits
-
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+Abas vērtības vēlāk varat atgūt no akreditācijas detaļu lapas, atšķirībā no daudziem citiem pakalpojumu sniedzējiem.
 
 ---
 
-## Related digna Modules
+## 4. solis: Atklāšanas (Discovery) URL
 
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+Google izmanto vienu atklāšanas URL visiem klientiem — nav jāveic nekāda aizvietošana:
+
+```
+https://accounts.google.com/.well-known/openid-configuration
+```
 
 ---
 
-## Summary
+## 5. solis: Konfigurēt digna
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+```
+
+### `config.toml`
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+`key` abos failos jāatbilst — šeit `google`.
+
+---
+
+## 6. solis: Testēšana
+
+Restartējiet backend un web serveri, pēc tam atveriet paneli. Skatīt [Pieslēgšanās testēšana](overview.md#testing-login) pilnai kontrolsarakstam.
+
+---
+
+## Problēmu novēršana Google Workspace
+
+### Kļūda 400: redirect_uri_mismatch
+
+URI, kas norādīts `DIGNA_OIDC_REDIRECT_URI`, nav iekļauts **Authorized redirect URIs** sarakstā, vai atšķiras ar papildslashi vai shēmu. Google kļūdas lapa parāda URI, ko tā saņēma — salīdziniet to rakstzīmi pa rakstzīmei ar reģistrēto URI.
+
+### Šī lietotne ir bloķēta / nav pabeigta verifikācija
+
+Piekrišanas ekrāns ir iestatīts kā **External** un joprojām atrodas *Testing* režīmā. Publicējiet to, vai pārslēdziet lietotni uz **Internal**.
+
+### Piekļuve bloķēta: autorizācijas kļūda
+
+Konts, kas mēģina pieslēgties, atrodas ārpus jūsu Workspace domēna, kamēr piekrišanas ekrāns ir **Internal**. Tas ir paredzēts uzvedība — Internal lietotnes pieņem tikai organizācijas kontus.
+
+### Izmaiņu propagācija aizņem vairākas minūtes
+
+Google asinkroni izplata akreditācijas datus un piekrišanas ekrāna izmaiņas. Ja nesen pievienots redirect URI vai cits iestatījums šķiet nereģistrēts, pagaidiet dažas minūtes un mēģiniet vēlreiz pirms sarežģītākas izmeklēšanas.
+
+---
+
+## Skatīt arī
+
+- [Single Sign-On pārskats](overview.md) — konfigurācijas atsauce, testēšana un vispārīga problēmu novēršana
+- [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
+
+---
+
+# Overview
+Source: https://docs.digna.ai/lv/sso/overview/
+
+# Vienreizējā autentifikācija — pārskats
+
+---
+
+## Satura rādītājs
+
+1. [Ievads un pārskats](#introduction-and-overview)
+2. [Pakalpojumu sniedzēju rokasgrāmatas](#provider-guides)
+3. [Konfigurācijas soļi](#configuration-steps)
+4. [Informācijas paneļa konfigurācija](#dashboard-configuration)
+5. [Backend konfigurācija](#backend-configuration)
+6. [Pieteikšanās testēšana](#testing-login)
+7. [Problēmu novēršana](#troubleshooting)
+8. [Atbalstītie pakalpojumu sniedzēji](#supported-providers)
+
+---
+
+## Ievads un pārskats {: #introduction-and-overview }
+
+Šajā rokasgrāmatā ir soli pa solim norādījumi, kā integrēt vienreizējo autentifikāciju (SSO) ar digna platformu, izmantojot **OpenID Connect (OIDC)**.
+
+### Kas ir SSO?
+
+Vienreizējā autentifikācija (SSO) ļauj lietotājiem droši pieteikties digna, izmantojot savas uzņēmuma akreditācijas lielajiem identitātes sniedzējiem. Lietotāji var autentificēties ar korporatīvajiem akreditācijas datiem, nevis pārvaldīt atsevišķas digna paroles.
+
+### Kā tas darbojas
+
+SSO digna tiek īstenots, izmantojot OIDC protokolu. Var konfigurēt vairākus identitātes sniedzējus paralēli, pielāgojot divus galvenos konfigurācijas failus:
+
+- **`dashboard_config.toml`** — kontrolē frontend pieteikšanās saskarni
+- **`config.toml`** — konfigurē backend OIDC savienojumus
+
+### Atbalstītie sniedzēji {: #supported-providers-overview }
+
+Šīs rokasgrāmatas piemēri izmanto **Microsoft** un **Google**, taču **jebkurš OIDC saderīgs sniedzējs** var tikt integrēts, sekojot tai pašai struktūrai.
+
+---
+
+## Pakalpojumu sniedzēju rokasgrāmatas {: #provider-guides }
+
+Katrā sniedzējā nepieciešamas tās pašas četras vērtības — klienta ID, klienta noslēpums (client secret), pāradresācijas URI (redirect URI) un atklāšanas (discovery) URL — taču katrs to ievieto savā vietā administrācijas konsolē, un vairākiem ir sniedzējam specifisks solis, kas pārējiem nav. Zemāk esošās rokasgrāmatas aptver šo daļu; šī lapa aptver digna daļu, kas visiem sniedzējiem ir identiska.
+
+| Pakalpojumu sniedzējs | Rokasgrāmata | Vērts zināt |
+|---|---|---|
+| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Pašpārvaldīts; vienīgais šeit minētais sniedzējs, kurā jūs kontrolējat token servisu |
+| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL ir uz katru tenant — pielāgoti domēni to maina |
+| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Atļauju ekrānam jābūt publicētam, lai netestējoši lietotāji var pieteikties |
+| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Pašpārvaldīts; discovery URL ir uz katru realm |
+| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID parādās discovery URL; noslēpumi var beigties |
+| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Autorizācijas servera izvēle maina discovery URL |
+| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | OIDC lietotnes tips jānokļūst izveides brīdī un to nevar mainīt |
+| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID parādās discovery URL |
+
+Jebkurš cits OIDC saderīgs sniedzējs darbojas tāpat — skatīt [Other OIDC Providers](#supported-providers).
+
+---
+
+## Konfigurācijas soļi {: #configuration-steps }
+
+SSO konfigurācija prasa atjauninājumus divos failos. Šajā sadaļā aprakstīts, kā konfigurēt katru no tiem.
+
+### Konfigurācijas failu pārskats
+
+| Fails | Atrašanās vieta | Mērķis |
+|---|---|---|
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend pieteikšanās saskarne |
+| **config.toml** | `/config.toml` | Backend OIDC savienojumi |
+
+Abi faili jākonfigurē, lai SSO darbotos pareizi.
+
+---
+
+## Informācijas paneļa konfigurācija {: #dashboard-configuration }
+
+### Faila atrašanās vieta
+
+```
+dashboard/dashboard_config.toml
+```
+
+### 1. solis: Pievienot OIDC sniedzējus
+
+Pievienojiet ierakstus zem masīva `[[login.oidc]]` katram identitātes sniedzējam, ko vēlaties atbalstīt.
+
+**Piemērs ar Microsoft un Google:**
+
+```toml
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+```
+
+### 2. solis: Konfigurēt pieteikšanās opcijas
+
+Norādiet, vai jāļauj pieteikšanās ar paroli:
+
+```toml
+[login]
+usePassword = true
+```
+
+### Konfigurācijas parametri
+
+#### `[[login.oidc]]` sadaļa
+
+| Parametrs | Tips | Obligāts | Apraksts |
+|---|---:|---:|---|
+| `key` | string | Jā | Unikāls identifikators OIDC savienojumam (jāatbilst key config.toml) |
+| `label` | string | Jā | Teksts, kas tiek rādīts pieteikšanās pogā (piem., "Login with Microsoft") |
+
+#### `[login]` sadaļa
+
+| Parametrs | Tips | Noklusējums | Apraksts |
+|---|---:|---:|---|
+| `usePassword` | boolean | false | Ļaut pieteikšanos, izmantojot paroli papildus SSO |
+
+### Izpratne par usePassword
+
+**Ja `usePassword = true`:**
+- Pieteikšanās ekrānā redzamas SSO pogas (piem., "Login with Microsoft")
+- Pieteikšanās ekrānā arī redzami lietotājvārds un paroles lauki
+- Lietotāji var autentificēties ar jebkuru no metodēm
+- Ļauj hibrīdus iestatījumus, kur daži lietotāji izmanto SSO, bet citi paroles
+
+**Ja `usePassword = false` (vai izlaists):**
+- Pieteikšanās ekrānā redzamas tikai SSO pogas
+- Nav lietotājvārda/paroles lauku
+- Pieejama tikai OIDC autentifikācija
+
+!!! tip "Padoms"
+
+    Pieteikšanās ar paroli ir pieejama tikai lietotājiem, kuri tika izveidoti ar parolēm, izmantojot komandu `digna user add` vai caur informācijas paneli.
+
+### Pilns piemērs
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+
+[[login.oidc]]
+key = "okta"
+label = "Login with Okta"
+```
+
+---
+
+## Backend konfigurācija {: #backend-configuration }
+
+### Faila atrašanās vieta
+
+```
+/config.toml
+```
+
+(Root digna instalācijas direktorija)
+
+### 1. solis: Pievienot OIDC sniedzēju sadaļas
+
+Katram sniedzējam jābūt atsevišķai `[oidc.<key>]` sadaļai. Key jāatbilst `key`, kas definēts `dashboard_config.toml`.
+
+### Microsoft konfigurācija
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
+```
+
+### Google konfigurācija
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+### Konfigurācijas parametri
+
+| Parametrs | Tips | Obligāts | Apraksts | Piemērs |
+|---|---:|---:|---|---|
+| `DIGNA_OIDC_CLIENT_ID` | string | Jā | Klienta ID no identitātes sniedzēja | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Jā | Klienta noslēpums no identitātes sniedzēja | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Jā | Callback URL pēc autentifikācijas | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Jā | OIDC konfigurācijas galapunkts | `https://login.microsoftonline.com/...` |
+
+!!! warning "Svarīgi"
+
+    Aizstājiet viettura vērtības (`<client_id>`, `<client_secret>`, `<tenant_id>`) ar reāliem akreditācijas datiem no jūsu identitātes sniedzēja izstrādātāja portāla.
+
+### Redirect URI
+
+Pāradresācijas URI jābūt identiskai jūsu identitātes sniedzēja konfigurācijā:
+
+```
+http://localhost:5173/oidc/callback
+```
+
+Ja digna ir mitināts citā domēnā, atjauniniet atbilstoši:
+- Lokāli: `http://localhost:5173/oidc/callback`
+- Ražošanā: `https://digna.yourdomain.com/oidc/callback`
+
+### Pilns piemērs
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+---
+
+## Pieteikšanās testēšana {: #testing-login }
+
+Pabeidzot konfigurāciju, pārbaudiet, vai SSO darbojas pareizi.
+
+### Pārbaudes priekšnosacījumu saraksts
+
+Pirms testēšanas pārliecinieties:
+
+- [ ] `dashboard_config.toml` ir atjaunināts ar OIDC sniedzējiem
+- [ ] `config.toml` ir atjaunināts ar OIDC akreditācijām
+- [ ] Abi faili ir saglabāti
+- [ ] Akreditācijas ir pareizas (client ID, client secret)
+- [ ] Redirect URI atbilst jūsu izvietošanas URL
+- [ ] Identitātes sniedzēja lietotne ir konfigurēta ar redirect URI
+
+### Testēšanas soļi
+
+#### 1. solis: Restartēt servisus
+
+Restartējiet digna backend un tīmekļa serveri, lai piemērotu izmaiņas.
+
+**Ja darbojas kā serviss Windows:**
+```bash
+cd C:\path\to\digna\bin
+stop_service.bat
+start_service.bat
+```
+
+**Ja darbojas kā serviss Linux vai macOS:**
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+sudo ./start_service.sh
+```
+
+**Ja darbojat manuāli:**
+```bash
+digna serve --address localhost --port 8082
+```
+
+**Restartējiet arī tīmekļa serveri** — IIS vai Tomcat uz Windows, nginx vai Apache uz Linux un macOS.
+
+#### 2. solis: Atvērt informācijas paneli
+
+Atveriet digna informācijas paneli pārlūkā:
+
+```
+http://localhost:5173
+```
+
+(ja nav — atveriet jūsu konfigurēto paneļa URL)
+
+#### 3. solis: Pārbaudīt pieteikšanās pogas
+
+Pārliecinieties, ka katram konfigurētajam sniedzējam redzama pieteikšanās poga:
+
+- Jāredz poga "Login with Microsoft"
+- Jāredz poga "Login with Google"
+- (Ja usePassword = true) Jāredz lietotājvārda/paroles lauki
+
+Ja pogas neparādās:
+- Pārbaudiet, vai `dashboard_config.toml` ir saglabāts
+- Pārbaudiet, vai informācijas paneļa serviss tika restartēts
+- Pārbaudiet pārlūkprogrammas konsoli (F12) par kļūdām
+
+#### 4. solis: Testēt SSO pieteikšanos
+
+Noklikšķiniet uz vienas no SSO pogām (piem., "Login with Microsoft"):
+
+1. Jums jābūt pāradresētam uz identitātes sniedzēja pieteikšanās lapu
+2. Piesakieties ar saviem uzņēmuma akreditācijas datiem
+3. Jums jābūt pāradresētam atpakaļ uz digna
+4. Jums jābūt pieteikušamies digna
+
+#### 5. solis: Pārbaudīt lietotāja izveidi
+
+Pēc veiksmīgas SSO pieteikšanās:
+
+- Lietotājs jāizveido automātiski digna
+- Lietotājam jābūt pieteiktam
+- Lietotāja profilā jāparādās jūsu identitātes sniedzēja datiem
+- Jums jāredz digna informācijas panelis
+
+#### 6. solis: Testēt pieteikšanos ar paroli (ja iespējots)
+
+Ja `usePassword = true`:
+
+1. Atslēdzieties no digna
+2. Pieteikšanās lapā ievadiet lietotājvārdu un paroli
+3. Jums jābūt iespējai pieteikties ar paroli
+
+---
+
+## Problēmu novēršana {: #troubleshooting }
+
+### Pieteikšanās pogas neparādās
+
+**Simptomi:**
+- OIDC pieteikšanās pogas nav redzamas pieteikšanās lapā
+- Redzami tikai paroles lauki (ja usePassword = true)
+
+**Cēloņi un risinājumi:**
+1. Pārbaudiet, ka `dashboard_config.toml` atrodas `dashboard/` direktorijā
+2. Pārbaudiet, vai `[[login.oidc]]` sadaļas ir klāt un ar pareizu sintaksi
+3. Restartējiet informācijas paneļa servisu
+4. Notīriet pārlūkprogrammas kešatmiņu (Ctrl+Shift+Delete vai Cmd+Shift+Delete)
+5. Pārbaudiet pārlūkprogrammas konsoli (F12 → Console cilne) par kļūdām
+
+---
+
+### Redirect URI neatbilstības kļūda
+
+**Simptomi:**
+- Noklikšķinot uz SSO pogas, tiek rādīta kļūda par "redirect_uri mismatch"
+- Kļūda "The redirect URI is not registered"
+
+**Cēloņi un risinājumi:**
+1. Pārbaudiet, vai `DIGNA_OIDC_REDIRECT_URI` `config.toml` ir pareizs
+2. Pārbaudiet, vai redirect URI ir reģistrēts identitātes sniedzēja iestatījumos
+3. Pārliecinieties, ka abi izmanto identiskas URL (ieskaitot protokolu, domēnu, ceļu)
+4. Pārbaudiet rakstzīmju kļūdas redirect URI
+5. Ja izmantojat HTTPS, pārbaudiet sertifikāta derīgumu
+
+---
+
+### Ne derīgi klienta akreditāciju kļūda
+
+**Simptomi:**
+- Kļūda "Invalid client ID or secret"
+- Autentifikācija neizdodas ar akreditāciju kļūdu
+
+**Cēloņi un risinājumi:**
+1. Pārbaudiet, vai `DIGNA_OIDC_CLIENT_ID` un `DIGNA_OIDC_CLIENT_SECRET` ir pareizi
+2. Pārliecinieties, ka nav lieku atstarpju vai speciālu rakstzīmju
+3. Pārbaudiet, vai akreditācijas nav beigušās vai atsauktas
+4. Restartējiet backend servisu pēc konfigurācijas atjaunināšanas
+5. Pārbaudiet identitātes sniedzēja konsoli, lai apstiprinātu akreditāciju statusu
+
+---
+
+### Pieteikšanās iestrēgst vai notiek taimauts
+
+**Simptomi:**
+- Noklikšķinot SSO pogu, nekas nenotiek
+- Pēc dažām sekundēm tiek taimauts
+- Pārlūkā parādās "Failed to connect" vai līdzīga ziņa
+
+**Cēloņi un risinājumi:**
+1. Pārbaudiet, vai digna backend darbojas: `digna repo check`
+2. Pārbaudiet tīkla savienojumu uz identitātes sniedzēju
+3. Pārliecinieties, ka `DIGNA_OIDC_CONFIGURATION_URL` ir pieejams
+4. Pārbaudiet ugunsmūra noteikumus, lai atļautu izejošos HTTPS savienojumus
+5. Pārliecinieties, ka backend un informācijas panelis var sasniegt viens otru
+
+---
+
+### Lietotāji netiek automātiski izveidoti
+
+**Simptomi:**
+- SSO pieteikšanās izdodas, bet lietotājs netiek izveidots digna
+- Pēc SSO pieteikšanās rodas atļauju kļūda
+
+**Cēloņi un risinājumi:**
+1. Pārbaudiet OIDC konfigurāciju
+2. Pārbaudiet lietotāju atļauju iestatījumus
+3. Pārskatiet digna žurnālus pēc kļūdu ziņojumiem
+4. Restartējiet backend servisu
+5. Ja problēma saglabājas, sazinieties ar support@digna.ai
+
+---
+
+## Atbalstītie pakalpojumu sniedzēji {: #supported-providers }
+
+### Testēti un atbalstīti
+
+Zemāk uzskaitītie OIDC sniedzēji ir testēti un zināmi kā strādājoši:
+
+| Pakalpojumu sniedzējs | Konfigurācijas URL | Uzstādīšanas rokasgrāmata |
+|---|---|---|
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+
+### Citi OIDC sniedzēji
+
+Jebkurš pakalpojumu sniedzējs, kas atbalsta OpenID Connect, var tikt integrēts. Nepieciešamā informācija:
+
+- Client ID
+- Client secret
+- OpenID konfigurācijas URL (parasti pie `/.well-known/openid-configuration`)
+- Atbalstītie scopes (parasti `openid profile email`)
+
+Ja nepieciešama palīdzība ar konkrēta sniedzēja integrāciju, sazinieties ar support@digna.ai.
+
+---
+
+## Labākā prakse
+
+**DARĪT:**
+- Ražošanā izmantot HTTPS (nevis HTTP)
+- Glabāt klienta noslēpumus droši (izmantojiet vides mainīgos, ja iespējams)
+- Regulāri rotēt noslēpumus
+- Vispirms testēt ne- ražošanas vidē
+- Dokumentēt, kuri sniedzēji ir konfigurēti
+- Monitorēt pieteikšanās žurnālus pēc aizdomīgas darbības
+- Uzturēt identitātes sniedzēja konfigurāciju sinhronā ar digna konfigurāciju
+
+**NEDARĪT:**
+- Glabāt klienta noslēpumus versiju kontrolē
+- Ražošanā izmantot HTTP redirect URI
+- Konfigurēt vairākus sniedzējus ar to pašu key
+- Atstāt noklusējuma/testa akreditācijas ražošanā
+- Pakļaut konfigurācijas failus ar noslēpumiem
+- Sajaukt izstrādes un ražošanas akreditācijas
+
+---
+
+## Atbalsts
+
+Nepieciešama palīdzība ar SSO konfigurāciju?
+
+- **E-pasts:** support@digna.ai
+- **Dokumentācija:** https://docs.digna.ai
+- **Tīmekļa vietne:** https://www.digna.ai
+
+---
+
+**Pēdējoreiz atjaunināts:** August 30, 2026  
+**Izlaidums:** 2026.04  
+**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+
+---
+
+# PingOne
+Source: https://docs.digna.ai/lv/sso/pingone_sso_guide/
+
+# Iestatīt SSO ar PingOne
+
+PingOne atbilst OIDC standartam. Divām no tā vērtībām jāpievērš īpaša uzmanība: **Environment ID**, kas parādās katrā gala punktā (endpoint) URL, un **reģionālais domēns**, kas atšķiras starp Ziemeļamerikas, Eiropas, Kanādas, Āzijas‑Kliedes un Austrālijas tenantiem.
+
+Šis ceļvedis aptver **PingOne pusi**: lietotnes izveidi un vērtību vākšanu, kas nepieciešamas digna. digna puse — `dashboard_config.toml`, testēšana un problēmu novēršana — ir vienāda visiem pakalpojumu sniedzējiem un aprakstīta [Single Sign-On pārskatā](overview.md).
+
+---
+
+## Pirms sākat
+
+| Prasība | Piezīmes |
+|---|---|
+| **PingOne loma** | Environment Admin vai Identity Data Admin mērķa vidē |
+| **Environment** | PingOne vide, kurā atrodas jūsu digna lietotāji |
+| **digna redirect URI** | URL, uz kuru lietotāji atgriežas pēc pieteikšanās, piem. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 1. solis: Izveidot lietotni
+
+1. Piesakieties PingOne administrācijas konsolē un izvēlieties savu vidi
+2. Dodieties uz **Applications → Applications**
+3. Noklikšķiniet uz pogas ar **+**
+4. Ievadiet `digna` kā **Application Name**
+5. Atlasiet **OIDC Web App**
+6. Noklikšķiniet **Save**
+
+!!! warning "Izvēlieties OIDC Web App, nevis Single-Page App"
+
+    *Single-Page App* un *Native App* izveido publiskus klientus, kas nevar glabāt slepeni. digna apmaina autorizācijas kodu no sava backend un nepieciešams konfidenciāls **OIDC Web App** tips.
+
+---
+
+## 2. solis: Konfigurēt redirect URI
+
+1. Atveriet lietotnes cilni **Configuration**
+2. Noklikšķiniet uz zīmuļa ikonas, lai rediģētu
+3. Pārliecinieties, ka **Response Type** ir *Code* un **Grant Type** ir *Authorization Code*
+4. Sadaļā **Redirect URIs** ievadiet savu digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+5. Iestatiet **Token Endpoint Authentication Method** uz *Client Secret Post* vai *Client Secret Basic*
+6. Noklikšķiniet **Save**
+
+---
+
+## 3. solis: Ieslēgt lietotni
+
+Lietotnes rindā vai detaļu panelī pārslēdziet slēdzi uz **enabled**.
+
+!!! warning "Jaunas lietotnes sākotnēji ir atslēgtas"
+
+    PingOne izveido lietotnes atslēgtā stāvoklī. Atslēgta lietotne radīs kļūdu autorizācijas solī, kas nesauks ārā slēdža stāvokli, tāpēc šo ir vērts pārbaudīt pirms cita meklēšanas.
+
+---
+
+## 4. solis: Piešķirt scope
+
+1. Atveriet cilni **Resources**
+2. Pārliecinieties, ka `openid` ir piešķirts, un pievienojiet `profile` un `email` no **OpenID Connect** resursa
+3. Noklikšķiniet **Save**
+
+---
+
+## 5. solis: Piešķirt piekļuvi lietotājiem
+
+1. Atveriet cilni **Access**
+2. Pievienojiet populāciju vai grupas, kuru dalībnieki var izmantot digna
+3. Noklikšķiniet **Save**
+
+---
+
+## 6. solis: Savākt akreditācijas datus un Environment ID
+
+Cilnē **Configuration** izvērst **General**:
+
+- **Client ID** → kļūst par `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → kļūst par `DIGNA_OIDC_CLIENT_SECRET` (noklikšķiniet uz acu ikonas)
+- **Environment ID** → tiek izmantots atklāšanas (discovery) URL
+
+Tajā pašā cilnē ir pieejams gatavs **OIDC Discovery Endpoint**, ko varat kopēt tieši, neassemblējot to pašrocīgi.
+
+---
+
+## 7. solis: Izveidot Discovery URL
+
+Aizvietojiet environment ID un domēnu atbilstoši jūsu reģionam:
+
+```
+https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
+```
+
+| Reģions | Domēns |
+|---|---|
+| Ziemeļamerika | `auth.pingone.com` |
+| Eiropa | `auth.pingone.eu` |
+| Kanāda | `auth.pingone.ca` |
+| Āzijas‑Kliede | `auth.pingone.asia` |
+| Austrālija | `auth.pingone.com.au` |
+
+Eiropas videi piemērs:
+
+```
+https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
+```
+
+!!! tip "Kopējiet, nevis rakstiet"
+
+    Reģionālais domēns ir visizplatītākā kļūda PingOne integrācijā, un nepareizs reģions dod 404 kļūdu, nevis saprotamu ziņojumu. Izmantojiet **OIDC Discovery Endpoint** vērtību no 6. soļa.
+
+---
+
+## 8. solis: Konfigurēt digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "pingone"
+label = "Login with PingOne"
+```
+
+### `config.toml`
+
+```toml
+[oidc.pingone]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
+```
+
+Abi failos `key` vērtībai jābūt sakrītošai — šeit `pingone`.
+
+---
+
+## 9. solis: Testēt
+
+Restartējiet backend un web serveri, pēc tam atveriet dashboard. Pilnu pārbaudes sarakstu skatiet [Pieteikšanās testēšana](overview.md#testing-login).
+
+---
+
+## PingOne problēmu novēršana
+
+### 404 pie Discovery URL
+
+Reģionālais domēns vai environment ID ir nepareizs. Salīdziniet ar **OIDC Discovery Endpoint**, kas redzams lietotnes cilnē Configuration.
+
+### NOT_FOUND vai lietotne atspējota
+
+Lietotnes slēdzis no 3. soļa joprojām ir izslēgts.
+
+### Redirect URI nesakritība
+
+PingOne salīdzina pilnu virkni. Pārbaudiet **Configuration → Redirect URIs** vai nav liekas slīpsvītras (trailing slash) vai shēmas atšķirības.
+
+### Pieteikšanās izdevusies, bet digna nesaņem e-pasta claim
+
+Sadaļā **Resources** nav piešķirti `email` un `profile` scope.
+
+### Lietotājs neredz lietotni
+
+Sadaļā **Access** nav piešķirta piekļuve attiecīgajai populācijai vai grupai.
+
+---
+
+## Skatīt arī
+
+- [Single Sign-On pārskats](overview.md) — konfigurācijas atsauce, testēšana un vispārīga problēmu novēršana
+- [PingOne: OIDC application configuration](https://docs.pingidentity.com/pingone/)
+
+---
+
+# AD FS
+Source: https://docs.digna.ai/lv/sso/adfs_sso_guide/
+
+# Set up SSO with AD FS
+
+Active Directory Federation Services is the on-premises option: your own servers issue the tokens, and the discovery URL is your own host name. AD FS supports OpenID Connect from **Windows Server 2016** onwards.
+
+This guide covers the **AD FS side**: creating the application group and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **AD FS version** | Windows Server 2016 or later — earlier versions have no OIDC support |
+| **Access** | Local administrator on the AD FS server |
+| **Federation service name** | e.g. `adfs.yourdomain.com` |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the Application Group
+
+1. On the AD FS server, open **AD FS Management**
+2. Right-click **Application Groups** and choose **Add Application Group**
+3. Enter `digna` as the name
+4. Under **Standalone applications** — or **Client-Server applications** depending on your version — select **Server application accessing a web API**
+5. Click **Next**
+
+---
+
+## Step 2: Configure the Server Application
+
+1. **Name**: `digna backend`
+2. **Client Identifier**: AD FS generates a GUID. Copy it — this becomes `DIGNA_OIDC_CLIENT_ID`
+3. **Redirect URI**: enter your digna callback URL and click **Add**:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. Click **Next**
+
+!!! warning "Click Add, Not Just Next"
+
+    The redirect URI field has its own **Add** button. Typing a URI and clicking **Next** without pressing **Add** discards it, and the wizard gives no warning. Confirm the URI appears in the list below the field before continuing.
+
+---
+
+## Step 3: Generate the Shared Secret
+
+1. Tick **Generate a shared secret**
+2. Copy the generated secret → becomes `DIGNA_OIDC_CLIENT_SECRET`
+3. Click **Next**
+
+!!! warning "The Secret Is Shown Once"
+
+    AD FS displays the shared secret only on this wizard page and cannot show it again. If you lose it, reset it later from the application group's properties.
+
+---
+
+## Step 4: Configure the Web API
+
+1. **Identifier**: enter the same client identifier from Step 2 and click **Add**
+2. Click **Next**
+3. Choose an **Access Control Policy** — *Permit everyone* is the simplest starting point; restrict it to a group for production
+4. Click **Next**
+
+---
+
+## Step 5: Grant the Permitted Scopes
+
+On the **Configure Application Permissions** step, tick:
+
+- `openid`
+- `profile`
+- `email`
+
+Then click **Next** and complete the wizard.
+
+!!! warning "openid Is Not Ticked by Default"
+
+    AD FS pre-selects only `user_impersonation` in some versions. Without `openid`, the token endpoint returns an OAuth access token rather than an ID token, and digna cannot identify the user.
+
+---
+
+## Step 6: Confirm the Discovery Endpoint
+
+Substitute your federation service name:
+
+```
+https://<adfs_host>/adfs/.well-known/openid-configuration
+```
+
+For example:
+
+```
+https://adfs.yourdomain.com/adfs/.well-known/openid-configuration
+```
+
+Open it in a browser. A JSON document confirms OIDC is enabled and the host name is right.
+
+!!! note "The Backend Must Trust the Certificate"
+
+    An internal certificate authority is common for AD FS. The machine running the digna backend makes its own outbound HTTPS call to this URL, so the issuing CA must be in that machine's trust store — not only in the browsers of the people logging in.
+
+---
+
+## Step 7: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "adfs"
+label = "Login with Active Directory"
+```
+
+### `config.toml`
+
+```toml
+[oidc.adfs]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://adfs.yourdomain.com/adfs/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `adfs` here.
+
+---
+
+## Step 8: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting AD FS
+
+### MSIS9611: The Client Is Not Allowed to Access the Resource
+
+The web API identifier in Step 4 does not match the client identifier, or the scopes in Step 5 were not granted. Both are editable from the application group's properties.
+
+### MSIS9602: Invalid redirect_uri
+
+The URI was typed but not added with the **Add** button, or differs from `DIGNA_OIDC_REDIRECT_URI`. Check **Application Groups → digna → digna backend → Properties**.
+
+### No ID Token Is Returned
+
+The `openid` scope is missing from the application permissions.
+
+### The Backend Cannot Reach the Discovery URL
+
+Either DNS on the backend host does not resolve the federation service name, or the AD FS certificate is not trusted there. Test with `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` from the digna server itself.
+
+### Events to Check
+
+The AD FS server logs failures to **Applications and Services Logs → AD FS → Admin** in Event Viewer, usually with a more specific reason than the browser shows.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Microsoft: AD FS OpenID Connect scenarios](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)
+
+---
+
+# Auth0
+Source: https://docs.digna.ai/lv/sso/auth0_sso_guide/
+
+# Set up SSO with Auth0
+
+Auth0 is OIDC-compliant and exposes a discovery endpoint per tenant. The main thing to get right is the tenant domain, which appears in the discovery URL and changes if you enable a custom domain.
+
+This guide covers the **Auth0 side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Auth0 role** | Admin on the tenant |
+| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the Application
+
+1. Sign in to the [Auth0 Dashboard](https://manage.auth0.com)
+2. Go to **Applications → Applications**
+3. Click **Create Application**
+4. Name it `digna` and choose **Regular Web Applications**
+5. Click **Create**
+
+!!! warning "Choose Regular Web Applications"
+
+    *Single Page Application* and *Native* create public clients with no secret. digna performs the code exchange from its backend and needs a confidential client, so **Regular Web Applications** is the correct type. Unlike some providers, Auth0 does let you change the type later under **Settings → Application Type**.
+
+---
+
+## Step 2: Add the Callback URL
+
+On the application's **Settings** tab:
+
+1. Find **Allowed Callback URLs**
+2. Enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. Optionally set **Allowed Logout URLs** to your dashboard URL
+4. Scroll to the bottom and click **Save Changes**
+
+!!! note "Comma-Separated, Not Newline-Separated"
+
+    Auth0 accepts several callback URLs in this field, separated by commas. A list separated only by newlines is read as one malformed URL and silently matches nothing.
+
+---
+
+## Step 3: Collect the Credentials
+
+Still on **Settings**, in the **Basic Information** panel:
+
+- **Domain** → goes into the discovery URL
+- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click to reveal)
+
+---
+
+## Step 4: Confirm the Grant Type
+
+1. Go to **Settings → Advanced Settings → Grant Types**
+2. Confirm **Authorization Code** is ticked
+
+It is enabled by default for Regular Web Applications. If it has been unticked, digna's login fails with `unauthorized_client`.
+
+---
+
+## Step 5: Build the Discovery URL
+
+Substitute the **Domain** from Step 3:
+
+```
+https://<your_tenant_domain>/.well-known/openid-configuration
+```
+
+For example:
+
+```
+https://yourcompany.eu.auth0.com/.well-known/openid-configuration
+```
+
+!!! warning "Custom Domains Change the Issuer"
+
+    If your tenant uses a custom domain such as `login.yourcompany.com`, use that domain in the discovery URL. Mixing the two — the canonical domain in the discovery URL, the custom one in the browser — produces an issuer mismatch, and the token is rejected after an otherwise successful login.
+
+---
+
+## Step 6: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "auth0"
+label = "Login with Auth0"
+```
+
+### `config.toml`
+
+```toml
+[oidc.auth0]
+DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `auth0` here.
+
+---
+
+## Step 7: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Auth0
+
+### Callback URL Mismatch
+
+Auth0's error page names the URL it received. Add it to **Allowed Callback URLs**, checking that entries are comma-separated.
+
+### unauthorized_client
+
+**Authorization Code** is not enabled under **Advanced Settings → Grant Types**, or the application type is not Regular Web Applications.
+
+### Access Denied After a Successful Login
+
+A Rule, Action or Post-Login trigger in the tenant is rejecting the user. Check **Actions → Flows → Login** and the tenant logs under **Monitoring → Logs**, which show the exact reason.
+
+### Issuer Mismatch
+
+The discovery URL and the domain the browser was sent to differ — usually the canonical tenant domain versus a custom domain. Use one consistently.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)
+
+---
+
+# Keycloak
+Source: https://docs.digna.ai/lv/sso/keycloak_sso_guide/
+
+# Set up SSO with Keycloak
+
+Keycloak is a self-hosted, fully OIDC-compliant identity provider. Because you run it yourself, the discovery URL is built from your own host name and realm rather than a vendor domain.
+
+This guide covers the **Keycloak side**: creating the client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Keycloak version** | 17 or later for the URL paths used here — see the note in Step 4 |
+| **Keycloak role** | `realm-admin` on the target realm, or a server administrator |
+| **Realm** | The realm your digna users belong to, not necessarily `master` |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Select the Realm
+
+1. Open the Keycloak admin console
+2. Use the realm selector in the top-left to switch to the realm your users are in
+
+!!! warning "Do Not Use the master Realm"
+
+    The `master` realm is intended for administering Keycloak itself. Application clients belong in a dedicated realm; putting digna in `master` gives its users a route into the Keycloak administration console.
+
+---
+
+## Step 2: Create the Client
+
+1. Go to **Clients** and click **Create client**
+2. Configure:
+   - **Client type**: *OpenID Connect*
+   - **Client ID**: `digna` — this becomes `DIGNA_OIDC_CLIENT_ID`
+3. Click **Next**
+4. On the **Capability config** step, turn **Client authentication** **On**
+5. Leave **Standard flow** enabled; the other flows are not needed
+6. Click **Next**
+
+!!! warning "Client Authentication Must Be On"
+
+    With **Client authentication** off, Keycloak creates a *public* client, which has no credentials at all — the **Credentials** tab in Step 4 will not exist. digna needs a confidential client. This toggle can be changed after creation if you get it wrong.
+
+---
+
+## Step 3: Set the Redirect URI
+
+On the **Login settings** step (or the **Settings** tab afterwards):
+
+1. **Valid redirect URIs**: enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+2. **Web origins**: leave empty, or set to `+` to mirror the redirect URIs
+3. Click **Save**
+
+!!! tip "Avoid Wildcards"
+
+    Keycloak accepts patterns such as `https://digna.yourdomain.com/*`. A wildcard lets any path on that host receive an authorization code, so prefer the exact callback URL.
+
+---
+
+## Step 4: Collect the Client Secret
+
+1. Open the **Credentials** tab
+2. Confirm **Client Authenticator** is *Client Id and Secret*
+3. Copy the **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
+
+The secret stays retrievable here and can be regenerated with **Regenerate**.
+
+---
+
+## Step 5: Build the Discovery URL
+
+Substitute your Keycloak host and realm name:
+
+```
+https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
+```
+
+For example:
+
+```
+https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
+```
+
+!!! note "Keycloak 16 and Earlier Include /auth"
+
+    Before Keycloak 17, every endpoint sat under an `/auth` prefix:
+
+    ```
+    https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
+    ```
+
+    Distributions that set `KC_HTTP_RELATIVE_PATH=/auth` keep the old layout on current versions too. If the URL without `/auth` returns 404, try it with.
+
+Open the URL in a browser before continuing. A JSON document confirms the host and realm are right.
+
+---
+
+## Step 6: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "keycloak"
+label = "Login with Keycloak"
+```
+
+### `config.toml`
+
+```toml
+[oidc.keycloak]
+DIGNA_OIDC_CLIENT_ID = "digna"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `keycloak` here. Note that it does not have to equal the Keycloak **Client ID**, though keeping them the same is easier to follow.
+
+---
+
+## Step 7: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Keycloak
+
+### Invalid parameter: redirect_uri
+
+The callback URL is not covered by **Valid redirect URIs**. Keycloak logs the URI it received in the server log, which is the quickest way to see the exact mismatch.
+
+### The Credentials Tab Is Missing
+
+The client is public. Turn **Client authentication** on under **Settings → Capability config**.
+
+### 404 on the Discovery URL
+
+Either the realm name is wrong, or the deployment uses the `/auth` prefix. Check the realm list in the admin console and try both URL forms.
+
+### unauthorized_client or invalid_client
+
+**Standard flow** is disabled under **Capability config**, or the secret was regenerated in Keycloak without updating `config.toml`.
+
+### Certificate Errors from the Backend
+
+A self-hosted Keycloak behind a private or self-signed certificate will fail digna's outbound HTTPS call to the discovery URL. Install the issuing CA into the trust store of the machine running the digna backend.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Keycloak: Securing applications](https://www.keycloak.org/docs/latest/securing_apps/)
+
+---
+
+# Microsoft Entra ID
+Source: https://docs.digna.ai/lv/sso/microsoft_entra_id_sso_guide/
+
+# Set up SSO with Microsoft Entra ID
+
+Microsoft Entra ID (formerly Azure Active Directory) is a fully OIDC-compliant provider, so digna integrates with it through the standard discovery endpoint.
+
+This guide covers the **Entra ID side**: registering the application and collecting the four values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Entra ID role** | Application Administrator, Cloud Application Administrator, or Global Administrator |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Tenant** | The directory your users sign in to |
+
+---
+
+## Step 1: Register the Application
+
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com)
+2. Go to **Identity → Applications → App registrations**
+3. Click **New registration**
+4. Configure:
+   - **Name**: `digna` (shown to users on the consent screen)
+   - **Supported account types**: *Accounts in this organizational directory only* for a single-tenant deployment
+5. Under **Redirect URI**, select platform **Web** and enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. Click **Register**
+
+!!! warning "Important"
+
+    The platform must be **Web**, not *Single-page application*. digna exchanges the authorization code from the backend using a client secret, which the SPA platform type does not permit.
+
+---
+
+## Step 2: Collect the Client and Tenant IDs
+
+On the application's **Overview** page, copy:
+
+- **Application (client) ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Directory (tenant) ID** → goes into the discovery URL
+
+---
+
+## Step 3: Create a Client Secret
+
+1. Go to **Certificates & secrets → Client secrets**
+2. Click **New client secret**
+3. Enter a description and choose an expiry
+4. Click **Add**
+5. Copy the **Value** column immediately
+
+!!! warning "Copy the Value, Not the Secret ID"
+
+    The **Value** is shown only once, on this page, and cannot be retrieved afterwards. The **Secret ID** next to it looks similar but is not the secret — using it produces an `invalid_client` error at login. If you navigate away before copying, delete the secret and create a new one.
+
+!!! tip "Tip"
+
+    Entra ID caps secret lifetime at 24 months, so every SSO integration has an expiry date. Note it somewhere you will see it — an expired secret takes SSO down for every user at once, with no warning on the login page.
+
+---
+
+## Step 4: Confirm the API Permissions
+
+1. Go to **API permissions**
+2. Confirm that **Microsoft Graph → User.Read** (delegated) is present — it is added by default
+
+The `openid`, `profile` and `email` scopes digna requests are part of the standard OIDC set and need no separate grant. If your tenant requires admin consent for all applications, click **Grant admin consent for &lt;tenant&gt;**.
+
+---
+
+## Step 5: Build the Discovery URL
+
+Substitute the **Directory (tenant) ID** from Step 2:
+
+```
+https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration
+```
+
+!!! note "Use the v2.0 Endpoint"
+
+    The `/v2.0/` segment matters. The v1.0 endpoint at `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` issues tokens in an older format and does not return the standard OIDC claims digna expects.
+
+Open the URL in a browser before continuing. A JSON document confirms the tenant ID is correct.
+
+---
+
+## Step 6: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+```
+
+### `config.toml`
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `microsoft` here.
+
+---
+
+## Step 7: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Entra ID
+
+### AADSTS50011: Redirect URI Mismatch
+
+The URI in `DIGNA_OIDC_REDIRECT_URI` differs from the one registered in Step 1. Entra ID compares the full string, so a trailing slash, `http` versus `https`, or a different port all count as a mismatch. Check **Authentication → Web → Redirect URIs**.
+
+### AADSTS7000215: Invalid Client Secret
+
+Either the **Secret ID** was copied instead of the **Value**, or the secret has expired. Create a new secret and copy the Value column.
+
+### AADSTS650057: Invalid Resource
+
+The application registration was deleted or belongs to a different tenant than the one in the discovery URL. Confirm the Directory (tenant) ID on the Overview page.
+
+### Users Log In but Nothing Happens
+
+If the tenant requires admin consent and it has not been granted, the redirect returns without a usable token. Grant admin consent under **API permissions**.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Microsoft: OAuth 2.0 authorization code flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
+
+---
+
+# Okta
+Source: https://docs.digna.ai/lv/sso/okta_sso_guide/
+
+# Set up SSO with Okta
+
+Okta is OIDC-compliant, with one wrinkle that catches most first-time integrations: an Okta org exposes more than one authorization server, and each has its own discovery URL.
+
+This guide covers the **Okta side**: creating the app integration and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Okta role** | Super Administrator, or an admin role permitted to create app integrations |
+| **Okta domain** | e.g. `yourcompany.okta.com`, or a custom domain if configured |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the App Integration
+
+1. Sign in to the Okta Admin Console
+2. Go to **Applications → Applications**
+3. Click **Create App Integration**
+4. Select:
+   - **Sign-in method**: *OIDC - OpenID Connect*
+   - **Application type**: *Web Application*
+5. Click **Next**
+
+!!! warning "Application Type Cannot Be Changed"
+
+    Choosing *Single-Page Application* instead of *Web Application* creates a public client with no secret, and digna's backend code exchange will fail with `invalid_client`. The type is fixed at creation — a wrong choice means deleting the app and starting again.
+
+---
+
+## Step 2: Configure the Integration
+
+1. **App integration name**: `digna`
+2. **Grant type**: leave *Authorization Code* selected
+3. **Sign-in redirect URIs**: enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. **Sign-out redirect URIs**: optional
+5. Under **Assignments**, choose who may use the integration — a specific group is safer than *Allow everyone in your organization to access*
+6. Click **Save**
+
+!!! note "Assignment Is Required"
+
+    Okta authenticates the user and then checks whether they are assigned to the application. An unassigned user reaches the Okta login page, signs in successfully, and is refused at the redirect back. If login works for you but not for colleagues, assignment is the first thing to check.
+
+---
+
+## Step 3: Collect the Credentials
+
+On the application's **General** tab, under **Client Credentials**:
+
+- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon to reveal)
+
+---
+
+## Step 4: Choose the Authorization Server
+
+This is the step that determines your discovery URL. Go to **Security → API** to see the authorization servers in your org.
+
+**Org authorization server** — issues tokens for the Okta org itself:
+
+```
+https://<your_okta_domain>/.well-known/openid-configuration
+```
+
+**Custom authorization server** — including the one Okta creates called `default`:
+
+```
+https://<your_okta_domain>/oauth2/<auth_server_id>/.well-known/openid-configuration
+```
+
+For the built-in server, `<auth_server_id>` is literally `default`:
+
+```
+https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration
+```
+
+!!! tip "Which One?"
+
+    Use the **org** authorization server unless your organization already standardizes on a custom one for API access policies. Okta Developer accounts default to `default`; many enterprise orgs disable it. Open both URLs in a browser — the one that returns JSON rather than an error is the one available to you.
+
+---
+
+## Step 5: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "okta"
+label = "Login with Okta"
+```
+
+### `config.toml`
+
+```toml
+[oidc.okta]
+DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `okta` here.
+
+---
+
+## Step 6: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Okta
+
+### The redirect URI Is Not Registered
+
+Okta names the offending URI in the error. Compare it with **General → Sign-in redirect URIs**; Okta matches the full string including any trailing slash.
+
+### User Is Not Assigned to the Client Application
+
+The account is not in the application's assignment list. Add the user or their group under **Assignments**.
+
+### 400 Bad Request: Invalid Authorization Server
+
+The `<auth_server_id>` in the discovery URL does not exist, most often `default` on an org where it has been removed. Check **Security → API** for the servers actually available.
+
+### invalid_client at the Token Step
+
+The integration was created as a Single-Page Application and has no client secret. Recreate it as a Web Application.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Okta: OpenID Connect & OAuth 2.0](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)
+
+---
+
+# OneLogin
+Source: https://docs.digna.ai/lv/sso/onelogin_sso_guide/
+
+# Set up SSO with OneLogin
+
+OneLogin is OIDC-compliant. Its distinguishing feature is that the connector type is chosen from a catalogue when the app is created and cannot be changed afterwards.
+
+This guide covers the **OneLogin side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **OneLogin role** | Account owner or an administrator permitted to add applications |
+| **Subdomain** | e.g. `yourcompany.onelogin.com` |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the OIDC Application
+
+1. Sign in to the OneLogin Admin portal
+2. Go to **Applications → Applications**
+3. Click **Add App**
+4. Search for `OpenId Connect` and select the **OpenId Connect (OIDC)** connector
+5. Set the **Display Name** to `digna`
+6. Click **Save**
+
+!!! warning "The Connector Type Is Fixed at Creation"
+
+    OneLogin has separate catalogue entries for SAML and OIDC, and an application cannot be converted from one to the other. If you pick a SAML connector by mistake, delete the app and add it again — there is no setting to switch protocols.
+
+---
+
+## Step 2: Configure the Redirect URI
+
+1. Open the **Configuration** tab
+2. In **Redirect URI's**, enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. Optionally set **Post Logout Redirect URIs** to your dashboard URL
+4. Click **Save**
+
+!!! note "One URI per Line"
+
+    Unlike providers that expect a comma-separated list, OneLogin's **Redirect URI's** field takes one URI per line.
+
+---
+
+## Step 3: Set the Application Type and Authentication Method
+
+1. Open the **SSO** tab
+2. Confirm **Application Type** is *Web*
+3. Set **Token Endpoint → Authentication Method** to *POST* (`client_secret_post`) or *Basic* (`client_secret_basic`)
+
+!!! warning "Do Not Choose None"
+
+    Setting the authentication method to *None* makes the application a public client with no secret, and digna's backend code exchange will be rejected. Either POST or Basic works.
+
+---
+
+## Step 4: Collect the Credentials
+
+Still on the **SSO** tab:
+
+- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click **Show client secret**)
+
+The page also shows the **Issuer URL**, which confirms the discovery URL in the next step.
+
+---
+
+## Step 5: Assign Users
+
+1. Open the **Access** tab
+2. Add the roles or groups whose members may use digna
+3. Click **Save**
+
+!!! note "Unassigned Users Are Refused After Login"
+
+    As with most providers, OneLogin authenticates the user first and checks entitlement second. An unassigned user signs in successfully and is then refused, which looks like a digna error rather than an access-control decision.
+
+---
+
+## Step 6: Build the Discovery URL
+
+Substitute your OneLogin subdomain:
+
+```
+https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+For example:
+
+```
+https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+!!! tip "The /2 Is the API Version"
+
+    OneLogin's current OIDC implementation lives under `/oidc/2/`. Older documentation shows `/oidc/` without a version, which points at the retired first version. Check the **Issuer URL** on the SSO tab if in doubt — the discovery URL is the issuer plus `/.well-known/openid-configuration`.
+
+---
+
+## Step 7: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "onelogin"
+label = "Login with OneLogin"
+```
+
+### `config.toml`
+
+```toml
+[oidc.onelogin]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `onelogin` here.
+
+---
+
+## Step 8: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting OneLogin
+
+### redirect_uri did not match
+
+The callback URL is missing from **Configuration → Redirect URI's**, or the entries were separated by commas rather than newlines.
+
+### invalid_client at the Token Step
+
+**Token Endpoint → Authentication Method** is set to *None*, or the client secret in `config.toml` is stale. Reveal the secret on the **SSO** tab and compare.
+
+### The App Does Not Appear for Users
+
+No role or group has been granted access on the **Access** tab.
+
+### 404 on the Discovery URL
+
+The subdomain is wrong, or the URL omits `/oidc/2/`. Compare against the **Issuer URL** shown on the SSO tab.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)

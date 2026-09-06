@@ -28,10 +28,19 @@
 
 ## Namestitev in razmestitev
 
+### Operacijski sistemi
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/sl/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Step-by-step guide to installing digna Release 2026.06 on Linux — system requirements, PostgreSQL setup, nginx or Apache configuration, backend and dashboard configuration, running digna as a systemd service, and upgrading to a new release.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/sl/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Korak‑po‑korak navodila za namestitev digna izdaje 2026.06 na macOS — sistemske zahteve, nastavitev Homebrew in PostgreSQL, konfiguracija nginx ali Apache, konfiguracija backend‑a in nadzorne plošče, zagon digna kot ozadnega servisa ter nadgradnja na novo izdajo.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/sl/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Vodnik po korakih za namestitev digna Release 2026.06 na Windows — sistemske zahteve, nastavitev PostgreSQL, konfiguracija spletnega strežnika, konfiguracija backenda in nadzorne plošče, poganjanje digna kot Windows storitve in nadgradnja na novo različico.
-- [Kako konfigurirati enotno prijavo](https://docs.digna.ai/sl/installation_deployment/sso_integration_guide/): Korak za korakom vodnik za konfiguracijo Single Sign-On (SSO) za digna z uporabo OpenID Connect (OIDC). Vključuje konfiguracijo na nadzorni plošči in v backendu, testiranje, odpravljanje napak in podprte identitne ponudnike, vključno z Microsoft Entra ID, Google Workspace in Okta.
+- [Release 2026.06](https://docs.digna.ai/sl/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Korak-po-korak vodič za namestitev digna Release 2026.06 na Windows — sistemske zahteve, nastavitev PostgreSQL, konfiguracija spletnega strežnika, konfiguracija backenda in nadzorne plošče, poganjanje digna kot Windows storitve in nadgradnja na novo verzijo.
 
 ## Začetek
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/sl/databases/snowflake_connector_guide/): Konfiguracija *digna* za povezavo s Snowflake z uporabo Python connectorja ali ODBC gonilnika. Podpira avtentikacijo z geslom z nastavitvami DSN ali brez DSN.
 - [MS SQL Server](https://docs.digna.ai/sl/databases/sqlserver_connector_guide/): Configure digna to connect to Microsoft SQL Server using the pymssql Python driver or the SQL Server ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
 - [Teradata](https://docs.digna.ai/sl/databases/teradata_connector_guide/): Konfigurirajte digna za povezavo s Teradata z uporabo Python gonilnika teradatasql ali Teradata ODBC gonilnika. Podpira prijavo z geslom z DSN ali brez DSN.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/sl/sso/overview/): Kako deluje enotna prijava (SSO) v digna z uporabo OpenID Connect (OIDC). Vsebuje konfiguracijo nadzorne plošče in zaledja, testiranje, odpravljanje težav in povezave do navodil za posamezne ponudnike, kot so Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne in AD FS.
+- [AD FS](https://docs.digna.ai/sl/sso/adfs_sso_guide/): Configure Single Sign-On for digna with Active Directory Federation Services using OpenID Connect — application group, server application, shared secret, permitted scopes and the matching digna configuration.
+- [Auth0](https://docs.digna.ai/sl/sso/auth0_sso_guide/): Configure Single Sign-On for digna with Auth0 using OpenID Connect — regular web application setup, allowed callback URLs, client credentials, tenant domain and the matching digna configuration.
+- [Google Workspace](https://docs.digna.ai/sl/sso/google_workspace_sso_guide/): Configure Single Sign-On for digna with Google Workspace using OpenID Connect — OAuth consent screen, OAuth client ID, authorized redirect URIs and the matching digna configuration.
+- [Keycloak](https://docs.digna.ai/sl/sso/keycloak_sso_guide/): Konfigurirajte enkratno prijavo za digna z Keycloak preko OpenID Connect — nastavitev realm in klienta, overjanje klienta, veljavne URI-ji za preusmeritev, skrivnost klienta in ustrezna konfiguracija digna.
+- [Microsoft Entra ID](https://docs.digna.ai/sl/sso/microsoft_entra_id_sso_guide/): Configure Single Sign-On for digna with Microsoft Entra ID (formerly Azure AD) using OpenID Connect — app registration, redirect URI, client secret, tenant ID and the matching digna configuration.
+- [Okta](https://docs.digna.ai/sl/sso/okta_sso_guide/): Konfigurirajte Single Sign-On za digna z Okta preko OpenID Connect — integracija aplikacije, preusmeritveni URI-ji za prijavo, poverilnice klienta, izbira avtentikacijskega strežnika in ustrezna digna konfiguracija.
+- [OneLogin](https://docs.digna.ai/sl/sso/onelogin_sso_guide/): Konfigurirajte Single Sign-On za digna z OneLogin preko OpenID Connect — ustvarjanje OIDC aplikacije, redirect URI-ji, poverilnice odjemalca, overjanje na token endpointu in ustrezna konfiguracija digna.
+- [PingOne](https://docs.digna.ai/sl/sso/pingone_sso_guide/): Configure Single Sign-On for digna with PingOne using OpenID Connect — OIDC web app setup, redirect URIs, client credentials, environment ID, regional domains and the matching digna configuration.
 
 ## Referenca CLI
 

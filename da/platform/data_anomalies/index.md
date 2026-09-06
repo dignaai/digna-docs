@@ -1,115 +1,115 @@
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# digna Data Anomalies – AI-baseret detektion af datakvalitetsproblemer
 
-**AI-powered observability for always-on data trust**
+**AI-drevet observabilitet for konstant datatillid**
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
+digna Data Anomalies er en del af **digna Data Observability Platform** — en modulær løsning, der forbedrer **datakvaliteten** ved kontinuerligt at analysere, hvordan datasæt opfører sig over tid.
 
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+Den lærer automatisk, hvordan “normal” ser ud for dine data, og alarmerer, når adfærden ændrer sig — uden at du skal definere statiske tærskler eller skrive en eneste regel.  
+Modulet kører direkte i din database, så data aldrig forlader dit miljø.
 
 ---
 
-## Key capabilities
+## Formålet med digna Data Anomalies
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+Modulet **digna Data Anomalies** leverer kontinuerlig **observabilitet af data** ved at beregne og spore foruddefinerede statistiske metrikker såsom:
 
----
+- Datavolumen og rekordtællinger  
+- Andel manglende værdier  
+- Værdifordelinger og histogrammer  
+- Numeriske intervaller og gennemsnit  
+- Kolonneunikhed og tekstlængder  
 
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+Disse metrikker indsamles automatisk for hvert datasæt.  
+På baggrund af dem bygger digna modeller, der repræsenterer den typiske adfærd for hver metrik — og lærer daglige, ugentlige eller sæsonmæssige mønstre.  
+Når modellerne er trænede, forudsiger modulet forventede værdier for nye data og detekterer afvigelser, som kan indikere kvalitetsproblemer, procesfejl eller ændringer upstream.
 
 ---
 
-## Example scenarios
+## Nøglefunktioner
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+- Lærer forventet dataadfærd automatisk ved hjælp af AI — ingen konfiguration af tærskler.  
+- Opfanger pludselige fald, spring eller drift i datavolumen og fordelinger.  
+- Identificerer byttede kolonner eller forkerte mappinger mellem attributter.  
+- Fremhæver uventede kategoriske værdier (f.eks. nye regioner eller koder).  
+- Understøtter alle kolonnetyper: numeriske, kategoriske eller uspecificerede.  
+- Kører fuldstændigt i kundens miljø — ingen dataoverførsel.  
+- Integreres med **digna Data Analytics** for langsigtet trendanalyse.
 
 ---
 
-## Integration with other modules
+## Sådan fungerer det
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+### Trin 1 – Beregning af metrikker
+digna beregner et sæt profilmetrikker for hver tabel og kolonne.  
+Disse metrikker beskriver strukturen og den statistiske adfærd i dine data og gemmes til videre analyse.
 
----
+### Trin 2 – Modeltræning
+Baseret på historiske metrikværdier træner digna kompakte maskinlæringsmodeller (signature models), der indfanger det normale spænd for hver metrik.
 
-## Typical use cases
+### Trin 3 – Automatisk tærskelbestemmelse
+Ved hjælp af *conformal inference* beregner digna adaptive konfidensintervaller (auto-thresholds), som tilpasser sig din data.  
+Hvis nye metrikværdier falder uden for det forudsagte område, markeres de som anomalier.
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+Denne kontinuerlige feedback-loop sikrer, at overvågningen forbliver relevant, også når datamængder eller mønstre naturligt ændrer sig.
 
 ---
 
-## Benefits
+## Eksempelscenarier
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+### Uventet fald i antal poster
+Et datasæt indeholder typisk omkring 500.000 poster om dagen.  
+Når en ny levering kun indeholder 50.000 poster, markerer digna en anomali og viser, hvor stort afvigelsen er i forhold til det lærte område.
 
----
+### Påvisning af byttede kolonner
+Gennemsnitslængden af strengen i `last_name` matcher pludselig den i `first_name`.  
+digna genkender afvigelsen i metrikmønstrene og signalerer en potentiel kolonnebytte.
 
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+### Uventet kategori fundet
+En kolonne med østrigske byer indeholder pludselig “Zurich”.  
+Baseret på historiske fordelinger markerer digna den nye værdi som uventet og advarer brugeren.
 
 ---
 
-## Summary
+## Integration med andre moduler
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+- **digna Data Analytics** — aggregerer anonymitetshistorik og volatilitetmetrikker for at afdække langsigtede trends.  
+- **digna Data Validation** — håndhæver eksplicitte forretningsregler til deterministiske kvalitetskontroller.  
+- **digna Data Timeliness** — overvåger ankomsttider for data og korrelerer forsinkelser med anomalihændelser.  
+- **digna Data Schema Tracker** — opdager strukturelle ændringer, som kan forklare nye anomalier.
+
+---
+
+## Typiske anvendelsestilfælde
+
+- Opdagelse af manglende eller duplikerede dataloads.  
+- Identifikation af byttede eller trunkerede kolonner.  
+- Detektion af fordelingdrift i numeriske eller kategoriske features.  
+- Fund af uventede referenceværdier eller koder.  
+- Overvågning af kontinuerlige ingest-pipelines for uregelmæssigheder.  
+- Sporing af den overordnede **kvalitet og observabilitet af data** på tværs af domæner.
+
+---
+
+## Fordele
+
+- Øjeblikkelig opdagelse af unormal dataadfærd.  
+- Eliminering af manuel tærskeljustering.  
+- Reducerer driftsindsats for store dataomgivelser.  
+- Opbygger tillid til analyse- og rapportsystemer.  
+- Styrker **datakvaliteten** og end-to-end **dataobservabilitet**.
+
+---
+
+## Relaterede digna-moduler
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trends og volatilitetmetrikker.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — regelbaseret dataverifikation.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — overvågning af dataleveringsplaner.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — detektion af skemændringer.
+
+---
+
+## Resumé
+
+Modulet **digna Data Anomalies** udgør kernen i dignas AI-drevne **Data Observability Platform**.  
+Ved kontinuerligt at overvåge nøglemetrikker, lære mønstre og identificere afvigelser hjælper det organisationer med at sikre, at **datakvaliteten** forbliver pålidelig, stabil og forklarlig — uden manuel konfiguration.

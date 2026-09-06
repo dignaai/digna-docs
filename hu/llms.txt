@@ -28,10 +28,19 @@
 
 ## Telepítés és telepítés
 
+### Operációs rendszerek
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/hu/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Lépésről lépésre útmutató a digna Release 2026.06 Linuxra történő telepítéséhez — rendszerkövetelmények, PostgreSQL beállítása, nginx vagy Apache konfiguráció, backend és dashboard konfigurálása, digna futtatása systemd szolgáltatásként és frissítés új kiadásra.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/hu/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Lépésről lépésre útmutató a digna Release 2026.06 telepítéséhez macOS rendszeren — rendszerkövetelmények, Homebrew és PostgreSQL beállítása, nginx vagy Apache konfiguráció, backend és dashboard konfiguráció, digna futtatása háttérszolgáltatásként, és frissítés új kiadásra.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/hu/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Lépésről lépésre útmutató a digna Release 2026.06 Windowsra történő telepítéséhez — rendszerkövetelmények, PostgreSQL beállítás, webszerver konfiguráció, backend és dashboard konfiguráció, digna futtatása Windows szolgáltatásként és verziófrissítés.
-- [Az egyszeri bejelentkezés konfigurálása](https://docs.digna.ai/hu/installation_deployment/sso_integration_guide/): Lépésről lépésre útmutató a Single Sign-On (SSO) beállításához digna számára OpenID Connect (OIDC) használatával. Lefedi a dashboard és backend konfigurációt, tesztelést, hibakeresést és a támogatott identitásszolgáltatókat, beleértve a Microsoft Entra ID-t, Google Workspace-t és Okta-t.
+- [Release 2026.06](https://docs.digna.ai/hu/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Lépésről lépésre útmutató a digna Release 2026.06 Windows rendszeren történő telepítéséhez — rendszerkövetelmények, PostgreSQL beállítása, webkiszolgáló konfigurálása, backend és dashboard konfiguráció, digna futtatása Windows szolgáltatásként és frissítés új kiadásra.
 
 ## Első lépések
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/hu/databases/snowflake_connector_guide/): Állítsa be a digna-t, hogy csatlakozzon a Snowflake-hez a Python connector vagy a Snowflake ODBC driver használatával. Támogatja a jelszóalapú hitelesítést DSN-es vagy DSN-nélküli konfigurációkban.
 - [MS SQL Server](https://docs.digna.ai/hu/databases/sqlserver_connector_guide/): Konfigurálja a digna-t, hogy csatlakozzon a Microsoft SQL Serverhez a pymssql Python driver vagy az SQL Server ODBC driver használatával. Támogatja a jelszó alapú hitelesítést DSN-es és DSN-nélküli beállításokkal.
 - [Teradata](https://docs.digna.ai/hu/databases/teradata_connector_guide/): Állítsa be a digna-t Teradata-hoz való csatlakozáshoz a teradatasql Python driver vagy a Teradata ODBC driver használatával. Támogatja a jelszavas hitelesítést DSN-es és DSN nélküli beállításokkal.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/hu/sso/overview/): Hogyan működik a Single Sign-On a digna rendszeren keresztül OpenID Connect (OIDC) használatával. Lefedi a dashboard és backend beállításokat, tesztelést, hibakeresést, valamint hivatkozásokat szolgáltató-specifikus telepítési útmutatókra Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne és AD FS esetén.
+- [AD FS](https://docs.digna.ai/hu/sso/adfs_sso_guide/): Configure Single Sign-On for digna with Active Directory Federation Services using OpenID Connect — application group, server application, shared secret, permitted scopes and the matching digna configuration.
+- [Auth0](https://docs.digna.ai/hu/sso/auth0_sso_guide/): Állítsa be a Single Sign-On-t a digna számára Auth0-val OpenID Connect használatával — normál webalkalmazás beállítása, engedélyezett callback URL-ek, kliens hitelesítő adatok, tenant domain és a hozzáillő digna konfiguráció.
+- [Google Workspace](https://docs.digna.ai/hu/sso/google_workspace_sso_guide/): Állítsa be a digna Single Sign-On (SSO) működését Google Workspace-szel OpenID Connect használatával — OAuth hozzájárulási képernyő, OAuth kliensazonosító, engedélyezett átirányítási URI-k és a hozzájuk tartozó digna konfiguráció.
+- [Keycloak](https://docs.digna.ai/hu/sso/keycloak_sso_guide/): Konfigurálja a Single Sign-On-t a digna számára Keycloakdal OpenID Connect használatával — realm és kliens beállítása, kliens hitelesítés, érvényes átirányítási URI-k, kliens titok és a megfelelő digna konfiguráció.
+- [Microsoft Entra ID](https://docs.digna.ai/hu/sso/microsoft_entra_id_sso_guide/): Konfigurálja a Single Sign-On-t a digna számára Microsoft Entra ID-vel (korábban Azure AD) OpenID Connect használatával — alkalmazásregisztráció, átirányítási URI, kliens titok, tenant ID és a hozzáillő digna konfiguráció.
+- [Okta](https://docs.digna.ai/hu/sso/okta_sso_guide/): Állítsa be a Single Sign-On-t (SSO) digna számára Okta és OpenID Connect használatával — alkalmazásintegráció, bejelentkezés átirányítási URI-k, klienshitelesítők, az authorization server kiválasztása és a hozzá illeszkedő digna konfiguráció.
+- [OneLogin](https://docs.digna.ai/hu/sso/onelogin_sso_guide/): Konfigurálja a Single Sign-On-t a digna számára OneLogin használatával az OpenID Connect segítségével — OIDC alkalmazás létrehozása, redirect URI-k, kliens-hitelesítő adatok, token endpoint hitelesítés és a megfelelő digna konfiguráció.
+- [PingOne](https://docs.digna.ai/hu/sso/pingone_sso_guide/): Állítsa be a digna Single Sign-On (SSO) megoldását PingOne segítségével OpenID Connect használatával — OIDC webalkalmazás beállítása, átirányítási URI-k, kliens hitelesítő adatok, Environment ID, regionális domainek és a megfelelő digna konfiguráció.
 
 ## CLI-referencia
 

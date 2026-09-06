@@ -1,41 +1,45 @@
-# Windowsi paigaldusjuhend digna Release 2026.06 jaoks
+# Windowsi paigaldusjuhend digna väljalaske 2026.06 jaoks
 
-**Release:** 2026.06
+**Väljalase:** 2026.06
 
 **Viimati uuendatud:** 30. august 2026
 
 
 ---
 
-## Sisukord
+## Sisu
 
 1. [Sissejuhatus](#introduction)
 2. [Süsteeminõuded](#system-requirements)
-3. [Eelpaigaldus](#pre-installation-setup)
+3. [Enne paigaldust tehtavad toimingud](#pre-installation-setup)
 4. [PostgreSQL serveri seadistus](#postgresql-server-setup)
 5. [Veebiserveri konfiguratsioon](#web-server-configuration)
 6. [Esmane paigaldus](#initial-installation)
 7. [Backendi konfiguratsioon](#backend-configuration)
-8. [Dashboardi konfiguratsioon](#dashboard-configuration)
-9. [digna käivitamine Windowsi teenusena](#running-digna-as-a-windows-service)
+8. [Juhtpaneeli konfiguratsioon](#dashboard-configuration)
+9. [digna käitamine Windowsi teenusena](#running-digna-as-a-windows-service)
 10. [Uuendamine uuele versioonile](#upgrading-to-a-new-release)
 
 ---
 
 ## Sissejuhatus {: #introduction }
 
-### digna kohta
+### Teave digna kohta
 
-digna on terviklik AI-põhine platvorm, mis on loodud andmekvaliteedi haldamise optimeerimiseks erinevates andmekeskkondades nagu andmehoidlad, andmeladestikud ja lakehoused. Skaleeritavuse ja kohandatavuse eesmärgil lahendab digna kaasaegseid andmeprobleeme automatiseerimise, reaalajas jälgimise ja anomaaliate tuvastamise kaudu.
+digna on kõikehõlmav AI-käitusel põhinev platvorm, mis on loodud andmekvaliteedi haldamise optimeerimiseks erinevates andmekeskkondades nagu andmelaod, andmejärved ja lakehoused. Suure skaleeritavuse ja kohandatavusega digna tegeleb kaasaegsete andmeprobleemidega automatiseerimise, reaalajas monitooringu ja anomaaliate tuvastuse kaudu.
 
-digna koosneb kahest põhikomponendist:
+digna koosneb kahest põhilisest komponendist:
 
-- **dignabackend**: rakenduse südamik, mis vastutab andmete töötlemise ja kvaliteedikontrollide eest.
+- **dignabackend**: rakenduse tuum, mis vastutab andmete töötlemise ja kvaliteedikontrollide eest.
 - **dignadashboard**: veebipõhine liides, mis majutatakse veebiserveris ja pakub kasutajasõbralikku viisi digna platvormiga suhtlemiseks ning andmekvaliteedi mõõdikute visualiseerimiseks.
 
-### Mis on uut Release 2026.06 versioonis
+### Mis on uut väljalaskes 2026.06
 
-Selles versioonis on andmeobservability võimekus viidud otse teie koodi, võimaldades arendajatel jälgida andmekvaliteeti juba allikas. Täielike üksikasjade jaoks vaadake [release notes](http://docs.digna.ai/changelog/Release_202606/).
+See väljalase toob andmete jälgitavuse võimekused otse teie koodi, võimaldades arendajatel jälgida andmekvaliteeti allikas. Täielike üksikasjade jaoks vaadake [väljalasete märkmeid](http://docs.digna.ai/changelog/Release_202606/).
+
+### Otsite macOS-i või Linuxi?
+
+See juhend käsitleb Windowsi. Muude platvormide jaoks vaadake [macOS-i paigaldusjuhendit](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) või [Linuxi paigaldusjuhendit](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
@@ -43,116 +47,116 @@ Selles versioonis on andmeobservability võimekus viidud otse teie koodi, võima
 
 Enne paigalduse alustamist veenduge, et teie süsteem vastab järgmistele miinimumnõuetele:
 
-| Requirement | Specification |
+| Nõue | Spetsifikatsioon |
 |---|---|
-| **Operating System** | Windows Server või Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB vaba kettaruumi |
-| **Database** | PostgreSQL Server 12 või uuem |
-| **Web Server** | IIS, Apache Tomcat või samaväärne |
+| **Operatsioonisüsteem** | Windows Server või Windows 10/11 |
+| **Mälu (minimaalne paigaldus)** | 16 GB RAM |
+| **Kettaruumi** | 10 GB vaba salvestusruumi |
+| **Andmebaas** | PostgreSQL Server 12 või uuem |
+| **Veebiserver** | IIS, Apache Tomcat või ekvivalent |
 
 ### Andmebaasi paigaldusvalikud
 
-**Kui PostgreSQL on juba installitud:**
-Võite lisada digna jaoks uue andmebaasi olemasolevasse PostgreSQL serverisse.
+**Kui PostgreSQL on juba paigaldatud:**
+Võite oma olemasolevale PostgreSQL-serverile lisada uue andmebaasi digna jaoks.
 
-**Kui paigaldate PostgreSQL-i samasse masinasse, kus jookseb digna:**
+**Kui paigaldate PostgreSQL-i samasse masinasse, kus töötab digna:**
 
-!!! info "Soovitatud spetsifikatsioonid"
+!!! info "Soovitatavad spetsifikatsioonid"
 
     - **Mälu**: 32 GB RAM (16 GB asemel)
-    - **Kettaruum**: 50 GB vaba salvestusruumi (10 GB asemel)
+    - **Kettaruumi**: 50 GB vaba salvestusruumi (10 GB asemel)
 
-    Need kõrgemad nõuded arvestavad nii digna kui ka PostgreSQL-i samaaegset käivitamist.
+    Need kõrgemad spetsifikatsioonid võimaldavad dignal ja PostgreSQL-il samaaegselt tõhusalt töötada.
 
 ---
 
-## Eelpaigaldus {: #pre-installation-setup }
+## Enne paigaldust tehtavad toimingud {: #pre-installation-setup }
 
-Enne digna paigaldamist veenduge, et kaks põhitingimust on täidetud:
+Enne digna paigaldamist veenduge, et kaks peamist eeltingimust on täidetud:
 
-1. **PostgreSQL Server** – salvestamaks arvutatud mõõdikuid ja jõudlusandmeid
-2. **Veebiserver** – digna Dashboardi majutamiseks
+1. **PostgreSQL Server** – arvutatud mõõdikute ja jõudlusandmete salvestamiseks
+2. **Veebiserver** – digna juhtpaneeli majutamiseks
 
-Kui need komponendid pole veel seadistatud, järgige alljärgnevaid sektsioone nende paigaldamiseks ja konfiguratsiooniks.
+Kui need komponendid pole veel seadistatud, järgige allolevaid lõike nende paigaldamiseks ja konfiguratsiooniks.
 
 ---
 
 ## PostgreSQL serveri seadistus {: #postgresql-server-setup }
 
-### Kui teil on juba PostgreSQL
+### Kui teil on PostgreSQL juba olemas
 
-Kui PostgreSQL on juba installitud ja töötab kas lokaalses masinas või kasutate hallatud kaug-PG serverit, võite liikuda järgmisesse sektsiooni [veebiserveri konfiguratsioon](#web-server-configuration).
+Kui PostgreSQL on juba paigaldatud ja töötab teie lokaalses masinas või kasutate hallatavat kaug-PostgreSQL-serverit, võite liikuda otse järgmisse jaotisse: [veebiserveri konfiguratsioon](#web-server-configuration).
 
-### PostgreSQL paigaldamine
+### PostgreSQL-i paigaldamine
 
-Järgige neid samme PostgreSQL-i paigaldamiseks Windowsile:
+Järgige neid samme PostgreSQL-i paigaldamiseks Windowsi:
 
-#### 1. samm: Laadige alla PostgreSQL
+#### Samm 1: Laadige alla PostgreSQL
 
-1. Külastage [PostgreSQL Downloads page](https://www.postgresql.org/download/)
+1. Minge lehele [PostgreSQL Downloads page](https://www.postgresql.org/download/)
 2. Valige **Windows**
-3. Laadige alla uusim installer
+3. Laadige alla viimane installeerija
 
-#### 2. samm: Käivitage installeerija
+#### Samm 2: Käivitage installeerija
 
-1. Topeltklõpsake alla laaditud installerfailil
-2. Järgige seadistusviisa juhiseid
+1. Topeltklõpsake alla laaditud installeerijafailil
+2. Järgige seadistusviisardi juhiseid
 
-#### 3. samm: Valige paigalduskataloog
+#### Samm 3: Valige paigalduse kataloog
 
-Valige kataloog, kuhu PostgreSQL paigaldatakse. Vaiketee on tavaliselt sobiv.
+Valige kataloog, kuhu PostgreSQL paigaldatakse. Vaikekoht on tavaliselt sobiv.
 
-#### 4. samm: Valige komponendid
+#### Samm 4: Valige komponendid
 
 Tavalise paigalduse jaoks jätke vaikimisi valitud komponendid.
 
-#### 5. samm: Määrake PostgreSQL superkasutaja parool
+#### Samm 5: Määrake PostgreSQL-i superkasutaja parool
 
-Sisestage ja kinnitage parool PostgreSQL superkasutajale (`postgres`). **Salvestage see parool turvaliselt** — vajate seda hiljem.
+Sisestage ja kinnitage parool PostgreSQL-i superkasutajale (`postgres`). **Salvestage see parool turvaliselt** — teil on seda hiljem vaja.
 
-#### 6. samm: Konfigureerige pordi number
+#### Samm 6: Konfigureerige pordinumber
 
-Vaikeport PostgreSQL-ile on `5432`. Võite kasutada vaikeseadet või määrata vajadusel teise pordi.
+Vaikeport PostgreSQL-ile on `5432`. Võite kasutada vaikimisi või määrata vajadusel teise pordi.
 
-!!! tip "Näpunäide"
+!!! tip "Vihje"
 
-    Kui port 5432 on juba kasutusel, valige alternatiivne port ja pidage seda meeles edasiseks konfiguratsiooniks.
+    Kui port 5432 on juba kasutusel, valige alternatiivne port ja märkige see hilisemaks konfiguratsiooniks üles.
 
-#### 7. samm: Valige lokaal
+#### Samm 7: Valige lokaliseerimine
 
-Valige andmebaasi lokaal. Vaikevalik sobib enamikele paigaldustele.
+Valige andmebaasi lokaliseerimine. Vaikeväärtus sobib tavaliselt enamiku paigalduste jaoks.
 
-#### 8. samm: Lõpetage paigaldus
+#### Samm 8: Lõpetage paigaldus
 
-Klõpsake ülejäänud sammudes **Next** ning seejärel **Finish**.
+Klõpsake ülejäänud sammudes **Next**, seejärel **Finish**.
 
-#### 9. samm: Kontrollige paigaldust
+#### Samm 9: Kontrollige paigaldust
 
-Avage käsurida ja kontrollige PostgreSQL-i olemasolu:
+Avage käsuviip ja kontrollige, kas PostgreSQL on paigaldatud:
 
 ```bash
 psql --version
 ```
 
-Kui paigaldus õnnestus, kuvatakse PostgreSQL versioon.
+Kui paigaldus õnnestus, kuvatakse PostgreSQL-i versioon.
 
 ---
 
 ## Veebiserveri konfiguratsioon {: #web-server-configuration }
 
-digna vajab veebiserverit, et majutada dashboardi. Valige üks järgmistest:
+digna vajab veebiserverit juhtpaneeli majutamiseks. Valige üks järgmistest võimalustest:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-Teil on vaja paigaldada ja konfigureerida ainult üks neist.
+Vajate ainult ühe neist serveritest paigaldamist ja konfiguratsiooni.
 
-### IIS seadistus {: #iis-setup }
+### IIS-i seadistus {: #iis-setup }
 
 #### Ülevaade
 
-Internet Information Services (IIS) on Microsofti veebiserver veebilehtede ja veebirakenduste majutamiseks.
+Internet Information Services (IIS) on Microsofti veebiserver veebisaitide ja veebirakenduste majutamiseks.
 
 #### IIS-i lubamine
 
@@ -160,7 +164,7 @@ Internet Information Services (IIS) on Microsofti veebiserver veebilehtede ja ve
    - Vajutage `Win + R`
    - Tippige `control` ja vajutage Enter
 
-2. **Navigeerige Windowsi funktsioonide juurde**
+2. **Minge Windowsi funktsioonide juurde**
    - Klõpsake **Programs**
    - Valige **Turn Windows features on or off**
 
@@ -175,66 +179,66 @@ Internet Information Services (IIS) on Microsofti veebiserver veebilehtede ja ve
 
 5. **Kontrollige IIS-i paigaldust**
    - Avage brauser
-   - Navigeerige aadressile `http://localhost`
-   - Peaksite nägema IIS-i tervitussaiti
+   - Minge aadressile `http://localhost`
+   - Te peaksite nägema IIS-i tervituse lehte
 
 #### Nõutav: URL Rewrite moodul
 
-IIS vajab URL Rewrite komponenti. Laadige see alla ja paigaldage [ametlikult Microsofti lehelt](https://www.iis.net/downloads/microsoft/url-rewrite).
+IIS nõuab URL Rewrite komponenti. Laadige see alla ja paigaldage sellelt [official Microsoft page](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Nõutav: MIME-tüüp Markdown-failidele
+#### Nõutav: MIME-tüüp Markdown-failide jaoks
 
-Et tagada Markdown-failide (`.md`) korrektne serveerimine IIS-is:
+Et tagada Markdown-failide (`.md`) korrektne teenindamine IIS-is:
 
 1. Avage **IIS Manager** (vajutage `Win + R`, tippige `inetmgr`, vajutage Enter)
-2. Navigeerige **Your Site > MIME Types**
+2. Minge **Your Site > MIME Types**
 3. Klõpsake **Add...**
 4. Konfigureerige:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-!!! warning "Oluline"
+!!! warning "Tähtis"
 
-    Ilma selle seadeteta ei pruugi `.md` failid korralikult teenindatavad olla.
+    Ilma selle säteta ei pruugi `.md` faile õigesti teenindada.
 
 ---
 
-### Apache Tomcat seadistus {: #apache-tomcat-setup }
+### Apache Tomcati seadistus {: #apache-tomcat-setup }
 
 #### Ülevaade
 
-Apache Tomcat on avatud lähtekoodiga Java servlet konteiner ja veebiserver.
+Apache Tomcat on avatud lähtekoodiga Java servlet-konteiner ja veebiserver.
 
 #### Paigaldamine
 
 1. **Laadige alla Apache Tomcat**
-   - Külastage [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
-   - Laadige alla Windows ZIP distributsioon
+   - Minge lehele [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
+   - Laadige alla Windowsi ZIP-versioon
 
 2. **Pakkige arhiiv lahti**
-   - Ekstraktige ZIP-fail süsteemi kataloogi
+   - Pakkige ZIP-fail lahti sobivasse kataloogi
    - Näide: `C:\Program Files\Apache Tomcat`
 
 3. **Kontrollige, et Tomcat töötab**
    - Avage brauser
-   - Navigeerige `http://localhost:8080`
-   - Peaksite nägema Apache Tomcat tervitussaiti
+   - Minge aadressile `http://localhost:8080`
+   - Te peaksite nägema Apache Tomcati tervituslehte
 
-!!! tip "Näpunäide"
+!!! tip "Vihje"
 
-    Apache Tomcat tavaliselt käivitub automaatselt pärast paigaldust. Kui see ei käivitu, minge `bin` kausta ja käivitage `startup.bat`.
+    Apache Tomcat peaks enamasti käivituma automaatselt pärast paigaldust. Kui see ei käivitu, minge `bin` kausta ja käivitage `startup.bat`.
 
 ---
 
 ## Esmane paigaldus {: #initial-installation }
 
-### 1. samm: Looge digna reposiitiorium
+### Samm 1: Looge digna andmehoidla skeem
 
-digna reposiitiorium salvestab kõik digna poolt arvutatud mõõdikud. See toimib keskse andmebaasina analüütilistele ja jõudlusandmetele.
+digna andmehoidla salvestab kõik digna poolt arvutatud mõõdikud. See toimib analüütilise ja jõudlusandmete keskse andmebaasina.
 
 #### Looge skeem ja kasutaja
 
-Avage oma PostgreSQL klient (pgAdmin, psql või sarnane) ja käivitage järgmised SQL-käsud:
+Avage oma PostgreSQL klient (pgAdmin, psql või sarnane) ja täitke järgmised SQL-käsud:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -246,9 +250,9 @@ GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 
 **Asendage järgmised kohatäitjad:**
 
-- `<digna_repo_schema>` — soovitud skeemi nimi (nt `dignarepo`)
-- `<digna_repo_user>` — soovitud kasutajanimi (nt `digna_user`)
-- `<digna_repo_password>` — turvaline parool sellele kasutajale
+- `<digna_repo_schema>` — Teie soovitud skeemi nimi (näiteks `dignarepo`)
+- `<digna_repo_user>` — Teie soovitud kasutajanimi (näiteks `digna_user`)
+- `<digna_repo_password>` — Turvaline parool selle kasutaja jaoks
 
 **Näide:**
 
@@ -260,60 +264,60 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Parim tava"
+!!! tip "Parim praktika"
 
-    Kasutage tugevaid, keerukaid paroole andmebaasi kasutajatele. Vältige kergesti äraarvatavaid mandaate.
+    Kasutage andmebaasi kasutajate jaoks tugevaid, keerukaid paroole. Vältige lihtsalt äraarvatavaid tunnuseid.
 
 ---
 
-### 2. samm: Ekstraktige digna paigalduspakett
+### Samm 2: Pakkige digna paigalduspakett lahti
 
-1. Leidke teile antud digna paigaldus ZIP-fail
+1. Leidke teile antud digna paigaldamise ZIP-fail
 2. Pakkige see soovitud paigalduskataloogi
-3. Pärast ekstraktimist peaksite nägema järgmisi elemente:
-   - `dashboard/` — veebidashboardi liides
-   - `digna` — põhiühildatav käivitatav fail (backend + CLI)
-   - `config.toml` — konfiguratsioonifail
-   - `license.toml` — litsentsifail (paigaldage oma fail siia)
+3. Pärast lahtipakkimist peaksite nägema järgmisi üksusi:
+   - `dashboard/` — Veebijuhtpaneeli liides
+   - `digna` — Peamine täitmisfail (backend + CLI kombineeritud)
+   - `config.toml` — Konfiguratsioonifail
+   - `license.toml` — Litsentsifail (kopeerige oma fail siia)
 
-### 3. samm: Paigaldage litsentsifail
+### Samm 3: Paigaldage litsentsifail
 
-!!! warning "Oluline"
+!!! warning "Tähtis"
 
-    Litsentsifail ei ole paigalduspaketis kaasas ja seda antakse eraldi digna poolt.
+    Litsentsifail EI OLE paigalduspaketis ja see antakse teile eraldi digna poolt.
 
 1. Leidke teile antud `license.toml` fail
-2. Kopeerige see digna paigalduskataloogi (samasse kohta, kus asuvad `config.toml` ja `digna` käivitatav fail)
+2. Kopeerige see digna paigalduskausta juurkausta (kuhu on paigaldatud `config.toml` ja `digna` täitmisfail)
 
 **Miks see oluline on:**
-Litsentsifail sisaldab kliendiinfot, litsentsi aegumiskuupäeva ja digiallkirja. **Ärge muutke seda faili** — mis tahes muudatused tühistavad selle.
+Litsentsifail sisaldab teie kliendiandmeid, litsentsi aegumiskuupäeva ja digitaalset allkirja. **Ärge muutke seda faili** — kõik muudatused annuleerivad selle.
 
 **Kataloogistruktuur pärast seadistust:**
 
 ```
 digna_installation/
-├── config.toml         (konfiguratsioonifail)
-├── license.toml        (TEIE LITSENTSFALL - kopeerige siia)
-├── digna               (põhi käivitatav fail)
-└── dashboard/          (veebiliides)
-    └── (dashboard failid)
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+└── dashboard/          (web interface)
+    └── (dashboard files)
 ```
 
 ---
 
 ## Backendi konfiguratsioon {: #backend-configuration }
 
-### 1. samm: Looge ja redigeerige konfiguratsioonifaili
+### Samm 1: Looge ja redigeerige konfiguratsioonifaili
 
-Teie digna paigalduskataloogis on olemas `config_template.toml` fail. Vajalik on selle ümbernimetamine `config.toml`-iks.
+Kaustas on teile antud `config_template.toml` fail. Te peate selle ümber nimetama `config.toml`-ks.
 
 **Asukoht:** `digna_installation/config.toml`
 
-Avage `config.toml` tekstiredaktoris ja konfigureerige alljärgnevad sektsioonid.
+Avage `config.toml` tekstiredaktoris ja kohandage allpool toodud sektsioone.
 
 #### [app] sektsioon
 
-See sektsioon seadistab digna backend rakenduse seaded:
+See sektsioon konfigureerib digna backendi rakenduse seadeid:
 
 ```toml
 [app]
@@ -325,18 +329,18 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Märkused |
+| Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` või IP-aadress | Hostinimi või IP, kus dignabackend majutatakse |
-| `digna_APP_PORT` | `8082` (vaikimisi) | Port REST API endpointide jaoks |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontendi URL | Kui dashboard on teisel serveril, lisage selle URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nõutav CORS-i puhul koos mandaadiga |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Lubab kõiki HTTP meetodeid |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Lubab kõiki päiseid |
+| `digna_APP_HOST` | `localhost` või IP-aadress | Hostinimi või IP, kus dignabackend jookseb |
+| `digna_APP_PORT` | `8082` (vaikimisi) | Port REST API lõpp-punktide jaoks |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontendi URL | Kui juhtpaneel on teisel serveril, lisage selle URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nõutud CORS-i jaoks koos tunnustega |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Lubab kõik HTTP meetodid |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Lubab kõik päised |
 
 #### [repo] sektsioon
 
-See sektsioon seadistab ühenduse PostgreSQL andmebaasiga:
+See sektsioon konfigureerib ühenduse PostgreSQL andmebaasiga:
 
 ```toml
 [repo]
@@ -348,18 +352,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Märkused |
+| Parameeter | Väärtus | Märkused |
 |---|---|---|
 | `digna_REPO_HOST` | `localhost` või IP | PostgreSQL serveri hostinimi/IP |
 | `digna_REPO_PORT` | `5432` (vaikimisi) | PostgreSQL port |
 | `digna_REPO_DB` | `postgres` | Andmebaasi nimi |
 | `digna_REPO_SCHEMA` | `dignarepo` | Varem loodud skeem |
-| `digna_REPO_USER` | `digna_user` | PostgreSQL-is loodud kasutaja |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL seadistuses loodud kasutaja |
 | `digna_REPO_PASSWORD` | Teie parool | Parool, mis määrati skeemi loomisel |
 
 #### [base] sektsioon
 
-See sektsioon sisaldab turbe- ja küpsiste seadeid:
+See sektsioon sisaldab turva- ja küpsise seadeid:
 
 ```toml
 [base]
@@ -373,19 +377,19 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Märkused |
+| Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_FERNET_KEY` | Krüpteerimisvõti | Kasutatakse tokenite ja küpsiste krüpteerimiseks (vaikeväärtus võimalik) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Peaks vastama teie frontendi domeenile |
-| `digna_COOKIE_SECURE` | `false` (lokaalne) / `true` (tootmine) | Kasutage `true` HTTPS ühenduste puhul |
+| `digna_FERNET_KEY` | Krüpteerimisvõti | Kasutatakse tokenite ja küpsiste krüpteerimiseks (vaikeväärtus olemas) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Vastab teie frontendi domeenile |
+| `digna_COOKIE_SECURE` | `false` (lokaalne) / `true` (tootmises) | Kasutage `true` HTTPS-ühenduse korral |
 | `digna_COOKIE_HTTPONLY` | `true` | Alati lubatud turvalisuse huvides |
-| `digna_COOKIE_SAME_SITE` | `lax` | Aitab vältida CSRF rünnakuid |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 tundi) | Seansi aegumisaeg sekundites |
-| `digna_MAX_WORKERS` | CPU tuumade arv - 1 | Paralellsete inspekteerimistöötajate arv |
+| `digna_COOKIE_SAME_SITE` | `lax` | Aitab vältida CSRF-rünnakuid |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 tundi) | Sessiooni aegumisaeg sekundites |
+| `digna_MAX_WORKERS` | CPU tuumade arv - 1 | Paralleelsete kontrollitööde arv |
 
 #### [logging] sektsioon
 
-See sektsioon seadistab logimise käitumist:
+See sektsioon konfigureerib logimise käitumist:
 
 ```toml
 [logging]
@@ -393,38 +397,38 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Märkused |
+| Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` või `DEBUG` | `INFO` tootmises, `DEBUG` tõrkeotsinguks |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Säilitavate päevade arvu logivarundustes |
+| `digna_LOGGING_MODE` | `INFO` või `DEBUG` | `INFO` tootmisse, `DEBUG` tõrkeotsingu jaoks |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Päevaste logivarukoopiate arv, mida säilitatakse |
 
 ---
 
-### 3. samm: Reposiitioriumi initsialiseerimine
+### Samm 3: Initsialiseeri andmehoidla ühendus
 
-1. Avage käsurida
-2. Liikuge digna paigalduskataloogi (kus asuvad `config.toml` ja `digna` käivitatav fail)
+1. Avage käsuviip
+2. Minge oma digna paigalduskausta (kus asuvad `config.toml` ja `digna` täitmisfail)
 3. Käivitage ühenduse test:
 
 ```bash
 digna repo check
 ```
 
-Te peaksite nägema kinnitust, et ühendus on loodud (repositoorium ise ei ole veel initsialiseeritud).
+Te peaksite nägema kinnitust, et ühendus on loodud (andmehoidla ennast pole veel initsialiseeritud).
 
-### 4. samm: Reposiitioriumi skeemi install
+### Samm 4: Paigaldage andmehoidla skeem
 
-Samas kaustas käivitage:
+Selles samas kataloogis käivitage:
 
 ```bash
 digna repo install
 ```
 
-See käsk loob vajalikud tabelid ja skeemi teie PostgreSQL andmebaasis.
+See käsk installib vajalikud tabelid ja skeemi teie PostgreSQL andmebaasi.
 
-### 5. samm: digna serveri käivitamine
+### Samm 5: Käivitage digna server
 
-digna paigalduskataloogis käivitage server:
+Digna paigalduskaustas käivitage server:
 
 ```bash
 digna serve --address <host> --port <port>
@@ -432,9 +436,9 @@ digna serve --address <host> --port <port>
 
 **Parameetrid:**
 - `--address` — serveri hostinimi/IP
-- `--port` — serveri port
+- `--port` — serveri port 
 
-Peaksite nägema käivitussõnumeid, mis kinnitavad serveri tööd:
+Peaksite nägema käivituse sõnumeid, mis kinnitavad serveri tööle hakkamist:
 
 ```
 INFO:     Started server process [1234]
@@ -443,11 +447,11 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### 6. samm: Admin-kasutaja loomine
+### Samm 6: Looge administraatorkasutaja
 
-1. Avage **uus** käsurida
-2. Liikuge digna paigalduskataloogi
-3. Käivitage järgmine käsk admin-kasutaja loomiseks:
+1. Avage **uus** käsuviip
+2. Minge oma digna paigalduskausta
+3. Käivitage järgmine käsk administraatori kasutaja loomiseks:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -459,94 +463,96 @@ digna user add <username> "<full_name>" <password> --su
 digna user add admin "Admin User" AdminPassword123! --su
 ```
 
-See loob kasutaja täielike administraatoriõigustega.
+See loob kasutaja täisadministratiivsete õigustega.
 
-!!! tip "Parim tava"
+!!! tip "Parim praktika"
 
-    Kasutage tugevat parooli, mis sisaldab suuri ja väikesi tähti, numbreid ja erimärke.
+    Kasutage tugevat parooli, mis sisaldab suur- ja väiketähti, numbreid ja erimärke.
 
 ---
 
-## Dashboardi konfiguratsioon {: #dashboard-configuration }
+## Juhtpaneeli konfiguratsioon {: #dashboard-configuration }
 
-### 1. samm: Dashboardi juurutamine veebiserverisse
+### Samm 1: Paigutage juhtpaneel veebiserverisse
 
-digna dashboardil on eraldi `config.toml` fail, mis asub `dashboard/` kataloogis. See konfiguratsioon on paigaldusel juba olemas ja seda ei pea esialgsel seadistusel muutma. Vajadusel kohandamiseks (nt multi-instances) muutke seda vastavalt dokumentatsioonile.
+digna juhtpaneelil on oma eraldi `config.toml` fail, mis asub `dashboard/` kataloogis. See konfiguratsioon on juba kaasas ega vaja esialgsel seadistusel muutmist. Vajadusel kohandage seda ainult siis, kui peate muutma backendi ühenduse sätteid.
+
+Kui peate juhtpaneeli konfiguratsiooni muutma (nt mitme instantsi juurutamisel), vaadake vastavat dokumentatsiooni.
 
 Valige veebiserver ja järgige vastavaid juurutusjuhiseid.
 
-#### IIS-i paigaldamine
+#### Paigutamine IIS-i
 
 1. **Avage IIS Manager**
    - Vajutage `Win + R`, tippige `inetmgr`, vajutage Enter
 
 2. **Looge uus veebisait**
-   - Vasakul paanil paremklõpsake **Sites**
+   - Vasakul paneelil paremklõpsake **Sites**
    - Valige **Add Website...**
 
 3. **Konfigureerige veebisait**
    - **Site Name**: Sisestage nimi (nt "dignaDashboard")
-   - **Physical Path**: Klõpsake Browse ja valige oma `dashboard` kaust
-   - **Binding**: Määrake IP-aadress ja port (vaikeport HTTP jaoks 80, HTTPS jaoks 443)
+   - **Physical Path**: Klõpsake Browse ja valige `dashboard` kaust
+   - **Binding**: Määrake IP-aadress ja port (vaikeport HTTP jaoks on 80, HTTPS jaoks 443)
 
 4. **Käivitage veebisait**
-   - Klõpsake **OK**, et saidi luua
-   - Paremklõpsake äsja loodud saidil ja valige **Start**
+   - Klõpsake **OK**, et saiti luua
+   - Paremklõpsake uuel saidil ja valige **Start**
 
 5. **Testige paigaldust**
    - Avage brauser
-   - Navigeerige aadressile `http://localhost` (või teie konfigureeritud URL)
-   - Peaksite nägema digna dashboardi sisselogimislehte
+   - Minge aadressile `http://localhost` (või teie konfigureeritud URL)
+   - Te peaksite nägema digna juhtpaneeli sisselogimislehte
 
-#### Apache Tomcat juurutamine
+#### Paigutamine Apache Tomcati
 
-1. **Kopeerige dashboard Tomcati**
+1. **Kopeerige juhtpaneel Tomcati**
    - Kopeerige `dashboard` kaust Tomcati `webapps` kataloogi
-   - Nimetage vajadusel ümber (nt `digna`)
+   - Nimetage see vajadusel ümber (nt `digna`)
    - Näide: `C:\Program Files\Apache Tomcat\webapps\digna`
 
 2. **Kontrollige juurutust**
    - Värskendage või laadige uuesti Tomcati halduslehte (http://localhost:8080)
-   - Peaksite nägema loendis "digna" (või valitud nime) rakenduste hulgas
+   - Te peaksite nägema loendis "digna" (või valitud nime)
 
-3. **Juurdepääs dashboardile**
+3. **Juurdepääs juhtpaneelile**
    - Avage brauser
-   - Navigeerige aadressile `http://localhost:8080/digna`
-   - Peaksite nägema digna dashboardi sisselogimislehte
+   - Minge aadressile `http://localhost:8080/digna`
+   - Te peaksite nägema digna juhtpaneeli sisselogimislehte
 
 ---
 
-## digna käivitamine Windowsi teenusena {: #running-digna-as-a-windows-service }
+## digna käitamine Windowsi teenusena {: #running-digna-as-a-windows-service }
 
 ### Miks kasutada Windowsi teenust?
 
-digna backendi käivitamine Windowsi teenusena tagab, et see:
-- Käivitub automaatselt serveri buutimisel
-- Jookseb taustal ilma avatud käsurida aknata
-- Taaskäivitub automaatselt, kui see jookseb kokku
-- On hallatav läbi Windows Services halduri
+digna backendi käitamine Windowsi teenusena tagab:
+- Teenuse automaatse käivitumise serveri buutimisel
+- Taustal töötamise ilma avatud käsuviibata
+- Automaatse taaskäivituse jooksmisel
+- Halduse võimaluse Windows Services kaudu
 
 ### Teenuse haldusfailid
 
-Kõik vajalikud failid asuvad digna paigalduskataloogis allosas: `bin/`
+Kõik vajalikud failid asuvad digna paigalduskaustas alamkaustas: `bin/`
 
 Järgnevad batch-failid on saadaval:
-- `install_service.bat` — registreerib digna Windowsi teenusena
-- `uninstall_service.bat` — eemaldab registreeritud teenuse
+- `install_service.bat` — registrib digna Windowsi teenusena
+- `uninstall_service.bat` — eemaldab teenuse registrist
 - `start_service.bat` — käivitab teenuse
 - `stop_service.bat` — peatab teenuse
 
-!!! warning "Administraatori õigused vajalikud"
+!!! warning "Nõutud administraatoriõigused"
 
-    Kõiki batch-faile tuleb käivitada administraatori õigustes.
+    Kõik batch-failid tuleb käivitada administraatoriõigustega.
 
 ### Teenuse paigaldamine
 
-1. **Avage käsurida administraatorina**
-   - Paremklõpsake käsurida
-   - Valige "Run as Administrator" (Käivita administraatorina)
+1. **Avage käsuviip administraatorina**
+   - Paremklõpsake Command Prompt
+   - Valige "Run as Administrator"
 
-2. **Liikuge bin kausta**
+2. **Minge bin kausta**
    ```bash
    cd C:\path\to\digna\bin
    ```
@@ -556,14 +562,14 @@ Järgnevad batch-failid on saadaval:
    install_service.bat
    ```
 
-digna server on nüüd registreeritud Windowsi teenusena automaatse käivitusega. Teenus ei pruugi alustada koheselt — vaadake järgmist jaotist teenuse käivitamiseks.
+Digna server on nüüd registreeritud Windowsi teenusena, mille põhikäivituse tüübiks on seatud automaatne. Teenus ei pruugi käivituda kohe — vaadake järgmist jaotist teenuse käivitamiseks.
 
 ### Teenuse käivitamine ja peatamine
 
 #### Teenuse käivitamiseks
 
-1. Avage käsurida administraatorina
-2. Liikuge `digna\bin` kausta
+1. Avage käsuviip administraatorina
+2. Minge `digna\bin`
 3. Käivitage:
    ```bash
    start_service.bat
@@ -571,20 +577,20 @@ digna server on nüüd registreeritud Windowsi teenusena automaatse käivitusega
 
 #### Teenuse peatamiseks
 
-1. Avage käsurida administraatorina
-2. Liikuge `digna\bin` kausta
+1. Avage käsuviip administraatorina
+2. Minge `digna\bin`
 3. Käivitage:
    ```bash
    stop_service.bat
    ```
 
-!!! tip "Näpunäide"
+!!! tip "Vihje"
 
     Enne rakenduse failide uuendamist peatage teenus alati.
 
 ### Teenuse liigutamine uude kataloogi
 
-Kui peate digna paigalduskataloogi teisaldama:
+Kui peate digna paigalduskausta teisaldama:
 
 1. **Desinstallige praegune teenus**
    ```bash
@@ -593,7 +599,7 @@ Kui peate digna paigalduskataloogi teisaldama:
    ```
 
 2. **Liigutage rakenduse failid**
-   - Liigutage kogu digna paigalduskataloog uude asukohta
+   - Liigutage kogu digna paigalduskaust uude asukohta
 
 3. **Installige teenus uuesti**
    ```bash
@@ -608,18 +614,18 @@ Kui peate digna paigalduskataloogi teisaldama:
 
 ### Teenuse eemaldamine
 
-1. **Peatage töötav teenus**
+1. **Peatage jooksvalt olev teenus**
    ```bash
    cd C:\path\to\digna\bin
    stop_service.bat
    ```
 
-2. **Eemaldage teenus**
+2. **Desinstallige teenus**
    ```bash
    uninstall_service.bat
    ```
 
-digna server on nüüd Windowsi teenustena registreerimisest eemaldatud.
+Digna server on nüüd registrist eemaldatud.
 
 ---
 
@@ -627,13 +633,14 @@ digna server on nüüd Windowsi teenustena registreerimisest eemaldatud.
 
 ### Enne uuendamist
 
-**digna reposiitioriumi varundamine on kohustuslik**
+**digna andmehoidla varundamine on kohustuslik**
 
-Enne digna uuendamist varundage kindlasti oma reposiitiorium (PostgreSQL), et vältida andmekadu. Varukoopia võimaldab taastada andmed, kui uuendamisel tekib ootamatuid probleeme.
+Enne digna uuendamist varundage oma andmehoidla (PostgreSQL), et kaitsta andmete kaotsimineku eest.
+Varukoopia tagab taastumise juhuks, kui uuendamisel tekib ootamatuid probleeme.
 
 ### Uuendusprotsess
 
-#### 1. samm: Peatage digna teenus
+#### Samm 1: Peatage digna teenus
 
 Kui digna töötab Windowsi teenusena, peatage see esmalt:
 
@@ -642,9 +649,9 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### 2. samm: Varundage praegune backend paigaldus
+#### Samm 2: Varundage praegune backendi paigaldus
 
-digna paigalduskataloogis:
+Teie digna paigalduskaustas:
 
 ```bash
 # Rename folder containing dignabackend
@@ -655,33 +662,33 @@ ren dignabackend dignabackend_old
 ren dashboard dashboard_old
 ```
 
-#### 3. samm: Ekstraktige ja juurutage uus versioon
+#### Samm 3: Pakkige ja paigutage uus versioon
 
-1. Ekstraktige uus digna paigaldus ZIP-fail
-2. Kopeerige uus `digna` käivitatav fail ja `dashboard` kaust oma paigalduskataloogi
+1. Pakkige uus digna paigaldus ZIP-fail lahti
+2. Kopeerige uus `digna` täitmisfail ja `dashboard` kaust oma paigalduskausta
 
-!!! warning "Oluline"
+!!! warning "Tähtis"
 
-    `config.toml` faili EI OLE kunagi kaasas paigaldus-ZIP-is. Teie olemasolev konfiguratsioon jääb samaks.
+    `config.toml` fail EI OLE kunagi kaasatud paigaldus-ZIP-is. Teie olemasolev konfiguratsioon jääb puutumatuks.
 
-### 4. samm: Taastage konfiguratsioonifailid
+### Samm 4: Taastage oma konfiguratsioonifailid
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### 5. samm: Reposiitioriumi skeemi uuendamine
+### Samm 5: Uuendage andmehoidla skeemi
 
-Liikuge digna paigalduskataloogi ja käivitage:
+Minge oma digna paigalduskausta ja käivitage:
 
 ```bash
 digna repo upgrade
 ```
 
-See värskendab PostgreSQL skeemi uusimale versioonile, säilitades kogu olemasoleva andmebaasi sisu.
+See uuendab PostgreSQL skeemi uusimale versioonile, säilitades kõik olemasolevad andmed.
 
-### 6. samm: Teenuste taaskäivitamine
+### Samm 6: Taaskäivitage teenused
 
-Kui kasutate Windowsi teenust:
+Kui käivitate teenust Windowsi teenusena:
 
 ```bash
 cd C:\path\to\digna\bin
@@ -695,10 +702,10 @@ cd C:\path\to\digna
 digna serve --address <address> --port <port>
 ```
 
-Kui kasutate IIS-i või Tomcatit, taaskäivitage vastav veebiserver.
+Kui kasutate IIS-i või Tomcati, taaskäivitage vastav veebiserver.
 
-#### 7. samm: Uuenduse kontrollimine
+#### Samm 7: Kinnitage uuendus
 
-1. Avage digna dashboard
-2. Kontrollige, et liides laaditakse korrektselt
-3. Vaadake serverilogisid võimalike vigade osas
+1. Avage digna juhtpaneel
+2. Veenduge, et liides laeb korralikult
+3. Kontrollige serverilogisid võimalike vigade osas

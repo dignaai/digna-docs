@@ -28,10 +28,19 @@
 
 ## Εγκατάσταση και ανάπτυξη
 
+### Λειτουργικά συστήματα
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/el/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Βημα προς βήμα οδηγίες για την εγκατάσταση της digna Έκδοση 2026.06 σε Linux — απαιτήσεις συστήματος, ρύθμιση PostgreSQL, ρύθμιση nginx ή Apache, διαμόρφωση backend και dashboard, εκτέλεση digna ως υπηρεσία systemd και αναβάθμιση σε νέα έκδοση.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/el/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Οδηγός βήμα-προς-βήμα για την εγκατάσταση της digna Έκδοση 2026.06 σε macOS — απαιτήσεις συστήματος, ρύθμιση Homebrew και PostgreSQL, διαμόρφωση nginx ή Apache, ρύθμιση backend και dashboard, εκτέλεση digna ως υπηρεσία στο παρασκήνιο και αναβάθμιση σε νέα έκδοση.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/el/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Βήμα-βήμα οδηγός για την εγκατάσταση της digna Έκδοση 2026.06 σε Windows — απαιτήσεις συστήματος, ρύθμιση PostgreSQL, ρύθμιση web server, ρύθμιση backend και dashboard, εκτέλεση digna ως Windows service και αναβάθμιση σε νέα έκδοση.
-- [Πώς να ρυθμίσετε την ενιαία σύνδεση](https://docs.digna.ai/el/installation_deployment/sso_integration_guide/): Βήμα προς βήμα οδηγίες για τη διαμόρφωση του Single Sign-On (SSO) για το digna χρησιμοποιώντας OpenID Connect (OIDC). Καλύπτει διαμόρφωση dashboard και backend, δοκιμές, αντιμετώπιση προβλημάτων και υποστηριζόμενους παρόχους ταυτότητας όπως Microsoft Entra ID, Google Workspace και Okta.
+- [Release 2026.06](https://docs.digna.ai/el/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Βήμα‑προς‑βήμα οδηγός για την εγκατάσταση του digna Release 2026.06 σε Windows — απαιτήσεις συστήματος, ρύθμιση PostgreSQL, ρύθμιση web server, διαμόρφωση backend και dashboard, εκτέλεση digna ως υπηρεσία Windows και αναβάθμιση σε νέα έκδοση.
 
 ## Ξεκινώντας
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/el/databases/snowflake_connector_guide/): Διαμορφώστε το digna για σύνδεση με το Snowflake χρησιμοποιώντας τον Python connector ή τον Snowflake ODBC driver. Υποστηρίζει πιστοποίηση με κωδικό πρόσβασης σε ρυθμίσεις με ή χωρίς DSN.
 - [MS SQL Server](https://docs.digna.ai/el/databases/sqlserver_connector_guide/): Διαμορφώστε το digna για σύνδεση με Microsoft SQL Server χρησιμοποιώντας τον Python οδηγό pymssql ή τον ODBC οδηγό SQL Server. Υποστηρίζει έλεγχο ταυτότητας με κωδικό σε ρυθμίσεις με DSN ή χωρίς DSN.
 - [Teradata](https://docs.digna.ai/el/databases/teradata_connector_guide/): Διαμορφώστε το digna για σύνδεση σε Teradata χρησιμοποιώντας τον Python driver teradatasql ή τον Teradata ODBC driver. Υποστηρίζει αυθεντικοποίηση με κωδικό πρόσβασης με ρυθμίσεις DSN ή χωρίς DSN.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/el/sso/overview/): Πώς λειτουργεί το Single Sign-On στο digna χρησιμοποιώντας OpenID Connect (OIDC). Καλύπτει τη ρύθμιση του dashboard και του backend, δοκιμές, αντιμετώπιση προβλημάτων και συνδέσμους σε οδηγούς ρύθμισης ανά πάροχο για Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne και AD FS.
+- [AD FS](https://docs.digna.ai/el/sso/adfs_sso_guide/): Ρυθμίστε το Single Sign-On για το digna με Active Directory Federation Services χρησιμοποιώντας OpenID Connect — ομάδα εφαρμογών, εφαρμογή διακομιστή, κοινόχρηστο μυστικό, επιτρεπόμενα scopes και η αντίστοιχη ρύθμιση του digna.
+- [Auth0](https://docs.digna.ai/el/sso/auth0_sso_guide/): Διαμορφώστε το Single Sign-On για το digna με Auth0 χρησιμοποιώντας OpenID Connect — ρύθμιση για regular web application, επιτρεπτά callback URLs, διαπιστευτήρια πελάτη, domain του tenant και η αντίστοιχη διαμόρφωση του digna.
+- [Google Workspace](https://docs.digna.ai/el/sso/google_workspace_sso_guide/): Διαμορφώστε το Single Sign-On για την digna με το Google Workspace χρησιμοποιώντας το OpenID Connect — οθόνη συναίνεσης OAuth, OAuth client ID, εξουσιοδοτημένα redirect URIs και η αντίστοιχη διαμόρφωση digna.
+- [Keycloak](https://docs.digna.ai/el/sso/keycloak_sso_guide/): Ρυθμίστε το Single Sign-On για το digna με Keycloak χρησιμοποιώντας OpenID Connect — ρύθμιση realm και client, authentication client, valid redirect URIs, client secret και η αντίστοιχη ρύθμιση στο digna.
+- [Microsoft Entra ID](https://docs.digna.ai/el/sso/microsoft_entra_id_sso_guide/): Ρυθμίστε το Single Sign-On για το digna με το Microsoft Entra ID (πρώην Azure AD) χρησιμοποιώντας OpenID Connect — εγγραφή εφαρμογής, redirect URI, client secret, tenant ID και η αντίστοιχη ρύθμιση στο digna.
+- [Okta](https://docs.digna.ai/el/sso/okta_sso_guide/): Διαμορφώστε το Single Sign-On για το digna με το Okta χρησιμοποιώντας OpenID Connect — ενσωμάτωση εφαρμογής, URI ανακατεύθυνσης σύνδεσης, διαπιστευτήρια πελάτη, επιλογή authorization server και η αντίστοιχη ρύθμιση του digna.
+- [OneLogin](https://docs.digna.ai/el/sso/onelogin_sso_guide/): Διαμορφώστε το Single Sign-On για το digna με OneLogin χρησιμοποιώντας OpenID Connect — δημιουργία εφαρμογής OIDC, redirect URIs, διαπιστευτήρια πελάτη, έλεγχος ταυτότητας token endpoint και η αντίστοιχη ρύθμιση για digna.
+- [PingOne](https://docs.digna.ai/el/sso/pingone_sso_guide/): Ρυθμίστε το Single Sign-On για το digna με το PingOne χρησιμοποιώντας OpenID Connect — ρύθμιση εφαρμογής OIDC web, redirect URIs, client credentials, environment ID, περιφερειακοί τομείς και η αντίστοιχη ρύθμιση στο digna.
 
 ## Αναφορά CLI
 

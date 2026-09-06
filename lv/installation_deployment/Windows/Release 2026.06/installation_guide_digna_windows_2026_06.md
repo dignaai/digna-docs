@@ -1,24 +1,24 @@
-# Windows uzstādīšanas ceļvedis digna Release 2026.06
+# Windows instalācijas ceļvedis digna Release 2026.06
 
-**Release:** 2026.06
+**Izlaidums:** 2026.06
 
-**Pēdējā atjaunināšana:** 2026. gada 30. augusts
+**Pēdējais atjauninājums:** 2026. gada 30. augusts
 
 
 ---
 
-## Saturu rādītājs
+## Saturs
 
 1. [Ievads](#introduction)
 2. [Sistēmas prasības](#system-requirements)
-3. [Priekšuzstādīšanas sagatavošana](#pre-installation-setup)
+3. [Priekšinstalācijas sagatavošana](#pre-installation-setup)
 4. [PostgreSQL servera iestatīšana](#postgresql-server-setup)
 5. [Tīmekļa servera konfigurācija](#web-server-configuration)
-6. [Sākotnējā instalēšana](#initial-installation)
+6. [Sākotnējā instalācija](#initial-installation)
 7. [Backend konfigurācija](#backend-configuration)
-8. [Dashboard konfigurācija](#dashboard-configuration)
+8. [Paneļa konfigurācija](#dashboard-configuration)
 9. [digna palaide kā Windows serviss](#running-digna-as-a-windows-service)
-10. [Pāreja uz jaunu izlaidumu](#upgrading-to-a-new-release)
+10. [Jaunināšana uz jaunu izlaidumu](#upgrading-to-a-new-release)
 
 ---
 
@@ -26,55 +26,59 @@
 
 ### Par digna
 
-digna ir visaptveroša ar mākslīgo intelektu darbināta platforma, kas paredzēta datu kvalitātes pārvaldības optimizācijai dažādās datu vidēs, piemēram, datu noliktavās, datu ezeros un lakehouse risinājumos. Izstrādāta, lai būtu ļoti mērogojama un pielāgojama, digna risina mūsdienu datu izaicinājumus, izmantojot automatizāciju, reāllaika uzraudzību un anomaliju noteikšanu.
+digna ir visaptveroša ar mākslīgo intelektu balstīta platforma, kas paredzēta datu kvalitātes pārvaldības optimizēšanai dažādās datu vidēs, piemēram, noliktavās, ezeros un lakehouse risinājumos. Izstrādāta kā mērogojama un pielāgojama sistēma, digna risina mūsdienu datu izaicinājumus, izmantojot automatizāciju, reāllaika uzraudzību un anomāliju atklāšanu.
 
 digna sastāv no divām galvenajām komponentēm:
 
-- **dignabackend**: lietotnes kodols, atbildīgs par datu apstrādi un kvalitātes pārbaudēm.
-- **dignadashboard**: tīmekļa saskarne, kas hostēta tīmekļa serverī, nodrošinot lietotājam draudzīgu veidu, kā mijiedarboties ar digna platformu un vizualizēt datu kvalitātes metrikas.
+- **dignabackend**: lietojumprogrammas kodols, kas atbild par datu apstrādi un kvalitātes pārbaudēm.
+- **dignadashboard**: tīmekļa saskarne, kas izvietota uz tīmekļa servera un nodrošina lietotājam draudzīgu veidu, kā mijiedarboties ar digna platformu un vizualizēt datu kvalitātes metrikas.
 
-### Kas jauns Release 2026.06
+### Kas jauns izlaidumā 2026.06
 
-Šajā izlaidumā datu novērojamības iespējas tiek ieviestas tieši jūsu kodā, ļaujot izstrādātājiem uzraudzīt datu kvalitāti pie avota. Pilnu informāciju skatiet [release notes](http://docs.digna.ai/changelog/Release_202606/).
+Šajā izlaidumā datu novērošanas iespējas ir integrētas tieši jūsu kodā, ļaujot izstrādātājiem uzraudzīt datu kvalitāti pie avota. Pilnas detaļas skatiet [izlaiduma piezīmēs](http://docs.digna.ai/changelog/Release_202606/).
+
+### Meklējat macOS vai Linux?
+
+Šis ceļvedis attiecas uz Windows. Citu platformu instalācijas skaidrojumu skatiet [macOS instalācijas ceļvedī](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) vai [Linux instalācijas ceļvedī](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
 ## Sistēmas prasības {: #system-requirements }
 
-Pirms sākat instalāciju, pārliecinieties, ka jūsu sistēma atbilst šādām minimālajām prasībām:
+Pirms instalācijas pārliecinieties, ka jūsu sistēma atbilst šādām minimālajām prasībām:
 
 | Prasība | Specifikācija |
 |---|---|
 | **Operētājsistēma** | Windows Server vai Windows 10/11 |
-| **Atmiņa (minimāli)** | 16 GB RAM |
-| **Diska vieta** | 10 GB brīvas atmiņas |
+| **Atmiņa (minimālā konfigurācija)** | 16 GB RAM |
+| **Diskā nepieciešamā vieta** | 10 GB brīvas vietas |
 | **Datubāze** | PostgreSQL Server 12 vai jaunāks |
-| **Tīmekļa serveris** | IIS, Apache Tomcat vai līdzvērtīgs |
+| **Tīmekļa serveris** | IIS, Apache Tomcat vai ekvivalents |
 
-### Datubāzes uzstādīšanas iespējas
+### Datubāzes instalācijas iespējas
 
 **Ja PostgreSQL jau ir instalēts:**
-Jūs varat pievienot jaunu datubāzi digna savam esošajam PostgreSQL serverim.
+Jūs varat pievienot jaunu datubāzi digna esošajam PostgreSQL serverim.
 
 **Ja instalējat PostgreSQL uz tā paša datora kā digna:**
 
 !!! info "Ieteicamās specifikācijas"
 
     - **Atmiņa**: 32 GB RAM (nevis 16 GB)
-    - **Diska vieta**: 50 GB brīvas atmiņas (nevis 10 GB)
+    - **Diskā nepieciešamā vieta**: 50 GB brīvas vietas (nevis 10 GB)
 
-    Šīs palielinātās specifikācijas nodrošina pietiekamus resursus gan digna, gan PostgreSQL darbināšanai vienlaikus.
+    Šīs augstākās specifikācijas nodrošina pietiekamus resursus vienlaicīgai digna un PostgreSQL datubāzes darbībai.
 
 ---
 
-## Priekšuzstādīšanas sagatavošana {: #pre-installation-setup }
+## Priekšinstalācijas sagatavošana {: #pre-installation-setup }
 
-Pirms instalēt digna, pārliecinieties, ka ir nodrošinātas divas galvenās priekšnosacījumu komponentes:
+Pirms digna instalēšanas pārliecinieties, ka ir izpildīti divi galvenie priekšnosacījumi:
 
 1. **PostgreSQL Server** – aprēķināto metrikas un veiktspējas datu glabāšanai
-2. **Tīmekļa serveris** – digna Dashboard hostēšanai
+2. **Tīmekļa serveris** – digna paneļa izvietošanai
 
-Ja šīs komponentes vēl nav uzstādītas, sekojiet zemāk norādītajiem norādījumiem, lai tās instalētu un konfigurētu.
+Ja šīs sastāvdaļas vēl nav iestatītas, izpildiet tālāk norādītās sadaļas, lai tās instalētu un konfigurētu.
 
 ---
 
@@ -82,54 +86,54 @@ Ja šīs komponentes vēl nav uzstādītas, sekojiet zemāk norādītajiem norā
 
 ### Ja PostgreSQL jau ir pieejams
 
-Ja PostgreSQL jau darbojas uz jūsu lokālā datora vai izmantojat pārvaldītu attālo PostgreSQL serveri, varat pāriet uz [nākamo sadaļu](#web-server-configuration).
+Ja PostgreSQL jau ir instalēts un darbojas uz jūsu lokālā datora vai ja izmantojat pārvaldītu attālo PostgreSQL serveri, varat pāriet uz [nākamo sadaļu](#web-server-configuration).
 
 ### PostgreSQL instalēšana
 
-Izpildiet šīs darbības, lai instalētu PostgreSQL uz Windows:
+Izpildiet šos soļus, lai instalētu PostgreSQL uz Windows:
 
-#### 1. solis: Lejupielādējiet PostgreSQL
+#### 1. solis: Lejupielādēt PostgreSQL
 
-1. Apmeklējiet [PostgreSQL Downloads lapu](https://www.postgresql.org/download/)
+1. Apmeklējiet [PostgreSQL lejupielādes lapu](https://www.postgresql.org/download/)
 2. Izvēlieties **Windows**
-3. Lejupielādējiet jaunāko instalētāju
+3. Lejupielādējiet jaunāko instalatoru
 
-#### 2. solis: Palaidiet instalētāju
+#### 2. solis: Palaist instalatoru
 
-1. Veiciet dubultklikšķi uz lejupielādētā instalētāja faila
-2. Sekojiet vedņa norādījumiem
+1. Veiciet dubultklikšķi uz lejupielādētā instalatora faila
+2. Sekojiet norādījumiem instalācijas vednī
 
-#### 3. solis: Izvēlieties instalācijas direktoriju
+#### 3. solis: Izvēlēties instalācijas direktoriju
 
-Izvēlieties direktoriju, kur PostgreSQL tiks instalēts. Parasti noklusējuma vieta ir piemērota.
+Izvēlieties mapi, kur PostgreSQL tiks instalēts. Parasti noklusējuma atrašanās vieta ir piemērota.
 
-#### 4. solis: Izvēlieties komponentes
+#### 4. solis: Izvēlēties komponentes
 
-Standarta uzstādīšanai atstājiet noklusējuma komponentes izvēlētas.
+Standarta uzstādīšanai atstājiet noklusējuma komponentes atlasītas.
 
-#### 5. solis: Iestatiet PostgreSQL superlietotāja paroli
+#### 5. solis: Iestatīt PostgreSQL superlietotāja paroli
 
 Ievadiet un apstipriniet paroli PostgreSQL superlietotājam (`postgres`). **Saglabājiet šo paroli drošā vietā** — tā būs nepieciešama vēlāk.
 
-#### 6. solis: Konfigurējiet porta numuru
+#### 6. solis: Konfigurēt porta numuru
 
-Noklusējuma PostgreSQL ports ir `5432`. Varat izmantot noklusējumu vai norādīt citu portu, ja nepieciešams.
+Noklusējuma PostgreSQL ports ir `5432`. Varat izmantot noklusējumu vai norādīt citu portu pēc vajadzības.
 
 !!! tip "Padoms"
 
-    Ja ports 5432 jau tiek izmantots, izvēlieties alternatīvu portu un pierakstiet to vēlākai konfigurācijai.
+    Ja ports 5432 jau ir aizņemts, izvēlieties citu portu un atcerieties to turpmākajai konfigurācijai.
 
-#### 7. solis: Izvēlieties lokalizāciju
+#### 7. solis: Izvēlēties lokalizāciju
 
-Izvēlieties datubāzes lokalizāciju. Noklusējums parasti ir piemērots lielākajai daļai instalāciju.
+Izvēlieties datubāzes lokalizāciju. Parasti noklusējums ir piemērots lielākajai daļai instalāciju.
 
-#### 8. solis: Pabeidziet instalāciju
+#### 8. solis: Pabeigt instalāciju
 
-Noklikšķiniet **Next** cauri atliekošajiem soļiem, pēc tam noklikšķiniet **Finish**.
+Noklikšķiniet **Next** cauri atlikušajiem soļiem, pēc tam noklikšķiniet **Finish**.
 
-#### 9. solis: Pārbaudiet instalāciju
+#### 9. solis: Pārbaudīt instalāciju
 
-Atveriet Command Prompt un pārbaudiet, vai PostgreSQL ir uzstādīts:
+Atveriet Command Prompt un pārbaudiet, vai PostgreSQL ir instalēts:
 
 ```bash
 psql --version
@@ -141,18 +145,18 @@ Ja instalācija bija veiksmīga, tiks parādīta PostgreSQL versija.
 
 ## Tīmekļa servera konfigurācija {: #web-server-configuration }
 
-digna nepieciešams tīmekļa serveris dashboard hostēšanai. Izvēlieties vienu no šīm opcijām:
+digna prasa tīmekļa serveri paneļa izvietošanai. Izvēlieties vienu no šīm iespējām:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-Jums nepieciešams uzstādīt un konfigurēt tikai vienu no šiem serveriem.
+Nepieciešams instalēt un konfigurēt tikai vienu no šiem serveriem.
 
-### IIS uzstādīšana {: #iis-setup }
+### IIS iestatīšana {: #iis-setup }
 
 #### Pārskats
 
-Internet Information Services (IIS) ir Microsoft tīmekļa serveris vietņu un tīmekļa lietotņu hostēšanai.
+Internet Information Services (IIS) ir Microsoft tīmekļa serveris vietņu un tīmekļa lietotņu mitināšanai.
 
 #### IIS ieslēgšana
 
@@ -160,79 +164,79 @@ Internet Information Services (IIS) ir Microsoft tīmekļa serveris vietņu un t
    - Nospiediet `Win + R`
    - Ierakstiet `control` un nospiediet Enter
 
-2. **Dodieties uz Windows funkcijām**
-   - Klikšķiniet uz **Programs**
+2. **Pārejiet uz Windows funkcijām**
+   - Noklikšķiniet **Programs**
    - Izvēlieties **Turn Windows features on or off**
 
 3. **Ieslēdziet Internet Information Services**
-   - Ritiniet sarakstu un atrodiet **Internet Information Services (IIS)**
+   - Ritiniet un atrodiet **Internet Information Services (IIS)**
    - Atzīmējiet izvēles rūtiņu, lai to ieslēgtu
-   - Noklikšķiniet uz **+**, lai izvērstu un pārliecinātos, ka ir atlasītas šādas apakškomponentes:
+   - Noklikšķiniet uz **+**, lai izvērstu un pārbaudītu, vai ir atlasītas šādas apakškomponentes:
      - **Web Management Tools**
      - **World Wide Web Services**
 
 4. **Noklikšķiniet OK**, lai piemērotu izmaiņas
 
-5. **Pārbaudiet IIS instalāciju**
+5. **Pārbaudīt IIS instalāciju**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost`
    - Jums jāredz IIS sveiciena lapa
 
-#### Nepieciešams: URL Rewrite modulis
+#### Obligāti: URL Rewrite modulis
 
 IIS prasa URL Rewrite komponenti. Lejupielādējiet un instalējiet to no [oficiālās Microsoft lapas](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Nepieciešams: MIME tips Markdown failiem
+#### Obligāti: MIME tips Markdown failiem
 
-Lai nodrošinātu, ka Markdown faili (`.md`) tiek apkalpoti pareizi ar IIS:
+Lai nodrošinātu, ka Markdown faili (`.md`) tiek pareizi servēti ar IIS:
 
 1. Atveriet **IIS Manager** (nospiediet `Win + R`, ierakstiet `inetmgr`, nospiediet Enter)
-2. Dodieties uz **Your Site > MIME Types**
-3. Klikšķiniet **Add...**
+2. Pārejiet uz **Your Site > MIME Types**
+3. Noklikšķiniet **Add...**
 4. Konfigurējiet:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
 !!! warning "Svarīgi"
 
-    Bez šī iestatījuma `.md` faili var netikt apkalpoti pareizi.
+    Bez šī iestatījuma `.md` faili var netikt pareizi servēti.
 
 ---
 
-### Apache Tomcat uzstādīšana {: #apache-tomcat-setup }
+### Apache Tomcat iestatīšana {: #apache-tomcat-setup }
 
 #### Pārskats
 
-Apache Tomcat ir atvērtā koda Java servlet konteiners un tīmekļa serveris.
+Apache Tomcat ir atvērtā koda Java servleta konteiners un tīmekļa serveris.
 
 #### Instalēšana
 
-1. **Lejupielādējiet Apache Tomcat**
+1. **Lejupielādēt Apache Tomcat**
    - Apmeklējiet [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
    - Lejupielādējiet Windows ZIP izplatījumu
 
 2. **Izpakot arhīvu**
-   - Izpakojiet ZIP failu izvēlētā direktorijā
+   - Izpakojiet ZIP failu direktorijā uz jūsu sistēmas
    - Piemērs: `C:\Program Files\Apache Tomcat`
 
-3. **Pārbaudiet, vai Tomcat darbojas**
+3. **Pārbaudīt, vai Tomcat darbojas**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost:8080`
    - Jums jāredz Apache Tomcat sveiciena lapa
 
 !!! tip "Padoms"
 
-    Apache Tomcat parasti tiek startēts automātiski pēc instalācijas. Ja tas netiek startēts, dodieties uz `bin` mapi un palaidiet `startup.bat`.
+    Apache Tomcat parasti sāk darboties automātiski pēc instalācijas. Ja tas nenotiek, atveriet `bin` mapi un palaidiet `startup.bat`.
 
 ---
 
-## Sākotnējā instalēšana {: #initial-installation }
+## Sākotnējā instalācija {: #initial-installation }
 
-### 1. solis: Izveidojiet digna repositāriju
+### 1. solis: Iestatīt digna repozitoriju
 
-digna repositārijs glabā visas digna aprēķinātās metrikas. Tas darbojas kā centrālā datubāze analītiskajiem un veiktspējas datiem.
+digna repozitorijs glabā visas ar digna aprēķinātās metrikas. Tas darbojas kā centrālā datubāze analītiskajiem un veiktspējas datiem.
 
-#### Izveidojiet shēmu un lietotāju repositārijam
+#### Izveidot repozitorija shēmu un lietotāju
 
 Atveriet savu PostgreSQL klientu (pgAdmin, psql vai līdzīgu) un izpildiet šādas SQL komandas:
 
@@ -244,10 +248,10 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Aizstājiet šādus vietturi:**
+**Aizvietojiet šādus aizstājējvārdus:**
 
-- `<digna_repo_schema>` — Jūsu izvēlētais shēmas nosaukums (piem., `dignarepo`)
-- `<digna_repo_user>` — Jūsu izvēlētais lietotājvārds (piem., `digna_user`)
+- `<digna_repo_schema>` — Vēlamais shēmas nosaukums (piem., `dignarepo`)
+- `<digna_repo_user>` — Vēlamais lietotājvārds (piem., `digna_user`)
 - `<digna_repo_password>` — Droša parole šim lietotājam
 
 **Piemērs:**
@@ -260,60 +264,60 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Labā prakse"
+!!! tip "Laba prakse"
 
-    Izmantojiet spēcīgas, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamām akreditācijām.
+    Lietojiet stipras, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamiem akreditācijas datiem.
 
 ---
 
 ### 2. solis: Izpakot digna instalācijas pakotni
 
 1. Atrodiet jums nodoto digna instalācijas ZIP failu
-2. Izpakojiet to uz vēlamo instalācijas direktoriju
-3. Pēc izpakotnes vajadzētu redzēt šādas vienības:
-   - `dashboard/` — tīmekļa dashboard saskarne
+2. Izpakojiet to vēlamajā instalācijas vietā
+3. Pēc izpakošanas jums jāredz sekojošas vienības:
+   - `dashboard/` — tīmekļa paneļa saskarne
    - `digna` — galvenais izpildāmais fails (backend + CLI apvienots)
    - `config.toml` — konfigurācijas fails
-   - `license.toml` — licences fails (kopējiet savu šeit)
+   - `license.toml` — licences fails (ielīmējiet savu šeit)
 
-### 3. solis: Instalējiet licences failu
+### 3. solis: Instalēt licences failu
 
 !!! warning "Svarīgi"
 
-    Licences fails **NAV** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
+    Licences fails **nav** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
 
-1. Atrodiet jums piegādāto `license.toml` failu
-2. Kopējiet to uz digna instalācijas saknes direktoriju (tur, kur atrodas `config.toml` un `digna` izpildāmais fails)
+1. Atrodiet jums nodoto `license.toml` failu
+2. Kopējiet to uz digna instalācijas saknes direktoriju (tur, kur atrodas `config.toml` un izpildāmais `digna`)
 
 **Kāpēc tas ir svarīgi:**
-Licences fails satur jūsu klienta informāciju, licences derīguma termiņu un digitālo parakstu. **Nemodificējiet šo failu** — jebkuras izmaiņas to padarīs nederīgu.
+Licences fails satur jūsu klienta informāciju, licences derīguma termiņu un digitālo parakstu. **Nemainiet šo failu** — jebkuras izmaiņas to inaktivizēs.
 
-**Direktorijas struktūra pēc uzstādīšanas:**
+**Direktorijas struktūra pēc iestatīšanas:**
 
 ```
 digna_installation/
-├── config.toml         (konfigurācijas fails)
-├── license.toml        (JŪSU LICENCES FAILS - kopējiet šeit)
-├── digna               (galvenais izpildāmais fails)
-└── dashboard/          (tīmekļa saskarne)
-    └── (dashboard faili)
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+└── dashboard/          (web interface)
+    └── (dashboard files)
 ```
 
 ---
 
 ## Backend konfigurācija {: #backend-configuration }
 
-### 1. solis: Izveidojiet un rediģējiet konfigurācijas failu
+### 1. solis: Izveidot un rediģēt konfigurācijas failu
 
-`config_template.toml` fails tiek piegādāts jūsu digna instalācijas direktorijā. Jums tas vienkārši jāpārdēvē uz `config.toml`.
+`config_template.toml` fails ir iekļauts jūsu digna instalācijas direktorijā. Pietiek to pārdēvēt par `config.toml`.
 
 **Atrašanās vieta:** `digna_installation/config.toml`
 
-Atveriet `config.toml` teksta redaktorā un konfigurējiet katru zemāk norādīto sadaļu.
+Atveriet `config.toml` teksta redaktorā un konfigurējiet katru sadaļu zemāk.
 
 #### [app] sadaļa
 
-Šī sadaļa konfigurē dignabackend lietotnes iestatījumus:
+Šī sadaļa konfigurē digna backend lietojumprogrammas iestatījumus:
 
 ```toml
 [app]
@@ -327,12 +331,12 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vai IP adrese | Hostname vai IP, kur tiek hostēts dignabackend |
-| `digna_APP_PORT` | `8082` (noklusējums) | Ports REST API endpointiem |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ja dashboard atrodas citā serverī, iekļaujiet tā URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijām |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļauj visus HTTP metodus |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Atļauj visus header laukus |
+| `digna_APP_HOST` | `localhost` vai IP adrese | Hostname vai IP, kur tiek mitināts dignabackend |
+| `digna_APP_PORT` | `8082` (noklusējums) | Ports REST API galapunktiem |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontenda URL | Ja panelis atrodas citā serverī, iekļaujiet tā URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijas datiem |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļaut visus HTTP metodus |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Atļaut visus header laukus |
 
 #### [repo] sadaļa
 
@@ -354,8 +358,8 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 | `digna_REPO_PORT` | `5432` (noklusējums) | PostgreSQL ports |
 | `digna_REPO_DB` | `postgres` | Datubāzes nosaukums |
 | `digna_REPO_SCHEMA` | `dignarepo` | Iepriekš izveidotā shēma |
-| `digna_REPO_USER` | `digna_user` | Lietotājs, izveidots PostgreSQL iestatīšanā |
-| `digna_REPO_PASSWORD` | Jūsu parole | Parole, kas iestatīta shēmas izveidē |
+| `digna_REPO_USER` | `digna_user` | Lietotājs izveidots PostgreSQL iestatīšanā |
+| `digna_REPO_PASSWORD` | Jūsu parole | Parole, iestatīta shēmas izveidē |
 
 #### [base] sadaļa
 
@@ -375,17 +379,17 @@ digna_MAX_WORKERS = 4
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_FERNET_KEY` | Šifrēšanas atslēga | Tiek izmantota tokenu un sīkfailu šifrēšanai (noklusējuma atslēga tiek nodrošināta) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontend domēnam |
-| `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcija) | Lietojiet `true` HTTPS savienojumiem |
-| `digna_COOKIE_HTTPONLY` | `true` | Vienmēr ieslēgts drošībai |
-| `digna_COOKIE_SAME_SITE` | `lax` | Aizsargā pret CSRF uzbrukumiem |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma termiņš sekundēs |
-| `digna_MAX_WORKERS` | CPU kodoli - 1 | Paralēlo pārbaudes uzdevumu skaits |
+| `digna_FERNET_KEY` | Šifrēšanas atslēga | Izmanto, lai šifrētu tokenus un sīkfailus (noklusējums iekļauts) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontenda domēnam |
+| `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcijā) | Lietojiet `true` HTTPS savienojumiem |
+| `digna_COOKIE_HTTPONLY` | `true` | Vienmēr iespējots drošībai |
+| `digna_COOKIE_SAME_SITE` | `lax` | Novērš CSRF uzbrukumus |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma laiks sekundēs |
+| `digna_MAX_WORKERS` | Skaitlis: CPU kodolu skaits - 1 | Paralēlo inspekciju uzdevumu skaits |
 
 #### [logging] sadaļa
 
-Šī sadaļa konfigurē žurnālu (logging) uzvedību:
+Šī sadaļa konfigurē žurnālu (logu) uzvedību:
 
 ```toml
 [logging]
@@ -396,23 +400,23 @@ digna_LOGGING_BACKUP_COUNT = 10
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
 | `digna_LOGGING_MODE` | `INFO` vai `DEBUG` | `INFO` produkcijai, `DEBUG` problēmu novēršanai |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Saglabājamo dienas žurnālu rezerves kopiju skaits |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Cik dienu žurnālu dublējumu saglabāt |
 
 ---
 
-### 3. solis: Inicializējiet repositāriju
+### 3. solis: Inicializēt repozitoriju
 
 1. Atveriet Command Prompt
-2. Pārejiet uz savu digna instalācijas direktoriju (tur, kur atrodas `config.toml` un `digna` izpildāmais fails)
+2. Pārejiet uz jūsu digna instalācijas direktoriju (tur, kur atrodas `config.toml` un izpildāmais `digna`)
 3. Palaidiet savienojuma pārbaudi:
 
 ```bash
 digna repo check
 ```
 
-Jums jāredz apstiprinājums, ka savienojums ir izveidots (repositārijs pats par sevi vēl nav instalēts).
+Jums jāsaņem apstiprinājums, ka savienojums ir izveidots (repozitārijs pats par sevi vēl nav inicializēts).
 
-### 4. solis: Instalējiet repositārija shēmu
+### 4. solis: Instalēt repozitorija shēmu
 
 Tajā pašā direktorijā palaidiet:
 
@@ -422,19 +426,19 @@ digna repo install
 
 Šī komanda instalē nepieciešamās tabulas un shēmu jūsu PostgreSQL datubāzē.
 
-### 5. solis: Startējiet digna serveri
+### 5. solis: Palaist digna serveri
 
-digna instalācijas direktorijā startējiet serveri ar:
+Digna instalācijas direktorijā palaidiet serveri ar:
 
 ```bash
 digna serve --address <host> --port <port>
 ```
 
 **Parametri:**
-- `--address` — Servera hostname/IP
-- `--port` — Servera ports
+- `--address` — servera hostname/IP
+- `--port` — servera ports 
 
-Jums jāredz startēšanas ziņojumi, kas apstiprina servera darbību:
+Jums jāredz startēšanas ziņas, kas apstiprina, ka serveris darbojas:
 
 ```
 INFO:     Started server process [1234]
@@ -443,11 +447,11 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### 6. solis: Izveidojiet administratīvo lietotāju
+### 6. solis: Izveidot administratora lietotāju
 
 1. Atveriet **jaunu** Command Prompt logu
-2. Pārejiet uz savu digna instalācijas direktoriju
-3. Palaidiet šādu komandu, lai izveidotu admin lietotāju:
+2. Pārejiet uz jūsu digna instalācijas direktoriju
+3. Palaidiet šādu komandu, lai izveidotu administratora lietotāju:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -459,93 +463,93 @@ digna user add <username> "<full_name>" <password> --su
 digna user add admin "Admin User" AdminPassword123! --su
 ```
 
-Šī komanda izveido lietotāju ar pilnīgām administratīvām tiesībām.
+Šī komanda izveido lietotāju ar pilnām administratīvām tiesībām.
 
-!!! tip "Labā prakse"
+!!! tip "Laba prakse"
 
-    Izmantojiet spēcīgu paroli ar lielajiem un mazajiem burtiem, cipariem un speciālajiem simboliem.
+    Izmantojiet stipru paroli ar lielajiem un maziem burtiem, cipariem un speciālajām zīmēm.
 
 ---
 
-## Dashboard konfigurācija {: #dashboard-configuration }
+## Paneļa konfigurācija {: #dashboard-configuration }
 
-### 1. solis: Ievietojiet dashboard tīmekļa serverī
+### 1. solis: Izvietot paneli uz tīmekļa servera
 
-digna dashboard satur savu atsevišķu `config.toml` failu, kas atrodas `dashboard/` direktorijā. Šī konfigurācija tiek nodrošināta un parasti nav jāmaina sākotnējā uzstādīšanas laikā. Jāmaina tikai tad, ja nepieciešams pielāgot backend savienojumu vai konfigurēt daudzinstanču izvietojumu.
+digna panelim ir atsevišķs `config.toml` fails, kas atrodas `dashboard/` direktorijā. Šī konfigurācija parasti jau ir nodrošināta un sākotnējā iestatīšanā nav jāmaina. Jāveic izmaiņas tikai tad, ja nepieciešams pielāgot backend savienojumu.
 
-Ja nepieciešams modificēt dashboard konfigurāciju, skatiet dashboard dokumentāciju.
+Ja nepieciešams modificēt paneļa konfigurāciju (piem., daudzinstanču izvietošanai), skatiet paneļa dokumentāciju.
 
-Izvēlieties tīmekļa serveri un sekojiet attiecīgajām izvietošanas darbībām.
+Izvēlieties jūsu tīmekļa serveri un izpildiet atbilstošos izvietošanas soļus.
 
-#### Izvietošana IIS
+#### Izvietošana uz IIS
 
 1. **Atveriet IIS Manager**
    - Nospiediet `Win + R`, ierakstiet `inetmgr`, nospiediet Enter
 
-2. **Izveidojiet jaunu vietni**
-   - Kreisajā rūtī ar peles labo pogu klikšķiniet uz **Sites**
+2. **Izveidot jaunu vietni**
+   - Kreisajā panelī ar peles labo pogu klikšķiniet uz **Sites**
    - Izvēlieties **Add Website...**
 
-3. **Konfigurējiet vietni**
+3. **Konfigurēt vietni**
    - **Site Name**: Ievadiet nosaukumu (piem., "dignaDashboard")
    - **Physical Path**: Noklikšķiniet Browse un izvēlieties jūsu `dashboard` mapi
    - **Binding**: Iestatiet IP adresi un portu (noklusējuma ports HTTP — 80, HTTPS — 443)
 
-4. **Startējiet vietni**
+4. **Startēt vietni**
    - Noklikšķiniet **OK**, lai izveidotu vietni
-   - Ar peles labo pogu klikšķiniet uz jaunās vietnes un izvēlieties **Start**
+   - Ar peles labo pogu klikšķiniet uz jaunizveidotās vietnes un izvēlieties **Start**
 
-5. **Pārbaudiet instalāciju**
+5. **Pārbaudīt instalāciju**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost` (vai jūsu konfigurēto URL)
-   - Jums jāredz digna dashboard pieslēgšanās lapa
+   - Jums jāredz digna paneļa pieteikšanās lapa
 
-#### Izvietošana Apache Tomcat
+#### Izvietošana uz Apache Tomcat
 
-1. **Kopējiet dashboard uz Tomcat**
-   - Kopējiet `dashboard` mapi uz jūsu Tomcat `webapps` direktoriju
+1. **Kopēt paneli uz Tomcat**
+   - Nokopējiet `dashboard` mapi uz jūsu Tomcat `webapps` direktoriju
    - Pārdēvējiet to pēc vajadzības (piem., uz `digna`)
    - Piemērs: `C:\Program Files\Apache Tomcat\webapps\digna`
 
-2. **Pārbaudiet izvietojumu**
-   - Atsvaidziniet vai pārlādējiet Tomcat pārvaldības lapu (http://localhost:8080)
+2. **Pārbaudīt izvietojumu**
+   - Atsvaidziniet vai ielādējiet Tomcat pārvaldības lapu (http://localhost:8080)
    - Jums jāredz "digna" (vai jūsu izvēlētais nosaukums) sarakstā ar izvietotajām lietotnēm
 
-3. **Piekļūstiet dashboard**
+3. **Piekļūt panelim**
    - Atveriet pārlūkprogrammu
    - Dodieties uz `http://localhost:8080/digna`
-   - Jums jāredz digna dashboard pieslēgšanās lapa
+   - Jums jāredz digna paneļa pieteikšanās lapa
 
 ---
 
-## digna palaišana kā Windows serviss {: #running-digna-as-a-windows-service }
+## digna palaide kā Windows serviss {: #running-digna-as-a-windows-service }
 
 ### Kāpēc izmantot Windows servisu?
 
-dignabackend palaišana kā Windows serviss nodrošina:
-- Automātisku startēšanu servera iedarbināšanas brīdī
-- Darbību fonā bez atvērtas Command Prompt loga
-- Automātisku restartēšanu avārijas gadījumā
-- Pārvaldību caur Windows Services
+digna backend darbināšana kā Windows serviss nodrošina, ka tas:
+- Automātiski startējas sistēmas boot laikā
+- Darbojas fonā bez atvērtas Command Prompt loga
+- Automātiski restartējas, ja notiek avārija
+- To var pārvaldīt caur Windows Services rīku
 
 ### Servisa pārvaldības faili
 
 Visi nepieciešamie faili atrodas digna instalācijas direktorijā zem: `bin/`
 
-Pieejamie batch faili:
+Sekojošas batch skripti ir pieejami:
 - `install_service.bat` — reģistrē digna kā Windows servisu
-- `uninstall_service.bat` — noņem servisu no reģistra
+- `uninstall_service.bat` — atreģistrē servisu
 - `start_service.bat` — palaiž servisu
-- `stop_service.bat` — apstādināt servisu
+- `stop_service.bat` — aptur servisu
 
-!!! warning "Nepieciešamas administratora tiesības"
+!!! warning "Nepieciešamas administratīvās tiesības"
 
     Visus batch failus jāizpilda ar Administratora tiesībām.
 
 ### Servisa instalēšana
 
 1. **Atveriet Command Prompt kā administrators**
-   - Ar peles labo pogu klikšķiniet Command Prompt
+   - Ar peles labo pogu klikšķiniet uz Command Prompt
    - Izvēlieties "Run as Administrator"
 
 2. **Pārejiet uz bin mapi**
@@ -558,7 +562,7 @@ Pieejamie batch faili:
    install_service.bat
    ```
 
-digna serveris tagad reģistrēts kā Windows serviss ar **automātisku startēšanu**. Serviss nekavējoties nesāk darboties — skatiet nākamo sadaļu, lai to palaistu.
+digna serveris tagad ir reģistrēts kā Windows serviss ar **automātisku startēšanu**. Serviss netiek sāknēts uzreiz — skatiet nākamo sadaļu, lai to palaistu.
 
 ### Servisa palaišana un apturēšana
 
@@ -582,60 +586,60 @@ digna serveris tagad reģistrēts kā Windows serviss ar **automātisku startē�
 
 !!! tip "Padoms"
 
-    Vienmēr apturiet servisu pirms lietotnes failu atjaunināšanas.
+    Vienmēr apturiet servisu, pirms atjaunināt lietojumprogrammas failus.
 
-### Pārvietošana uz jaunu direktoriju
+### Pārvietot servisu uz jaunu direktoriju
 
 Ja nepieciešams pārvietot digna instalāciju:
 
-1. **Atinstalējiet esošo servisu**
+1. **Atinstalēt esošo servisu**
    ```bash
    cd C:\old\path\digna\bin
    uninstall_service.bat
    ```
 
-2. **Pārvietojiet lietotnes failus**
-   - Pārvietojiet visu digna instalācijas mapes saturu uz jauno atrašanās vietu
+2. **Pārvietot aplikācijas failus**
+   - Pārvietojiet visu digna instalācijas mapi uz jauno atrašanās vietu
 
-3. **Pārliecinieties, ka serviss atkal ir instalēts**
+3. **Pārinstalēt servisu**
    ```bash
    cd C:\new\path\digna\bin
    install_service.bat
    ```
 
-4. **Palaidiet servisu**
+4. **Palaist servisu**
    ```bash
    start_service.bat
    ```
 
 ### Servisa atinstalēšana
 
-1. **Apturiet darbojošo servisu**
+1. **Apturēt darbojošos servisu**
    ```bash
    cd C:\path\to\digna\bin
    stop_service.bat
    ```
 
-2. **Atinstalējiet servisu**
+2. **Atinstalēt servisu**
    ```bash
    uninstall_service.bat
    ```
 
-digna serveris tagad ir noņemts no Windows servisu reģistra.
+digna serveris tagad vairs nav reģistrēts kā Windows serviss.
 
 ---
 
-## Pāreja uz jaunu izlaidumu {: #upgrading-to-a-new-release }
+## Jaunināšana uz jaunu izlaidumu {: #upgrading-to-a-new-release }
 
-### Pirms pārejas
+### Pirms jaunināšanas
 
-**digna repositārija rezerves kopijas izveide ir obligāta**
+**Repozitārija (PostgreSQL) rezerves kopijas izveide ir obligāta**
 
-Pirms digna atjaunināšanas, izveidojiet rezerves kopiju savam repositārijam (PostgreSQL), lai aizsargātu pret datu zudumu. Rezerves kopija nodrošina atjaunošanu, ja atjaunināšanas laikā rodas negaidītas problēmas.
+Pirms digna jaunināšanas veiciet rezerves kopiju sava repozitorija (PostgreSQL), lai izvairītos no datu zuduma. Rezerves kopija nodrošina atjaunošanas iespēju, ja jaunināšanas laikā rodas neparedzētas problēmas.
 
-### Atjaunināšanas process
+### Jaunināšanas process
 
-#### 1. solis: Apturiet digna servisu
+#### 1. solis: Apturēt digna servisu
 
 Ja digna darbojas kā Windows serviss, vispirms to apturiet:
 
@@ -644,54 +648,54 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### 2. solis: Rezervējiet pašreizējo backend instalāciju
+#### 2. solis: Rezerves kopija esošajai backend instalācijai
 
 Jūsu digna instalācijas direktorijā:
 
 ```bash
-# Pārdēvējiet mapi, kas satur dignabackend
+# Rename folder containing dignabackend
 ren dignabackend dignabackend_old
 ```
 ```bash
-# Pārdēvējiet dashboard
+# Rename dashboard
 ren dashboard dashboard_old
 ```
 
 #### 3. solis: Izpakot un izvietot jauno versiju
 
 1. Izpakojiet jauno digna instalācijas ZIP failu
-2. Kopējiet jauno `digna` izpildāmo failu un `dashboard` mapi uz savu instalācijas direktoriju
+2. Kopējiet jauno `digna` izpildāmo failu un `dashboard` mapi uz jūsu instalācijas direktoriju
+
 
 !!! warning "Svarīgi"
 
-    `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek neskarta.
+    `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek droša.
 
-### 4. solis: Atjaunojiet konfigurācijas failus
+### 4. solis: Atjaunot jūsu konfigurācijas failus
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
+### 5. solis: Jaunināt repozitorija shēmu
 
-### 5. solis: Atjauniniet repositārija shēmu
-
-Pārejiet uz savu digna instalācijas direktoriju un palaidiet:
+Pārejiet uz jūsu digna instalācijas direktoriju un palaidiet:
 
 ```bash
 digna repo upgrade
 ```
 
-Šī komanda atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visus esošos datus.
+Tas atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visu esošo datu integritāti.
 
-### 6. solis: Restartējiet servisus
+### 6. solis: Restartēt servisus
 
-Ja tiek izmantots Windows serviss:
+Ja darbināt kā Windows servisu:
 
 ```bash
 cd C:\path\to\digna\bin
 start_service.bat
 ```
 
-Ja serveris tiek palaists manuāli, restartējiet to:
+Ja darbināt manuāli, restartējiet serveri:
 
 ```bash
 cd C:\path\to\digna
@@ -700,8 +704,8 @@ digna serve --address <address> --port <port>
 
 Ja izmantojat IIS vai Tomcat, restartējiet attiecīgo tīmekļa serveri.
 
-#### 7. solis: Pārbaudiet atjaunināšanu
+#### 7. solis: Pārbaudīt jaunināšanu
 
-1. Piekļūstiet digna dashboard
-2. Pārliecinieties, ka saskarne ielādējas pareizi
-3. Pārbaudiet servera žurnālus, vai nav kļūdu
+1. Piekļūstiet digna panelim
+2. Pārbaudiet, vai saskarne ielādējas pareizi
+3. Pārskatiet servera žurnālus, vai nav kļūdu

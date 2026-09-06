@@ -28,10 +28,19 @@
 
 ## التثبيت والنشر
 
+### أنظمة التشغيل
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): دليل خطوة بخطوة لتثبيت digna إصدار 2026.06 على Linux — متطلبات النظام، إعداد PostgreSQL، تهيئة nginx أو Apache، تكوين الbackend و الdashboard، تشغيل digna كخدمة systemd، والترقية إلى إصدار جديد.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): دليل خطوة بخطوة لتثبيت إصدار digna 2026.06 على macOS — متطلبات النظام، إعداد Homebrew و PostgreSQL، تكوين nginx أو Apache، إعداد الbackend واللوحة، تشغيل digna كخدمة في الخلفية، والترقية إلى إصدار جديد.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): دليل خطوة بخطوة لتثبيت إصدار digna 2026.06 على Windows — متطلبات النظام، إعداد PostgreSQL، تكوين خادم الويب، إعداد الواجهة الخلفية واللوحة، تشغيل digna كخدمة Windows، والترقية إلى إصدار جديد.
-- [كيفية تكوين الدخول الموحد](https://docs.digna.ai/ar/installation_deployment/sso_integration_guide/): دليل خطوة بخطوة لتكوين تسجيل الدخول الموحد (SSO) لـ digna باستخدام OpenID Connect (OIDC). يغطي إعداد لوحة التحكم والواجهة الخلفية، الاختبار، استكشاف الأخطاء وإصلاحها، ومزودي الهوية المدعومين بما في ذلك Microsoft Entra ID و Google Workspace و Okta.
+- [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): دليل خطوة بخطوة لتثبيت digna إصدار 2026.06 على Windows — متطلبات النظام، إعداد PostgreSQL، تكوين خادم الويب، إعداد الواجهة الخلفية واللوحة، تشغيل digna كخدمة Windows، والترقية إلى إصدار جديد.
 
 ## البدء
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/ar/databases/snowflake_connector_guide/): قم بتكوين digna للاتصال بـ Snowflake باستخدام الموصل الأصلي الخاص بـ Python أو برنامج تشغيل ODBC الخاص بـ Snowflake. يدعم المصادقة بناءً على كلمة المرور بإعدادات DSN أو بدون DSN.
 - [MS SQL Server](https://docs.digna.ai/ar/databases/sqlserver_connector_guide/): تكوين digna للاتصال بـ Microsoft SQL Server باستخدام برنامج التشغيل pymssql الخاص بـ Python أو برنامج تشغيل SQL Server عبر ODBC. يدعم المصادقة عن طريق كلمة المرور مع إعدادات DSN أو بدون DSN.
 - [Teradata](https://docs.digna.ai/ar/databases/teradata_connector_guide/): قم بتكوين digna للاتصال بـ Teradata باستخدام برنامج التشغيل teradatasql الخاص بـ Python أو برنامج تشغيل Teradata ODBC. يدعم المصادقة بواسطة كلمة المرور مع إعدادات DSN أو بدون DSN.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/ar/sso/overview/): كيف يعمل تسجيل الدخول الأحادي في digna باستخدام OpenID Connect (OIDC). يغطي إعداد لوحة القيادة والـ backend والاختبار واستكشاف الأخطاء، وروابط لأدلة إعداد لكل مزود مثل Microsoft Entra ID وGoogle Workspace وOkta وAuth0 وKeycloak وOneLogin وPingOne وAD FS.
+- [AD FS](https://docs.digna.ai/ar/sso/adfs_sso_guide/): تكوين تسجيل الدخول الموحد لـ digna باستخدام Active Directory Federation Services عبر OpenID Connect — مجموعة التطبيق، تطبيق الخادم، السر المشترك، النطاقات المسموح بها وتكوين digna المطابق.
+- [Auth0](https://docs.digna.ai/ar/sso/auth0_sso_guide/): إعداد تسجيل الدخول الموحد (Single Sign-On) لـ digna باستخدام OpenID Connect — إعداد تطبيق ويب عادي، عناوين callback المسموح بها، بيانات اعتماد العميل، نطاق المستأجر وتكوين digna المطابق.
+- [Google Workspace](https://docs.digna.ai/ar/sso/google_workspace_sso_guide/): قم بتكوين تسجيل الدخول الموحد لـ digna باستخدام Google Workspace عبر OpenID Connect — شاشة موافقة OAuth، معرف عميل OAuth، عناوين إعادة التوجيه المصرح بها وتكوين digna المطابق.
+- [Keycloak](https://docs.digna.ai/ar/sso/keycloak_sso_guide/): إعداد تسجيل الدخول الأحادي (SSO) لـ digna باستخدام Keycloak عبر OpenID Connect — إعداد الـ realm والعميل، مصادقة العميل، عناوين إعادة التوجيه الصالحة، سر العميل وتكوين digna المطابق.
+- [Microsoft Entra ID](https://docs.digna.ai/ar/sso/microsoft_entra_id_sso_guide/): تكوين تسجيل الدخول الأحادي (Single Sign-On) لـ digna باستخدام Microsoft Entra ID (المعروف سابقًا باسم Azure AD) عبر OpenID Connect — تسجيل التطبيق، URI التحويل، السر الخاص بالعميل، معرف المستأجر وتهيئة digna المطابقة.
+- [Okta](https://docs.digna.ai/ar/sso/okta_sso_guide/): قم بتكوين تسجيل الدخول الموحد (Single Sign-On) لـ digna باستخدام Okta عبر OpenID Connect — تكامل التطبيق، عناوين URI لإعادة التوجيه بعد تسجيل الدخول، بيانات اعتماد العميل، اختيار خادم التفويض وتكوين digna المطابق.
+- [OneLogin](https://docs.digna.ai/ar/sso/onelogin_sso_guide/): قم بتكوين تسجيل الدخول الموحد (Single Sign-On) لـ digna باستخدام OneLogin عبر OpenID Connect — إنشاء تطبيق OIDC، عناوين إعادة التوجيه، بيانات اعتماد العميل، مصادقة نقطة نهاية التوكن وتكوين digna المطابق.
+- [PingOne](https://docs.digna.ai/ar/sso/pingone_sso_guide/): إعداد تسجيل الدخول الموحد لـ digna مع PingOne باستخدام OpenID Connect — إعداد تطبيق OIDC على الويب، عناوين إعادة التوجيه، بيانات اعتماد العميل، معرف البيئة، المجالات الإقليمية وتطابق إعداد digna.
 
 ## مرجع CLI
 

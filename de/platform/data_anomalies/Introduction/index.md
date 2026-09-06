@@ -1,61 +1,60 @@
 # Data Anomalies – Automatisierte Erkennung
-<h1 style="display:none;">KI-gesteuertes Modul für Datenqualität und Observability – digna Data Anomalies</h1>
 
 ---
 
 ## Zweck
 
-Das **Data Anomalies**-Modul identifiziert automatisch Unregelmäßigkeiten in Ihren Datensätzen — ganz ohne Regelprogrammierung.  
-Es überwacht kontinuierlich **die Qualität der Datenlieferung**, lernt, wie „normal“ aussieht, und erkennt Abweichungen in Echtzeit.
+Das **Data Anomalies**-Modul identifiziert Unregelmäßigkeiten in Ihren Datensätzen automatisch — ganz ohne Regeldefinition.  
+Es überwacht kontinuierlich **die Qualität der Datenlieferung** und lernt, wie „normal“ aussieht, um Abweichungen in Echtzeit zu erkennen.
 
-Durch KI-basierte Erkennung erkennt digna *stille Datenfehler* wie fehlende, duplizierte oder beschädigte Datensätze, die Berichte, ML-Modelle und Dashboards verfälschen können.
+Durch KI-basierte Erkennung erkennt digna stille Datenfehler wie fehlende, duplizierte oder beschädigte Datensätze, die Berichte, ML-Modelle und Dashboards verfälschen können.
 
 ---
 
-## Technische Übersicht
+## Technischer Überblick
 
 ### Analysierte Metriken
 
 digna profiliert kontinuierlich die folgenden Aspekte Ihrer Daten:
 
-- **Datensatzvolumen** – Gesamtanzahl der Zeilen, täglich oder batch-basiert  
-- **Fehlende Werte** – Erkennung von null- oder leeren Feldern  
-- **Verteilungen und Histogramme** – Überwachung von Formänderungen in den Daten  
-- **Wertbereiche** – automatische Identifikation von außerhalb liegenden oder extremen Werten  
-- **Eindeutigkeit** – Prüfen auf doppelte Schlüssel oder wiederholte Einträge  
+- **Record volume** – Gesamtanzahl der Zeilen, täglich oder batch-basiert  
+- **Missing values** – Erkennung von Null- oder leeren Feldern  
+- **Distributions and histograms** – Überwachung von Formänderungen in Daten  
+- **Value ranges** – automatische Identifikation von außerhalb liegenden oder extremen Werten  
+- **Uniqueness** – Prüfungen auf doppelte Schlüssel oder wiederholte Einträge  
 
 ### Intelligente Anomalieerkennung
 
 - Nutzt **historisches Lernen**, um erwartete Grenzen dynamisch zu definieren  
 - Erkennt Abweichungen in **Volumen, Wertverteilungen oder logischen Beziehungen**  
-- Setzt KI ein, um Schwellenwerte automatisch anhand von Tageszeiten oder saisonalen Mustern anzupassen  
+- Setzt KI ein, um Schwellenwerte automatisch an Tageszeiten oder saisonale Muster anzupassen  
 - Unterscheidet zwischen **statistischen Schwankungen** und echten Anomalien  
-- Liefert detaillierte Metriken und Konfidenzwerte pro Datensatz und Spalte  
+- Liefert detaillierte Metriken und Konfidenzwerte pro Dataset und Spalte  
 
 ---
 
 ## Erkennungsszenarien
 
-Nachfolgend Beispiele aus der Praxis, die vom **Data Anomalies**-Modul automatisch erkannt werden:
+Nachfolgend Beispiele für reale Probleme, die vom **Data Anomalies**-Modul automatisch erkannt werden:
 
 | Scenario | Description |
 |-----------|--------------|
 | **Volume drops or spikes** | Fehlende Hälfte der täglichen Transaktionen, doppelte Batch-Ladevorgänge oder plötzliche Datenanstiege |
-| **Missing or null values** | Datenextraktionen abgeschlossen, aber kritische Spalten bleiben leer |
-| **Distribution drifts** | Durchschnittlicher Einkaufspreis oder Transaktionsanzahl pro Region verändert sich unerwartet |
+| **Missing or null values** | Datenauszüge abgeschlossen, aber kritische Spalten bleiben leer |
+| **Distribution drifts** | Durchschnittlicher Kaufbetrag oder Transaktionsanzahl pro Region ändert sich unerwartet |
 | **Column swaps** | Spalten wie *first_name* und *last_name* wurden während des ETL versehentlich vertauscht |
-| **Unexpected categorical values** | z. B. „Zurich“ erscheint in der Liste österreichischer Städte |
-| **Sudden uniqueness loss** | Früher eindeutige IDs beginnen sich aufgrund von fehlerhaften Joins upstream zu duplizieren |
+| **Unexpected categorical values** | z. B. erscheint „Zurich“ in der österreichischen Städtegruppe |
+| **Sudden uniqueness loss** | Zuvor eindeutige IDs duplizieren sich plötzlich wegen fehlerhafter Upstream-Joins |
 
 ---
 
 ## Architektur und Ausführung
 
-- **Ausführung in der Datenbank:** Die gesamte Anomalieerkennungslogik wird *im Datenbank-Engine* ausgeführt (Teradata, Snowflake, Databricks, PostgreSQL usw.)  
-- **Keine Datenbewegung:** digna liest nur Metriken und transferiert niemals Rohdaten extern  
-- **Inkrementelle Updates:** Pro Lauf werden nur neue Datensegmente analysiert, um effizient zu bleiben  
-- **Konfigurierbare Prüfintervalle:** Stündlich, täglich oder durch upstream-Prozesse ausgelöst  
-- **Ergebnisablage:** Metriken und Anomalie-Flags werden zurück in dignas Observability-Schema geschrieben zur Visualisierung und Alarmierung  
+- **In-database execution:** Die gesamte Anomalieerkennungslogik wird *im Datenbank-Engine* (Teradata, Snowflake, Databricks, PostgreSQL, etc.) ausgeführt  
+- **No data movement:** digna liest nur Metriken und überträgt niemals Rohdaten extern  
+- **Incremental updates:** Es werden nur neue Datensegmente pro Lauf analysiert, um effizient zu bleiben  
+- **Configurable inspection frequency:** Stündlich, täglich oder ausgelöst durch Upstream-Prozesse  
+- **Result storage:** Metriken und Anomalie-Flags werden zurück in digna’s Observability-Schema geschrieben zur Visualisierung und Alarmierung  
 
 ---
 
@@ -63,11 +62,11 @@ Nachfolgend Beispiele aus der Praxis, die vom **Data Anomalies**-Modul automatis
 
 | Area | Benefit |
 |------|----------|
-| **Automation** | Eliminierung hunderter manueller SQL- oder Regeldefinitionen |
+| **Automation** | Eliminierung von hunderten manueller SQL- oder Regeldefinitionen |
 | **Precision** | Erkennt Probleme, die statische Schwellenwerte oft übersehen |
-| **Scalability** | Überwacht effizient Millionen von Datensätzen pro Tabelle |
-| **Integration** | Funktioniert nahtlos mit *digna Data Analytics* für Trendanalysen |
-| **Compliance** | Sorgt für kontinuierliche Kontrolle über die **Qualität und Observability von Daten** |
+| **Scalability** | Überwacht Millionen von Datensätzen pro Tabelle effizient |
+| **Integration** | Arbeitet nahtlos mit *digna Data Analytics* für Trendanalysen zusammen |
+| **Compliance** | Sichert die kontinuierliche Kontrolle über die **Qualität und Beobachtbarkeit von Daten** |
 | **Transparency** | Bietet Konfidenzwerte, Zeitstempel und Begründungscodes für jede Anomalie |
 
 ---
@@ -76,36 +75,38 @@ Nachfolgend Beispiele aus der Praxis, die vom **Data Anomalies**-Modul automatis
 
 1. **Profiling-Phase:** digna sammelt Metriken aus historischen Datensätzen.  
 2. **Lernphase:** KI-Modelle identifizieren wiederkehrende Muster (saisonal, wöchentlich, täglich).  
-3. **Monitoring-Phase:** Zukünftige Datensätze werden mit dynamisch gelernten Schwellenwerten verglichen.  
+3. **Monitoring-Phase:** Zukünftige Datensätze werden gegen dynamisch gelernte Schwellenwerte verglichen.  
 4. **Alerting-Phase:** Abweichungen außerhalb statistischer Konfidenzgrenzen werden als Anomalien gemeldet.  
 
-Alle Modelle sind erklärbar, deterministisch und für Unternehmensdatenvolumina optimiert.
+Alle Modelle sind erklärbar, deterministisch und für Unternehmensdatenvolumen optimiert.
 
 ---
 
 ## Beispielanwendungsfälle
 
-- Überwachung der Datenqualität in **Banktransaktionssystemen**  
+- Überwachung der Datenqualität in **Bank-Transaktionssystemen**  
 - Erkennung von Ladefehlern in **ETL- oder Data-Warehouse-Jobs**  
-- Identifikation abnormaler Kundenaktivitäten in **Telekommunikationsaufzeichnungen**  
-- Überwachung der Konsistenz klinischer Daten in **Healthcare-Analytics-Pipelines**  
-- Verhinderung defekter Dashboards in **BI- und Reporting-Umgebungen**
+- Identifikation abnormaler Kundenaktivitäten in **Telekommunikationsdaten**  
+- Überprüfung der Konsistenz klinischer Daten in **Healthcare-Analytics-Pipelines**  
+- Vermeidung defekter Dashboards in **BI- und Reporting-Umgebungen**
 
 ---
 
 ## Häufig gestellte Fragen
 
-**Does Data Anomalies require predefined rules?**  
+**Benötigt Data Anomalies vordefinierte Regeln?**  
 Nein — das Modul lernt das Verhalten der Daten automatisch.
 
-**Can I still define specific thresholds if needed?**  
+**Kann ich bei Bedarf trotzdem spezifische Schwellenwerte definieren?**  
 Ja. digna erlaubt die Kombination von KI-basierter und regelbasierter Erkennung (via *Data Validation*).
 
-**How are false positives minimized?**  
+**Wie werden False Positives minimiert?**  
 Das Modul verwendet adaptives Lernen und statistische Konfidenzbewertung, um normale saisonale Variationen zu ignorieren.
 
-**Where does computation happen?**  
-Alle Verarbeitungen laufen innerhalb Ihrer Datenbank — digna extrahiert niemals Rohdaten.
+**Wo findet die Berechnung statt?**  
+Die gesamte Verarbeitung läuft in Ihrer Datenbank — digna extrahiert niemals Rohdaten.
 
-**Is it suitable for sensitive or regulated data?**  
-Ja. digna läuft vollständig on-premises oder in privaten Clouds und entspricht europäischen Compliance-Standards.
+**Ist es für sensible oder regulierte Daten geeignet?**  
+Ja. digna läuft vollständig on-premises oder in privater Cloud und entspricht europäischen Compliance-Standards.
+
+---

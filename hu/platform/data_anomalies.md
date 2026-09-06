@@ -1,115 +1,115 @@
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# digna Data Anomalies – AI-alapú adatminőségi problémák észlelése
 
-**AI-powered observability for always-on data trust**
+**AI-alapú megfigyelhetőség az állandó adatbizalomért**
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
+A digna Data Anomalies a **digna Data Observability Platform** része — egy moduláris megoldás, amely folyamatosan elemzi az adatkészletek viselkedését az időben, és ezáltal javítja az **adatok minőségét**.
 
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+Automatikusan megtanulja, hogy mi a „normális” az adataidban, és riaszt, amikor a viselkedés megváltozik — statikus küszöbszintek meghatározása vagy egyetlen szabály írása nélkül.  
+A modul közvetlenül az adatbázisban fut, így az adatok soha nem hagyják el a környezetedet.
 
 ---
 
-## Key capabilities
+## A digna Data Anomalies célja
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+A **digna Data Anomalies** modul folyamatos **adatmegfigyelhetőséget** biztosít előre definiált statisztikai metrikák kiszámításával és nyomon követésével, mint például:
 
----
+- Adatmennyiség és rekordszámok  
+- Hiányzó értékek aránya  
+- Értékeloszlások és hisztogramok  
+- Numerikus tartományok és átlagok  
+- Oszlopok egyedisége és szöveg hosszúsága  
 
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+Ezeket a metrikákat minden adatkészletre automatikusan gyűjtjük.  
+Ezek alapján a digna modelleket épít, amelyek jellemzik az egyes metrikák tipikus viselkedését — naponta, heti vagy szezonális minták szerint tanulva.  
+Az edzés után a modul előrejelzi az új adatok várható értékeit és észleli az eltéréseket, amelyek minőségi problémára, folyamathibára vagy upstream változásokra utalhatnak.
 
 ---
 
-## Example scenarios
+## Fő képességek
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+- AI segítségével automatikusan megtanulja a várt adatviselkedést — nincs szükség küszöbök konfigurálására.  
+- Észleli a hirtelen csökkenéseket, belövéseket vagy eltolódásokat az adatmennyiségben és eloszlásokban.  
+- Felismeri az átcserélt oszlopokat vagy helytelen attribútumtérképezéseket.  
+- Kiemeli a váratlan kategóriás értékeket (pl. új régiók vagy kódok).  
+- Támogat minden oszloptípust: numerikus, kategóriás vagy nem meghatározott.  
+- Teljes mértékben az ügyfél környezetében működik — nincs adatmigráció.  
+- Integrálható a **digna Data Analytics**-szel hosszú távú trendanalízishez.
 
 ---
 
-## Integration with other modules
+## Működési elv
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+### 1. lépés – Metrika számítás
+A digna profil metrikák halmazát számítja ki minden táblára és oszlopra.  
+Ezek a metrikák leírják az adataid szerkezetét és statisztikai viselkedését, és tárolódnak a további elemzéshez.
 
----
+### 2. lépés – Modell tanítás
+A metrikaértékek történeti adatai alapján a digna kompakt gépi tanulási modelleket (signature models) tanít, amelyek leképezik az egyes metrikák normál tartományát.
 
-## Typical use cases
+### 3. lépés – Automatikus küszöbölés
+*conformal inference* használatával a digna adaptív konfidencia intervallumokat (auto-thresholds) számít, amelyek együtt változnak az adataiddal.  
+Ha új metrikaértékek kívül esnek a várt tartományon, anomáliaként jelöljük őket.
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+Ez a folyamatos visszacsatolási kör biztosítja, hogy a monitorozás releváns maradjon még akkor is, ha az adatmennyiségek vagy minták természetesen változnak.
 
 ---
 
-## Benefits
+## Példaszcenáriók
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+### Váratlan csökkenés a rekordmennyiségben
+Egy adatkészlet jellemzően napi körülbelül 500 000 rekordot tartalmaz.  
+Amikor egy új feltöltés csak 50 000 rekordot hoz, a digna anomáliát jelez, és megmutatja, mennyire tér el az érték a megtanult tartománytól.
 
----
+### Átcserélt oszlopok észlelése
+A `last_name` átlagos karakterhossza hirtelen megegyezik a `first_name` értékével.  
+A digna felismeri a metrikák mintázatának eltérését, és potenciális oszlopcserét jelez.
 
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+### Váratlan kategória észlelése
+Egy oszlop, amely osztrák városokat listáz, hirtelen „Zurich” értéket tartalmaz.  
+A történeti eloszlások alapján a digna a új értéket váratlanként jelöli és riasztást küld.
 
 ---
 
-## Summary
+## Integráció más modulokkal
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+- **digna Data Analytics** — összegzi az anomália történetet és volatilitási metrikákat a hosszú távú trendek feltárásához.  
+- **digna Data Validation** — explicit üzleti szabályokat érvényesít determinisztikus minőségellenőrzéshez.  
+- **digna Data Timeliness** — figyeli az adatok érkezési idejét és korrelálja a késéseket az anomáliák előfordulásával.  
+- **digna Data Schema Tracker** — detektálja a szerkezeti változásokat, amelyek magyarázatot adhatnak új anomáliákra.
+
+---
+
+## Tipikus felhasználási esetek
+
+- Hiányzó vagy duplikált adathalmazok észlelése.  
+- Átcserélt vagy levágott oszlopok azonosítása.  
+- Eloszláselmozdulás észlelése numerikus vagy kategóriás jellemzőkben.  
+- Váratlan referenciaértékek vagy kódok felderítése.  
+- Folyamatos betöltési csatornák monitorozása rendellenességekért.  
+- Az adatok általános **minőségének és megfigyelhetőségének** nyomon követése több doménben.
+
+---
+
+## Előnyök
+
+- Azonnali észlelés a rendellenes adatviselkedésre.  
+- Kézi küszöbhangolás megszüntetése.  
+- Csökkenti az üzemeltetési erőfeszítést nagy adatkörnyezetekben.  
+- Növeli az analitikai és riportálási rendszerek megbízhatóságát.  
+- Erősíti az **adatok minőségét** és az end-to-end **adatmegfigyelhetőséget**.
+
+---
+
+## Kapcsolódó digna modulok
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend- és volatilitási metrikák.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — szabályalapú adatellenőrzés.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — adatszállítási ütemtervek monitorozása.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — sémaváltozások észlelése.
+
+---
+
+## Összefoglalás
+
+A **digna Data Anomalies** modul a digna AI-vezérelt **Data Observability Platform** magját képezi.  
+A kulcsmetrikák folyamatos monitorozásával, minták tanulásával és eltérések azonosításával segít a szervezeteknek abban, hogy az **adatok minősége** megbízható, stabil és magyarázható maradjon — manuális konfiguráció nélkül.

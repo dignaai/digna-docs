@@ -28,10 +28,19 @@
 
 ## 설치 및 배포
 
+### 운영 체제
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Linux에 digna 릴리스 2026.06을 설치하는 단계별 가이드 — 시스템 요구사항, PostgreSQL 설정, nginx 또는 Apache 구성, 백엔드 및 대시보드 구성, digna를 systemd 서비스로 실행하는 방법, 새 릴리스로 업그레이드하는 방법
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): macOS에 digna Release 2026.06을 설치하는 단계별 안내 — 시스템 요구사항, Homebrew 및 PostgreSQL 설정, nginx 또는 Apache 구성, 백엔드 및 대시보드 설정, digna를 백그라운드 서비스로 실행 및 새 릴리스로 업그레이드 방법.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Windows에 digna Release 2026.06을 설치하는 단계별 가이드 — 시스템 요구사항, PostgreSQL 설정, 웹 서버 구성, 백엔드 및 대시보드 구성, Windows 서비스로 digna 실행, 새 릴리스로 업그레이드
-- [싱글 사인온을 구성하는 방법](https://docs.digna.ai/ko/installation_deployment/sso_integration_guide/): OpenID Connect (OIDC)를 사용하여 digna에 Single Sign-On (SSO)을 구성하는 단계별 가이드입니다. 대시보드 및 백엔드 구성, 테스트, 문제 해결 및 Microsoft Entra ID, Google Workspace, Okta를 포함한 지원되는 IdP를 다룹니다.
+- [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Windows에 digna 릴리스 2026.06을 설치하는 단계별 안내 — 시스템 요구사항, PostgreSQL 설정, 웹 서버 구성, 백엔드 및 대시보드 설정, Windows 서비스로서의 digna 실행 및 릴리스 업그레이드 방법.
 
 ## 시작하기
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/ko/databases/snowflake_connector_guide/): Python 커넥터 또는 Snowflake ODBC 드라이버를 사용하여 digna를 Snowflake에 연결하도록 구성하는 방법입니다. DSN 또는 DSN-less 설정을 사용한 암호 기반 인증을 지원합니다.
 - [MS SQL Server](https://docs.digna.ai/ko/databases/sqlserver_connector_guide/): pymssql Python 드라이버 또는 SQL Server ODBC 드라이버를 사용해 digna가 Microsoft SQL Server에 연결하도록 구성하는 방법입니다. DSN 기반 또는 DSN-less 설정으로 암호 기반 인증을 지원합니다.
 - [Teradata](https://docs.digna.ai/ko/databases/teradata_connector_guide/): digna를 teradatasql Python 드라이버 또는 Teradata ODBC 드라이버를 사용하여 Teradata에 연결하도록 구성합니다. DSN 또는 DSN-less 설정에서 비밀번호 기반 인증을 지원합니다.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/ko/sso/overview/): OpenID Connect (OIDC)를 사용해 digna에서 Single Sign-On이 작동하는 방식. 대시보드 및 백엔드 구성, 테스트, 문제 해결, Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne 및 AD FS별 설정 가이드 링크 포함.
+- [AD FS](https://docs.digna.ai/ko/sso/adfs_sso_guide/): OpenID Connect를 사용하여 Active Directory Federation Services로 digna의 싱글 사인온을 구성합니다 — 애플리케이션 그룹, 서버 애플리케이션, 공유 비밀, 허용된 스코프 및 대응하는 digna 구성.
+- [Auth0](https://docs.digna.ai/ko/sso/auth0_sso_guide/): OpenID Connect를 사용해 Auth0로 digna의 싱글 사인온을 구성합니다 — Regular Web Application 설정, 허용된 콜백 URL, 클라이언트 자격 증명, 테넌트 도메인 및 일치하는 digna 구성을 다룹니다.
+- [Google Workspace](https://docs.digna.ai/ko/sso/google_workspace_sso_guide/): OpenID Connect를 사용하여 Google Workspace와 digna의 Single Sign-On을 구성하는 방법 — OAuth 동의 화면, OAuth 클라이언트 ID, 승인된 리디렉트 URI 및 대응하는 digna 구성.
+- [Keycloak](https://docs.digna.ai/ko/sso/keycloak_sso_guide/): OpenID Connect를 사용하여 Keycloak으로 digna의 Single Sign-On을 구성합니다 — realm 및 클라이언트 설정, 클라이언트 인증, 유효한 리디렉트 URI, 클라이언트 시크릿 및 해당 digna 구성.
+- [Microsoft Entra ID](https://docs.digna.ai/ko/sso/microsoft_entra_id_sso_guide/): OpenID Connect를 사용하여 Microsoft Entra ID(이전 Azure AD)로 digna의 싱글 사인온을 구성 — 앱 등록, 리디렉트 URI, 클라이언트 시크릿, 테넌트 ID 및 대응하는 digna 구성.
+- [Okta](https://docs.digna.ai/ko/sso/okta_sso_guide/): OpenID Connect를 사용해 Okta로 digna의 Single Sign-On을 구성합니다 — 앱 통합, 로그인 리디렉션 URI, 클라이언트 자격 증명, 인증 서버 선택 및 그에 맞는 digna 설정을 다룹니다.
+- [OneLogin](https://docs.digna.ai/ko/sso/onelogin_sso_guide/): OpenID Connect를 사용해 OneLogin으로 digna의 Single Sign-On을 구성합니다 — OIDC 앱 생성, 리디렉션 URI, 클라이언트 자격증명, 토큰 엔드포인트 인증 및 대응하는 digna 설정을 다룹니다.
+- [PingOne](https://docs.digna.ai/ko/sso/pingone_sso_guide/): OpenID Connect를 사용하여 PingOne으로 digna의 Single Sign-On을 구성합니다 — OIDC 웹 앱 설정, 리디렉트 URI, 클라이언트 자격 증명, 환경 ID, 지역 도메인 및 대응하는 digna 구성.
 
 ## CLI 참고 문서
 

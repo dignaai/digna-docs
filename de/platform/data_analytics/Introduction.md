@@ -1,20 +1,19 @@
 # Data Analytics – Trends und Stabilität
-<h1 style="display:none;">AI-Driven Data Analytics Module for Data Quality and Observability – digna</h1>
 
 ---
 
 ## Zweck
 
-Das **Data Analytics**-Modul offenbart **langfristige Muster, Stabilität und Volatilität** in Ihren Datensätzen und verwandelt Rohmetriken in aussagekräftige Erkenntnisse.  
-Es bietet eine übergeordnete analytische Ebene über die Ergebnisse von *Data Anomalies* und ermöglicht Teams, **Veränderungen über die Zeit zu verstehen** und sowohl die **Datenqualität** als auch die **Observability von Datenpipelines** zu verbessern.
+Das **Data Analytics**-Modul zeigt **langfristige Muster, Stabilität und Volatilität** in Ihren Datensätzen auf — und verwandelt rohe Metriken in aussagekräftige Erkenntnisse.  
+Es bietet eine übergeordnete analytische Ebene über den Ergebnissen von *Data Anomalies* und ermöglicht Teams, **Veränderungen über die Zeit zu verstehen** und sowohl die **Datenqualität** als auch die **Beobachtbarkeit von Datenpipelines** zu verbessern.
 
-Durch die Identifikation von Trendbrüchen, wiederkehrenden Mustern und Verschiebungen in der Volatilität hilft digna Data Analytics dabei, zwischen **erwartetem saisonalem Verhalten** und **tatsächlichen Problemen der Datenqualität** zu unterscheiden.
+Durch das Erkennen von Trendbrüchen, wiederkehrenden Mustern und Verschiebungen in der Volatilität hilft digna Data Analytics dabei, zwischen **erwartetem saisonalem Verhalten** und **tatsächlichen Problemen in der Datenqualität** zu unterscheiden.
 
 ---
 
 ## Technische Übersicht
 
-### Abgeleitete Statistiken
+### Abgeleitete Statistik
 *digna Data Analytics* berechnet statistische Eigenschaften wie:
 
 - **Trend** – langfristige Richtung einer Metrik (steigend, fallend, stabil)  
@@ -26,36 +25,38 @@ Durch die Identifikation von Trendbrüchen, wiederkehrenden Mustern und Verschie
 Das Modul kann jede Metrik analysieren, die von anderen digna-Modulen erzeugt wird, einschließlich:
 
 - Datensatzanzahlen  
-- Fehlende-Werte-Raten  
-- Verteilungsstatistiken (min, max, Mittelwert, Varianz)  
+- Fehlwertquoten  
+- Verteilungsstatistiken (min, max, mean, variance)  
 - KPI-Aggregationen (z. B. Umsatz, Transaktionen, Claims)  
-- Abweichungen in der Timeliness oder Häufigkeit von Anomalien  
+- Abweichungen in der Timeliness oder Häufigkeiten von Anomalien  
+
+Hinweis: Die Modulnamen Data Anomalies, Data Analytics, Data Validation, Data Timeliness und Data Schema Tracker werden nicht übersetzt.
 
 ### Zeitreihenanalyse
-Data Analytics bewertet die **Stabilität über Perioden hinweg** — vergleicht eine Woche, einen Monat oder ein Quartal mit einem anderen — und nutzt statistische Konfidenz sowie visuelle Metriken zur Trendstabilität.
+Data Analytics bewertet die **Stabilität über Perioden** — vergleicht eine Woche, einen Monat oder ein Quartal mit einer anderen — und nutzt statistische Konfidenz sowie visuelle Metriken zur Trendstabilität.
 
 ---
 
 ## Funktionsweise
 
 1. **Eingabedaten** – digna sammelt Zeitreihenmetriken aus anderen Modulen (z. B. Anzahl der Anomalien).  
-2. **Statistisches Modellieren** – AI- und statistische Funktionen identifizieren zugrunde liegende Trends und Volatilitätsniveaus.  
-3. **Vergleich zwischen Perioden** – digna vergleicht historische und aktuelle Performance für KPIs oder Qualitätsindikatoren.  
-4. **Generierung von Erkenntnissen** – Dashboards zeigen erkannte Trends, stabile Perioden und Change Points im *Inspection Hub* und in Analytics-Ansichten an.  
+2. **Statistisches Modellieren** – KI und statistische Funktionen identifizieren zugrundeliegende Trends und Volatilitätsniveaus.  
+3. **Vergleich über Perioden** – digna vergleicht historische und aktuelle Leistung für KPIs oder Qualitätsindikatoren.  
+4. **Erzeugung von Erkenntnissen** – Dashboards zeigen erkannte Trends, stabile Perioden und Change Points in *Inspection Hub* und Analyseansichten an.  
 
-Dies ermöglicht die proaktive Erkennung von *langsamen Drifts* oder *allmählicher Verschlechterung* der Datenqualität, bevor sie kritisch werden.
+Dies ermöglicht die proaktive Erkennung von *langsamen Drift* oder *allmählicher Verschlechterung* der Datenqualität, bevor sie kritisch werden.
 
 ---
 
 ## Beispielanwendungsfälle
 
-| Use Case | Description |
+| Use Case | Beschreibung |
 |-----------|--------------|
-| **Monitoring KPI stability** | Verfolgen Sie Verkäufe, Transaktionen oder Claims über die Zeit und erkennen Sie ungewöhnliche Volatilität. |
-| **Detecting hidden data drift** | Beobachten Sie langsame Verschiebungen in Datenverteilungen oder Fehlerraten, die von typischen Regeln übersehen werden. |
-| **Change point analysis** | Identifizieren Sie, wann eine Metrik ihr Verhalten ändert (z. B. plötzlicher Anstieg von Anomalien). |
-| **Operational reliability** | Bewerten Sie Perioden mit hoher vs. niedriger Datenstabilität über Systeme oder Abteilungen hinweg. |
-| **Business insights** | Heben Sie über rollierende Perioden Top-Performer-Kategorien oder -Produkte hervor. |
+| **Monitoring der KPI-Stabilität** | Verfolgen Sie Umsatz, Transaktionen oder Claims über die Zeit und erkennen Sie ungewöhnliche Volatilität. |
+| **Erkennung versteckten Daten-Drifts** | Beobachten Sie langsame Verschiebungen in Datenverteilungen oder Fehlwertquoten, die typische Regeln übersehen. |
+| **Change-Point-Analyse** | Identifizieren Sie Zeitpunkte, an denen sich das Verhalten einer Metrik ändert (z. B. plötzlicher Anstieg von Anomalien). |
+| **Betriebliche Zuverlässigkeit** | Bewerten Sie Perioden hoher vs. niedriger Datenstabilität über Systeme oder Abteilungen hinweg. |
+| **Business-Erkenntnisse** | Heben Sie über rollierende Perioden hinweg die leistungsstärksten Kategorien oder Produkte hervor. |
 
 ---
 
@@ -64,7 +65,7 @@ Dies ermöglicht die proaktive Erkennung von *langsamen Drifts* oder *allmählic
 | Bereich | Vorteil |
 |------|----------|
 | **Sichtbarkeit** | Bietet langfristige Einblicke in Trends und Muster der Datenqualität. |
-| **Frühwarnung** | Erkennt langsame Drifts, bevor sie Anomalien oder SLA-Verstöße auslösen. |
-| **Optimierung** | Hilft, instabile Datenquellen oder Systeme zu identifizieren, die Prozessanpassungen benötigen. |
-| **Cross-Module Analysis** | Kombiniert Daten aus Anomalies, Validation und Timeliness für ganzheitliche Erkenntnisse. |
-| **Actionable Insights** | Unterstützt sowohl technische Teams als auch Business-User beim unders
+| **Frühwarnung** | Erkennt langsame Drifts, bevor sie Anomalien oder SLA-Verletzungen auslösen. |
+| **Optimierung** | Hilft, instabile Datenquellen oder Systeme zu identifizieren, die Prozessoptimierung benötigen. |
+| **Cross-Modul-Analyse** | Kombiniert Daten aus Anomalies, Validation und Timeliness für ganzheitliche Erkenntnisse. |
+| **Umsetzbare Erkenntnisse** | Unterstützt sowohl technische Teams als auch Business-Anwender beim Verständnis und der Nutzung der gewonnenen Erkenntnisse.

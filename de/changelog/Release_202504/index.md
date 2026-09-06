@@ -1,92 +1,92 @@
-# Changelog – Release 2025.04
+# Änderungsprotokoll – Release 2025.04
 
-Mit Release 2025.04 macht digna einen großen Schritt, um Datenqualität und Observability einfacher zu verwalten, für Teams transparenter zu machen und weltweit zugänglich zu gestalten.  
-Dieses Release kombiniert **starke neue Funktionen**, **Verbesserungen der Workflow-Automatisierung** und **Optimierungen der Benutzererfahrung**.  
+Mit Release 2025.04 macht digna einen großen Schritt nach vorn, um Datenqualität und Observability einfacher zu verwalten, für Teams transparenter zu machen und Nutzern weltweit zugänglich zu machen.  
+Dieses Release kombiniert **leistungsstarke neue Funktionen**, **Verbesserungen der Workflow-Automatisierung** und **Feinheiten in der Benutzererfahrung**.  
 
 ---
 
 ## Neue Funktionen
 
-### Inspection Hub – Ein neues Kommandozentrum
-Der **Inspection Hub** ist jetzt als zentraler Ort verfügbar, um alle Ihre Inspection-Jobs zu verwalten. Statt zwischen verschiedenen Modulen zu wechseln oder ausschließlich auf die Kommandozeile angewiesen zu sein, können Sie Ihre Inspektionen jetzt von einer schlanken Oberfläche aus überwachen und steuern.  
+### Inspection Hub – Ein neues Steuerzentrum
+Das **Inspection Hub** ist jetzt als zentraler Ort verfügbar, um alle Ihre Inspektions-Jobs zu verwalten. Anstatt zwischen verschiedenen Modulen hin- und herzuspringen oder ausschließlich auf die Ausführung über die Kommandozeile angewiesen zu sein, können Sie Ihre Inspektionen jetzt in einer schlanken Oberfläche überwachen und steuern.  
 
 Wesentliche Funktionen umfassen:  
-- On-Demand-Inspektionen: Starten Sie neue Jobs sofort, wenn Sie frische Ergebnisse benötigen.  
-- Inspektionshistorie: Sehen Sie eine Timeline der Inspektionen — was ausgeführt wurde, wer sie ausgelöst hat und wann.  
-- Status-Tracking: Jobs sind klar als abgeschlossen, in Bearbeitung oder ausstehend gekennzeichnet.  
-- Invoker-Insights: Prüfen Sie schnell, ob eine Inspektion von einem Benutzer, Scheduler oder der CLI ausgelöst wurde.  
-- Aufräumwerkzeuge: Löschen Sie veraltete oder unnötige Jobs, um Ihren Arbeitsbereich übersichtlich zu halten.  
-- Detaillierte Logs: Tauchen Sie in jeden Job ein, um Laufzeiten, eingeschlossene Quellen und angewendete Schwellenwerte zu sehen.  
+- On-Demand-Inspektionen: Starten Sie neue Jobs sofort, wann immer Sie aktuelle Ergebnisse benötigen.  
+- Inspektionsverlauf: Sehen Sie eine Zeitachse der Inspektionen — was ausgeführt wurde, wer sie ausgelöst hat und wann.  
+- Statusverfolgung: Jobs sind klar als abgeschlossen, in Bearbeitung oder ausstehend markiert.  
+- Invoker-Einblicke: Prüfen Sie schnell, ob eine Inspektion von einem Benutzer, dem Scheduler oder der CLI ausgelöst wurde.  
+- Aufräum-Tools: Löschen Sie veraltete oder unnötige Jobs, um Ihren Arbeitsbereich übersichtlich zu halten.  
+- Detaillierte Logs: Tauchen Sie in jeden Job ein, um zu sehen, wie lange er gedauert hat, welche Quellen eingeschlossen wurden und wie Schwellenwerte angewendet wurden.  
 
-Der Inspection Hub bietet Teams **End-to-End-Transparenz und Kontrolle** und erleichtert das Management von Inspektionen in großen Projekten.  
+Das Inspection Hub bietet Teams **End-to-End-Sichtbarkeit und Kontrolle** und macht Inspektionen über große Projekte hinweg leichter handhabbar.  
 
 ---
 
-### Mehrsprachigkeit – digna spricht Ihre Sprache
-digna ist jetzt bereit für internationale Teams durch die Einführung der **Mehrsprachigkeit**.  
+### Mehrsprachige Unterstützung – digna spricht Ihre Sprache
+digna ist jetzt bereit für internationale Teams mit der Einführung der **Mehrsprachigkeit**.  
 
-In diesem Release können Sie Ihre **bevorzugte Schnittstellensprache** direkt in den User Preferences einstellen. Unterstützte Sprachen sind:  
+In diesem Release können Sie Ihre **bevorzugte Interface-Sprache** direkt in den Benutzereinstellungen festlegen. Unterstützte Sprachen sind:  
 - Englisch (UK, US, CA, AU)  
 - Deutsch (DE, AT, CH)  
 - Polnisch (PL)  
 
-Das macht digna für mehrsprachige Organisationen einfacher nutzbar und sorgt für eine reibungslosere Einführung in Teams, die in verschiedenen Regionen arbeiten. Weitere Sprachen werden in kommenden Releases ergänzt.  
+Das macht digna für mehrsprachige Organisationen leichter nutzbar und verbessert die Akzeptanz in Teams, die in verschiedenen Regionen arbeiten. Weitere Sprachen werden in kommenden Releases hinzugefügt.  
 
 ---
 
-### Import & Export von Datenquellen – Konfiguration einfach gemacht
-Konsistenz über Umgebungen hinweg ist in Unternehmensumgebungen entscheidend. Mit 2025.04 führt digna den **Import/Export von Datenquellen** via **dignacli** ein, dem Kommandozeilen-Tool für fortgeschrittene Nutzer.  
+### Import & Export von Datenquellen – Konfiguration leicht gemacht
+Konsistenz über Umgebungen hinweg ist essenziell in Unternehmensbereitstellungen. Mit 2025.04 führt digna den **Import/Export von Datenquellen** über **dignacli** ein, das Kommandozeilenwerkzeug für fortgeschrittene Anwender.  
 
 Vorteile:  
-- Exportieren Sie eine Datenquellenkonfiguration einmal und verwenden Sie sie in Development, Test und Production wieder.  
-- Eliminieren Sie manuelle Neukonfigurationen und vermeiden Sie kostspielige Fehler.  
+- Exportieren Sie eine Datenquellenkonfiguration einmal und verwenden Sie sie wieder in Development, Test und Production.  
+- Vermeiden Sie manuelle Neukonfigurationen und teure Fehler.  
 - Unterstützen Sie automatisierte Workflows und CI/CD-Pipelines mit einfachen CLI-Befehlen (`export-ds` und `import-ds`).  
 - Kopieren Sie Datenquellen schnell zwischen Projekten für einfachere Zusammenarbeit.  
 
-Diese Funktionalität stellt sicher, dass Teams mit Vertrauen deployen können, da Konfigurationen in jeder Umgebung konsistent sind.  
+Diese Funktion stellt sicher, dass Teams mit Vertrauen bereitstellen können, da Konfigurationen in jeder Umgebung konsistent sind.  
 
 ---
 
-### Module Analytics (v1) – Vom Erkennen zum Verstehen
-digna begann als Plattform zur Anomalieerkennung und Überwachung der Datenqualität. Mit Release 2025.04 entwickelt es sich weiter durch die **erste Version von Module Analytics**.  
+### Module Analytics (v1) – Von der Erkennung zum Verständnis
+digna begann als Plattform für Anomalieerkennung und Überwachung der Datenqualität. Mit Release 2025.04 entwickelt es sich weiter mit der **ersten Version von Module Analytics**.  
 
-Module Analytics hilft Nutzern, ihre Daten **zu verstehen** statt nur auf Probleme zu reagieren. Mit diesem neuen Modul können Sie:  
+Module Analytics hilft Nutzern dabei, ihre **Daten zu verstehen** statt nur auf Probleme zu reagieren. Mit diesem neuen Modul können Sie:  
 - Langfristige Trends in Ihren Datensätzen verfolgen.  
-- Volatilität erkennen und überwachen, um Schwankungen besser zu verstehen.  
-- Das Verhalten von Daten über die Zeit explorativ untersuchen, um tieferen Kontext zu gewinnen.  
+- Volatilität erkennen und überwachen, um Schwankungen zu verstehen.  
+- Das Verhalten von Daten über die Zeit erkunden, um tieferen Kontext zu erhalten.  
 
-Beispielsweise kann digna automatisch hervorheben, dass „die Zeilenanzahl seit Jahresbeginn um 15,8 % gestiegen ist.“  
-Keine SQL-Abfragen, keine manuellen Prüfungen — nur **handlungsfähige Erkenntnisse auf einen Blick**.  
+Zum Beispiel kann digna automatisch hervorheben, dass *„Die Zeilenanzahl seit Jahresbeginn um 15,8 % gestiegen ist.“*  
+Keine SQL-Abfragen, keine manuellen Prüfungen — nur **umsetzbare Erkenntnisse auf einen Blick**.  
 
-Dies ist die Grundlage von dignas Weiterentwicklung zu fortgeschrittener Datenanalyse, die Data-Teams ermöglicht, von reaktivem zu proaktivem Monitoring zu wechseln.  
+Dies bildet die Grundlage für dignas Weg hin zu fortgeschrittener Datenanalyse und ermöglicht es Datenteams, von reaktiver zu proaktiver Überwachung zu wechseln.  
 
 ---
 
-### Dashboard-Verbesserungen – Eine flüssigere Benutzererfahrung
-Neben den großen Features enthält Release 2025.04 mehrere **Feinabstimmungen am Dashboard**, die digna intuitiver und angenehmer machen:  
+### Dashboard-Verbesserungen – Eine reibungslosere Benutzererfahrung
+Neben den großen Funktionen enthält Release 2025.04 mehrere **Feinheiten am Dashboard**, die darauf abzielen, digna intuitiver und angenehmer zu machen:  
 - Schnellere Navigation zwischen Projekten und Inspektionen.  
-- Ein aufgeräumteres Layout für Inspektionslogs und Job-Submissions.  
-- Dezente Designanpassungen, die helfen, Erkenntnisse schneller zu finden.  
+- Ein klareres Layout für Inspektions-Logs und Job-Einreichungen.  
+- Dezente Designanpassungen, die Ihnen helfen, Erkenntnisse schneller zu finden.  
 
-Diese Verbesserungen basieren direkt auf Kundenfeedback und zeigen unser fortwährendes Engagement, digna **als Plattform für den täglichen Einsatz** zu gestalten.  
+Diese Verbesserungen basieren direkt auf Kundenfeedback und zeigen unser fortlaufendes Engagement, digna **zu einer Plattform für den täglichen Gebrauch** zu machen.  
 
 ---
 
 ## Allgemeine Verbesserungen
-- Performance-Optimierungen für Inspektionsjobs über große Datensätze.  
-- Verbesserte Fehlerbehandlung in dignacli zur klareren Rückmeldung.  
+- Performance-Optimierungen für Inspektions-Jobs über große Datensätze.  
+- Verbesserte Fehlerbehandlung in dignacli, um klareres Feedback zu geben.  
 - Stabilitätsverbesserungen für Projekte mit vielen gleichzeitigen Jobs.  
-- UI-Verfeinerungen für Job-Log-Filterung und Projektverwaltung.  
+- UI-Feinheiten für das Filtern von Job-Logs und Projektmanagement.  
 
 ---
 
 ## Zusammenfassung
-Release 2025.04 steht für **Kontrolle, Zugänglichkeit und Erkenntnis**.  
+Release 2025.04 dreht sich um **Kontrolle, Zugänglichkeit und Erkenntnis**.  
 
-- Der neue **Inspection Hub** bietet Nutzern volle Sichtbarkeit über Inspektionsjobs.  
-- **Mehrsprachigkeit** stellt sicher, dass digna in globalen Teams eingesetzt werden kann.  
-- Die **Import/Export-Funktion** vereinfacht das Konfigurationsmanagement über Umgebungen hinweg.  
-- **Module Analytics (v1)** verlagert den Fokus vom Erkennen zum Verstehen, mit Trend- und Volatilitätsverfolgung.  
-- **Dashboard-Verbesserungen** verfeinern das Gesamterlebnis.  
+- Das neue **Inspection Hub** bietet Nutzern volle Sichtbarkeit über Inspektions-Jobs.  
+- **Mehrsprachige Unterstützung** sorgt dafür, dass digna in globalen Teams nutzbar ist.  
+- **Import/Export-Funktionalität** vereinfacht das Konfigurationsmanagement über Umgebungen hinweg.  
+- **Module Analytics (v1)** verlagert den Fokus von Erkennung zu Verständnis, mit Trend- und Volatilitätsverfolgung.  
+- **Dashboard-Verbesserungen** verfeinern das Gesamtbenutzererlebnis.  
 
-Gemeinsam machen diese Updates digna leistungsfähiger, benutzerfreundlicher und international einsatzbereiter als je zuvor.
+Zusammen machen diese Updates digna leistungsfähiger, benutzerfreundlicher und international einsatzbereit wie nie zuvor.

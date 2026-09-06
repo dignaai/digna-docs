@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# macOS इंस्टॉलेशन गाइड — digna रिलीज 2026.06
 
-**Release:** 2026.06
+**रिलीज:** 2026.06
 
-**Last Updated:** September 5, 2026
+**अंतिम अद्यतन:** 5 सितम्बर, 2026
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## सामग्री तालिका
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+1. [परिचय](#introduction)
+2. [सिस्टम आवश्यकताएँ](#system-requirements)
+3. [पूर्व-इंस्टॉलेशन सेटअप](#pre-installation-setup)
+4. [PostgreSQL सर्वर सेटअप](#postgresql-server-setup)
+5. [वेब सर्वर कॉन्फ़िगरेशन](#web-server-configuration)
+6. [प्रारम्भिक इंस्टॉलेशन](#initial-installation)
+7. [बैकएंड कॉन्फ़िगरेशन](#backend-configuration)
+8. [डैशबोर्ड कॉन्फ़िगरेशन](#dashboard-configuration)
+9. [digna को बैकग्राउंड सेवा के रूप में चलाना](#running-digna-as-a-background-service)
+10. [नए रिलीज़ में अपग्रेड करना](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## परिचय {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### digna के बारे में
 
-| Requirement | Specification |
+digna एक व्यापक AI-समर्थित प्लेटफ़ॉर्म है जो विभिन्न डेटा वातावरणों (वेयरहाउस, लेक्स और लेकहाउस जैसे) में डेटा गुणवत्ता प्रबंधन को अनुकूलित करने के लिए डिज़ाइन किया गया है। यह उच्च स्केलेबल और अनुकूलनीय बनाने के लिए ऑटोमेशन, वास्तविक समय की निगरानी और अनॉमली डिटेक्शन के माध्यम से आधुनिक डेटा चुनौतियों को संबोधित करता है।
+
+digna दो मुख्य घटकों से मिलकर बनता है:
+
+- **dignabackend**: एप्लिकेशन का कोर इंजन, जो डेटा प्रोसेसिंग और गुणवत्ता जाँच के लिए जिम्मेदार है।
+- **dignadashboard**: एक वेब-आधारित इंटरफ़ेस जो वेब सर्वर पर होस्ट होता है और digna प्लेटफ़ॉर्म के साथ इंटरैक्ट करने तथा डेटा गुणवत्ता मीट्रिक्स को विज़ुअलाइज़ करने का उपयोगकर्ता-अनुकूल तरीका प्रदान करता है।
+
+### रिलीज 2026.06 में नया क्या है
+
+यह रिलीज़ डेटा ऑब्ज़र्वेबिलिटी क्षमताएँ सीधे आपके कोड के अंदर लाती है, जिससे डेवलपर स्रोत पर ही डेटा गुणवत्ता की निगरानी कर सकते हैं। पूर्ण विवरण के लिए देखें [release notes](http://docs.digna.ai/changelog/Release_202606/).
+
+### क्या आप Windows या Linux ढूंढ रहे हैं?
+
+यह गाइड macOS के लिए है। अन्य प्लेटफार्मों के लिए देखें [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) या [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## सिस्टम आवश्यकताएँ {: #system-requirements }
+
+इंस्टॉलेशन शुरू करने से पहले सुनिश्चित करें कि आपका सिस्टम निम्न न्यूनतम आवश्यकताओं को पूरा करता है:
+
+| आवश्यकता | विनिर्देश |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **ऑपरेटिंग सिस्टम** | macOS 13 (Ventura) या बाद वाला |
+| **आर्किटेक्चर** | Apple Silicon (arm64) या Intel (x86_64) |
+| **मेमोरी (मिनिमल सेटअप)** | 16 GB RAM |
+| **डिस्क स्पेस** | 10 GB उपलब्ध स्टोरेज |
+| **डेटाबेस** | PostgreSQL Server 12 या उससे ऊपर |
+| **वेब सर्वर** | nginx, Apache httpd, या समकक्ष |
+| **कमान्ड लाइन टूल्स** | Xcode Command Line Tools (Homebrew के लिए आवश्यक) |
 
-### Database Installation Options
+### डेटाबेस इंस्टॉलेशन विकल्प
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**यदि PostgreSQL पहले से इंस्टॉल है:**
+आप मौजूदा PostgreSQL सर्वर में digna के लिए नया डेटाबेस जोड़ सकते हैं।
 
-**If installing PostgreSQL on the same machine as digna:**
+**यदि आप PostgreSQL को उसी मशीन पर इंस्टॉल कर रहे हैं जहाँ digna है:**
 
-!!! info "Recommended Specifications"
+!!! info "सिफारिश की गई विनिर्देश"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **मेमोरी**: 32 GB RAM (16 GB की जगह)
+    - **डिस्क स्पेस**: 50 GB उपलब्ध स्टोरेज (10 GB की जगह)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    ये उच्च विनिर्देश दोनों, digna और PostgreSQL डेटाबेस को एक साथ चलाने के लिए उपयुक्त हैं।
 
-### Checking Your Architecture
+### अपनी आर्किटेक्चर की जाँच
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+इस गाइड में कई पाथ Apple Silicon और Intel Mac के बीच अलग होते हैं। यह जाँचने के लिए **Terminal** खोलकर चलाएँ:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew `/opt/homebrew` पर इंस्टॉल होता है।
+- `x86_64` — Intel. Homebrew `/usr/local` पर इंस्टॉल होता है।
 
-!!! tip "Tip"
+!!! tip "सुझाव"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    किसी भी एक पाथ को हार्ड-कोड करने के बजाय, यह गाइड `$(brew --prefix)` का उपयोग करती है, जो दोनों आर्किटेक्चरों पर सही स्थान में विस्तारित होता है। आप कमांड्स यथावत कॉपी कर सकते हैं।
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## पूर्व-इंस्टॉलेशन सेटअप {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+digna इंस्टॉल करने से पहले सुनिश्चित करें कि तीन प्रमुख पूर्वापेक्षित चीज़ें मौजूद हों:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – पैकेज मैनेजर जिसका उपयोग नीचे दिए गए कंपोनेंट्स को इंस्टॉल करने के लिए किया जाता है
+2. **PostgreSQL Server** – गणना किए गए मीट्रिक्स और प्रदर्शन डेटा को स्टोर करने के लिए
+3. **Web Server** – digna Dashboard की होस्टिंग के लिए
 
-If these components are not already set up, follow the sections below to install and configure them.
+यदि ये कंपोनेंट्स पहले से सेट नहीं हैं, तो इन्हें इंस्टॉल और कॉन्फ़िगर करने के लिए नीचे के सेक्शनों का पालन करें।
 
-### Installing Homebrew
+### Homebrew इंस्टॉल करना
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew macOS के लिए मानक पैकेज मैनेजर है और इस गाइड में PostgreSQL और nginx इंस्टॉल करने के लिए उपयोग किया जाता है।
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### चरण 1: जाँचें कि Homebrew पहले से इंस्टॉल है या नहीं
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+**Terminal** खोलें (press `Cmd + Space`, type `Terminal`, press Enter) और चलाएँ:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+यदि कोई वर्शन नंबर लौटता है, तो [PostgreSQL Server Setup](#postgresql-server-setup) अनुभाग पर जाएँ।
 
-#### Step 2: Install Homebrew
+#### चरण 2: Homebrew इंस्टॉल करें
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+यदि कमांड नहीं मिला, तो Homebrew इंस्टॉल करने के लिए [official Homebrew site](https://brew.sh) पर दिए निर्देशों का पालन करें। इंस्टॉलर Xcode Command Line Tools भी इंस्टॉल कर देता है यदि वे पहले से मौजूद नहीं हैं।
 
-#### Step 3: Add Homebrew to Your PATH
+#### चरण 3: Homebrew को अपने PATH में जोड़ें
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Apple Silicon पर, इंस्टॉलर आपके शेल पर्यावरण में Homebrew जोड़ने के लिए दो कमांड प्रिंट करता है। उन्हें निर्देशानुसार चलाएँ, फिर पुष्टि करें:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+यह Apple Silicon पर `/opt/homebrew` या Intel पर `/usr/local` प्रिंट करेगा।
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL सर्वर सेटअप {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### यदि आपके पास पहले से PostgreSQL मौजूद है
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+यदि PostgreSQL पहले से आपके लोकल मशीन पर इंस्टॉल और रन कर रहा है, या आप किसी मैनेज्ड रिमोट PostgreSQL सर्वर का उपयोग कर रहे हैं, तो आप [अगले अनुभाग](#web-server-configuration) पर जा सकते हैं।
 
-### Installation Options
+### इंस्टॉलेशन विकल्प
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS दो सरल तरीकों की पेशकश करता है PostgreSQL इंस्टॉल करने के लिए। एक चुनें:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — कमांड-लाइन इंस्टॉलेशन, सर्वर डिप्लॉयमेंट के लिए अनुशंसित
+- [Postgres.app](#postgresql-app) — ग्राफिकल इंस्टॉलेशन, लोकल मूल्यांकन के लिए सुविधाजनक
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Homebrew के साथ PostgreSQL इंस्टॉल करना {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### चरण 1: PostgreSQL फॉर्मूला इंस्टॉल करें
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### चरण 2: PostgreSQL को अपने PATH में जोड़ें
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+वर्ज़न्ड PostgreSQL फॉर्मूलाज *keg-only* होते हैं, जिसका मतलब है कि Homebrew उनके कमांड्स को अपने PATH में स्वतः लिंक नहीं करता। इन्हें स्वयं जोड़ें:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "नोट"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    यह macOS द्वारा उपयोग किए जाने वाले डिफ़ॉल्ट `zsh` शेल को मानकर है। यदि आप `bash` उपयोग करते हैं, तो समान लाइन को `~/.bash_profile` में जोड़ें।
 
-#### Step 3: Start the PostgreSQL Service
+#### चरण 3: PostgreSQL सर्विस शुरू करें
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+यह PostgreSQL को तुरंत शुरू कर देता है तथा इसे लॉगिन पर ऑटोमैटिक रूप से शुरू होने के लिए कॉन्फ़िगर करता है।
 
-#### Step 4: Verify the Installation
+#### चरण 4: इंस्टॉलेशन सत्यापित करें
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+यदि इंस्टॉलेशन सफल रहा तो PostgreSQL वर्शन दिखाई देगा।
 
-#### Step 5: Connect to the Server
+#### चरण 5: सर्वर से कनेक्ट करें
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "महत्वपूर्ण — macOS यहाँ Windows से अलग है"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Windows इंस्टॉलर आपसे `postgres` सुपरयूज़र और पासवर्ड बनाने के लिए कहता है। Homebrew ऐसा नहीं करता। इसके बजाय यह आपके **macOS अकाउंट** के नाम का एक सुपरयूज़र बनाता है, बिना पासवर्ड के, और केवल लोकल मशीन से पहुँच योग्य होता है।
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    इसका मतलब है कि एक फ्रेश Homebrew इंस्टॉलेशन पर `postgres` रोल मौजूद नहीं होता। जब आपको सुपरयूज़र की आवश्यकता हो तब अपने अकाउंट नाम का उपयोग करें, और Initial Installation में बताए अनुसार एक स्पष्ट digna यूज़र बनाएं।
 
-#### Step 6: Confirm the Port
+#### चरण 6: पोर्ट की पुष्टि करें
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+डिफ़ॉल्ट PostgreSQL पोर्ट `5432` है। यह पुष्टि करने के लिए कि आपका सर्वर किस पोर्ट पर सुन रहा है:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+मान नोट कर लें — आपको digna बैकएंड कॉन्फ़िगर करते समय इसकी आवश्यकता होगी।
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Postgres.app के साथ PostgreSQL इंस्टॉल करना {: #postgresql-app }
 
-If you prefer a graphical installation:
+यदि आप ग्राफिकल इंस्टॉलेशन पसंद करते हैं:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. [Postgres.app](https://postgresapp.com) डाउनलोड करें और उसे **Applications** फ़ोल्डर में ड्रैग करें
+2. ऐप खोलें और नई सर्वर बनाने के लिए **Initialize** पर क्लिक करें
+3. ऐप के निर्देशों का पालन करके उसके कमांड-लाइन टूल्स को अपने PATH में जोड़ें
+4. इंस्टॉलेशन सत्यापित करें:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Postgres.app भी आपके macOS अकाउंट के नाम का एक सुपरयूज़र बनाता है।
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## वेब सर्वर कॉन्फ़िगरेशन {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna को डैशबोर्ड होस्ट करने के लिए एक वेब सर्वर की आवश्यकता है। निम्नलिखित विकल्पों में से एक चुनें:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — Homebrew के माध्यम से इंस्टॉल, अनुशंसित
+- [Apache httpd](#apache-setup) — macOS के साथ शामिल
 
-You only need to install and configure **one** of these servers.
+आपको केवल इन में से किसी एक सर्वर को इंस्टॉल और कॉन्फ़िगर करने की आवश्यकता है।
 
-Both sections configure two things the dashboard depends on:
+दोनों सेक्शन उन दो चीज़ों को कॉन्फ़िगर करते हैं जिन पर डैशबोर्ड निर्भर करता है:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **सिंगल-पेज-एप्लिकेशन fallback**, ताकि डैशबोर्ड URL को रिफ़्रेश करने पर 404 न मिले
+- **`.md` MIME टाइप**, ताकि Markdown फ़ाइलें सही ढंग से सर्व हों
 
-### nginx Setup {: #nginx-setup }
+### nginx सेटअप {: #nginx-setup }
 
-#### Overview
+#### अवलोकन
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx एक हल्का, उच्च-प्रदर्शन वेब सर्वर है जो स्टेटिक digna डैशबोर्ड सर्व करने के लिए उपयुक्त है।
 
-#### Installation
+#### इंस्टॉलेशन
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### nginx शुरू करना
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### इंस्टॉलेशन सत्यापित करें
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. ब्राउज़र खोलें
+2. `http://localhost:8080` पर नेविगेट करें
+3. आपको nginx स्वागत पृष्ठ दिखाई देना चाहिए
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "नोट — डिफ़ॉल्ट पोर्ट 8080 है, 80 नहीं"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew nginx को पोर्ट `8080` पर सुनने के लिए कॉन्फ़िगर करता है ताकि यह बिना एडमिनिस्ट्रेटर विशेषाधिकार के चल सके। macOS पर पोर्ट `80` या 1024 से कम किसी भी पोर्ट पर बाइंड करने के लिए रूट की आवश्यकता होती है।
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    डैशबोर्ड को पोर्ट 80 पर सर्व करने के लिए, नीचे दी गई कॉन्फ़िगरेशन में `listen 8080;` को `listen 80;` में बदलें और फिर `sudo brew services start nginx` के साथ nginx को शुरू करें।
 
-#### Configuring a Site for the Dashboard
+#### डैशबोर्ड के लिए साइट कॉन्फ़िगर करना
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Homebrew की nginx कॉन्फ़िगरेशन उसकी `servers` डायरेक्टरी में हर फ़ाइल को शामिल करती है। वहां digna के लिए एक समर्पित कॉन्फ़िगरेशन फ़ाइल बनाएँ:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+निम्नलिखित पेस्ट करें, `/path/to/digna/dashboard` को अपने एक्सट्रैक्ट किए हुए `dashboard` फ़ोल्डर के वास्तविक पाथ से बदलें:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "महत्वपूर्ण"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    `try_files` निर्देश के बिना, रूट URL के अलावा किसी भी डैशबोर्ड पेज को रीलोड करने पर 404 लौटेगा। यह nginx का वह समाधान है जो Windows पर IIS के URL Rewrite मॉड्यूल के बराबर है।
 
-#### Apply the Configuration
+#### कॉन्फ़िगरेशन लागू करें
 
-Test the configuration for syntax errors, then reload nginx:
+सिंटैक्स त्रुटियों के लिए कॉन्फ़िगरेशन का परीक्षण करें, फिर nginx रीलोड करें:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd सेटअप {: #apache-setup }
 
-#### Overview
+#### अवलोकन
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS में Apache httpd शामिल है, इसलिए इंस्टॉलेशन की आवश्यकता नहीं है। यह डिफ़ॉल्ट रूप से अक्षम होता है।
 
-#### Starting Apache
+#### Apache शुरू करना
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### इंस्टॉलेशन सत्यापित करें
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. ब्राउज़र खोलें
+2. `http://localhost` पर नेविगेट करें
+3. आपको "It works!" संदेश दिखाई देना चाहिए
 
-#### Required: Enable mod_rewrite
+#### आवश्यक: mod_rewrite सक्षम करें
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+डैशबोर्ड के लिए URL री-राइटिंग आवश्यक है। Apache कॉन्फ़िगरेशन खोलें:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+निम्नलिखित लाइन ढूँढें और उसके आगे का `#` हटा दें ताकि यह अनकमेंट हो जाए:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### आवश्यक: .htaccess ओवरराइड की अनुमति दें
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+उसी फ़ाइल में `<Directory "/Library/WebServer/Documents">` ब्लॉक खोजें और बदलें:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+से:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### आवश्यक: Markdown फ़ाइलों के लिए MIME टाइप
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+इसी `httpd.conf` में निम्न लाइन जोड़ें ताकि Markdown फ़ाइलें सही तरीके से सर्व हों:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "महत्वपूर्ण"
 
-    Without this setting, `.md` files may not be served properly.
+    इस सेटिंग के बिना, `.md` फ़ाइलें सही ढंग से सर्व नहीं हो सकती हैं।
 
-#### Apply the Configuration
+#### कॉन्फ़िगरेशन लागू करें
 
-Check the configuration for syntax errors, then restart Apache:
+सिंटैक्स की जाँच करें, फिर Apache को रीस्टार्ट करें:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## प्रारम्भिक इंस्टॉलेशन {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### चरण 1: digna Repository सेट करें
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+digna रिपॉज़िटरी सभी गणना किए गए मीट्रिक्स को स्टोर करती है। यह विश्लेषणात्मक और प्रदर्शन डेटा के लिए केंद्रीय डेटाबेस का काम करती है।
 
-#### Create Repository Schema and User
+#### Repository Schema और यूज़र बनाएँ
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+अपना PostgreSQL क्लाइंट (psql, pgAdmin, या समान) खोलें और निम्न SQL कमांड्स चलाएँ:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**निम्न प्लेसहोल्डर्स को बदलें:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — आपकी इच्छित schema का नाम (उदा., `dignarepo`)
+- `<digna_repo_user>` — आपका इच्छित यूज़रनेम (उदा., `digna_user`)
+- `<digna_repo_password>` — इस यूज़र के लिए एक सुरक्षित पासवर्ड
 
-**Example:**
+**उदाहरण:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,72 +410,72 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+टर्मिनल से इन्हें एक ही स्टेप में चलाने के लिए:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+फिर `postgres=#` प्रॉम्प्ट पर स्टेटमेंट पेस्ट करें और बाहर निकलने के लिए `\q` टाइप करें।
 
-!!! tip "Best Practice"
+!!! tip "सर्वोत्तम प्रथा"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    डेटाबेस यूज़र्स के लिए मजबूत, जटिल पासवर्ड का उपयोग करें। आसान से अनुमान लगाए जाने योग्य क्रेडेंशियल्स से बचें।
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### चरण 2: digna इंस्टॉलेशन पैकेज को अनज़िप करें
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+1. आपको प्रदान किए गए digna इंस्टॉलेशन ZIP फ़ाइल का पता लगाएँ
+2. इसे अपनी इच्छित इंस्टॉलेशन लोकेशन पर निकालें — उदाहरण के लिए `/opt/digna` या `~/digna`
+3. एक्सट्रैक्शन के बाद, आपको निम्न आइटम दिखाई देने चाहिए:
+   - `dashboard/` — वेब डैशबोर्ड इंटरफेस
+   - `digna` — मुख्य executable (बैकएंड + CLI संयुक्त)
+   - `config.toml` — कॉन्फ़िगरेशन फ़ाइल
+   - `license.toml` — लाइसेंस फ़ाइल (अपनी फ़ाइल यहाँ कॉपी करें)
 
-To extract from the Terminal:
+Terminal से अनज़िप करने के लिए:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Executable को runnable बनाएँ
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+किस तरह का आर्काइव ट्रांसफर हुआ है उसके आधार पर executable bit रह न भी सकता है। इसे स्पष्ट रूप से सेट करें:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### यदि macOS ऐप को ब्लॉक करता है
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+ब्राउज़र या मेल क्लाइंट के माध्यम से डाउनलोड की गई फ़ाइलों पर क्वारैंटाइन एट्रिब्यूट हो सकता है। यदि macOS रिपोर्ट करता है कि ऐप *"cannot be opened because the developer cannot be verified"*, तो इंस्टॉलेशन डायरेक्टरी से एट्रिब्यूट हटाएं:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+वैकल्पिक रूप से, **System Settings → Privacy & Security** खोलें, पेज के नीचे नज़दीक ब्लॉक किए गए आइटम को खोजें और **Open Anyway** पर क्लिक करें।
 
-!!! note "Note"
+!!! note "नोट"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    यह चरण केवल तभी आवश्यक है जब macOS वास्तव में executable को ब्लॉक करता है। SSH या आंतरिक फ़ाइल शेयर के माध्यम से ट्रांसफर्ड पैकेज आमतौर पर क्वारैंटाइन नहीं होते।
 
-### Step 3: Install the License File
+### चरण 3: लाइसेंस फ़ाइल इंस्टॉल करें
 
-!!! warning "Important"
+!!! warning "महत्वपूर्ण"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    लाइसेंस फ़ाइल इंस्टॉलेशन पैकेज में **शामिल नहीं** होती और यह digna द्वारा अलग से प्रदान की जाएगी।
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. आपको प्रदान की गई `license.toml` फ़ाइल का पता लगाएँ
+2. इसे रूट digna इंस्टॉलेशन डायरेक्टरी (जहाँ `config.toml` और `digna` executable स्थित हैं) में कॉपी करें
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**यह क्यों महत्वपूर्ण है:**
+लाइसेंस फ़ाइल में आपके ग्राहक जानकारी, लाइसेंस समाप्ति तिथि, और डिजिटल सिग्नेचर होती है। **इस फ़ाइल को संशोधित न करें** — कोई भी परिवर्तन इसे अमान्य कर देगा।
 
-**Directory structure after setup:**
+**सेटअप के बाद डायरेक्टरी संरचना:**
 
 ```
 /opt/digna/
@@ -489,24 +489,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## बैकएंड कॉन्फ़िगरेशन {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### चरण 1: कॉन्फ़िगरेशन फ़ाइल बनाएँ और संपादित करें
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+`config_template.toml` फ़ाइल आपकी digna इंस्टॉलेशन डायरेक्टरी में प्रदान की गई है। इसे केवल `config.toml` में रेनैम करें।
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**स्थान:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+`config.toml` को किसी टेक्स्ट एडिटर में खोलें और नीचे दिए गए प्रत्येक सेक्शन को कॉन्फ़िगर करें।
 
-#### [app] Section
+#### [app] सेक्शन
 
-This section configures the digna backend application settings:
+यह सेक्शन digna बैकएंड एप्लिकेशन सेटिंग्स को कॉन्फ़िगर करता है:
 
 ```toml
 [app]
@@ -518,22 +518,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| पैरामीटर | मान | नोट्स |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` या IP पता | वह होस्टनाम या IP जहाँ dignabackend होस्ट है |
+| `digna_APP_PORT` | `8082` (डिफ़ॉल्ट) | REST API एंडपॉइंट के लिए पोर्ट |
+| `digna_APP_CORS_ALLOW_ORIGINS` | फ्रंटेंड URL | यदि डैशबोर्ड किसी अलग सर्वर पर है, तो उसका URL यहाँ शामिल करें |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | क्रेडेंशियल्स के साथ CORS के लिए आवश्यक |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | सभी HTTP मेथड्स की अनुमति दें |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | सभी हेडर्स की अनुमति दें |
 
-!!! note "Note"
+!!! note "नोट"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    यदि आप डैशबोर्ड को Homebrew के nginx पर उसके डिफ़ॉल्ट पोर्ट पर सर्व कर रहे हैं, तो अनुमति देने के लिए origin `http://localhost:8080` है।
 
-#### [repo] Section
+#### [repo] सेक्शन
 
-This section configures the connection to the PostgreSQL database:
+यह सेक्शन PostgreSQL डेटाबेस से कनेक्शन को कॉन्फ़िगर करता है:
 
 ```toml
 [repo]
@@ -545,18 +545,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| पैरामीटर | मान | नोट्स |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` या IP | PostgreSQL सर्वर होस्टनाम/IP |
+| `digna_REPO_PORT` | `5432` (डिफ़ॉल्ट) | PostgreSQL पोर्ट |
+| `digna_REPO_DB` | `postgres` | डेटाबेस का नाम |
+| `digna_REPO_SCHEMA` | `dignarepo` | पहले बनाया गया schema |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL सेटअप में बनाया गया यूज़र |
+| `digna_REPO_PASSWORD` | आपका पासवर्ड | schema क्रिएशन के दौरान सेट किया गया पासवर्ड |
 
-#### [base] Section
+#### [base] सेक्शन
 
-This section contains security and cookie settings:
+यह सेक्शन सुरक्षा और कुकी सेटिंग्स को रखता है:
 
 ```toml
 [base]
@@ -570,23 +570,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| पैरामीटर | मान | नोट्स |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | एन्क्रिप्शन कुंजी | टोकन और कुकीज़ को एन्क्रिप्ट करने के लिए उपयोग होती है (डिफ़ॉल्ट प्रदान किया गया) |
+| `digna_COOKIE_DOMAIN` | `localhost` | अपने फ्रंटेंड डोमेन से मेल खाएं |
+| `digna_COOKIE_SECURE` | `false` (लोकल) / `true` (प्रोडक्शन) | HTTPS कनेक्शनों के लिए `true` का उपयोग करें |
+| `digna_COOKIE_HTTPONLY` | `true` | सुरक्षा के लिए हमेशा सक्षम रखें |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF हमलों को रोकने में मदद करता है |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 घंटे) | सेकंड में सत्र समयसीमा |
+| `digna_MAX_WORKERS` | Number of CPU cores - 1 | समानांतर निरीक्षण कार्यों की संख्या |
 
-!!! tip "Tip"
+!!! tip "सुझाव"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    अपने Mac पर उपलब्ध CPU कोर की संख्या जानने के लिए चलाएँ `sysctl -n hw.ncpu`।
 
-#### [logging] Section
+#### [logging] सेक्शन
 
-This section configures logging behavior:
+यह सेक्शन लॉगिंग व्यवहार को कॉन्फ़िगर करता है:
 
 ```toml
 [logging]
@@ -594,58 +594,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| पैरामीटर | मान | नोट्स |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` या `DEBUG` | प्रोडक्शन के लिए `INFO`, त्रुटि निवारण के लिए `DEBUG` |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | प्रतिदिन के लॉग बैकअप की प्रतियाँ रखने की संख्या |
 
 ---
 
-### Step 2: Initialize the Repository
+### चरण 2: Repository इनिशियलाइज़ करें
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. **Terminal** खोलें
+2. अपने digna इंस्टॉलेशन डायरेक्टरी पर जाएँ (जहाँ `config.toml` और `digna` executable स्थित हैं)
+3. कनेक्शन टेस्ट चलाएँ:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+आपको पुष्टि दिखनी चाहिए कि कनेक्शन स्थापित है (रिपॉज़िटरी स्वयं अभी इनिशियलाइज़ नहीं हुई है)।
 
-!!! note "Note"
+!!! note "नोट"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    macOS पर, करंट डायरेक्टरी में कमांड्स आपके PATH पर नहीं होते, इसलिए executable को `./digna` के रूप में ही चलाया जाता है न कि `digna` के रूप में। शॉर्टर रूप हर जगह उपयोग करने के लिए इंस्टॉलेशन डायरेक्टरी को अपने PATH में जोड़ें:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### चरण 3: Repository Schema इंस्टॉल करें
 
-In the same directory, run:
+उसी डायरेक्टरी में चलाएँ:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+यह कमांड आपके PostgreSQL डेटाबेस में आवश्यक टेबल और schema इंस्टॉल करती है।
 
-### Step 4: Start the digna Server
+### चरण 4: digna सर्वर शुरू करें
 
-In the digna installation directory, start the server with:
+digna इंस्टॉलेशन डायरेक्टरी में सर्वर शुरू करें:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**पैरामीटर:**
+- `--address` — सर्वर होस्टनाम/IP
+- `--port` — सर्वर पोर्ट
 
-You should see startup messages confirming the server is running:
+आपको स्टार्टअप संदेश दिखाई देने चाहिए जो पुष्टि करें कि सर्वर चल रहा है:
 
 ```
 INFO:     Started server process [1234]
@@ -654,88 +654,88 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "सुझाव"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    पहली बार सर्वर शुरू करने पर macOS आपसे पूछ सकता है कि क्या आप एप्लिकेशन को इनकमिंग नेटवर्क कनेक्शनों को स्वीकार करने की अनुमति देना चाहते हैं। **Allow** पर क्लिक करें, अन्यथा डैशबोर्ड बैकएंड से कनेक्ट नहीं कर पाएगा।
 
-### Step 5: Create an Admin User
+### चरण 5: एक Admin यूज़र बनायें
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. एक **नया** Terminal विंडो खोलें
+2. अपने digna इंस्टॉलेशन डायरेक्टरी पर जाएँ
+3. एक एडमिन यूज़र बनाने के लिए निम्न कमांड चलाएँ:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**उदाहरण:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+यह `admin` नाम का यूज़र और पूर्ण प्रशासकीय विशेषाधिकार के साथ एक यूज़र बनाएगा।
 
-!!! tip "Tip"
+!!! tip "सुझाव"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    पासवर्ड को सिंगल कोट्स में रखें। `zsh` जैसे शेल `!`, `$` और `*` जैसे करैक्टर को विशेष मानते हैं; बिना उद्धरण के ऐसे पासवर्ड सही तरीके से पारित नहीं होंगे।
 
-!!! tip "Best Practice"
+!!! tip "सर्वोत्तम प्रथा"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    बड़े, छोटे अक्षर, संख्याएँ और स्पेशल करैक्टर मिलाकर मजबूत पासवर्ड उपयोग करें।
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## डैशबोर्ड कॉन्फ़िगरेशन {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### चरण 1: डैशबोर्ड को वेब सर्वर पर डिप्लॉय करें
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+digna डैशबोर्ड की अपनी अलग `config.toml` फ़ाइल `dashboard/` डायरेक्टरी में स्थित है। यह कॉन्फ़िगरेशन पहले से प्रदान की गई होती है और प्रारम्भिक सेटअप के दौरान बदलने की आवश्यकता नहीं है। केवल तभी संशोधित करें जब बैकएंड कनेक्शन कस्टमाइज़ करना हो।
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+यदि आपको डैशबोर्ड कॉन्फ़िगरेशन बदलने की आवश्यकता है (उदा., मल्टी-इन्स्टेंस डिप्लॉयमेंट के लिए), तो डैशबोर्ड के डॉक्यूमेंटेशन को देखें।
 
-Choose your web server and follow the corresponding deployment steps.
+अपने वेब सर्वर का चयन करें और संबंधित डिप्लॉयमेंट स्टेप्स का पालन करें।
 
-#### Deploying to nginx
+#### nginx पर डिप्लॉय करना
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+यदि आपने [nginx Setup](#nginx-setup) सेक्शन का पालन किया है, तो सर्वर ब्लॉक पहले से ही आपके `dashboard` फ़ोल्डर की ओर पॉइंट करता है और कॉपी करने की आवश्यकता नहीं है।
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **पाथ की पुष्टि करें**
+   - खोलें `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - सत्यापित करें कि `root` आपके एक्सट्रैक्ट किए हुए `dashboard` फ़ोल्डर की ओर पॉइंट कर रहा है
 
-2. **Ensure the folder is readable**
+2. **सुनिश्चित करें कि फ़ोल्डर पठनीय है**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **nginx रीलोड करें**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **इंस्टॉलेशन टेस्ट करें**
+   - ब्राउज़र खोलें
+   - `http://localhost:8080` (या आपका कॉन्फ़िगर किया गया URL) खोलें
+   - आपको digna डैशबोर्ड लॉगिन पेज दिखाई देना चाहिए
 
-#### Deploying to Apache httpd
+#### Apache httpd पर डिप्लॉय करना
 
-1. **Copy the Dashboard to the Document Root**
+1. **डैशबोर्ड को डॉक्यूमेंट रूट में कॉपी करें**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **रीराइट नियम जोड़ें**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   डिप्लॉय किए गए फ़ोल्डर के अंदर एक `.htaccess` फ़ाइल बनाएं ताकि डैशबोर्ड रूट पर ब्राउज़र रिफ्रेश होने पर रूटिंग बनी रहे:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   निम्नलिखित पेस्ट करें:
 
    ```apache
    RewriteEngine On
@@ -750,177 +750,177 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Apache रीस्टार्ट करें**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **डैशबोर्ड एक्सेस करें**
+   - ब्राउज़र खोलें
+   - `http://localhost/digna` पर नेविगेट करें
+   - आपको digna डैशबोर्ड लॉगिन पेज दिखाई देना चाहिए
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## digna को बैकग्राउंड सेवा के रूप में चलाना {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### digna को सेवा के रूप में चलाने का कारण
 
-Running the digna backend as a background service ensures it:
+digna बैकएंड को बैकग्राउंड सेवा के रूप में चलाने से यह सुनिश्चित होता है कि यह:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- मशीन के बूट होने पर स्वचालित रूप से शुरू हो
+- बिना खुले Terminal विंडो के बैकग्राउंड में चले
+- क्रैश होने पर स्वतः पुनः आरंभ हो
+- macOS के सेवा प्रबंधक `launchctl` के माध्यम से प्रबंधित किया जा सके
 
-### Service Management Files
+### सेवा प्रबंधन फाइलें
 
-All necessary files are located in the digna installation directory under: `bin/`
+सारी आवश्यक फाइलें digna इंस्टॉलेशन डायरेक्टरी के अंदर स्थित हैं: `bin/`
 
-The following shell scripts are available:
+उपलब्ध शेल स्क्रिप्ट्स:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — digna को launchd के साथ रजिस्टर करता है
+- `uninstall_service.sh` — सर्विस का अनरजिस्टर करता है
+- `start_service.sh` — रजिस्टर की गई सर्विस को स्टार्ट करता है
+- `stop_service.sh` — चल रही सर्विस को स्टॉप करता है
 
-!!! warning "Administrator Required"
+!!! warning "एडमिनिस्ट्रेटर आवश्यक"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    सभी स्क्रिप्ट्स को `sudo` के साथ चलाना अनिवार्य है, क्योंकि बूट पर शुरू होने वाली सर्विस को रजिस्टर करना `/Library/LaunchDaemons` में लिखता है।
 
-### Making the Scripts Executable
+### स्क्रिप्ट्स को executable बनाना
 
-Extraction may not preserve the executable bit. Before first use:
+एक्सट्रैक्शन executable बिट को बनाए नहीं रख सकता। पहले उपयोग से पहले:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### सर्विस इंस्टॉल करना
 
-1. **Open Terminal**
+1. **Terminal खोलें**
 
-2. **Navigate to the bin Folder**
+2. **bin फोल्डर पर जाएँ**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **इंस्टॉलेशन स्क्रिप्ट चलाएँ**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+digna सर्वर अब launchd के साथ रजिस्टर हो गया है और **ऑटोमेटिक स्टार्टअप** सक्षम है। सर्विस तुरंत शुरू नहीं होती — इसे शुरू करने के लिए अगला सेक्शन देखें।
 
-### Starting and Stopping the Service
+### सर्विस शुरू करना और रोकना
 
-#### To Start the Service
+#### सर्विस शुरू करने के लिए
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Terminal खोलें
+2. `/opt/digna/bin` पर जाएँ
+3. चलाएँ:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### सर्विस रोकने के लिए
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Terminal खोलें
+2. `/opt/digna/bin` पर जाएँ
+3. चलाएँ:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "सुझाव"
 
-    Always stop the service before updating application files.
+    एप्लिकेशन फ़ाइलों को अपडेट करने से पहले हमेशा सर्विस को रोकें।
 
-### Verifying the Service
+### सर्विस को सत्यापित करना
 
-To confirm that the service is registered and running:
+यह पुष्टि करने के लिए कि सर्विस रजिस्टर और रन कर रही है:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+यदि पहली कॉलम में प्रक्रिया ID के साथ एक लाइन शुरू होती है तो सर्विस चल रही है। पहले कॉलम में `-` होने का मतलब है कि यह रजिस्टर तो है पर रुकी हुई है।
 
-### Moving the Service to a New Directory
+### सर्विस को नई डायरेक्टरी पर ले जाना
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd executable का absolute पाथ स्टोर करता है, इसलिए इंस्टॉलेशन को स्थानांतरित करने पर सर्विस को पुनः रजिस्टर करना आवश्यक है:
 
-1. **Uninstall the Current Service**
+1. **वर्तमान सर्विस अनइंस्टॉल करें**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **एप्लिकेशन फाइलें मूव करें**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **सर्विस पुनः इंस्टॉल करें**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **सर्विस शुरू करें**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### सर्विस अनइंस्टॉल करना
 
-1. **Stop the Running Service**
+1. **चल रही सर्विस रोकें**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **सर्विस अनइंस्टॉल करें**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+अब digna सर्वर launchd से अनरजिस्टर हो चुका है।
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## नए रिलीज़ में अपग्रेड करना {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### अपग्रेड करने से पहले
 
-**Creating a digna Repository Backup is Mandatory**
+**digna Repository बैकअप बनाना अनिवार्य है**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+digna को अपग्रेड करने से पहले अपने रिपॉज़िटरी (PostgreSQL) का बैकअप लें ताकि डेटा लॉस से बचा जा सके।
+बैकअप यह सुनिश्चित करता है कि अपग्रेड में अप्रत्याशित समस्याएँ आने पर आप पुनर्प्राप्त कर सकें।
 
-To create a backup from the Terminal:
+Terminal से बैकअप बनाने के लिए:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### अपग्रेड प्रक्रिया
 
-#### Step 1: Stop the digna Service
+#### चरण 1: digna सर्विस रोकें
 
-If digna is running as a background service, stop it first:
+यदि digna बैकग्राउंड सेवा के रूप में चल रहा है, तो पहले इसे रोकें:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+यदि digna फ़ोरग्राउंड में चल रहा है, तो उसके Terminal विंडो में `Ctrl + C` दबाएँ।
 
-#### Step 2: Backup Current Backend Installation
+#### चरण 2: वर्तमान बैकएंड इंस्टॉलेशन का बैकअप लें
 
-In your digna installation directory:
+अपने digna इंस्टॉलेशन डायरेक्टरी में:
 
 ```bash
 cd /opt/digna
@@ -930,55 +930,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### चरण 3: नई वर्ज़न को एक्सट्रैक्ट और डिप्लॉय करें
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. नई digna इंस्टॉलेशन ZIP फ़ाइल एक्सट्रैक्ट करें
+2. नई `digna` executable और `dashboard` फ़ोल्डर को अपनी इंस्टॉलेशन डायरेक्टरी में कॉपी करें
+3. executable बिट पुनर्स्थापित करें और यदि आवश्यक हो तो क्वारैंटाइन एट्रिब्यूट निकालें:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "महत्वपूर्ण"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    `config.toml` फ़ाइल इंस्टॉलेशन ZIP में **कभी भी** शामिल नहीं होती। आपकी मौजूदा कॉन्फ़िगरेशन सुरक्षित रहती है।
 
-### Step 4: Restore Your Configuration Files
+### चरण 4: अपनी कॉन्फ़िगरेशन फ़ाइलें पुनर्स्थापित करें
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### चरण 5: Repository Schema को अपग्रेड करें
 
-Navigate to your digna installation directory and run:
+अपने digna इंस्टॉलेशन डायरेक्टरी पर जाकर चलाएँ:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+यह PostgreSQL schema को नवीनतम वर्ज़न में अपडेट करेगा जबकि सभी मौजूदा डेटा सुरक्षित रहेंगे।
 
-### Step 6: Restart Services
+### चरण 6: सर्विसेज़ पुनः आरंभ करें
 
-If running as a background service:
+यदि बैकग्राउंड सर्विस के रूप में चल रहा है:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+यदि मैन्युअली चलाते हैं, तो सर्वर को फिर से शुरू करें:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+यदि आप nginx या Apache का उपयोग कर रहे हैं, तो संबंधित वेब सर्वर को रीस्टार्ट करें:
 
 ```bash
 brew services restart nginx
@@ -987,8 +987,8 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### चरण 7: अपग्रेड की पुष्टि करें
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. digna डैशबोर्ड एक्सेस करें
+2. सत्यापित करें कि इंटरफ़ेस सही ढंग से लोड होता है
+3. किसी भी त्रुटि के लिए सर्वर लॉग्स की जाँच करें

@@ -1,6 +1,6 @@
 # Datenbank verbinden
 
-Diese Anleitung zeigt die minimalen Schritte, um Ihrem Projekt eine Datenbankverbindung hinzuzufügen.
+Diese Anleitung zeigt die minimalen Schritte, um eine Datenbankverbindung zu Ihrem Projekt hinzuzufügen.
 
 ## Interaktive Demo
 
@@ -31,10 +31,10 @@ Diese Anleitung zeigt die minimalen Schritte, um Ihrem Projekt eine Datenbankver
    Gehen Sie zu **Connections** und klicken Sie auf **Add Connection**.
 
 3. **Datenbanktyp wählen**  
-   Wählen Sie die Datenbank aus, die Sie verbinden möchten (z. B. PostgreSQL, MySQL, SQL Server, Oracle, Snowflake, Teradata).
+   Wählen Sie die Datenbank, die Sie verbinden möchten (z. B. PostgreSQL, MySQL, SQL Server, Oracle, Snowflake, Teradata).
 
 4. **Verbindungsdetails eingeben**  
-   Geben Sie **Name**, **Host**, **Port**, **Database/Service** und **Credentials** an (Benutzername/Passwort oder SSO, falls zutreffend).
+   Geben Sie **Name**, **Host**, **Port**, **Database/Service** und **Credentials** (Benutzername/Passwort oder SSO, falls zutreffend) an.
 
 5. **Testen & Speichern**  
-   Klicken Sie auf **Test**. Wenn erfolgreich, klicken Sie auf **Save**. Die Verbindung wird unter **Connections** für das Projekt angezeigt.
+   Klicken Sie auf **Test**. Wenn erfolgreich, klicken Sie auf **Save**. Die Verbindung erscheint anschließend unter **Connections** für das Projekt.

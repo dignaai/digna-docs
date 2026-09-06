@@ -28,10 +28,19 @@
 
 ## Instalace a nasazení
 
+### Operační systémy
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/cs/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Krok za krokem průvodce instalací digna Release 2026.06 na Linuxu — systémové požadavky, nastavení PostgreSQL, konfigurace nginx nebo Apache, konfigurace backendu a dashboardu, spuštění digna jako systemd služby a aktualizace na nové vydání.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/cs/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Krok za krokem průvodce instalací digna Release 2026.06 na macOS — systémové požadavky, nastavení Homebrew a PostgreSQL, konfigurace nginx nebo Apache, konfigurace backendu a dashboardu, spuštění digna jako služby na pozadí a postup upgradu na novou verzi.
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/cs/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Krok za krokem průvodce instalací digna Release 2026.06 na Windows — systémové požadavky, nastavení PostgreSQL, konfigurace webového serveru, konfigurace backendu a dashboardu, spuštění digna jako služby Windows a upgrade na novou verzi.
-- [Jak nakonfigurovat jednotné přihlašování](https://docs.digna.ai/cs/installation_deployment/sso_integration_guide/): Krok za krokem průvodce konfigurací Single Sign-On (SSO) pro digna pomocí OpenID Connect (OIDC). Pokrývá konfiguraci dashboardu a backendu, testování, odstraňování problémů a podporované identity providery včetně Microsoft Entra ID, Google Workspace a Okta.
+- [Release 2026.06](https://docs.digna.ai/cs/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Krok za krokem průvodce instalací digna Release 2026.06 na Windows — systémové požadavky, nastavení PostgreSQL, konfigurace webového serveru, konfigurace backendu a dashboardu, spuštění digna jako služby Windows a upgrade na nové vydání.
 
 ## Začínáme
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/cs/databases/snowflake_connector_guide/): Configure digna to connect to Snowflake using the Python connector or the Snowflake ODBC driver. Supports password-based authentication with DSN or DSN-less setups.
 - [MS SQL Server](https://docs.digna.ai/cs/databases/sqlserver_connector_guide/): Nakonfigurujte digna pro připojení k Microsoft SQL Serveru pomocí Python ovladače pymssql nebo ODBC ovladače SQL Server. Podporuje ověřování založené na hesle s DSN nebo DSN-less nastavením.
 - [Teradata](https://docs.digna.ai/cs/databases/teradata_connector_guide/): Nakonfigurujte digna pro připojení k Teradata pomocí Python driveru teradatasql nebo Teradata ODBC driveru. Podporuje autentizaci pomocí hesla s nastavením přes DSN nebo bez DSN.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/cs/sso/overview/): Jak funguje Single Sign-On v digna pomocí OpenID Connect (OIDC). Zahrnuje konfiguraci dashboardu a backendu, testování, odstraňování problémů a odkazy na průvodce pro Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne a AD FS.
+- [AD FS](https://docs.digna.ai/cs/sso/adfs_sso_guide/): Konfigurace Single Sign-On pro digna s Active Directory Federation Services pomocí OpenID Connect — skupina aplikací, serverová aplikace, sdílené tajemství, povolené scope a odpovídající konfigurace digna.
+- [Auth0](https://docs.digna.ai/cs/sso/auth0_sso_guide/): Nakonfigurujte Single Sign-On pro digna pomocí Auth0 a OpenID Connect — nastavení pro běžnou webovou aplikaci, povolené callback URL, klientské údaje, doména tenanta a odpovídající konfigurace v digna.
+- [Google Workspace](https://docs.digna.ai/cs/sso/google_workspace_sso_guide/): Nakonfigurujte Single Sign-On pro digna s použitím Google Workspace a OpenID Connect — obrazovka souhlasu OAuth, OAuth client ID, autorizované redirect URI a odpovídající konfigurace digna.
+- [Keycloak](https://docs.digna.ai/cs/sso/keycloak_sso_guide/): Nakonfigurujte Single Sign-On pro digna s Keycloakem pomocí OpenID Connect — nastavení realm a klienta, ověření klienta, platná přesměrovací URI, klientské tajemství a odpovídající konfigurace digna.
+- [Microsoft Entra ID](https://docs.digna.ai/cs/sso/microsoft_entra_id_sso_guide/): Nakonfigurujte Single Sign-On pro digna pomocí Microsoft Entra ID (dříve Azure AD) přes OpenID Connect — registrace aplikace, přesměrovací URI, client secret, tenant ID a odpovídající konfigurace digna.
+- [Okta](https://docs.digna.ai/cs/sso/okta_sso_guide/): Nakonfigurujte Single Sign-On pro digna s Okta pomocí OpenID Connect — integrace aplikace, přesměrovací URI pro přihlášení, přihlašovací údaje klienta, volba autorizačního serveru a odpovídající konfigurace digna.
+- [OneLogin](https://docs.digna.ai/cs/sso/onelogin_sso_guide/): Nakonfigurujte Single Sign-On pro digna s OneLogin pomocí OpenID Connect — vytvoření OIDC aplikace, redirect URI, klientské přihlašovací údaje, autentizace token endpointu a odpovídající konfigurace digna.
+- [PingOne](https://docs.digna.ai/cs/sso/pingone_sso_guide/): Nakonfigurujte Single Sign-On pro digna s PingOne pomocí OpenID Connect — nastavení OIDC web app, přesměrovací URI, přihlašovací údaje klienta, ID prostředí, regionální domény a odpovídající konfigurace digna.
 
 ## Referenční příručka CLI
 

@@ -1,115 +1,115 @@
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# digna Data Anomalies – AI-põhine andmekvaliteedi probleemide avastamine
 
-**AI-powered observability for always-on data trust**
+**AI-toega jälgitavus pideva andmete usaldusväärsuse jaoks**
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
+digna Data Anomalies on osa **digna Data Observability Platform**ist — moodulipõhine lahendus, mis parandab **andmete kvaliteeti**, analüüsides pidevalt, kuidas andmekogumid aja jooksul käituvad.
 
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+See õpib automaatselt, milline on teie andmete „tavaline” käitumine, ja teavitab teid käitumise muutustest — ilma staatiliste lävendite määramise või ühe reegli kirjutamiseta.  
+Moodul töötab otse teie andmebaasis, nii et andmed ei lahku kunagi teie keskkonnast.
 
 ---
 
-## Key capabilities
+## digna Data Anomalies eesmärk
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+**digna Data Anomalies** moodul tagab pideva **andmete jälgitavuse**, arvutades ja jälgides eelmääratletud statistilisi mõõdikuid, nagu:
 
----
+- Andmemaht ja kirjete arv  
+- Puuduvate väärtuste osakaal  
+- Väärtuste jaotused ja histogrammid  
+- Numbrilised vahemikud ja keskmised  
+- Veergude unikaalsus ja teksti pikkus  
 
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+Need mõõdikud kogutakse automaatselt iga andmekogu kohta.  
+Nende abil ehitab digna mudeleid, mis esindavad iga mõõdiku tüüpilist käitumist — õppides päevaseid, nädalalisi või hooajalisi mustreid.  
+Kui mudel on treenitud, ennustab moodul oodatavaid väärtusi uute andmete jaoks ja tuvastab kõrvalekalded, mis võivad viidata kvaliteediprobleemidele, protsessiriketest või ülesvoolu muutustest.
 
 ---
 
-## Example scenarios
+## Põhifunktsioonid
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+- Õpib oodatavat andmekäitumist automaatselt AI abil — ei vaja lävendite seadistamist.  
+- Tuvastab järsud langused, hüpped või nihked andmemahtudes ja jaotustes.  
+- Tuletab välja vahetatud veerud või valed atribuudi-kaardistused.  
+- Tõstab esile ootamatud kategoriseeritud väärtused (nt uued piirkonnad või koodid).  
+- Toetab kõiki veerutüüpe: numbrilised, kategoriseeritud või määramata.  
+- Tegutseb täielikult kliendi keskkonnas — andmete liigutamist ei toimu.  
+- Integreerub **digna Data Analytics**iga pikaajaliste trendide analüüsiks.
 
 ---
 
-## Integration with other modules
+## Kuidas see töötab
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+### 1. samm – mõõdikute arvutamine
+digna arvutab iga tabeli ja veeru kohta hulga profiilimõõdikuid.  
+Need mõõdikud kirjeldavad teie andmete struktuuri ja statistilist käitumist ning salvestatakse edasiseks analüüsiks.
 
----
+### 2. samm – mudeli treenimine
+Ajalooliste mõõdikuväärtuste põhjal treenib digna kompaktseid masinõppemudeleid (signatuuri mudeleid), mis jäädvustavad iga mõõdiku normaalvahemikku.
 
-## Typical use cases
+### 3. samm – automaatne lävendi määramine
+Kasutades *conformal inference* meetodit, arvutab digna adaptiivsed usaldusintervallid (auto-lävedid), mis kohanevad koos teie andmetega.  
+Kui uued mõõdikuväärtused jäävad ennustatud vahemikust välja, märgistatakse need anomaaliatena.
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+See pidev tagasiside-silmus tagab, et monitooring jääb asjakohaseks isegi siis, kui andmemaht või mustrid loomulikult suurenevad.
 
 ---
 
-## Benefits
+## Näidistsenaariumid
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+### Ootamatu langus kirjete mahus
+Andmekogu sisaldab tavaliselt umbes 500 000 kirjet päevas.  
+Kui uus sissekanne sisaldab vaid 50 000 kirjet, märgib digna anomaalia ja näitab, kui palju väärtus oma õpitud vahemikust kõrvalekaldub.
 
----
+### Tuvastatud vahetatud veerud
+Veeru `last_name` keskmine stringi pikkus sobib järsku `first_name` keskmisega.  
+digna tuvastab mõõdikumustrite kõrvalekalde ja annab märku võimalikust veerutevahetusest.
 
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+### Ootamatu kategooria tuvastamine
+Austria linnu loetlev veerg sisaldab järsku väärtust „Zurich”.  
+Põhinedes ajaloolistele jaotustele märgib digna uue väärtuse ootamatuna ja hoiatab kasutajat.
 
 ---
 
-## Summary
+## Integratsioon teiste moodulitega
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+- **digna Data Analytics** — koondab anomaaliaajaloo ja volatiilsuse mõõdikud, et paljastada pikaajalisi trende.  
+- **digna Data Validation** — rakendab selgeid ärireegleid deterministlikeks kvaliteedikontrollideks.  
+- **digna Data Timeliness** — jälgib andmete saabumisaegu ja korreleerib hilinemisi anomaaliajuhtumitega.  
+- **digna Data Schema Tracker** — tuvastab struktuurimuutusi, mis võivad seletada uusi anomaaliaid.
+
+---
+
+## Tüüpilised kasutusjuhtumid
+
+- Puuduva või topeltlaadimise tuvastamine.  
+- Vahetatud või lühendatud veergude identifitseerimine.  
+- Jaotuse nihke tuvastamine numbrilistes või kategoorilistes tunnustes.  
+- Ootamatute viiteväärtuste või koodide leidmine.  
+- Pidevate ingestioonitorude monitoorimine ebaühtluste suhtes.  
+- Üldise **andmete kvaliteedi** ja andmete **jälgitavuse** jälgimine erinevates domeenides.
+
+---
+
+## Kasud
+
+- Ebanormaalse andmekäitumise viivitamatu tuvastamine.  
+- Manuaalse lävendi häälestamise vajaduse likvideerimine.  
+- Operatiivse koormuse vähendamine suurtes andmekeskkondades.  
+- Analüütika ja aruandluse süsteemide usaldusväärsuse tõstmine.  
+- Tugevdab **andmete kvaliteeti** ja lõpp-to-end **andmete jälgitavust**.
+
+---
+
+## Seotud digna moodulid
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trendi- ja volatiilsusmõõdikud.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — reeglitel põhinev andmete verifitseerimine.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — andmete kohaletoimetamise ajakava jälgimine.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — skeemi muutuste tuvastamine.
+
+---
+
+## Kokkuvõte
+
+**digna Data Anomalies** moodul on digna AI-toega **Data Observability Platform**i tuum.  
+Pidevalt jälgides võtmemõõdikuid, õppides mustreid ja tuvastades kõrvalekaldeid aitab see organisatsioonidel tagada, et **andmete kvaliteet** jääb usaldusväärseks, stabiilseks ja seletatavaks — ilma manuaalse seadistamiseta.

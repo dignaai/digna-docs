@@ -1,65 +1,70 @@
-# Source Connector for Teradata
+# Quell-Connector für Teradata
 
-Dieses Handbuch beschreibt, wie *digna* so konfiguriert wird, dass eine Verbindung zu Teradata entweder über den nativen Python-Connector oder über den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Teradata entweder über den nativen Python-Connector oder über den ODBC-Treiber hergestellt wird.
 
-Es bezieht sich auf den Bildschirm **"Create a Database Connection"**.
+Sie bezieht sich auf den Bildschirm **"Create a Database Connection"**.
 
 ![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
 
 ---
 
-## Native Python Driver
+## Nativer Python-Treiber
 
-**Library:** `teradatasql`  
+**Bibliothek:** `teradatasql`  
 **Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
 
 > Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
 
-### *digna* Konfiguration (Native Driver)
+### *digna* Konfiguration (nativer Treiber)
 
-Geben Sie die folgenden Informationen im Bildschirm **"Create a Database Connection"** an:
+Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
 
 ```
-Technologie:      Teradata
-Host-Adresse:     Servername oder IP-Adresse
-Host-Port:        Portnummer, z. B. 1025
-Datenbankname:    Name der Datenbank
-Schema-Name:      Name der Datenbank
-Benutzername:     Datenbank-Benutzername
-Benutzerpasswort: Passwort für den Benutzer
-ODBC verwenden:   Deaktiviert (Standard)
+Name:               Name der Verbindung. Wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
+Technology:         Teradata
+Host Address:       Servername oder IP-Adresse
+Host Port:          Portnummer, z. B. 1025
+Database Name:      Kann leer gelassen werden. digna behandelt Datenbanken als Schemas für Teradata.
+User Name:          Datenbank-Benutzername
+User Password:      Passwort des Benutzers
+Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
+                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
+                    - Permanent: Daten für den geprüften Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
+                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
+Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in dieses Schema gelegt.
+Use ODBC:           Deaktiviert (Standard)
 ```
 
 ---
 
-## ODBC Driver
+## ODBC-Treiber
 
-Der ODBC-Treiber kann eine größere Bandbreite an Authentifizierungs- und Verbindungsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **Teradata Database ODBC Driver 20.00**.
+Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf die passwortbasierte Authentifizierung mit dem Treiber **Teradata Database ODBC Driver 20.00**.
 
-### 1. Installation des ODBC-Treibers
+### 1. ODBC-Treiber installieren
 
-Installieren Sie den Treiber **Teradata Database ODBC Driver 20.00** (oder eine ähnliche Version) gemäß der offiziellen Installationsanleitung des Herstellers.
+Installieren Sie den Treiber **Teradata Database ODBC Driver 20.00** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
 
-### 2. Konfigurieren der ODBC-Datenquelle
+### 2. ODBC-Datenquelle konfigurieren
 
-Befolgen Sie diese Schritte, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+Gehen Sie wie folgt vor, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
 
 #### Schritt 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+![Schritt 1](images/teradata/create_odbc_data_source_step1.png)
 
 Klicken Sie auf die Schaltfläche **Test**.
 
 #### Schritt 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+![Schritt 2](images/teradata/create_odbc_data_source_step2.png)
 
 Geben Sie Benutzername und Passwort ein.
 
-Klicken Sie auf die **OK**-Schaltfläche.  
-Wenn Sie den Erfolgsscreen erhalten, ist ODBC korrekt konfiguriert.
+Klicken Sie auf die Schaltfläche **OK**.  
+Wenn Sie den Erfolgsbildschirm sehen, ist ODBC korrekt konfiguriert.
 
 ---
 
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird — entweder mit einem **DSN (Data Source Name)** oder in einer **DSN-less** Konfiguration.
+Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder in einem **DSN-losen** Setup.
 
 ---
 
@@ -67,45 +72,55 @@ Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wir
 
 #### *digna* Konfiguration
 
-Im Bildschirm **"Create a Database Connection"** geben Sie Folgendes an:
+Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
 
 ```
-Technologie:      Teradata
-Datenbankname:    Datenbank, die das Quellschema enthält
-Schema-Name:      Schema, das die Quelldaten enthält
-ODBC verwenden:   Aktiviert
+Name:               Name der Verbindung. Wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
+Technology:         Teradata
+Database Name:      Kann leer gelassen werden. digna behandelt Datenbanken als Schemas für Teradata.
+Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
+                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
+                    - Permanent: Daten für den geprüften Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
+                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
+Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in dieses Schema gelegt.
+Use ODBC:           Aktiviert
 ```
 
-#### ODBC-Eigenschaften
+#### ODBC Properties
 
 ```
 name: "DSN",        value: "*digna*data_teradata"
-name: "UID",        value: "Ihr Datenbankbenutzer"
-name: "PWD",        value: "Ihr Datenbankpasswort"
+name: "UID",        value: "Ihr Datenbank-Benutzer"
+name: "PWD",        value: "Ihr Datenbank-Passwort"
 ```
 
 > Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
 
 ---
 
-### B. DSN-less Konfiguration
+### B. DSN-loses Setup
 
 #### *digna* Konfiguration
 
-Im Bildschirm **"Create a Database Connection"** geben Sie Folgendes an:
+Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
 
 ```
-Technologie:      Teradata
-Datenbankname:    Schema, das die Quelldaten enthält (gleich wie Schema-Name)
-Schema-Name:      Schema, das die Quelldaten enthält
-ODBC verwenden:   Aktiviert
+Name:               Name der Verbindung. Wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
+Technology:         Teradata
+Database Name:      Kann leer gelassen werden. digna behandelt Datenbanken als Schemas für Teradata.
+Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
+                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
+                    - Permanent: Daten für den geprüften Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
+                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
+Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in dieses Schema gelegt.
+Use ODBC:           Aktiviert
 ```
 
-#### ODBC-Eigenschaften
+#### ODBC Properties
 
 ```
 name: "DRIVER",     value: "Teradata Database ODBC Driver 20.00"
 name: "DBCNAME",    value: "Ihr Servername oder Ihre IP-Adresse"
-name: "UID",        value: "Ihr Datenbankbenutzer"
-name: "PWD",        value: "Ihr Datenbankpasswort"
+name: "UID",        value: "Ihr Datenbank-Benutzer"
+name: "PWD",        value: "Ihr Datenbank-Passwort"
 ```

@@ -6312,468 +6312,1172 @@ To schedule a job to run every **Saturday and Sunday at 10:00 AM**, use the foll
 
 ---
 
-# 싱글 사인온을 구성하는 방법
-Source: https://docs.digna.ai/ko/installation_deployment/sso_integration_guide/
+# Release 2026.06
+Source: https://docs.digna.ai/ko/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/
 
-# Single Sign-On Integration Guide
+# digna 릴리스 2026.06용 Linux 설치 가이드
+
+**릴리스:** 2026.06
+
+**최종 업데이트:** 2026년 9월 5일
+
 
 ---
 
 ## 목차
 
-1. [소개 및 개요](#introduction-and-overview)
-2. [구성 단계](#configuration-steps)
-3. [대시보드 구성](#dashboard-configuration)
-4. [백엔드 구성](#backend-configuration)
-5. [로그인 테스트](#testing-login)
-6. [문제 해결](#troubleshooting)
-7. [지원되는 공급자](#supported-providers)
+1. [소개](#introduction)
+2. [시스템 요구사항](#system-requirements)
+3. [사전 설치 준비](#pre-installation-setup)
+4. [PostgreSQL 서버 설정](#postgresql-server-setup)
+5. [웹 서버 구성](#web-server-configuration)
+6. [초기 설치](#initial-installation)
+7. [백엔드 구성](#backend-configuration)
+8. [대시보드 구성](#dashboard-configuration)
+9. [digna를 systemd 서비스로 실행하기](#running-digna-as-a-systemd-service)
+10. [새 릴리스로 업그레이드하기](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction and Overview {: #introduction-and-overview }
+## 소개 {: #introduction }
 
-이 가이드는 **OpenID Connect (OIDC)**를 사용하여 digna 플랫폼에 Single Sign-On(SSO)을 통합하는 단계별 지침을 제공합니다.
+### digna 소개
 
-### SSO란?
+digna는 데이터 웨어하우스, 데이터 레이크, 레이크하우스 등 다양한 데이터 환경 전반에서 데이터 품질 관리를 최적화하도록 설계된 종합적인 AI 기반 플랫폼입니다. 높은 확장성 및 적응성을 갖추었으며 자동화, 실시간 모니터링 및 이상값 탐지를 통해 현대 데이터 과제를 해결합니다.
 
-Single Sign-On은 외부 아이덴티티 제공자(IdP)를 통해 기업 자격증명으로 digna에 안전하게 로그인할 수 있게 합니다. 사용자는 별도의 digna 비밀번호를 관리하지 않고도 기업 자격증명으로 인증할 수 있습니다.
+digna는 두 가지 주요 구성요소로 이루어져 있습니다:
 
-### 작동 방식
+- **dignabackend**: 데이터 처리 및 품질 검사를 수행하는 애플리케이션의 핵심 엔진입니다.
+- **dignadashboard**: 웹 서버에 호스팅되는 웹 기반 인터페이스로, digna 플랫폼과 상호작용하고 데이터 품질 지표를 시각화하는 사용자 친화적인 방법을 제공합니다.
 
-digna의 SSO는 OIDC 프로토콜을 사용해 구현됩니다. 여러 아이덴티티 제공자를 병렬로 구성하려면 두 가지 핵심 구성 파일을 조정하면 됩니다:
+### 릴리스 2026.06의 새로운 기능
 
-- **`dashboard_config.toml`** — 프런트엔드 로그인 인터페이스 제어
-- **`config.toml`** — 백엔드 OIDC 연결 구성
+이번 릴리스는 코드 내에서 직접 데이터 관찰성(data observability) 기능을 제공하여 개발자가 소스에서 데이터 품질을 모니터링할 수 있도록 합니다. 자세한 내용은 [릴리스 노트](http://docs.digna.ai/changelog/Release_202606/)를 참조하십시오.
 
-### 지원되는 공급자 {: #supported-providers-overview }
+### Windows나 macOS용 가이드를 찾고 계신가요?
 
-이 가이드의 예시는 **Microsoft**와 **Google**을 사용하지만, **OIDC 규격을 준수하는 모든 공급자**는 동일한 구조를 따라 통합할 수 있습니다.
+이 가이드는 Linux를 다룹니다. 다른 플랫폼은 [Windows 설치 가이드](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) 또는 [macOS 설치 가이드](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md)를 참조하십시오.
 
-일반적인 OIDC 공급자 예:
-- Microsoft Entra ID (Azure AD)
-- Google Workspace
-- Okta
-- Auth0
-- Keycloak
-- 기타 OIDC 준수 아이덴티티 제공자
+### 이 가이드는 어떤 배포판을 다루나요?
 
----
+지침은 가장 일반적인 두 서버 계열을 기준으로 작성되었습니다. 두 계열이 다를 때는 두 가지 명령을 모두 제시합니다:
 
-## Configuration Steps {: #configuration-steps }
+- **Debian 계열** — Debian, Ubuntu. 패키지 관리자: `apt`.
+- **RHEL 계열** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. 패키지 관리자: `dnf`.
 
-SSO 구성은 두 파일의 업데이트를 필요로 합니다. 이 섹션에서는 각 파일을 구성하는 방법을 설명합니다.
-
-### 구성 파일 개요
-
-| File | Location | Purpose |
-|---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | 프런트엔드 로그인 인터페이스 |
-| **config.toml** | `/config.toml` | 백엔드 OIDC 연결 |
-
-SSO가 제대로 작동하려면 두 파일 모두 구성되어야 합니다.
+`systemd`를 사용하는 현대적인 배포판이면 모두 동작합니다. 변경되는 것은 패키지 이름과 일부 구성 경로뿐입니다.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## 시스템 요구사항 {: #system-requirements }
 
-### 파일 위치
+설치를 시작하기 전에 시스템이 다음 최소 요구사항을 충족하는지 확인하십시오:
 
+| 요구사항 | 사양 |
+|---|---|
+| **운영체제** | Ubuntu 22.04 LTS 이상, Debian 12 이상, RHEL 9 / Rocky 9 / AlmaLinux 9 이상 |
+| **아키텍처** | x86_64 (amd64) 또는 arm64 |
+| **초기화 시스템** | systemd |
+| **메모리 (최소 구성)** | 16 GB RAM |
+| **디스크 용량** | 10 GB 사용 가능 저장소 |
+| **데이터베이스** | PostgreSQL 서버 12 이상 |
+| **웹 서버** | nginx, Apache httpd 또는 동등한 서버 |
+
+### 데이터베이스 설치 옵션
+
+**PostgreSQL이 이미 설치된 경우:**
+기존 PostgreSQL 서버에 digna용 새 데이터베이스를 추가하면 됩니다.
+
+**digna와 같은 머신에 PostgreSQL을 설치하는 경우:**
+
+!!! info "권장 사양"
+
+    - **메모리**: 32 GB RAM (기본 16 GB 대신)
+    - **디스크 공간**: 50 GB 사용 가능 저장소 (기본 10 GB 대신)
+
+    이 더 높은 사양은 digna와 PostgreSQL 데이터베이스가 동시에 실행되는 상황을 수용합니다.
+
+### 배포판 및 아키텍처 확인
+
+이 가이드의 여러 명령은 Debian과 RHEL 계열 간에 다릅니다. 자신의 시스템이 어느 계열인지 확인하려면 다음을 실행하십시오:
+
+```bash
+cat /etc/os-release
+uname -m
 ```
-dashboard/dashboard_config.toml
+
+- `ID=ubuntu` 또는 `ID=debian` — `apt` 명령을 사용하십시오.
+- `ID=rhel`, `rocky`, `almalinux` 또는 `fedora` — `dnf` 명령을 사용하십시오.
+- `x86_64` 또는 `aarch64` — 설치 패키지에 맞는 아키텍처입니다.
+
+---
+
+## 사전 설치 준비 {: #pre-installation-setup }
+
+digna를 설치하기 전에 두 가지 주요 전제 조건이 준비되어 있는지 확인하십시오:
+
+1. **PostgreSQL 서버** – 계산된 지표와 성능 데이터를 저장하기 위함
+2. **웹 서버** – digna Dashboard를 호스팅하기 위함
+
+이 구성 요소들이 아직 설정되지 않았다면 아래 섹션을 따라 설치하고 구성하십시오.
+
+### 패키지 인덱스 갱신
+
+설치하기 전에 패키지 목록을 업데이트하십시오:
+
+```bash
+sudo apt update
+```
+```bash
+sudo dnf check-update
 ```
 
-### 1단계: OIDC 공급자 추가
+!!! note "참고"
 
-지원하려는 각 아이덴티티 제공자에 대해 `[[login.oidc]]` 배열 아래에 항목을 추가합니다.
+    이 가이드 전반에서 한 쌍의 첫 번째 명령은 **Debian 계열**용이고 두 번째는 **RHEL 계열**용입니다. 시스템에 맞는 것만 실행하십시오.
 
-**Microsoft 및 Google 예시:**
+---
 
-```toml
-[[login.oidc]]
-key = "microsoft"
-label = "Login with Microsoft"
+## PostgreSQL 서버 설정 {: #postgresql-server-setup }
 
-[[login.oidc]]
-key = "google"
-label = "Login with Google"
+### PostgreSQL이 이미 있는 경우
+
+PostgreSQL이 로컬 머신에 이미 설치되어 실행 중이거나 관리되는 원격 PostgreSQL 서버를 사용 중이라면, [다음 섹션](#web-server-configuration)으로 건너뛸 수 있습니다.
+
+### PostgreSQL 설치
+
+#### 1단계: 서버 패키지 설치
+
+```bash
+sudo apt install -y postgresql postgresql-contrib
 ```
-
-### 2단계: 로그인 옵션 구성
-
-비밀번호 기반 로그인을 허용할지 여부를 지정합니다:
-
-```toml
-[login]
-usePassword = true
+```bash
+sudo dnf install -y postgresql-server postgresql-contrib
 ```
-
-### 구성 매개변수
-
-#### `[[login.oidc]]` 섹션
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `key` | string | Yes | OIDC 연결의 고유 식별자(config.toml의 키와 일치해야 함) |
-| `label` | string | Yes | 로그인 버튼에 표시될 텍스트(예: "Login with Microsoft") |
-
-#### `[login]` 섹션
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `usePassword` | boolean | false | SSO 외에 비밀번호 기반 로그인을 허용할지 여부 |
-
-### usePassword 이해하기
-
-**`usePassword = true`인 경우:**
-- 로그인 화면에 SSO 버튼(예: "Login with Microsoft")이 표시됩니다.
-- 로그인 화면에 사용자 이름 및 비밀번호 필드도 표시됩니다.
-- 사용자는 두 방법 중 하나로 인증할 수 있습니다.
-- 일부 사용자는 SSO를 사용하고 다른 사용자는 비밀번호를 사용하는 하이브리드 설정을 허용합니다.
-
-**`usePassword = false`(또는 생략)인 경우:**
-- 로그인 화면에 SSO 버튼만 표시됩니다.
-- 사용자 이름/비밀번호 필드가 없습니다.
-- OIDC 인증만 사용할 수 있습니다.
 
 !!! tip "팁"
 
-    비밀번호 기반 로그인은 `digna user add` 명령어 또는 대시보드를 통해 비밀번호로 생성된 사용자에게만 제공됩니다.
+    배포판 패키지는 최신 PostgreSQL 릴리스보다 뒤처질 수 있습니다. 특정 최신 버전이 필요하면 공식 [PostgreSQL apt 또는 yum 저장소](https://www.postgresql.org/download/linux/)를 사용하십시오.
 
-### 전체 예시
+#### 2단계: 데이터베이스 클러스터 초기화
 
-```toml
-[login]
-usePassword = true
+**Debian 계열**에서는 패키지가 자동으로 클러스터를 생성하고 시작합니다 — 다음 단계로 건너뛰십시오.
 
-[[login.oidc]]
-key = "microsoft"
-label = "Login with Microsoft"
+**RHEL 계열**에서는 클러스터를 명시적으로 생성해야 합니다:
 
-[[login.oidc]]
-key = "google"
-label = "Login with Google"
+```bash
+sudo postgresql-setup --initdb
+```
 
-[[login.oidc]]
-key = "okta"
-label = "Login with Okta"
+#### 3단계: 서비스 시작 및 활성화
+
+```bash
+sudo systemctl enable --now postgresql
+```
+
+이 명령은 PostgreSQL을 즉시 시작하고 부팅 시 자동으로 다시 시작되도록 구성합니다.
+
+#### 4단계: 설치 확인
+
+```bash
+psql --version
+sudo systemctl status postgresql
+```
+
+PostgreSQL 버전과 `active (running)` 상태를 확인할 수 있어야 합니다.
+
+#### 5단계: 서버에 접속
+
+Linux PostgreSQL 패키지는 클러스터를 소유한 `postgres` 시스템 계정을 생성합니다. 해당 계정으로 접속하십시오:
+
+```bash
+sudo -u postgres psql
+```
+
+!!! note "참고 — 여기서 Linux는 Windows와 다릅니다"
+
+    Windows 설치 관리자는 설치 중에 `postgres` 슈퍼유저의 비밀번호 설정을 요청합니다. Linux 패키지는 그렇지 않습니다. 대신 로컬 연결은 **peer authentication**으로 인증됩니다: 운영체제의 `postgres` 사용자가 비밀번호 없이 `postgres` 데이터베이스 사용자로 연결할 수 있습니다.
+
+    그래서 위 명령은 `sudo -u postgres`를 사용합니다. digna 백엔드는 사용자 이름과 비밀번호로 TCP를 통해 연결하므로, [초기 설치](#initial-installation)에서 명시적인 digna 사용자를 생성할 것입니다.
+
+#### 6단계: 포트 확인
+
+기본 PostgreSQL 포트는 `5432`입니다. 서버가 어떤 포트를 리스닝하는지 확인하려면:
+
+```bash
+sudo -u postgres psql -c "SHOW port;"
+```
+
+값을 기록해 두십시오 — digna 백엔드를 구성할 때 필요합니다.
+
+#### 7단계: digna 사용자를 위한 비밀번호 인증 활성화
+
+digna는 TCP로 `digna_user` 계정으로 PostgreSQL에 연결하므로 peer 인증이 아닌 비밀번호 인증이 필요합니다. `pg_hba.conf`가 이를 허용하는지 확인하십시오.
+
+파일 위치 확인:
+
+```bash
+sudo -u postgres psql -c "SHOW hba_file;"
+```
+
+편집기로 열어 로컬 TCP 라인이 `ident` 대신 `scram-sha-256`(또는 오래된 서버에서는 `md5`)을 사용하도록 확인하십시오:
+
+```
+# TYPE  DATABASE  USER  ADDRESS         METHOD
+host    all       all   127.0.0.1/32    scram-sha-256
+host    all       all   ::1/128         scram-sha-256
+```
+
+변경 후 PostgreSQL을 다시 로드하십시오:
+
+```bash
+sudo systemctl reload postgresql
+```
+
+!!! warning "경고"
+
+    digna가 `FATAL: Ident authentication failed for user "digna_user"`를 보고하면, 이 설정이 원인입니다.
+
+#### 8단계: PostgreSQL이 다른 머신에서 실행되는 경우
+
+다른 호스트의 연결을 허용하려면 `postgresql.conf`에서 `listen_addresses`를 설정하고 `pg_hba.conf`에 해당 네트워크에 맞는 `host` 라인을 추가하십시오:
+
+```
+listen_addresses = '*'
+```
+
+그런 다음 방화벽에서 포트를 열고 서비스를 재시작하십시오:
+
+```bash
+sudo ufw allow 5432/tcp
+```
+```bash
+sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
+```
+```bash
+sudo systemctl restart postgresql
 ```
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## 웹 서버 구성 {: #web-server-configuration }
 
-### 파일 위치
+digna는 대시보드를 호스팅하기 위해 웹 서버가 필요합니다. 다음 옵션 중 하나를 선택하십시오:
 
+- [nginx](#nginx-setup) — 경량이며 권장
+- [Apache httpd](#apache-setup) — 널리 배포된 대안
+
+이 서버들 중 하나만 설치하고 구성하면 됩니다.
+
+두 섹션 모두 대시보드가 의존하는 두 가지를 구성합니다:
+
+- **단일 페이지 애플리케이션 폴백** — 대시보드 URL을 새로고침해도 404가 발생하지 않도록 함
+- **`.md` MIME 타입** — 마크다운 파일을 올바르게 제공하기 위함
+
+### nginx 설정 {: #nginx-setup }
+
+#### 개요
+
+nginx는 정적 digna 대시보드를 제공하기에 적합한 경량 고성능 웹 서버입니다.
+
+#### 설치
+
+```bash
+sudo apt install -y nginx
 ```
-/config.toml
-```
-
-(루트 digna 설치 디렉터리)
-
-### 1단계: OIDC 공급자 섹션 추가
-
-각 공급자에 대해 `[oidc.<key>]` 섹션을 추가해야 합니다. 여기서 key는 `dashboard_config.toml`에 정의된 `key`와 일치해야 합니다.
-
-### Microsoft 구성
-
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
-```
-
-### Google 구성
-
-```toml
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```bash
+sudo dnf install -y nginx
 ```
 
-### 구성 매개변수
+#### nginx 시작
 
-| Parameter | Type | Required | Description | Example |
-|---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | 아이덴티티 제공자에서 발급된 클라이언트 ID | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | 아이덴티티 제공자에서 발급된 클라이언트 시크릿 | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | 인증 후 콜백 URL | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC 구성 엔드포인트 | `https://login.microsoftonline.com/...` |
+```bash
+sudo systemctl enable --now nginx
+```
+
+#### 설치 확인
+
+1. 브라우저를 엽니다.
+2. `http://localhost`로 접속합니다.
+3. nginx 환영 페이지가 표시되어야 합니다.
+
+#### 방화벽 열기
+
+서버가 다른 머신에서 접근된다면 HTTP 트래픽을 허용하십시오:
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+```bash
+sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
+```
+
+#### 대시보드용 사이트 구성
+
+nginx는 두 배포판 계열 모두에서 `conf.d` 디렉토리의 모든 파일을 포함합니다. digna 전용 구성 파일을 생성하십시오:
+
+```bash
+sudo nano /etc/nginx/conf.d/digna.conf
+```
+
+다음 내용을 붙여넣고 `/opt/digna/dashboard`를 추출한 실제 `dashboard` 폴더 경로로 바꾸십시오:
+
+```nginx
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+
+    root   /opt/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
 
 !!! warning "중요"
 
-    플레이스홀더 값(`<client_id>`, `<client_secret>`, `<tenant_id>`)을 아이덴티티 제공자 개발자 포털에서 발급받은 실제 자격 증명으로 바꾸세요.
+    `try_files` 지시어가 없으면 루트 URL이 아닌 다른 대시보드 페이지를 새로고침할 때 404가 발생합니다. 이는 Windows의 IIS에서 필요한 URL Rewrite 모듈에 해당하는 nginx 설정입니다.
 
-### Redirect URI
+#### 기본 사이트 비활성화
 
-리디렉션 URI는 아이덴티티 제공자 구성에 등록된 값과 동일해야 합니다:
+포트의 `default_server`가 될 수 있는 서버 블록은 하나뿐입니다. **Debian 계열**에서는 패키지로 제공된 기본 페이지를 제거하여 충돌을 방지하십시오:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+```
+
+**RHEL 계열**에서는 `/etc/nginx/nginx.conf` 내부의 `server { ... }` 블록을 주석 처리하거나 삭제하십시오.
+
+#### 구성 적용
+
+구문 오류가 있는지 구성 테스트를 실행한 후 nginx를 다시 로드하십시오:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+### Apache httpd 설정 {: #apache-setup }
+
+#### 개요
+
+Apache httpd는 지원되는 모든 배포판의 기본 저장소에서 사용할 수 있습니다. 패키지 이름은 Debian 계열에서는 `apache2`이고 RHEL 계열에서는 `httpd`입니다.
+
+#### 설치
+
+```bash
+sudo apt install -y apache2
+```
+```bash
+sudo dnf install -y httpd
+```
+
+#### Apache 시작
+
+```bash
+sudo systemctl enable --now apache2
+```
+```bash
+sudo systemctl enable --now httpd
+```
+
+#### 설치 확인
+
+1. 브라우저를 엽니다.
+2. `http://localhost`로 접속합니다.
+3. 배포판의 기본 Apache 페이지가 표시되어야 합니다.
+
+#### 필수: mod_rewrite 활성화
+
+대시보드는 URL 재작성(rewrite)을 필요로 합니다.
+
+**Debian 계열**에서는 모듈을 활성화하고 재시작하십시오:
+
+```bash
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
+
+**RHEL 계열**에서는 `mod_rewrite`가 기본으로 로드됩니다. 확인하려면:
+
+```bash
+httpd -M | grep rewrite
+```
+
+#### 필수: .htaccess 재정의 허용
+
+문서 루트에 대한 구성 파일을 엽니다:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
+```
+
+문서 루트(`/var/www/html` — 두 계열 모두 해당)를 포함하는 `<Directory>` 블록을 찾아 다음을 변경하십시오:
+
+```apache
+AllowOverride None
+```
+
+다음과 같이 변경:
+
+```apache
+AllowOverride All
+```
+
+#### 필수: 마크다운 파일용 MIME 타입
+
+같은 파일에 마크다운 파일이 제대로 제공되도록 다음 줄을 추가하십시오:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "중요"
+
+    이 설정이 없으면 `.md` 파일이 제대로 제공되지 않을 수 있습니다.
+
+#### 구성 적용
+
+구문 오류를 검사한 후 Apache를 재시작하십시오:
+
+```bash
+sudo apachectl configtest
+sudo systemctl restart apache2
+```
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
+
+---
+
+## 초기 설치 {: #initial-installation }
+
+### 1단계: digna 저장소 설정
+
+digna 저장소는 digna가 계산한 모든 지표를 저장합니다. 분석 및 성능 데이터의 중앙 데이터베이스 역할을 합니다.
+
+#### 저장소 스키마 및 사용자 생성
+
+PostgreSQL 클라이언트(psql, pgAdmin 등)를 열고 다음 SQL 명령을 실행하십시오:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**다음 플레이스홀더를 교체하십시오:**
+
+- `<digna_repo_schema>` — 원하는 스키마 이름(예: `dignarepo`)
+- `<digna_repo_user>` — 원하는 사용자 이름(예: `digna_user`)
+- `<digna_repo_password>` — 이 사용자의 안전한 비밀번호
+
+**예시:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+쉘에서 한 번에 실행하려면:
+
+```bash
+sudo -u postgres psql
+```
+
+그런 다음 `postgres=#` 프롬프트에 위 명령들을 붙여넣고 `\q`로 종료하십시오.
+
+!!! tip "권장 사항"
+
+    데이터베이스 사용자에는 강력하고 복잡한 비밀번호를 사용하십시오. 쉽게 추측할 수 있는 자격증명은 피하십시오.
+
+---
+
+### 2단계: digna 설치 패키지 압축 해제
+
+1. 제공된 digna 설치 ZIP 파일을 찾습니다.
+2. 원하는 설치 위치(예: `/opt/digna`)에 압축을 풉니다.
+3. 압축을 풀면 다음 항목들이 보여야 합니다:
+   - `dashboard/` — 웹 대시보드 인터페이스
+   - `digna` — 메인 실행 파일(백엔드 + CLI 결합)
+   - `config.toml` — 구성 파일
+   - `license.toml` — 라이선스 파일(제공된 파일을 복사)
+
+셸에서 압축을 풀려면:
+
+```bash
+sudo mkdir -p /opt/digna
+sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
+```
+
+!!! note "참고"
+
+    `unzip`이 설치되지 않은 경우 `sudo apt install -y unzip` 또는 `sudo dnf install -y unzip`로 추가하십시오.
+
+#### 실행 파일에 실행 권한 부여
+
+아카이브 전송 방식에 따라 실행 권한 비트가 유지되지 않을 수 있습니다. 명시적으로 설정하십시오:
+
+```bash
+cd /opt/digna
+sudo chmod +x digna
+```
+
+#### 서비스 계정 생성
+
+백엔드를 전용 비권한 사용자로 실행하는 것이 프로덕션 배포에 권장됩니다:
+
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! note "참고"
+
+    RHEL 계열에서는 동등한 쉘 경로가 `/sbin/nologin`입니다.
+
+### 3단계: 라이선스 파일 설치
+
+!!! warning "중요"
+
+    라이선스 파일은 설치 패키지에 포함되어 있지 않으며 digna에서 별도로 제공됩니다.
+
+1. 제공된 `license.toml` 파일을 찾으십시오.
+2. 이를 digna 설치 루트 디렉터리( `config.toml`과 `digna` 실행 파일이 있는 곳)로 복사하십시오.
+
+**이유:**
+라이선스 파일에는 고객 정보, 라이선스 만료일 및 디지털 서명이 포함되어 있습니다. **이 파일을 수정하지 마십시오** — 변경하면 무효화됩니다.
+
+**설정 후 디렉터리 구조 예시:**
 
 ```
-http://localhost:5173/oidc/callback
+/opt/digna/
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+├── bin/                (service management scripts)
+└── dashboard/          (web interface)
+    └── (dashboard files)
 ```
 
-digna가 다른 도메인에 호스팅된 경우 다음과 같이 적절히 업데이트하세요:
-- 로컬: `http://localhost:5173/oidc/callback`
-- 프로덕션: `https://digna.yourdomain.com/oidc/callback`
+---
 
-### 전체 예시
+## 백엔드 구성 {: #backend-configuration }
+
+### 1단계: 구성 파일 생성 및 편집
+
+`config_template.toml` 파일이 digna 설치 디렉터리에 제공됩니다. 이를 `config.toml`로 이름만 변경하면 됩니다.
+
+```bash
+cd /opt/digna
+sudo mv config_template.toml config.toml
+```
+
+**위치:** `/opt/digna/config.toml`
+
+텍스트 편집기로 `config.toml`을 열고 아래 각 섹션을 구성하십시오.
+
+#### [app] 섹션
+
+이 섹션은 digna 백엔드 애플리케이션 설정을 구성합니다:
 
 ```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
-
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
-DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+[app]
+digna_APP_HOST = "localhost"
+digna_APP_PORT = 8082
+digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+digna_APP_CORS_ALLOW_CREDENTIALS = true
+digna_APP_CORS_ALLOW_METHODS = ["*"]
+digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
----
-
-## Testing Login {: #testing-login }
-
-구성을 완료한 후 SSO가 정상 작동하는지 확인하세요.
-
-### 테스트 전 체크리스트
-
-테스트 전에 다음을 확인하세요:
-
-- [ ] `dashboard_config.toml`에 OIDC 공급자가 추가되었는지
-- [ ] `config.toml`에 OIDC 자격 증명이 추가되었는지
-- [ ] 두 파일이 저장되었는지
-- [ ] 자격 증명(client ID, client secret)이 정확한지
-- [ ] 리디렉션 URI가 배포 URL과 일치하는지
-- [ ] 아이덴티티 제공자 앱에 리디렉션 URI가 구성되어 있는지
-
-### 테스트 단계
-
-#### 1단계: 서비스 재시작
-
-변경 사항을 적용하려면 digna 백엔드와 웹 서버를 재시작하세요.
-
-**Windows 서비스로 실행 중인 경우:**
-```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
-```
-
-**수동으로 실행하는 경우:**
-```bash
-cd C:\path\to\digna
-digna serve --address localhost --port 8082
-```
-
-**IIS 또는 Tomcat을 사용하는 경우:**
-웹 서버 서비스를 재시작하세요.
-
-#### 2단계: 대시보드 열기
-
-브라우저에서 digna 대시보드를 엽니다:
-
-```
-http://localhost:5173
-```
-
-(또는 구성한 대시보드 URL)
-
-#### 3단계: 로그인 버튼 확인
-
-구성한 각 공급자에 대한 로그인 버튼이 표시되는지 확인합니다:
-
-- "Login with Microsoft" 버튼이 보여야 함
-- "Login with Google" 버튼이 보여야 함
-- (`usePassword = true`인 경우) 사용자명/비밀번호 필드가 보여야 함
-
-버튼이 보이지 않는 경우:
-- `dashboard_config.toml`이 저장되었는지 확인
-- 대시보드 서비스가 재시작되었는지 확인
-- 브라우저 콘솔(F12)에서 오류 확인
-
-#### 4단계: SSO 로그인 테스트
-
-SSO 버튼(예: "Login with Microsoft")을 클릭합니다:
-
-1. 아이덴티티 제공자의 로그인 페이지로 리디렉션되어야 합니다.
-2. 기업 자격증명으로 로그인합니다.
-3. digna로 리디렉션되어야 합니다.
-4. digna에 로그인되어야 합니다.
-
-#### 5단계: 사용자 생성 확인
-
-SSO 로그인 성공 후:
-
-- 사용자가 digna에 자동으로 생성되어야 함
-- 사용자가 로그인되어야 함
-- 사용자 프로필에 아이덴티티 제공자 정보가 표시되어야 함
-- digna 대시보드를 볼 수 있어야 함
-
-#### 6단계: 비밀번호 로그인 테스트(활성화된 경우)
-
-`usePassword = true`인 경우:
-
-1. digna에서 로그아웃합니다.
-2. 로그인 페이지에서 사용자명과 비밀번호를 입력합니다.
-3. 비밀번호 자격증명으로 로그인이 되어야 합니다.
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### 로그인 버튼이 나타나지 않음
-
-**증상:**
-- 로그인 페이지에 OIDC 로그인 버튼이 보이지 않음
-- 비밀번호 필드만 보임(만약 usePassword = true인 경우)
-
-**원인 및 해결책:**
-1. `dashboard_config.toml`이 `dashboard/` 디렉터리에 있는지 확인
-2. `[[login.oidc]]` 섹션이 올바른 문법으로 존재하는지 확인
-3. 대시보드 서비스를 재시작
-4. 브라우저 캐시 지우기(Ctrl+Shift+Delete 또는 Cmd+Shift+Delete)
-5. 브라우저 콘솔(F12 → Console 탭)에서 오류 확인
-
----
-
-### Redirect URI 불일치 오류
-
-**증상:**
-- SSO 버튼 클릭 후 "redirect_uri mismatch" 관련 오류 발생
-- "The redirect URI is not registered" 오류
-
-**원인 및 해결책:**
-1. `config.toml`의 `DIGNA_OIDC_REDIRECT_URI`가 올바른지 확인
-2. 아이덴티티 제공자 설정에 리디렉션 URI가 등록되어 있는지 확인
-3. 프로토콜, 도메인, 경로까지 동일한지 확인
-4. 리디렉션 URI에 오타가 없는지 확인
-5. HTTPS 사용 시 인증서가 유효한지 확인
-
----
-
-### 클라이언트 자격 증명 오류(Invalid Client Credentials)
-
-**증상:**
-- "Invalid client ID or secret" 오류
-- 자격 증명 오류로 인증 실패
-
-**원인 및 해결책:**
-1. `DIGNA_OIDC_CLIENT_ID` 및 `DIGNA_OIDC_CLIENT_SECRET`이 정확한지 확인
-2. 추가 공백이나 특수문자가 섞여 있지 않은지 확인
-3. 자격 증명이 만료되거나 취소되지 않았는지 확인
-4. 구성 업데이트 후 백엔드 서비스를 재시작
-5. 아이덴티티 제공자 콘솔에서 자격 증명이 활성 상태인지 확인
-
----
-
-### 로그인 지연 또는 타임아웃
-
-**증상:**
-- SSO 버튼 클릭 시 아무 동작이 없음
-- 몇 초 후 타임아웃 발생
-- 브라우저에 "Failed to connect" 등의 메시지 표시
-
-**원인 및 해결책:**
-1. digna 백엔드가 실행 중인지 확인: `digna repo check`
-2. 아이덴티티 제공자로의 네트워크 연결 확인
-3. `DIGNA_OIDC_CONFIGURATION_URL`에 접근 가능한지 확인
-4. 방화벽 규칙이 아웃바운드 HTTPS 연결을 허용하는지 확인
-5. 백엔드와 대시보드가 서로 통신 가능한지 확인
-
----
-
-### 사용자가 자동으로 생성되지 않음
-
-**증상:**
-- SSO 로그인은 성공하지만 digna에 사용자가 생성되지 않음
-- SSO 로그인 후 권한 오류 발생
-
-**원인 및 해결책:**
-1. OIDC 구성이 올바른지 확인
-2. 사용자 권한 설정이 올바른지 확인
-3. digna 로그에서 오류 메시지 검토
-4. 백엔드 서비스 재시작
-5. 문제가 지속되면 support@digna.ai로 문의
-
----
-
-## Supported Providers {: #supported-providers }
-
-### 테스트 및 지원됨
-
-다음 OIDC 공급자는 테스트되었으며 작동하는 것으로 확인되었습니다:
-
-| Provider | Configuration URL | Setup Guide |
+| 매개변수 | 값 | 메모 |
 |---|---|---|
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft Doc](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google Doc](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta Doc](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
+| `digna_APP_HOST` | `localhost` 또는 IP 주소 | dignabackend가 호스팅되는 호스트명 또는 IP |
+| `digna_APP_PORT` | `8082` (기본) | REST API 엔드포인트 포트 |
+| `digna_APP_CORS_ALLOW_ORIGINS` | 프론트엔드 URL | 대시보드가 다른 서버에 있다면 해당 URL 포함 |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | 자격증명과 함께 CORS 사용 시 필요 |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | 모든 HTTP 메서드 허용 |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | 모든 헤더 허용 |
 
-### 기타 OIDC 공급자
+!!! note "참고"
 
-OpenID Connect를 지원하는 모든 공급자를 통합할 수 있습니다. 필요한 정보:
+    대시보드를 기본 HTTP 포트에서 nginx 또는 Apache로 제공하는 경우 허용할 오리진은 `http://localhost`입니다 — 또는 대시보드에 다른 머신에서 접근하는 경우 서버의 공개 URL을 사용하십시오.
 
-- Client ID
-- Client secret
-- OpenID 구성 URL(일반적으로 `/.well-known/openid-configuration`)
-- 지원되는 스코프(일반적으로 `openid profile email`)
+#### [repo] 섹션
 
-특정 공급자 통합에 도움이 필요하면 support@digna.ai로 문의하세요.
+이 섹션은 PostgreSQL 데이터베이스 연결을 구성합니다:
+
+```toml
+[repo]
+digna_REPO_HOST = "localhost"
+digna_REPO_PORT = 5432
+digna_REPO_DB = "postgres"
+digna_REPO_SCHEMA = "dignarepo"
+digna_REPO_USER = "digna_user"
+digna_REPO_PASSWORD = "YourSecurePassword123!"
+```
+
+| 매개변수 | 값 | 메모 |
+|---|---|---|
+| `digna_REPO_HOST` | `localhost` 또는 IP | PostgreSQL 서버 호스트명/IP |
+| `digna_REPO_PORT` | `5432` (기본) | PostgreSQL 포트 |
+| `digna_REPO_DB` | `postgres` | 데이터베이스 이름 |
+| `digna_REPO_SCHEMA` | `dignarepo` | 앞서 생성한 스키마 |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL에서 생성한 사용자 |
+| `digna_REPO_PASSWORD` | 비밀번호 | 스키마 생성 시 설정한 비밀번호 |
+
+!!! tip "권장 사항"
+
+    `config.toml`에는 평문으로 데이터베이스 비밀번호가 포함됩니다. 서비스 계정만 읽을 수 있도록 권한을 제한하십시오:
+
+    ```bash
+    sudo chown digna:digna /opt/digna/config.toml
+    sudo chmod 600 /opt/digna/config.toml
+    ```
+
+#### [base] 섹션
+
+이 섹션에는 보안 및 쿠키 설정이 포함됩니다:
+
+```toml
+[base]
+digna_FERNET_KEY = "your-fernet-key"
+digna_COOKIE_DOMAIN = "localhost"
+digna_COOKIE_PATH = "/"
+digna_COOKIE_SECURE = false
+digna_COOKIE_HTTPONLY = true
+digna_COOKIE_SAME_SITE = "lax"
+digna_TOKEN_EXPIRES_IN = 86400
+digna_MAX_WORKERS = 4
+```
+
+| 매개변수 | 값 | 메모 |
+|---|---|---|
+| `digna_FERNET_KEY` | 암호화 키 | 토큰 및 쿠키 암호화에 사용 (기본값 제공) |
+| `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킬 것 |
+| `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결에서는 `true` 사용 |
+| `digna_COOKIE_HTTPONLY` | `true` | 보안을 위해 항상 활성화 |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF 공격 방지 |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24시간) | 세션 만료 시간(초) |
+| `digna_MAX_WORKERS` | CPU 코어 수 - 1 | 병렬 검사 작업 수 |
+
+!!! tip "팁"
+
+    서버에서 사용 가능한 CPU 코어 수를 확인하려면 `nproc`를 실행하십시오.
+
+#### [logging] 섹션
+
+이 섹션은 로깅 동작을 구성합니다:
+
+```toml
+[logging]
+digna_LOGGING_MODE = "INFO"
+digna_LOGGING_BACKUP_COUNT = 10
+```
+
+| 매개변수 | 값 | 메모 |
+|---|---|---|
+| `digna_LOGGING_MODE` | `INFO` 또는 `DEBUG` | 프로덕션은 `INFO`, 문제 해결 시 `DEBUG` |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | 보관할 일별 로그 백업 수 |
 
 ---
 
-## Best Practices
+### 2단계: 저장소 초기화
 
-**권장 사항:**
-- 프로덕션에서는 HTTPS 사용(HTTP 사용 금지)
-- 클라이언트 시크릿을 안전하게 보관(가능하면 환경 변수 사용)
-- 주기적으로 시크릿 교체(rotate) 수행
-- 먼저 비프로덕션 환경에서 테스트
-- 구성된 공급자를 문서화
-- 로그인 로그를 모니터링하여 이상 활동 감지
-- 아이덴티티 제공자 구성과 digna 구성을 동기화 상태로 유지
+1. 터미널을 엽니다.
+2. digna 설치 디렉터리( `config.toml` 및 `digna` 실행 파일이 있는 곳)로 이동합니다.
+3. 연결 테스트를 실행하십시오:
 
-**금지 사항:**
-- 클라이언트 시크릿을 버전 관리에 저장하지 마세요
-- 프로덕션에서 HTTP 리디렉션 URI 사용 금지
-- 동일한 키로 여러 공급자 구성 금지
-- 프로덕션에 기본/테스트 자격 증명 남겨두지 않기
-- 시크릿이 포함된 구성 파일 노출 금지
-- 개발 및 프로덕션 자격 증명을 혼용하지 마세요
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+연결이 설정되었다는 확인 메시지가 표시되어야 합니다(저장소 자체는 아직 초기화되지 않음).
+
+!!! note "참고"
+
+    Linux에서는 현재 디렉터리가 PATH에 포함되어 있지 않으므로 실행 파일을 `./digna`로 호출합니다. 항상 짧은 명령어로 사용하려면 심볼릭 링크를 추가하십시오:
+
+    ```bash
+    sudo ln -s /opt/digna/digna /usr/local/bin/digna
+    ```
+
+### 3단계: 저장소 스키마 설치
+
+같은 디렉터리에서 다음을 실행하십시오:
+
+```bash
+./digna repo install
+```
+
+이 명령은 PostgreSQL 데이터베이스에 필요한 테이블과 스키마를 설치합니다.
+
+### 4단계: digna 서버 시작
+
+digna 설치 디렉터리에서 서버를 시작합니다:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**매개변수:**
+- `--address` — 서버 호스트명/IP
+- `--port` — 서버 포트
+
+서버가 실행 중임을 확인하는 시작 메시지가 표시되어야 합니다:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "팁"
+
+    대시보드가 백엔드와 다른 머신에서 제공되는 경우 API 포트도 방화벽에서 열어야 합니다:
+
+    ```bash
+    sudo ufw allow 8082/tcp
+    ```
+    ```bash
+    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
+    ```
+
+### 5단계: 관리자 사용자 생성
+
+1. **새로운** 터미널 창을 엽니다.
+2. digna 설치 디렉터리로 이동합니다.
+3. 관리자 사용자를 생성하려면 다음 명령을 실행하십시오:
+
+```bash
+./digna user add <username> "<full_name>" <password> --su
+```
+
+**예시:**
+
+```bash
+./digna user add admin "Admin User" 'AdminPassword123!' --su
+```
+
+이 명령은 `admin` 사용자 이름의 전체 관리자 권한을 가진 사용자를 생성합니다.
+
+!!! tip "팁"
+
+    비밀번호는 작은따옴표로 감싸십시오. `bash`와 `zsh`는 `!`, `$`, `*` 같은 문자를 특별하게 취급하므로 인용하지 않으면 원래 문자열대로 전달되지 않습니다.
+
+!!! tip "권장 사항"
+
+    대문자, 소문자, 숫자 및 특수 문자를 섞어 강력한 비밀번호를 사용하십시오.
 
 ---
 
-## Support
+## 대시보드 구성 {: #dashboard-configuration }
 
-SSO 구성에 도움이 필요하신가요?
+### 1단계: 대시보드를 웹 서버에 배포
 
-- **이메일:** support@digna.ai
-- **문서:** https://docs.digna.ai
-- **웹사이트:** https://www.digna.ai
+digna 대시보드는 `dashboard/` 디렉터리에 별도의 `config.toml` 파일을 가지고 있습니다. 초기 설정에서는 이미 제공되어 있으므로 변경할 필요는 없습니다. 백엔드 연결을 사용자 지정해야 하는 경우에만 구성하십시오.
+
+대시보드 구성이 필요하다면 대시보드 문서를 참조하십시오.
+
+웹 서버를 선택하고 해당 배포 단계를 따르십시오.
+
+#### nginx에 배포
+
+[nginx 설정](#nginx-setup)을 따른 경우 서버 블록이 이미 `dashboard` 폴더를 가리키므로 복사가 필요 없습니다.
+
+1. **경로 확인**
+   - `/etc/nginx/conf.d/digna.conf`를 엽니다.
+   - `root`가 추출된 `dashboard` 폴더를 가리키는지 확인합니다.
+
+2. **폴더가 읽기 가능하도록 설정**
+   ```bash
+   sudo chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **nginx 다시 로드**
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+4. **설치 테스트**
+   - 브라우저를 엽니다.
+   - `http://localhost`(또는 구성한 URL)로 이동합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
+
+#### Apache httpd에 배포
+
+1. **대시보드를 문서 루트로 복사**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /var/www/html/digna
+   ```
+
+2. **리라이트 규칙 추가**
+
+   대시보드 경로가 브라우저 새로고침 시 유지되도록 배포된 폴더 안에 `.htaccess` 파일을 생성합니다:
+
+   ```bash
+   sudo nano /var/www/html/digna/.htaccess
+   ```
+
+   다음을 붙여넣으십시오:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **Apache 재시작**
+   ```bash
+   sudo systemctl restart apache2
+   ```
+   ```bash
+   sudo systemctl restart httpd
+   ```
+
+4. **대시보드 접속**
+   - 브라우저를 엽니다.
+   - `http://localhost/digna`로 이동합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
+
+### 2단계: SELinux (RHEL 계열 전용)
+
+RHEL, Rocky, AlmaLinux 및 Fedora에서는 기본적으로 SELinux가 활성화되어 웹 서버가 예상 위치 외부의 파일을 읽지 못하도록 차단할 수 있습니다. SELinux가 활성화되어 있는지 확인하십시오:
+
+```bash
+getenforce
+```
+
+결과가 `Enforcing`이고 `/opt/digna/dashboard`에서 대시보드를 제공하는 경우, 웹 서버가 해당 디렉터리를 읽을 수 있도록 라벨을 지정하십시오:
+
+```bash
+sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+!!! note "참고"
+
+    `semanage`가 없다면 `sudo dnf install -y policycoreutils-python-utils`로 설치하십시오.
+
+!!! warning "중요"
+
+    새로 구성된 RHEL 서버에서 대시보드가 **403 Forbidden**을 반환하는 경우, 파일 권한 문제보다는 거의 항상 SELinux 라벨링 문제입니다. `sudo ausearch -m avc -ts recent`로 확인하십시오.
 
 ---
 
-**마지막 업데이트:** August 30, 2026  
-**릴리스:** 2026.04  
-**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+## digna를 systemd 서비스로 실행하기 {: #running-digna-as-a-systemd-service }
+
+### 왜 digna를 서비스로 실행해야 하나요?
+
+digna 백엔드를 systemd 서비스로 실행하면 다음과 같은 장점이 있습니다:
+
+- 머신 부팅 시 자동으로 시작됩니다.
+- 열린 터미널 창 없이 백그라운드에서 실행됩니다.
+- 충돌 시 자동으로 재시작됩니다.
+- 표준 Linux 서비스 관리자 `systemctl`로 관리할 수 있습니다.
+
+### 서비스 관리 파일
+
+필요한 모든 파일은 digna 설치 디렉터리의 `bin/` 아래에 있습니다.
+
+사용 가능한 셸 스크립트는 다음과 같습니다:
+
+- `install_service.sh` — digna를 systemd에 등록합니다.
+- `uninstall_service.sh` — 서비스를 등록 취소합니다.
+- `start_service.sh` — 등록된 서비스를 시작합니다.
+- `stop_service.sh` — 실행 중인 서비스를 중지합니다.
+
+!!! warning "관리자 권한 필요"
+
+    모든 스크립트는 부팅 시 시작하도록 단위 파일을 `/etc/systemd/system`에 작성하므로 `sudo`로 실행해야 합니다.
+
+### 스크립트에 실행 권한 부여
+
+압축 해제 시 실행 권한이 보존되지 않을 수 있습니다. 처음 사용 전에 다음을 실행하십시오:
+
+```bash
+cd /opt/digna/bin
+sudo chmod +x *.sh
+```
+
+### 서비스 설치
+
+1. **터미널을 엽니다.**
+
+2. **bin 폴더로 이동**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **설치 스크립트 실행**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+이제 digna 서버가 systemd에 자동 시작으로 등록됩니다. 서비스는 즉시 시작되지 않습니다 — 다음 섹션을 참조하여 시작하십시오.
+
+### 서비스 시작 및 중지
+
+#### 서비스를 시작하려면
+
+1. 터미널을 엽니다.
+2. `/opt/digna/bin`로 이동합니다.
+3. 다음을 실행합니다:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### 서비스를 중지하려면
+
+1. 터미널을 엽니다.
+2. `/opt/digna/bin`로 이동합니다.
+3. 다음을 실행합니다:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "팁"
+
+    애플리케이션 파일을 업데이트하기 전에 항상 서비스를 중지하십시오.
+
+### systemctl로 서비스 관리
+
+등록된 후에는 어느 디렉터리에서나 표준 systemd 명령으로 서비스를 제어할 수 있습니다:
+
+```bash
+sudo systemctl start digna
+sudo systemctl stop digna
+sudo systemctl restart digna
+sudo systemctl status digna
+```
+
+### 서비스 확인
+
+서비스가 등록되어 실행 중인지 확인하려면:
+
+```bash
+systemctl is-enabled digna
+systemctl is-active digna
+```
+
+`enabled`이면 부팅 시 시작되며; `active`이면 현재 실행 중임을 의미합니다.
+
+### 서비스 로그 보기
+
+systemd는 백엔드가 콘솔에 출력하는 모든 내용을 캡처합니다. 로그를 확인하려면:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+문제를 재현하면서 실시간으로 로그를 따라가려면:
+
+```bash
+sudo journalctl -u digna -f
+```
+
+!!! tip "팁"
+
+    서비스가 즉시 시작 후 중지되는 경우 진단하는 가장 빠른 방법입니다. 저장소 연결 실패나 누락된 `license.toml`은 여기에서 보고됩니다.
+
+### 서비스를 새 디렉터리로 이동
+
+유닛 파일은 실행 파일의 절대 경로를 저장하므로 설치를 이동하면 서비스를 재등록해야 합니다:
+
+1. **현재 서비스 제거**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **애플리케이션 파일 이동**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **서비스 재설치**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **서비스 시작**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### 서비스 제거
+
+1. **실행 중인 서비스 중지**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **서비스 등록 해제**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+이제 digna 서버가 systemd에서 등록 해제됩니다.
+
+---
+
+## 새 릴리스로 업그레이드하기 {: #upgrading-to-a-new-release }
+
+### 업그레이드 전에
+
+**digna 저장소 백업 생성은 필수입니다**
+
+업그레이드 전에 저장소(PostgreSQL)를 백업하여 데이터 손실에 대비하십시오.
+백업이 있으면 업그레이드 중 예기치 않은 문제가 발생해도 복구할 수 있습니다.
+
+쉘에서 백업을 생성하려면:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+### 업그레이드 절차
+
+#### 1단계: digna 서비스 중지
+
+digna가 systemd 서비스로 실행 중이면 먼저 중지하십시오:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+digna가 포그라운드에서 실행 중이면 해당 터미널 창에서 `Ctrl + C`를 누르십시오.
+
+#### 2단계: 현재 백엔드 설치 백업
+
+digna 설치 디렉터리에서:
+
+```bash
+cd /opt/digna
+sudo mv digna digna_old
+```
+```bash
+sudo mv dashboard dashboard_old
+```
+
+#### 3단계: 새 버전 압축 해제 및 배포
+
+1. 새 digna 설치 ZIP 파일을 압축 해제합니다.
+2. 새 `digna` 실행 파일과 `dashboard` 폴더를 설치 디렉터리에 복사합니다.
+3. 실행 권한 비트와 서비스 계정 소유권을 복원합니다:
+
+```bash
+sudo chmod +x /opt/digna/digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! warning "중요"
+
+    `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
+
+### 4단계: 구성 파일 복원
+
+```bash
+sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+### 5단계: 저장소 스키마 업그레이드
+
+digna 설치 디렉터리로 이동하여 다음을 실행하십시오:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+이 명령은 기존 데이터를 보존하면서 PostgreSQL 스키마를 최신 버전으로 업데이트합니다.
+
+### 6단계: 서비스 재시작
+
+systemd 서비스로 실행 중이라면:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+수동으로 실행 중이었다면 서버를 다시 시작하십시오:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+nginx 또는 Apache를 사용하는 경우 해당 웹 서버를 다시 로드하십시오:
+
+```bash
+sudo systemctl reload nginx
+```
+```bash
+sudo systemctl restart apache2
+```
+
+RHEL 계열에서는 `dashboard` 디렉터리를 교체한 경우 SELinux 라벨을 다시 적용하십시오:
+
+```bash
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+#### 7단계: 업그레이드 확인
+
+1. digna 대시보드에 접속합니다.
+2. 인터페이스가 올바르게 로드되는지 확인합니다.
+3. 서버 로그에 오류가 없는지 확인합니다:
+
+```bash
+sudo journalctl -u digna -n 100
+```
 
 ---
 
 # Release 2026.06
 Source: https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/
 
-# digna Release 2026.06용 Windows 설치 가이드
+# digna 릴리스 2026.06용 Windows 설치 안내
 
-**Release:** 2026.06
+**릴리스:** 2026.06
 
-**최종 수정일:** 2026년 8월 30일
+**최종 업데이트:** 2026년 8월 30일
 
 
 ---
@@ -6795,65 +7499,69 @@ Source: https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.
 
 ## 소개 {: #introduction }
 
-### digna에 관하여
+### digna에 대하여
 
-digna는 데이터 웨어하우스, 데이터 레이크, 레이크하우스 등 다양한 데이터 환경 전반의 데이터 품질 관리를 최적화하도록 설계된 포괄적인 AI 기반 플랫폼입니다. 고도로 확장 가능하고 적응력이 뛰어나며 자동화, 실시간 모니터링 및 이상 탐지를 통해 현대 데이터 과제를 해결합니다.
+digna는 데이터 웨어하우스, 데이터 레이크, 레이크하우스 등 다양한 데이터 환경에서 데이터 품질 관리를 최적화하도록 설계된 종합 AI 기반 플랫폼입니다. 높은 확장성과 적응성을 목표로 하며, 자동화, 실시간 모니터링 및 이상 감지를 통해 현대적인 데이터 문제를 해결합니다.
 
 digna는 두 가지 주요 구성요소로 이루어져 있습니다:
 
 - **dignabackend**: 데이터 처리 및 품질 검사를 수행하는 애플리케이션의 핵심 엔진입니다.
-- **dignadashboard**: 웹 서버에 호스팅되는 웹 기반 인터페이스로, digna 플랫폼과 상호작용하고 데이터 품질 지표를 시각화할 수 있는 사용자 친화적인 방법을 제공합니다.
+- **dignadashboard**: 웹 서버에서 호스팅되는 웹 기반 인터페이스로, 사용자 친화적인 방식으로 digna 플랫폼과 데이터 품질 지표를 시각화합니다.
 
-### 릴리스 2026.06의 주요 변경사항
+### 릴리스 2026.06의 주요 변경 사항
 
-이번 릴리스는 데이터 관찰 가능성(data observability)을 코드에 직접 통합하여 개발자가 소스에서 데이터 품질을 모니터링할 수 있도록 합니다. 전체 내용은 [릴리스 노트](http://docs.digna.ai/changelog/Release_202606/)를 참조하세요.
+이번 릴리스는 코드 상에서 직접 데이터 관찰성(data observability) 기능을 제공하여 개발자가 소스에서 데이터 품질을 모니터링할 수 있도록 합니다. 자세한 내용은 [release notes](http://docs.digna.ai/changelog/Release_202606/)를 참조하세요.
+
+### macOS 또는 Linux용 안내서를 찾으시나요?
+
+이 안내서는 Windows를 다룹니다. 다른 플랫폼은 [macOS 설치 안내](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) 또는 [Linux 설치 안내](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md)를 참조하십시오.
 
 ---
 
 ## 시스템 요구사항 {: #system-requirements }
 
-설치를 시작하기 전에 시스템이 다음 최소 요구사항을 충족하는지 확인하십시오:
+설치를 시작하기 전에 시스템이 다음 최소 요구사항을 충족하는지 확인하세요:
 
-| Requirement | Specification |
+| 요구사항 | 사양 |
 |---|---|
-| **운영 체제** | Windows Server 또는 Windows 10/11 |
+| **운영체제** | Windows Server 또는 Windows 10/11 |
 | **메모리 (최소 구성)** | 16 GB RAM |
-| **디스크 공간** | 10 GB 사용 가능한 저장공간 |
+| **디스크 공간** | 10 GB 사용 가능 저장공간 |
 | **데이터베이스** | PostgreSQL Server 12 이상 |
-| **웹 서버** | IIS, Apache Tomcat 또는 동등 제품 |
+| **웹 서버** | IIS, Apache Tomcat 또는 동등한 서버 |
 
 ### 데이터베이스 설치 옵션
 
-**PostgreSQL이 이미 설치되어 있는 경우:**
+**이미 PostgreSQL이 설치되어 있는 경우:**
 기존 PostgreSQL 서버에 digna용 새 데이터베이스를 추가할 수 있습니다.
 
 **digna와 동일한 머신에 PostgreSQL을 설치하는 경우:**
 
 !!! info "권장 사양"
 
-    - **메모리**: 32 GB RAM (16 GB 대신)
-    - **디스크 공간**: 50 GB 사용 가능한 저장공간 (10 GB 대신)
+    - **메모리**: 32 GB RAM (기본 16 GB 대신)
+    - **디스크 공간**: 50 GB 사용 가능 저장공간 (기본 10 GB 대신)
 
-    이 높은 사양은 digna와 PostgreSQL 데이터베이스가 동시에 실행될 때를 대비한 것입니다.
+    이 사양 증가는 digna와 PostgreSQL 데이터베이스가 동시에 실행될 때를 고려한 권장사항입니다.
 
 ---
 
 ## 사전 설치 준비 {: #pre-installation-setup }
 
-digna를 설치하기 전에 다음 두 가지 중요한 전제 조건이 준비되어 있어야 합니다:
+digna를 설치하기 전에 다음 두 가지 핵심 전제 조건이 준비되어 있는지 확인하세요:
 
-1. **PostgreSQL 서버** – 계산된 메트릭과 성능 데이터를 저장하기 위함
-2. **웹 서버** – digna 대시보드를 호스팅하기 위함
+1. **PostgreSQL 서버** – 계산된 메트릭 및 성능 데이터를 저장하기 위함
+2. **웹 서버** – digna Dashboard를 호스팅하기 위함
 
-이 구성 요소들이 아직 설정되지 않았다면, 아래 섹션을 따라 설치 및 구성을 진행하세요.
+이 구성요소들이 아직 설정되어 있지 않다면, 아래 섹션을 따라 설치 및 구성을 진행하세요.
 
 ---
 
 ## PostgreSQL 서버 설정 {: #postgresql-server-setup }
 
-### PostgreSQL이 이미 설치되어 있는 경우
+### 이미 PostgreSQL이 설치되어 있는 경우
 
-PostgreSQL이 로컬 머신에서 이미 실행 중이거나 관리형 원격 PostgreSQL 서버를 사용 중이라면 [다음 섹션](#web-server-configuration)으로 건너뛰세요.
+PostgreSQL이 로컬 머신에 이미 설치되어 실행 중이거나 관리형 원격 PostgreSQL 서버를 사용하는 경우, [다음 섹션](#web-server-configuration)으로 건너뛰어도 됩니다.
 
 ### PostgreSQL 설치
 
@@ -6861,42 +7569,42 @@ Windows에 PostgreSQL을 설치하려면 다음 단계를 따르세요:
 
 #### 1단계: PostgreSQL 다운로드
 
-1. [PostgreSQL 다운로드 페이지](https://www.postgresql.org/download/)를 방문합니다.
-2. **Windows**를 선택합니다.
-3. 최신 설치관리자를 다운로드합니다.
+1. [PostgreSQL Downloads 페이지](https://www.postgresql.org/download/)로 이동
+2. **Windows** 선택
+3. 최신 설치 프로그램 다운로드
 
-#### 2단계: 설치관리자 실행
+#### 2단계: 설치 프로그램 실행
 
-1. 다운로드한 설치관리자 파일을 더블클릭합니다.
-2. 설치 마법사의 지시에 따라 진행합니다.
+1. 다운로드한 설치 프로그램 파일을 더블클릭
+2. 설치 마법사의 안내를 따름
 
 #### 3단계: 설치 디렉터리 선택
 
-PostgreSQL을 설치할 디렉터리를 선택합니다. 기본 위치를 사용해도 무방합니다.
+PostgreSQL이 설치될 디렉터리를 선택합니다. 기본 위치가 일반적으로 적합합니다.
 
 #### 4단계: 구성요소 선택
 
-표준 설치의 경우 기본 구성요소 선택을 유지합니다.
+표준 설정의 경우 기본 구성요소 옵션을 유지합니다.
 
 #### 5단계: PostgreSQL 슈퍼유저 암호 설정
 
-PostgreSQL 슈퍼유저(`postgres`)의 암호를 입력하고 확인합니다. **이 암호를 안전하게 보관하세요** — 이후에 필요합니다.
+PostgreSQL 슈퍼유저(`postgres`)의 암호를 입력하고 확인합니다. **이 암호를 안전하게 보관**하세요 — 나중에 필요합니다.
 
 #### 6단계: 포트 번호 구성
 
-기본 PostgreSQL 포트는 `5432`입니다. 기본값을 사용하거나 필요한 경우 다른 포트를 지정할 수 있습니다.
+기본 PostgreSQL 포트는 `5432`입니다. 필요에 따라 기본값을 사용하거나 다른 포트를 지정할 수 있습니다.
 
 !!! tip "팁"
 
-    포트 5432가 이미 사용 중인 경우 대체 포트를 선택하고 이후 구성에 참고하세요.
+    포트 5432가 이미 사용 중인 경우, 다른 포트를 선택하고 추후 구성 시 해당 포트를 기록해 두세요.
 
 #### 7단계: 로케일 선택
 
-데이터베이스의 로케일을 선택합니다. 기본값이 대부분의 설치에 적합합니다.
+데이터베이스의 로케일을 선택합니다. 기본값은 대부분의 설치에 적합합니다.
 
 #### 8단계: 설치 완료
 
-나머지 단계를 **다음(Next)**으로 진행한 후 **끝(Finish)**을 클릭합니다.
+나머지 단계에서 **다음**을 클릭한 후 **마침**을 클릭합니다.
 
 #### 9단계: 설치 확인
 
@@ -6906,7 +7614,7 @@ PostgreSQL 슈퍼유저(`postgres`)의 암호를 입력하고 확인합니다. *
 psql --version
 ```
 
-설치가 성공하면 PostgreSQL 버전이 표시됩니다.
+설치가 성공적이면 PostgreSQL 버전이 표시됩니다.
 
 ---
 
@@ -6917,56 +7625,56 @@ digna는 대시보드를 호스팅하기 위해 웹 서버가 필요합니다. �
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-이 중 **하나**의 서버만 설치하고 구성하면 됩니다.
+이 중 하나의 서버만 설치 및 구성하면 됩니다.
 
 ### IIS 설정 {: #iis-setup }
 
 #### 개요
 
-Internet Information Services(IIS)는 웹사이트 및 웹 애플리케이션을 호스팅하기 위한 Microsoft의 웹 서버입니다.
+Internet Information Services(IIS)는 웹사이트와 웹 애플리케이션을 호스팅하기 위한 Microsoft의 웹 서버입니다.
 
 #### IIS 활성화
 
 1. **제어판 열기**
-   - `Win + R`을 누릅니다.
-   - `control`을 입력하고 Enter 키를 누릅니다.
+   - `Win + R` 누름
+   - `control` 입력 후 Enter
 
 2. **Windows 기능으로 이동**
-   - **프로그램**을 클릭합니다.
-   - **Windows 기능 켜기/끄기**를 선택합니다.
+   - **프로그램** 클릭
+   - **Windows 기능 켜기/끄기** 선택
 
 3. **Internet Information Services 활성화**
-   - 항목 목록에서 **Internet Information Services (IIS)**를 찾습니다.
-   - 체크박스를 선택하여 활성화합니다.
-   - **+**를 클릭하여 하위 구성요소가 다음과 같이 선택되었는지 확인합니다:
+   - 아래로 스크롤하여 **Internet Information Services (IIS)** 찾기
+   - 체크박스를 체크하여 활성화
+   - **+**를 클릭하여 아래 하위 구성요소가 선택되었는지 확인:
      - **Web Management Tools**
      - **World Wide Web Services**
 
-4. **확인(OK)**을 클릭하여 변경 사항을 적용합니다.
+4. **확인(OK)** 클릭하여 변경 사항 적용
 
 5. **IIS 설치 확인**
-   - 브라우저를 열고
-   - `http://localhost`로 이동합니다.
-   - IIS 환영 페이지가 표시되어야 합니다.
+   - 브라우저 열기
+   - `http://localhost`로 이동
+   - IIS 환영 페이지가 표시되어야 함
 
 #### 필수: URL Rewrite 모듈
 
-IIS는 URL Rewrite 구성요소가 필요합니다. [공식 Microsoft 페이지](https://www.iis.net/downloads/microsoft/url-rewrite)에서 다운로드하여 설치하세요.
+IIS에는 URL Rewrite 구성요소가 필요합니다. [공식 Microsoft 페이지](https://www.iis.net/downloads/microsoft/url-rewrite)에서 다운로드하여 설치하세요.
 
 #### 필수: Markdown 파일용 MIME 타입
 
-IIS에서 Markdown 파일(`.md`)이 올바르게 서빙되도록 하려면:
+IIS가 Markdown 파일(`.md`)을 올바르게 제공하려면:
 
-1. **IIS 관리자**를 엽니다 (`Win + R`, `inetmgr` 입력, Enter)
-2. **사이트 > MIME Types**로 이동합니다.
-3. **추가(Add...)**를 클릭합니다.
+1. **IIS 관리자** 열기 (`Win + R`, `inetmgr` 입력 후 Enter)
+2. **사이트 > MIME Types**로 이동
+3. **추가(Add...)** 클릭
 4. 구성:
-   - **파일 이름 확장자(File name extension)**: `.md`
-   - **MIME 타입(MIME type)**: `text/markdown`
+   - **파일 이름 확장자**: `.md`
+   - **MIME 타입**: `text/markdown`
 
 !!! warning "중요"
 
-    이 설정이 없으면 `.md` 파일이 제대로 서빙되지 않을 수 있습니다.
+    이 설정이 없으면 `.md` 파일이 올바르게 서빙되지 않을 수 있습니다.
 
 ---
 
@@ -6979,21 +7687,21 @@ Apache Tomcat은 오픈소스 Java 서블릿 컨테이너이자 웹 서버입니
 #### 설치
 
 1. **Apache Tomcat 다운로드**
-   - [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)를 방문합니다.
-   - Windows ZIP 배포판을 다운로드합니다.
+   - [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi) 방문
+   - Windows ZIP 배포판 다운로드
 
 2. **압축 해제**
-   - ZIP 파일을 시스템의 디렉터리에 압축 해제합니다.
+   - ZIP 파일을 시스템의 디렉터리에 압축 해제
    - 예: `C:\Program Files\Apache Tomcat`
 
 3. **Tomcat 실행 확인**
-   - 브라우저를 열고
-   - `http://localhost:8080`로 이동합니다.
-   - Apache Tomcat 환영 페이지가 표시되어야 합니다.
+   - 브라우저 열기
+   - `http://localhost:8080`로 이동
+   - Apache Tomcat 환영 페이지가 표시되어야 함
 
 !!! tip "팁"
 
-    Apache Tomcat은 일반적으로 설치 후 자동으로 시작됩니다. 시작되지 않는 경우 `bin` 폴더로 이동하여 `startup.bat`를 실행하세요.
+    Apache Tomcat은 일반적으로 설치 후 자동으로 시작됩니다. 시작되지 않으면 `bin` 폴더로 이동하여 `startup.bat`을 실행하세요.
 
 ---
 
@@ -7015,11 +7723,11 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**아래 플레이스홀더를 바꾸세요:**
+**다음 플레이스홀더를 교체하세요:**
 
-- `<digna_repo_schema>` — 원하는 스키마 이름 (예: `dignarepo`)
-- `<digna_repo_user>` — 원하는 사용자명 (예: `digna_user`)
-- `<digna_repo_password>` — 이 사용자에 대한 안전한 암호
+- `<digna_repo_schema>` — 원하는 스키마 이름(예: `dignarepo`)
+- `<digna_repo_user>` — 원하는 사용자 이름(예: `digna_user`)
+- `<digna_repo_password>` — 이 사용자에 대한 안전한 비밀번호
 
 **예시:**
 
@@ -7033,33 +7741,33 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 !!! tip "권장사항"
 
-    데이터베이스 사용자에 대해 강력하고 복잡한 암호를 사용하세요. 쉽게 추측 가능한 자격증명은 피하십시오.
+    데이터베이스 사용자에는 강력하고 복잡한 암호를 사용하세요. 쉽게 추측 가능한 자격증명은 피하십시오.
 
 ---
 
 ### 2단계: digna 설치 패키지 압축 해제
 
-1. 제공된 digna 설치 ZIP 파일을 찾습니다.
-2. 원하는 설치 위치에 압축을 풉니다.
-3. 압축 해제 후 다음 항목들이 보여야 합니다:
+1. 제공받은 digna 설치 ZIP 파일을 찾습니다
+2. 원하는 설치 위치로 압축을 풉니다
+3. 압축 해제 후 다음 항목들이 표시되어야 합니다:
    - `dashboard/` — 웹 대시보드 인터페이스
-   - `digna` — 메인 실행 파일(백엔드 + CLI 결합)
-   - `config.toml` — 구성 파일
-   - `license.toml` — 라이선스 파일(제공받은 파일을 여기에 복사)
+   - `digna` — 메인 실행 파일(백엔드 + CLI 포함)
+   - `config.toml` — 설정 파일
+   - `license.toml` — 라이선스 파일(여기에 복사)
 
 ### 3단계: 라이선스 파일 설치
 
 !!! warning "중요"
 
-    라이선스 파일은 설치 패키지에 **포함되어 있지 않으며** digna에서 별도로 제공됩니다.
+    라이선스 파일은 설치 패키지에 포함되어 있지 않으며 digna에서 별도로 제공됩니다.
 
-1. 제공받은 `license.toml` 파일을 찾습니다.
-2. `config.toml` 및 `digna` 실행 파일이 있는 digna 설치 루트 디렉터리에 복사합니다.
+1. 제공받은 `license.toml` 파일을 찾습니다
+2. `config.toml` 및 `digna` 실행 파일이 있는 digna 설치 루트 디렉터리에 복사합니다
 
-**중요 이유:**
-라이선스 파일에는 고객 정보, 라이선스 만료일 및 디지털 서명이 포함되어 있습니다. **이 파일을 수정하지 마십시오** — 변경 시 라이선스가 무효화됩니다.
+**이유:**
+라이선스 파일은 고객 정보, 라이선스 만료일 및 디지털 서명을 포함합니다. **이 파일을 수정하지 마세요** — 변경 시 라이선스가 무효화됩니다.
 
-**설정 후 디렉터리 구조 예시:**
+**설정 후 디렉터리 구조:**
 
 ```
 digna_installation/
@@ -7076,11 +7784,11 @@ digna_installation/
 
 ### 1단계: 구성 파일 생성 및 편집
 
-`config_template.toml` 파일이 digna 설치 디렉터리에 제공됩니다. 파일 이름을 `config.toml`로 변경하면됩니다.
+`config_template.toml` 파일이 digna 설치 디렉터리에 제공됩니다. 이 파일의 이름을 `config.toml`로 변경하면 됩니다.
 
 **위치:** `digna_installation/config.toml`
 
-텍스트 편집기에서 `config.toml`을 열고 아래 각 섹션을 구성하세요.
+텍스트 편집기로 `config.toml`을 열고 아래 각 섹션을 구성하세요.
 
 #### [app] 섹션
 
@@ -7096,12 +7804,12 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 비고 |
 |---|---|---|
 | `digna_APP_HOST` | `localhost` 또는 IP 주소 | dignabackend가 호스팅되는 호스트명 또는 IP |
-| `digna_APP_PORT` | `8082` (기본값) | REST API 엔드포인트용 포트 |
+| `digna_APP_PORT` | `8082` (기본) | REST API 엔드포인트용 포트 |
 | `digna_APP_CORS_ALLOW_ORIGINS` | 프론트엔드 URL | 대시보드가 다른 서버에 있는 경우 해당 URL 포함 |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | 자격증명 있는 CORS에 필요 |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | 자격증명 포함 CORS에 필요 |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | 모든 HTTP 메서드 허용 |
 | `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | 모든 헤더 허용 |
 
@@ -7119,14 +7827,14 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 비고 |
 |---|---|---|
 | `digna_REPO_HOST` | `localhost` 또는 IP | PostgreSQL 서버 호스트명/IP |
-| `digna_REPO_PORT` | `5432` (기본값) | PostgreSQL 포트 |
+| `digna_REPO_PORT` | `5432` (기본) | PostgreSQL 포트 |
 | `digna_REPO_DB` | `postgres` | 데이터베이스 이름 |
 | `digna_REPO_SCHEMA` | `dignarepo` | 앞서 생성한 스키마 |
 | `digna_REPO_USER` | `digna_user` | PostgreSQL 설정에서 생성한 사용자 |
-| `digna_REPO_PASSWORD` | 사용자 암호 | 스키마 생성 시 설정한 암호 |
+| `digna_REPO_PASSWORD` | 비밀번호 | 스키마 생성 시 설정한 비밀번호 |
 
 #### [base] 섹션
 
@@ -7144,13 +7852,13 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 비고 |
 |---|---|---|
-| `digna_FERNET_KEY` | 암호화 키 | 토큰 및 쿠키 암호화에 사용됨 (기본 키 제공) |
-| `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킵니다 |
-| `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결인 경우 `true`로 설정 |
+| `digna_FERNET_KEY` | 암호화 키 | 토큰 및 쿠키 암호화에 사용 (기본값 제공) |
+| `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킬 것 |
+| `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결에서는 `true` 사용 |
 | `digna_COOKIE_HTTPONLY` | `true` | 보안을 위해 항상 활성화 |
-| `digna_COOKIE_SAME_SITE` | `lax` | CSRF 공격 방지에 도움 |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF 공격 방지 |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24시간) | 세션 타임아웃(초) |
 | `digna_MAX_WORKERS` | CPU 코어 수 - 1 | 병렬 검사 작업 수 |
 
@@ -7164,28 +7872,28 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 비고 |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` 또는 `DEBUG` | 운영환경은 `INFO`, 문제해결 시 `DEBUG` |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | 보관할 일별 로그 백업 수 |
+| `digna_LOGGING_MODE` | `INFO` 또는 `DEBUG` | 프로덕션에는 `INFO`, 문제 해결 시 `DEBUG` |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | 보관할 일일 로그 백업 수 |
 
 ---
 
 ### 3단계: 저장소 연결 테스트
 
-1. 명령 프롬프트를 엽니다.
-2. `config.toml`과 `digna` 실행 파일이 있는 digna 설치 디렉터리로 이동합니다.
-3. 연결 테스트를 실행합니다:
+1. 명령 프롬프트 열기
+2. `config.toml` 및 `digna` 실행 파일이 있는 digna 설치 디렉터리로 이동
+3. 연결 테스트 실행:
 
 ```bash
 digna repo check
 ```
 
-연결이 설정되었다는 확인 메시지가 표시되어야 합니다(아직 저장소 자체는 초기화되지 않았습니다).
+연결이 설정되었음을 확인하는 메시지가 표시되어야 합니다(아직 저장소 자체가 초기화되지는 않았습니다).
 
 ### 4단계: 저장소 스키마 설치
 
-같은 디렉터리에서 다음을 실행합니다:
+동일한 디렉터리에서 다음을 실행하세요:
 
 ```bash
 digna repo install
@@ -7203,7 +7911,7 @@ digna serve --address <host> --port <port>
 
 **매개변수:**
 - `--address` — 서버 호스트명/IP
-- `--port` — 서버 포트
+- `--port` — 서버 포트 
 
 서버가 실행 중임을 확인하는 시작 메시지가 표시됩니다:
 
@@ -7216,9 +7924,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 6단계: 관리자 사용자 생성
 
-1. **새로운** 명령 프롬프트 창을 엽니다.
-2. digna 설치 디렉터리로 이동합니다.
-3. 다음 명령을 실행하여 관리자 사용자를 생성합니다:
+1. **새로운** 명령 프롬프트 창을 엽니다
+2. digna 설치 디렉터리로 이동
+3. 관리자 사용자 생성 명령을 실행합니다:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -7230,11 +7938,11 @@ digna user add <username> "<full_name>" <password> --su
 digna user add admin "Admin User" AdminPassword123! --su
 ```
 
-이 명령은 전체 관리 권한을 가진 사용자를 만듭니다.
+이렇게 하면 전체 관리자 권한을 가진 사용자가 생성됩니다.
 
 !!! tip "권장사항"
 
-    대문자, 소문자, 숫자 및 특수문자를 혼합한 강력한 암호를 사용하세요.
+    대문자, 소문자, 숫자 및 특수문자가 조합된 강력한 비밀번호를 사용하세요.
 
 ---
 
@@ -7242,34 +7950,32 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 ### 1단계: 대시보드를 웹 서버에 배포
 
-digna 대시보드에는 별도의 `config.toml` 파일이 `dashboard/` 디렉터리에 있습니다. 이 구성은 이미 제공되어 있으며 초기 설정 시 변경할 필요가 없습니다. 백엔드 연결을 맞춤화해야 하는 경우에만 구성 파일을 편집하세요.
+digna 대시보드는 `dashboard/` 디렉터리에 별도의 `config.toml` 파일을 가지고 있습니다. 이 구성은 초기 설정 시 이미 제공되며 변경이 필요하지 않습니다. 백엔드 연결을 사용자화해야 하는 경우에만 수정하면 됩니다.
 
-대시보드 구성이 필요한 경우(예: 다중 인스턴스 배포)에는 대시보드 문서를 참조하세요.
-
-웹 서버를 선택한 후 해당 배포 절차를 따르세요.
+대시보드를 배포할 웹 서버를 선택하고 해당 배포 절차를 따르세요.
 
 #### IIS에 배포
 
 1. **IIS 관리자 열기**
-   - `Win + R`을 누르고 `inetmgr`을 입력한 후 Enter
+   - `Win + R` 누름, `inetmgr` 입력 후 Enter
 
 2. **새 웹사이트 생성**
-   - 왼쪽 패널에서 **Sites**를 우클릭
-   - **Add Website...** 선택
+   - 왼쪽 패널에서 **사이트(Sites)** 우클릭
+   - **웹 사이트 추가(Add Website...)** 선택
 
 3. **웹사이트 구성**
-   - **Site Name**: 이름 입력(예: "dignaDashboard")
-   - **Physical Path**: Browse를 클릭하고 `dashboard` 폴더 선택
-   - **Binding**: IP 주소와 포트 설정(HTTP 기본 포트 80, HTTPS 443)
+   - **사이트 이름**: 이름 입력(예: "dignaDashboard")
+   - **물리적 경로(Physical Path)**: Browse를 클릭하고 `dashboard` 폴더 선택
+   - **바인딩(Binding)**: IP 주소 및 포트 설정(기본 HTTP 포트 80, HTTPS는 443)
 
 4. **웹사이트 시작**
-   - **OK**를 클릭하여 사이트 생성
-   - 새 사이트를 우클릭하고 **Start** 선택
+   - **확인(OK)** 클릭하여 사이트 생성
+   - 새로 생성된 사이트 우클릭 후 **시작(Start)** 선택
 
 5. **설치 테스트**
-   - 브라우저를 열고
+   - 브라우저 열기
    - `http://localhost`(또는 구성한 URL)로 이동
-   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 함
 
 #### Apache Tomcat에 배포
 
@@ -7279,13 +7985,13 @@ digna 대시보드에는 별도의 `config.toml` 파일이 `dashboard/` 디렉�
    - 예: `C:\Program Files\Apache Tomcat\webapps\digna`
 
 2. **배포 확인**
-   - Tomcat 관리 페이지를 새로고침하거나 다시 로드합니다 (`http://localhost:8080`)
-   - 배포된 애플리케이션 목록에 "digna"(또는 설정한 이름)가 표시됩니다.
+   - Tomcat 관리 페이지( http://localhost:8080 )를 새로고침하거나 다시 로드
+   - 배포된 애플리케이션 목록에 "digna"(또는 선택한 이름)가 표시되어야 함
 
 3. **대시보드 접근**
-   - 브라우저를 열고
+   - 브라우저 열기
    - `http://localhost:8080/digna`로 이동
-   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 함
 
 ---
 
@@ -7294,16 +8000,16 @@ digna 대시보드에는 별도의 `config.toml` 파일이 `dashboard/` 디렉�
 ### Windows 서비스를 사용하는 이유
 
 digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 있습니다:
-- 서버 부팅 시 자동으로 시작
-- 명령 프롬프트 없이 백그라운드에서 실행
-- 충돌 시 자동 재시작
-- Windows 서비스 관리자를 통해 관리 가능
+- 서버 부팅 시 자동으로 시작됨
+- 열린 명령 프롬프트 없이 백그라운드에서 실행됨
+- 충돌 시 자동으로 재시작 가능
+- Windows 서비스 관리 도구를 통해 관리 가능
 
 ### 서비스 관리 파일
 
-필요한 모든 파일은 digna 설치 디렉터리의 `bin/` 아래에 있습니다.
+모든 필요한 파일은 digna 설치 디렉터리의 `bin/` 아래에 위치합니다.
 
-다음 배치 파일이 제공됩니다:
+다음 배치 파일들이 제공됩니다:
 - `install_service.bat` — digna를 Windows 서비스로 등록
 - `uninstall_service.bat` — 서비스 등록 해제
 - `start_service.bat` — 서비스를 시작
@@ -7316,7 +8022,7 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
 ### 서비스 설치
 
 1. **관리자 권한으로 명령 프롬프트 열기**
-   - 명령 프롬프트 아이콘을 우클릭
+   - 명령 프롬프트 오른쪽 클릭
    - "관리자 권한으로 실행(Run as Administrator)" 선택
 
 2. **bin 폴더로 이동**
@@ -7329,24 +8035,24 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
    install_service.bat
    ```
 
-이제 digna 서버가 **자동 시작**으로 Windows 서비스에 등록됩니다. 서비스는 즉시 시작되지 않습니다 — 다음 섹션을 참조하여 시작하세요.
+이제 digna 서버가 자동 시작으로 설정된 Windows 서비스로 등록됩니다. 서비스는 즉시 시작되지 않습니다 — 다음 섹션에서 시작 방법을 참조하세요.
 
 ### 서비스 시작 및 중지
 
 #### 서비스를 시작하려면
 
-1. 관리자 권한으로 명령 프롬프트를 엽니다.
-2. `digna\bin`으로 이동합니다.
-3. 실행:
+1. 관리자 권한으로 명령 프롬프트 열기
+2. `digna\bin`으로 이동
+3. 다음 실행:
    ```bash
    start_service.bat
    ```
 
 #### 서비스를 중지하려면
 
-1. 관리자 권한으로 명령 프롬프트를 엽니다.
-2. `digna\bin`으로 이동합니다.
-3. 실행:
+1. 관리자 권한으로 명령 프롬프트 열기
+2. `digna\bin`으로 이동
+3. 다음 실행:
    ```bash
    stop_service.bat
    ```
@@ -7357,7 +8063,7 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
 
 ### 서비스를 새 디렉터리로 이동하기
 
-digna 설치를 다른 위치로 옮겨야 할 경우:
+digna 설치 위치를 이동해야 하는 경우:
 
 1. **현재 서비스 제거**
    ```bash
@@ -7366,7 +8072,7 @@ digna 설치를 다른 위치로 옮겨야 할 경우:
    ```
 
 2. **애플리케이션 파일 이동**
-   - 전체 digna 설치 폴더를 새 위치로 이동합니다.
+   - 전체 digna 설치 폴더를 새 위치로 이동
 
 3. **서비스 재설치**
    ```bash
@@ -7387,28 +8093,28 @@ digna 설치를 다른 위치로 옮겨야 할 경우:
    stop_service.bat
    ```
 
-2. **서비스 등록 해제**
+2. **서비스 제거**
    ```bash
    uninstall_service.bat
    ```
 
-이제 digna 서버가 Windows 서비스에서 등록 해제됩니다.
+이제 digna 서버는 Windows 서비스에서 등록 해제됩니다.
 
 ---
 
 ## 새 릴리스로 업그레이드하기 {: #upgrading-to-a-new-release }
 
-### 업그레이드 전에
+### 업그레이드 전
 
-**digna 저장소 백업은 필수입니다**
+**digna 저장소 백업 생성은 필수입니다**
 
-digna를 업그레이드하기 전에 저장소(PostgreSQL)를 백업하여 데이터 손실에 대비하세요. 백업은 업그레이드 중 예기치 않은 문제가 발생할 경우 복구를 보장합니다.
+digna를 업그레이드하기 전에 저장소(PostgreSQL)를 백업하여 데이터 손실을 방지하세요. 백업이 있으면 업그레이드 중 문제가 발생했을 때 복구할 수 있습니다.
 
 ### 업그레이드 절차
 
 #### 1단계: digna 서비스 중지
 
-digna가 Windows 서비스로 실행 중인 경우 먼저 중지합니다:
+digna가 Windows 서비스로 실행 중인 경우 먼저 중지하세요:
 
 ```bash
 cd C:\path\to\digna\bin
@@ -7420,7 +8126,7 @@ stop_service.bat
 digna 설치 디렉터리에서:
 
 ```bash
-# dignabackend 폴더 이름 변경
+# dignabackend가 포함된 폴더 이름 변경
 ren dignabackend dignabackend_old
 ```
 ```bash
@@ -7430,19 +8136,18 @@ ren dashboard dashboard_old
 
 #### 3단계: 새 버전 압축 해제 및 배포
 
-1. 새 digna 설치 ZIP 파일의 압축을 풉니다.
-2. 새 `digna` 실행 파일과 `dashboard` 폴더를 설치 디렉터리에 복사합니다.
+1. 새 digna 설치 ZIP 파일을 압축 해제
+2. 새 `digna` 실행 파일, `dashboard` 폴더를 설치 디렉터리에 복사
 
 !!! warning "중요"
 
-    `config.toml` 파일은 설치 ZIP에 **절대** 포함되지 않습니다. 기존 구성은 안전하게 유지됩니다.
+    `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
 
 ### 4단계: 구성 파일 복원
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-
 ### 5단계: 저장소 스키마 업그레이드
 
 digna 설치 디렉터리로 이동하여 다음을 실행합니다:
@@ -7451,18 +8156,18 @@ digna 설치 디렉터리로 이동하여 다음을 실행합니다:
 digna repo upgrade
 ```
 
-이 명령은 기존 데이터를 보존하면서 PostgreSQL 스키마를 최신 버전으로 업데이트합니다.
+이 명령은 PostgreSQL 스키마를 최신 버전으로 업데이트하면서 기존 데이터를 유지합니다.
 
 ### 6단계: 서비스 재시작
 
-Windows 서비스로 실행 중이었다면:
+Windows 서비스로 실행 중인 경우:
 
 ```bash
 cd C:\path\to\digna\bin
 start_service.bat
 ```
 
-수동으로 실행하던 경우 서버를 재시작합니다:
+수동으로 실행 중인 경우, 서버를 다시 시작하세요:
 
 ```bash
 cd C:\path\to\digna
@@ -7473,287 +8178,287 @@ IIS 또는 Tomcat을 사용하는 경우 해당 웹 서버를 재시작하세요
 
 #### 7단계: 업그레이드 확인
 
-1. digna 대시보드에 접속합니다.
-2. 인터페이스가 올바르게 로드되는지 확인합니다.
-3. 서버 로그에서 오류가 없는지 확인합니다.
+1. digna 대시보드에 접속
+2. 인터페이스가 올바르게 로드되는지 확인
+3. 서버 로그에서 오류가 있는지 확인
 
 ---
 
-# macOS Installation Guide – digna Release 2026.06 | digna Documentation
+# Release 2026.06
 Source: https://docs.digna.ai/ko/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/
 
-# macOS Installation Guide for digna Release 2026.06
+# macOS용 digna 설치 안내 Release 2026.06
 
-**Release:** 2026.06
+**릴리스:** 2026.06
 
-**Last Updated:** September 5, 2026
+**최종 업데이트:** 2026년 9월 5일
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## 목차
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+1. [소개](#introduction)
+2. [시스템 요구사항](#system-requirements)
+3. [사전 설치 준비](#pre-installation-setup)
+4. [PostgreSQL 서버 설정](#postgresql-server-setup)
+5. [웹 서버 구성](#web-server-configuration)
+6. [초기 설치](#initial-installation)
+7. [백엔드 구성](#backend-configuration)
+8. [대시보드 구성](#dashboard-configuration)
+9. [digna를 백그라운드 서비스로 실행하기](#running-digna-as-a-background-service)
+10. [새 릴리스로 업그레이드하기](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## 소개 {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### digna에 관하여
 
-| Requirement | Specification |
+digna는 데이터 웨어하우스, 데이터 레이크, 레이크하우스 등 다양한 데이터 환경에서 데이터 품질 관리를 최적화하도록 설계된 AI 기반 플랫폼입니다. 자동화, 실시간 모니터링 및 이상 탐지를 통해 현대 데이터 문제를 해결할 수 있도록 높은 확장성과 적응성을 갖추고 있습니다.
+
+digna는 두 가지 주요 구성 요소로 이루어져 있습니다:
+
+- **dignabackend**: 데이터 처리 및 품질 검사를 담당하는 핵심 엔진입니다.
+- **dignadashboard**: 웹 서버에 호스팅되는 웹 기반 인터페이스로, digna 플랫폼과 상호작용하고 데이터 품질 지표를 시각화하는 사용자 친화적 수단을 제공합니다.
+
+### Release 2026.06의 변경 사항
+
+이번 릴리스는 데이터 관찰 가능성(data observability) 기능을 코드 안으로 직접 제공하여 개발자가 소스에서 데이터 품질을 모니터링할 수 있게 합니다. 전체 내용은 [릴리스 노트](http://docs.digna.ai/changelog/Release_202606/)를 참조하세요.
+
+### Windows 또는 Linux용 안내를 찾고 계신가요?
+
+이 가이드는 macOS를 다룹니다. 다른 플랫폼은 [Windows 설치 안내](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) 또는 [Linux 설치 안내](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md)를 참조하세요.
+
+---
+
+## 시스템 요구사항 {: #system-requirements }
+
+설치를 시작하기 전에 시스템이 다음 최소 요구사항을 충족하는지 확인하세요:
+
+| 요구사항 | 사양 |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **운영체제** | macOS 13 (Ventura) 이상 |
+| **아키텍처** | Apple Silicon (arm64) 또는 Intel (x86_64) |
+| **메모리 (최소 구성)** | 16 GB RAM |
+| **디스크 공간** | 10 GB 사용 가능 저장소 |
+| **데이터베이스** | PostgreSQL Server 12 이상 |
+| **웹 서버** | nginx, Apache httpd 또는 동등한 서버 |
+| **명령줄 도구** | Xcode Command Line Tools (Homebrew에서 필요) |
 
-### Database Installation Options
+### 데이터베이스 설치 옵션
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**PostgreSQL가 이미 설치되어 있는 경우:**
+기존 PostgreSQL 서버에 digna용 새 데이터베이스를 추가할 수 있습니다.
 
-**If installing PostgreSQL on the same machine as digna:**
+**digna와 동일한 머신에 PostgreSQL을 설치하는 경우:**
 
-!!! info "Recommended Specifications"
+!!! info "권장 사양"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **메모리**: 32 GB RAM (16 GB 대신)
+    - **디스크 공간**: 50 GB 사용 가능 저장소 (10 GB 대신)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    이 권장 사양은 digna와 PostgreSQL 데이터베이스가 동시에 실행될 때를 고려한 것입니다.
 
-### Checking Your Architecture
+### 아키텍처 확인 방법
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+이 가이드의 여러 경로는 Apple Silicon과 Intel Mac 간에 다릅니다. 어느 쪽인지 확인하려면 **터미널**을 열고 다음을 실행하세요:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew는 `/opt/homebrew`에 설치됩니다.
+- `x86_64` — Intel. Homebrew는 `/usr/local`에 설치됩니다.
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    어느 경로든 하드코딩하기보다는, 이 가이드에서는 `$(brew --prefix)`를 사용합니다. 이 명령은 두 아키텍처 모두에서 올바른 위치로 확장되므로 명령을 그대로 복사해서 사용할 수 있습니다.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## 사전 설치 준비 {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+digna를 설치하기 전에 다음 세 가지 주요 필수 요소가 준비되어 있는지 확인하세요:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – 아래 구성 요소를 설치하는 데 사용되는 패키지 관리자
+2. **PostgreSQL 서버** – 계산된 메트릭 및 성능 데이터를 저장하기 위한 데이터베이스
+3. **웹 서버** – digna 대시보드를 호스팅하기 위한 서버
 
-If these components are not already set up, follow the sections below to install and configure them.
+이들 구성 요소가 아직 설정되어 있지 않다면, 아래 섹션을 따라 설치 및 구성하세요.
 
-### Installing Homebrew
+### Homebrew 설치
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew는 macOS의 표준 패키지 관리자이며 이 가이드 전반에서 PostgreSQL과 nginx를 설치하는 데 사용됩니다.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### 1단계: Homebrew가 이미 설치되어 있는지 확인
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+**터미널**을 열고(유틸리티에서 또는 `Cmd + Space` 후 Terminal 입력) 다음을 실행하세요:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+버전 번호가 반환되면 [PostgreSQL 서버 설정](#postgresql-server-setup) 섹션으로 건너뛰세요.
 
-#### Step 2: Install Homebrew
+#### 2단계: Homebrew 설치
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+명령을 찾을 수 없는 경우, [공식 Homebrew 사이트](https://brew.sh)의 지침에 따라 Homebrew를 설치하세요. 설치 프로그램은 Xcode Command Line Tools가 없는 경우 이를 함께 설치합니다.
 
-#### Step 3: Add Homebrew to Your PATH
+#### 3단계: Homebrew를 PATH에 추가
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Apple Silicon에서는 설치 프로그램이 Homebrew를 셸 환경에 추가하기 위한 두 명령을 출력합니다. 지시에 따라 해당 명령을 실행한 후 다음을 확인하세요:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Apple Silicon에서는 `/opt/homebrew`를, Intel에서는 `/usr/local`을 출력해야 합니다.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL 서버 설정 {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### 이미 PostgreSQL이 있는 경우
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+PostgreSQL이 로컬 머신에서 이미 실행 중이거나 관리형 원격 PostgreSQL 서버를 사용하는 경우, [다음 섹션](#web-server-configuration)으로 건너뛰세요.
 
-### Installation Options
+### 설치 옵션
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS에서는 PostgreSQL을 설치하는 두 가지 간단한 방법이 있습니다. 하나만 선택하세요:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — 명령줄 설치, 서버 배포에 권장
+- [Postgres.app](#postgresql-app) — 그래픽 설치, 로컬 평가에 편리
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Homebrew로 PostgreSQL 설치 {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### 1단계: PostgreSQL 포뮬러 설치
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### 2단계: PostgreSQL을 PATH에 추가
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+버전 지정 포뮬러는 *keg-only*이므로 Homebrew가 자동으로 명령을 PATH에 연결하지 않습니다. 직접 추가하세요:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "참고"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    macOS의 기본 셸인 `zsh`를 가정한 예입니다. `bash`를 사용하는 경우 동일한 줄을 `~/.bash_profile`에 추가하세요.
 
-#### Step 3: Start the PostgreSQL Service
+#### 3단계: PostgreSQL 서비스 시작
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+이 명령은 PostgreSQL을 즉시 시작하고 로그인할 때 자동으로 다시 시작되도록 구성합니다.
 
-#### Step 4: Verify the Installation
+#### 4단계: 설치 확인
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+설치가 성공했다면 PostgreSQL 버전이 표시됩니다.
 
-#### Step 5: Connect to the Server
+#### 5단계: 서버에 연결
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "중요 — macOS는 이 부분에서 Windows와 다릅니다"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Windows 설치 관리자는 `postgres` 슈퍼유저와 비밀번호를 생성하도록 안내합니다. Homebrew는 그렇지 않습니다. 대신 macOS 계정 이름으로 된 슈퍼유저를 생성하며 비밀번호가 없고 로컬 머신에서만 접근할 수 있습니다.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    따라서 초기 Homebrew 설치에는 `postgres` 역할이 없습니다. 슈퍼유저가 필요할 때는 자신의 계정 이름을 사용하고, [초기 설치](#initial-installation)에 설명된 대로 명시적인 digna 사용자를 생성하세요.
 
-#### Step 6: Confirm the Port
+#### 6단계: 포트 확인
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+기본 PostgreSQL 포트는 `5432`입니다. 서버가 어느 포트를 수신하는지 확인하려면:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+이 값을 기록해 두세요 — digna 백엔드를 구성할 때 필요합니다.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Postgres.app로 PostgreSQL 설치 {: #postgresql-app }
 
-If you prefer a graphical installation:
+그래픽 설치를 선호하는 경우:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. [Postgres.app](https://postgresapp.com)을 다운로드하여 **Applications** 폴더로 드래그합니다.
+2. 앱을 열고 **Initialize**를 클릭하여 새 서버를 만듭니다.
+3. 앱의 지침에 따라 명령줄 도구를 PATH에 추가합니다.
+4. 설치 확인:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Postgres.app은 macOS 계정 이름으로 된 슈퍼유저도 생성합니다.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## 웹 서버 구성 {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna는 대시보드를 호스팅하기 위해 웹 서버가 필요합니다. 다음 옵션 중 하나를 선택하세요:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — Homebrew로 설치, 권장
+- [Apache httpd](#apache-setup) — macOS에 포함
 
-You only need to install and configure **one** of these servers.
+이 중 하나만 설치하고 구성하면 됩니다.
 
-Both sections configure two things the dashboard depends on:
+두 섹션 모두 대시보드가 의존하는 두 가지를 구성합니다:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **단일 페이지 애플리케이션(fallback)** — 대시보드 URL을 새로고침해도 404가 반환되지 않도록 함
+- **`.md` MIME 타입** — Markdown 파일이 올바르게 제공되도록 함
 
-### nginx Setup {: #nginx-setup }
+### nginx 설정 {: #nginx-setup }
 
-#### Overview
+#### 개요
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx는 정적 digna 대시보드를 제공하는 데 적합한 가볍고 고성능의 웹 서버입니다.
 
-#### Installation
+#### 설치
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### nginx 시작
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### 설치 확인
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. 브라우저를 엽니다.
+2. `http://localhost:8080`로 이동합니다.
+3. nginx 환영 페이지가 표시되어야 합니다.
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "참고 — 기본 포트는 8080이며 80이 아닙니다"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew는 관리자 권한 없이 실행할 수 있도록 nginx를 포트 `8080`으로 설정합니다. macOS에서 포트 `80` 또는 1024 미만의 다른 포트에 바인딩하려면 루트 권한이 필요합니다.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    대시보드를 포트 80에서 제공하려면 아래 구성에서 `listen 8080;`을 `listen 80;`으로 변경하고 대신 `sudo brew services start nginx`로 시작하세요.
 
-#### Configuring a Site for the Dashboard
+#### 대시보드용 사이트 구성
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Homebrew의 nginx 구성은 `servers` 디렉터리의 모든 파일을 포함합니다. digna용 전용 구성 파일을 생성하세요:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+다음 내용을 붙여넣고 `/path/to/digna/dashboard`를 압축을 푼 `dashboard` 폴더의 실제 경로로 바꾸세요:
 
 ```nginx
 server {
@@ -7776,13 +8481,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "중요"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    `try_files` 지시어가 없으면 루트 URL이 아닌 대시보드 페이지를 새로고침할 때 404가 반환됩니다. 이는 Windows의 IIS에서 요구되는 URL Rewrite 모듈과 동등한 nginx 설정입니다.
 
-#### Apply the Configuration
+#### 구성 적용
 
-Test the configuration for syntax errors, then reload nginx:
+구성 문법 오류가 없는지 테스트한 다음 nginx를 다시 로드하세요:
 
 ```bash
 nginx -t
@@ -7791,67 +8496,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd 설정 {: #apache-setup }
 
-#### Overview
+#### 개요
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS에는 Apache httpd가 포함되어 있어 별도 설치가 필요 없습니다. 기본적으로 비활성화되어 있습니다.
 
-#### Starting Apache
+#### Apache 시작
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### 설치 확인
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. 브라우저를 엽니다.
+2. `http://localhost`로 이동합니다.
+3. "It works!" 메시지가 표시되어야 합니다.
 
-#### Required: Enable mod_rewrite
+#### 필수: mod_rewrite 활성화
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+대시보드는 URL 재작성 기능이 필요합니다. Apache 구성 파일을 엽니다:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+다음 줄을 찾아 앞의 `#`를 제거하여 주석을 해제하세요:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### 필수: .htaccess 재정의 허용
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+같은 파일에서 `<Directory "/Library/WebServer/Documents">` 블록을 찾아 다음을 변경하세요:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+다음으로:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### 필수: Markdown 파일용 MIME 타입
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+여전히 `httpd.conf`에서 Markdown 파일이 올바르게 제공되도록 다음 줄을 추가하세요:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "중요"
 
-    Without this setting, `.md` files may not be served properly.
+    이 설정이 없으면 `.md` 파일이 제대로 제공되지 않을 수 있습니다.
 
-#### Apply the Configuration
+#### 구성 적용
 
-Check the configuration for syntax errors, then restart Apache:
+구성 문법 오류를 검사한 다음 Apache를 다시 시작하세요:
 
 ```bash
 sudo apachectl configtest
@@ -7860,15 +8565,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## 초기 설치 {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### 1단계: digna 리포지토리 설정
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+digna 리포지토리는 digna가 계산한 모든 메트릭을 저장합니다. 분석 및 성능 데이터의 중앙 데이터베이스 역할을 합니다.
 
-#### Create Repository Schema and User
+#### 리포지토리 스키마 및 사용자 생성
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+PostgreSQL 클라이언트(psql, pgAdmin 등)를 열고 다음 SQL 명령을 실행하세요:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -7878,13 +8583,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**다음 플레이스홀더를 교체하세요:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — 원하는 스키마 이름(예: `dignarepo`)
+- `<digna_repo_user>` — 원하는 사용자 이름(예: `digna_user`)
+- `<digna_repo_password>` — 이 사용자의 안전한 비밀번호
 
-**Example:**
+**예시:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -7894,72 +8599,72 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+터미널에서 한 번에 실행하려면:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+그런 다음 `postgres=#` 프롬프트에 위 명령들을 붙여넣고 `\q`를 입력하여 종료하세요.
 
-!!! tip "Best Practice"
+!!! tip "권장 사항"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    데이터베이스 사용자에는 강력하고 복잡한 비밀번호를 사용하세요. 쉽게 추측 가능한 자격증명은 피하세요.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### 2단계: digna 설치 패키지 압축 해제
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+1. 제공된 digna 설치 ZIP 파일을 찾습니다.
+2. 예를 들어 `/opt/digna` 또는 `~/digna`와 같은 원하는 설치 위치에 압축을 풉니다.
+3. 압축을 풀면 다음 항목이 보여야 합니다:
+   - `dashboard/` — 웹 대시보드 인터페이스
+   - `digna` — 메인 실행 파일(백엔드 + CLI 통합)
+   - `config.toml` — 구성 파일
+   - `license.toml` — 라이선스 파일(별도로 복사)
 
-To extract from the Terminal:
+터미널에서 압축을 풀려면:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### 실행 파일에 실행 권한 부여
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+아카이브 전송 방법에 따라 실행 비트가 유지되지 않을 수 있습니다. 명시적으로 설정하세요:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### macOS가 애플리케이션을 차단하는 경우
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+브라우저나 메일 클라이언트를 통해 다운로드된 파일에는 격리(quarantine) 속성이 추가됩니다. macOS에서 앱을 *"개발자를 확인할 수 없어 열 수 없습니다"*라고 보고하면 설치 디렉터리에서 해당 속성을 제거하세요:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+또는 **시스템 설정 → 개인정보 및 보안**을 열어 페이지 하단 근처에서 차단된 항목을 찾아 **열기 허용(Open Anyway)** 을 클릭하세요.
 
-!!! note "Note"
+!!! note "참고"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    이 단계는 macOS가 실제로 실행 파일을 차단할 때만 필요합니다. SSH로 전송되었거나 내부 파일 공유로 전달된 패키지는 일반적으로 격리되지 않습니다.
 
-### Step 3: Install the License File
+### 3단계: 라이선스 파일 설치
 
-!!! warning "Important"
+!!! warning "중요"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    라이선스 파일은 설치 패키지에 포함되어 있지 않으며 digna에서 별도로 제공합니다.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. 제공된 `license.toml` 파일을 찾습니다.
+2. `config.toml` 및 `digna` 실행 파일이 있는 digna 설치 루트 디렉터리에 복사합니다.
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**이유:**
+라이선스 파일에는 고객 정보, 라이선스 만료일 및 디지털 서명이 포함되어 있습니다. **이 파일을 수정하지 마세요** — 변경하면 무효화됩니다.
 
-**Directory structure after setup:**
+**설치 후 디렉터리 구조 예시:**
 
 ```
 /opt/digna/
@@ -7973,24 +8678,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## 백엔드 구성 {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### 1단계: 구성 파일 생성 및 편집
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+`config_template.toml` 파일이 digna 설치 디렉터리에 제공됩니다. 이를 `config.toml`로 이름만 변경하면 됩니다.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**위치:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+텍스트 편집기에서 `config.toml`을 열고 아래 각 섹션을 구성하세요.
 
-#### [app] Section
+#### [app] 섹션
 
-This section configures the digna backend application settings:
+이 섹션은 digna 백엔드 애플리케이션 설정을 구성합니다:
 
 ```toml
 [app]
@@ -8002,22 +8707,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` 또는 IP 주소 | dignabackend가 호스팅되는 호스트명 또는 IP |
+| `digna_APP_PORT` | `8082` (기본) | REST API 엔드포인트 포트 |
+| `digna_APP_CORS_ALLOW_ORIGINS` | 프론트엔드 URL | 대시보드가 다른 서버에 있다면 해당 URL 포함 |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | 자격증명 있는 CORS에 필요 |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | 모든 HTTP 메서드를 허용 |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | 모든 헤더를 허용 |
 
-!!! note "Note"
+!!! note "참고"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Homebrew의 nginx 기본 포트에서 대시보드를 제공하는 경우 허용할 origin은 `http://localhost:8080`입니다.
 
-#### [repo] Section
+#### [repo] 섹션
 
-This section configures the connection to the PostgreSQL database:
+이 섹션은 PostgreSQL 데이터베이스 연결을 구성합니다:
 
 ```toml
 [repo]
@@ -8029,18 +8734,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` 또는 IP | PostgreSQL 서버 호스트명/IP |
+| `digna_REPO_PORT` | `5432` (기본) | PostgreSQL 포트 |
+| `digna_REPO_DB` | `postgres` | 데이터베이스 이름 |
+| `digna_REPO_SCHEMA` | `dignarepo` | 이전에 생성한 스키마 |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL 설정에서 생성한 사용자 |
+| `digna_REPO_PASSWORD` | 비밀번호 | 스키마 생성 시 설정한 비밀번호 |
 
-#### [base] Section
+#### [base] 섹션
 
-This section contains security and cookie settings:
+이 섹션은 보안 및 쿠키 설정을 포함합니다:
 
 ```toml
 [base]
@@ -8054,23 +8759,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | 암호화 키 | 토큰과 쿠키 암호화에 사용 (기본값 제공) |
+| `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킴 |
+| `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결에서는 `true` 사용 |
+| `digna_COOKIE_HTTPONLY` | `true` | 보안을 위해 항상 활성화 |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF 공격 방지 목적 |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24시간) | 세션 만료 시간(초) |
+| `digna_MAX_WORKERS` | CPU 코어 수 - 1 | 병렬 검사 작업 수 |
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Mac에서 사용 가능한 CPU 코어 수를 확인하려면 `sysctl -n hw.ncpu`를 실행하세요.
 
-#### [logging] Section
+#### [logging] 섹션
 
-This section configures logging behavior:
+이 섹션은 로깅 동작을 구성합니다:
 
 ```toml
 [logging]
@@ -8078,58 +8783,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` 또는 `DEBUG` | 운영 환경은 `INFO`, 문제 해결 시 `DEBUG` |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | 보관할 일별 로그 백업 수 |
 
 ---
 
-### Step 2: Initialize the Repository
+### 2단계: 리포지토리 초기화
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. **터미널**을 엽니다.
+2. digna 설치 디렉터리(예: `config.toml`과 `digna` 실행 파일이 있는 위치)로 이동합니다.
+3. 연결 테스트를 실행하세요:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+연결이 설정되었다는 확인 메시지가 표시되어야 합니다(리포지토리 자체는 아직 초기화되지 않았습니다).
 
-!!! note "Note"
+!!! note "참고"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    macOS에서는 현재 디렉터리의 명령이 PATH에 포함되지 않으므로 실행 파일을 `digna`가 아닌 `./digna`로 호출합니다. 모든 곳에서 짧은 형태를 사용하려면 설치 디렉터리를 PATH에 추가하세요:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### 3단계: 리포지토리 스키마 설치
 
-In the same directory, run:
+같은 디렉터리에서 다음을 실행하세요:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+이 명령은 PostgreSQL 데이터베이스에 필요한 테이블과 스키마를 설치합니다.
 
-### Step 4: Start the digna Server
+### 4단계: digna 서버 시작
 
-In the digna installation directory, start the server with:
+digna 설치 디렉터리에서 서버를 시작하세요:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**매개변수:**
+- `--address` — 서버 호스트명/IP
+- `--port` — 서버 포트
 
-You should see startup messages confirming the server is running:
+다음과 같은 시작 메시지가 표시되어 서버가 실행 중임을 확인할 수 있습니다:
 
 ```
 INFO:     Started server process [1234]
@@ -8138,88 +8843,88 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    서버를 처음 시작할 때 macOS가 애플리케이션의 수신 네트워크 연결 허용을 묻는 경우 **허용(Allow)** 을 클릭하세요. 허용하지 않으면 대시보드가 백엔드에 접근할 수 없습니다.
 
-### Step 5: Create an Admin User
+### 5단계: 관리자 사용자 생성
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. **새로운** 터미널 창을 엽니다.
+2. digna 설치 디렉터리로 이동합니다.
+3. 관리자 사용자를 생성하려면 다음 명령을 실행하세요:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**예시:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+이 명령은 `admin`이라는 사용자 이름과 전체 관리자 권한을 가진 계정을 생성합니다.
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    비밀번호를 작은따옴표로 묶어 사용하세요. `zsh`는 `!`, `$`, `*` 같은 문자를 특별하게 처리하므로 따옴표로 묶지 않으면 의도한 대로 전달되지 않을 수 있습니다.
 
-!!! tip "Best Practice"
+!!! tip "권장 사항"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    대소문자, 숫자 및 특수 문자를 혼합한 강력한 비밀번호를 사용하세요.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## 대시보드 구성 {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### 1단계: 대시보드를 웹 서버에 배포
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+digna 대시보드에는 별도의 `config.toml` 파일이 `dashboard/` 디렉터리에 있습니다. 초기 설정에서는 이 구성 파일이 이미 제공되어 있으며 변경이 필요하지 않습니다. 백엔드 연결을 사용자화해야 하는 경우에만 수정하면 됩니다.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+대시보드 구성이 필요하거나(예: 다중 인스턴스 배포) 수정해야 하는 경우에는 대시보드 문서를 참조하세요.
 
-Choose your web server and follow the corresponding deployment steps.
+웹 서버를 선택한 다음 해당 배포 단계를 따르세요.
 
-#### Deploying to nginx
+#### nginx에 배포
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+[nginx 설정](#nginx-setup) 섹션을 따랐다면 서버 블록이 이미 `dashboard` 폴더를 가리키므로 복사할 필요가 없습니다.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **경로 확인**
+   - `$(brew --prefix)/etc/nginx/servers/digna.conf` 파일을 엽니다.
+   - `root`가 압축을 푼 `dashboard` 폴더를 가리키는지 확인합니다.
 
-2. **Ensure the folder is readable**
+2. **폴더가 읽기 가능하도록 설정**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **nginx 재로드**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **설치 테스트**
+   - 브라우저를 엽니다.
+   - `http://localhost:8080`(또는 구성한 URL)로 이동합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
 
-#### Deploying to Apache httpd
+#### Apache httpd에 배포
 
-1. **Copy the Dashboard to the Document Root**
+1. **대시보드를 문서 루트로 복사**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **재작성 규칙 추가**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   대시보드 경로가 새로고침 시 유지되도록 배포된 폴더 안에 `.htaccess` 파일을 만듭니다:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   다음 내용을 붙여넣으세요:
 
    ```apache
    RewriteEngine On
@@ -8234,177 +8939,176 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Apache 재시작**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **대시보드 접속**
+   - 브라우저를 엽니다.
+   - `http://localhost/digna`로 이동합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## digna를 백그라운드 서비스로 실행하기 {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### 왜 digna를 서비스로 실행해야 하나요?
 
-Running the digna backend as a background service ensures it:
+digna 백엔드를 백그라운드 서비스로 실행하면 다음과 같은 이점이 있습니다:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- 머신 부팅 시 자동으로 시작됩니다.
+- 열린 터미널 창 없이 백그라운드에서 실행됩니다.
+- 충돌 시 자동으로 재시작됩니다.
+- macOS의 서비스 관리자 `launchctl`을 통해 관리할 수 있습니다.
 
-### Service Management Files
+### 서비스 관리 파일
 
-All necessary files are located in the digna installation directory under: `bin/`
+필요한 모든 파일은 digna 설치 디렉터리의 `bin/` 아래에 있습니다.
 
-The following shell scripts are available:
+다음 셸 스크립트들이 제공됩니다:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — digna를 launchd에 등록
+- `uninstall_service.sh` — 서비스 등록 해제
+- `start_service.sh` — 등록된 서비스 시작
+- `stop_service.sh` — 실행 중인 서비스 중지
 
-!!! warning "Administrator Required"
+!!! warning "관리자 권한 필요"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    부팅 시 시작되도록 서비스를 등록하려면 `/Library/LaunchDaemons`에 기록해야 하므로 모든 스크립트는 `sudo`로 실행해야 합니다.
 
-### Making the Scripts Executable
+### 스크립트에 실행 권한 부여
 
-Extraction may not preserve the executable bit. Before first use:
+추출 과정에서 실행 비트가 유지되지 않을 수 있습니다. 처음 사용하기 전에:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### 서비스 설치
 
-1. **Open Terminal**
+1. **터미널을 엽니다.**
 
-2. **Navigate to the bin Folder**
+2. **bin 폴더로 이동**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **설치 스크립트 실행**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+이제 digna 서버가 자동 시작이 활성화된 상태로 launchd에 등록됩니다. 서비스는 즉시 시작되지 않으니, 다음 섹션을 참조하여 시작하세요.
 
-### Starting and Stopping the Service
+### 서비스 시작 및 중지
 
-#### To Start the Service
+#### 서비스를 시작하려면
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. 터미널을 엽니다.
+2. `/opt/digna/bin`으로 이동합니다.
+3. 다음을 실행하세요:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### 서비스를 중지하려면
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. 터미널을 엽니다.
+2. `/opt/digna/bin`으로 이동합니다.
+3. 다음을 실행하세요:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    Always stop the service before updating application files.
+    애플리케이션 파일을 업데이트하기 전에 항상 서비스를 중지하세요.
 
-### Verifying the Service
+### 서비스 확인
 
-To confirm that the service is registered and running:
+서비스가 등록되고 실행 중인지 확인하려면:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+프로세스 ID로 시작하는 줄이 있으면 서비스가 실행 중입니다. 첫 번째 열에 `-`가 있으면 등록은 되어 있으나 중지된 상태입니다.
 
-### Moving the Service to a New Directory
+### 설치 위치를 변경하는 경우
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd는 실행 파일의 절대 경로를 저장하므로 설치 위치를 옮기면 서비스를 다시 등록해야 합니다:
 
-1. **Uninstall the Current Service**
+1. **현재 서비스 제거**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **애플리케이션 파일 이동**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **서비스 재설치**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **서비스 시작**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### 서비스 제거
 
-1. **Stop the Running Service**
+1. **실행 중인 서비스 중지**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **서비스 등록 해제**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+이제 digna 서버가 launchd에서 등록 해제되었습니다.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## 새 릴리스로 업그레이드하기 {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### 업그레이드 전에
 
-**Creating a digna Repository Backup is Mandatory**
+**digna 리포지토리 백업은 필수입니다**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+업그레이드하기 전에 데이터 손실을 방지하기 위해 리포지토리(PostgreSQL)를 백업하세요. 백업은 업그레이드 중 문제가 발생할 경우 복구할 수 있게 해줍니다.
 
-To create a backup from the Terminal:
+터미널에서 백업을 생성하려면:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### 업그레이드 절차
 
-#### Step 1: Stop the digna Service
+#### 1단계: digna 서비스 중지
 
-If digna is running as a background service, stop it first:
+digna가 백그라운드 서비스로 실행 중이면 먼저 중지하세요:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+포그라운드에서 실행 중이면 해당 터미널 창에서 `Ctrl + C`를 누르세요.
 
-#### Step 2: Backup Current Backend Installation
+#### 2단계: 현재 백엔드 설치 백업
 
-In your digna installation directory:
+digna 설치 디렉터리에서:
 
 ```bash
 cd /opt/digna
@@ -8414,55 +9118,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### 3단계: 새 버전 압축 해제 및 배포
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. 새 digna 설치 ZIP 파일의 압축을 풉니다.
+2. 새 `digna` 실행 파일과 `dashboard` 폴더를 설치 디렉터리에 복사합니다.
+3. 실행 비트를 복원하고 필요한 경우 격리 속성을 제거합니다:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "중요"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
 
-### Step 4: Restore Your Configuration Files
+### 4단계: 구성 파일 복원
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### 5단계: 리포지토리 스키마 업그레이드
 
-Navigate to your digna installation directory and run:
+digna 설치 디렉터리로 이동하여 다음을 실행하세요:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+이 명령은 기존 데이터를 보존하면서 PostgreSQL 스키마를 최신 버전으로 업데이트합니다.
 
-### Step 6: Restart Services
+### 6단계: 서비스 재시작
 
-If running as a background service:
+백그라운드 서비스로 실행 중이었다면:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+수동으로 실행하는 경우 서버를 다시 시작하세요:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+nginx 또는 Apache를 사용하는 경우 해당 웹 서버도 재시작하세요:
 
 ```bash
 brew services restart nginx
@@ -8471,11 +9175,11 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### 7단계: 업그레이드 확인
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. digna 대시보드에 접속합니다.
+2. 인터페이스가 정상적으로 로드되는지 확인합니다.
+3. 서버 로그에서 오류가 있는지 확인합니다.
 
 ---
 
@@ -8624,6 +9328,127 @@ Data Analytics는 **기간 간 안정성**을 평가합니다 — 통계적 신�
 | **최적화** | 프로세스 조정이 필요한 불안정한 데이터 소스나 시스템을 식별하는 데 도움을 줍니다. |
 | **교차 모듈 분석** | Data Anomalies, Data Validation, Data Timeliness의 데이터를 결합하여 통합적인 인사이트를 제공합니다. |
 | **실행 가능한 인사이트** | 기술 팀과 비즈니스 사용자가 이해하고 활용할 수 있는 인사이트를 제공합니다. |
+
+---
+
+# digna Data Anomalies | AI 기반 데이터 관찰성
+Source: https://docs.digna.ai/ko/platform/data_anomalies/
+
+# digna Data Anomalies – AI 기반 데이터 품질 문제 감지
+
+**항상 신뢰할 수 있는 데이터 관찰을 위한 AI 기반 솔루션**
+
+digna Data Anomalies는 **digna Data Observability Platform**의 일부로, 데이터셋이 시간에 따라 어떻게 동작하는지 지속적으로 분석하여 **데이터 품질**을 개선하는 모듈식 솔루션입니다.
+
+이 모듈은 데이터의 “정상” 상태가 어떤지 자동으로 학습하고, 동작이 변할 때 경고를 발생시킵니다 — 정적 임계값을 정의하거나 규칙을 하나도 작성할 필요가 없습니다.  
+모듈은 고객 데이터베이스 내부에서 직접 실행되므로 데이터가 환경을 벗어나지 않습니다.
+
+---
+
+## digna Data Anomalies의 목적
+
+**digna Data Anomalies** 모듈은 다음과 같은 사전 정의된 통계 지표를 계산하고 추적하여 지속적인 **데이터 관찰성**을 제공합니다:
+
+- 데이터 볼륨 및 레코드 수  
+- 결측값 비율  
+- 값 분포 및 히스토그램  
+- 수치 범위 및 평균  
+- 컬럼 중복성(uniqueness) 및 텍스트 길이  
+
+이 지표들은 모든 데이터셋에 대해 자동으로 수집됩니다.  
+digna는 이를 사용해 각 지표의 전형적인 동작을 나타내는 모델을 구축하며 — 일간, 주간 또는 계절적 패턴을 학습합니다.  
+모델이 학습된 후에는 새로운 데이터에 대해 예측값을 산출하고, 품질 문제, 프로세스 실패 또는 상류 변경을 나타낼 수 있는 편차를 감지합니다.
+
+---
+
+## 주요 기능
+
+- AI를 사용해 예상되는 데이터 동작을 자동으로 학습 — 임계값 설정 불필요.  
+- 데이터 볼륨 및 분포에서의 갑작스런 감소, 급증 또는 드리프트를 감지.  
+- 컬럼이 서로 바뀌었거나 속성 간 매핑이 잘못된 경우 식별.  
+- 예상치 못한 범주형 값(예: 새로운 지역 또는 코드) 강조.  
+- 숫자형, 범주형 또는 지정되지 않은 모든 컬럼 유형 지원.  
+- 완전히 고객 환경 내에서 동작 — 데이터 이동 없음.  
+- 장기 추세 분석을 위해 **digna Data Analytics**와 통합.
+
+---
+
+## 작동 원리
+
+### Step 1 – Metric calculation
+digna는 각 테이블과 컬럼에 대해 프로파일 지표 집합을 계산합니다.  
+이 지표들은 데이터의 구조와 통계적 동작을 설명하며 추가 분석을 위해 저장됩니다.
+
+### Step 2 – Model training
+과거 지표 값을 바탕으로 digna는 각 지표의 정상 범위를 포착하는 컴팩트한 머신러닝 모델(시그니처 모델)을 학습합니다.
+
+### Step 3 – Automatic thresholding
+*conformal inference*을 사용하여 digna는 데이터와 함께 진화하는 적응형 신뢰구간(자동 임계값)을 계산합니다.  
+새로운 지표 값이 예측된 범위를 벗어나면 이상으로 표시됩니다.
+
+이 지속적인 피드백 루프는 데이터 볼륨이나 패턴이 자연스럽게 성장하더라도 모니터링이 관련성을 유지하도록 보장합니다.
+
+---
+
+## 예시 시나리오
+
+### 레코드 볼륨의 예상치 못한 감소
+어떤 데이터셋은 일반적으로 하루에 약 500,000개의 레코드를 포함합니다.  
+새로운 전달이 50,000개의 레코드만 포함한 경우, digna는 이상을 표시하고 학습된 범위에서 얼마나 벗어났는지 보여줍니다.
+
+### 컬럼 스왑 감지
+`last_name`의 평균 문자열 길이가 갑자기 `first_name`과 일치합니다.  
+digna는 지표 패턴의 편차를 인식하고 컬럼 교환 가능성을 신호로 보냅니다.
+
+### 예상치 못한 범주 감지
+오스트리아 도시를 나열하는 컬럼에 갑자기 "Zurich"가 포함됩니다.  
+과거 분포를 기반으로 digna는 새로운 값을 예상 밖으로 표시하고 사용자에게 경고합니다.
+
+---
+
+## 다른 모듈과의 통합
+
+- **digna Data Analytics** — 이상 이력과 변동성 지표를 집계하여 장기 추세를 드러냄.  
+- **digna Data Validation** — 결정론적 품질 검사를 위한 명시적 비즈니스 규칙 적용.  
+- **digna Data Timeliness** — 데이터 도착 시간을 모니터링하고 지연을 이상 발생과 상관시킴.  
+- **digna Data Schema Tracker** — 새로운 이상을 설명할 수 있는 구조적 변경 감지.
+
+---
+
+## 전형적인 사용 사례
+
+- 누락되거나 중복된 데이터 로드 감지.  
+- 교환되거나 잘린 컬럼 식별.  
+- 숫자형 또는 범주형 특성의 분포 드리프트 감지.  
+- 예상치 못한 참조 값 또는 코드 발견.  
+- 연속 수집 파이프라인의 불규칙성 모니터링.  
+- 도메인 전반에 걸친 전체적인 **데이터 품질 및 관찰성** 추적.
+
+---
+
+## 이점
+
+- 비정상적인 데이터 동작의 즉각적 탐지.  
+- 수동 임계값 튜닝 제거.  
+- 대규모 데이터 환경에서 운영 효율성 감소.  
+- 분석 및 리포팅 시스템에 대한 신뢰 구축.  
+- **데이터 품질**과 종단간 **데이터 관찰성** 강화.
+
+---
+
+## Related digna Modules
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+
+---
+
+## 요약
+
+**digna Data Anomalies** 모듈은 digna의 AI 기반 **Data Observability Platform**의 핵심을 형성합니다.  
+핵심 지표를 지속적으로 모니터링하고, 패턴을 학습하며, 편차를 식별함으로써 조직이 **데이터 품질**을 신뢰할 수 있고, 안정적이며 설명 가능하도록 유지하는 데 도움을 줍니다 — 수동 구성 없이도.
 
 ---
 
@@ -8972,121 +9797,1775 @@ Source: https://docs.digna.ai/ko/platform/schema_tracker/Introduction/
 
 ---
 
-# digna Data Anomalies | AI-Powered Observability of Data
-Source: https://docs.digna.ai/ko/platform/data_anomalies/
+# AD FS
+Source: https://docs.digna.ai/ko/sso/adfs_sso_guide/
 
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# AD FS로 SSO 설정
 
-**AI-powered observability for always-on data trust**
+Active Directory Federation Services는 온프레미스 옵션입니다: 자체 서버가 토큰을 발급하며 discovery URL은 자체 호스트 이름입니다. AD FS는 **Windows Server 2016**부터 OpenID Connect를 지원합니다.
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
-
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
+이 가이드는 **AD FS 쪽**을 다룹니다: 애플리케이션 그룹을 생성하고 digna가 필요로 하는 값을 수집하는 방법입니다. digna 쪽 — `dashboard_config.toml`, 테스트 및 문제해결 — 은 모든 프로바이더에 대해 동일하며 [Single Sign-On 개요](overview.md)에 설명되어 있습니다.
 
 ---
 
-## Purpose of digna Data Anomalies
+## 시작하기 전에
 
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+| Requirement | Notes |
+|---|---|
+| **AD FS version** | Windows Server 2016 이상 — 이전 버전은 OIDC를 지원하지 않음 |
+| **Access** | AD FS 서버의 로컬 관리자 권한 |
+| **Federation service name** | 예: `adfs.yourdomain.com` |
+| **digna redirect URI** | 로그인 후 사용자가 돌아갈 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Key capabilities
+## 1단계: 애플리케이션 그룹 생성
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+1. AD FS 서버에서 **AD FS Management**를 엽니다.
+2. **Application Groups**를 우클릭하고 **Add Application Group**을 선택합니다.
+3. 이름에 `digna`를 입력합니다.
+4. 버전에 따라 **Standalone applications** 또는 **Client-Server applications** 아래에서 **Server application accessing a web API**를 선택합니다.
+5. **Next**를 클릭합니다.
 
 ---
 
-## How it works
+## 2단계: 서버 애플리케이션 구성
 
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
+1. **Name**: `digna backend`
+2. **Client Identifier**: AD FS가 GUID를 생성합니다. 이를 복사하세요 — 이 값이 `DIGNA_OIDC_CLIENT_ID`가 됩니다.
+3. **Redirect URI**: digna 콜백 URL을 입력하고 **Add**를 클릭합니다:
 
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
+```
+https://digna.yourdomain.com/oidc/callback
+```
 
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
+4. **Next**를 클릭합니다.
 
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+!!! warning "추가(Add) 버튼을 클릭하세요 — Next만 누르지 마세요"
 
----
-
-## Example scenarios
-
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+    Redirect URI 필드에는 자체 **Add** 버튼이 있습니다. URI를 입력하고 **Next**만 누르면 해당 URI가 버려지며 마법자가 경고를 하지 않습니다. 계속하기 전에 필드 아래 목록에 URI가 표시되는지 확인하세요.
 
 ---
 
-## Integration with other modules
+## 3단계: 공유 비밀 생성
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+1. **Generate a shared secret**에 체크합니다.
+2. 생성된 시크릿을 복사합니다 → 이것이 `DIGNA_OIDC_CLIENT_SECRET`가 됩니다.
+3. **Next**를 클릭합니다.
 
----
+!!! warning "시크릿은 한 번만 표시됩니다"
 
-## Typical use cases
-
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+    AD FS는 이 마법자 페이지에서만 공유 비밀을 표시하며 다시 볼 수 없습니다. 분실한 경우 애플리케이션 그룹 속성에서 나중에 재설정하세요.
 
 ---
 
-## Benefits
+## 4단계: Web API 구성
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
-
----
-
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+1. **Identifier**: 2단계에서 사용한 동일한 클라이언트 식별자를 입력하고 **Add**를 클릭합니다.
+2. **Next**를 클릭합니다.
+3. **Access Control Policy**를 선택합니다 — *Permit everyone*이 시작하기에 가장 간단합니다; 실사용 환경에서는 그룹으로 제한하세요.
+4. **Next**를 클릭합니다.
 
 ---
 
-## Summary
+## 5단계: 허용된 스코프 부여
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+**Configure Application Permissions** 단계에서 다음을 체크하세요:
+
+- `openid`
+- `profile`
+- `email`
+
+그런 다음 **Next**를 클릭하고 마법자를 완료합니다.
+
+!!! warning "openid가 기본으로 선택되어 있지 않습니다"
+
+    일부 버전의 AD FS는 `user_impersonation`만 기본 선택합니다. `openid`가 없으면 토큰 엔드포인트는 ID 토큰 대신 OAuth 액세스 토큰을 반환하므로 digna는 사용자를 식별할 수 없습니다.
+
+---
+
+## 6단계: Discovery 엔드포인트 확인
+
+페더레이션 서비스 이름을 대체하세요:
+
+```
+https://<adfs_host>/adfs/.well-known/openid-configuration
+```
+
+예:
+
+```
+https://adfs.yourdomain.com/adfs/.well-known/openid-configuration
+```
+
+브라우저에서 열어보세요. JSON 문서가 OIDC가 활성화되어 있고 호스트 이름이 올바른지 확인해 줍니다.
+
+!!! note "백엔드는 인증서 신뢰 필요"
+
+    내부 인증 기관을 사용하는 경우가 AD FS에서 흔합니다. digna 백엔드를 실행하는 머신이 이 URL에 대해 자체적으로 아웃바운드 HTTPS 호출을 하므로, 발급 CA는 해당 머신의 신뢰 저장소에 있어야 합니다 — 로그인하는 사람들의 브라우저에만 있는 것으로는 충분하지 않습니다.
+
+---
+
+## 7단계: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "adfs"
+label = "Active Directory로 로그인"
+```
+
+### `config.toml`
+
+```toml
+[oidc.adfs]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://adfs.yourdomain.com/adfs/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 일치해야 합니다 — 여기서는 `adfs`입니다.
+
+---
+
+## 8단계: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 체크리스트는 [로그인 테스트](overview.md#testing-login)를 참조하세요.
+
+---
+
+## AD FS 문제해결
+
+### MSIS9611: The Client Is Not Allowed to Access the Resource
+
+4단계에서 웹 API 식별자가 클라이언트 식별자와 일치하지 않거나 5단계에서 스코프가 부여되지 않았습니다. 둘 다 애플리케이션 그룹 속성에서 편집할 수 있습니다.
+
+### MSIS9602: Invalid redirect_uri
+
+URI를 입력했지만 **Add** 버튼으로 추가하지 않았거나 `DIGNA_OIDC_REDIRECT_URI`와 다릅니다. **Application Groups → digna → digna backend → Properties**를 확인하세요.
+
+### ID 토큰이 반환되지 않음
+
+애플리케이션 권한에 `openid` 스코프가 없습니다.
+
+### 백엔드가 Discovery URL에 접근하지 못함
+
+백엔드 호스트의 DNS가 페더레이션 서비스 이름을 해석하지 못하거나 AD FS 인증서가 신뢰되지 않습니다. digna 서버 자체에서 `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration`로 테스트하세요.
+
+### 확인할 이벤트
+
+AD FS 서버는 Event Viewer의 **Applications and Services Logs → AD FS → Admin**에 실패 로그를 기록하며, 브라우저에 표시되는 것보다 더 구체적인 이유가 있는 경우가 많습니다.
+
+---
+
+## 참고
+
+- [Single Sign-On 개요](overview.md) — 구성 참조, 테스트 및 일반 문제해결
+- [Microsoft: AD FS OpenID Connect scenarios](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)
+
+---
+
+# Auth0
+Source: https://docs.digna.ai/ko/sso/auth0_sso_guide/
+
+# Auth0로 SSO 설정
+
+Auth0는 OIDC 규격을 준수하며 테넌트별 discovery 엔드포인트를 제공합니다. 가장 중요한 것은 discovery URL에 들어가는 테넌트 도메인으로, 커스텀 도메인을 활성화하면 변경됩니다.
+
+이 가이드는 **Auth0 측**을 다룹니다: 애플리케이션 생성 및 digna가 필요로 하는 값 수집. digna 측 설정 — `dashboard_config.toml`, 테스트 및 문제해결 — 은 모든 공급자에 대해 동일하며 [Single Sign-On Overview](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작하기 전에
+
+| 요구 사항 | 비고 |
+|---|---|
+| **Auth0 역할** | 테넌트의 Admin |
+| **테넌트 도메인** | 예: `yourcompany.eu.auth0.com` — 리전 세그먼트가 중요합니다 |
+| **digna 리다이렉트 URI** | 로그인 후 사용자가 돌아오는 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 1단계: 애플리케이션 생성
+
+1. [Auth0 Dashboard](https://manage.auth0.com)에 로그인합니다.
+2. **Applications → Applications**로 이동합니다.
+3. **Create Application**을 클릭합니다.
+4. 이름을 `digna`로 하고 **Regular Web Applications**을 선택합니다.
+5. **Create**를 클릭합니다.
+
+!!! warning "Regular Web Applications 선택"
+
+    *Single Page Application* 및 *Native*는 시크릿이 없는 공개 클라이언트를 생성합니다. digna는 백엔드에서 코드 교환을 수행하므로 비밀을 가진 confidential client가 필요하며, 따라서 **Regular Web Applications**이 올바른 유형입니다. 일부 공급자와 달리 Auth0는 이후 **Settings → Application Type**에서 유형을 변경할 수 있습니다.
+
+---
+
+## 2단계: 콜백 URL 추가
+
+애플리케이션의 **Settings** 탭에서:
+
+1. **Allowed Callback URLs**를 찾습니다.
+2. digna 콜백 URL을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. 선택적으로 **Allowed Logout URLs**를 대시보드 URL로 설정합니다.
+4. 페이지 하단으로 스크롤해 **Save Changes**를 클릭합니다.
+
+!!! note "쉼표로 구분, 줄바꿈으로 구분하지 않음"
+
+    Auth0는 이 필드에서 여러 콜백 URL을 쉼표로 구분해 받습니다. 줄바꿈만으로 구분된 목록은 하나의 잘못된 URL로 해석되어 아무것도 일치시키지 않습니다.
+
+---
+
+## 3단계: 자격 증명 수집
+
+여전히 **Settings**의 **Basic Information** 패널에서:
+
+- **Domain** → discovery URL에 들어갑니다
+- **Client ID** → `DIGNA_OIDC_CLIENT_ID`가 됩니다
+- **Client Secret** → `DIGNA_OIDC_CLIENT_SECRET`가 됩니다 (클릭하여 표시)
+
+---
+
+## 4단계: Grant Type 확인
+
+1. **Settings → Advanced Settings → Grant Types**로 이동합니다.
+2. **Authorization Code**가 체크되어 있는지 확인합니다.
+
+Regular Web Applications의 경우 기본적으로 활성화되어 있습니다. 체크가 해제되어 있으면 digna의 로그인이 `unauthorized_client`로 실패합니다.
+
+---
+
+## 5단계: Discovery URL 구성
+
+3단계에서 얻은 **Domain**을 대체합니다:
+
+```
+https://<your_tenant_domain>/.well-known/openid-configuration
+```
+
+예:
+
+```
+https://yourcompany.eu.auth0.com/.well-known/openid-configuration
+```
+
+!!! warning "커스텀 도메인은 Issuer를 변경합니다"
+
+    테넌트가 `login.yourcompany.com`과 같은 커스텀 도메인을 사용하는 경우 discovery URL에 해당 도메인을 사용하세요. 둘을 섞어서 — discovery URL에는 표준 도메인, 브라우저에는 커스텀 도메인 — 사용하면 issuer 불일치가 발생해 로그인은 성공했더라도 토큰이 거부됩니다.
+
+---
+
+## 6단계: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "auth0"
+label = "Login with Auth0"
+```
+
+### `config.toml`
+
+```toml
+[oidc.auth0]
+DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 일치해야 합니다 — 여기서는 `auth0`.
+
+---
+
+## 7단계: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 체크리스트는 [Testing Login](overview.md#testing-login)을 참조하세요.
+
+---
+
+## Auth0 문제해결
+
+### 콜백 URL 불일치
+
+Auth0의 오류 페이지에 수신된 URL이 표시됩니다. 해당 URL을 **Allowed Callback URLs**에 추가하고 항목이 쉼표로 구분되어 있는지 확인하세요.
+
+### unauthorized_client
+
+**Advanced Settings → Grant Types**에서 **Authorization Code**가 활성화되어 있지 않거나 애플리케이션 유형이 Regular Web Applications이 아닙니다.
+
+### 성공적인 로그인 후 액세스 거부
+
+테넌트의 Rule, Action 또는 Post-Login 트리거가 사용자를 거부하고 있습니다. **Actions → Flows → Login**을 확인하고 정확한 이유를 보여주는 **Monitoring → Logs**의 테넌트 로그를 확인하세요.
+
+### Issuer 불일치
+
+Discovery URL과 브라우저로 리디렉션된 도메인이 다릅니다 — 보통 표준 테넌트 도메인과 커스텀 도메인을 혼용한 경우입니다. 하나로 통일해서 사용하세요.
+
+---
+
+## 참고
+
+- [Single Sign-On Overview](overview.md) — 구성 참조, 테스트 및 일반 문제해결
+- [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)
+
+---
+
+# Google Workspace
+Source: https://docs.digna.ai/ko/sso/google_workspace_sso_guide/
+
+# Google Workspace로 SSO 설정하기
+
+Google의 아이덴티티 플랫폼은 OIDC 규격을 준수하며 모든 고객에 대해 단일의 잘 알려진 디스커버리 URL을 사용하므로, 조직별로 필요한 값은 클라이언트 ID와 시크릿뿐입니다.
+
+이 가이드는 **Google 쪽**을 다룹니다: OAuth 클라이언트 생성과 digna가 필요로 하는 값 수집 방법입니다. digna 쪽 — `dashboard_config.toml`, 테스트 및 문제해결 — 은 모든 공급자에서 동일하며 [Single Sign-On Overview](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작 전에
+
+| 요구 사항 | 비고 |
+|---|---|
+| **Google Cloud 프로젝트** | Workspace 도메인과 같은 조직에 속한 아무 프로젝트 |
+| **역할** | 프로젝트의 Editor 또는 Owner |
+| **digna 리디렉트 URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 1단계: OAuth 동의 화면 구성
+
+Google은 동의 화면이 존재할 때까지 자격 증명을 발급하지 않습니다.
+
+1. [Google Cloud Console](https://console.cloud.google.com)을 열고 프로젝트를 선택합니다.
+2. **APIs & Services → OAuth consent screen**으로 이동합니다.
+3. 사용자 유형을 선택합니다:
+   - **Internal** — Workspace 도메인의 계정만 로그인할 수 있습니다. 권장합니다.
+   - **External** — 모든 Google 계정이 로그인 시도를 할 수 있습니다.
+4. 앱 이름, 사용자 지원 이메일 및 개발자 연락 이메일을 입력합니다.
+5. **Scopes** 단계에서 `openid`, `.../auth/userinfo.email` 및 `.../auth/userinfo.profile`을 추가합니다.
+6. 저장합니다.
+
+!!! warning "외부 앱은 게시되어야 합니다"
+
+    **External** 동의 화면은 *Testing* 상태로 시작하며, 이 상태에서는 테스트 사용자 목록에 명시적으로 추가된 계정만 로그인을 완료할 수 있습니다. 다른 모든 사용자에게는 "digna has not completed the Google verification process" 메시지가 표시됩니다. **Publishing status**에서 앱을 **In production**으로 전환하거나 **Internal**을 사용하세요 — Internal은 이러한 제한이 없으며 Workspace 전용 배포에는 올바른 선택입니다.
+
+---
+
+## 2단계: OAuth 클라이언트 생성
+
+1. **APIs & Services → Credentials**로 이동합니다.
+2. **Create Credentials → OAuth client ID**를 클릭합니다.
+3. **Application type**을 **Web application**으로 설정합니다.
+4. 이름을 지정합니다 (예: `digna`).
+5. **Authorized redirect URIs**에서 **Add URI**를 클릭하고 다음을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. **Create**를 클릭합니다.
+
+!!! note "승인된 JavaScript 출처는 필요하지 않습니다"
+
+    digna는 인가 코드를 브라우저가 아닌 백엔드에서 교환하므로 **Authorized JavaScript origins** 필드는 비워둘 수 있습니다. 리디렉트 URI만 중요합니다.
+
+---
+
+## 3단계: 자격 증명 수집
+
+생성 후 표시되는 대화창에는 다음이 보입니다:
+
+- **Client ID** — `.apps.googleusercontent.com`로 끝남 → `DIGNA_OIDC_CLIENT_ID`가 됩니다
+- **Client secret** → `DIGNA_OIDC_CLIENT_SECRET`가 됩니다
+
+두 값 모두 대부분의 다른 제공자와 달리 이후에도 자격 증명 상세 페이지에서 다시 조회할 수 있습니다.
+
+---
+
+## 4단계: 디스커버리 URL
+
+Google은 모든 고객에 대해 하나의 디스커버리 URL을 사용합니다 — 치환할 내용이 없습니다:
+
+```
+https://accounts.google.com/.well-known/openid-configuration
+```
+
+---
+
+## 5단계: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "google"
+label = "Google로 로그인"
+```
+
+### `config.toml`
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "<3단계에서 복사한 클라이언트 시크릿>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 일치해야 합니다 — 여기서는 `google`입니다.
+
+---
+
+## 6단계: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 체크리스트는 [Testing Login](overview.md#testing-login)을 참조하세요.
+
+---
+
+## Google Workspace 문제해결
+
+### Error 400: redirect_uri_mismatch
+
+`DIGNA_OIDC_REDIRECT_URI`에 설정된 URI가 **Authorized redirect URIs** 목록에 없거나, 끝에 슬래시가 있거나 스킴이 다른 등 사소한 차이가 있는 경우 발생합니다. Google의 오류 페이지는 수신한 URI를 보여줍니다 — 등록된 URI와 문자 단위로 비교하세요.
+
+### 이 앱이 차단됨 / 검증을 완료하지 않았음
+
+동의 화면이 **External**이고 아직 *Testing* 상태입니다. 게시하거나 앱을 **Internal**로 전환하세요.
+
+### 액세스 차단: 권한 오류
+
+로그인 시도하는 계정이 Workspace 도메인 외부에 있고 동의 화면이 **Internal**인 경우 발생합니다. Internal 앱은 조직 내 계정만 허용하는 것이 의도된 동작입니다.
+
+### 변경 사항 적용에 몇 분 소요
+
+Google은 자격 증명 및 동의 화면 변경을 비동기적으로 전파합니다. 새로 추가한 리디렉트 URI가 적용되기까지 몇 분 걸릴 수 있으므로 변경이 무시된 것처럼 보이면 조사하기 전에 잠시 기다렸다가 재시도하세요.
+
+---
+
+## 참고 링크
+
+- [Single Sign-On Overview](overview.md) — 구성 참조, 테스트 및 일반적인 문제해결
+- [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
+
+---
+
+# Keycloak
+Source: https://docs.digna.ai/ko/sso/keycloak_sso_guide/
+
+# Keycloak로 SSO 설정
+
+Keycloak은 자체 호스팅되는, 완전한 OIDC 호환 아이덴티티 공급자입니다. 직접 운영하므로 디스커버리 URL은 공급업체 도메인이 아니라 본인의 호스트 이름과 realm에서 만들어집니다.
+
+이 가이드는 **Keycloak 쪽**을 다룹니다: 클라이언트 생성과 digna가 필요로 하는 값 수집. digna 쪽 — `dashboard_config.toml`, 테스트 및 문제해결 — 은 모든 공급자에서 동일하며 [Single Sign-On 개요](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작 전에
+
+| 요구사항 | 설명 |
+|---|---|
+| **Keycloak 버전** | 여기에서 사용하는 URL 경로는 17 이상 — 4단계의 주의사항 참조 |
+| **Keycloak 역할** | 대상 realm의 `realm-admin`, 또는 서버 관리자 |
+| **Realm** | digna 사용자가 속한 realm, 반드시 `master`일 필요는 없음 |
+| **digna 리디렉트 URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 단계 1: Realm 선택
+
+1. Keycloak 관리자 콘솔을 엽니다.
+2. 좌상단의 realm 선택기에서 사용자가 속한 realm으로 전환합니다.
+
+!!! warning "master Realm을 사용하지 마십시오"
+
+    `master` realm은 Keycloak 자체 관리를 위한 용도입니다. 애플리케이션 클라이언트는 별도의 realm에 있어야 하며; digna를 `master`에 두면 그 사용자가 Keycloak 관리 콘솔에 접근할 수 있는 경로가 생깁니다.
+
+---
+
+## 단계 2: 클라이언트 생성
+
+1. **Clients**로 이동하여 **Create client**를 클릭합니다.
+2. 구성:
+   - **Client type**: *OpenID Connect*
+   - **Client ID**: `digna` — 이 값은 `DIGNA_OIDC_CLIENT_ID`가 됩니다
+3. **Next**를 클릭합니다.
+4. **Capability config** 단계에서 **Client authentication**을 **On**으로 전환합니다.
+5. **Standard flow**는 활성화된 상태로 두세요; 다른 플로우는 필요하지 않습니다.
+6. **Next**를 클릭합니다.
+
+!!! warning "Client authentication을 켜야 합니다"
+
+    **Client authentication**이 꺼져 있으면 Keycloak은 자격증명이 전혀 없는 *public* 클라이언트를 생성합니다 — 4단계의 **Credentials** 탭이 존재하지 않습니다. digna는 confidential 클라이언트가 필요합니다. 잘못 설정했더라도 생성 후 이 토글을 변경할 수 있습니다.
+
+---
+
+## 단계 3: 리디렉트 URI 설정
+
+**Login settings** 단계(또는 이후 **Settings** 탭)에서:
+
+1. **Valid redirect URIs**: digna 콜백 URL을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+2. **Web origins**: 비워두거나 리디렉트 URIs를 반영하도록 `+`로 설정합니다.
+3. **Save**를 클릭합니다.
+
+!!! tip "와일드카드 사용을 피하세요"
+
+    Keycloak은 `https://digna.yourdomain.com/*` 같은 패턴을 허용합니다. 와일드카드는 해당 호스트의 모든 경로가 인가 코드를 받을 수 있게 하므로, 정확한 콜백 URL을 사용하는 것이 좋습니다.
+
+---
+
+## 단계 4: 클라이언트 시크릿 수집
+
+1. **Credentials** 탭을 엽니다.
+2. **Client Authenticator**가 *Client Id and Secret*인지 확인합니다.
+3. **Client secret**을 복사 → 이 값이 `DIGNA_OIDC_CLIENT_SECRET`가 됩니다.
+
+시크릿은 여기서 계속해서 조회할 수 있으며 **Regenerate**로 재생성할 수 있습니다.
+
+---
+
+## 단계 5: 디스커버리 URL 구성
+
+Keycloak 호스트와 realm 이름을 대입하세요:
+
+```
+https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
+```
+
+예시:
+
+```
+https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
+```
+
+!!! note "Keycloak 16 및 이전 버전은 /auth를 포함합니다"
+
+    Keycloak 17 이전에는 모든 엔드포인트가 `/auth` 접두사 아래에 있었습니다:
+
+    ```
+    https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
+    ```
+
+    `KC_HTTP_RELATIVE_PATH=/auth`를 설정한 배포판은 현재 버전에서도 이전 레이아웃을 유지합니다. `/auth`가 없는 URL이 404를 반환하면 `/auth`를 포함한 URL을 시도해 보세요.
+
+계속하기 전에 브라우저에서 해당 URL을 열어 보세요. JSON 문서가 표시되면 호스트와 realm이 올바른 것입니다.
+
+---
+
+## 단계 6: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "keycloak"
+label = "Keycloak로 로그인"
+```
+
+### `config.toml`
+
+```toml
+[oidc.keycloak]
+DIGNA_OIDC_CLIENT_ID = "digna"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 반드시 일치해야 합니다 — 여기서는 `keycloak`. 이 값이 Keycloak의 **Client ID**와 같을 필요는 없지만, 동일하게 하면 관리하기 쉽습니다.
+
+---
+
+## 단계 7: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 체크리스트는 [Single Sign-On 개요](overview.md#testing-login)를 참조하세요.
+
+---
+
+## Keycloak 문제해결
+
+### 잘못된 매개변수: redirect_uri
+
+콜백 URL이 **Valid redirect URIs**에 포함되어 있지 않습니다. Keycloak은 수신한 URI를 서버 로그에 기록하므로, 정확한 불일치를 확인하려면 로그가 가장 빠릅니다.
+
+### Credentials 탭이 없음
+
+클라이언트가 public입니다. **Settings → Capability config**에서 **Client authentication**을 켜세요.
+
+### 디스커버리 URL의 404
+
+realm 이름이 틀렸거나 배포가 `/auth` 접두사를 사용하고 있을 수 있습니다. 관리자 콘솔에서 realm 목록을 확인하고 두 가지 URL 형태를 모두 시도해 보세요.
+
+### unauthorized_client 또는 invalid_client
+
+**Standard flow**가 **Capability config**에서 비활성화되었거나, Keycloak에서 시크릿을 재생성했지만 `config.toml`을 업데이트하지 않은 경우입니다.
+
+### 백엔드에서의 인증서 오류
+
+사설 또는 자체 서명된 인증서 뒤에 있는 자체 호스팅 Keycloak은 digna의 디스커버리 URL에 대한 아웃바운드 HTTPS 호출에 실패합니다. digna 백엔드를 실행하는 머신의 신뢰 저장소에 발급 CA를 설치하세요.
+
+---
+
+## 참고
+
+- [Single Sign-On 개요](overview.md) — 구성 참조, 테스트 및 일반적인 문제해결
+- [Keycloak: 애플리케이션 보안](https://www.keycloak.org/docs/latest/securing_apps/)
+
+---
+
+# Microsoft Entra ID
+Source: https://docs.digna.ai/ko/sso/microsoft_entra_id_sso_guide/
+
+# Microsoft Entra ID로 SSO 설정
+
+Microsoft Entra ID(이전 Azure Active Directory)는 완전한 OIDC 호환 공급자이므로 digna는 표준 discovery 엔드포인트를 통해 통합됩니다.
+
+이 가이드는 **Entra ID 측**을 다룹니다: 애플리케이션 등록과 digna가 필요로 하는 네 가지 값을 수집하는 방법입니다. digna 측 — `dashboard_config.toml`, 테스트 및 문제해결 — 은 모든 공급자에 대해 동일하며 [싱글 사인온 개요](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작하기 전에
+
+| 요구 사항 | 비고 |
+|---|---|
+| **Entra ID 역할** | Application Administrator, Cloud Application Administrator, 또는 Global Administrator |
+| **digna 리디렉트 URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+| **테넌트** | 사용자가 로그인하는 디렉터리 |
+
+---
+
+## 1단계: 애플리케이션 등록
+
+1. [Microsoft Entra 관리 센터](https://entra.microsoft.com)에 로그인합니다.
+2. **Identity → Applications → App registrations**로 이동합니다.
+3. **New registration**을 클릭합니다.
+4. 구성:
+   - **Name**: `digna` (동의 화면에 사용자에게 표시됨)
+   - **Supported account types**: 단일 테넌트 배포의 경우 *Accounts in this organizational directory only*
+5. **Redirect URI**에서 플랫폼 **Web**을 선택하고 digna 콜백 URL을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. **Register**를 클릭합니다.
+
+!!! warning "중요"
+
+    플랫폼은 **Web**이어야 하며 *Single-page application*이 아닙니다. digna는 백엔드에서 클라이언트 시크릿을 사용해 인증 코드를 교환하므로 SPA 플랫폼 유형은 이를 허용하지 않습니다.
+
+---
+
+## 2단계: 클라이언트 및 테넌트 ID 수집
+
+애플리케이션의 **Overview** 페이지에서 다음을 복사합니다:
+
+- **Application (client) ID** → `DIGNA_OIDC_CLIENT_ID`가 됩니다
+- **Directory (tenant) ID** → discovery URL에 사용됩니다
+
+---
+
+## 3단계: 클라이언트 시크릿 생성
+
+1. **Certificates & secrets → Client secrets**로 이동합니다.
+2. **New client secret**를 클릭합니다.
+3. 설명을 입력하고 만료 기간을 선택합니다.
+4. **Add**를 클릭합니다.
+5. 즉시 **Value** 열을 복사합니다.
+
+!!! warning "Value를 복사하세요, Secret ID를 복사하지 마세요"
+
+    **Value**는 이 페이지에서 한 번만 표시되며 이후에는 조회할 수 없습니다. 옆에 표시되는 **Secret ID**는 비슷하게 보이지만 실제 시크릿이 아닙니다 — 그것을 사용하면 로그인 시 `invalid_client` 오류가 발생합니다. 복사하기 전에 페이지를 벗어났다면 해당 시크릿을 삭제하고 새로 만드세요.
+
+!!! tip "팁"
+
+    Entra ID는 시크릿 수명을 최대 24개월로 제한하므로 모든 SSO 통합에는 만료일이 있습니다. 만료된 시크릿은 로그인 페이지에 경고 없이 모든 사용자의 SSO를 중단시키므로, 눈에 띄는 곳에 만료일을 기록해 두세요.
+
+---
+
+## 4단계: API 권한 확인
+
+1. **API permissions**로 이동합니다.
+2. **Microsoft Graph → User.Read**(delegated)가 있는지 확인합니다 — 기본으로 추가됩니다.
+
+digna가 요청하는 `openid`, `profile`, `email` 스코프는 표준 OIDC 집합의 일부이므로 별도의 권한 부여가 필요 없습니다. 테넌트가 모든 애플리케이션에 대해 관리자 동의를 요구하면 **Grant admin consent for &lt;tenant&gt;**를 클릭하세요.
+
+---
+
+## 5단계: Discovery URL 작성
+
+2단계에서 얻은 **Directory (tenant) ID**를 대체합니다:
+
+```
+https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration
+```
+
+!!! note "v2.0 엔드포인트 사용"
+
+    `/v2.0/` 세그먼트는 중요합니다. `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration`의 v1.0 엔드포인트는 오래된 형식의 토큰을 발급하며 digna가 기대하는 표준 OIDC 클레임을 반환하지 않습니다.
+
+계속하기 전에 브라우저에서 URL을 열어 보세요. JSON 문서가 표시되면 테넌트 ID가 올바른 것입니다.
+
+---
+
+## 6단계: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+```
+
+### `config.toml`
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 일치해야 합니다 — 여기서는 `microsoft`입니다.
+
+---
+
+## 7단계: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 점검 목록은 [로그인 테스트](overview.md#testing-login)를 참조하세요.
+
+---
+
+## Entra ID 문제해결
+
+### AADSTS50011: Redirect URI 불일치
+
+`DIGNA_OIDC_REDIRECT_URI`에 있는 URI가 1단계에서 등록한 것과 다릅니다. Entra ID는 전체 문자열을 비교하므로 슬래시 유무, `http`와 `https`, 포트 차이 모두 불일치로 간주됩니다. **Authentication → Web → Redirect URIs**를 확인하세요.
+
+### AADSTS7000215: 잘못된 클라이언트 시크릿
+
+**Secret ID**를 복사했거나 시크릿이 만료되었습니다. 새 시크릿을 생성하고 Value 열을 복사하세요.
+
+### AADSTS650057: Invalid Resource
+
+애플리케이션 등록이 삭제되었거나 discovery URL의 테넌트와 다른 테넌트에 속해 있습니다. Overview 페이지에서 Directory (tenant) ID를 확인하세요.
+
+### 사용자는 로그인되지만 아무 일도 발생하지 않음
+
+테넌트가 관리자 동의를 요구하는데 동의가 부여되지 않았다면 리다이렉트가 사용 가능한 토큰 없이 돌아옵니다. **API permissions**에서 관리자 동의를 부여하세요.
+
+---
+
+## 관련 문서
+
+- [싱글 사인온 개요](overview.md) — 구성 참조, 테스트 및 일반 문제해결
+- [Microsoft: OAuth 2.0 권한 부여 코드 흐름](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
+
+---
+
+# Okta
+Source: https://docs.digna.ai/ko/sso/okta_sso_guide/
+
+# Okta로 SSO 설정
+
+Okta는 OIDC를 준수하지만, 첫 통합에서 많은 이들이 헷갈리는 한 가지가 있습니다. Okta 조직은 여러 인증 서버(authorization server)를 노출하며, 각 서버는 고유한 discovery URL을 가집니다.
+
+이 가이드는 **Okta 쪽** — 앱 통합 생성과 digna가 필요로 하는 값 수집 — 을 다룹니다. digna 쪽( `dashboard_config.toml`, 테스트와 문제해결)은 공급자에 상관없이 동일하며 [Single Sign-On Overview](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작하기 전에
+
+| 요구사항 | 비고 |
+|---|---|
+| **Okta role** | Super Administrator, 또는 앱 통합을 생성할 수 있는 관리자 역할 |
+| **Okta domain** | 예: `yourcompany.okta.com`, 또는 구성된 커스텀 도메인 |
+| **digna redirect URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 단계 1: 앱 통합 생성
+
+1. Okta Admin Console에 로그인합니다.
+2. **Applications → Applications**로 이동합니다.
+3. **Create App Integration**를 클릭합니다.
+4. 다음을 선택합니다:
+   - **Sign-in method**: *OIDC - OpenID Connect*
+   - **Application type**: *Web Application*
+5. **Next**를 클릭합니다.
+
+!!! warning "애플리케이션 유형은 변경할 수 없습니다"
+
+    *Single-Page Application* 대신 *Web Application*을 선택하지 않으면 비밀 키가 없는 퍼블릭 클라이언트가 생성되고, digna의 백엔드 코드 교환 단계에서 `invalid_client` 오류가 발생합니다. 유형은 생성 시 고정되므로 잘못 선택했다면 앱을 삭제하고 다시 만들어야 합니다.
+
+---
+
+## 단계 2: 통합 구성
+
+1. **App integration name**: `digna`
+2. **Grant type**: *Authorization Code*가 선택된 상태로 둡니다.
+3. **Sign-in redirect URIs**: digna 콜백 URL을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. **Sign-out redirect URIs**: 선택 사항입니다.
+5. **Assignments**에서 누가 이 통합을 사용할지 선택합니다 — 특정 그룹을 지정하는 것이 *Allow everyone in your organization to access*보다 안전합니다.
+6. **Save**를 클릭합니다.
+
+!!! note "할당이 필요합니다"
+
+    Okta는 사용자를 인증한 후 해당 사용자가 애플리케이션에 할당되었는지를 확인합니다. 할당되지 않은 사용자는 Okta 로그인 페이지에서 정상적으로 로그인하더라도 리디렉션 시 거부됩니다. 본인에게는 로그인이 되지만 동료에게는 되지 않는다면, 가장 먼저 확인할 것은 할당 여부입니다.
+
+---
+
+## 단계 3: 자격 증명 수집
+
+애플리케이션의 **General** 탭에서 **Client Credentials** 항목을 확인합니다:
+
+- **Client ID** → `DIGNA_OIDC_CLIENT_ID`가 됩니다.
+- **Client secret** → `DIGNA_OIDC_CLIENT_SECRET`가 됩니다(눈 아이콘을 클릭해 표시).
+
+---
+
+## 단계 4: 인증 서버 선택
+
+이 단계에서 discovery URL이 결정됩니다. **Security → API**로 이동하여 조직의 인증 서버들을 확인합니다.
+
+**Org authorization server** — Okta 조직 자체를 위한 토큰을 발급합니다:
+
+```
+https://<your_okta_domain>/.well-known/openid-configuration
+```
+
+**Custom authorization server** — Okta가 생성하는 `default`를 포함한 커스텀 서버:
+
+```
+https://<your_okta_domain>/oauth2/<auth_server_id>/.well-known/openid-configuration
+```
+
+내장 서버의 경우 `<auth_server_id>`는 문자 그대로 `default`입니다:
+
+```
+https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration
+```
+
+!!! tip "어떤 것을 선택해야 하나요?"
+
+    조직이 API 접근 정책을 위해 이미 커스텀 인증 서버를 표준으로 사용 중이 아니라면 **org** 인증 서버를 사용하세요. Okta Developer 계정은 기본적으로 `default`를 사용하며, 많은 기업 조직에서는 이를 비활성화합니다. 두 URL을 브라우저에서 열어보고 JSON을 반환하는 쪽이 사용 가능한 서버입니다.
+
+---
+
+## 단계 5: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "okta"
+label = "Okta로 로그인"
+```
+
+### `config.toml`
+
+```toml
+[oidc.okta]
+DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
+DIGNA_OIDC_CLIENT_SECRET = "<3단계에서 복사한 클라이언트 시크릿>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 반드시 일치해야 합니다 — 여기서는 `okta`입니다.
+
+---
+
+## 단계 6: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 체크리스트는 [Testing Login](overview.md#testing-login)을 참조하세요.
+
+---
+
+## Okta 문제해결
+
+### 리디렉션 URI가 등록되어 있지 않습니다
+
+Okta는 문제를 일으키는 URI를 오류 메시지에 표시합니다. 이를 **General → Sign-in redirect URIs**와 비교해보세요; Okta는 후행 슬래시 포함 전체 문자열을 정확히 일치시킵니다.
+
+### 사용자가 클라이언트 애플리케이션에 할당되어 있지 않습니다
+
+계정이 애플리케이션의 할당 목록에 없습니다. **Assignments**에서 사용자나 그들의 그룹을 추가하세요.
+
+### 400 Bad Request: Invalid Authorization Server
+
+디스커버리 URL의 `<auth_server_id>`가 존재하지 않을 때 발생합니다. 보통 `default`가 제거된 조직에서 발생합니다. 실제로 사용 가능한 서버는 **Security → API**에서 확인하세요.
+
+### 토큰 단계에서 invalid_client
+
+통합이 Single-Page Application으로 생성되어 클라이언트 시크릿이 없습니다. Web Application으로 다시 생성하세요.
+
+---
+
+## 참고
+
+- [Single Sign-On Overview](overview.md) — 구성 참조, 테스트 및 일반적인 문제해결
+- [Okta: OpenID Connect & OAuth 2.0](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)
+
+---
+
+# OneLogin
+Source: https://docs.digna.ai/ko/sso/onelogin_sso_guide/
+
+# OneLogin으로 SSO 설정
+
+OneLogin은 OIDC 규격을 준수합니다. 특징적인 점은 애플리케이션 생성 시 카탈로그에서 커넥터 유형을 선택하면 이후에 변경할 수 없다는 것입니다.
+
+이 가이드는 **OneLogin 측**을 다룹니다: 애플리케이션 생성과 digna에 필요한 값 수집. digna 측 — `dashboard_config.toml`, 테스트 및 문제 해결 — 은 모든 공급자에 대해 동일하며 [Single Sign-On Overview](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작하기 전에
+
+| 요구사항 | 비고 |
+|---|---|
+| **OneLogin 역할** | 애플리케이션을 추가할 수 있는 계정 소유자 또는 관리자 |
+| **서브도메인** | 예: `yourcompany.onelogin.com` |
+| **digna 리디렉션 URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 1단계: OIDC 애플리케이션 생성
+
+1. OneLogin 관리자 포털에 로그인합니다.
+2. **Applications → Applications**로 이동합니다.
+3. **Add App**을 클릭합니다.
+4. `OpenId Connect`를 검색하고 **OpenId Connect (OIDC)** 커넥터를 선택합니다.
+5. **Display Name**을 `digna`로 설정합니다.
+6. **Save**를 클릭합니다.
+
+!!! warning "커넥터 유형은 생성 시 고정됩니다"
+
+    OneLogin은 SAML과 OIDC에 대해 별도의 카탈로그 항목을 가지고 있으며, 애플리케이션을 한 프로토콜에서 다른 프로토콜로 변환할 수 없습니다. 실수로 SAML 커넥터를 선택했다면 앱을 삭제하고 다시 추가하세요 — 프로토콜을 전환하는 설정은 없습니다.
+
+---
+
+## 2단계: 리디렉션 URI 구성
+
+1. **Configuration** 탭을 엽니다.
+2. **Redirect URI's**에 digna 콜백 URL을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. 선택적으로 **Post Logout Redirect URIs**에 대시보드 URL을 설정합니다.
+4. **Save**를 클릭합니다.
+
+!!! note "URI는 한 줄에 하나씩"
+
+    쉼표로 구분된 목록을 기대하는 공급자와 달리 OneLogin의 **Redirect URI's** 필드는 한 줄에 하나의 URI를 받습니다.
+
+---
+
+## 3단계: 애플리케이션 유형과 인증 방식 설정
+
+1. **SSO** 탭을 엽니다.
+2. **Application Type**이 *Web*인지 확인합니다.
+3. **Token Endpoint → Authentication Method**를 *POST* (`client_secret_post`) 또는 *Basic* (`client_secret_basic`)으로 설정합니다.
+
+!!! warning "*None*을 선택하지 마십시오"
+
+    인증 방식을 *None*으로 설정하면 애플리케이션이 시크릿 없는 퍼블릭 클라이언트가 되어 digna의 백엔드 토큰 교환이 거부됩니다. POST 또는 Basic 중 하나를 사용하세요.
+
+---
+
+## 4단계: 자격증명 수집
+
+계속해서 **SSO** 탭에서:
+
+- **Client ID** → `DIGNA_OIDC_CLIENT_ID`가 됩니다.
+- **Client Secret** → `DIGNA_OIDC_CLIENT_SECRET`가 됩니다 (**Show client secret** 클릭).
+
+페이지에는 또한 **Issuer URL**이 표시되며, 다음 단계의 디스커버리 URL을 확인하는 데 사용됩니다.
+
+---
+
+## 5단계: 사용자 할당
+
+1. **Access** 탭을 엽니다.
+2. digna를 사용할 수 있는 역할 또는 그룹을 추가합니다.
+3. **Save**를 클릭합니다.
+
+!!! note "할당되지 않은 사용자는 로그인 후 거부됩니다"
+
+    대부분의 공급자와 마찬가지로 OneLogin은 먼저 사용자를 인증하고 그 다음 권한을 확인합니다. 할당되지 않은 사용자는 로그인에는 성공하지만 이후 거부되어 digna 오류처럼 보일 수 있습니다.
+
+---
+
+## 6단계: 디스커버리 URL 구성
+
+OneLogin 서브도메인을 대체합니다:
+
+```
+https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+예를 들면:
+
+```
+https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+!!! tip "/2는 API 버전입니다"
+
+    OneLogin의 현재 OIDC 구현은 `/oidc/2/`에 위치합니다. 이전 문서에서는 버전 없이 `/oidc/`가 나와 있는데 이는 사용 중단된 첫 번째 버전을 가리킵니다. 확실하지 않으면 SSO 탭에 표시된 **Issuer URL**과 비교하세요 — 디스커버리 URL은 Issuer 뒤에 `/.well-known/openid-configuration`를 붙인 것입니다.
+
+---
+
+## 7단계: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "onelogin"
+label = "OneLogin으로 로그인"
+```
+
+### `config.toml`
+
+```toml
+[oidc.onelogin]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
+DIGNA_OIDC_CLIENT_SECRET = "<4단계에서 복사한 클라이언트 시크릿>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
+```
+
+두 파일의 `key`는 일치해야 합니다 — 여기서는 `onelogin`입니다.
+
+---
+
+## 8단계: 테스트
+
+백엔드와 웹 서버를 재시작한 뒤 대시보드를 엽니다. 전체 체크리스트는 [Testing Login](overview.md#testing-login)을 참고하세요.
+
+---
+
+## OneLogin 문제 해결
+
+### redirect_uri did not match
+
+콜백 URL이 **Configuration → Redirect URI's**에 없거나 항목들이 쉼표로 구분되어 줄바꿈으로 입력되지 않았습니다.
+
+### invalid_client at the Token Step
+
+**Token Endpoint → Authentication Method**가 *None*으로 설정되어 있거나 `config.toml`의 클라이언트 시크릿이 오래되었습니다. **SSO** 탭에서 시크릿을 표시하여 비교하세요.
+
+### 애플리케이션이 사용자에게 표시되지 않음
+
+**Access** 탭에서 어떤 역할이나 그룹에도 접근 권한이 부여되지 않았습니다.
+
+### 디스커버리 URL에서 404 발생
+
+서브도메인이 잘못되었거나 URL에 `/oidc/2/`가 빠졌습니다. SSO 탭에 표시된 **Issuer URL**과 비교하세요.
+
+---
+
+## 관련 문서
+
+- [Single Sign-On Overview](overview.md) — 구성 참조, 테스트 및 일반적인 문제 해결
+- [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)
+
+---
+
+# Overview
+Source: https://docs.digna.ai/ko/sso/overview/
+
+# Single Sign-On Overview
+
+---
+
+## Table of Contents
+
+1. [Introduction and Overview](#introduction-and-overview)
+2. [Provider Guides](#provider-guides)
+3. [Configuration Steps](#configuration-steps)
+4. [Dashboard Configuration](#dashboard-configuration)
+5. [Backend Configuration](#backend-configuration)
+6. [Testing Login](#testing-login)
+7. [Troubleshooting](#troubleshooting)
+8. [Supported Providers](#supported-providers)
+
+---
+
+## 소개 및 개요 {: #introduction-and-overview }
+
+이 가이드는 **OpenID Connect (OIDC)**를 사용하여 digna 플랫폼과 Single Sign-On(SSO)을 통합하는 단계별 지침을 제공합니다.
+
+### SSO란?
+
+Single Sign-On은 사용자가 외부 아이덴티티 제공자를 통해 기업 자격증명으로 digna에 안전하게 로그인할 수 있도록 합니다. 사용자는 별도의 digna 비밀번호를 관리하는 대신 사내 자격증명으로 인증할 수 있습니다.
+
+### 동작 원리
+
+digna의 SSO는 OIDC 프로토콜로 구현됩니다. 여러 아이덴티티 제공자를 병렬로 구성할 수 있으며, 이를 위해 두 가지 주요 구성 파일을 조정합니다:
+
+- **`dashboard_config.toml`** — 프런트엔드 로그인 인터페이스 제어
+- **`config.toml`** — 백엔드 OIDC 연결 구성
+
+### 지원되는 제공자 {: #supported-providers-overview }
+
+이 가이드의 예시는 **Microsoft**와 **Google**을 사용하지만, **OIDC를 준수하는 모든 제공자**는 동일한 구조로 통합할 수 있습니다.
+
+---
+
+## 제공자 가이드 {: #provider-guides }
+
+모든 제공자는 동일한 네 가지 값(클라이언트 ID, 클라이언트 시크릿, 리디렉션 URI, 디스커버리 URL)을 필요로 하지만, 각 제공자는 관리자 콘솔에서 이를 배치하는 위치가 다르며 몇몇은 다른 제공자와 다른 고유한 단계를 요구합니다. 아래 가이드는 그 절반(제공자 측 설정)을 다루고; 이 페이지는 digna 측 설정을 다룹니다(모두 동일).
+
+| Provider | Guide | Worth knowing |
+|---|---|---|
+| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | 자체 호스팅; 토큰 서비스를 직접 제어하는 유일한 제공자 |
+| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | 디스커버리 URL이 테넌트별이며, 커스텀 도메인은 URL을 변경함 |
+| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | 동의 화면은 비-테스트 사용자가 로그인하기 전에 게시되어야 함 |
+| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | 자체 호스팅; 디스커버리 URL이 realm(영역)별 |
+| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | 테넌트 ID가 디스커버리 URL에 나타나며, 시크릿은 만료됨 |
+| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | 인증 서버 선택이 디스커버리 URL을 변경함 |
+| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | OIDC 앱 유형은 생성 시 선택해야 하며 변경 불가 |
+| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | 환경 ID가 디스커버리 URL에 나타남 |
+
+다른 모든 OIDC 준수 제공자는 동일하게 작동합니다 — [Other OIDC Providers](#supported-providers)를 참조하세요.
+
+---
+
+## 구성 단계 {: #configuration-steps }
+
+SSO 구성에는 두 파일의 업데이트가 필요합니다. 이 섹션은 각 파일을 구성하는 방법을 설명합니다.
+
+### 구성 파일 개요
+
+| File | Location | Purpose |
+|---|---|---|
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | 프런트엔드 로그인 인터페이스 |
+| **config.toml** | `/config.toml` | 백엔드 OIDC 연결 |
+
+두 파일 모두 SSO가 제대로 작동하려면 구성되어야 합니다.
+
+---
+
+## 대시보드 구성 {: #dashboard-configuration }
+
+### 파일 위치
+
+```
+dashboard/dashboard_config.toml
+```
+
+### 단계 1: OIDC 제공자 추가
+
+지원하려는 각 아이덴티티 제공자에 대해 `[[login.oidc]]` 배열 아래에 항목을 추가합니다.
+
+**Microsoft와 Google 예시:**
+
+```toml
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+```
+
+### 단계 2: 로그인 옵션 구성
+
+비밀번호 기반 로그인을 허용할지 지정합니다:
+
+```toml
+[login]
+usePassword = true
+```
+
+### 구성 매개변수
+
+#### `[[login.oidc]]` 섹션
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `key` | string | Yes | OIDC 연결의 고유 식별자 (config.toml의 key와 일치해야 함) |
+| `label` | string | Yes | 로그인 버튼에 표시되는 텍스트 (예: "Login with Microsoft") |
+
+#### `[login]` 섹션
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `usePassword` | boolean | false | SSO 외에 비밀번호 기반 로그인을 허용할지 여부 |
+
+### usePassword 이해하기
+
+**`usePassword = true`인 경우:**
+- 로그인 화면에 SSO 버튼(예: "Login with Microsoft")이 표시됩니다
+- 로그인 화면에 사용자 이름 및 비밀번호 필드도 표시됩니다
+- 사용자는 둘 중 한 방법으로 인증할 수 있습니다
+- 일부 사용자는 SSO를 사용하고 일부는 비밀번호를 사용하는 하이브리드 설정을 허용합니다
+
+**`usePassword = false`(또는 생략)인 경우:**
+- 로그인 화면에는 SSO 버튼만 표시됩니다
+- 사용자 이름/비밀번호 필드는 없습니다
+- OIDC 인증만 사용 가능합니다
+
+!!! tip "팁"
+
+    Password 기반 로그인은 `digna user add` 명령으로 비밀번호가 설정된 사용자 또는 대시보드를 통해 생성된 사용자에게만 제공됩니다.
+
+### 전체 예시
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+
+[[login.oidc]]
+key = "okta"
+label = "Login with Okta"
+```
+
+---
+
+## 백엔드 구성 {: #backend-configuration }
+
+### 파일 위치
+
+```
+/config.toml
+```
+
+(루트 digna 설치 디렉터리)
+
+### 단계 1: OIDC 제공자 섹션 추가
+
+각 제공자는 전용 `[oidc.<key>]` 섹션을 가져야 합니다. key는 `dashboard_config.toml`에 정의된 `key`와 일치해야 합니다.
+
+### Microsoft 구성
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
+```
+
+### Google 구성
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+### 구성 매개변수
+
+| Parameter | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `DIGNA_OIDC_CLIENT_ID` | string | Yes | 아이덴티티 제공자에서 발급한 클라이언트 ID | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | 아이덴티티 제공자에서 발급한 클라이언트 시크릿 | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | 인증 후 콜백 URL | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC 구성 엔드포인트 | `https://login.microsoftonline.com/...` |
+
+!!! warning "중요"
+
+    플레이스홀더 값(`<client_id>`, `<client_secret>`, `<tenant_id>`)을 아이덴티티 제공자 개발자 포털의 실제 자격증명으로 교체하세요.
+
+### 리디렉션 URI
+
+리디렉션 URI는 아이덴티티 제공자 구성에 등록된 값과 동일해야 합니다:
+
+```
+http://localhost:5173/oidc/callback
+```
+
+digna가 다른 도메인에서 호스팅되는 경우 적절히 업데이트하세요:
+- 로컬: `http://localhost:5173/oidc/callback`
+- 운영 환경: `https://digna.yourdomain.com/oidc/callback`
+
+### 전체 예시
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+---
+
+## 로그인 테스트 {: #testing-login }
+
+구성을 완료한 후 SSO가 정상 작동하는지 확인합니다.
+
+### 테스트 전 체크리스트
+
+테스트 전에 다음을 확인하세요:
+
+- [ ] `dashboard_config.toml`에 OIDC 제공자가 업데이트되었는가
+- [ ] `config.toml`에 OIDC 자격증명이 업데이트되었는가
+- [ ] 두 파일이 저장되었는가
+- [ ] 자격증명이 올바른가 (클라이언트 ID, 클라이언트 시크릿)
+- [ ] 리디렉션 URI가 배포 URL과 일치하는가
+- [ ] 아이덴티티 제공자 애플리케이션에 리디렉션 URI가 구성되어 있는가
+
+### 테스트 단계
+
+#### 단계 1: 서비스 재시작
+
+변경사항을 적용하려면 digna 백엔드 및 웹 서버를 재시작합니다.
+
+**Windows에서 서비스로 실행 중인 경우:**
+```bash
+cd C:\path\to\digna\bin
+stop_service.bat
+start_service.bat
+```
+
+**Linux 또는 macOS에서 서비스로 실행 중인 경우:**
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+sudo ./start_service.sh
+```
+
+**수동으로 실행 중인 경우:**
+```bash
+digna serve --address localhost --port 8082
+```
+
+**웹 서버도 재시작하세요** — Windows의 경우 IIS 또는 Tomcat, Linux/macOS의 경우 nginx 또는 Apache 등.
+
+#### 단계 2: 대시보드 열기
+
+브라우저에서 digna 대시보드를 엽니다:
+
+```
+http://localhost:5173
+```
+
+(또는 구성한 대시보드 URL)
+
+#### 단계 3: 로그인 버튼 확인
+
+구성된 각 제공자에 대한 로그인 버튼이 표시되는지 확인합니다:
+
+- "Login with Microsoft" 버튼이 보여야 함
+- "Login with Google" 버튼이 보여야 함
+- (usePassword = true인 경우) 사용자 이름/비밀번호 필드가 보여야 함
+
+버튼이 나타나지 않으면:
+- `dashboard_config.toml`이 저장되었는지 확인
+- 대시보드 서비스가 재시작되었는지 확인
+- 브라우저 콘솔(F12)에서 오류 확인
+
+#### 단계 4: SSO 로그인 테스트
+
+SSO 버튼(예: "Login with Microsoft")을 클릭합니다:
+
+1. 아이덴티티 제공자의 로그인 화면으로 리디렉션되어야 합니다
+2. 사내 자격증명으로 로그인합니다
+3. digna로 리디렉션되어야 합니다
+4. digna에 로그인되어 있어야 합니다
+
+#### 단계 5: 사용자 생성 확인
+
+SSO 로그인 성공 후:
+
+- 사용자가 digna에 자동으로 생성되어야 합니다
+- 사용자가 로그인되어야 합니다
+- 사용자 프로필에 아이덴티티 제공자 관련 정보가 표시되어야 합니다
+- digna 대시보드를 볼 수 있어야 합니다
+
+#### 단계 6: 비밀번호 로그인 테스트 (활성화된 경우)
+
+`usePassword = true`인 경우:
+
+1. digna에서 로그아웃합니다
+2. 로그인 페이지에서 사용자 이름과 비밀번호를 입력합니다
+3. 비밀번호 자격증명으로 로그인할 수 있어야 합니다
+
+---
+
+## 문제 해결 {: #troubleshooting }
+
+### 로그인 버튼이 표시되지 않음
+
+**증상:**
+- 로그인 페이지에 OIDC 로그인 버튼이 보이지 않음
+- (usePassword = true인 경우) 비밀번호 필드만 보임
+
+**원인 및 해결책:**
+1. `dashboard_config.toml`이 `dashboard/` 디렉터리에 있는지 확인
+2. `[[login.oidc]]` 섹션이 올바른 문법으로 존재하는지 검증
+3. 대시보드 서비스를 재시작
+4. 브라우저 캐시 삭제 (Ctrl+Shift+Delete 또는 Cmd+Shift+Delete)
+5. 브라우저 콘솔(F12 → Console 탭)에서 오류 확인
+
+---
+
+### 리디렉션 URI 불일치 오류
+
+**증상:**
+- SSO 버튼 클릭 후 "redirect_uri mismatch" 관련 오류 발생
+- "The redirect URI is not registered" 오류
+
+**원인 및 해결책:**
+1. `config.toml`의 `DIGNA_OIDC_REDIRECT_URI`가 올바른지 확인
+2. 아이덴티티 제공자 설정에 리디렉션 URI가 등록되어 있는지 확인
+3. 프로토콜, 도메인, 경로까지 정확히 동일한지 확인
+4. 리디렉션 URI에 오타가 없는지 확인
+5. HTTPS 사용 시 인증서가 유효한지 확인
+
+---
+
+### 잘못된 클라이언트 자격증명 오류
+
+**증상:**
+- "Invalid client ID or secret" 오류
+- 자격증명 오류로 인증 실패
+
+**원인 및 해결책:**
+1. `DIGNA_OIDC_CLIENT_ID` 및 `DIGNA_OIDC_CLIENT_SECRET`이 올바른지 확인
+2. 앞뒤 공백이나 특수문자가 포함되어 있지 않은지 확인
+3. 자격증명이 만료되었거나 취소되지 않았는지 확인
+4. 구성 업데이트 후 백엔드 서비스를 재시작
+5. 아이덴티티 제공자 콘솔에서 자격증명이 활성 상태인지 확인
+
+---
+
+### 로그인 중 멈춤 또는 시간 초과
+
+**증상:**
+- SSO 버튼 클릭 시 아무 동작이 없음
+- 몇 초 후 타임아웃
+- 브라우저에서 "Failed to connect" 등의 표시
+
+**원인 및 해결책:**
+1. digna 백엔드가 실행 중인지 확인: `digna repo check`
+2. 아이덴티티 제공자로의 네트워크 연결 상태 확인
+3. `DIGNA_OIDC_CONFIGURATION_URL`에 접근 가능한지 확인
+4. 방화벽 규칙이 아웃바운드 HTTPS 연결을 허용하는지 확인
+5. 백엔드와 대시보드가 서로 통신 가능한지 확인
+
+---
+
+### 사용자가 자동으로 생성되지 않음
+
+**증상:**
+- SSO 로그인은 성공하지만 digna에 사용자가 생성되지 않음
+- SSO 로그인 후 권한 오류 발생
+
+**원인 및 해결책:**
+1. OIDC 구성이 올바른지 확인
+2. 사용자 권한이 적절히 설정되어 있는지 확인
+3. digna 로그에서 오류 메시지 검토
+4. 백엔드 서비스 재시작
+5. 문제가 지속되면 support@digna.ai로 문의
+
+---
+
+## 지원되는 제공자 {: #supported-providers }
+
+### 테스트 및 지원됨
+
+다음 OIDC 제공자는 테스트되어 작동이 확인된 목록입니다:
+
+| Provider | Configuration URL | Setup Guide |
+|---|---|---|
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+
+### 기타 OIDC 제공자
+
+OpenID Connect를 지원하는 모든 제공자는 통합할 수 있습니다. 필요한 정보:
+
+- 클라이언트 ID
+- 클라이언트 시크릿
+- OpenID 구성 URL (일반적으로 `/.well-known/openid-configuration`)
+- 지원되는 스코프(일반적으로 `openid profile email`)
+
+특정 제공자 통합에 도움이 필요하면 support@digna.ai로 문의하세요.
+
+---
+
+## 모범 사례
+
+**해야 할 것(DO):**
+- 운영 환경에서는 HTTPS 사용 (HTTP 사용 금지)
+- 클라이언트 시크릿을 안전하게 저장 (가능하면 환경 변수 사용)
+- 시크릿 주기적 회전
+- 먼저 비운영 환경에서 테스트
+- 구성된 제공자 문서화
+- 이상 활동을 모니터링하기 위해 로그인 로그 확인
+- 아이덴티티 제공자 구성과 digna 구성을 동기화 상태로 유지
+
+**하지 말아야 할 것(DON'T):**
+- 클라이언트 시크릿을 버전 관리에 저장하지 말 것
+- 운영 환경에서 HTTP 리디렉션 URI 사용하지 말 것
+- 동일한 키로 여러 제공자를 구성하지 말 것
+- 운영 환경에 기본/테스트 자격증명을 남기지 말 것
+- 시크릿이 포함된 구성 파일을 공개하지 말 것
+- 개발 및 운영 자격증명을 혼용하지 말 것
+
+---
+
+## 지원
+
+SSO 구성에 도움이 필요하신가요?
+
+- **이메일:** support@digna.ai
+- **문서:** https://docs.digna.ai
+- **웹사이트:** https://www.digna.ai
+
+---
+
+**최종 업데이트:** 2026년 8월 30일  
+**릴리스:** 2026.04  
+**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+
+---
+
+# PingOne
+Source: https://docs.digna.ai/ko/sso/pingone_sso_guide/
+
+# PingOne으로 SSO 설정
+
+PingOne은 OIDC를 준수합니다. 특히 주의해야 할 값이 두 가지 있습니다: 모든 엔드포인트 URL에 나타나는 **Environment ID(환경 ID)**와 북미, 유럽, 캐나다, 아시아태평양, 호주 테넌트마다 다른 **지역 도메인**입니다.
+
+이 가이드는 **PingOne 측 작업**을 다룹니다: 애플리케이션 생성과 digna가 필요로 하는 값 수집. digna 측 설정 — `dashboard_config.toml`, 테스트 및 문제 해결 — 은 모든 공급자에서 동일하며 [Single Sign-On Overview](overview.md)에 설명되어 있습니다.
+
+---
+
+## 시작하기 전
+
+| 요구사항 | 비고 |
+|---|---|
+| **PingOne 역할** | 대상 환경의 Environment Admin 또는 Identity Data Admin |
+| **환경** | digna 사용자가 속한 PingOne 환경 |
+| **digna 리디렉트 URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 단계 1: 애플리케이션 생성
+
+1. PingOne 관리자 콘솔에 로그인하고 환경을 선택합니다  
+2. **Applications → Applications**로 이동합니다  
+3. **+** 버튼을 클릭합니다  
+4. **Application Name**에 `digna`를 입력합니다  
+5. **OIDC Web App**을 선택합니다  
+6. **Save**를 클릭합니다
+
+!!! warning "OIDC Web App를 선택하세요, Single-Page App이 아닙니다"
+
+    *Single-Page App*과 *Native App*은 시크릿을 보관할 수 없는 퍼블릭 클라이언트를 만듭니다. digna는 백엔드에서 인가 코드를 교환하므로 기밀을 보관할 수 있는 **OIDC Web App** 유형이 필요합니다.
+
+---
+
+## 단계 2: 리디렉트 URI 구성
+
+1. 애플리케이션의 **Configuration** 탭을 엽니다  
+2. 연필 아이콘을 클릭하여 편집합니다  
+3. **Response Type**이 *Code*이고 **Grant Type**이 *Authorization Code*인지 확인합니다  
+4. **Redirect URIs**에 digna 콜백 URL을 입력합니다:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+5. **Token Endpoint Authentication Method**를 *Client Secret Post* 또는 *Client Secret Basic*으로 설정합니다  
+6. **Save**를 클릭합니다
+
+---
+
+## 단계 3: 애플리케이션 활성화
+
+애플리케이션의 행 또는 상세 패널에서 토글을 **enabled**로 전환합니다.
+
+!!! warning "새 애플리케이션은 기본적으로 비활성화됩니다"
+
+    PingOne은 애플리케이션을 비활성화된 상태로 생성합니다. 비활성화된 애플리케이션은 인가 단계에서 토글을 언급하지 않는 오류를 발생시키므로, 다른 디버깅을 시작하기 전에 이 항목을 확인하는 것이 좋습니다.
+
+---
+
+## 단계 4: 스코프 부여
+
+1. **Resources** 탭을 엽니다  
+2. `openid`가 부여되어 있는지 확인하고 **OpenID Connect** 리소스에서 `profile` 및 `email`을 추가합니다  
+3. **Save**를 클릭합니다
+
+---
+
+## 단계 5: 사용자 할당
+
+1. **Access** 탭을 엽니다  
+2. digna를 사용할 수 있는 집단 또는 그룹을 추가합니다  
+3. **Save**를 클릭합니다
+
+---
+
+## 단계 6: 자격 증명 및 환경 ID 수집
+
+**Configuration** 탭에서 **General**을 확장합니다:
+
+- **Client ID** → `DIGNA_OIDC_CLIENT_ID`가 됩니다  
+- **Client Secret** → `DIGNA_OIDC_CLIENT_SECRET`가 됩니다 (눈 아이콘을 클릭)  
+- **Environment ID** → discovery URL에 들어갑니다
+
+같은 탭에 이미 만들어져 있는 **OIDC Discovery Endpoint**가 나열되어 있으며, 이를 직접 복사하면 수동으로 조합할 필요가 없습니다.
+
+---
+
+## 단계 7: Discovery URL 구성
+
+환경 ID와 해당 지역의 도메인을 대체하여 사용합니다:
+
+```
+https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
+```
+
+| 지역 | 도메인 |
+|---|---|
+| 북미 | `auth.pingone.com` |
+| 유럽 | `auth.pingone.eu` |
+| 캐나다 | `auth.pingone.ca` |
+| 아시아-태평양 | `auth.pingone.asia` |
+| 호주 | `auth.pingone.com.au` |
+
+유럽 환경의 예:
+
+```
+https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
+```
+
+!!! tip "직접 입력하지 말고 복사하세요"
+
+    지역 도메인이 PingOne 통합에서 가장 흔한 실수입니다. 잘못된 지역을 사용하면 유용한 메시지 대신 404가 발생하므로, 6단계의 **OIDC Discovery Endpoint** 값을 사용해 복사하세요.
+
+---
+
+## 단계 8: digna 구성
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "pingone"
+label = "Login with PingOne"
+```
+
+### `config.toml`
+
+```toml
+[oidc.pingone]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
+```
+
+두 파일의 `key`가 일치해야 합니다 — 여기서는 `pingone`.
+
+---
+
+## 단계 9: 테스트
+
+백엔드와 웹 서버를 재시작한 다음 대시보드를 엽니다. 전체 체크리스트는 [Single Sign-On Overview](overview.md#testing-login)를 참조하세요.
+
+---
+
+## PingOne 문제 해결
+
+### Discovery URL에서 404 발생
+
+지역 도메인 또는 Environment ID가 잘못되었습니다. 애플리케이션의 Configuration 탭에 표시된 **OIDC Discovery Endpoint**와 비교하세요.
+
+### NOT_FOUND 또는 애플리케이션 비활성화 오류
+
+3단계의 애플리케이션 토글이 여전히 꺼져 있습니다.
+
+### Redirect URI 불일치
+
+PingOne은 전체 문자열을 비교합니다. **Configuration → Redirect URIs**에서 끝에 슬래시가 있거나 스킴(https/http) 차이가 없는지 확인하세요.
+
+### 로그인은 성공하지만 이메일 클레임이 digna에 도달하지 않음
+
+**Resources** 탭에서 `email` 및 `profile` 스코프가 부여되지 않았습니다.
+
+### 사용자가 애플리케이션을 볼 수 없음
+
+**Access** 탭에서 해당 집단 또는 그룹에 접근 권한이 부여되지 않았습니다.
+
+---
+
+## 참고
+
+- [Single Sign-On Overview](overview.md) — 구성 참고, 테스트 및 일반 문제 해결  
+- [PingOne: OIDC application configuration](https://docs.pingidentity.com/pingone/)

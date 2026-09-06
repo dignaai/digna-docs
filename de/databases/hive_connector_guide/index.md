@@ -1,64 +1,69 @@
 # Quell-Connector für Hive
 
-Diese Anleitung beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Hive entweder über den nativen Python-Connector oder über den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie *digna* so konfiguriert wird, dass es sich mit Hive verbindet, entweder über den nativen Python-Connector oder den ODBC-Treiber.
 
-Sie bezieht sich auf den Bildschirm **"Create a Database Connection"**.
+Sie bezieht sich auf den Bildschirm **"Datenbankverbindung erstellen"**.
 
-![Create a database connection](images/data_source_config_input_mask.png)
+![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
 
 ---
 
 ## Nativer Python-Treiber
 
-**Bibliothek:** `PyHive`  
+**Library:** `PyHive`  
 **Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
 
 > Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
 
 ### *digna*-Konfiguration (nativer Treiber)
 
-Geben Sie die folgenden Informationen im Bildschirm **"Create a Database Connection"** an:
+Geben Sie die folgenden Informationen im Bildschirm **"Datenbankverbindung erstellen"** an:
 
 ```
-Technology:      Apache Hive
-Host Address:    Servername oder IP-Adresse
-Host Port:       Portnummer, z. B. 10000
-Database Name:   Schema, das die Quelldaten enthält
-Schema Name:     Schema, das die Quelldaten enthält
-User Name:       Datenbank-Benutzername
-User Password:   Passwort für den Benutzer
-Use ODBC:        Deaktiviert (Standard)
+Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
+Technology:         Apache Hive
+Host Address:       Servername oder IP-Adresse
+Host Port:          Portnummer, z. B. 10000
+Database Name:      Schema, das die Quelldaten enthält
+User Name:          Datenbank-Benutzername
+User Password:      Passwort für den Benutzer
+Profiling Mode:     Der Profiling-Modus legt fest, wie digna Daten verarbeitet und Metriken berechnet:
+                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
+                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
+                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
+Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
+Use ODBC:           Deaktiviert (Standard)
 ```
 
 ---
 
 ## ODBC-Treiber
 
-Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **Cloudera ODBC Driver for Apache Hive**.
+Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung unter Verwendung des Treibers **Cloudera ODBC Driver for Apache Hive**.
 
-### 1. Installieren des ODBC-Treibers
+### 1. ODBC-Treiber installieren
 
-Installieren Sie den **Cloudera ODBC Driver for Apache Hive** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Herstellers.
+Installieren Sie den **Cloudera ODBC Driver for Apache Hive** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
 
-### 2. Konfigurieren der ODBC-Datenquelle
+### 2. ODBC-Datenquelle konfigurieren
 
-Befolgen Sie diese Schritte, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+Gehen Sie wie folgt vor, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
 
 #### Schritt 1
-![Step 1](images/hive/create_odbc_data_source_step1.png)
+![Schritt 1](images/hive/create_odbc_data_source_step1.png)
 
 
 #### Schritt 2 – Verbindung testen
 
-Geben Sie das Passwort ein und klicken Sie auf die **Test**-Schaltfläche.
+Geben Sie das Passwort ein und klicken Sie auf die Schaltfläche **Test**.
 
-![Step 2](images/hive/create_odbc_data_source_step2.png)
+![Schritt 2](images/hive/create_odbc_data_source_step2.png)
 
-Nach einem erfolgreichen Test klicken Sie auf die **OK**-Schaltfläche.
+Nach einem erfolgreichen Test klicken Sie auf **OK**.
 
 ---
 
-Jetzt können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einer **DSN (Data Source Name)**- oder einer **DSN-less**-Konfiguration.
+Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder einer **DSN-less**-Konfiguration.
 
 ---
 
@@ -66,13 +71,18 @@ Jetzt können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet w
 
 #### *digna*-Konfiguration
 
-Geben Sie im Bildschirm **"Create a Database Connection"** Folgendes an:
+Geben Sie im Bildschirm **"Datenbankverbindung erstellen"** Folgendes an:
 
 ```
-Technology:      Apache Hive
-Database Name:   Schema, das die Quelldaten enthält (gleich wie Schema Name)
-Schema Name:     Schema, das die Quelldaten enthält
-Use ODBC:        Aktiviert
+Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
+Technology:         Apache Hive
+Database Name:      Schema, das die Quelldaten enthält
+Profiling Mode:     Der Profiling-Modus legt fest, wie digna Daten verarbeitet und Metriken berechnet:
+                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
+                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
+                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
+Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
+Use ODBC:           Aktiviert
 ```
 
 #### ODBC-Eigenschaften
@@ -90,13 +100,18 @@ name: "PWD",            value: "{Ihr Passwort in geschweiften Klammern}"
 
 #### *digna*-Konfiguration
 
-Geben Sie im Bildschirm **"Create a Database Connection"** Folgendes an:
+Geben Sie im Bildschirm **"Datenbankverbindung erstellen"** Folgendes an:
 
 ```
-Technology:      Apache Hive
-Database Name:   Schema, das die Quelldaten enthält (gleich wie Schema Name)
-Schema Name:     Schema, das die Quelldaten enthält
-Use ODBC:        Aktiviert
+Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
+Technology:         Apache Hive
+Database Name:      Schema, das die Quelldaten enthält
+Profiling Mode:     Der Profiling-Modus legt fest, wie digna Daten verarbeitet und Metriken berechnet:
+                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
+                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
+                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
+Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
+Use ODBC:           Aktiviert
 ```
 
 #### ODBC-Eigenschaften

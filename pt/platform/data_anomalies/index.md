@@ -1,115 +1,115 @@
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# digna Data Anomalies – Detecção baseada em IA de problemas de qualidade de dados
 
-**AI-powered observability for always-on data trust**
+**Observabilidade com IA para confiança contínua nos dados**
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
+digna Data Anomalies faz parte da **digna Data Observability Platform** — uma solução modular que melhora a **qualidade dos dados** ao analisar continuamente como os conjuntos de dados se comportam ao longo do tempo.
 
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+Ele aprende automaticamente como é o “normal” para seus dados e alerta quando o comportamento muda — sem definir limites estáticos ou escrever uma única regra.  
+O módulo é executado diretamente dentro do seu banco de dados, então os dados nunca deixam o seu ambiente.
 
 ---
 
-## Key capabilities
+## Objetivo do digna Data Anomalies
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+O módulo **digna Data Anomalies** fornece **observabilidade de dados** contínua calculando e monitorando métricas estatísticas pré-definidas, tais como:
 
----
+- Volume de dados e contagem de registros  
+- Proporção de valores ausentes  
+- Distribuições de valores e histogramas  
+- Intervalos numéricos e médias  
+- Unicidade de colunas e comprimento de texto  
 
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+Essas métricas são coletadas automaticamente para cada conjunto de dados.  
+Com base nelas, a digna constrói modelos que representam o comportamento típico de cada métrica — aprendendo padrões diários, semanais ou sazonais.  
+Uma vez treinado, o módulo prevê valores esperados para novos dados e detecta desvios que podem indicar problemas de qualidade, falhas de processo ou mudanças a montante.
 
 ---
 
-## Example scenarios
+## Principais capacidades
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+- Aprende automaticamente o comportamento esperado dos dados usando IA — sem configuração de limites.  
+- Detecta quedas súbitas, picos ou drift nas distribuições e no volume de dados.  
+- Identifica colunas trocadas ou mapeamentos incorretos entre atributos.  
+- Destaca valores categóricos inesperados (por exemplo, novas regiões ou códigos).  
+- Suporta todos os tipos de coluna: numéricas, categóricas ou não especificadas.  
+- Opera inteiramente no ambiente do cliente — sem movimentação de dados.  
+- Integra-se com **digna Data Analytics** para análise de tendências de longo prazo.
 
 ---
 
-## Integration with other modules
+## Como funciona
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+### Passo 1 – Cálculo de métricas
+A digna calcula um conjunto de métricas de perfil para cada tabela e coluna.  
+Essas métricas descrevem a estrutura e o comportamento estatístico dos seus dados e são armazenadas para análise posterior.
 
----
+### Passo 2 – Treinamento do modelo
+Com base em valores históricos das métricas, a digna treina modelos compactos de aprendizado de máquina (modelos de assinatura) que capturam a faixa normal de cada métrica.
 
-## Typical use cases
+### Passo 3 – Definição automática de limites
+Usando *inferência conformal*, a digna calcula intervalos de confiança adaptativos (limiares automáticos) que evoluem com os seus dados.  
+Se novos valores de métricas ficarem fora da faixa prevista, eles são marcados como anomalias.
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+Esse ciclo contínuo de feedback garante que o monitoramento permaneça relevante mesmo quando os volumes ou padrões de dados crescem naturalmente.
 
 ---
 
-## Benefits
+## Cenários de exemplo
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+### Queda inesperada no volume de registros
+Um conjunto de dados normalmente contém cerca de 500 000 registros por dia.  
+Quando uma nova entrega inclui apenas 50 000 registros, a digna sinaliza uma anomalia e mostra o quanto o valor diverge da faixa aprendida.
 
----
+### Colunas trocadas detectadas
+O comprimento médio da string de `last_name` passa a coincidir repentinamente com o de `first_name`.  
+A digna reconhece a mudança nos padrões das métricas e sinaliza uma possível troca de colunas.
 
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+### Categoria inesperada detectada
+Uma coluna que lista cidades austríacas passa a conter “Zurich”.  
+Com base nas distribuições históricas, a digna marca o novo valor como inesperado e alerta o usuário.
 
 ---
 
-## Summary
+## Integração com outros módulos
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+- **digna Data Analytics** — agrega histórico de anomalias e métricas de volatilidade para revelar tendências de longo prazo.  
+- **digna Data Validation** — aplica regras de negócio explícitas para verificações determinísticas de qualidade.  
+- **digna Data Timeliness** — monitora tempos de chegada dos dados e correlaciona atrasos com ocorrências de anomalias.  
+- **digna Data Schema Tracker** — detecta mudanças estruturais que podem explicar novas anomalias.
+
+---
+
+## Casos de uso típicos
+
+- Detectar cargas de dados ausentes ou duplicadas.  
+- Identificar colunas trocadas ou truncadas.  
+- Detectar drift de distribuição em atributos numéricos ou categóricos.  
+- Encontrar valores de referência ou códigos inesperados.  
+- Monitorar pipelines de ingestão contínua quanto a irregularidades.  
+- Acompanhar a **qualidade e observabilidade dos dados** em vários domínios.
+
+---
+
+## Benefícios
+
+- Detecção imediata de comportamento anômalo dos dados.  
+- Elimina a afinação manual de limites.  
+- Reduz o esforço operacional em ambientes de dados de grande escala.  
+- Constrói confiança em sistemas de análise e relatórios.  
+- Reforça a **qualidade dos dados** e a observabilidade de ponta a ponta.
+
+---
+
+## Módulos digna relacionados
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — métricas de tendência e volatilidade.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — verificação de dados baseada em regras.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoramento de cronogramas de entrega de dados.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — detecção de mudanças de esquema.
+
+---
+
+## Resumo
+
+O módulo **digna Data Anomalies** forma o núcleo da **Plataforma de Observabilidade de Dados** da digna orientada por IA.  
+Ao monitorar continuamente métricas-chave, aprender padrões e identificar desvios, ele ajuda organizações a garantir que a **qualidade dos dados** permaneça confiável, estável e explicável — sem configuração manual.

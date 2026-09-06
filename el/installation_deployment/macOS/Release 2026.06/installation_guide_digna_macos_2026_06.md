@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# Οδηγός Εγκατάστασης macOS για digna Έκδοση 2026.06
 
-**Release:** 2026.06
+**Έκδοση:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Τελευταία Ενημέρωση:** 5 Σεπτεμβρίου 2026
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Πίνακας Περιεχομένων
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+1. [Εισαγωγή](#introduction)
+2. [Απαιτήσεις Συστήματος](#system-requirements)
+3. [Προεγκατάσταση](#pre-installation-setup)
+4. [Ρύθμιση Διακομιστή PostgreSQL](#postgresql-server-setup)
+5. [Διαμόρφωση Web Server](#web-server-configuration)
+6. [Αρχική Εγκατάσταση](#initial-installation)
+7. [Διαμόρφωση Backend](#backend-configuration)
+8. [Διαμόρφωση Dashboard](#dashboard-configuration)
+9. [Εκτέλεση digna ως Υπηρεσία στο Παρασκήνιο](#running-digna-as-a-background-service)
+10. [Αναβάθμιση σε Νέα Έκδοση](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Εισαγωγή {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### Σχετικά με την digna
 
-| Requirement | Specification |
+digna είναι μια ολοκληρωμένη πλατφόρμα με τεχνητή νοημοσύνη σχεδιασμένη να βελτιστοποιεί τη διαχείριση ποιότητας δεδομένων σε διάφορα περιβάλλοντα δεδομένων όπως warehouses, lakes και lakehouses. Σχεδιασμένη για υψηλή κλίμακα και ευελιξία, η digna αντιμετωπίζει σύγχρονες προκλήσεις δεδομένων μέσω αυτοματοποίησης, παρακολούθησης σε πραγματικό χρόνο και εντοπισμού ανωμαλιών.
+
+Η digna αποτελείται από δύο κύρια συστατικά:
+
+- **dignabackend**: Ο πυρήνας της εφαρμογής, υπεύθυνος για επεξεργασία δεδομένων και εκτέλεση ελέγχων ποιότητας.
+- **dignadashboard**: Διεπαφή web που φιλοξενείται σε web server και προσφέρει έναν φιλικό τρόπο αλληλεπίδρασης με την πλατφόρμα digna και οπτικοποίησης μετρικών ποιότητας δεδομένων.
+
+### Τι νέο φέρνει η Έκδοση 2026.06
+
+Αυτή η έκδοση φέρνει δυνατότητες παρατηρησιμότητας δεδομένων απευθείας στον κώδικα, επιτρέποντας στους προγραμματιστές να παρακολουθούν την ποιότητα των δεδομένων στην πηγή. Δείτε τις [σημειώσεις έκδοσης](http://docs.digna.ai/changelog/Release_202606/) για πλήρεις λεπτομέρειες.
+
+### Ψάχνετε για Windows ή Linux;
+
+Αυτός ο οδηγός καλύπτει macOS. Για άλλες πλατφόρμες, δείτε τον [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) ή τον [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Απαιτήσεις Συστήματος {: #system-requirements }
+
+Πριν ξεκινήσετε την εγκατάσταση, βεβαιωθείτε ότι το σύστημά σας πληροί τις ακόλουθες ελάχιστες απαιτήσεις:
+
+| Απαίτηση | Προδιαγραφή |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **Λειτουργικό Σύστημα** | macOS 13 (Ventura) ή νεότερο |
+| **Αρχιτεκτονική** | Apple Silicon (arm64) ή Intel (x86_64) |
+| **Μνήμη (Ελάχιστη Εγκατάσταση)** | 16 GB RAM |
+| **Χώρος Δίσκου** | 10 GB διαθέσιμος χώρος |
+| **Βάση Δεδομένων** | PostgreSQL Server 12 ή νεότερο |
+| **Web Server** | nginx, Apache httpd, ή αντίστοιχο |
+| **Εργαλεία Γραμμής Εντολών** | Xcode Command Line Tools (απαραίτητα για Homebrew) |
 
-### Database Installation Options
+### Επιλογές Εγκατάστασης Βάσης Δεδομένων
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Εάν το PostgreSQL είναι ήδη εγκατεστημένο:**
+Μπορείτε να προσθέσετε μια νέα βάση δεδομένων για την digna στο υπάρχον PostgreSQL Server.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Εάν εγκαθιστάτε το PostgreSQL στο ίδιο μηχάνημα με την digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Συνιστώμενες Προδιαγραφές"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Μνήμη**: 32 GB RAM (αντί για 16 GB)
+    - **Χώρος Δίσκου**: 50 GB διαθέσιμος χώρος (αντί για 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Αυτές οι υψηλότερες προδιαγραφές καλύπτουν τόσο την digna όσο και τη βάση PostgreSQL που τρέχει ταυτόχρονα.
 
-### Checking Your Architecture
+### Έλεγχος Αρχιτεκτονικής
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Ποια διαδρομή χρησιμοποιείται σε αυτόν τον οδηγό διαφέρει ανάμεσα σε Apple Silicon και Intel Macs. Για να ελέγξετε ποια έχετε, ανοίξτε το **Terminal** και εκτελέστε:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Το Homebrew εγκαθίσταται στο `/opt/homebrew`.
+- `x86_64` — Intel. Το Homebrew εγκαθίσταται στο `/usr/local`.
 
-!!! tip "Tip"
+!!! tip "Συμβουλή"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    Αντί να κωδικοποιείτε μια από τις δύο διαδρομές, αυτός ο οδηγός χρησιμοποιεί `$(brew --prefix)`, που επεκτείνεται στη σωστή τοποθεσία και για τις δύο αρχιτεκτονικές. Μπορείτε να αντιγράψετε τις εντολές αυτούσιες.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Προεγκατάσταση {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Πριν εγκαταστήσετε την digna, βεβαιωθείτε ότι υπάρχουν τρεις βασικές προϋποθέσεις:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – ο διαχειριστής πακέτων που χρησιμοποιείται για την εγκατάσταση των παρακάτω στοιχείων
+2. **PostgreSQL Server** – για την αποθήκευση υπολογισμένων μετρικών και δεδομένων απόδοσης
+3. **Web Server** – για τη φιλοξενία του Dashboard της digna
 
-If these components are not already set up, follow the sections below to install and configure them.
+Εάν αυτά τα συστατικά δεν έχουν εγκατασταθεί ήδη, ακολουθήστε τις παρακάτω ενότητες για να τα εγκαταστήσετε και να τα ρυθμίσετε.
 
-### Installing Homebrew
+### Εγκατάσταση Homebrew
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Το Homebrew είναι ο τυπικός διαχειριστής πακέτων για macOS και χρησιμοποιείται σε όλο αυτόν τον οδηγό για την εγκατάσταση του PostgreSQL και του nginx.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### Βήμα 1: Έλεγχος Εγκατάστασης Homebrew
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Ανοίξτε το **Terminal** (πατήστε `Cmd + Space`, πληκτρολογήστε `Terminal`, πατήστε Enter) και εκτελέστε:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Εάν εμφανιστεί αριθμός έκδοσης, προχωρήστε στην ενότητα [Ρύθμιση Διακομιστή PostgreSQL](#postgresql-server-setup).
 
-#### Step 2: Install Homebrew
+#### Βήμα 2: Εγκατάσταση Homebrew
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Εάν η εντολή δεν βρέθηκε, εγκαταστήστε το Homebrew ακολουθώντας τις οδηγίες στον [επίσημο ιστότοπο Homebrew](https://brew.sh). Ο εγκαταστάτης επίσης εγκαθιστά τα Xcode Command Line Tools εάν δεν υπάρχουν ήδη.
 
-#### Step 3: Add Homebrew to Your PATH
+#### Βήμα 3: Προσθήκη Homebrew στο PATH
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Σε Apple Silicon, ο εγκαταστάτης εκτυπώνει δύο εντολές για να προσθέσετε το Homebrew στο περιβάλλον του shell σας. Εκτελέστε τις όπως υποδεικνύεται και στη συνέχεια επιβεβαιώστε:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Αυτό θα πρέπει να εκτυπώσει `/opt/homebrew` σε Apple Silicon ή `/usr/local` σε Intel.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Ρύθμιση Διακομιστή PostgreSQL {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Εάν Έχετε Ήδη PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Εάν το PostgreSQL είναι ήδη εγκαταστημένο και εκτελείται τοπικά ή χρησιμοποιείτε έναν managed απομακρυσμένο PostgreSQL server, μπορείτε να παραλείψετε στην [επόμενη ενότητα](#web-server-configuration).
 
-### Installation Options
+### Επιλογές Εγκατάστασης
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+Το macOS προσφέρει δύο απλούς τρόπους εγκατάστασης του PostgreSQL. Επιλέξτε **ένα**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — εγκατάσταση μέσω γραμμής εντολών, συνιστάται για server deployments
+- [Postgres.app](#postgresql-app) — γραφική εγκατάσταση, βολική για τοπική αξιολόγηση
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Εγκατάσταση PostgreSQL με Homebrew {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### Βήμα 1: Εγκατάσταση του Formula PostgreSQL
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### Βήμα 2: Προσθήκη PostgreSQL στο PATH
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+Τα versioned PostgreSQL formulas είναι *keg-only*, που σημαίνει ότι το Homebrew δεν συνδέει αυτόματα τις εντολές τους στο PATH σας. Προσθέστε τις χειροκίνητα:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Σημείωση"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Αυτό υποθέτει το προεπιλεγμένο shell `zsh` που χρησιμοποιεί το macOS. Εάν χρησιμοποιείτε `bash`, προσθέστε την ίδια γραμμή στο `~/.bash_profile`.
 
-#### Step 3: Start the PostgreSQL Service
+#### Βήμα 3: Εκκίνηση της Υπηρεσίας PostgreSQL
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+Αυτό ξεκινά το PostgreSQL άμεσα και το ρυθμίζει να ξεκινά αυτόματα όταν συνδεθείτε.
 
-#### Step 4: Verify the Installation
+#### Βήμα 4: Επαλήθευση Εγκατάστασης
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Θα πρέπει να δείτε την έκδοση του PostgreSQL εάν η εγκατάσταση ήταν επιτυχής.
 
-#### Step 5: Connect to the Server
+#### Βήμα 5: Σύνδεση στον Διακομιστή
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Σημαντικό — στο macOS Διαφέρει Από τα Windows"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Ο installer των Windows σας ζητά να δημιουργήσετε έναν superuser `postgres` και κωδικό. Το Homebrew δεν το κάνει. Αντίθετα δημιουργεί έναν superuser με το όνομα του **λογαριασμού macOS** σας, χωρίς κωδικό, προσβάσιμο μόνο από το τοπικό μηχάνημα.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    Αυτό σημαίνει ότι δεν υπάρχει ρόλος `postgres` σε μια καθαρή εγκατάσταση μέσω Homebrew. Χρησιμοποιήστε το όνομα του δικού σας λογαριασμού όταν χρειαστεί superuser και δημιουργήστε έναν ρητό χρήστη για την digna όπως περιγράφεται στην [Αρχική Εγκατάσταση](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### Βήμα 6: Επιβεβαίωση Θύρας
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Η προεπιλεγμένη θύρα PostgreSQL είναι `5432`. Για να επιβεβαιώσετε τη θύρα στην οποία ακούει ο server:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Σημειώστε την τιμή — θα τη χρειαστείτε κατά τη ρύθμιση του backend της digna.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Εγκατάσταση PostgreSQL με Postgres.app {: #postgresql-app }
 
-If you prefer a graphical installation:
+Εάν προτιμάτε γραφική εγκατάσταση:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Κατεβάστε το [Postgres.app](https://postgresapp.com) και σύρετέ το στο φάκελο **Applications**
+2. Ανοίξτε την εφαρμογή και κάντε κλικ στο **Initialize** για να δημιουργήσετε νέο server
+3. Ακολουθήστε τις οδηγίες της εφαρμογής για να προσθέσετε τα εργαλεία γραμμής εντολών στο PATH σας
+4. Επαληθεύστε την εγκατάσταση:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Το Postgres.app επίσης δημιουργεί έναν superuser με το όνομα του λογαριασμού macOS σας.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Διαμόρφωση Web Server {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+Η digna χρειάζεται web server για να φιλοξενήσει το dashboard. Επιλέξτε έναν από τους παρακάτω:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — εγκατάσταση μέσω Homebrew, συνιστάται
+- [Apache httpd](#apache-setup) — περιλαμβάνεται στο macOS
 
-You only need to install and configure **one** of these servers.
+Χρειάζεται να εγκαταστήσετε και να διαμορφώσετε **έναν** από αυτούς τους servers.
 
-Both sections configure two things the dashboard depends on:
+Και οι δύο ενότητες ρυθμίζουν δύο στοιχεία από τα οποία εξαρτάται το dashboard:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Single-page-application fallback**, ώστε όταν κάνετε ανανέωση σε μια URL του dashboard να μην επιστρέφεται 404
+- **Τύπος MIME για `.md`**, ώστε τα αρχεία Markdown να σερβίρονται σωστά
 
-### nginx Setup {: #nginx-setup }
+### Ρύθμιση nginx {: #nginx-setup }
 
-#### Overview
+#### Επισκόπηση
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+Το nginx είναι ελαφρύς, υψηλής απόδοσης web server, κατάλληλος για τη φιλοξενία του στατικού dashboard της digna.
 
-#### Installation
+#### Εγκατάσταση
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### Εκκίνηση nginx
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Επαλήθευση Εγκατάστασης
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Ανοίξτε τον browser σας
+2. Πλοηγηθείτε στο `http://localhost:8080`
+3. Πρέπει να δείτε τη σελίδα καλωσορίσματος του nginx
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Σημείωση — Η Προεπιλεγμένη Θύρα Είναι 8080, Όχι 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Το Homebrew ρυθμίζει το nginx να ακούει στην θύρα `8080` ώστε να μπορεί να τρέξει χωρίς δικαιώματα διαχειριστή. Στο macOS, η σύνδεση σε θύρα `80` ή οποιαδήποτε άλλη θύρα κάτω από 1024 απαιτεί δικαιώματα root.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    Για να σερβίρετε το dashboard στην θύρα 80, αλλάξτε `listen 8080;` σε `listen 80;` στη διαμόρφωση πιο κάτω και ξεκινήστε το nginx με `sudo brew services start nginx` αντίστοιχα.
 
-#### Configuring a Site for the Dashboard
+#### Διαμόρφωση Site για το Dashboard
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Η διαμόρφωση nginx του Homebrew περιλαμβάνει κάθε αρχείο στον φάκελο `servers`. Δημιουργήστε ένα αφιερωμένο αρχείο διαμόρφωσης για την digna εκεί:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Επικολλήστε το παρακάτω, αντικαθιστώντας `/path/to/digna/dashboard` με την πραγματική διαδρομή του αποσυμπιεσμένου φακέλου `dashboard`:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Σημαντικό"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Χωρίς τη δέσμη `try_files`, η ανανέωση οποιασδήποτε σελίδας του dashboard εκτός της ρίζας επιστρέφει 404. Αυτό είναι το αντίστοιχο του URL Rewrite module που απαιτείται από το IIS στα Windows.
 
-#### Apply the Configuration
+#### Εφαρμογή της Διαμόρφωσης
 
-Test the configuration for syntax errors, then reload nginx:
+Ελέγξτε τη σύνταξη της διαμόρφωσης για σφάλματα, και μετά κάντε reload το nginx:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Ρύθμιση Apache httpd {: #apache-setup }
 
-#### Overview
+#### Επισκόπηση
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+Το macOS περιλαμβάνει τον Apache httpd, οπότε δεν απαιτείται εγκατάσταση. Είναι απενεργοποιημένος από προεπιλογή.
 
-#### Starting Apache
+#### Εκκίνηση Apache
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Επαλήθευση Εγκατάστασης
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Ανοίξτε τον browser σας
+2. Πλοηγηθείτε στο `http://localhost`
+3. Πρέπει να δείτε το μήνυμα "It works!"
 
-#### Required: Enable mod_rewrite
+#### Απαιτούμενο: Ενεργοποίηση mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+Το dashboard απαιτεί URL rewriting. Ανοίξτε τη διαμόρφωση του Apache:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Βρείτε την ακόλουθη γραμμή και αφαιρέστε το αρχικό `#` για να την αποσχολιάσετε:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Απαιτούμενο: Επιτρέψτε overrides με .htaccess
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+Στο ίδιο αρχείο, εντοπίστε το μπλοκ `<Directory "/Library/WebServer/Documents">` και αλλάξτε:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+σε:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Απαιτούμενο: Τύπος MIME για Αρχεία Markdown
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Ακόμη στο `httpd.conf`, προσθέστε την ακόλουθη γραμμή ώστε τα αρχεία Markdown να σερβίρονται σωστά:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Σημαντικό"
 
-    Without this setting, `.md` files may not be served properly.
+    Χωρίς αυτή τη ρύθμιση, τα αρχεία `.md` ενδέχεται να μην σερβίρονται σωστά.
 
-#### Apply the Configuration
+#### Εφαρμογή της Διαμόρφωσης
 
-Check the configuration for syntax errors, then restart Apache:
+Ελέγξτε τη σύνταξη της διαμόρφωσης, και μετά κάντε επανεκκίνηση του Apache:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Αρχική Εγκατάσταση {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Βήμα 1: Ρύθμιση του Repository της digna
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Το repository της digna αποθηκεύει όλες τις μετρικές που υπολογίζει η digna. Λειτουργεί ως κεντρική βάση δεδομένων για αναλυτικά και δεδομένα απόδοσης.
 
-#### Create Repository Schema and User
+#### Δημιουργία Schema και Χρήστη για το Repository
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Ανοίξτε τον PostgreSQL client σας (psql, pgAdmin ή παρόμοιο) και εκτελέστε τις ακόλουθες εντολές SQL:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Αντικαταστήστε τις ακόλουθες θέσεις κράτησης:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — Το επιθυμητό όνομα schema (π.χ., `dignarepo`)
+- `<digna_repo_user>` — Το επιθυμητό όνομα χρήστη (π.χ., `digna_user`)
+- `<digna_repo_password>` — Ένας ασφαλής κωδικός για αυτόν τον χρήστη
 
-**Example:**
+**Παράδειγμα:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,72 +410,72 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+Για να τρέξετε αυτά από το Terminal σε ένα βήμα:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Έπειτα επικολλήστε τις εντολές στο prompt `postgres=#` και πληκτρολογήστε `\q` για έξοδο.
 
-!!! tip "Best Practice"
+!!! tip "Βέλτιστη Πρακτική"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Χρησιμοποιήστε ισχυρούς, σύνθετους κωδικούς για τους χρήστες της βάσης δεδομένων. Αποφύγετε ευκόλως μαντευόμενα διαπιστευτήρια.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Βήμα 2: Αποσυμπίεση του Πακέτου Εγκατάστασης digna
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+1. Εντοπίστε το αρχείο ZIP εγκατάστασης digna που σας παρέχεται
+2. Αποσυμπιέστε το στην επιθυμητή τοποθεσία εγκατάστασης — για παράδειγμα `/opt/digna` ή `~/digna`
+3. Μετά την αποσυμπίεση, πρέπει να δείτε τα ακόλουθα στοιχεία:
+   - `dashboard/` — Διεπαφή web dashboard
+   - `digna` — Κύριο εκτελέσιμο (backend + CLI σε ένα)
+   - `config.toml` — Αρχείο ρυθμίσεων
+   - `license.toml` — Αρχείο άδειας (τοποθετήστε εδώ τη δική σας άδεια)
 
-To extract from the Terminal:
+Για να αποσυμπιέσετε από το Terminal:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Κάντε το Εκτελέσιμο Runnable
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+Ανάλογα με τον τρόπο μεταφοράς του αρχείου, το bit εκτέλεσης ενδέχεται να μην διατηρηθεί. Ορίστε το ρητά:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Εάν το macOS Αποκλείει την Εφαρμογή
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Αρχεία που έχουν ληφθεί μέσω browser ή mail client έχουν σημαδευτεί με καραντίνα. Εάν το macOS αναφέρει ότι η εφαρμογή *"cannot be opened because the developer cannot be verified"*, αφαιρέστε την ιδιότητα από τον κατάλογο εγκατάστασης:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Εναλλακτικά, ανοίξτε τις **System Settings → Απόρρητο & Ασφάλεια**, εντοπίστε το αποκλεισμένο στοιχείο στο κάτω μέρος της σελίδας και κάντε κλικ στο **Open Anyway**.
 
-!!! note "Note"
+!!! note "Σημείωση"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Αυτό το βήμα είναι απαραίτητο μόνο εάν το macOS πραγματικά μπλοκάρει το εκτελέσιμο. Πακέτα που μεταφέρονται μέσω SSH ή από εσωτερικούς file shares συνήθως δεν είναι σε καραντίνα.
 
-### Step 3: Install the License File
+### Βήμα 3: Εγκατάσταση του Αρχείου Άδειας
 
-!!! warning "Important"
+!!! warning "Σημαντικό"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Το αρχείο άδειας **δεν** περιλαμβάνεται στο πακέτο εγκατάστασης και θα σας παρασχεθεί ξεχωριστά από την digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Εντοπίστε το αρχείο `license.toml` που σας παρέχεται
+2. Αντιγράψτε το στο root directory εγκατάστασης της digna (όπου βρίσκονται το `config.toml` και το εκτελέσιμο `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Γιατί έχει σημασία:**
+Το αρχείο άδειας περιέχει πληροφορίες πελάτη, ημερομηνία λήξης άδειας και ψηφιακή υπογραφή. **Μην τροποποιείτε αυτό το αρχείο** — οποιαδήποτε αλλαγή θα το ακυρώσει.
 
-**Directory structure after setup:**
+**Δομή καταλόγου μετά τη ρύθμιση:**
 
 ```
 /opt/digna/
@@ -489,24 +489,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Διαμόρφωση Backend {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Βήμα 1: Δημιουργία και Επεξεργασία του Αρχείου Ρυθμίσεων
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+Το αρχείο `config_template.toml` περιλαμβάνεται στον κατάλογο εγκατάστασης της digna. Απλά μετονομάστε το σε `config.toml`.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Τοποθεσία:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Ανοίξτε το `config.toml` σε έναν επεξεργαστή κειμένου και ρυθμίστε κάθε ενότητα όπως παρακάτω.
 
-#### [app] Section
+#### Ενότητα [app]
 
-This section configures the digna backend application settings:
+Αυτή η ενότητα ρυθμίζει τις ρυθμίσεις της εφαρμογής backend της digna:
 
 ```toml
 [app]
@@ -518,22 +518,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` ή διεύθυνση IP | Όνομα host ή IP όπου φιλοξενείται το dignabackend |
+| `digna_APP_PORT` | `8082` (προεπιλεγμένο) | Θύρα για τα REST API endpoints |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Εάν το dashboard είναι σε διαφορετικό server, συμπεριλάβετε το URL του |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Απαιτείται για CORS με credentials |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Επιτρέπονται όλες οι HTTP μέθοδοι |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Επιτρέπονται όλα τα headers |
 
-!!! note "Note"
+!!! note "Σημείωση"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Εάν σερβίρετε το dashboard από το nginx του Homebrew στην προεπιλεγμένη θύρα, το origin που πρέπει να επιτρέψετε είναι `http://localhost:8080`.
 
-#### [repo] Section
+#### Ενότητα [repo]
 
-This section configures the connection to the PostgreSQL database:
+Αυτή η ενότητα ρυθμίζει τη σύνδεση με τη βάση PostgreSQL:
 
 ```toml
 [repo]
@@ -545,18 +545,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` ή IP | Όνομα host/IP του PostgreSQL server |
+| `digna_REPO_PORT` | `5432` (προεπιλεγμένο) | Θύρα PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Όνομα βάσης δεδομένων |
+| `digna_REPO_SCHEMA` | `dignarepo` | Το schema που δημιουργήσατε νωρίτερα |
+| `digna_REPO_USER` | `digna_user` | Ο χρήστης που δημιουργήθηκε στην εγκατάσταση PostgreSQL |
+| `digna_REPO_PASSWORD` | Ο κωδικός σας | Ο κωδικός που ορίσατε κατά τη δημιουργία του schema |
 
-#### [base] Section
+#### Ενότητα [base]
 
-This section contains security and cookie settings:
+Αυτή η ενότητα περιέχει ρυθμίσεις ασφάλειας και cookies:
 
 ```toml
 [base]
@@ -570,23 +570,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | Κλειδί κρυπτογράφησης | Χρησιμοποιείται για την κρυπτογράφηση tokens και cookies (παρέχεται προεπιλογή) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Ταιριάξτε με το domain του frontend |
+| `digna_COOKIE_SECURE` | `false` (τοπικά) / `true` (production) | Χρησιμοποιήστε `true` για συνδέσεις HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | Πάντα ενεργοποιημένο για ασφάλεια |
+| `digna_COOKIE_SAME_SITE` | `lax` | Αποτρέπει επιθέσεις CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ώρες) | Χρονικό όριο συνεδρίας σε δευτερόλεπτα |
+| `digna_MAX_WORKERS` | Αριθμός πυρήνων CPU - 1 | Αριθμός παράλληλων εργασιών επιθεώρησης |
 
-!!! tip "Tip"
+!!! tip "Συμβουλή"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Για να βρείτε τον αριθμό πυρήνων CPU στο Mac σας, εκτελέστε `sysctl -n hw.ncpu`.
 
-#### [logging] Section
+#### Ενότητα [logging]
 
-This section configures logging behavior:
+Αυτή η ενότητα ρυθμίζει τη συμπεριφορά καταγραφής:
 
 ```toml
 [logging]
@@ -594,58 +594,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` ή `DEBUG` | `INFO` για παραγωγή, `DEBUG` για ανάλυση προβλημάτων |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Αριθμός ημερήσιων backups logs που θα διατηρούνται |
 
 ---
 
-### Step 2: Initialize the Repository
+### Βήμα 2: Αρχικοποίηση του Repository
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Ανοίξτε το **Terminal**
+2. Πλοηγηθείτε στον κατάλογο εγκατάστασης της digna (όπου βρίσκονται το `config.toml` και το εκτελέσιμο `digna`)
+3. Εκτελέστε το τεστ σύνδεσης:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Θα πρέπει να δείτε επιβεβαίωση ότι η σύνδεση έχει επιτευχθεί (το repository αυτό καθαυτό δεν έχει ακόμη αρχικοποιηθεί).
 
-!!! note "Note"
+!!! note "Σημείωση"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    Στο macOS, οι εντολές στον τρέχοντα κατάλογο δεν είναι στο PATH σας, οπότε το εκτελέσιμο καλείται ως `./digna` αντί για `digna`. Για να χρησιμοποιείτε τη συντομότερη μορφή παντού, προσθέστε τον κατάλογο εγκατάστασης στο PATH σας:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### Βήμα 3: Εγκατάσταση του Schema του Repository
 
-In the same directory, run:
+Στον ίδιο κατάλογο, τρέξτε:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Αυτή η εντολή εγκαθιστά τους απαραίτητους πίνακες και το schema στη βάση PostgreSQL σας.
 
-### Step 4: Start the digna Server
+### Βήμα 4: Εκκίνηση του διακομιστή digna
 
-In the digna installation directory, start the server with:
+Στον κατάλογο εγκατάστασης της digna, ξεκινήστε τον server με:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Παράμετροι:**
+- `--address` — Όνομα host/IP
+- `--port` — Θύρα server
 
-You should see startup messages confirming the server is running:
+Θα δείτε μηνύματα εκκίνησης που επιβεβαιώνουν ότι ο server τρέχει:
 
 ```
 INFO:     Started server process [1234]
@@ -654,57 +654,57 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Συμβουλή"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    Την πρώτη φορά που θα ξεκινήσετε τον server, το macOS μπορεί να ζητήσει αν θέλετε η εφαρμογή να δέχεται εισερχόμενες δικτυακές συνδέσεις. Κάντε κλικ στο **Allow**, διαφορετικά το dashboard δεν θα μπορεί να συνδεθεί με το backend.
 
-### Step 5: Create an Admin User
+### Βήμα 5: Δημιουργία Διαχειριστή (Admin User)
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. Ανοίξτε ένα **νέο** παράθυρο Terminal
+2. Πλοηγηθείτε στον κατάλογο εγκατάστασης της digna
+3. Εκτελέστε την παρακάτω εντολή για να δημιουργήσετε έναν admin χρήστη:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**Παράδειγμα:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+Αυτό δημιουργεί έναν χρήστη με username `admin` και πλήρη δικαιώματα διαχειριστή.
 
-!!! tip "Tip"
+!!! tip "Συμβουλή"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Βάλτε τον κωδικό μέσα σε απλά εισαγωγικά. Το `zsh` αντιμετωπίζει ειδικά χαρακτήρες όπως `!`, `$` και `*`, και ένας απροστάτευτος κωδικός που τα περιέχει δεν θα περάσει σωστά.
 
-!!! tip "Best Practice"
+!!! tip "Βέλτιστη Πρακτική"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Χρησιμοποιήστε έναν ισχυρό κωδικό με ανάμειξη κεφαλαίων, πεζών, αριθμών και ειδικών χαρακτήρων.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Διαμόρφωση Dashboard {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Βήμα 1: Ανάπτυξη του Dashboard στον Web Server
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+Το dashboard της digna έχει το δικό του ξεχωριστό αρχείο `config.toml` που βρίσκεται στον φάκελο `dashboard/`. Αυτή η ρύθμιση παρέχεται ήδη και συνήθως δεν χρειάζεται αλλαγές κατά την αρχική εγκατάσταση. Θα χρειαστεί να την τροποποιήσετε μόνο εάν απαιτείται προσαρμογή της σύνδεσης προς το backend.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Εάν χρειαστεί να αλλάξετε τη διαμόρφωση του dashboard (π.χ. για multi-instance deployments), ανατρέξτε στην τεκμηρίωση του dashboard.
 
-Choose your web server and follow the corresponding deployment steps.
+Επιλέξτε τον web server σας και ακολουθήστε τα αντίστοιχα βήματα ανάπτυξης.
 
-#### Deploying to nginx
+#### Ανάπτυξη σε nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Εάν ακολουθήσατε την ενότητα [nginx Setup](#nginx-setup), το server block ήδη δείχνει στον φάκελο `dashboard` σας και δεν απαιτείται αντιγραφή.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Επιβεβαιώστε τη διαδρομή**
+   - Ανοίξτε `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Ελέγξτε ότι το `root` δείχνει στον αποσυμπιεσμένο φάκελο `dashboard`
 
-2. **Ensure the folder is readable**
+2. **Βεβαιωθείτε ότι ο φάκελος είναι αναγνώσιμος**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
@@ -715,27 +715,27 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Δοκιμή Εγκατάστασης**
+   - Ανοίξτε τον browser σας
+   - Πλοηγηθείτε στο `http://localhost:8080` (ή στο διαμορφωμένο URL)
+   - Πρέπει να δείτε τη σελίδα σύνδεσης του dashboard της digna
 
-#### Deploying to Apache httpd
+#### Ανάπτυξη σε Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Αντιγράψτε το Dashboard στο Document Root**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Προσθήκη Κανόνων Rewrite**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Δημιουργήστε ένα αρχείο `.htaccess` μέσα στο αναπτυγμένο φάκελο ώστε οι διαδρομές του dashboard να επιβιώνουν κατά την ανανέωση:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Επικολλήστε το παρακάτω:
 
    ```apache
    RewriteEngine On
@@ -750,177 +750,177 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Επανεκκίνηση Apache**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Πρόσβαση στο Dashboard**
+   - Ανοίξτε τον browser σας
+   - Πλοηγηθείτε στο `http://localhost/digna`
+   - Πρέπει να δείτε τη σελίδα σύνδεσης του dashboard της digna
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## Εκτέλεση digna ως Υπηρεσία στο Παρασκήνιο {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### Γιατί να τρέχετε την digna ως Υπηρεσία;
 
-Running the digna backend as a background service ensures it:
+Η εκτέλεση του backend της digna ως υπηρεσία στο παρασκήνιο εξασφαλίζει ότι:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Ξεκινά αυτόματα όταν το μηχάνημα εκκινεί
+- Τρέχει στο παρασκήνιο χωρίς ανοιχτό παράθυρο Terminal
+- Επανεκκινείται αυτόματα αν καταρρεύσει
+- Μπορεί να διαχειρίζεται μέσω του `launchctl`, του διαχειριστή υπηρεσιών του macOS
 
-### Service Management Files
+### Αρχεία Διαχείρισης Υπηρεσίας
 
-All necessary files are located in the digna installation directory under: `bin/`
+Όλα τα απαραίτητα αρχεία βρίσκονται στον κατάλογο εγκατάστασης της digna κάτω από: `bin/`
 
-The following shell scripts are available:
+Τα ακόλουθα shell scripts είναι διαθέσιμα:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — Εγγράφει την digna στο launchd
+- `uninstall_service.sh` — Καταργεί την εγγραφή της υπηρεσίας
+- `start_service.sh` — Ξεκινά την εγγεγραμμένη υπηρεσία
+- `stop_service.sh` — Σταματά την τρέχουσα υπηρεσία
 
-!!! warning "Administrator Required"
+!!! warning "Απαιτείται Διαχειριστής"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Όλα τα scripts πρέπει να εκτελεστούν με `sudo`, επειδή η εγγραφή μιας υπηρεσίας που ξεκινά στην εκκίνηση γράφει στο `/Library/LaunchDaemons`.
 
-### Making the Scripts Executable
+### Κάνοντας τα Scripts Εκτελέσιμα
 
-Extraction may not preserve the executable bit. Before first use:
+Η αποσυμπίεση μπορεί να μην διατηρήσει το bit εκτέλεσης. Πριν την πρώτη χρήση:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### Εγκατάσταση της Υπηρεσίας
 
-1. **Open Terminal**
+1. **Ανοίξτε Terminal**
 
-2. **Navigate to the bin Folder**
+2. **Πλοηγηθείτε στον φάκελο bin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Τρέξτε το script εγκατάστασης**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Η digna τώρα έχει εγγραφεί στο launchd με **αυτόματη εκκίνηση** ενεργοποιημένη. Η υπηρεσία δεν ξεκινά άμεσα — δείτε την επόμενη ενότητα για να την ξεκινήσετε.
 
-### Starting and Stopping the Service
+### Εκκίνηση και Σταμάτημα της Υπηρεσίας
 
-#### To Start the Service
+#### Για να Ξεκινήσετε την Υπηρεσία
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Ανοίξτε Terminal
+2. Πλοηγηθείτε στο `/opt/digna/bin`
+3. Τρέξτε:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Για να Σταματήσετε την Υπηρεσία
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Ανοίξτε Terminal
+2. Πλοηγηθείτε στο `/opt/digna/bin`
+3. Τρέξτε:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Συμβουλή"
 
-    Always stop the service before updating application files.
+    Πάντα σταματήστε την υπηρεσία πριν ενημερώσετε αρχεία της εφαρμογής.
 
-### Verifying the Service
+### Επαλήθευση της Υπηρεσίας
 
-To confirm that the service is registered and running:
+Για να επιβεβαιώσετε ότι η υπηρεσία έχει εγγραφεί και τρέχει:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+Μια γραμμή που ξεκινά με process ID δείχνει ότι η υπηρεσία τρέχει. Ένα `-` στην πρώτη στήλη σημαίνει ότι είναι εγγεγραμμένη αλλά σταματημένη.
 
-### Moving the Service to a New Directory
+### Μετακίνηση της Υπηρεσίας σε Νέο Κατάλογο
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+Το launchd αποθηκεύει την απόλυτη διαδρομή προς το εκτελέσιμο, οπότε η μετακίνηση της εγκατάστασης απαιτεί επανεγγραφή της υπηρεσίας:
 
-1. **Uninstall the Current Service**
+1. **Απεγκατάσταση της Τρέχουσας Υπηρεσίας**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Μετακίνηση των Αρχείων της Εφαρμογής**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Επανεγκατάσταση της Υπηρεσίας**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Εκκίνηση της Υπηρεσίας**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Απεγκατάσταση της Υπηρεσίας
 
-1. **Stop the Running Service**
+1. **Σταματήστε την Τρέχουσα Υπηρεσία**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Καταργήστε την Εγγραφή της Υπηρεσίας**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+Η digna πλέον έχει καταργηθεί από το launchd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Αναβάθμιση σε Νέα Έκδοση {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Πριν Αναβαθμίσετε
 
-**Creating a digna Repository Backup is Mandatory**
+**Η δημιουργία αντιγράφου ασφαλείας του Repository της digna είναι ΥΠΟΧΡΕΩΤΙΚΗ**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Πριν αναβαθμίσετε την digna, κάντε backup του repository (PostgreSQL) για να προστατευθείτε από απώλεια δεδομένων.
+Ένα backup σας επιτρέπει να επαναφέρετε σε περίπτωση που η αναβάθμιση αντιμετωπίσει απρόβλεπτα προβλήματα.
 
-To create a backup from the Terminal:
+Για να δημιουργήσετε backup από το Terminal:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Διαδικασία Αναβάθμισης
 
-#### Step 1: Stop the digna Service
+#### Βήμα 1: Σταματήστε την Υπηρεσία digna
 
-If digna is running as a background service, stop it first:
+Αν η digna τρέχει ως υπηρεσία στο παρασκήνιο, σταματήστε την πρώτα:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Αν η digna τρέχει σε πρώτο πλάνο, πατήστε `Ctrl + C` στο παράθυρο Terminal όπου εκτελείται.
 
-#### Step 2: Backup Current Backend Installation
+#### Βήμα 2: Backup της Τρέχουσας Εγκατάστασης Backend
 
-In your digna installation directory:
+Στον κατάλογο εγκατάστασης της digna:
 
 ```bash
 cd /opt/digna
@@ -930,55 +930,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### Βήμα 3: Αποσυμπίεση και Ανάπτυξη Νέας Έκδοσης
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Αποσυμπιέστε το νέο ZIP αρχείο εγκατάστασης digna
+2. Αντιγράψτε το νέο εκτελέσιμο `digna` και τον φάκελο `dashboard` στον κατάλογο εγκατάστασης
+3. Επαναφέρετε το bit εκτέλεσης και, αν χρειάζεται, αφαιρέστε την ιδιότητα καραντίνας:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Σημαντικό"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    Το αρχείο `config.toml` **δεν** περιλαμβάνεται ποτέ στο ZIP εγκατάστασης. Η υπάρχουσα διαμόρφωσή σας παραμένει ασφαλής.
 
-### Step 4: Restore Your Configuration Files
+### Βήμα 4: Επαναφορά των Αρχείων Διαμόρφωσης
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### Βήμα 5: Αναβάθμιση του Schema του Repository
 
-Navigate to your digna installation directory and run:
+Πλοηγηθείτε στον κατάλογο εγκατάστασης της digna και εκτελέστε:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Αυτό ενημερώνει το schema του PostgreSQL στην τελευταία έκδοση διατηρώντας όλα τα υπάρχοντα δεδομένα.
 
-### Step 6: Restart Services
+### Βήμα 6: Επανεκκίνηση Υπηρεσιών
 
-If running as a background service:
+Εάν τρέχει ως υπηρεσία στο παρασκήνιο:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Εάν τρέχετε χειροκίνητα, επανεκκινήστε τον server:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Εάν χρησιμοποιείτε nginx ή Apache, επανεκκινήστε τον αντίστοιχο web server:
 
 ```bash
 brew services restart nginx
@@ -987,8 +987,8 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### Βήμα 7: Επαλήθευση Αναβάθμισης
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. Πλοηγηθείτε στο dashboard της digna
+2. Επιβεβαιώστε ότι το περιβάλλον φορτώνει σωστά
+3. Ελέγξτε τα logs του server για τυχόν σφάλματα

@@ -1,67 +1,66 @@
-# Data Schema Tracker – Schema‑Evolution überwachen
-<h1 style="display:none;">KI‑gesteuertes Modul für Metadaten‑Observability und Datenqualität – digna Data Schema Tracker</h1>
+# Data Schema Tracker – Schema-Entwicklung überwachen
 
 ---
 
 ## Zweck
 
-Der **Data Schema Tracker** hält Sie darüber informiert, wie sich Ihre Datenbankstrukturen entwickeln.  
-Er überwacht kontinuierlich **Tabellenschemata, Spalten und Datentypen**, um **Schema‑Drift** zu erkennen — absichtliche oder unbeabsichtigte strukturelle Änderungen, die Pipelines, ETL‑Jobs oder BI‑Dashboards stören können.
+Der **Data Schema Tracker** informiert Sie darüber, wie sich Ihre Datenbankstrukturen entwickeln.  
+Er überwacht kontinuierlich **Tabellen-Schemata, Spalten und Datentypen**, um **Schema-Drift** zu erkennen — beabsichtigte oder unbeabsichtigte strukturelle Änderungen, die Pipelines, ETL-Jobs oder BI-Dashboards stören können.
 
-Indem Transparenz in der Schema‑Evolution sichergestellt wird, hilft digna Organisationen, **Vertrauen in die Datenqualität** zu erhalten, die **Observability von Datensystemen** zu wahren und kostspielige Produktionsvorfälle zu vermeiden, die durch unerkannte Schemaänderungen ausgelöst werden.
+Indem er Transparenz bei der Schema-Entwicklung sicherstellt, hilft digna Organisationen, **Vertrauen in die Datenqualität** zu erhalten, die **Beobachtbarkeit von Datensystemen** aufrechtzuerhalten und kostspielige Produktionsvorfälle zu vermeiden, die durch unentdeckte Schemaänderungen entstehen.
 
 ---
 
 ## Technische Übersicht
 
-### Was es überwacht
+### Was überwacht wird
 
-- **Hinzugefügte oder entfernte Spalten** – erkennt neu eingeführte, umbenannte oder gelöschte Spalten.  
-- **Änderungen von Datentypen** – identifiziert Änderungen wie `INT → VARCHAR` oder `DATE → TIMESTAMP`.  
-- **Änderungen an Tabellen und Views** – verfolgt Erstellung, Umbenennung oder Entfernung von Tabellen und Views.  
-- **Unterschiede zwischen Umgebungen** – vergleicht Schema‑Versionen zwischen Dev, Test und Production.  
+- **Hinzufügte oder entfernte Spalten** – Erkennt neu eingeführte, umbenannte oder gelöschte Spalten.  
+- **Änderungen von Datentypen** – Identifiziert Änderungen wie `INT → VARCHAR` oder `DATE → TIMESTAMP`.  
+- **Änderungen an Tabellen und Views** – Verfolgt Erstellung, Umbenennung oder Löschung von Tabellen und Views.  
+- **Umgebungsübergreifende Unterschiede** – Vergleicht Schema-Versionen zwischen Dev-, Test- und Produktionsumgebungen.  
 
-### Erkennung & Benachrichtigung
+### Erkennung & Alarmierung
 
-- Scannt **Datenbank‑Metadaten** oder **Systemkataloge** direkt innerhalb Ihrer Datenplattform.  
-- Vergleicht jeden Schema‑Snapshot mit der zuvor bekannten Version, die im digna Observability‑Schema gespeichert ist.  
-- Generiert **Echtzeit‑Benachrichtigungen** im Dashboard, über die API oder externe Benachrichtigungskanäle (E‑Mail, Slack, Webhook).  
-- Protokolliert jede Schema‑Version zur **historischen Nachverfolgung und Prüfbereitschaft**.
+- Durchsucht **Datenbank-Metadaten** oder **Systemkataloge** direkt innerhalb Ihrer Datenplattform.  
+- Vergleicht jeden Schema-Snapshot mit der zuvor bekannten Version, die im digna Observability-Schema gespeichert ist.  
+- Erzeugt **Echtzeitwarnungen** im Dashboard, per API oder über externe Benachrichtigungskanäle (E-Mail, Slack, Webhook).  
+- Protokolliert jede Schema-Version für **historische Nachverfolgung und Prüfungsbereitschaft**.
 
 ---
 
 ## Architektur und Ausführung
 
-- **Ausführung innerhalb der Datenbank:** digna läuft vollständig in Ihrer Umgebung und liest Metadaten‑Views ab, ohne Nutzdaten zu extrahieren.  
-- **Leichtgewichtige Scans:** greift nur auf strukturelle Informationen zu — niemals auf Benutzerdaten.  
-- **Zentrale Speicherung:** Schema‑Metadaten und Drift‑Aufzeichnungen werden im digna Observability‑Schema für Visualisierung und Analysen abgelegt.  
-- **Automatisierung:** unterstützt geplante oder ereignisbasierte Scans über digna Core oder externe Orchestrierungs‑Tools.  
+- **Ausführung innerhalb der Datenbank:** digna läuft vollständig in Ihrer Umgebung und fragt Metadatenansichten ab, ohne irgendwelche Daten zu extrahieren.  
+- **Leichtgewichtige Scans:** greift nur auf Strukturinformationen zu — niemals auf Benutzerdaten.  
+- **Zentrale Speicherung:** Schema-Metadaten und Drift-Aufzeichnungen werden im digna Observability-Schema für Visualisierung und Analysen gespeichert.  
+- **Automatisierung:** unterstützt zeitgesteuerte oder ereignisbasierte Scans über digna Core oder externe Orchestrierungstools.  
 
 ---
 
 ## Beispielanwendungsfälle
 
 | Anwendungsfall | Beschreibung |
-|----------------|--------------|
-| **Überwachung der ETL‑Stabilität** | Erkennt Änderungen in upstream‑Strukturen, bevor Pipelines wegen Schema‑Mismatches ausfallen. |
-| **Zuverlässigkeit von Business Intelligence** | Verhindert fehlerhafte Dashboards, die durch umbenannte oder fehlende Spalten entstehen. |
-| **Data Warehouse‑Governance** | Pflegt eine prüfbare Historie der Schema‑Evolution für Compliance und Impact‑Analysen. |
-| **Integrationsüberwachung** | Stellt sicher, dass Data‑Lake‑ und Warehouse‑Schemata nach Strukturupdates synchron bleiben. |
+|-----------|--------------|
+| **Überwachung der ETL-Stabilität** | Erkennt Änderungen in Upstream-Strukturen, bevor Pipelines aufgrund von Schemainkonsistenzen ausfallen. |
+| **Zuverlässigkeit von Business Intelligence** | Verhindert fehlerhafte Dashboards, die durch umbenannte oder fehlende Spalten verursacht werden. |
+| **Governance des Data Warehouse** | Erhält eine prüfbare Historie der Schema-Entwicklung für Compliance und Impact-Analysen. |
+| **Integrationsüberwachung** | Stellt sicher, dass Data Lake- und Data Warehouse-Schemata nach strukturellen Änderungen synchron bleiben. |
 
 ---
 
 ## Vorteile
 
 | Bereich | Vorteil |
-|--------|---------|
-| **Datenqualität** | Verhindert unerkannte Schema‑Drifts, die Datenpipelines korrumpieren oder ungültig machen können. |
-| **Observability** | Ergänzt strukturelles Monitoring zur Gesamt‑Observability von Datenökosystemen. |
-| **Compliance** | Bewahrt versionierte Schema‑Historien für Audit, Rückverfolgbarkeit und Change‑Control. |
-| **Vorbeugung** | Erkennt strukturelle Probleme, bevor sie sich auf Reporting oder Produktion auswirken. |
+|------|----------|
+| **Datenqualität** | Verhindert unerkannte Schema-Drifts, die Datenpipelines beschädigen oder ungültig machen können. |
+| **Beobachtbarkeit** | Ergänzt die Gesamtbeobachtbarkeit von Datenökosystemen um strukturelles Monitoring. |
+| **Compliance** | Erhält eine versionierte Schema-Historie für Audit, Rückverfolgbarkeit und Änderungsmanagement. |
+| **Prävention** | Erkennt strukturelle Probleme, bevor sie sich auf Reporting oder Produktion auswirken. |
 
 ---
 
 ## Funktionsweise
 
-1. **Snapshot‑Erfassung** – digna nimmt die aktuellen Schema‑Metadaten auf.  
+1. **Snapshot-Erfassung** – digna erfasst die aktuellen Schema-Metadaten.  
 2. **Vergleich** – der neue Snapshot wird verglichen

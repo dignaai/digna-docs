@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# macOS Telepítési útmutató a digna Release 2026.06-hoz
 
-**Release:** 2026.06
+**Kiadás:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Utoljára frissítve:** 2026. szeptember 5.
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Tartalomjegyzék
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+1. [Bevezetés](#introduction)
+2. [Rendszerkövetelmények](#system-requirements)
+3. [Előtelepítési beállítások](#pre-installation-setup)
+4. [PostgreSQL szerver beállítása](#postgresql-server-setup)
+5. [Webszerver konfiguráció](#web-server-configuration)
+6. [Első telepítés](#initial-installation)
+7. [Backend konfiguráció](#backend-configuration)
+8. [Dashboard konfiguráció](#dashboard-configuration)
+9. [digna futtatása háttérszolgáltatásként](#running-digna-as-a-background-service)
+10. [Frissítés új kiadásra](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Bevezetés {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### A dignáról
 
-| Requirement | Specification |
+digna egy átfogó, MI-vezérelt platform, amely az adatok minőségének kezelését optimalizálja különböző adatkörnyezetekben, mint adattárházak, adat-tavak és lakehouse-ok. Nagymértékben skálázható és alkalmazkodó, digna automatizálással, valós idejű figyeléssel és anomáliaészleléssel kezeli a modern adathasználati kihívásokat.
+
+A digna két fő komponensből áll:
+
+- **dignabackend**: az alkalmazás magja, amely felelős az adatok feldolgozásáért és a minőségellenőrzések végrehajtásáért.
+- **dignadashboard**: webalapú felület egy webszerveren, amely felhasználóbarát módon teszi lehetővé a digna platform használatát és az adathigiéniai mutatók megjelenítését.
+
+### Mi újság a 2026.06-os kiadásban
+
+Ez a kiadás az adathatékonysági (observability) képességeket közvetlenül a kódba hozza, lehetővé téve a fejlesztők számára, hogy az adatok forrásánál figyeljék az adatmimőséget. Részletekért lásd a [release notes](http://docs.digna.ai/changelog/Release_202606/)-t.
+
+### Windowsot vagy Linuxot keres?
+
+Ez az útmutató macOS-re vonatkozik. Más platformokhoz lásd a [Windows telepítési útmutatót](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) vagy a [Linux telepítési útmutatót](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Rendszerkövetelmények {: #system-requirements }
+
+Mielőtt megkezdené a telepítést, győződjön meg arról, hogy a rendszere megfelel az alábbi minimális követelményeknek:
+
+| Követelmény | Specifikáció |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **Operációs rendszer** | macOS 13 (Ventura) vagy újabb |
+| **Architektúra** | Apple Silicon (arm64) vagy Intel (x86_64) |
+| **Memória (minimális telepítéshez)** | 16 GB RAM |
+| **Lemezterület** | 10 GB szabad tárhely |
+| **Adatbázis** | PostgreSQL Server 12 vagy újabb |
+| **Webszerver** | nginx, Apache httpd vagy egyenértékű |
+| **Parancssori eszközök** | Xcode Command Line Tools (Homebrew által igényelt) |
 
-### Database Installation Options
+### Adatbázis telepítési lehetőségek
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Ha PostgreSQL már telepítve van:**
+Hozzáadhat egy új adatbázist digna számára a meglévő PostgreSQL szerveréhez.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Ha PostgreSQL-t a dignával ugyanarra a gépre telepíti:**
 
-!!! info "Recommended Specifications"
+!!! info "Ajánlott specifikációk"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Memória**: 32 GB RAM (a 16 GB helyett)
+    - **Lemezterület**: 50 GB szabad tárhely (a 10 GB helyett)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Ezek a magasabb specifikációk lehetővé teszik, hogy a digna és a PostgreSQL adatbázis egyszerre fusson optimálisan.
 
-### Checking Your Architecture
+### Az architektúra ellenőrzése
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Több útvonal a leírásban különbözik Apple Silicon és Intel Mac-ek között. Hogy megtudja, melyik van, nyissa meg a **Terminalt** és futtassa:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. A Homebrew az `/opt/homebrew`-be települ.
+- `x86_64` — Intel. A Homebrew a `/usr/local`-ba települ.
 
-!!! tip "Tip"
+!!! tip "Tipp"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    Ahelyett, hogy mereven beégett útvonalakat használna, ez az útmutató a `$(brew --prefix)`-et használja, ami mindkét architektúrán a megfelelő helyre bővül. Másolja a parancsokat karakterről karakterre.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Előtelepítési beállítások {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+A digna telepítése előtt győződjön meg róla, hogy három kulcsfontosságú előfeltétel rendelkezésre áll:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – a csomagkezelő, amellyel a lenti komponenseket telepítjük
+2. **PostgreSQL Server** – a számított metrikák és teljesítményadatok tárolásához
+3. **Webszerver** – a digna Dashboard hosztolásához
 
-If these components are not already set up, follow the sections below to install and configure them.
+Ha ezek a komponensek még nincsenek beállítva, kövesse az alábbi részeket a telepítésükhöz és konfigurációjukhoz.
 
-### Installing Homebrew
+### Homebrew telepítése
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+A Homebrew a standard csomagkezelő macOS-hez, és ezt használjuk a PostgreSQL és az nginx telepítéséhez.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### 1. lépés: Ellenőrizze, hogy a Homebrew már telepítve van-e
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Nyissa meg a **Terminalt** (nyomja meg a `Cmd + Space`-t, írja be: `Terminal`, nyomjon Entert) és futtassa:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Ha verziószám jelenik meg, ugorjon a [PostgreSQL szerver beállítása](#postgresql-server-setup) részre.
 
-#### Step 2: Install Homebrew
+#### 2. lépés: Telepítse a Homebrew-t
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Ha a fenti parancs nem található, telepítse a Homebrew-t a [hivatalos Homebrew oldal](https://brew.sh) utasításai szerint. Az telepítő telepíti az Xcode Command Line Toolst is, ha még nincsenek jelen.
 
-#### Step 3: Add Homebrew to Your PATH
+#### 3. lépés: Adja hozzá a Homebrew-t a PATH-hoz
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Apple Silicon esetén a telepítő két parancsot ír ki, amelyeket futtatni kell a Homebrew shell környezetbe illesztéséhez. Futtassa azokat, majd ellenőrizze:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Ennek `/opt/homebrew`-t kell kiírnia Apple Siliconon vagy `/usr/local`-t Intel esetén.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL szerver beállítása {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Ha már van PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Ha PostgreSQL már telepítve és fut a helyi gépén, vagy felügyelt távoli PostgreSQL szervert használ, ugorjon a [következő részhez](#web-server-configuration).
 
-### Installation Options
+### Telepítési lehetőségek
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS-en két egyszerű módon telepíthető PostgreSQL. Válasszon **egyet**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — parancssoros telepítés, ajánlott szerver telepítésekhez
+- [Postgres.app](#postgresql-app) — grafikus telepítés, kényelmes helyi értékeléshez
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### PostgreSQL telepítése Homebrew-vel {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### 1. lépés: Telepítse a PostgreSQL formulát
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### 2. lépés: Adja hozzá a PostgreSQL-t a PATH-hoz
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+A verziózott PostgreSQL formulák *keg-only* jellegűek, ami azt jelenti, hogy a Homebrew nem linkeli automatikusan a parancsokat a PATH-ba. Adja hozzá kézzel:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Megjegyzés"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Ez az alapértelmezett `zsh` shellre vonatkozik, amit macOS használ. Ha `bash`-t használ, fűzze ugyanazt a sort a `~/.bash_profile`-hoz.
 
-#### Step 3: Start the PostgreSQL Service
+#### 3. lépés: Indítsa el a PostgreSQL szolgáltatást
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+Ez azonnal elindítja a PostgreSQL-t és beállítja, hogy bejelentkezéskor automatikusan újrainduljon.
 
-#### Step 4: Verify the Installation
+#### 4. lépés: Ellenőrizze a telepítést
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Ha sikeres a telepítés, meg kell jelennie a PostgreSQL verziónak.
 
-#### Step 5: Connect to the Server
+#### 5. lépés: Csatlakozás a szerverhez
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Fontos — macOS eltér Windows-tól itt"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    A Windows telepítő megkérdezi, hogy hozzon-e létre `postgres` szuperfelhasználót és jelszót. A Homebrew nem teszi ezt. Ehelyett egy, a **macOS fiókjának** megfelelő nevű szuperfelhasználót hoz létre, jelszó nélkül, amely csak a helyi gépről érhető el.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    Ez azt jelenti, hogy egy friss Homebrew telepítésen nincs `postgres` szerep. Használja a saját fióknevét, amikor szuperfelhasználói jogosultságra van szükség, és hozzon létre egy explicit digna felhasználót az [Első telepítés](#initial-installation) leírás szerint.
 
-#### Step 6: Confirm the Port
+#### 6. lépés: Ellenőrizze a portot
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+A PostgreSQL alapértelmezett portja `5432`. A szerver által használt port ellenőrzéséhez:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Jegyezze fel az értéket — szüksége lesz rá a digna backend konfigurálásakor.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### PostgreSQL telepítése Postgres.app-pal {: #postgresql-app }
 
-If you prefer a graphical installation:
+Ha grafikus telepítést preferál:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Töltse le a [Postgres.app](https://postgresapp.com)-ot és húzza az **Applications** mappába
+2. Nyissa meg az alkalmazást és kattintson az **Initialize** gombra egy új szerver létrehozásához
+3. Kövesse az alkalmazás utasításait a parancssori eszközök PATH-hoz adásához
+4. Ellenőrizze a telepítést:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+A Postgres.app is létrehoz egy, a macOS fióknevéről elnevezett szuperfelhasználót.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Webszerver konfiguráció {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+A dignának szüksége van egy webszerverre a dashboard hosztolásához. Válasszon az alábbiak közül:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — Homebrew-vel telepítve, ajánlott
+- [Apache httpd](#apache-setup) — macOS része
 
-You only need to install and configure **one** of these servers.
+Csak **egyiket** kell telepítenie és konfigurálnia.
 
-Both sections configure two things the dashboard depends on:
+Mindkét rész a dashboard számára szükséges két beállítást konfigurálja:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Single-page-application fallback** (egylapos alkalmazás visszadobás), hogy egy dashboard URL frissítésekor ne kapjon 404-et
+- **.md MIME típus** beállítása, hogy a Markdown fájlok helyesen legyenek kiszolgálva
 
-### nginx Setup {: #nginx-setup }
+### nginx beállítása {: #nginx-setup }
 
-#### Overview
+#### Áttekintés
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+Az nginx egy könnyű, nagy teljesítményű webszerver, amely jól alkalmas a statikus digna dashboard kiszolgálására.
 
-#### Installation
+#### Telepítés
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### nginx indítása
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Ellenőrizze a telepítést
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Nyissa meg a böngészőt
+2. Navigáljon a `http://localhost:8080` címre
+3. Az nginx üdvözlőoldalát kell látnia
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Megjegyzés — az alapértelmezett port 8080, nem 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    A Homebrew úgy konfigurálja az nginx-et, hogy a `8080` porton hallgasson, így admin jogosultság nélkül is futtatható. macOS-en a `80` vagy bármely, 1024 alatti port kötése root jogosultságot igényel.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    Ha a dashboardot a 80-as porton szeretné kiszolgálni, cserélje a konfigurációban a `listen 8080;` sort `listen 80;`-ra, és indítsa el az nginx-et `sudo brew services start nginx` paranccsal.
 
-#### Configuring a Site for the Dashboard
+#### Site konfigurálása a Dashboardhoz
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+A Homebrew nginx konfigurációja minden fájlt beolvas a `servers` könyvtárból. Hozzon létre egy dedikált konfigurációs fájlt a digna számára:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Illessze be a következőt, kicserélve a `/path/to/digna/dashboard`-ot az Ön kicsomagolt `dashboard` mappájának valódi elérési útjára:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Fontos"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    A `try_files` direktíva nélkül bármely dashboard oldal újratöltése a gyökér URL-en kívül 404-et ad vissza. Ez az nginx megfelelője az IIS URL Rewrite modulnak Windows-on.
 
-#### Apply the Configuration
+#### Alkalmazza a konfigurációt
 
-Test the configuration for syntax errors, then reload nginx:
+Tesztelje a konfigurációt szintaktikai hibákra, majd töltse újra az nginx-et:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd beállítása {: #apache-setup }
 
-#### Overview
+#### Áttekintés
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+A macOS tartalmazza az Apache httpd-t, így telepítés nem szükséges. Alapértelmezetten le van tiltva.
 
-#### Starting Apache
+#### Apache indítása
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Ellenőrizze a telepítést
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Nyissa meg a böngészőt
+2. Navigáljon a `http://localhost` címre
+3. A "It works!" üzenetet kell látnia
 
-#### Required: Enable mod_rewrite
+#### Kötelező: mod_rewrite engedélyezése
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+A dashboard URL átírást igényel. Nyissa meg az Apache konfigurációt:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Keresse meg a következő sort és távolítsa el előle a kezdő `#`-t, hogy kicsomagolja:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Kötelező: .htaccess felülbírálások engedélyezése
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+Ugyanabban a fájlban keresse meg a `<Directory "/Library/WebServer/Documents">` blokkot és változtassa meg:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+erre:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Kötelező: MIME típus Markdown fájlokhoz
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Még az `httpd.conf`-ban adja hozzá a következő sort, hogy a Markdown fájlok helyesen legyenek kiszolgálva:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Fontos"
 
-    Without this setting, `.md` files may not be served properly.
+    E nélkül a beállítás nélkül a `.md` fájlok nem biztos, hogy helyesen lesznek kiszolgálva.
 
-#### Apply the Configuration
+#### Alkalmazza a konfigurációt
 
-Check the configuration for syntax errors, then restart Apache:
+Ellenőrizze a konfigurációt szintaktikai hibákra, majd indítsa újra az Apache-ot:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Első telepítés {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### 1. lépés: Hozza létre a digna repository-t
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+A digna repository tárol minden, a digna által kiszámított metrikát. Ez működik, mint a központi adatbázis az analitikai és teljesítményadatok számára.
 
-#### Create Repository Schema and User
+#### Repository sémája és felhasználó létrehozása
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Nyissa meg a PostgreSQL kliensét (psql, pgAdmin vagy hasonló) és futtassa a következő SQL parancsokat:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Cserélje ki az alábbi helykitöltőket:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — A kívánt séma neve (pl. `dignarepo`)
+- `<digna_repo_user>` — A kívánt felhasználónév (pl. `digna_user`)
+- `<digna_repo_password>` — Biztonságos jelszó ehhez a felhasználóhoz
 
-**Example:**
+**Példa:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,72 +410,72 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+A parancsok futtatásához a Terminalból egyetlen lépésben:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Majd illessze be a fenti utasításokat a `postgres=#` promptnál, és írja be a kilépéshez: `\q`.
 
-!!! tip "Best Practice"
+!!! tip "Legjobb gyakorlat"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Használjon erős, összetett jelszavakat az adatbázis felhasználókhoz. Kerülje az egyszerűen kitalálható hitelesítő adatokat.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### 2. lépés: Csomagolja ki a digna telepítési csomagot
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+1. Keresse meg a digna telepítő ZIP fájlját, amelyet kapott
+2. Csomagolja ki a kívánt telepítési helyre — például `/opt/digna` vagy `~/digna`
+3. A kicsomagolás után a következő elemeket kell látnia:
+   - `dashboard/` — Web dashboard felület
+   - `digna` — Fő futtatható állomány (backend + CLI egyben)
+   - `config.toml` — Konfigurációs fájl
+   - `license.toml` — Licenc fájl (másolja ide a sajátját)
 
-To extract from the Terminal:
+A Terminalból történő kicsomagoláshoz:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Tegye futtathatóvá a binárist
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+Attól függően, hogyan került át a csomag, a futtathatósági bit lehet, hogy nem maradt meg. Állítsa be egyértelműen:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Ha macOS blokkolja az alkalmazást
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+A böngészőn vagy levelezőn keresztül letöltött fájlok karantén attribútummal vannak jelölve. Ha macOS azt írja, hogy az alkalmazás *"nem nyitható meg, mert a fejlesztőt nem lehet ellenőrizni"*, távolítsa el az attribútumot a telepítési könyvtárról:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Alternatívaként nyissa meg a **System Settings → Privacy & Security** menüt, keresse meg a blokkolt elemet az oldal alján, és kattintson az **Open Anyway** gombra.
 
-!!! note "Note"
+!!! note "Megjegyzés"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Erre a lépésre csak akkor van szükség, ha macOS ténylegesen blokkolja a futtatható állományt. SSH-n vagy belső fájlkiszolgálóról átvitt csomagok általában nincsenek karanténnal jelölve.
 
-### Step 3: Install the License File
+### 3. lépés: Telepítse a licencfájlt
 
-!!! warning "Important"
+!!! warning "Fontos"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    A licenc fájl NEM része a telepítési csomagnak és a dignától külön kerül kiszolgálásra.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Keresse meg az Önnek biztosított `license.toml` fájlt
+2. Másolja be a digna telepítési gyökérkönyvtárába (ahol a `config.toml` és a `digna` futtatható található)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Miért fontos ez:**
+A licenc fájl tartalmazza az ügyféladatokat, a licenc lejárati dátumát és a digitális aláírást. **Ne módosítsa ezt a fájlt** — bármilyen változtatás érvényteleníti azt.
 
-**Directory structure after setup:**
+**Könyvtárstruktúra a beállítás után:**
 
 ```
 /opt/digna/
@@ -489,24 +489,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backend konfiguráció {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### 1. lépés: Hozza létre és szerkessze a konfigurációs fájlt
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+A `config_template.toml` fájl megtalálható a digna telepítési könyvtárban. Csak át kell neveznie `config.toml`-ra.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Hely:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Nyissa meg a `config.toml` fájlt egy szövegszerkesztőben és konfigurálja az alábbi részeket.
 
-#### [app] Section
+#### [app] szekció
 
-This section configures the digna backend application settings:
+Ez a rész a digna backend alkalmazás beállításait tartalmazza:
 
 ```toml
 [app]
@@ -518,22 +518,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` vagy IP cím | A hoszt vagy IP, ahol a dignabackend fut |
+| `digna_APP_PORT` | `8082` (alapértelmezett) | A REST API végpontok portja |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ha a dashboard másik szerveren van, adja hozzá annak URL-jét |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Szükséges, ha CORS hitelesítő adatokat is engedélyez |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Minden HTTP metódus engedélyezése |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Minden fejléc engedélyezése |
 
-!!! note "Note"
+!!! note "Megjegyzés"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Ha a dashboardot a Homebrew nginx-en szolgálja ki az alapértelmezett porton, az engedélyezendő origin: `http://localhost:8080`.
 
-#### [repo] Section
+#### [repo] szekció
 
-This section configures the connection to the PostgreSQL database:
+Ez a rész a PostgreSQL adatbázishoz való csatlakozást konfigurálja:
 
 ```toml
 [repo]
@@ -545,18 +545,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` vagy IP | PostgreSQL szerver hosztja/IP-je |
+| `digna_REPO_PORT` | `5432` (alapértelmezett) | PostgreSQL port |
+| `digna_REPO_DB` | `postgres` | Adatbázis neve |
+| `digna_REPO_SCHEMA` | `dignarepo` | Korábban létrehozott séma |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL-ben létrehozott felhasználó |
+| `digna_REPO_PASSWORD` | Az Ön jelszava | A séma létrehozásakor beállított jelszó |
 
-#### [base] Section
+#### [base] szekció
 
-This section contains security and cookie settings:
+Ez a rész a biztonsági és cookie beállításokat tartalmazza:
 
 ```toml
 [base]
@@ -570,23 +570,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | Titkosítási kulcs | Tokenek és cookie-k titkosításához (alapértelmezett érkezik) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Illeszkedjen a frontend domainhez |
+| `digna_COOKIE_SECURE` | `false` (helyi) / `true` (éles) | Használja a `true`-t HTTPS kapcsolatoknál |
+| `digna_COOKIE_HTTPONLY` | `true` | Mindig engedélyezze a biztonság érdekében |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF támadások megelőzésére |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 óra) | Munkamenet lejárati ideje másodpercben |
+| `digna_MAX_WORKERS` | CPU magok száma - 1 | Párhuzamos ellenőrzési feladatok száma |
 
-!!! tip "Tip"
+!!! tip "Tipp"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    A Mac-en rendelkezésre álló CPU-magok számának megkereséséhez futtassa: `sysctl -n hw.ncpu`.
 
-#### [logging] Section
+#### [logging] szekció
 
-This section configures logging behavior:
+Ez a rész a naplózás viselkedését konfigurálja:
 
 ```toml
 [logging]
@@ -594,58 +594,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` vagy `DEBUG` | `INFO` éles környezethez, `DEBUG` hibakereséshez |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Megőrzendő napi naplómentések száma |
 
 ---
 
-### Step 2: Initialize the Repository
+### 2. lépés: Inicializálja a repository-t
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Nyissa meg a **Terminalt**
+2. Navigáljon a digna telepítési könyvtárába (ahol a `config.toml` és a `digna` futtatható található)
+3. Futtassa a csatlakozás tesztet:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Vissza kell kapnia egy megerősítést, hogy a csatlakozás sikeres (magát a repository-t még nem inicializálta).
 
-!!! note "Note"
+!!! note "Megjegyzés"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    macOS-en a jelenlegi könyvtárban lévő parancsok nincsenek a PATH-on, ezért a futtatható `./digna` formában indítandó. Ha szeretné a rövidebb formát használni mindenhol, adja hozzá a telepítési könyvtárat a PATH-hoz:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### 3. lépés: Telepítse a repository sémát
 
-In the same directory, run:
+Ugyanabban a könyvtárban futtassa:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Ez a parancs telepíti a szükséges táblákat és sémát a PostgreSQL adatbázisba.
 
-### Step 4: Start the digna Server
+### 4. lépés: Indítsa el a digna szervert
 
-In the digna installation directory, start the server with:
+A digna telepítési könyvtárban indítsa el a szervert:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Paraméterek:**
+- `--address` — Szerver hosztneve/IP-je
+- `--port` — Szerver portja
 
-You should see startup messages confirming the server is running:
+Induláskor a következő üzeneteket kell látnia:
 
 ```
 INFO:     Started server process [1234]
@@ -654,88 +654,88 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Tipp"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    Amikor a szervert először indítja, macOS megkérdezheti, hogy szeretné-e engedélyezni az alkalmazásnak a bejövő hálózati kapcsolatok elfogadását. Kattintson az **Allow**-ra, különben a dashboard nem fogja elérni a backendet.
 
-### Step 5: Create an Admin User
+### 5. lépés: Hozzon létre egy admin felhasználót
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. Nyisson egy **új** Terminal ablakot
+2. Navigáljon a digna telepítési könyvtárába
+3. Futtassa a következő parancsot egy admin felhasználó létrehozásához:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**Példa:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+Ez létrehoz egy `admin` felhasználót teljes adminisztrátori jogosultsággal.
 
-!!! tip "Tip"
+!!! tip "Tipp"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Tegye idézőjelek közé a jelszót. A `zsh` különlegesként kezeli az olyan karaktereket, mint `!`, `$` és `*`, és egy idézőjelek nélküli jelszó ezeket nem fogja helyesen továbbítani.
 
-!!! tip "Best Practice"
+!!! tip "Legjobb gyakorlat"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Használjon erős jelszót, amely tartalmaz nagybetűt, kisbetűt, számokat és speciális karaktereket.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboard konfiguráció {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### 1. lépés: Telepítse a dashboardot a webszerverre
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+A digna dashboardnak van egy külön `config.toml` fájlja a `dashboard/` könyvtárban. Ez a konfiguráció már biztosítva van, és az első beállításkor általában nem kell módosítani. Csak akkor kell szerkesztenie, ha testreszabni szeretné a backend kapcsolódást.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Ha módosítania kell a dashboard konfigurációját (pl. több példányos telepítésekhez), kövesse a dashboard dokumentációját.
 
-Choose your web server and follow the corresponding deployment steps.
+Válassza ki a webszervert és kövesse a megfelelő telepítési lépéseket.
 
-#### Deploying to nginx
+#### Telepítés nginx-re
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Ha követte a [nginx beállítás](#nginx-setup) részt, a szerver blokk már a `dashboard` mappájára mutat, így másolás nem szükséges.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Ellenőrizze az elérési utat**
+   - Nyissa meg: `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Győződjön meg róla, hogy a `root` a kicsomagolt `dashboard` mappára mutat
 
-2. **Ensure the folder is readable**
+2. **Biztosítsa a mappa olvashatóságát**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Töltse újra az nginx-et**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Tesztelje a telepítést**
+   - Nyissa meg a böngészőt
+   - Navigáljon a `http://localhost:8080` címre (vagy a konfigurált URL-re)
+   - A digna dashboard bejelentkező oldalát kell látnia
 
-#### Deploying to Apache httpd
+#### Telepítés Apache httpd-re
 
-1. **Copy the Dashboard to the Document Root**
+1. **Másolja a Dashboardot a Document Root-ba**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Adja hozzá az átírási szabályokat**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Hozzon létre egy `.htaccess` fájlt a telepített mappában, hogy a dashboard útvonalak túléljék az oldalfrissítést:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Illessze be a következőt:
 
    ```apache
    RewriteEngine On
@@ -750,177 +750,176 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Indítsa újra az Apache-ot**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Nyissa meg a dashboardot**
+   - Nyissa meg a böngészőt
+   - Navigáljon a `http://localhost/digna` címre
+   - A digna dashboard bejelentkező oldalát kell látnia
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## digna futtatása háttérszolgáltatásként {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### Miért futtassa a digna-t szolgáltatásként?
 
-Running the digna backend as a background service ensures it:
+A digna backend háttérszolgáltatásként történő futtatása biztosítja, hogy:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Automatikusan elinduljon a gép bootolásakor
+- A háttérben fusson, anélkül, hogy nyitva kellene tartani egy Terminal ablakot
+- Automatikusan újrainduljon, ha összeomlik
+- `launchctl`-lel, macOS szolgáltatáskezelővel menedzselhető legyen
 
-### Service Management Files
+### Szolgáltatás-kezelő fájlok
 
-All necessary files are located in the digna installation directory under: `bin/`
+Minden szükséges fájl a digna telepítési könyvtár `bin/` almappájában található: `bin/`
 
-The following shell scripts are available:
+Az elérhető shell scriptek:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — digna regisztrálása a launchd-hez
+- `uninstall_service.sh` — a szolgáltatás eltávolítása
+- `start_service.sh` — a regisztrált szolgáltatás indítása
+- `stop_service.sh` — a futó szolgáltatás leállítása
 
-!!! warning "Administrator Required"
+!!! warning "Rendszergazdai jogosultság szükséges"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Minden scriptet `sudo`-val kell futtatni, mert egy rendszerinduláskor elinduló szolgáltatás regisztrálása a `/Library/LaunchDaemons`-be ír.
 
-### Making the Scripts Executable
+### Tegye futtathatóvá a scripteket
 
-Extraction may not preserve the executable bit. Before first use:
+A kicsomagoláskor az executable bit eltűnhet. Az első használat előtt:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### A szolgáltatás telepítése
 
-1. **Open Terminal**
+1. **Nyissa meg a Terminalt**
 
-2. **Navigate to the bin Folder**
+2. **Navigáljon a bin mappába**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Futtassa a telepítő scriptet**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+A digna szerver most regisztrálva van a launchd-ben automatikus indítással. A szolgáltatás nem indul el automatikusan a telepítéskor — lásd a következő szakaszt az indításhoz.
 
-### Starting and Stopping the Service
+### A szolgáltatás indítása és leállítása
 
-#### To Start the Service
+#### A szolgáltatás indítása
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Nyissa meg a Terminalt
+2. Navigáljon a `/opt/digna/bin` könyvtárba
+3. Futtassa:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### A szolgáltatás leállítása
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Nyissa meg a Terminalt
+2. Navigáljon a `/opt/digna/bin` könyvtárba
+3. Futtassa:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Tipp"
 
-    Always stop the service before updating application files.
+    Mindig állítsa le a szolgáltatást az alkalmazásfájlok frissítése előtt.
 
-### Verifying the Service
+### A szolgáltatás ellenőrzése
 
-To confirm that the service is registered and running:
+A szolgáltatás regisztráltságának és futásának ellenőrzéséhez:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+Egy sor, ami folyamatazonosítóval kezdődik, azt jelenti, hogy a szolgáltatás fut. Ha az első oszlopban `-` szerepel, az azt jelenti, hogy regisztrálva van, de leállt.
 
-### Moving the Service to a New Directory
+### A szolgáltatás áthelyezése új könyvtárba
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+A launchd eltárolja a futtatható abszolút elérési útját, így az áthelyezés újra-regisztrálást igényel:
 
-1. **Uninstall the Current Service**
+1. **Távolítsa el a jelenlegi szolgáltatást**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Mozgassa az alkalmazás fájlokat**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Telepítse újra a szolgáltatást**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Indítsa el a szolgáltatást**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### A szolgáltatás eltávolítása
 
-1. **Stop the Running Service**
+1. **Állítsa le a futó szolgáltatást**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Távolítsa el a szolgáltatást**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+A digna szerver most eltávolításra került a launchd regisztrációból.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Frissítés új kiadásra {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Mielőtt frissítene
 
-**Creating a digna Repository Backup is Mandatory**
+**A digna repository biztonsági mentése kötelező**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+A frissítés előtt készítsen biztonsági mentést a repository-ról (PostgreSQL), hogy védje az adatvesztéstől. A mentés biztosítja a visszaállítást, ha a frissítés közben váratlan problémák merülnek fel.
 
-To create a backup from the Terminal:
+A biztonsági mentés készítése a Terminalból:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Frissítési folyamat
 
-#### Step 1: Stop the digna Service
+#### 1. lépés: Állítsa le a digna szolgáltatást
 
-If digna is running as a background service, stop it first:
+Ha a digna háttérszolgáltatásként fut, először állítsa le:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Ha a digna előtérben fut, nyomja meg a terminálablakában a `Ctrl + C`-t.
 
-#### Step 2: Backup Current Backend Installation
+#### 2. lépés: Biztonsági mentés a jelenlegi backend telepítésről
 
-In your digna installation directory:
+A digna telepítési könyvtárában:
 
 ```bash
 cd /opt/digna
@@ -930,55 +929,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### 3. lépés: Csomagolja ki és telepítse az új verziót
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Csomagolja ki az új digna telepítő ZIP fájlt
+2. Másolja az új `digna` futtathatót és a `dashboard` mappát a telepítési könyvtárába
+3. Állítsa vissza a futtathatósági bitet és szükség esetén távolítsa el a karantén attribútumot:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Fontos"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    A `config.toml` fájl SOHA nem része a telepítési ZIP-nek. A meglévő konfigurációja biztonságban marad.
 
-### Step 4: Restore Your Configuration Files
+### 4. lépés: Állítsa vissza a konfigurációs fájlokat
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### 5. lépés: Frissítse a repository sémát
 
-Navigate to your digna installation directory and run:
+Navigáljon a digna telepítési könyvtárába és futtassa:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Ez frissíti a PostgreSQL sémát a legújabb verzióra, miközben megőrzi a meglévő adatokat.
 
-### Step 6: Restart Services
+### 6. lépés: Indítsa újra a szolgáltatásokat
 
-If running as a background service:
+Ha háttérszolgáltatásként fut:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Ha manuálisan futtatja, indítsa újra a szervert:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Ha nginx-et vagy Apache-ot használ, indítsa újra a megfelelő webszervert:
 
 ```bash
 brew services restart nginx
@@ -987,8 +986,8 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### 7. lépés: Ellenőrizze a frissítést
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. Nyissa meg a digna dashboardot
+2. Ellenőrizze, hogy a felület helyesen töltődik-e
+3. Nézze át a szerver naplóit esetleges hibákért

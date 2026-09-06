@@ -28,10 +28,19 @@
 
 ## Installazione e distribuzione
 
+### Sistemi operativi
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/it/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Guida passo passo all'installazione di digna Release 2026.06 su Linux — requisiti di sistema, configurazione di PostgreSQL, configurazione di nginx o Apache, configurazione del backend e della dashboard, esecuzione di digna come servizio systemd e aggiornamento a una nuova release.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/it/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Guida passo passo per l'installazione di digna Release 2026.06 su macOS — requisiti di sistema, configurazione di Homebrew e PostgreSQL, configurazione di nginx o Apache, configurazione del backend e della dashboard, esecuzione di digna come servizio in background e aggiornamento a una nuova release.
+
 ### Windows
 
 - [Release 2026.06](https://docs.digna.ai/it/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Guida passo passo per l'installazione di digna Release 2026.06 su Windows — requisiti di sistema, configurazione di PostgreSQL, configurazione del web server, configurazione del backend e della dashboard, esecuzione di digna come servizio Windows e aggiornamento a una nuova release.
-- [Come configurare l'accesso single sign-on](https://docs.digna.ai/it/installation_deployment/sso_integration_guide/): Guida passo-passo per configurare Single Sign-On (SSO) per digna usando OpenID Connect (OIDC). Copre configurazione della dashboard e del backend, test, risoluzione dei problemi e provider di identità supportati tra cui Microsoft Entra ID, Google Workspace e Okta.
 
 ## Primi passi
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/it/databases/snowflake_connector_guide/): Configura digna per connettersi a Snowflake usando il connettore Python o il driver ODBC di Snowflake. Supporta l'autenticazione tramite password con configurazioni DSN o senza DSN.
 - [MS SQL Server](https://docs.digna.ai/it/databases/sqlserver_connector_guide/): Configura digna per connettersi a Microsoft SQL Server usando il driver Python pymssql o il driver ODBC di SQL Server. Supporta l'autenticazione basata su password con configurazioni DSN o senza DSN.
 - [Teradata](https://docs.digna.ai/it/databases/teradata_connector_guide/): Configura digna per connettersi a Teradata usando il driver Python teradatasql o il driver ODBC di Teradata. Supporta l'autenticazione tramite password con configurazioni DSN o senza DSN.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/it/sso/overview/): Come funziona il Single Sign-On in digna usando OpenID Connect (OIDC). Copre la configurazione del dashboard e del backend, i test, la risoluzione dei problemi e collegamenti alle guide per provider per Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne e AD FS.
+- [AD FS](https://docs.digna.ai/it/sso/adfs_sso_guide/): Configurare il Single Sign-On per digna con Active Directory Federation Services usando OpenID Connect — application group, server application, shared secret, scope consentiti e la corrispondente configurazione di digna.
+- [Auth0](https://docs.digna.ai/it/sso/auth0_sso_guide/): Configura il Single Sign-On per digna con Auth0 usando OpenID Connect — configurazione per applicazioni web regolari, URL di callback consentiti, credenziali client, dominio del tenant e la corrispondente configurazione di digna.
+- [Google Workspace](https://docs.digna.ai/it/sso/google_workspace_sso_guide/): Configura Single Sign-On per digna con Google Workspace usando OpenID Connect — schermata di consenso OAuth, client ID OAuth, URI di reindirizzamento autorizzati e la corrispondente configurazione di digna.
+- [Keycloak](https://docs.digna.ai/it/sso/keycloak_sso_guide/): Configura il Single Sign-On per digna con Keycloak usando OpenID Connect — configurazione del realm e del client, autenticazione del client, URI di redirect validi, client secret e la corrispondente configurazione di digna.
+- [Microsoft Entra ID](https://docs.digna.ai/it/sso/microsoft_entra_id_sso_guide/): Configura il Single Sign-On per digna con Microsoft Entra ID (precedentemente Azure AD) usando OpenID Connect — registrazione dell'app, redirect URI, client secret, tenant ID e la corrispondente configurazione di digna.
+- [Okta](https://docs.digna.ai/it/sso/okta_sso_guide/): Configura Single Sign-On per digna con Okta usando OpenID Connect — integrazione dell'app, redirect URI di accesso, credenziali client, scelta del server di autorizzazione e la corrispondente configurazione di digna.
+- [OneLogin](https://docs.digna.ai/it/sso/onelogin_sso_guide/): Configura il Single Sign-On per digna con OneLogin usando OpenID Connect — creazione dell'app OIDC, redirect URI, credenziali client, autenticazione del token endpoint e la corrispondente configurazione di digna.
+- [PingOne](https://docs.digna.ai/it/sso/pingone_sso_guide/): Configura il Single Sign-On per digna con PingOne usando OpenID Connect — configurazione dell'app OIDC web, redirect URI, credenziali client, ID dell'ambiente, domini regionali e la corrispondente configurazione di digna.
 
 ## Riferimento CLI
 

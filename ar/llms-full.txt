@@ -5561,457 +5561,1161 @@ Source: https://docs.digna.ai/ar/getting_started/how_to_use_crontab/
 
 ---
 
-# كيفية تكوين الدخول الموحد
-Source: https://docs.digna.ai/ar/installation_deployment/sso_integration_guide/
+# Release 2026.06
+Source: https://docs.digna.ai/ar/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/
 
-# دليل تكامل تسجيل الدخول الموحد
+# دليل التثبيت على Linux لـ digna إصدار 2026.06
+
+**الإصدار:** 2026.06
+
+**آخر تحديث:** 5 سبتمبر 2026
+
 
 ---
 
 ## جدول المحتويات
 
-1. [مقدمة ونظرة عامة](#introduction-and-overview)
-2. [خطوات التكوين](#configuration-steps)
-3. [تكوين لوحة التحكم](#dashboard-configuration)
-4. [تكوين الواجهة الخلفية](#backend-configuration)
-5. [اختبار تسجيل الدخول](#testing-login)
-6. [استكشاف الأخطاء وإصلاحها](#troubleshooting)
-7. [المزودون المدعومون](#supported-providers)
+1. [مقدمة](#introduction)
+2. [متطلبات النظام](#system-requirements)
+3. [التهيئة ما قبل التثبيت](#pre-installation-setup)
+4. [إعداد خادم PostgreSQL](#postgresql-server-setup)
+5. [تهيئة خادم الويب](#web-server-configuration)
+6. [التثبيت الابتدائي](#initial-installation)
+7. [تكوين الخلفية (Backend)](#backend-configuration)
+8. [تكوين الواجهة (Dashboard)](#dashboard-configuration)
+9. [تشغيل digna كخدمة systemd](#running-digna-as-a-systemd-service)
+10. [الترقية إلى إصدار جديد](#upgrading-to-a-new-release)
 
 ---
 
-## مقدمة ونظرة عامة {: #introduction-and-overview }
+## مقدمة {: #introduction }
 
-يوفر هذا الدليل تعليمات خطوة بخطوة لدمج تسجيل الدخول الموحد (SSO) مع منصة digna باستخدام **OpenID Connect (OIDC)**.
+### عن digna
 
-### ما هو SSO؟
+digna هي منصة شاملة مدفوعة بالذكاء الاصطناعي مصممة لتحسين إدارة جودة البيانات عبر بيئات بيانات متعددة مثل المستودعات، البحيرات، وlakehouses. بُنيت لتكون قابلة للتوسع والتكيف بدرجة عالية، وتتعامل digna مع تحديات البيانات الحديثة عبر الأتمتة، المراقبة في الوقت الحقيقي، واكتشاف الشذوذ.
 
-يسمح تسجيل الدخول الموحد للمستخدمين بتسجيل الدخول إلى digna بأمان باستخدام بيانات اعتماد المؤسسة الخاصة بهم عبر مزودي هوية خارجيين. يمكن للمستخدمين المصادقة باستخدام بيانات اعتماد المؤسسة بدلًا من إدارة كلمات مرور منفصلة لـ digna.
+تتكون digna من مكوّنَين رئيسيين:
 
-### كيف يعمل
+- **dignabackend**: المحرك الأساسي للتطبيق، المسؤول عن معالجة البيانات وتنفيذ فحوصات الجودة.
+- **dignadashboard**: واجهة ويب مستضافة على خادم ويب، توفّر وسيلة سهلة التفاعل مع منصة digna وتصوّر مقاييس جودة البيانات.
 
-يتم تنفيذ SSO في digna باستخدام بروتوكول OIDC. يمكن تكوين مزودي هوية متعددين بالتوازي عن طريق تعديل ملفين أساسيين:
+### ما الجديد في إصدار 2026.06
 
-- **`dashboard_config.toml`** — يتحكم بواجهة تسجيل الدخول في الواجهة الأمامية
-- **`config.toml`** — يكوّن اتصالات OIDC في الواجهة الخلفية
+يجلب هذا الإصدار قدرات مراقبة البيانات داخل الشيفرة نفسها، مما يتيح للمطورين مراقبة جودة البيانات من المصدر. راجع [ملاحظات الإصدار](http://docs.digna.ai/changelog/Release_202606/) للتفاصيل الكاملة.
 
-### المزودون المدعومون {: #supported-providers-overview }
+### تبحث عن Windows أو macOS؟
 
-الأمثلة في هذا الدليل تستخدم **Microsoft** و **Google**، لكن **أي مزود متوافق مع OIDC** يمكن دمجه باتباع نفس الهيكل.
+يغطي هذا الدليل Linux. للمنصات الأخرى، راجع [دليل التثبيت على Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) أو [دليل التثبيت على macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
 
-من مزودي OIDC الشائعين:
-- Microsoft Entra ID (Azure AD)
-- Google Workspace
-- Okta
-- Auth0
-- Keycloak
-- مزودو هوية آخرون متوافقون مع OIDC
+### أي توزيعة يغطي هذا الدليل؟
 
----
+التعليمات مكتوبة لعائلتين شائعتين من الخوادم. حيث تختلف الأوامر بينهما، يتم عرض كلا الأمرين:
 
-## خطوات التكوين {: #configuration-steps }
+- **عائلة Debian** — Debian، Ubuntu. مدير الحزم: `apt`.
+- **عائلة RHEL** — Red Hat Enterprise Linux، Rocky Linux، AlmaLinux، Fedora. مدير الحزم: `dnf`.
 
-يتطلب تكوين SSO تحديث ملفين. يشرح هذا القسم كيفية تكوين كل منهما.
-
-### نظرة عامة على ملفات التكوين
-
-| الملف | الموقع | الغرض |
-|---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | واجهة تسجيل الدخول في الواجهة الأمامية |
-| **config.toml** | `/config.toml` | اتصالات OIDC في الواجهة الخلفية |
-
-يجب تكوين كلا الملفين لكي يعمل SSO بشكل صحيح.
+أي توزيعة حديثة تحتوي على `systemd` ستعمل؛ ما يتغير فقط أسماء الحزم وبعض مسارات التهيئة.
 
 ---
 
-## تكوين لوحة التحكم {: #dashboard-configuration }
+## متطلبات النظام {: #system-requirements }
 
-### موقع الملف
+قبل أن تبدأ التثبيت، تأكد من أن نظامك يفي بالحد الأدنى من المتطلبات التالية:
 
-```
-dashboard/dashboard_config.toml
-```
+| المتطلب | المواصفات |
+|---|---|
+| **نظام التشغيل** | Ubuntu 22.04 LTS أو أحدث، Debian 12 أو أحدث، RHEL 9 / Rocky 9 / AlmaLinux 9 أو أحدث |
+| **العمارة** | x86_64 (amd64) أو arm64 |
+| **نظام التهيئة (Init System)** | systemd |
+| **الذاكرة (إعداد أدنى)** | 16 GB RAM |
+| **مساحة القرص** | 10 GB مساحة متاحة |
+| **قاعدة البيانات** | خادم PostgreSQL 12 أو أحدث |
+| **خادم الويب** | nginx، Apache httpd، أو مكافئ |
 
-### الخطوة 1: إضافة مزودي OIDC
+### خيارات تثبيت قاعدة البيانات
 
-أضف مدخلات تحت مصفوفة `[[login.oidc]]` لكل مزود هوية تريد دعمه.
+**إذا كان PostgreSQL مثبتًا بالفعل:**
+يمكنك إضافة قاعدة بيانات جديدة لـ digna إلى خادم PostgreSQL الموجود لديك.
 
-**مثال مع Microsoft و Google:**
+**إذا كنت ستثبت PostgreSQL على نفس الجهاز الذي سيشغّل digna:**
 
-```toml
-[[login.oidc]]
-key = "microsoft"
-label = "تسجيل الدخول باستخدام Microsoft"
+!!! info "المواصفات الموصى بها"
 
-[[login.oidc]]
-key = "google"
-label = "تسجيل الدخول باستخدام Google"
-```
+    - **الذاكرة**: 32 GB RAM (بدلاً من 16 GB)
+    - **مساحة القرص**: 50 GB مساحة متاحة (بدلاً من 10 GB)
 
-### الخطوة 2: تكوين خيارات تسجيل الدخول
+    هذه المواصفات الأعلى تستوعب تشغيل digna وقاعدة بيانات PostgreSQL معًا.
 
-حدد ما إذا كان يجب السماح بتسجيل الدخول باستخدام كلمة المرور:
+### التحقق من التوزيعة والعمارة
 
-```toml
-[login]
-usePassword = true
-```
+تختلف عدة أوامر في هذا الدليل بين عائلتي Debian و RHEL. للتحقق أي منهما تستخدم، شغّل:
 
-### معلمات التكوين
-
-#### قسم `[[login.oidc]]`
-
-| المعامل | النوع | مطلوب | الوصف |
-|---|---|---|---|
-| `key` | string | نعم | معرف فريد لاتصال OIDC (يجب أن يطابق المفتاح في config.toml) |
-| `label` | string | نعم | النص المعروض على زر الدخول (مثل "تسجيل الدخول باستخدام Microsoft") |
-
-#### قسم `[login]`
-
-| المعامل | النوع | الافتراضي | الوصف |
-|---|---|---|---|
-| `usePassword` | boolean | false | السماح بتسجيل الدخول باستخدام كلمة المرور بالإضافة إلى SSO |
-
-### فهم usePassword
-
-**إذا كان `usePassword = true`:**
-- شاشة تسجيل الدخول تعرض أزرار SSO (مثل "تسجيل الدخول باستخدام Microsoft")
-- شاشة تسجيل الدخول تعرض أيضًا حقول اسم المستخدم وكلمة المرور
-- يمكن للمستخدمين المصادقة بأي من الطريقتين
-- يسمح بإعدادات هجينة حيث يستخدم بعض المستخدمين SSO والآخرون كلمات مرور
-
-**إذا كان `usePassword = false` (أو تم حذفه):**
-- شاشة تسجيل الدخول تعرض أزرار SSO فقط
-- لا توجد حقول اسم المستخدم/كلمة المرور
-- المصادقة تكون متاحة فقط عبر OIDC
-
-!!! tip "تلميح"
-
-    تسجيل الدخول باستخدام كلمة المرور متاح فقط للمستخدمين الذين تم إنشاؤهم بكلمات مرور عبر أمر `digna user add` أو عبر لوحة التحكم.
-
-### مثال مكتمل
-
-```toml
-[login]
-usePassword = true
-
-[[login.oidc]]
-key = "microsoft"
-label = "تسجيل الدخول باستخدام Microsoft"
-
-[[login.oidc]]
-key = "google"
-label = "تسجيل الدخول باستخدام Google"
-
-[[login.oidc]]
-key = "okta"
-label = "تسجيل الدخول باستخدام Okta"
-```
-
----
-
-## تكوين الواجهة الخلفية {: #backend-configuration }
-
-### موقع الملف
-
-```
-/config.toml
-```
-
-(دليل تثبيت digna الجذري)
-
-### الخطوة 1: إضافة أقسام مزود OIDC
-
-يجب أن يحتوي كل مزود على قسم مخصص `[oidc.<key>]`. يجب أن يطابق المفتاح المفتاح المعرفة في `dashboard_config.toml`.
-
-### تكوين Microsoft
-
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
-```
-
-### تكوين Google
-
-```toml
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
-```
-
-### معلمات التكوين
-
-| المعامل | النوع | مطلوب | الوصف | مثال |
-|---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | نعم | معرف العميل من مزود الهوية | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | نعم | سر العميل من مزود الهوية | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | نعم | عنوان الاستدعاء بعد المصادقة | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | نعم | نقطة تكوين OIDC | `https://login.microsoftonline.com/...` |
-
-!!! warning "هام"
-
-    استبدل القيم النائبة (`<client_id>`, `<client_secret>`, `<tenant_id>`) بالبيانات الفعلية من بوابة مطوري مزود الهوية الخاص بك.
-
-### عنوان الاستدعاء (Redirect URI)
-
-يجب أن يكون عنوان الاستدعاء نفس الموجود في إعدادات مزود الهوية:
-
-```
-http://localhost:5173/oidc/callback
-```
-
-إذا كان digna مستضافًا على نطاق مختلف، قم بالتحديث وفقًا لذلك:
-- محليًا: `http://localhost:5173/oidc/callback`
-- في الإنتاج: `https://digna.yourdomain.com/oidc/callback`
-
-### مثال مكتمل
-
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
-
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
-DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
-```
-
----
-
-## اختبار تسجيل الدخول {: #testing-login }
-
-بعد إكمال التكوين، تحقق من أن SSO يعمل بشكل صحيح.
-
-### قائمة التحقق قبل الاختبار
-
-قبل الاختبار تأكد من:
-
-- [ ] تم تحديث `dashboard_config.toml` بمزودي OIDC
-- [ ] تم تحديث `config.toml` ببيانات اعتماد OIDC
-- [ ] تم حفظ كلا الملفين
-- [ ] بيانات الاعتماد صحيحة (client ID، client secret)
-- [ ] عنوان الاستدعاء يطابق عنوان نشر التطبيق
-- [ ] تم تكوين تطبيق مزود الهوية بعنوان الاستدعاء
-
-### خطوات الاختبار
-
-#### الخطوة 1: إعادة تشغيل الخدمات
-
-أعد تشغيل الواجهة الخلفية و خادم الويب لتطبيق التغييرات.
-
-**إذا كان يعمل كخدمة Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cat /etc/os-release
+uname -m
 ```
 
-**إذا كنت تشغّله يدويًا:**
+- `ID=ubuntu` أو `ID=debian` — استخدم أوامر `apt`.
+- `ID=rhel`, `rocky`, `almalinux` أو `fedora` — استخدم أوامر `dnf`.
+- `x86_64` أو `aarch64` — هي معمارية حزمة التثبيت التي تحتاجها.
+
+---
+
+## التهيئة ما قبل التثبيت {: #pre-installation-setup }
+
+قبل تثبيت digna، تأكد من توافر شرطين أساسيين:
+
+1. **خادم PostgreSQL** – لتخزين المقاييس المحسوبة وبيانات الأداء
+2. **خادم الويب** – لاستضافة لوحة تحكم digna
+
+إذا لم تكن هذه المكونات معدّة بالفعل، اتبع الأقسام أدناه لتثبيتها وتكوينها.
+
+### تحديث فهارس الحزم
+
+حدّث قوائم الحزم قبل تثبيت أي شيء:
+
 ```bash
-cd C:\path\to\digna
-digna serve --address localhost --port 8082
+sudo apt update
+```
+```bash
+sudo dnf check-update
 ```
 
-**إذا كنت تستخدم IIS أو Tomcat:**
-أعد تشغيل خدمة خادم الويب الخاص بك.
+!!! note "ملاحظة"
 
-#### الخطوة 2: افتح لوحة التحكم
+    طوال هذا الدليل، الأمر الأول في كل زوج مخصص **لعائلة Debian** والثاني لعائلة **RHEL**. شغّل الأمر الذي يطابق نظامك فقط.
 
-افتح لوحة تحكم digna في متصفحك:
+---
+
+## إعداد خادم PostgreSQL {: #postgresql-server-setup }
+
+### إذا كان PostgreSQL مثبتًا بالفعل
+
+إذا كان PostgreSQL مثبتًا ويعمل على جهازك المحلي أو كنت تستخدم خادم PostgreSQL مدارًا عن بُعد، يمكنك الانتقال إلى [القسم التالي](#web-server-configuration).
+
+### تثبيت PostgreSQL
+
+#### الخطوة 1: تثبيت حزمة الخادم
+
+```bash
+sudo apt install -y postgresql postgresql-contrib
+```
+```bash
+sudo dnf install -y postgresql-server postgresql-contrib
+```
+
+!!! tip "نصيحة"
+
+    حزم التوزيعة قد تتأخر عن إصدار PostgreSQL الحالي. إذا احتجت إلى إصدار أحدث محدد، استخدم المستودع الرسمي الخاص بـ [PostgreSQL apt أو yum](https://www.postgresql.org/download/linux/).
+
+#### الخطوة 2: تهيئة عنقود قاعدة البيانات
+
+على **عائلة Debian**، الحزمة تُنشئ وتبدأ العنقود تلقائيًا — انتقل إلى الخطوة التالية.
+
+على **عائلة RHEL**، يجب إنشاء العنقود صراحة:
+
+```bash
+sudo postgresql-setup --initdb
+```
+
+#### الخطوة 3: بدء وتمكين الخدمة
+
+```bash
+sudo systemctl enable --now postgresql
+```
+
+هذا يبدأ PostgreSQL فورًا ويضبطه ليعمل تلقائيًا عند الإقلاع.
+
+#### الخطوة 4: التحقق من التثبيت
+
+```bash
+psql --version
+sudo systemctl status postgresql
+```
+
+يجب أن ترى إصدار PostgreSQL وخدمة في حالة `active (running)`.
+
+#### الخطوة 5: الاتصال بالخادم
+
+حزمة PostgreSQL على Linux تنشئ حساب نظامي `postgres` الذي يملك العنقود. اتصل من خلاله:
+
+```bash
+sudo -u postgres psql
+```
+
+!!! note "ملاحظة — يختلف Linux عن Windows هنا"
+
+    مُثبِّت Windows يطالبك بتعيين كلمة مرور لمستخدم `postgres` أثناء التثبيت. حزم Linux لا تفعل ذلك. بدلًا من ذلك، تُجرى المصادقة على الاتصالات المحلية عبر **peer authentication**: يُسمح لمستخدم نظام التشغيل `postgres` بالاتصال كمستخدم قاعدة بيانات `postgres` بدون كلمة مرور.
+
+    لهذا السبب يستخدم الأمر أعلاه `sudo -u postgres`. يتصل digna backend عبر TCP باسم مستخدم وكلمة مرور، لذا ستنشئ مستخدمًا صريحًا لـ digna في [التثبيت الابتدائي](#initial-installation).
+
+#### الخطوة 6: تأكيد المنفذ
+
+المنفذ الافتراضي لـ PostgreSQL هو `5432`. لتأكيد المنفذ الذي يستمع عليه خادمك:
+
+```bash
+sudo -u postgres psql -c "SHOW port;"
+```
+
+دوّن هذه القيمة — ستحتاجها عند تكوين backend الخاص بـ digna.
+
+#### الخطوة 7: تمكين مصادقة كلمات المرور لمستخدم digna
+
+digna يتصل بـ PostgreSQL عبر TCP كمستخدم `digna_user`، ويتطلب ذلك مصادقة بكلمة مرور بدلًا من peer authentication. تحقق أن `pg_hba.conf` يسمح بذلك.
+
+حدد موقع الملف:
+
+```bash
+sudo -u postgres psql -c "SHOW hba_file;"
+```
+
+افتحه بمحرر وتأكد أن الأسطر الخاصة بالاتصالات TCP المحلية تستخدم `scram-sha-256` (أو `md5` على الخوادم الأقدم) بدلاً من `ident`:
 
 ```
-http://localhost:5173
+# TYPE  DATABASE  USER  ADDRESS         METHOD
+host    all       all   127.0.0.1/32    scram-sha-256
+host    all       all   ::1/128         scram-sha-256
 ```
 
-(أو عنوان لوحة التحكم الذي قمت بتكوينه)
+أعد تحميل PostgreSQL بعد أي تغيير:
 
-#### الخطوة 3: التحقق من أزرار الدخول
+```bash
+sudo systemctl reload postgresql
+```
 
-تحقق من ظهور أزرار الدخول لكل مزود تم تكوينه:
+!!! warning "مهم"
 
-- يجب أن ترى زر "تسجيل الدخول باستخدام Microsoft"
-- يجب أن ترى زر "تسجيل الدخول باستخدام Google"
-- (إذا كان usePassword = true) يجب أن ترى حقول اسم المستخدم/كلمة المرور
+    إذا أبلغت digna عن `FATAL: Ident authentication failed for user "digna_user"`, فهذه الإعدادات هي السبب.
 
-إذا لم تظهر الأزرار:
-- تحقق من حفظ `dashboard_config.toml`
-- تحقق من إعادة تشغيل خدمة لوحة التحكم
-- تحقق من وحدة تحكم المتصفح (F12) للأخطاء
+#### الخطوة 8: إذا كان PostgreSQL يعمل على جهاز آخر
 
-#### الخطوة 4: اختبار تسجيل الدخول عبر SSO
+للسماح بالاتصالات من مضيف مختلف، اضبط `listen_addresses` في `postgresql.conf` وأضف سطر `host` مناسبًا لشبكتك في `pg_hba.conf`:
 
-انقر على أحد أزرار SSO (مثال: "تسجيل الدخول باستخدام Microsoft"):
+```
+listen_addresses = '*'
+```
 
-1. يجب أن يتم توجيهك إلى صفحة تسجيل الدخول الخاصة بمزود الهوية
-2. سجّل الدخول باستخدام بيانات اعتماد المؤسسة
-3. يجب أن تعود إلى digna
-4. يجب أن تكون مسجلاً في digna
+ثم افتح المنفذ في جدار الحماية وأعد تشغيل الخدمة:
 
-#### الخطوة 5: التحقق من إنشاء المستخدم
-
-بعد تسجيل الدخول الناجح عبر SSO:
-
-- يجب إنشاء المستخدم تلقائيًا في digna
-- يجب أن يتم تسجيل دخول المستخدم
-- يجب أن يعرض ملف التعريف بيانات مزود الهوية الخاص بك
-- يجب أن ترى لوحة تحكم digna
-
-#### الخطوة 6: اختبار تسجيل الدخول باستخدام كلمة المرور (إذا كان مفعلًا)
-
-إذا كان `usePassword = true`:
-
-1. سجّل الخروج من digna
-2. في صفحة تسجيل الدخول، أدخل اسم المستخدم وكلمة المرور
-3. يجب أن تتمكن من تسجيل الدخول باستخدام بيانات كلمة المرور
+```bash
+sudo ufw allow 5432/tcp
+```
+```bash
+sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
+```
+```bash
+sudo systemctl restart postgresql
+```
 
 ---
 
-## استكشاف الأخطاء وإصلاحها {: #troubleshooting }
+## تهيئة خادم الويب {: #web-server-configuration }
 
-### عدم ظهور أزرار الدخول
+تتطلب digna خادم ويب لاستضافة الواجهة. اختر أحد الخيارات التالية:
 
-**الأعراض:**
-- أزرار OIDC غير مرئية في صفحة الدخول
-- ترى حقول كلمة المرور فقط (إذا كان usePassword = true)
+- [nginx](#nginx-setup) — خفيف ومُوصى به
+- [Apache httpd](#apache-setup) — بديل واسع الانتشار
 
-**الأسباب والحلول:**
-1. تحقق أن `dashboard_config.toml` موجود في دليل `dashboard/`
-2. تحقق من وجود أقسام `[[login.oidc]]` وبالصياغة الصحيحة
-3. أعد تشغيل خدمة لوحة التحكم
-4. امسح ذاكرة تخزين المتصفح (Ctrl+Shift+Delete أو Cmd+Shift+Delete)
-5. تحقق من وحدة تحكم المتصفح (F12 → تبويب Console) للأخطاء
+تحتاج فقط إلى تثبيت وتكوين **أحد** هذين الخادمين.
+
+تقوم كلا القسمين بتكوين أمرين تعتمد عليهما الواجهة:
+
+- **استرجاع تطبيق الصفحة الواحدة (single-page-application fallback)**، حتى لا يعيد تحديث عنوان URL في لوحة التحكم خطأ 404
+- **نوع MIME للاحقة `.md`**، حتى تُخدَمّ ملفات Markdown بشكل صحيح
+
+### إعداد nginx {: #nginx-setup }
+
+#### نظرة عامة
+
+nginx هو خادم ويب خفيف وعالي الأداء مناسب جيدًا لخدمة لوحة تحكم digna الثابتة.
+
+#### التثبيت
+
+```bash
+sudo apt install -y nginx
+```
+```bash
+sudo dnf install -y nginx
+```
+
+#### بدء nginx
+
+```bash
+sudo systemctl enable --now nginx
+```
+
+#### التحقق من التثبيت
+
+1. افتح المتصفح
+2. انتقل إلى `http://localhost`
+3. يجب أن ترى صفحة الترحيب الخاصة بـ nginx
+
+#### فتح جدار الحماية
+
+إذا كان الخادم مُتاحًا من أجهزة أخرى، سمح بحركة HTTP:
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+```bash
+sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
+```
+
+#### تكوين موقع للوحة التحكم
+
+nginx يضمن تضمين كل ملف في دليل `conf.d` على كلتا العائلتين. أنشئ ملف تهيئة مخصص لـ digna هناك:
+
+```bash
+sudo nano /etc/nginx/conf.d/digna.conf
+```
+
+ألصق التالي، مع استبدال `/opt/digna/dashboard` بالمسار الفعلي لمجلد `dashboard` المستخرج لديك:
+
+```nginx
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+
+    root   /opt/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "مهم"
+
+    بدون توجيه `try_files`، يؤدي إعادة تحميل أي صفحة في لوحة التحكم غير صفحة الجذر إلى 404. هذا مكافئ nginx لوظيفة URL Rewrite المطلوبة في IIS على Windows.
+
+#### تعطيل الموقع الافتراضي
+
+يمكن أن يكون بلوك سيرفر واحد فقط هو الـ `default_server` لمنفذ. على **عائلة Debian**، احذف الإعداد الافتراضي المعبأ حتى لا يتعارض:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+```
+
+على **عائلة RHEL**، علّق أو احذف بلوك `server { ... }` داخل `/etc/nginx/nginx.conf`.
+
+#### تطبيق التهيئة
+
+اختبر التهيئة لصياغة صحيحة، ثم أعد تحميل nginx:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
 ---
 
-### خطأ عدم تطابق Redirect URI
+### إعداد Apache httpd {: #apache-setup }
 
-**الأعراض:**
-- بعد النقر على زر SSO يظهر خطأ حول "redirect_uri mismatch"
-- خطأ "The redirect URI is not registered"
+#### نظرة عامة
 
-**الأسباب والحلول:**
-1. تحقق من صحة `DIGNA_OIDC_REDIRECT_URI` في `config.toml`
-2. تحقق أن عنوان الاستدعاء مسجل في إعدادات مزود الهوية
-3. تأكد من تطابق العنوانين تمامًا (بروتوكول، نطاق، المسار)
-4. ابحث عن أخطاء مطبعية في عنوان الاستدعاء
-5. إذا كنت تستخدم HTTPS تأكد من صحة الشهادة
+Apache httpd متوفر في مستودعات التوزيعة الافتراضية لكل توزيعة مدعومة. اسم الحزمة هو `apache2` على عائلة Debian و `httpd` على عائلة RHEL.
+
+#### التثبيت
+
+```bash
+sudo apt install -y apache2
+```
+```bash
+sudo dnf install -y httpd
+```
+
+#### بدء Apache
+
+```bash
+sudo systemctl enable --now apache2
+```
+```bash
+sudo systemctl enable --now httpd
+```
+
+#### التحقق من التثبيت
+
+1. افتح المتصفح
+2. انتقل إلى `http://localhost`
+3. يجب أن ترى صفحة Apache الافتراضية لتوزيعتك
+
+#### مطلوب: تفعيل mod_rewrite
+
+تتطلب الواجهة إعادة كتابة عناوين URL.
+
+على **عائلة Debian**، فعّل الوِحدة وأعد التشغيل:
+
+```bash
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
+
+على **عائلة RHEL**، `mod_rewrite` محمّل افتراضيًا. تأكد من وجوده:
+
+```bash
+httpd -M | grep rewrite
+```
+
+#### مطلوب: السماح بتجاوزات .htaccess
+
+افتح ملف التهيئة لجذر المستندات:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
+```
+
+حدِّد بلوك `<Directory>` الذي يغطي جذر المستندات (`/var/www/html` على كلتا العائلتين) وغيّر:
+
+```apache
+AllowOverride None
+```
+
+إلى:
+
+```apache
+AllowOverride All
+```
+
+#### مطلوب: نوع MIME لملفات Markdown
+
+في نفس الملف، أضف السطر التالي حتى تُخدم ملفات Markdown بشكل صحيح:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "مهم"
+
+    بدون هذا الإعداد، قد لا تُخدم ملفات `.md` بشكل صحيح.
+
+#### تطبيق التهيئة
+
+تحقق من التهيئة لصياغة صحيحة، ثم أعد تشغيل Apache:
+
+```bash
+sudo apachectl configtest
+sudo systemctl restart apache2
+```
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
 
 ---
 
-### خطأ بيانات اعتماد العميل غير صالحة
+## التثبيت الابتدائي {: #initial-installation }
 
-**الأعراض:**
-- خطأ "Invalid client ID or secret"
-- فشل المصادقة بسبب خطأ في البيانات
+### الخطوة 1: إعداد مستودع digna
 
-**الأسباب والحلول:**
-1. تحقق من صحة `DIGNA_OIDC_CLIENT_ID` و `DIGNA_OIDC_CLIENT_SECRET`
-2. تأكد من عدم وجود مسافات زائدة أو أحرف غير مقصودة
-3. تحقق أن البيانات لم تنتهِ صلاحيتها أو لم تُلغي
-4. أعد تشغيل الواجهة الخلفية بعد تحديث التكوين
-5. تحقق من وحدة تحكم مزود الهوية لتأكيد أن البيانات نشطة
+مستودع digna يخزن جميع المقاييس المحسوبة بواسطة digna. يعمل كقاعدة بيانات مركزية للبيانات التحليلية وأداء النظام.
+
+#### إنشاء مخطط المستودع والمستخدم
+
+افتح عميل PostgreSQL الخاص بك (psql، pgAdmin، أو ما شابه) ونفّذ أوامر SQL التالية:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**استبدل العناصر النائبة التالية:**
+
+- `<digna_repo_schema>` — اسم المخطط المطلوب (مثلاً `dignarepo`)
+- `<digna_repo_user>` — اسم المستخدم المطلوب (مثلاً `digna_user`)
+- `<digna_repo_password>` — كلمة مرور آمنة لهذا المستخدم
+
+**مثال:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+لتنفيذ هذه الأوامر من الشل في خطوة واحدة:
+
+```bash
+sudo -u postgres psql
+```
+
+ثم ألصق العبارات عند موجه `postgres=#` واكتب `\q` للخروج.
+
+!!! tip "أفضل ممارسة"
+
+    استخدم كلمات مرور قوية ومعقدة لمستخدمي قاعدة البيانات. تجنّب بيانات اعتماد سهلة التخمين.
 
 ---
 
-### تعليق أو انتهاء مهلة تسجيل الدخول
+### الخطوة 2: فك حزمة تثبيت digna
 
-**الأعراض:**
-- النقر على زر SSO لا يفعل شيئًا
-- انتهاء مهلة بعد عدة ثوانٍ
-- المتصفح يعرض "Failed to connect" أو ما يشابهه
+1. حدّد ملف ZIP لتثبيت digna المزوَّد لك
+2. فكّه في موقع التثبيت الذي تريده — على سبيل المثال `/opt/digna`
+3. بعد الفك، يجب أن ترى العناصر التالية:
+   - `dashboard/` — واجهة الويب
+   - `digna` — الملف التنفيذي الرئيسي (backend + CLI مدمجان)
+   - `config.toml` — ملف التهيئة
+   - `license.toml` — ملف الترخيص (انسخ ملف الترخيص الخاص بك هنا)
 
-**الأسباب والحلول:**
-1. تحقق أن الواجهة الخلفية لـ digna تعمل: `digna repo check`
-2. تحقق من اتصال الشبكة إلى مزود الهوية
-3. تحقق من إمكانية الوصول إلى `DIGNA_OIDC_CONFIGURATION_URL`
-4. تحقق من قواعد الجدار الناري للسماح باتصالات HTTPS الصادرة
-5. تحقق أن الواجهة الخلفية واللوحة الأمامية يمكنهما الوصول إلى بعضهما البعض
+لفك الضغط من الشل:
+
+```bash
+sudo mkdir -p /opt/digna
+sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
+```
+
+!!! note "ملاحظة"
+
+    إذا لم يكن `unzip` مثبتًا، أضفه بـ `sudo apt install -y unzip` أو `sudo dnf install -y unzip`.
+
+#### جعل الملف التنفيذي قابلاً للتشغيل
+
+اعتمادًا على طريقة نقل الأرشيف، قد لا تحتفظ بيانات الترخيص بحقوق التنفيذ عند الفك. اضبطها صراحة:
+
+```bash
+cd /opt/digna
+sudo chmod +x digna
+```
+
+#### إنشاء حساب خدمة
+
+يوصى بتشغيل الخلفية كمستخدم غير مميز مخصص للإنتاج:
+
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! note "ملاحظة"
+
+    على عائلة RHEL، مسار الشِل المعادل هو `/sbin/nologin`.
+
+### الخطوة 3: تثبيت ملف الترخيص
+
+!!! warning "مهم"
+
+    ملف الترخيص **غير** متضمن في حزمة التثبيت وسيزوَّد لك منفصلًا من digna.
+
+1. حدّد ملف `license.toml` المزود لك
+2. انسخه إلى دليل تثبيت digna الجذري (حيث يوجد `config.toml` والملف التنفيذي `digna`)
+
+**لماذا هذا مهم:**
+يحتوي ملف الترخيص على معلومات العميل، تاريخ انتهاء الترخيص، والتوقيع الرقمي. **لا تُعدِّل هذا الملف** — أي تغيّر سيبطله.
+
+**هيكل الدليل بعد الإعداد:**
+
+```
+/opt/digna/
+├── config.toml         (ملف التهيئة)
+├── license.toml        (ملف الترخيص الخاص بك - انسخه هنا)
+├── digna               (الملف التنفيذي الرئيسي)
+├── bin/                (سكريبتات إدارة الخدمة)
+└── dashboard/          (واجهة الويب)
+    └── (ملفات الdashboard)
+```
 
 ---
 
-### لم يتم إنشاء المستخدم تلقائيًا
+## تكوين الخلفية (Backend) {: #backend-configuration }
 
-**الأعراض:**
-- تسجيل الدخول عبر SSO ينجح لكن لم يُنشأ مستخدم في digna
-- تحصل على خطأ أذونات بعد SSO
+### الخطوة 1: إنشاء وتحرير ملف التهيئة
 
-**الأسباب والحلول:**
-1. تحقق من صحة تكوين OIDC
-2. تحقق من إعدادات أذونات المستخدمين
-3. راجع سجلات digna للرسائل الخطأ
-4. أعد تشغيل الواجهة الخلفية
-5. اتصل بـ support@digna.ai إذا استمرت المشكلة
+ملف `config_template.toml` مُقدم في دليل تثبيت digna. كل ما عليك هو إعادة تسميته إلى `config.toml`.
 
----
+```bash
+cd /opt/digna
+sudo mv config_template.toml config.toml
+```
 
-## المزودون المدعومون {: #supported-providers }
+**الموقع:** `/opt/digna/config.toml`
 
-### تم الاختبار والدعم
+افتح `config.toml` في محرر نصّي وقم بتكوين كل قسم أدناه.
 
-المزودون التاليون متوافقون وتم اختبارهم ويعملون:
+#### قسم [app]
 
-| المزود | عنوان تكوين OIDC | دليل الإعداد |
+هذا القسم يضبط إعدادات تطبيق backend الخاص بـ digna:
+
+```toml
+[app]
+digna_APP_HOST = "localhost"
+digna_APP_PORT = 8082
+digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+digna_APP_CORS_ALLOW_CREDENTIALS = true
+digna_APP_CORS_ALLOW_METHODS = ["*"]
+digna_APP_CORS_ALLOW_HEADERS = ["*"]
+```
+
+| المعامل | القيمة | ملاحظات |
 |---|---|---|
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft Doc](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google Doc](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta Doc](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
+| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP حيث يتم استضافة dignabackend |
+| `digna_APP_PORT` | `8082` (افتراضي) | منفذ نقاط REST API |
+| `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت الواجهة على خادم مختلف، أضف عنوانها هنا |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب للـ CORS مع الاعتمادات |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بجميع طرق HTTP |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | السماح بجميع الرؤوس |
 
-### مزودو OIDC الآخرون
+!!! note "ملاحظة"
 
-أي مزود يدعم OpenID Connect يمكن دمجه. المعلومات المطلوبة:
+    إذا كنت تخدم الواجهة من nginx أو Apache على منفذ HTTP الافتراضي، فالأصل المسموح هو `http://localhost` — أو عنوان الخادم العام عندما تُصل الواجهة من أجهزة أخرى.
 
-- Client ID
-- Client secret
-- عنوان تكوين OpenID (عادةً عند `/.well-known/openid-configuration`)
-- الصلاحيات المدعومة (عادةً `openid profile email`)
+#### قسم [repo]
 
-اتصل بـ support@digna.ai إذا احتجت مساعدة في دمج مزود محدد.
+هذا القسم يضبط الاتصال بقاعدة بيانات PostgreSQL:
+
+```toml
+[repo]
+digna_REPO_HOST = "localhost"
+digna_REPO_PORT = 5432
+digna_REPO_DB = "postgres"
+digna_REPO_SCHEMA = "dignarepo"
+digna_REPO_USER = "digna_user"
+digna_REPO_PASSWORD = "YourSecurePassword123!"
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_REPO_HOST` | `localhost` أو IP | اسم مضيف/IP خادم PostgreSQL |
+| `digna_REPO_PORT` | `5432` (افتراضي) | منفذ PostgreSQL |
+| `digna_REPO_DB` | `postgres` | اسم قاعدة البيانات |
+| `digna_REPO_SCHEMA` | `dignarepo` | المخطط الذي أنشأته سابقًا |
+| `digna_REPO_USER` | `digna_user` | المستخدم الذي أنشأته في إعداد PostgreSQL |
+| `digna_REPO_PASSWORD` | كلمة مرورك | كلمة المرور التي عيّنتها أثناء إنشاء المخطط |
+
+!!! tip "أفضل ممارسة"
+
+    يحتوي `config.toml` على كلمة مرور قاعدة البيانات كنص صريح. قيد أذوناته بحيث لا يقرأه سوى حساب الخدمة:
+
+    ```bash
+    sudo chown digna:digna /opt/digna/config.toml
+    sudo chmod 600 /opt/digna/config.toml
+    ```
+
+#### قسم [base]
+
+يحتوي هذا القسم على إعدادات الأمان وملفات تعريف الارتباط:
+
+```toml
+[base]
+digna_FERNET_KEY = "your-fernet-key"
+digna_COOKIE_DOMAIN = "localhost"
+digna_COOKIE_PATH = "/"
+digna_COOKIE_SECURE = false
+digna_COOKIE_HTTPONLY = true
+digna_COOKIE_SAME_SITE = "lax"
+digna_TOKEN_EXPIRES_IN = 86400
+digna_MAX_WORKERS = 4
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_FERNET_KEY` | مفتاح تشفير | يُستخدم لتشفير الرموز وملفات تعريف الارتباط (يوجد مفتاح افتراضي) |
+| `digna_COOKIE_DOMAIN` | `localhost` | طابق نطاق الواجهة الأمامية |
+| `digna_COOKIE_SECURE` | `false` (محلي) / `true` (إنتاج) | استخدم `true` للاتصالات عبر HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | مفعل دائمًا لأسباب أمنية |
+| `digna_COOKIE_SAME_SITE` | `lax` | يقي من هجمات CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ساعة) | مهلة الجلسة بالثواني |
+| `digna_MAX_WORKERS` | عدد أنوية CPU - 1 | عدد مهام الفحص المتوازية |
+
+!!! tip "نصيحة"
+
+    لمعرفة عدد أنوية CPU المتاحة على الخادم، شغّل `nproc`.
+
+#### قسم [logging]
+
+هذا القسم يضبط سلوك التسجيل:
+
+```toml
+[logging]
+digna_LOGGING_MODE = "INFO"
+digna_LOGGING_BACKUP_COUNT = 10
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_LOGGING_MODE` | `INFO` أو `DEBUG` | `INFO` للإنتاج، `DEBUG` لاستكشاف الأخطاء |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | عدد نُسَخ التسجيل اليومية التي سيتم الاحتفاظ بها |
 
 ---
 
-## أفضل الممارسات
+### الخطوة 2: تهيئة المستودع
 
-افعل:
-- استخدم HTTPS في بيئة الإنتاج (لا تستخدم HTTP)
-- خزّن أسرار العملاء بأمان (استخدم متغيرات البيئة إن أمكن)
-- قم بتدوير الأسرار دوريًا
-- اختبر في بيئة غير إنتاجية أولًا
-- وثّق المزودين المكونين
-- راقب سجلات تسجيل الدخول للنشاط غير المألوف
-- حافظ على تزامن إعدادات مزود الهوية مع تكوين digna
+1. افتح طرفية
+2. انتقل إلى دليل تثبيت digna (حيث يوجد `config.toml` والملف التنفيذي `digna`)
+3. شغّل اختبار الاتصال:
 
-لا تفعل:
-- خزّن أسرار العملاء في نظام التحكم بالإصدارات
-- استخدم عناوين إعادة التوجيه HTTP في الإنتاج
-- قم بتكوين مزودين متعددين بنفس المفتاح
-- اترك بيانات اعتماد افتراضية/تجريبية في الإنتاج
-- اكشف ملفات التكوين التي تحتوي على أسرار
-- اخلط بين بيانات اعتماد التطوير والإنتاج
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+يجب أن ترى تأكيدًا على نجاح الاتصال (المستودع نفسه لم يُهيأ بعد).
+
+!!! note "ملاحظة"
+
+    على Linux، الدليل الحالي ليس في PATH، لذا يُستدعى الملف التنفيذي كـ `./digna` بدلًا من `digna`. لاستخدام الشكل الأقصر في كل مكان، أضف رابطًا رمزيًا:
+
+    ```bash
+    sudo ln -s /opt/digna/digna /usr/local/bin/digna
+    ```
+
+### الخطوة 3: تثبيت مخطط المستودع
+
+في نفس الدليل، شغّل:
+
+```bash
+./digna repo install
+```
+
+يُنشئ هذا الأمر الجداول والمخططات اللازمة في قاعدة بيانات PostgreSQL الخاصة بك.
+
+### الخطوة 4: بدء خادم digna
+
+في دليل تثبيت digna، ابدأ الخادم بـ:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**المعلمات:**
+- `--address` — اسم المضيف/عنوان IP للخادم
+- `--port` — منفذ الخادم
+
+يجب أن ترى رسائل بدء تُؤكِّد أن الخادم يعمل:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "نصيحة"
+
+    إذا كانت الواجهة تُخدم من جهاز مختلف عن الـ backend، افتح منفذ API أيضًا في جدار الحماية:
+
+    ```bash
+    sudo ufw allow 8082/tcp
+    ```
+    ```bash
+    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
+    ```
+
+### الخطوة 5: إنشاء مستخدم مشرف
+
+1. افتح نافذة طرفية **جديدة**
+2. انتقل إلى دليل تثبيت digna
+3. شغّل الأمر التالي لإنشاء مستخدم مشرف:
+
+```bash
+./digna user add <username> "<full_name>" <password> --su
+```
+
+**مثال:**
+
+```bash
+./digna user add admin "Admin User" 'AdminPassword123!' --su
+```
+
+يُنشيء هذا مستخدمًا باسم `admin` بصلاحيات إدارية كاملة.
+
+!!! tip "نصيحة"
+
+    ضمّن كلمة المرور بين علامات اقتباس مفردة. تتعامل `bash` و `zsh` مع الأحرف مثل `!` و `$` و `*` بشكل خاص، وكلمة مرور غير محاطة قد لا تُمرَّر كما كتبت.
+
+!!! tip "أفضل ممارسة"
+
+    استخدم كلمة مرور قوية تضم مزيجًا من أحرف كبيرة وصغيرة وأرقام ورموز خاصة.
 
 ---
 
-## الدعم
+## تكوين الواجهة (Dashboard) {: #dashboard-configuration }
 
-تحتاج مساعدة في تكوين SSO؟
+### الخطوة 1: نشر الواجهة على خادم الويب
 
-- **البريد الإلكتروني:** support@digna.ai
-- **التوثيق:** https://docs.digna.ai
-- **الموقع:** https://www.digna.ai
+تمتلك لوحة digna ملف `config.toml` منفصلًا داخل دليل `dashboard/`. هذا التكوين مُقدّم بالفعل ولا يتطلب تغييرات أثناء الإعداد الابتدائي. تحتاج لتعديله فقط إذا أردت تخصيص اتصال الـ backend.
+
+إذا احتجت لتعديل تهيئة الواجهة (مثلًا لانتشار متعدد النسخ)، ارجع إلى توثيق الواجهة.
+
+اختر خادم الويب واتبع خطوات النشر المناسبة.
+
+#### النشر على nginx
+
+إذا اتبعت قسم [إعداد nginx](#nginx-setup)، فإن بلوك السيرفر يشير بالفعل إلى مجلد `dashboard` ولا حاجة للنسخ.
+
+1. **أكد المسار**
+   - افتح `/etc/nginx/conf.d/digna.conf`
+   - تحقق أن `root` يشير إلى مجلد `dashboard` المستخرج
+
+2. **تأكد من أن المجلد قابل للقراءة**
+   ```bash
+   sudo chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **أعد تحميل nginx**
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+4. **اختبر التثبيت**
+   - افتح المتصفح
+   - انتقل إلى `http://localhost` (أو عنوان الـ URL المكوّن)
+   - يجب أن ترى صفحة تسجيل دخول لوحة digna
+
+#### النشر على Apache httpd
+
+1. **انسخ الواجهة إلى جذر المستندات**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /var/www/html/digna
+   ```
+
+2. **أضف قواعد إعادة الكتابة**
+
+   أنشئ ملف `.htaccess` داخل المجلد المنشور ليظلّت مسارات الواجهة صالحة بعد تحديث المتصفح:
+
+   ```bash
+   sudo nano /var/www/html/digna/.htaccess
+   ```
+
+   ألصق التالي:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **أعد تشغيل Apache**
+   ```bash
+   sudo systemctl restart apache2
+   ```
+   ```bash
+   sudo systemctl restart httpd
+   ```
+
+4. **افتح الواجهة**
+   - افتح المتصفح
+   - انتقل إلى `http://localhost/digna`
+   - يجب أن ترى صفحة تسجيل دخول لوحة digna
+
+### الخطوة 2: SELinux (عائلة RHEL فقط)
+
+على RHEL، Rocky، AlmaLinux و Fedora، يكون SELinux في الوضع المطبق (enforcing) افتراضيًا وسيمنع خادم الويب من قراءة الملفات خارج المواقع المتوقعة. تحقّق ما إذا كان مفعلًا:
+
+```bash
+getenforce
+```
+
+إذا كانت النتيجة `Enforcing` وكنت تخدم الواجهة من `/opt/digna/dashboard`، صنف المجلد بحيث يتمكن خادم الويب من قراءته:
+
+```bash
+sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+!!! note "ملاحظة"
+
+    إذا لم تجد `semanage`، ثبِّته بـ `sudo dnf install -y policycoreutils-python-utils`.
+
+!!! warning "مهم"
+
+    غالبًا ما يكون سبب ظهور **403 Forbidden** على خادم RHEL مهيأ حديثًا هو مشكلة في تمييز SELinux وليس في أذونات الملفات. تأكد باستخدام `sudo ausearch -m avc -ts recent`.
 
 ---
 
-**آخر تحديث:** 30 أغسطس 2026  
-**الإصدار:** 2026.04  
-**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+## تشغيل digna كخدمة systemd {: #running-digna-as-a-systemd-service }
+
+### لماذا تشغيل digna كخدمة؟
+
+تشغيل backend الخاص بـ digna كخدمة systemd يضمن أنه:
+
+- يبدأ تلقائيًا عند إقلاع الجهاز
+- يعمل في الخلفية دون نافذة طرفية مفتوحة
+- يعاد تشغيله تلقائيًا إذا تعطل
+- يمكن إدارته عبر `systemctl`، مدير الخدمات القياسي على Linux
+
+### ملفات إدارة الخدمة
+
+جميع الملفات اللازمة موجودة في دليل تثبيت digna تحت: `bin/`
+
+السكريبتات الشل التالية متاحة:
+
+- `install_service.sh` — يسجل digna لدى systemd
+- `uninstall_service.sh` — يلغى تسجيل الخدمة
+- `start_service.sh` — يبدء الخدمة المسجلة
+- `stop_service.sh` — يوقف الخدمة الجارية
+
+!!! warning "مطلوب صلاحيات الروت"
+
+    يجب تنفيذ جميع السكريبتات باستخدام `sudo`، لأن تسجيل خدمة تبدأ عند الإقلاع يكتب ملف وحدة إلى `/etc/systemd/system`.
+
+### جعل السكريبتات قابلة للتنفيذ
+
+قد لا تحافظ عملية الفك على بت التنفيذ. قبل الاستخدام الأول:
+
+```bash
+cd /opt/digna/bin
+sudo chmod +x *.sh
+```
+
+### تثبيت الخدمة
+
+1. **افتح طرفية**
+
+2. **انتقل إلى مجلد bin**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **شغّل سكريبت التثبيت**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+تم الآن تسجيل خادم digna لدى systemd مع تمكين بدء التشغيل التلقائي. الخدمة لا تبدأ فورًا — راجع القسم التالي لبدءها.
+
+### بدء وإيقاف الخدمة
+
+#### لبدء الخدمة
+
+1. افتح طرفية
+2. انتقل إلى `/opt/digna/bin`
+3. شغّل:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### لإيقاف الخدمة
+
+1. افتح طرفية
+2. انتقل إلى `/opt/digna/bin`
+3. شغّل:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "نصيحة"
+
+    أوقف الخدمة دائمًا قبل تحديث ملفات التطبيق.
+
+### إدارة الخدمة عبر systemctl
+
+بعد التسجيل، يمكن أيضًا التحكم بالخدمة باستخدام أوامر systemd القياسية من أي دليل:
+
+```bash
+sudo systemctl start digna
+sudo systemctl stop digna
+sudo systemctl restart digna
+sudo systemctl status digna
+```
+
+### التحقق من الخدمة
+
+للتأكد أن الخدمة مسجلة وتعمل:
+
+```bash
+systemctl is-enabled digna
+systemctl is-active digna
+```
+
+`enabled` يعني أن الخدمة تبدأ عند الإقلاع؛ `active` يعني أنها تعمل الآن.
+
+### عرض سجلات الخدمة
+
+يقوم systemd بالتقاط كل ما يطبعه الـ backend على الطرفية. لقراءته:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+لمتابعة السجل مباشرًة أثناء إعادة إنتاج المشكلة:
+
+```bash
+sudo journalctl -u digna -f
+```
+
+!!! tip "نصيحة"
+
+    هذه أسرع طريقة لتشخيص خدمة تبدأ ثم تتوقف فورًا. فشل اتصال المستودع أو افتقار `license.toml` يُبلغ عنه هنا.
+
+### نقل الخدمة إلى دليل جديد
+
+ملف الوحدة يخزن المسار المطلق للملف التنفيذي، لذا يتطلب نقل التثبيت إعادة تسجيل الخدمة:
+
+1. **إلغاء تثبيت الخدمة الحالية**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **نقل ملفات التطبيق**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **إعادة تثبيت الخدمة**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **بدء الخدمة**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### إلغاء تثبيت الخدمة
+
+1. **أوقف الخدمة الجارية**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **أزل الخدمة**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+تم الآن إلغاء تسجيل خادم digna من systemd.
+
+---
+
+## الترقية إلى إصدار جديد {: #upgrading-to-a-new-release }
+
+### قبل الترقية
+
+**النسخ الاحتياطي لمستودع digna إلزامي**
+
+قبل ترقية digna، اعمل نسخة احتياطية من مستودعك (PostgreSQL) لحماية بياناتك من الضياع.
+النسخة الاحتياطية تضمن إمكانية الاسترداد إذا واجهت الترقية مشكلات غير متوقعة.
+
+لإنشاء نسخة احتياطية من الشل:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+### عملية الترقية
+
+#### الخطوة 1: إيقاف خدمة digna
+
+إذا كانت digna تعمل كخدمة systemd، أوقفها أولًا:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+إذا كانت تعمل في المقدمة (foreground)، اضغط `Ctrl + C` في نافذة الطرفية الخاصة بها.
+
+#### الخطوة 2: نسخ احتياطي للتثبيت الحالي للـ backend
+
+في دليل تثبيت digna:
+
+```bash
+cd /opt/digna
+sudo mv digna digna_old
+```
+```bash
+sudo mv dashboard dashboard_old
+```
+
+#### الخطوة 3: فك ونشر النسخة الجديدة
+
+1. فك ملف ZIP للنسخة الجديدة من digna
+2. انسخ الملف التنفيذي الجديد `digna` ومجلد `dashboard` إلى دليل التثبيت
+3. أعد بت التنفيذ وملكية حساب الخدمة:
+
+```bash
+sudo chmod +x /opt/digna/digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! warning "مهم"
+
+    ملف `config.toml` **غير** مضمن أبدًا في أرشيف التثبيت. تظل تهيئتك الحالية سليمة.
+
+### الخطوة 4: استعادة ملفات التهيئة الخاصة بك
+
+```bash
+sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+### الخطوة 5: ترقية مخطط المستودع
+
+انتقل إلى دليل تثبيت digna وشغّل:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+سيحدِّث هذا مخطط PostgreSQL إلى أحدث إصدار مع المحافظة على جميع البيانات الحالية.
+
+### الخطوة 6: إعادة تشغيل الخدمات
+
+إذا كانت تعمل كخدمة systemd:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+إذا كنت تديرها يدويًا، أعد تشغيل الخادم:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+إذا كنت تستخدم nginx أو Apache، أعد تحميل خادم الويب المعني:
+
+```bash
+sudo systemctl reload nginx
+```
+```bash
+sudo systemctl restart apache2
+```
+
+على عائلة RHEL، أعد تطبيق تمييز SELinux إذا استُبدل دليل `dashboard`:
+
+```bash
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+#### الخطوة 7: التحقق من الترقية
+
+1. افتح لوحة digna
+2. تحقق من تحميل الواجهة بشكل صحيح
+3. تحقق من سجلات الخادم لأي أخطاء:
+
+```bash
+sudo journalctl -u digna -n 100
+```
 
 ---
 
@@ -6036,54 +6740,58 @@ Source: https://docs.digna.ai/ar/installation_deployment/Windows/Release%202026.
 5. [تكوين خادم الويب](#web-server-configuration)
 6. [التثبيت الأولي](#initial-installation)
 7. [تكوين الواجهة الخلفية](#backend-configuration)
-8. [تكوين اللوحة (Dashboard)](#dashboard-configuration)
+8. [تكوين اللوحة](#dashboard-configuration)
 9. [تشغيل digna كخدمة Windows](#running-digna-as-a-windows-service)
 10. [الترقية إلى إصدار جديد](#upgrading-to-a-new-release)
 
 ---
 
-## مقدمة {: #introduction }
+## المقدمة {: #introduction }
 
-### عن digna
+### حول digna
 
-digna هي منصة شاملة مدفوعة بالذكاء الاصطناعي مصممة لتحسين إدارة جودة البيانات عبر بيئات بيانات متنوعة مثل المستودعات، والبحيرات، والـ lakehouses. تم بناؤها لتكون قابلة للتوسع والتكيّف، وتتعامل digna مع تحديات البيانات الحديثة من خلال الأتمتة، والمراقبة في الوقت الحقيقي، والكشف عن الشذوذ.
+digna هي منصة شاملة تعتمد على الذكاء الاصطناعي مصممة لتحسين إدارة جودة البيانات عبر بيئات بيانات متنوعة مثل المستودعات (warehouses)، والبحيرات (lakes)، والـ lakehouses. تم بناؤها لتكون قابلة للتوسع والتكيف بدرجة عالية، وتتعامل digna مع تحديات البيانات الحديثة من خلال الأتمتة، والمراقبة في الوقت الحقيقي، وكشف الشذوذ.
 
-تتكون digna من مكونين رئيسيين:
+يتكون digna من مكونين رئيسيين:
 
-- **dignabackend**: المحرك الأساسي للتطبيق، المسؤول عن معالجة البيانات وإجراء فحوصات الجودة.
-- **dignadashboard**: واجهة ويب مستضافة على خادم ويب، توفر طريقة سهلة للتفاعل مع منصة digna وتصوّر مقاييس جودة البيانات.
+- **dignabackend**: المحرك الأساسي للتطبيق، المسؤول عن معالجة البيانات وتنفيذ فحوصات الجودة.
+- **dignadashboard**: واجهة ويب مستضافة على خادم ويب، توفر طريقة سهلة للتفاعل مع منصة digna وتصوير مؤشرات جودة البيانات.
 
 ### ما الجديد في الإصدار 2026.06
 
-يجلب هذا الإصدار قدرات رصد البيانات (data observability) مباشرة إلى الكود الخاص بك، مما يتيح للمطورين مراقبة جودة البيانات من المصدر. راجع [ملاحظات الإصدار](http://docs.digna.ai/changelog/Release_202606/) للتفاصيل الكاملة.
+يجلب هذا الإصدار قدرات مراقبة البيانات (data observability) مباشرة إلى التعليمات البرمجية الخاصة بك، مما يمكّن المطورين من مراقبة جودة البيانات عند المصدر. راجع ملاحظات الإصدارة في [ملاحظات الإصدار](http://docs.digna.ai/changelog/Release_202606/) للاطلاع على التفاصيل الكاملة.
+
+### تبحث عن macOS أو Linux؟
+
+يغطي هذا الدليل Windows. للمنصات الأخرى، راجع [دليل التثبيت على macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) أو [دليل التثبيت على Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
 ## متطلبات النظام {: #system-requirements }
 
-قبل البدء بالتثبيت، تأكد من أن نظامك يفي بالحد الأدنى من المتطلبات التالية:
+قبل البدء في التثبيت، تأكد من أن نظامك يستوفي الحد الأدنى من المتطلبات التالية:
 
-| Requirement | Specification |
+| المتطلب | المواصفة |
 |---|---|
-| **Operating System** | Windows Server أو Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB متاح للتخزين |
-| **Database** | PostgreSQL Server 12 أو أحدث |
-| **Web Server** | IIS أو Apache Tomcat أو ما يعادله |
+| **نظام التشغيل** | Windows Server أو Windows 10/11 |
+| **الذاكرة (إعداد بسيط)** | 16 جيجابايت RAM |
+| **مساحة القرص** | 10 جيجابايت مساحة متاحة |
+| **قاعدة البيانات** | PostgreSQL Server إصدار 12 أو أعلى |
+| **خادم الويب** | IIS أو Apache Tomcat أو ما يعادلهما |
 
 ### خيارات تثبيت قاعدة البيانات
 
 **إذا كان PostgreSQL مثبتًا بالفعل:**
-يمكنك إضافة قاعدة بيانات جديدة لـ digna على خادم PostgreSQL الحالي لديك.
+يمكنك إضافة قاعدة بيانات جديدة لـ digna إلى خادم PostgreSQL الموجود لديك.
 
-**إذا كنت تقوم بتثبيت PostgreSQL على نفس الجهاز الذي سيشغّل digna:**
+**إذا كنت ستثبت PostgreSQL على نفس الجهاز الذي سيشغل digna:**
 
 !!! info "المواصفات الموصى بها"
 
-    - **الذاكرة**: 32 GB RAM (بدلاً من 16 GB)
-    - **مساحة التخزين**: 50 GB متاحة (بدلاً من 10 GB)
+    - **الذاكرة**: 32 جيجابايت RAM (بدلاً من 16 جيجابايت)
+    - **مساحة القرص**: 50 جيجابايت مساحة متاحة (بدلاً من 10 جيجابايت)
 
-    هذه المواصفات الأعلى تستوعب تشغيل digna وقاعدة بيانات PostgreSQL في آنٍ واحد.
+    هذه المواصفات الأعلى تستوعب تشغيل digna وقاعدة بيانات PostgreSQL معًا على نفس الجهاز.
 
 ---
 
@@ -6094,58 +6802,58 @@ digna هي منصة شاملة مدفوعة بالذكاء الاصطناعي م
 1. **خادم PostgreSQL** – لتخزين المقاييس المحسوبة وبيانات الأداء
 2. **خادم ويب** – لاستضافة لوحة digna
 
-إذا لم تكن هذه المكونات مُعدة بالفعل، اتبع الأقسام أدناه لتثبيتها وتكوينها.
+إذا لم تكن هذه المكونات معدة بالفعل، اتبع الأقسام أدناه لتثبيتها وتكوينها.
 
 ---
 
 ## إعداد خادم PostgreSQL {: #postgresql-server-setup }
 
-### إذا كان PostgreSQL مثبتًا لديك بالفعل
+### إذا كان PostgreSQL مثبتًا بالفعل
 
-إذا كان PostgreSQL مثبتًا ويعمل على جهازك المحلي أو إذا كنت تستخدم خادم PostgreSQL مُدار عن بُعد، يمكنك الانتقال إلى [القسم التالي](#web-server-configuration).
+إذا كان PostgreSQL مثبتًا ويعمل على جهازك المحلي أو إذا كنت تستخدم خادم PostgreSQL مُدار عن بُعد، يمكنك الانتقال إلى القسم التالي: [تكوين خادم الويب](#web-server-configuration).
 
 ### تثبيت PostgreSQL
 
-اتبع الخطوات التالية لتثبيت PostgreSQL على Windows:
+اتبع هذه الخطوات لتثبيت PostgreSQL على Windows:
 
 #### الخطوة 1: تنزيل PostgreSQL
 
-1. زر [صفحة تنزيلات PostgreSQL](https://www.postgresql.org/download/)
+1. زر صفحة [تنزيلات PostgreSQL](https://www.postgresql.org/download/)
 2. اختر **Windows**
-3. حمّل أحدث برنامج التثبيت
+3. قم بتنزيل أحدث مثبت
 
-#### الخطوة 2: تشغيل برنامج التثبيت
+#### الخطوة 2: تشغيل المثبت
 
-1. انقر نقرًا مزدوجًا على ملف برنامج التثبيت الذي تم تنزيله
-2. اتبع التعليمات في معالج الإعداد
+1. انقر نقرًا مزدوجًا على ملف المثبت الذي تم تنزيله
+2. اتبع المطالبات في معالج التثبيت
 
 #### الخطوة 3: اختيار دليل التثبيت
 
-اختر الدليل الذي سيتم تثبيت PostgreSQL فيه. الموقع الافتراضي عادةً مناسب.
+حدد الدليل الذي سيتم تثبيت PostgreSQL فيه. الموقع الافتراضي عادةً ما يكون مناسبًا.
 
 #### الخطوة 4: اختيار المكونات
 
 لإعداد قياسي، احتفظ بخيارات المكونات الافتراضية محددة.
 
-#### الخطوة 5: تعيين كلمة مرور المستخدم الخارق لـ PostgreSQL
+#### الخطوة 5: تعيين كلمة مرور مستخدم PostgreSQL الخارق
 
 أدخل وأكد كلمة مرور لمستخدم PostgreSQL الخارق (`postgres`). **احفظ هذه الكلمة بأمان** — ستحتاجها لاحقًا.
 
 #### الخطوة 6: تكوين رقم المنفذ
 
-المنفذ الافتراضي لـ PostgreSQL هو `5432`. يمكنك استخدام الافتراضي أو تحديد منفذ آخر إذا لزم الأمر.
+المنفذ الافتراضي لـ PostgreSQL هو `5432`. يمكنك استخدام الافتراضي أو تحديد منفذ مختلف إذا لزم الأمر.
 
 !!! tip "نصيحة"
 
-    إذا كان المنفذ 5432 مستخدمًا بالفعل، اختر منفذًا بديلًا وسجّله للتكوين لاحقًا.
+    إذا كان المنفذ 5432 مستخدمًا بالفعل، اختر منفذًا بديلًا ودوِّنَه للتكوين لاحقًا.
 
-#### الخطوة 7: اختيار الإعدادات المحلية (Locale)
+#### الخطوة 7: اختيار اللغة المحلية (Locale)
 
-اختر الإعداد المحلي لقاعدة البيانات. الإعداد الافتراضي مناسب لمعظم الحالات.
+اختر اللغة المحلية لقاعدة البيانات. الافتراضي عادةً ما يكون مناسبًا لمعظم التثبيتات.
 
 #### الخطوة 8: إكمال التثبيت
 
-انقر **Next** خلال الخطوات المتبقية، ثم انقر **Finish**.
+انقر **التالي** عبر الخطوات المتبقية، ثم انقر **إنهاء**.
 
 #### الخطوة 9: التحقق من التثبيت
 
@@ -6155,52 +6863,52 @@ digna هي منصة شاملة مدفوعة بالذكاء الاصطناعي م
 psql --version
 ```
 
-يجب أن ترى إصدار PostgreSQL إذا تم التثبيت بنجاح.
+يجب أن ترى إصدار PostgreSQL إذا كان التثبيت ناجحًا.
 
 ---
 
 ## تكوين خادم الويب {: #web-server-configuration }
 
-تتطلب digna خادم ويب لاستضافة اللوحة (dashboard). اختر أحد الخيارات التالية:
+تتطلب digna خادم ويب لاستضافة اللوحة. اختر أحد الخيارات التالية:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-لا تحتاج إلى تثبيت أو تكوين إلا **واحد** من هذه الخوادم.
+تحتاج إلى تثبيت وتكوين **واحد** فقط من هذه الخوادم.
 
 ### إعداد IIS {: #iis-setup }
 
 #### نظرة عامة
 
-Internet Information Services (IIS) هو خادم الويب من Microsoft لاستضافة المواقع والتطبيقات الويب.
+Internet Information Services (IIS) هو خادم الويب من Microsoft لاستضافة مواقع الويب والتطبيقات على الويب.
 
-#### تفعيل IIS
+#### تمكين IIS
 
 1. **افتح لوحة التحكم**
    - اضغط `Win + R`
    - اكتب `control` واضغط Enter
 
 2. **انتقل إلى ميزات Windows**
-   - انقر **Programs**
-   - اختر **Turn Windows features on or off**
+   - انقر **البرامج**
+   - اختر **تشغيل ميزات Windows أو إيقافها**
 
-3. **تفعيل Internet Information Services**
-   - مرّر للأسفل وابحث عن **Internet Information Services (IIS)**
-   - ضع علامة الاختيار لتفعيله
+3. **تمكين Internet Information Services**
+   - مرر لأسفل وابحث عن **Internet Information Services (IIS)**
+   - ضع علامة في مربع الاختيار لتمكينه
    - انقر على **+** لتوسيع وتحقق من تحديد المكونات الفرعية التالية:
      - **Web Management Tools**
      - **World Wide Web Services**
 
-4. **انقر OK** لتطبيق التغييرات
+4. **انقر موافق** لتطبيق التغييرات
 
 5. **التحقق من تثبيت IIS**
-   - افتح متصفحك
+   - افتح المتصفح
    - انتقل إلى `http://localhost`
-   - يجب أن ترى صفحة الترحيب الخاصة بـ IIS
+   - يجب أن ترى صفحة ترحيب IIS
 
-#### مطلوب: مكوّن URL Rewrite
+#### مطلوب: مكون URL Rewrite
 
-يتطلب IIS مكوّن URL Rewrite. حمّله وثبته من [صفحة Microsoft الرسمية](https://www.iis.net/downloads/microsoft/url-rewrite).
+يتطلب IIS مكون URL Rewrite. قم بتنزيله وتثبيته من [الصفحة الرسمية لمايكروسوفت](https://www.iis.net/downloads/microsoft/url-rewrite).
 
 #### مطلوب: نوع MIME لملفات Markdown
 
@@ -6209,13 +6917,13 @@ Internet Information Services (IIS) هو خادم الويب من Microsoft لا
 1. افتح **IIS Manager** (اضغط `Win + R`، اكتب `inetmgr`، اضغط Enter)
 2. انتقل إلى **Your Site > MIME Types**
 3. انقر **Add...**
-4. قم بالتكوين:
+4. اضبط:
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
 !!! warning "مهم"
 
-    بدون هذا الإعداد، قد لا تُقدَّم ملفات `.md` بشكل صحيح.
+    بدون هذا الإعداد، قد لا يتم تقديم ملفات `.md` بشكل صحيح.
 
 ---
 
@@ -6228,21 +6936,21 @@ Apache Tomcat هو حاوية Java Servlet وخادم ويب مفتوح المص
 #### التثبيت
 
 1. **تنزيل Apache Tomcat**
-   - زر [صفحة تنزيلات Apache Tomcat](https://tomcat.apache.org/download-90.cgi)
-   - حمّل توزيعة ZIP الخاصة بنظام Windows
+   - زر [تنزيلات Apache Tomcat](https://tomcat.apache.org/download-90.cgi)
+   - قم بتنزيل توزيع ZIP لنظام Windows
 
 2. **فك ضغط الأرشيف**
-   - فك ضغط ملف ZIP إلى دليل على نظامك
+   - فك ضغط ملف ZIP إلى مجلد على نظامك
    - مثال: `C:\Program Files\Apache Tomcat`
 
 3. **التحقق من تشغيل Tomcat**
-   - افتح متصفحك
+   - افتح المتصفح
    - انتقل إلى `http://localhost:8080`
-   - يجب أن ترى صفحة الترحيب الخاصة بـ Apache Tomcat
+   - يجب أن ترى صفحة الترحيب لـ Apache Tomcat
 
 !!! tip "نصيحة"
 
-    عادةً ما يبدأ Apache Tomcat تلقائيًا بعد التثبيت. إذا لم يبدأ، انتقل إلى مجلد `bin` وشغّل `startup.bat`.
+    عادةً ما يبدأ Apache Tomcat تلقائيًا بعد التثبيت. إذا لم يبدأ، انتقل إلى مجلد `bin` وقم بتشغيل `startup.bat`.
 
 ---
 
@@ -6250,11 +6958,11 @@ Apache Tomcat هو حاوية Java Servlet وخادم ويب مفتوح المص
 
 ### الخطوة 1: إعداد مستودع digna
 
-يخزن مستودع digna جميع المقاييس المحسوبة بواسطة digna. يعمل كمركز بيانات تحليلي وأداء.
+يخزن مستودع digna جميع المقاييس المحسوبة بواسطة digna. يعمل كمركز قاعدة البيانات للبيانات التحليلية وأداء النظام.
 
-#### إنشاء الـ Schema والمستخدم للمستودع
+#### إنشاء مخطط المستودع ومستخدم
 
-افتح عميل PostgreSQL الخاص بك (pgAdmin، psql، أو ما شابهه) ونفّذ أوامر SQL التالية:
+افتح عميل PostgreSQL الخاص بك (pgAdmin أو psql أو ما شابه) ونفّذ أوامر SQL التالية:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -6266,8 +6974,8 @@ GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 
 **استبدل العناصر النائبة التالية:**
 
-- `<digna_repo_schema>` — اسم الـ schema المرغوب (مثال: `dignarepo`)
-- `<digna_repo_user>` — اسم المستخدم المرغوب (مثال: `digna_user`)
+- `<digna_repo_schema>` — اسم المخطط الذي تريده (مثال: `dignarepo`)
+- `<digna_repo_user>` — اسم المستخدم الذي تريده (مثال: `digna_user`)
 - `<digna_repo_password>` — كلمة مرور آمنة لهذا المستخدم
 
 **مثال:**
@@ -6282,17 +6990,17 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 !!! tip "أفضل الممارسات"
 
-    استخدم كلمات مرور قوية ومعقدة لمستخدمي قواعد البيانات. تجنب بيانات اعتماد سهلة التخمين.
+    استخدم كلمات مرور قوية ومعقدة لمستخدمي قواعد البيانات. تجنب بيانات الاعتماد سهلة التخمين.
 
 ---
 
 ### الخطوة 2: فك حزمة تثبيت digna
 
-1. حدّد ملف ZIP الخاص بتثبيت digna الذي تم تزويدك به
-2. فك ضغطه إلى موقع التثبيت المرغوب
-3. بعد فك الضغط، يجب أن ترى العناصر التالية:
+1. اعثر على ملف ZIP لتثبيت digna المقدم إليك
+2. فك ضغطه إلى موقع التثبيت الذي تختاره
+3. بعد الفك، يجب أن ترى العناصر التالية:
    - `dashboard/` — واجهة الويب للوحة
-   - `digna` — الملف التنفيذي الرئيسي (الواجهة الخلفية + CLI مدمجين)
+   - `digna` — الملف التنفيذي الرئيسي (الواجهة الخلفية + CLI مدمجان)
    - `config.toml` — ملف التكوين
    - `license.toml` — ملف الترخيص (انسخ ملف الترخيص الخاص بك هنا)
 
@@ -6300,13 +7008,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 
 !!! warning "مهم"
 
-    ملف الترخيص **غير** مضمن في حزمة التثبيت وسيتم تزويدك به بشكل منفصل من digna.
+    ملف الترخيص **غير** مشمول في حزمة التثبيت وسيُقدّم لك بشكل منفصل من digna.
 
-1. حدّد ملف `license.toml` الذي تم تزويدك به
+1. اعثر على ملف `license.toml` المقدم لك
 2. انسخه إلى الدليل الجذري لتثبيت digna (حيث يوجد `config.toml` والملف التنفيذي `digna`)
 
-**أهمية هذا الإجراء:**
-يحتوي ملف الترخيص على معلومات العميل وتاريخ انتهاء الترخيص والتوقيع الرقمي. **لا تقم بتعديل هذا الملف** — أي تغييرات ستؤدي إلى إبطال صلاحيته.
+**لماذا هذا مهم:**
+يحتوي ملف الترخيص على معلومات العميل وتاريخ انتهاء صلاحية الترخيص والتوقيع الرقمي. **لا تقم بتعديل هذا الملف** — أي تغييرات ستبطل صلاحيته.
 
 **هيكل الدليل بعد الإعداد:**
 
@@ -6325,15 +7033,15 @@ digna_installation/
 
 ### الخطوة 1: إنشاء وتحرير ملف التكوين
 
-يتم توفير ملف `config_template.toml` في دليل تثبيت digna. كل ما عليك هو إعادة تسميته إلى `config.toml`.
+ملف `config_template.toml` موجود في دليل تثبيت digna الخاص بك. كل ما عليك هو إعادة تسميته إلى `config.toml`.
 
-**الموقع:** `digna_installation/config.toml`
+الموقع: `digna_installation/config.toml`
 
-افتح `config.toml` في محرر نصوص وقم بتكوين كل قسم أدناه.
+افتح `config.toml` في محرر نصوص وغيّر كل قسم كما هو موضح أدناه.
 
 #### قسم [app]
 
-هذا القسم يكوّن إعدادات تطبيق الواجهة الخلفية الخاصة بـ digna:
+هذا القسم يضبط إعدادات تطبيق الواجهة الخلفية لـ digna:
 
 ```toml
 [app]
@@ -6345,18 +7053,18 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو عنوان IP حيث يستضاف dignabackend |
-| `digna_APP_PORT` | `8082` (افتراضي) | المنفذ لواجهات REST API |
-| `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت اللوحة على خادم مختلف، أضف عنوانها هنا |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب عند استخدام CORS مع بيانات الاعتماد |
+| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP الذي يستضيف dignabackend |
+| `digna_APP_PORT` | `8082` (افتراضي) | المنفذ لنقاط نهاية واجهة برمجة التطبيقات REST |
+| `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت اللوحة على خادم مختلف، أدرج عنوان URL الخاص بها |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب لـ CORS مع بيانات الاعتماد |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بجميع طرق HTTP |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | السماح بجميع رؤوس الطلب |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | السماح بجميع الرؤوس |
 
 #### قسم [repo]
 
-هذا القسم يكوّن الاتصال بقواعد بيانات PostgreSQL:
+هذا القسم يضبط الاتصال بقاعدة بيانات PostgreSQL:
 
 ```toml
 [repo]
@@ -6368,18 +7076,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` أو IP | اسم مضيف/عنوان IP لخادم PostgreSQL |
+| `digna_REPO_HOST` | `localhost` أو IP | اسم مضيف/عنوان IP خادم PostgreSQL |
 | `digna_REPO_PORT` | `5432` (افتراضي) | منفذ PostgreSQL |
 | `digna_REPO_DB` | `postgres` | اسم قاعدة البيانات |
-| `digna_REPO_SCHEMA` | `dignarepo` | الـ schema التي قمت بإنشائها سابقًا |
+| `digna_REPO_SCHEMA` | `dignarepo` | المخطط الذي تم إنشاؤه سابقًا |
 | `digna_REPO_USER` | `digna_user` | المستخدم الذي تم إنشاؤه في إعداد PostgreSQL |
-| `digna_REPO_PASSWORD` | كلمة مرورك | كلمة المرور التي تم تعيينها أثناء إنشاء الـ schema |
+| `digna_REPO_PASSWORD` | كلمة مرورك | كلمة المرور التي تم تعيينها أثناء إنشاء المخطط |
 
 #### قسم [base]
 
-يحتوي هذا القسم على إعدادات الأمان والكوكيز:
+يحتوي هذا القسم على إعدادات الأمان وملفات تعريف الارتباط:
 
 ```toml
 [base]
@@ -6393,19 +7101,19 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_FERNET_KEY` | مفتاح التشفير | يُستخدم لتشفير الرموز والكوكيز (يتم توفير قيمة افتراضية) |
-| `digna_COOKIE_DOMAIN` | `localhost` | يجب أن يتوافق مع نطاق الواجهة الأمامية |
-| `digna_COOKIE_SECURE` | `false` (محلي) / `true` (إنتاج) | استخدم `true` لاتصالات HTTPS |
-| `digna_COOKIE_HTTPONLY` | `true` | مفعل دائمًا لأمان أفضل |
+| `digna_FERNET_KEY` | مفتاح التشفير | يستخدم لتشفير الرموز وملفات تعريف الارتباط (يوجد افتراضي) |
+| `digna_COOKIE_DOMAIN` | `localhost` | طابق مع نطاق الواجهة الأمامية |
+| `digna_COOKIE_SECURE` | `false` (محلي) / `true` (إنتاج) | استخدم `true` للاتصالات عبر HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | مُمكّن دائمًا لأغراض الأمان |
 | `digna_COOKIE_SAME_SITE` | `lax` | يساعد في منع هجمات CSRF |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ساعة) | مدة انتهاء الجلسة بالثواني |
-| `digna_MAX_WORKERS` | عدد أنوية CPU - 1 | عدد مهام الفحص المتوازية |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ساعة) | مهلة الجلسة بالثواني |
+| `digna_MAX_WORKERS` | عدد أنوية المعالج - 1 | عدد مهام الفحص المتوازية |
 
 #### قسم [logging]
 
-هذا القسم يكوّن سلوك تسجيل الدخول (اللوغات):
+هذا القسم يضبط سلوك السجلات:
 
 ```toml
 [logging]
@@ -6413,38 +7121,38 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` أو `DEBUG` | استخدم `INFO` للإنتاج، و`DEBUG` لاستكشاف الأخطاء |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | عدد النسخ الاحتياطية اليومية للوغز التي يتم الاحتفاظ بها |
+| `digna_LOGGING_MODE` | `INFO` أو `DEBUG` | `INFO` للإنتاج، `DEBUG` لاستكشاف الأخطاء |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | عدد النسخ الاحتياطية اليومية للسجلات التي سيتم الاحتفاظ بها |
 
 ---
 
-### الخطوة 3: اختبار الاتصال بالمستودع
+### الخطوة 3: تهيئة المستودع
 
 1. افتح موجه الأوامر
-2. انتقل إلى دليل تثبيت digna (حيث يوجد `config.toml` والملف التنفيذي `digna`)
-3. شغل اختبار الاتصال:
+2. انتقل إلى دليل تثبيت digna الخاص بك (حيث يوجد `config.toml` والملف التنفيذي `digna`)
+3. شغّل اختبار الاتصال:
 
 ```bash
 digna repo check
 ```
 
-يجب أن ترى تأكيدًا بأن الاتصال تم إنشاؤه (المستودع نفسه لم يتم تهيئته بعد).
+يجب أن ترى تأكيدًا بأن الاتصال قد تم (المستودع نفسه لم يتم تهيئته بعد).
 
-### الخطوة 4: تثبيت الـ Schema للمستودع
+### الخطوة 4: تثبيت مخطط المستودع
 
-في نفس الدليل، شغّل:
+في نفس الدليل، نفّذ:
 
 ```bash
 digna repo install
 ```
 
-يقوم هذا الأمر بتثبيت الجداول والـ schema اللازمة في قاعدة بيانات PostgreSQL الخاصة بك.
+هذا الأمر يثبت الجداول والمخطط الضروريين في قاعدة بيانات PostgreSQL الخاصة بك.
 
-### الخطوة 5: تشغيل خادم digna
+### الخطوة 5: بدء خادم digna
 
-في دليل تثبيت digna، شغّل الخادم باستخدام:
+في دليل تثبيت digna، ابدأ الخادم بـ:
 
 ```bash
 digna serve --address <host> --port <port>
@@ -6454,7 +7162,7 @@ digna serve --address <host> --port <port>
 - `--address` — اسم المضيف/عنوان IP للخادم
 - `--port` — منفذ الخادم
 
-يجب أن ترى رسائل بدء التشغيل تؤكد أن الخادم قيد التشغيل:
+يجب أن ترى رسائل بدء تؤكد أن الخادم يعمل:
 
 ```
 INFO:     Started server process [1234]
@@ -6463,11 +7171,11 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### الخطوة 6: إنشاء مستخدم إداري
+### الخطوة 6: إنشاء مستخدم مسؤول
 
 1. افتح نافذة موجه أوامر **جديدة**
-2. انتقل إلى دليل تثبيت digna
-3. شغل الأمر التالي لإنشاء مستخدم إداري:
+2. انتقل إلى دليل تثبيت digna الخاص بك
+3. شغّل الأمر التالي لإنشاء مستخدم مسؤول:
 
 ```bash
 digna user add <username> "<full_name>" <password> --su
@@ -6483,19 +7191,19 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 !!! tip "أفضل الممارسات"
 
-    استخدم كلمة مرور قوية تحتوي على مزيج من أحرف كبيرة وصغيرة وأرقام وحروف خاصة.
+    استخدم كلمة مرور قوية تشتمل على أحرف كبيرة وصغيرة وأرقام ورموز خاصة.
 
 ---
 
-## تكوين اللوحة (Dashboard) {: #dashboard-configuration }
+## تكوين اللوحة {: #dashboard-configuration }
 
-### الخطوة 1: نشر اللوحة إلى خادم الويب
+### الخطوة 1: نشر اللوحة على خادم الويب
 
-للوحة digna ملف `config.toml` منفصل موجود داخل مجلد `dashboard/`. يتم توفير هذا التكوين مسبقًا ولا يتطلب تغييرات أثناء الإعداد الأولي. تحتاج إلى تعديله فقط إذا كنت بحاجة إلى تخصيص اتصال الواجهة الخلفية.
+للوحة digna ملف `config.toml` منفصل موجود في مجلد `dashboard/`. هذا التكوين مُقدَّم بالفعل ولا يتطلب تغييرات أثناء الإعداد الأولي. تحتاج لتعديله فقط إذا رغبت في تخصيص اتصال الواجهة الخلفية.
 
-إذا احتجت لتعديل تكوين اللوحة (مثل نشر متعدد النسخ)، ارجع إلى توثيق اللوحة.
+إذا كنت بحاجة لتعديل تكوين اللوحة (مثلاً لنشر متعدد الحركات)، ارجع إلى وثائق اللوحة.
 
-اختر خادم الويب الذي قمت بتثبيته واتبع خطوات النشر المقابلة.
+اختر خادم الويب الخاص بك واتبع خطوات النشر المناسبة.
 
 #### النشر على IIS
 
@@ -6508,23 +7216,23 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 3. **تكوين الموقع**
    - **Site Name**: أدخل اسمًا (مثال: "dignaDashboard")
-   - **Physical Path**: انقر Browse وحدد مجلد `dashboard`
-   - **Binding**: اضبط عنوان IP والمنفذ (المنفذ الافتراضي 80 لـ HTTP، 443 لـ HTTPS)
+   - **Physical Path**: اضغط Browse وحدد مجلد `dashboard`
+   - **Binding**: عيّن عنوان IP والمنفذ (المنفذ الافتراضي 80 لـ HTTP و443 لـ HTTPS)
 
-4. **ابدأ الموقع**
+4. **بدء الموقع**
    - انقر **OK** لإنشاء الموقع
    - انقر بزر الماوس الأيمن على الموقع الجديد واختر **Start**
 
 5. **اختبار التثبيت**
-   - افتح متصفحك
+   - افتح المتصفح
    - انتقل إلى `http://localhost` (أو عنوان URL الذي قمت بتكوينه)
-   - يجب أن ترى صفحة تسجيل الدخول للوحة digna
+   - يجب أن ترى صفحة تسجيل دخول لوحة digna
 
 #### النشر على Apache Tomcat
 
 1. **نسخ اللوحة إلى Tomcat**
-   - انسخ مجلد `dashboard` إلى دليل `webapps` الخاص بـ Tomcat
-   - أعد تسميته إذا لزم الأمر (مثال: إلى `digna`)
+   - انسخ مجلد `dashboard` إلى مجلد `webapps` في Tomcat
+   - أعد تسميته إذا لزم (مثال: إلى `digna`)
    - مثال: `C:\Program Files\Apache Tomcat\webapps\digna`
 
 2. **التحقق من النشر**
@@ -6532,35 +7240,35 @@ digna user add admin "Admin User" AdminPassword123! --su
    - يجب أن ترى "digna" (أو الاسم الذي اخترته) مدرجًا ضمن التطبيقات المنشورة
 
 3. **الوصول إلى اللوحة**
-   - افتح متصفحك
+   - افتح المتصفح
    - انتقل إلى `http://localhost:8080/digna`
-   - يجب أن ترى صفحة تسجيل الدخول للوحة digna
+   - يجب أن ترى صفحة تسجيل دخول لوحة digna
 
 ---
 
 ## تشغيل digna كخدمة Windows {: #running-digna-as-a-windows-service }
 
-### لماذا استخدام خدمة Windows؟
+### لماذا نستخدم خدمة Windows؟
 
 تشغيل الواجهة الخلفية لـ digna كخدمة Windows يضمن أنها:
 - تبدأ تلقائيًا عند إقلاع الخادم
-- تعمل في الخلفية دون الحاجة إلى نافذة موجه أوامر مفتوحة
-- تعيد التشغيل تلقائيًا عند حدوث تعطل
-- يمكن إدارتها عبر خدمات Windows
+- تعمل في الخلفية دون الحاجة لفتح نافذة موجه الأوامر
+- تعيد التشغيل تلقائيًا إذا تعطّلت
+- يمكن إدارتها عبر أدوات خدمات Windows
 
 ### ملفات إدارة الخدمة
 
-جميع الملفات اللازمة موجودة في دليل تثبيت digna تحت: `bin/`
+تقع جميع الملفات اللازمة في دليل تثبيت digna تحت: `bin/`
 
 ملفات الدُفعات (batch) المتاحة:
 - `install_service.bat` — يسجل digna كخدمة Windows
-- `uninstall_service.bat` — يزيل تسجيل الخدمة
-- `start_service.bat` — يبدأ الخدمة
-- `stop_service.bat` — يوقف الخدمة
+- `uninstall_service.bat` — يلغي تسجيل الخدمة
+- `start_service.bat` — يشغل الخدمة المسجلة
+- `stop_service.bat` — يوقف الخدمة المسجلة
 
-!!! warning "مطلوب صلاحيات المسؤول"
+!!! warning "يتطلب صلاحيات المسؤول"
 
-    يجب تنفيذ جميع ملفات الدُفعات بامتيازات المسؤول (Administrator).
+    يجب تنفيذ جميع ملفات الدُفعات بصلاحيات Administrator.
 
 ### تثبيت الخدمة
 
@@ -6586,7 +7294,7 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 1. افتح موجه الأوامر كمسؤول
 2. انتقل إلى `digna\bin`
-3. شغّل:
+3. نفّذ:
    ```bash
    start_service.bat
    ```
@@ -6595,14 +7303,14 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 1. افتح موجه الأوامر كمسؤول
 2. انتقل إلى `digna\bin`
-3. شغّل:
+3. نفّذ:
    ```bash
    stop_service.bat
    ```
 
 !!! tip "نصيحة"
 
-    أوقف الخدمة دائمًا قبل تحديث ملفات التطبيق.
+    أوقف دائمًا الخدمة قبل تحديث ملفات التطبيق.
 
 ### نقل الخدمة إلى دليل جديد
 
@@ -6636,7 +7344,7 @@ digna user add admin "Admin User" AdminPassword123! --su
    stop_service.bat
    ```
 
-2. **إزالة تثبيت الخدمة**
+2. **إلغاء تثبيت الخدمة**
    ```bash
    uninstall_service.bat
    ```
@@ -6649,16 +7357,16 @@ digna user add admin "Admin User" AdminPassword123! --su
 
 ### قبل الترقية
 
-**إنشاء نسخة احتياطية من مستودع digna أمر إلزامي**
+إنشاء نسخة احتياطية من مستودع digna إلزامي
 
-قبل ترقية digna، قم بعمل نسخة احتياطية لمستودعك (PostgreSQL) لحماية البيانات من الفقدان.
-النسخة الاحتياطية تضمن إمكانية الاسترجاع إذا حدثت مشكلات غير متوقعة أثناء الترقية.
+قبل ترقية digna، احفظ نسخة احتياطية من المستودع (PostgreSQL) للحماية من فقدان البيانات.
+النسخة الاحتياطية تضمن إمكانية الاسترجاع إذا واجهت الترقية مشكلات غير متوقعة.
 
 ### عملية الترقية
 
 #### الخطوة 1: إيقاف خدمة digna
 
-إذا كانت digna تعمل كخدمة Windows، أوقفها أولًا:
+إذا كانت digna تعمل كخدمة Windows، أوقفها أولاً:
 
 ```bash
 cd C:\path\to\digna\bin
@@ -6670,15 +7378,15 @@ stop_service.bat
 في دليل تثبيت digna:
 
 ```bash
-# إعادة تسمية المجلد المحتوي على dignabackend
+# Rename folder containing dignabackend
 ren dignabackend dignabackend_old
 ```
 ```bash
-# إعادة تسمية لوحة العرض (dashboard)
+# Rename dashboard
 ren dashboard dashboard_old
 ```
 
-#### الخطوة 3: فك وتوزيع النسخة الجديدة
+#### الخطوة 3: فك واستخراج الإصدار الجديد
 
 1. فك ضغط ملف ZIP الخاص بالإصدار الجديد من digna
 2. انسخ الملف التنفيذي الجديد `digna` ومجلد `dashboard` إلى دليل التثبيت الخاص بك
@@ -6686,46 +7394,1046 @@ ren dashboard dashboard_old
 
 !!! warning "مهم"
 
-    ملف `config.toml` **غير** مضمن أبدًا في ملف ZIP للتثبيت. تبقى إعداداتك الحالية آمنة.
+    ملف `config.toml` **غير** مشمول أبدًا في ملف ZIP للتثبيت. يظل تكوينك الحالي آمنًا.
 
 ### الخطوة 4: استعادة ملفات التكوين الخاصة بك
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### الخطوة 5: ترقية مخطط المستودع (Repository Schema)
+### الخطوة 5: ترقية مخطط المستودع
 
-انتقل إلى دليل تثبيت digna وشغّل:
+انتقل إلى دليل تثبيت digna ونفّذ:
 
 ```bash
 digna repo upgrade
 ```
 
-سيقوم هذا بتحديث مخطط PostgreSQL إلى الإصدار الأحدث مع الحفاظ على جميع البيانات الحالية.
+هذا يقوم بتحديث مخطط PostgreSQL إلى أحدث إصدار مع الحفاظ على جميع البيانات الموجودة.
 
 ### الخطوة 6: إعادة تشغيل الخدمات
 
-إذا كنت تعمل كخدمة Windows:
+إذا كانت تعمل كخدمة Windows:
 
 ```bash
 cd C:\path\to\digna\bin
 start_service.bat
 ```
 
-إذا كنت تشغّل التطبيق يدويًا، أعد تشغيل الخادم:
+إذا كانت تعمل يدويًا، أعد تشغيل الخادم:
 
 ```bash
 cd C:\path\to\digna
 digna serve --address <address> --port <port>
 ```
 
-إذا كنت تستخدم IIS أو Tomcat، أعد تشغيل خادم الويب المقابل.
+إذا كنت تستخدم IIS أو Tomcat، أعد تشغيل خادم الويب المعني.
 
 #### الخطوة 7: التحقق من الترقية
 
 1. ادخل إلى لوحة digna
-2. تأكد من تحميل الواجهة بشكل صحيح
-3. افحص سجلات الخادم للتأكد من عدم وجود أخطاء
+2. تحقق من تحميل الواجهة بشكل صحيح
+3. تفقد سجلات الخادم للتأكد من عدم وجود أخطاء
+
+---
+
+# Release 2026.06
+Source: https://docs.digna.ai/ar/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/
+
+# دليل التثبيت على macOS لإصدار digna 2026.06
+
+**الإصدار:** 2026.06
+
+**آخر تحديث:** 5 سبتمبر، 2026
+
+
+---
+
+## جدول المحتويات
+
+1. [مقدمة](#introduction)
+2. [متطلبات النظام](#system-requirements)
+3. [الإعداد قبل التثبيت](#pre-installation-setup)
+4. [إعداد خادم PostgreSQL](#postgresql-server-setup)
+5. [تكوين خادم الويب](#web-server-configuration)
+6. [التثبيت الابتدائي](#initial-installation)
+7. [تكوين الBackend](#backend-configuration)
+8. [تكوين اللوحة](#dashboard-configuration)
+9. [تشغيل digna كخدمة في الخلفية](#running-digna-as-a-background-service)
+10. [الترقية إلى إصدار جديد](#upgrading-to-a-new-release)
+
+---
+
+## مقدمة {: #introduction }
+
+### عن digna
+
+digna هي منصة شاملة مدعومة بالذكاء الاصطناعي مصممة لتحسين إدارة جودة البيانات عبر بيئات بيانات متعددة مثل المخازن، والـ lakes، و lakehouses. بُنيت لتكون قابلة للتوسع والتكيف بدرجة عالية، وتتعامل digna مع تحديات البيانات الحديثة من خلال الأتمتة، والمراقبة في الوقت الفعلي، واكتشاف الشذوذ.
+
+يتكون digna من مكوّنين رئيسيين:
+
+- **dignabackend**: المحرك الأساسي للتطبيق، المسؤول عن معالجة البيانات وإجراء فحوصات الجودة.
+- **dignadashboard**: واجهة ويب مستضافة على خادم ويب، توفّر طريقة سهلة للتفاعل مع منصة digna وعرض مقاييس جودة البيانات.
+
+### الجديد في إصدار 2026.06
+
+يضيف هذا الإصدار قدرات مراقبة بيانات قابلة للملاحظة مباشرة داخل التعليمات البرمجية الخاصة بك، مما يمكّن المطورين من تتبع جودة البيانات عند المصدر. راجع [ملاحظات الإصدار](http://docs.digna.ai/changelog/Release_202606/) للحصول على التفاصيل الكاملة.
+
+### تبحث عن Windows أو Linux؟
+
+يغطي هذا الدليل macOS. للمنصات الأخرى، راجع [دليل التثبيت على Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) أو [دليل التثبيت على Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## متطلبات النظام {: #system-requirements }
+
+قبل البدء بالتثبيت، تأكد من أن النظام يلبي متطلبات الحد الأدنى التالية:
+
+| المتطلب | المواصفة |
+|---|---|
+| **نظام التشغيل** | macOS 13 (Ventura) أو أحدث |
+| **المعمارية** | Apple Silicon (arm64) أو Intel (x86_64) |
+| **الذاكرة (إعداد أدنى)** | 16 غيغابايت RAM |
+| **مساحة القرص** | 10 غيغابايت مساحة متاحة |
+| **قاعدة البيانات** | PostgreSQL Server 12 أو أحدث |
+| **خادم الويب** | nginx، Apache httpd، أو ما يعادله |
+| **أدوات سطر الأوامر** | Xcode Command Line Tools (مطلوبة بواسطة Homebrew) |
+
+### خيارات تثبيت قاعدة البيانات
+
+**إذا كان PostgreSQL مثبتًا بالفعل:**
+يمكنك إضافة قاعدة بيانات جديدة لـ digna إلى خادم PostgreSQL الموجود لديك.
+
+**إذا كنت تثبت PostgreSQL على نفس الجهاز الذي سيجري عليه تشغيل digna:**
+
+!!! info "المواصفات الموصى بها"
+
+    - **الذاكرة**: 32 غيغابايت RAM (بدلاً من 16 غيغابايت)
+    - **مساحة القرص**: 50 غيغابايت مساحة متاحة (بدلاً من 10 غيغابايت)
+
+    هذه المواصفات الأعلى تستوعب تشغيل digna و PostgreSQL معًا على الجهاز نفسه.
+
+### التحقق من المعمارية الخاصة بك
+
+تختلف العديد من المسارات في هذا الدليل بين أجهزة Apple Silicon و Intel. للتحقق من نوع المعالج، افتح **Terminal** وشغّل:
+
+```bash
+uname -m
+```
+
+- `arm64` — Apple Silicon. يثبت Homebrew في `/opt/homebrew`.
+- `x86_64` — Intel. يثبت Homebrew في `/usr/local`.
+
+!!! tip "نصيحة"
+
+    بدلاً من ترميز أحد المسارين بشكل ثابت، يستخدم هذا الدليل `$(brew --prefix)`، التي تتوسع إلى الموقع الصحيح على كلتا المعماريتين. يمكنك نسخ الأوامر كما هي.
+
+---
+
+## الإعداد قبل التثبيت {: #pre-installation-setup }
+
+قبل تثبيت digna، تأكد من وجود ثلاثة متطلبات أساسية:
+
+1. **Homebrew** – مدير الحزم المستخدم لتثبيت المكوّنات أدناه
+2. **PostgreSQL Server** – لتخزين المقاييس المحسوبة وبيانات الأداء
+3. **خادم الويب** – لاستضافة لوحة digna
+
+إذا لم تكن هذه المكوّنات مُعدة بالفعل، اتبع الأقسام أدناه لتثبيتها وتكوينها.
+
+### تثبيت Homebrew
+
+Homebrew هو مدير الحزم القياسي لنظام macOS ويُستخدم طوال هذا الدليل لتثبيت PostgreSQL و nginx.
+
+#### الخطوة 1: تحقق مما إذا كان Homebrew مثبتًا بالفعل
+
+افتح **Terminal** (اضغط `Cmd + Space`، اكتب `Terminal`، واضغط Enter) وشغّل:
+
+```bash
+brew --version
+```
+
+إذا تم إرجاع رقم إصدار، انتقل إلى قسم [إعداد خادم PostgreSQL](#postgresql-server-setup).
+
+#### الخطوة 2: تثبيت Homebrew
+
+إذا لم يتم العثور على الأمر، ثبّت Homebrew باتباع التعليمات على [موقع Homebrew الرسمي](https://brew.sh). يقوم المثبّت أيضًا بتثبيت Xcode Command Line Tools إذا لم تكن موجودة بالفعل.
+
+#### الخطوة 3: أضف Homebrew إلى PATH
+
+على Apple Silicon، يعرض المثبّت أمرين لإضافة Homebrew إلى بيئة الصدفة الخاصة بك. نفّذهما كما هو مذكور، ثم تأكد:
+
+```bash
+brew --prefix
+```
+
+يجب أن يعرض `/opt/homebrew` على Apple Silicon أو `/usr/local` على Intel.
+
+---
+
+## إعداد خادم PostgreSQL {: #postgresql-server-setup }
+
+### إذا كان لديك PostgreSQL بالفعل
+
+إذا كان PostgreSQL مثبتًا ويعمل على جهازك المحلي أو إذا كنت تستخدم خادم PostgreSQL مُدار عن بُعد، يمكنك الانتقال إلى [القسم التالي](#web-server-configuration).
+
+### خيارات التثبيت
+
+يوفر macOS طريقتين بسيطتين لتثبيت PostgreSQL. اختر **واحدة** فقط:
+
+- [Homebrew](#postgresql-homebrew) — تثبيت عبر سطر الأوامر، موصى به لنشر الخادم
+- [Postgres.app](#postgresql-app) — تثبيت رسومي، مناسب للتقييم المحلي
+
+### تثبيت PostgreSQL باستخدام Homebrew {: #postgresql-homebrew }
+
+#### الخطوة 1: تثبيت الصيغة الخاصة بـ PostgreSQL
+
+```bash
+brew install postgresql@16
+```
+
+#### الخطوة 2: أضف PostgreSQL إلى PATH
+
+الصيغ ذات الإصدار المحدد تكون *keg-only*، مما يعني أن Homebrew لا يربط أوتوماتيكيًا أوامره في PATH لديك. أضفها بنفسك:
+
+```bash
+echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+!!! note "ملاحظة"
+
+    هذا يفترض استخدام الصدفة الافتراضية `zsh` التي يستخدمها macOS. إذا كنت تستخدم `bash`، أضف نفس السطر إلى `~/.bash_profile` بدلًا من ذلك.
+
+#### الخطوة 3: ابدأ خدمة PostgreSQL
+
+```bash
+brew services start postgresql@16
+```
+
+هذا يشغل PostgreSQL فورًا ويضبطه ليبدأ تلقائيًا عند تسجيل الدخول.
+
+#### الخطوة 4: تحقق من التثبيت
+
+```bash
+psql --version
+```
+
+يجب أن ترى إصدار PostgreSQL إذا نجح التثبيت.
+
+#### الخطوة 5: الاتصال بالخادم
+
+```bash
+psql postgres
+```
+
+!!! warning "مهم — يختلف macOS عن Windows هنا"
+
+    يطالب مُثبت Windows بإنشاء مستخدم `postgres` بكلمة مرور. Homebrew لا يفعل ذلك. بدلًا من ذلك ينشئ superuser باسم **حساب macOS الخاص بك**، دون كلمة مرور، ويمكن الوصول إليه فقط من الجهاز المحلي.
+
+    هذا يعني أنه لا يوجد دور `postgres` على تثبيت Homebrew الطازج. استخدم اسم حسابك عند الحاجة إلى صلاحيات superuser، وأنشئ مستخدم digna صريحًا كما هو موضح في [التثبيت الابتدائي](#initial-installation).
+
+#### الخطوة 6: تأكد من المنفذ
+
+المنفذ الافتراضي لـ PostgreSQL هو `5432`. لتأكيد المنفذ الذي يستمع عليه الخادم:
+
+```bash
+psql postgres -c "SHOW port;"
+```
+
+سجّل القيمة — ستحتاجها عند تكوين backend الخاص بـ digna.
+
+### تثبيت PostgreSQL باستخدام Postgres.app {: #postgresql-app }
+
+إذا فضّلت التثبيت الرسومي:
+
+1. حمّل [Postgres.app](https://postgresapp.com) واسحبه إلى مجلد **Applications**
+2. افتح التطبيق وانقر **Initialize** لإنشاء خادم جديد
+3. اتبع تعليمات التطبيق لإضافة أدوات سطر الأوامر إلى PATH
+4. تحقق من التثبيت:
+
+```bash
+psql --version
+```
+
+يقوم Postgres.app أيضًا بإنشاء superuser باسم حساب macOS الخاص بك.
+
+---
+
+## تكوين خادم الويب {: #web-server-configuration }
+
+تتطلب digna خادم ويب لاستضافة اللوحة. اختر أحد الخيارات التالية:
+
+- [nginx](#nginx-setup) — يُثبت عبر Homebrew، موصى به
+- [Apache httpd](#apache-setup) — مُضمّن مع macOS
+
+تحتاج فقط إلى تثبيت وتكوين **أحد** هذه الخوادم.
+
+يُكوّن كلا القسمين شيئين تعتمد عليهما اللوحة:
+
+- **آلية تراجع لتطبيق الصفحة الواحدة (SPA)**، حتى لا يعيد تحديث عنوان URL للوحة صفحة 404
+- **نوع MIME لملفات `.md`**، حتى تُخدم ملفات Markdown بشكل صحيح
+
+### إعداد nginx {: #nginx-setup }
+
+#### نظرة عامة
+
+nginx هو خادم ويب خفيف وعالي الأداء مناسب لخدمة لوحة digna الثابتة.
+
+#### التثبيت
+
+```bash
+brew install nginx
+```
+
+#### بدء nginx
+
+```bash
+brew services start nginx
+```
+
+#### التحقق من التثبيت
+
+1. افتح متصفحك
+2. انتقل إلى `http://localhost:8080`
+3. يجب أن ترى صفحة الترحيب الخاصة بـ nginx
+
+!!! note "ملاحظة — المنفذ الافتراضي هو 8080، وليس 80"
+
+    يضبط Homebrew nginx للاستماع على المنفذ `8080` حتى يعمل بدون امتيازات المسؤول. على macOS، ربط المنفذ `80` أو أي منفذ أقل من 1024 يتطلب صلاحيات root.
+
+    لخدمة اللوحة على المنفذ 80، غيّر `listen 8080;` إلى `listen 80;` في التكوين أدناه وابدأ nginx باستخدام `sudo brew services start nginx` بدلًا من ذلك.
+
+#### تكوين موقع للوحة
+
+يشمل تكوين nginx الخاص بـ Homebrew كل ملف في دليل `servers` الخاص به. أنشئ ملف تكوين مخصص لـ digna هناك:
+
+```bash
+nano $(brew --prefix)/etc/nginx/servers/digna.conf
+```
+
+ألصق التالي، مع استبدال `/path/to/digna/dashboard` بالمسار الفعلي لمجلد `dashboard` المستخرج لديك:
+
+```nginx
+server {
+    listen       8080;
+    server_name  localhost;
+
+    root   /path/to/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "مهم"
+
+    بدون توجيه `try_files`، سيؤدي إعادة تحميل أي صفحة للوحة بخلاف عنوان الجذر إلى إرجاع 404. هذا مكافئ nginx لوحدة إعادة كتابة العناوين المطلوبة في IIS على Windows.
+
+#### تطبيق التكوين
+
+اختبر التكوين للأخطاء النحوية، ثم أعد تحميل nginx:
+
+```bash
+nginx -t
+brew services restart nginx
+```
+
+---
+
+### إعداد Apache httpd {: #apache-setup }
+
+#### نظرة عامة
+
+يتضمن macOS Apache httpd، لذا لا حاجة لتثبيته. هو معطَّل افتراضيًا.
+
+#### بدء Apache
+
+```bash
+sudo apachectl start
+```
+
+#### التحقق من التثبيت
+
+1. افتح متصفحك
+2. انتقل إلى `http://localhost`
+3. يجب أن ترى الرسالة "It works!"
+
+#### مطلوب: تمكين mod_rewrite
+
+تتطلب اللوحة إعادة كتابة URL. افتح ملف تكوين Apache:
+
+```bash
+sudo nano /etc/apache2/httpd.conf
+```
+
+ابحث عن السطر التالي وأزل الـ `#` القيّمة لفتحه:
+
+```apache
+LoadModule rewrite_module libexec/apache2/mod_rewrite.so
+```
+
+#### مطلوب: السماح بتجاوزات .htaccess
+
+في نفس الملف، حدد الكتلة `<Directory "/Library/WebServer/Documents">` وغير:
+
+```apache
+AllowOverride None
+```
+
+إلى:
+
+```apache
+AllowOverride All
+```
+
+#### مطلوب: نوع MIME لملفات Markdown
+
+لا تزال في `httpd.conf`، أضف السطر التالي حتى تُخدم ملفات Markdown بشكل صحيح:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "مهم"
+
+    بدون هذا الإعداد، قد لا تُخدم ملفات `.md` بشكل صحيح.
+
+#### تطبيق التكوين
+
+تحقق من التكوين للأخطاء النحوية، ثم أعد تشغيل Apache:
+
+```bash
+sudo apachectl configtest
+sudo apachectl restart
+```
+
+---
+
+## التثبيت الابتدائي {: #initial-installation }
+
+### الخطوة 1: إعداد مستودع digna
+
+يخزن مستودع digna كل المقاييس المحسوبة بواسطة digna. يعمل كمركز قاعدة بيانات للبيانات التحليلية وبيانات الأداء.
+
+#### إنشاء الـ Schema والمستخدم للمستودع
+
+افتح عميل PostgreSQL الخاص بك (psql، pgAdmin، أو ما شابه) ونفّذ أوامر SQL التالية:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**استبدل العناصر النائبة التالية:**
+
+- `<digna_repo_schema>` — اسم الـ schema الذي تريده (مثلاً، `dignarepo`)
+- `<digna_repo_user>` — اسم المستخدم المطلوب (مثلاً، `digna_user`)
+- `<digna_repo_password>` — كلمة مرور آمنة لهذا المستخدم
+
+**مثال:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+لتنفيذ هذه من الـ Terminal في خطوة واحدة:
+
+```bash
+psql postgres
+```
+
+ثم ألصق العبارات عند موجه `postgres=#` واكتب `\q` للخروج.
+
+!!! tip "أفضل الممارسات"
+
+    استخدم كلمات مرور قوية ومعقّدة لمستخدمي قاعدة البيانات. تجنّب بيانات اعتماد يسهل تخمينها.
+
+---
+
+### الخطوة 2: فك حزمة تثبيت digna
+
+1. حدّد ملف ZIP لتثبيت digna المقدم لك
+2. فك ضغطه إلى موقع التثبيت المرغوب — على سبيل المثال `/opt/digna` أو `~/digna`
+3. بعد الاستخراج، يجب أن ترى العناصر التالية:
+   - `dashboard/` — واجهة الويب للوحة
+   - `digna` — الملف التنفيذي الرئيسي (backend + CLI مدمجان)
+   - `config.toml` — ملف التكوين
+   - `license.toml` — ملف الترخيص (انسخ ملفك هنا)
+
+لفك الضغط من الـ Terminal:
+
+```bash
+unzip digna-2026.06-macos.zip -d /opt/digna
+```
+
+#### اجعل الملف التنفيذي قابلاً للتشغيل
+
+اعتمادًا على طريقة نقل الأرشيف، قد لا يبقى بت التشغيل بعد الاستخراج. حدده صراحةً:
+
+```bash
+cd /opt/digna
+chmod +x digna
+```
+
+#### إذا قام macOS بحظر التطبيق
+
+الملفات التي تُحمّل عبر متصفح أو عميل بريد يتم وسمها بصفة الحجر الصحي (quarantine). إذا أبلغك macOS أن التطبيق *"cannot be opened because the developer cannot be verified"*, نظّف السمة من دليل التثبيت:
+
+```bash
+xattr -dr com.apple.quarantine /opt/digna
+```
+
+بدلاً من ذلك، افتح **System Settings → Privacy & Security**، ابحث عن العنصر المحظور قرب أسفل الصفحة، وانقر **Open Anyway**.
+
+!!! note "ملاحظة"
+
+    هذه الخطوة مطلوبة فقط إذا قام macOS فعليًا بحظر الملف التنفيذي. الحزم المنقولة عبر SSH أو من مشاركات ملفات داخلية عادةً لا تُعلّق بالحجر الصحي.
+
+### الخطوة 3: تثبيت ملف الترخيص
+
+!!! warning "مهم"
+
+    ملف الترخيص **غير** متضمن في حزمة التثبيت وسيُقدّم لك بشكل منفصل من قِبل digna.
+
+1. حدّد ملف `license.toml` المزوّد لك
+2. انسخه إلى جذر دليل تثبيت digna (حيث يتواجد `config.toml` والملف التنفيذي `digna`)
+
+**لماذا هذا مهم:**
+يحتوي ملف الترخيص على معلومات العميل، وتاريخ انتهاء الترخيص، والتوقيع الرقمي. **لا تعدّل هذا الملف** — أي تغييرات ستبطل صحته.
+
+**هيكل الدليل بعد الإعداد:**
+
+```
+/opt/digna/
+├── config.toml         (ملف التكوين)
+├── license.toml        (ملف الترخيص الخاص بك - انسخه هنا)
+├── digna               (الملف التنفيذي الرئيسي)
+├── bin/                (سكريبتات إدارة الخدمة)
+└── dashboard/          (واجهة الويب)
+    └── (ملفات اللوحة)
+```
+
+---
+
+## تكوين الBackend {: #backend-configuration }
+
+### الخطوة 1: إنشاء وتعديل ملف التكوين
+
+يوجد ملف `config_template.toml` في دليل تثبيت digna الخاص بك. كل ما عليك هو إعادة تسميته إلى `config.toml`.
+
+```bash
+cd /opt/digna
+mv config_template.toml config.toml
+```
+
+**الموقع:** `/opt/digna/config.toml`
+
+افتح `config.toml` في محرر نصي وقم بتكوين كل قسم أدناه.
+
+#### قسم [app]
+
+هذا القسم يضبط إعدادات تطبيق backend الخاص بـ digna:
+
+```toml
+[app]
+digna_APP_HOST = "localhost"
+digna_APP_PORT = 8082
+digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+digna_APP_CORS_ALLOW_CREDENTIALS = true
+digna_APP_CORS_ALLOW_METHODS = ["*"]
+digna_APP_CORS_ALLOW_HEADERS = ["*"]
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP حيث يستضيف dignabackend |
+| `digna_APP_PORT` | `8082` (افتراضي) | منفذ نقاط نهاية REST API |
+| `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت اللوحة على خادم مختلف، أضف عنوان URL الخاص بها |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب لطلبات CORS التي تحتوي على بيانات اعتماد |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بكل طرق HTTP |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | السماح بكل العناوين |
+
+!!! note "ملاحظة"
+
+    إذا قمت بخدمة اللوحة من nginx الخاص بـ Homebrew على المنفذ الافتراضي، فإن الأصل الذي يجب السماح به هو `http://localhost:8080`.
+
+#### قسم [repo]
+
+هذا القسم يضبط الاتصال بقاعدة بيانات PostgreSQL:
+
+```toml
+[repo]
+digna_REPO_HOST = "localhost"
+digna_REPO_PORT = 5432
+digna_REPO_DB = "postgres"
+digna_REPO_SCHEMA = "dignarepo"
+digna_REPO_USER = "digna_user"
+digna_REPO_PASSWORD = "YourSecurePassword123!"
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_REPO_HOST` | `localhost` أو IP | اسم مضيف/IP خادم PostgreSQL |
+| `digna_REPO_PORT` | `5432` (افتراضي) | منفذ PostgreSQL |
+| `digna_REPO_DB` | `postgres` | اسم قاعدة البيانات |
+| `digna_REPO_SCHEMA` | `dignarepo` | الـ schema الذي أنشأته سابقًا |
+| `digna_REPO_USER` | `digna_user` | المستخدم الذي أنشأته في إعداد PostgreSQL |
+| `digna_REPO_PASSWORD` | كلمة مرورك | كلمة المرور التي تم تعيينها أثناء إنشاء الـ schema |
+
+#### قسم [base]
+
+يحتوي هذا القسم على إعدادات الأمان والكوكيز:
+
+```toml
+[base]
+digna_FERNET_KEY = "your-fernet-key"
+digna_COOKIE_DOMAIN = "localhost"
+digna_COOKIE_PATH = "/"
+digna_COOKIE_SECURE = false
+digna_COOKIE_HTTPONLY = true
+digna_COOKIE_SAME_SITE = "lax"
+digna_TOKEN_EXPIRES_IN = 86400
+digna_MAX_WORKERS = 4
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_FERNET_KEY` | مفتاح التشفير | يُستخدم لتشفير التوكنات والكوكيز (يوجد مفتاح افتراضي) |
+| `digna_COOKIE_DOMAIN` | `localhost` | طابق نطاق الواجهة الأمامية لديك |
+| `digna_COOKIE_SECURE` | `false` (محلي) / `true` (إنتاج) | استخدم `true` لاتصالات HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | مفعّل دائمًا لأمن أفضل |
+| `digna_COOKIE_SAME_SITE` | `lax` | يمنع هجومات CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ساعة) | انتهاء صلاحية الجلسة بالثواني |
+| `digna_MAX_WORKERS` | عدد أنوية المعالج - 1 | عدد مهام الفحص المتوازية |
+
+!!! tip "نصيحة"
+
+    لمعرفة عدد أنوية المعالج المتاحة على جهاز Mac، شغّل `sysctl -n hw.ncpu`.
+
+#### قسم [logging]
+
+هذا القسم يضبط سلوك التسجيل:
+
+```toml
+[logging]
+digna_LOGGING_MODE = "INFO"
+digna_LOGGING_BACKUP_COUNT = 10
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `digna_LOGGING_MODE` | `INFO` أو `DEBUG` | استخدم `INFO` للإنتاج، و`DEBUG` لاستكشاف الأعطال |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | عدد نسخ النسخ الاحتياطية اليومية من السجلات المراد الاحتفاظ بها |
+
+---
+
+### الخطوة 2: تهيئة المستودع
+
+1. افتح **Terminal**
+2. انتقل إلى دليل تثبيت digna (حيث يوجد `config.toml` والملف التنفيذي `digna`)
+3. شغّل اختبار الاتصال:
+
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+يجب أن ترى تأكيدًا على أن الاتصال تم (المستودع نفسه لم يُهيأ بعد).
+
+!!! note "ملاحظة"
+
+    على macOS، الأوامر في الدليل الحالي ليست في PATH، لذا يُستدعى الملف التنفيذي كـ `./digna` بدلًا من `digna`. لاستخدام الشكل الأقصر في كل مكان، أضف دليل التثبيت إلى PATH لديك:
+
+    ```bash
+    echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+
+### الخطوة 3: تثبيت مخطط المستودع
+
+في نفس الدليل، شغّل:
+
+```bash
+./digna repo install
+```
+
+يقوم هذا الأمر بتثبيت الجداول والمخططات اللازمة في قاعدة بيانات PostgreSQL الخاصة بك.
+
+### الخطوة 4: بدء خادم digna
+
+في دليل تثبيت digna، ابدأ الخادم بـ:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**المعلمات:**
+- `--address` — اسم المضيف/IP للخادم
+- `--port` — منفذ الخادم
+
+يجب أن ترى رسائل بدء تؤكد أن الخادم يعمل:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "نصيحة"
+
+    في المرة الأولى التي تشغّل فيها الخادم، قد يسألك macOS ما إذا كنت تريد السماح للتطبيق بقبول اتصالات الشبكة الواردة. انقر **Allow**، وإلا فلن تتمكن اللوحة من الوصول إلى الـ backend.
+
+### الخطوة 5: إنشاء مستخدم مسؤول (Admin)
+
+1. افتح نافذة Terminal **جديدة**
+2. انتقل إلى دليل تثبيت digna
+3. شغّل الأمر التالي لإنشاء مستخدم مسؤول:
+
+```bash
+./digna user add <username> "<full_name>" <password> --su
+```
+
+**مثال:**
+
+```bash
+./digna user add admin "Admin User" 'AdminPassword123!' --su
+```
+
+سيُنشئ هذا مستخدمًا باسم `admin` بصلاحيات إدارية كاملة.
+
+!!! tip "نصيحة"
+
+    ضع كلمة المرور بين علامات اقتباس مفردة. يتعامل `zsh` مع أحرف مثل `!` و `$` و `*` بشكل خاص، والكلمة غير المقتبسة التي تحتوي عليها لن تُمرَّر كما كتبت.
+
+!!! tip "أفضل الممارسات"
+
+    استخدم كلمة مرور قوية تحتوي مزيجًا من أحرف كبيرة، وصغيرة، وأرقام، ورموز خاصة.
+
+---
+
+## تكوين اللوحة {: #dashboard-configuration }
+
+### الخطوة 1: نشر اللوحة على خادم الويب
+
+تحتوي لوحة digna على ملف `config.toml` منفصل داخل مجلد `dashboard/`. يتم توفير هذا التكوين مسبقًا ولا يتطلب تغييرات أثناء التثبيت الابتدائي. تحتاج فقط لتعديله إذا رغبت في تخصيص اتصال الـ backend.
+
+إذا احتجت لتعديل تكوين اللوحة (مثلًا للنشر متعدد النسخ)، ارجع إلى وثائق اللوحة.
+
+اختر خادم الويب الخاص بك واتبع خطوات النشر المناسبة.
+
+#### النشر على nginx
+
+إذا اتبعت قسم [إعداد nginx](#nginx-setup)، فإن كتلة الخادم تشير بالفعل إلى مجلد `dashboard` الخاص بك ولا حاجة للنسخ.
+
+1. **تأكد من المسار**
+   - افتح `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - تحقق أن `root` يشير إلى مجلد `dashboard` المستخرج
+
+2. **تأكد أن المجلد قابل للقراءة**
+   ```bash
+   chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **أعد تحميل nginx**
+   ```bash
+   nginx -t
+   brew services restart nginx
+   ```
+
+4. **اختبر التثبيت**
+   - افتح متصفحك
+   - انتقل إلى `http://localhost:8080` (أو عنوان URL الذي ضبطته)
+   - يجب أن ترى صفحة تسجيل دخول لوحة digna
+
+#### النشر على Apache httpd
+
+1. **انسخ اللوحة إلى جذر المستندات**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
+   ```
+
+2. **أضف قواعد إعادة الكتابة**
+
+   أنشئ ملف `.htaccess` داخل المجلد المنشور حتى تبقى مسارات اللوحة صالحة عند تحديث المتصفح:
+
+   ```bash
+   sudo nano /Library/WebServer/Documents/digna/.htaccess
+   ```
+
+   ألصق التالي:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **أعد تشغيل Apache**
+   ```bash
+   sudo apachectl restart
+   ```
+
+4. **الوصول إلى اللوحة**
+   - افتح متصفحك
+   - انتقل إلى `http://localhost/digna`
+   - يجب أن ترى صفحة تسجيل دخول لوحة digna
+
+---
+
+## تشغيل digna كخدمة في الخلفية {: #running-digna-as-a-background-service }
+
+### لماذا تشغيل digna كخدمة؟
+
+تشغيل backend الخاص بـ digna كخدمة في الخلفية يضمن أن:
+
+- يبدأ تلقائيًا عند إقلاع الجهاز
+- يعمل في الخلفية دون الحاجة إلى نافذة Terminal مفتوحة
+- يعاد تشغيله تلقائيًا إذا تعطل
+- يمكن إدارته عبر `launchctl`، مدير الخدمات في macOS
+
+### ملفات إدارة الخدمة
+
+جميع الملفات اللازمة تقع في دليل تثبيت digna تحت: `bin/`
+
+السكربتات الشل التالية متاحة:
+
+- `install_service.sh` — يسجل digna لدى launchd
+- `uninstall_service.sh` — يلغى تسجيل الخدمة
+- `start_service.sh` — يشغّل الخدمة المسجلة
+- `stop_service.sh` — يوقف الخدمة العاملة
+
+!!! warning "مطلوب صلاحيات المسؤول"
+
+    يجب تنفيذ كل السكربتات باستخدام `sudo`، لأن تسجيل خدمة تبدأ عند الإقلاع يكتب إلى `/Library/LaunchDaemons`.
+
+### جعل السكربتات قابلة للتنفيذ
+
+قد لا تحفظ عملية الاستخراج بت التشغيل. قبل الاستخدام الأول:
+
+```bash
+cd /opt/digna/bin
+chmod +x *.sh
+```
+
+### تثبيت الخدمة
+
+1. **افتح Terminal**
+
+2. **انتقل إلى مجلد bin**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **شغّل سكربت التثبيت**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+تم الآن تسجيل خادم digna لدى launchd مع تشغيل تلقائي عند الإقلاع. لا تبدأ الخدمة فورًا — راجع القسم التالي لبدئها.
+
+### بدء وإيقاف الخدمة
+
+#### لبدء الخدمة
+
+1. افتح Terminal
+2. انتقل إلى `/opt/digna/bin`
+3. شغّل:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### لإيقاف الخدمة
+
+1. افتح Terminal
+2. انتقل إلى `/opt/digna/bin`
+3. شغّل:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "نصيحة"
+
+    أوقِف دائمًا الخدمة قبل تحديث ملفات التطبيق.
+
+### التحقق من الخدمة
+
+لتأكيد أن الخدمة مسجلة وتعمل:
+
+```bash
+sudo launchctl list | grep digna
+```
+
+سطر يبدأ بمعرف عملية يدل على أن الخدمة تعمل. وجود `-` في العمود الأول يعني أنها مسجلة ولكن متوقفة.
+
+### نقل الخدمة إلى دليل جديد
+
+يخزن launchd المسار المطلق للملف التنفيذي، لذا يتطلب نقل التثبيت إعادة تسجيل الخدمة:
+
+1. **إلغاء تثبيت الخدمة الحالية**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **نقل ملفات التطبيق**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **إعادة تثبيت الخدمة**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **بدء الخدمة**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### إلغاء تثبيت الخدمة
+
+1. **أوقف الخدمة العاملة**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **ألغِ تثبيت الخدمة**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+تم الآن إلغاء تسجيل خادم digna من launchd.
+
+---
+
+## الترقية إلى إصدار جديد {: #upgrading-to-a-new-release }
+
+### قبل الترقية
+
+إنشاء نسخة احتياطية من مستودع digna أمر إجباري
+
+قبل ترقية digna، احتفظ بنسخة احتياطية من مستودعك (PostgreSQL) لحمايته من فقدان البيانات.
+تضمن النسخة الاحتياطية إمكانية الاسترداد إذا واجهت الترقية مشكلات غير متوقعة.
+
+لإنشاء نسخة احتياطية من الـ Terminal:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+### عملية الترقية
+
+#### الخطوة 1: أوقف خدمة digna
+
+إذا كانت digna تعمل كخدمة في الخلفية، أوقفها أولًا:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+إذا كانت تعمل في الواجهة الأمامية، اضغط `Ctrl + C` في نافذة الـ Terminal الخاصة بها.
+
+#### الخطوة 2: احتفظ بنسخة احتياطية من التثبيت الحالي للـ backend
+
+في دليل تثبيت digna:
+
+```bash
+cd /opt/digna
+mv digna digna_old
+```
+```bash
+mv dashboard dashboard_old
+```
+
+#### الخطوة 3: فك ونشر النسخة الجديدة
+
+1. فكّ أرشيف التثبيت الجديد لـ digna
+2. انسخ الملف التنفيذي الجديد `digna` ومجلد `dashboard` إلى دليل التثبيت الخاص بك
+3. استعد بت تشغيل بت التنفيذ، وإذا لزم الأمر، نظّف سمة الحجر الصحي:
+
+```bash
+chmod +x /opt/digna/digna
+xattr -dr com.apple.quarantine /opt/digna
+```
+
+!!! warning "مهم"
+
+    ملف `config.toml` **غير** مضمن أبدًا في ZIP التثبيت. يبقى تكوينك الحالي آمنًا.
+
+### الخطوة 4: استعادة ملفات التكوين الخاصة بك
+
+```bash
+cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+### الخطوة 5: ترقية مخطط المستودع
+
+انتقل إلى دليل تثبيت digna وشغّل:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+يقوم هذا بتحديث مخطط PostgreSQL إلى أحدث إصدار مع الحفاظ على جميع البيانات الحالية.
+
+### الخطوة 6: إعادة تشغيل الخدمات
+
+إذا كانت تعمل كخدمة في الخلفية:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+إذا كانت تعمل يدويًا، أعد تشغيل الخادم:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+إذا كنت تستخدم nginx أو Apache، أعد تشغيل خادم الويب المعني:
+
+```bash
+brew services restart nginx
+```
+```bash
+sudo apachectl restart
+```
+
+#### الخطوة 7: التحقق من الترقية
+
+1. ادخل إلى لوحة digna
+2. تحقق من تحميل الواجهة بشكل صحيح
+3. راجع سجلات الخادم لأي أخطاء
 
 ---
 
@@ -6872,6 +8580,127 @@ Source: https://docs.digna.ai/ar/platform/data_analytics/Introduction/
 | **Optimization** | يساعد في تحديد مصادر البيانات أو الأنظمة غير المستقرة التي تحتاج لضبط العمليات. |
 | **Cross-Module Analysis** | يجمع البيانات من Data Anomalies, Data Validation, وData Timeliness للحصول على رؤى شاملة. |
 | **Actionable Insights** | يدعم كل من الفرق التقنية والمستخدمين التجاريين في unders
+
+---
+
+# digna Data Anomalies | المراقبة المعتمدة على الذكاء الاصطناعي للبيانات
+Source: https://docs.digna.ai/ar/platform/data_anomalies/
+
+# digna Data Anomalies – الكشف المعتمد على الذكاء الاصطناعي عن مشكلات جودة البيانات
+
+**مراقبة معتمدة على الذكاء الاصطناعي لثقة دائمة في البيانات**
+
+digna Data Anomalies هو جزء من **منصة digna Data Observability** — حل معياري يحسن **جودة البيانات** من خلال تحليل مستمر لكيفية تصرف مجموعات البيانات عبر الزمن.
+
+يتعلّم تلقائيًا ما يبدو "طبيعيًا" لبياناتك وينبهك عند حدوث تغيّرات في السلوك — دون تعريف عتبات ثابتة أو كتابة قاعدة واحدة.  
+يعمل هذا الموديول مباشرة داخل قاعدة بياناتك، لذا لا تغادر البيانات بيئتك مطلقًا.
+
+---
+
+## غرض digna Data Anomalies
+
+يقدم موديول **digna Data Anomalies** مراقبة مستمرة **لقابلية المراقبة للبيانات** عن طريق حساب وتتبع مقاييس إحصائية محددة مسبقًا مثل:
+
+- حجم البيانات وعدد السجلات  
+- نسب القيم المفقودة  
+- توزيعات القيم والهيستوغرامات  
+- النطاقات والمتوسطات العددية  
+- تفرد الأعمدة وطول النص  
+
+يتم جمع هذه المقاييس تلقائيًا لكل مجموعة بيانات.  
+باستخدامها، تبني digna نماذج تمثل السلوك النموذجي لكل مقياس — متعلمة الأنماط اليومية أو الأسبوعية أو الموسمية.  
+بمجرد تدريبها، يتنبأ الموديول بالقيم المتوقعة للبيانات الجديدة ويكشف الانحرافات التي قد تشير إلى مشكلات جودة، أعطال عملية، أو تغييرات في المصدر.
+
+---
+
+## القدرات الرئيسية
+
+- يتعلم السلوك المتوقع للبيانات تلقائيًا باستخدام الذكاء الاصطناعي — دون الحاجة لضبط عتبات.  
+- يكتشف الانخفاضات أو الارتفاعات المفاجئة أو الانجرافات في حجم البيانات والتوزيعات.  
+- يحدد الأعمدة المبدلة أو التعيينات غير الصحيحة بين السمات.  
+- يبرز قيمًا تصنيفية غير متوقعة (مثل مناطق أو رموز جديدة).  
+- يدعم جميع أنواع الأعمدة: عددية، تصنيفية، أو غير محددة.  
+- يعمل بالكامل داخل بيئة العميل — دون نقل البيانات.  
+- يتكامل مع **digna Data Analytics** لتحليل الاتجاهات طويلة المدى.
+
+---
+
+## كيف يعمل
+
+### الخطوة 1 – حساب المقاييس
+تحسب digna مجموعة من مقاييس الملف التعريفي لكل جدول وعمود.  
+تصف هذه المقاييس بنية وسلوك بياناتك الإحصائي وتُخزن لمزيد من التحليل.
+
+### الخطوة 2 – تدريب النماذج
+استنادًا إلى قيم المقاييس التاريخية، تُدرّب digna نماذج تعلم آلي مضغوطة (signature models) تلتقط النطاق الطبيعي لكل مقياس.
+
+### الخطوة 3 – الضبط التلقائي للعتبات
+باستخدام *conformal inference*، تحسب digna فترات ثقة تكيفية (auto-thresholds) تتطور مع بياناتك.  
+إذا وقعت قيم المقاييس الجديدة خارج النطاق المتوقَّع، يتم وسمها كشذوذ.
+
+يضمن هذا الحلقة المستمرة من التقييم أن تظل المراقبة ذات صلة حتى عندما تنمو أحجام البيانات أو تتغير الأنماط طبيعيًا.
+
+---
+
+## سيناريوهات توضيحية
+
+### انخفاض غير متوقع في حجم السجلات
+عادةً تحتوي مجموعة بيانات على حوالي 500,000 سجل يوميًا.  
+عندما تتضمن عملية تسليم جديدة 50,000 سجل فقط، تُشير digna إلى وجود شذوذ وتُظهر مدى انحراف القيمة عن النطاق الذي تعلمته.
+
+### اكتشاف أعمدة مبدلة
+طول السلسلة النصية المتوسط لعمود `last_name` يطابق فجأة طول `first_name`.  
+تتعرف digna على الانحراف في أنماط المقاييس وتشير إلى احتمال تبادل الأعمدة.
+
+### اكتشاف فئة غير متوقعة
+عمود يسرد مدنًا نمساوية يحتوي فجأة على "Zurich".  
+بناءً على التوزيعات التاريخية، تميّز digna القيمة الجديدة كقيمة غير متوقعة وتنبه المستخدم.
+
+---
+
+## التكامل مع موديولات أخرى
+
+- **digna Data Analytics** — يجمع سجل الشذوذ ومقاييس التقلب ليكشف الاتجاهات طويلة المدى.  
+- **digna Data Validation** — يفرض قواعد عمل صريحة للتحقق الحتمي من الجودة.  
+- **digna Data Timeliness** — يراقب أوقات وصول البيانات ويربط التأخيرات بحدوث الشذوذات.  
+- **digna Data Schema Tracker** — يكتشف التغييرات البنيوية التي قد تفسر الشذوذات الجديدة.
+
+---
+
+## حالات استخدام نموذجية
+
+- الكشف عن عمليات تحميل بيانات مفقودة أو مكررة.  
+- تحديد الأعمدة المبدلة أو المقطوعة.  
+- اكتشاف انجراف التوزيع في الميزات العددية أو التصنيفية.  
+- العثور على قيم مرجعية أو رموز غير متوقعة.  
+- مراقبة خطوط أنابيب الإدخال المستمر للكشف عن الشذوذات.  
+- تتبع **جودة البيانات** و**قابلية المراقبة للبيانات** عبر المجالات.
+
+---
+
+## الفوائد
+
+- اكتشاف فوري لسلوك البيانات الشاذ.  
+- يلغي الحاجة لضبط العتبات يدويًا.  
+- يقلل الجهد التشغيلي للبيئات البيانية الكبيرة.  
+- يبني ثقة في أنظمة التحليلات والتقارير.  
+- يعزز **جودة البيانات** و**قابلية المراقبة للبيانات** من البداية للنهاية.
+
+---
+
+## Related digna Modules
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — مقاييس الاتجاه والتقلب.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — التحقق من البيانات بالقواعد.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — مراقبة جداول تسليم البيانات.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — كشف تغييرات المخطط.
+
+---
+
+## الخلاصة
+
+يشكل موديول **digna Data Anomalies** جوهر منصة digna المعتمدة على الذكاء الاصطناعي لـ**مراقبة البيانات**.  
+من خلال المراقبة المستمرة للمقاييس الأساسية، وتعلّم الأنماط، وتحديد الانحرافات، يساعد المؤسسات على ضمان أن تظل **جودة البيانات** موثوقة ومستقرة وقابلة للتفسير — دون الحاجة إلى إعداد يدوي.
 
 ---
 
@@ -7217,6 +9046,1781 @@ The **Data Schema Tracker** يُبقيك على اطلاع بكيفية تطور
 
 1. **Snapshot Collection** – تقوم digna بالتقاط metadata المخطط الحالي.  
 2. **Comparison** – the new snapshot is compared
+
+---
+
+# AD FS
+Source: https://docs.digna.ai/ar/sso/adfs_sso_guide/
+
+# إعداد تسجيل الدخول الموحد مع AD FS
+
+Active Directory Federation Services هو الخيار المحلي: تقوم خوادمكم الخاصة بإصدار الرموز، وعنوان الاكتشاف (discovery URL) هو اسم مضيفكم. يدعم AD FS بروتوكول OpenID Connect اعتبارًا من **Windows Server 2016** فصاعدًا.
+
+يغطي هذا الدليل **جانب AD FS**: إنشاء مجموعة التطبيق وجمع القيم التي يحتاجها digna. جانب digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء وإصلاحها — متطابق لكل مزود ويُوصف في [نظرة عامة على تسجيل الدخول الموحد](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| المتطلب | ملاحظات |
+|---|---|
+| **إصدار AD FS** | Windows Server 2016 أو أحدث — الإصدارات الأقدم لا تدعم OIDC |
+| **الوصول** | مسؤول محلي على خادم AD FS |
+| **اسم خدمة الاتحاد (federation service name)** | مثال: `adfs.yourdomain.com` |
+| **URI إعادة التوجيه لـ digna** | عنوان URL الذي يعود إليه المستخدمون بعد تسجيل الدخول، مثال: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: إنشاء مجموعة التطبيق
+
+1. على خادم AD FS، افتح **AD FS Management**
+2. انقر بزر الماوس الأيمن على **Application Groups** واختر **Add Application Group**
+3. أدخل `digna` كاسم
+4. ضمن **Standalone applications** — أو **Client-Server applications** حسب إصدارك — اختر **Server application accessing a web API**
+5. انقر **Next**
+
+---
+
+## الخطوة 2: تكوين تطبيق الخادم
+
+1. **الاسم**: `digna backend`
+2. **معرف العميل (Client Identifier)**: يقوم AD FS بإنشاء GUID. انسخه — هذا يصبح `DIGNA_OIDC_CLIENT_ID`
+3. **Redirect URI**: أدخل عنوان callback الخاص بـ digna ثم انقر **Add**:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. انقر **Next**
+
+!!! warning "اضغط Add، لا تكتفِ بالضغط على Next"
+
+    حقل Redirect URI يحتوي على زر **Add** خاص به. كتابة URI والضغط على **Next** دون الضغط على **Add** سيلغي الإدخال، ولن يعرض المعالج أي تحذير. تأكد من ظهور URI في القائمة أسفل الحقل قبل المتابعة.
+
+---
+
+## الخطوة 3: إنشاء السر المشترك
+
+1. ضع علامة على **Generate a shared secret**
+2. انسخ السر المُولد → يصبح `DIGNA_OIDC_CLIENT_SECRET`
+3. انقر **Next**
+
+!!! warning "يُعرض السر مرة واحدة فقط"
+
+    يعرض AD FS السر المشترك فقط في صفحة المعالج هذه ولا يمكنه عرضه مرة أخرى. إذا فقدته، أعد تعيينه لاحقًا من خصائص مجموعة التطبيق.
+
+---
+
+## الخطوة 4: تكوين Web API
+
+1. **Identifier**: أدخل نفس معرف العميل من الخطوة 2 ثم انقر **Add**
+2. انقر **Next**
+3. اختر **سياسة التحكم بالوصول (Access Control Policy)** — *Permit everyone* هو أبسط خيار للتجربة؛ قيده لمجموعة للاستخدام في الإنتاج
+4. انقر **Next**
+
+---
+
+## الخطوة 5: منح النطاقات المسموح بها
+
+في خطوة **Configure Application Permissions**، ضع علامة على:
+
+- `openid`
+- `profile`
+- `email`
+
+ثم انقر **Next** وأكمل المعالج.
+
+!!! warning "النطاق openid ليس محددًا افتراضيًا"
+
+    يحدد AD FS في بعض الإصدارات فقط `user_impersonation` بشكل افتراضي. بدون `openid`، يعيد نقطة انتهاء التوكن (token endpoint) رمز وصول OAuth بدلاً من ID token، ولا يمكن لـ digna التعرف على المستخدم.
+
+---
+
+## الخطوة 6: التأكد من نقطة اكتشاف الاعدادات (Discovery Endpoint)
+
+استبدل اسم خدمة الاتحاد الخاص بك:
+
+```
+https://<adfs_host>/adfs/.well-known/openid-configuration
+```
+
+على سبيل المثال:
+
+```
+https://adfs.yourdomain.com/adfs/.well-known/openid-configuration
+```
+
+افتحه في متصفح. ستؤكد وثيقة JSON أن OIDC مفعل واسم المضيف صحيح.
+
+!!! note "يجب أن يثق الـ Backend في الشهادة"
+
+    من الشائع استخدام سلطة شهادات داخلية لـ AD FS. الآلة التي تشغّل الـ digna backend تجري طلب HTTPS خارجي إلى هذا العنوان، لذا يجب أن تكون الجهة المصدرة للشهادة موجودة في مخزن الثقة لتلك الآلة — وليس فقط في متصفحات الأشخاص الذين يسجلون الدخول.
+
+---
+
+## الخطوة 7: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "adfs"
+label = "Login with Active Directory"
+```
+
+### `config.toml`
+
+```toml
+[oidc.adfs]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://adfs.yourdomain.com/adfs/.well-known/openid-configuration"
+```
+
+يجب أن يتطابق `key` في الملفين — هنا `adfs`.
+
+---
+
+## الخطوة 8: الاختبار
+
+أعد تشغيل الـ backend وخادم الويب، ثم افتح لوحة التحكم. راجع [اختبار تسجيل الدخول](overview.md#testing-login) للقائمة الكاملة للفحص.
+
+---
+
+## استكشاف أخطاء AD FS وإصلاحها
+
+### MSIS9611: العميل غير مسموح له بالوصول إلى المورد
+
+معرف Web API في الخطوة 4 لا يطابق معرف العميل، أو لم تُمنح النطاقات في الخطوة 5. كلاهما قابل للتعديل من خصائص مجموعة التطبيق.
+
+### MSIS9602: redirect_uri غير صالح
+
+تم كتابة URI ولم يتم إضافته عبر زر **Add**، أو يختلف عن `DIGNA_OIDC_REDIRECT_URI`. تحقق من **Application Groups → digna → digna backend → Properties**.
+
+### لم يتم إرجاع ID Token
+
+نطاق `openid` مفقود من أذونات التطبيق.
+
+### لا يمكن للـ Backend الوصول إلى عنوان الاكتشاف
+
+إما أن DNS على مضيف الـ backend لا يحل اسم خدمة الاتحاد، أو أن شهادة AD FS غير موثوقة هناك. اختبر باستخدام `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` من خادم digna نفسه.
+
+### الأحداث التي يجب التحقق منها
+
+يسجل خادم AD FS حالات الفشل في **Applications and Services Logs → AD FS → Admin** في Event Viewer، عادةً مع سبب أكثر تحديدًا مما يظهر في المتصفح.
+
+---
+
+## انظر أيضًا
+
+- [نظرة عامة على تسجيل الدخول الموحد](overview.md) — مرجع التكوين، الاختبار واستكشاف الأخطاء العامة
+- [Microsoft: AD FS OpenID Connect scenarios](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)
+
+---
+
+# Auth0
+Source: https://docs.digna.ai/ar/sso/auth0_sso_guide/
+
+# إعداد SSO مع Auth0
+
+Auth0 متوافق مع OIDC ويعرض نقطة اكتشاف (discovery) لكل مستأجر. الأمر الأساسي الذي يجب ضبطه بشكل صحيح هو نطاق المستأجر، الذي يظهر في عنوان الاكتشاف ويتغير إذا قمت بتمكين نطاق مخصص.
+
+يغطي هذا الدليل جانب **Auth0**: إنشاء التطبيق وجمع القيم التي تحتاجها digna. جانب digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء وإصلاحها — هو نفسه بالنسبة لكل مزود ومذكور في [Single Sign-On Overview](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| Requirement | Notes |
+|---|---|
+| **Auth0 role** | Admin on the tenant |
+| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: إنشاء التطبيق
+
+1. سجّل الدخول إلى [Auth0 Dashboard](https://manage.auth0.com)
+2. انتقل إلى **Applications → Applications**
+3. انقر **Create Application**
+4. سمّه `digna` واختر **Regular Web Applications**
+5. انقر **Create**
+
+!!! warning "اختر Regular Web Applications"
+
+    *Single Page Application* و *Native* ينشئان عملاء عامين بدون سر. تقوم digna بإجراء مقايضة الترميز (code exchange) من الخلفية وتحتاج إلى عميل سري (confidential client)، لذا فإن **Regular Web Applications** هو النوع الصحيح. على عكس بعض المزودين، يتيح Auth0 تغيير النوع لاحقًا ضمن **Settings → Application Type**.
+
+---
+
+## الخطوة 2: إضافة عنوان الاستدعاء (Callback URL)
+
+في تبويب **Settings** الخاص بالتطبيق:
+
+1. اعثر على **Allowed Callback URLs**
+2. أدخل عنوان callback الخاص بـ digna:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. اختياريًا عيّن **Allowed Logout URLs** إلى عنوان لوحة التحكم الخاصة بك
+4. انتقل إلى الأسفل وانقر **Save Changes**
+
+!!! note "مفصولة بفواصل، ليست مفصولة بأسطر جديدة"
+
+    يقبل Auth0 عدة عناوين callback في هذا الحقل، مفصولة بفواصل. القائمة المفصولة بأسطر جديدة فقط تُقرأ كعنوان واحد معطّل وتطابق لا شيء بصمت.
+
+---
+
+## الخطوة 3: جمع بيانات الاعتماد
+
+ما زلت في **Settings**، في لوحة **Basic Information**:
+
+- **Domain** → توضع في عنوان الاكتشاف (discovery URL)
+- **Client ID** → يصبح `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → يصبح `DIGNA_OIDC_CLIENT_SECRET` (انقر للكشف)
+
+---
+
+## الخطوة 4: تأكيد نوع التفويض (Grant Type)
+
+1. انتقل إلى **Settings → Advanced Settings → Grant Types**
+2. تأكد من وضع علامة على **Authorization Code**
+
+يتم تمكينه افتراضيًا لتطبيقات Regular Web Applications. إذا أُزيل، يفشل تسجيل دخول digna مع `unauthorized_client`.
+
+---
+
+## الخطوة 5: بناء عنوان الاكتشاف (Discovery URL)
+
+استبدل **Domain** من الخطوة 3:
+
+```
+https://<your_tenant_domain>/.well-known/openid-configuration
+```
+
+على سبيل المثال:
+
+```
+https://yourcompany.eu.auth0.com/.well-known/openid-configuration
+```
+
+!!! warning "النطاقات المخصصة تغير issuer"
+
+    إذا كان مستأجرك يستخدم نطاقًا مخصصًا مثل `login.yourcompany.com`، فاستخدم ذلك النطاق في عنوان الاكتشاف. المزج بين الاثنين — النطاق الرسمي في عنوان الاكتشاف، والنطاق المخصص في المتصفح — يؤدي إلى عدم تطابق issuer، ويتم رفض التوكن بعد تسجيل دخول ناجح خلاف ذلك.
+
+---
+
+## الخطوة 6: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "auth0"
+label = "Login with Auth0"
+```
+
+### `config.toml`
+
+```toml
+[oidc.auth0]
+DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
+```
+
+يجب أن يتطابق الـ `key` في الملفين — هنا `auth0`.
+
+---
+
+## الخطوة 7: الاختبار
+
+أعد تشغيل الخادم الخلفي وخادم الويب، ثم افتح لوحة التحكم. راجع [Testing Login](overview.md#testing-login) للقائمة الكاملة لفحص الأمور.
+
+---
+
+## استكشاف أخطاء Auth0 وإصلاحها
+
+### عدم تطابق Callback URL
+
+تظهر صفحة خطأ Auth0 العنوان الذي استلمه. أضفه إلى **Allowed Callback URLs**، وتحقق من أن الإدخالات مفصولة بفواصل.
+
+### unauthorized_client
+
+لم يتم تفعيل **Authorization Code** ضمن **Advanced Settings → Grant Types**، أو أن نوع التطبيق ليس Regular Web Applications.
+
+### رفض الوصول بعد تسجيل دخول ناجح
+
+قاعدة (Rule) أو Action أو مشغل ما بعد الدخول (Post-Login trigger) في المستأجر يرفض المستخدم. تحقق من **Actions → Flows → Login** وسجلات المستأجر تحت **Monitoring → Logs**، والتي تُظهر السبب الدقيق.
+
+### عدم تطابق issuer
+
+عنوان الاكتشاف والنطاق الذي أُرسل إليه المتصفح يختلفان — عادةً النطاق الرسمي للمستأجر مقابل نطاق مخصص. استخدم واحدًا بشكل متسق.
+
+---
+
+## راجع أيضًا
+
+- [Single Sign-On Overview](overview.md) — مرجع التكوين، والاختبار واستكشاف الأخطاء العام
+- [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)
+
+---
+
+# Google Workspace
+Source: https://docs.digna.ai/ar/sso/google_workspace_sso_guide/
+
+# إعداد تسجيل الدخول الموحد مع Google Workspace
+
+منصة الهوية من Google متوافقة مع OIDC وتستخدم عنوان اكتشاف واحد معروف لكل عميل، لذا القيم الخاصة بكل مؤسسة هي فقط معرف العميل والسر.
+
+يغطي هذا الدليل الجانب الخاص بـ **Google**: إنشاء عميل OAuth وجمع القيم التي يحتاجها digna. الجانب الخاص بـ digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء — متماثل لكل مزود ويُوصف في [نظرة عامة على تسجيل الدخول الموحد](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| المتطلب | ملاحظات |
+|---|---|
+| **مشروع Google Cloud** | أي مشروع في نفس المؤسسة كالنطاق Workspace الخاص بك |
+| **الدور** | محرر أو مالك على المشروع |
+| **digna redirect URI** | عنوان URL يعود إليه المستخدمون بعد تسجيل الدخول، مثال `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: تكوين شاشة موافقة OAuth
+
+لن تصدر Google بيانات اعتماد حتى توجد شاشة الموافقة.
+
+1. افتح [وحدة تحكم Google Cloud](https://console.cloud.google.com) واختر المشروع الخاص بك
+2. اذهب إلى **APIs & Services → OAuth consent screen**
+3. اختر نوع المستخدم:
+   - **Internal** — يمكن تسجيل الدخول فقط للحسابات الموجودة في نطاق Workspace الخاص بك. يُنصح به.
+   - **External** — يمكن لأي حساب Google محاولة تسجيل الدخول.
+4. املأ اسم التطبيق، بريد دعم المستخدم وبريد اتصال المطور
+5. في خطوة **Scopes**، أضف `openid` و `.../auth/userinfo.email` و `.../auth/userinfo.profile`
+6. احفظ
+
+!!! warning "يجب نشر التطبيقات الخارجية"
+
+    شاشة موافقة **External** تبدأ بحالة *Testing*، حيث يمكن فقط للحسابات المضافة صراحة إلى قائمة المستخدمين الاختباريين إكمال تسجيل الدخول. سيرى الآخرون رسالة "digna has not completed the Google verification process". إما غيّر التطبيق إلى **In production** تحت **Publishing status**، أو استخدم **Internal** — الذي لا يفرض هذا القيد وهو الخيار الصحيح لنشر يقتصر على Workspace.
+
+---
+
+## الخطوة 2: إنشاء عميل OAuth
+
+1. اذهب إلى **APIs & Services → Credentials**
+2. انقر **Create Credentials → OAuth client ID**
+3. اضبط **Application type** على **Web application**
+4. أعطه اسمًا، مثل `digna`
+5. ضمن **Authorized redirect URIs**، انقر **Add URI** وأدخل:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. انقر **Create**
+
+!!! note "لا حاجة لـ Authorized JavaScript Origins"
+
+    digna يتبادل رمز التفويض من الخادم الخلفي، وليس من المتصفح، لذلك يمكن ترك حقل **Authorized JavaScript origins** فارغًا. فقط URI إعادة التوجيه هو المهم.
+
+---
+
+## الخطوة 3: جمع بيانات الاعتماد
+
+يظهر في الحوار الذي يظهر بعد الإنشاء:
+
+- **Client ID** — ينتهي بـ `.apps.googleusercontent.com` → يصبح `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → يصبح `DIGNA_OIDC_CLIENT_SECRET`
+
+يمكن استرجاع كلاهما لاحقًا من صفحة تفاصيل بيانات الاعتماد، على عكس معظم المزودين الآخرين.
+
+---
+
+## الخطوة 4: عنوان الاكتشاف
+
+تستخدم Google عنوان اكتشاف واحدًا لجميع العملاء — لا يوجد ما يستبدل:
+
+```
+https://accounts.google.com/.well-known/openid-configuration
+```
+
+---
+
+## الخطوة 5: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "google"
+label = "تسجيل الدخول عبر Google"
+```
+
+### `config.toml`
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+يجب أن يتطابق الـ `key` في كلا الملفين — هنا `google`.
+
+---
+
+## الخطوة 6: الاختبار
+
+أعد تشغيل الخادم الخلفي وخادم الويب، ثم افتح لوحة التحكم. راجع [اختبار تسجيل الدخول](overview.md#testing-login) للحصول على قائمة التحقق الكاملة.
+
+---
+
+## استكشاف أخطاء Google Workspace وإصلاحها
+
+### خطأ 400: redirect_uri_mismatch
+
+الـ URI في `DIGNA_OIDC_REDIRECT_URI` غير موجود في قائمة **Authorized redirect URIs**، أو يختلف بسبب شرطة مائلة نهائية أو البروتوكول. تعرض صفحة الخطأ من Google الـ URI الذي استلمته — قارنها حرفًا بحرف مع المسجل.
+
+### This App Is Blocked / Has Not Completed Verification
+
+شاشة الموافقة هي **External** وما زالت في حالة *Testing*. انشرها، أو غيّر التطبيق إلى **Internal**.
+
+### Access Blocked: Authorization Error
+
+الحساب الذي يحاول تسجيل الدخول خارج نطاق Workspace الخاص بك بينما شاشة الموافقة هي **Internal**. هذا السلوك المقصود — التطبيقات Internal تقبل فقط حسابات المؤسسة.
+
+### التغييرات تستغرق عدة دقائق
+
+تقوم Google بترحيل تغييرات بيانات الاعتماد وشاشة الموافقة بشكل غير متزامن. قد يستغرق تفعيل URI إعادة توجيه تم إضافته حديثًا بضع دقائق؛ إذا بدا أن التغيير لم يؤثر، انتظر وأعد المحاولة قبل متابعة التحقيق.
+
+---
+
+## راجع أيضًا
+
+- [نظرة عامة على تسجيل الدخول الموحد](overview.md) — مرجع التكوين، الاختبار واستكشاف الأخطاء العام
+- [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
+
+---
+
+# Keycloak
+Source: https://docs.digna.ai/ar/sso/keycloak_sso_guide/
+
+# إعداد SSO مع Keycloak
+
+Keycloak هو مزود هوية مستضاف ذاتيًا ومتوافق تمامًا مع OIDC. بما أنك تديره بنفسك، فإن عنوان الاكتشاف (discovery URL) يُبنى من اسم المضيف (host) وrealm الخاصين بك بدلاً من نطاق مزود خدمة.
+
+هذا الدليل يغطي جانب **Keycloak**: إنشاء العميل وجمع القيم التي يحتاجها digna. جانب digna — `dashboard_config.toml` والاختبار واستكشاف الأخطاء — هو نفسه لكل مزود ويوضح في [نظرة عامة على تسجيل الدخول الأحادي](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| المتطلب | ملاحظات |
+|---|---|
+| **إصدار Keycloak** | 17 أو أحدث للمسارات المستخدمة هنا — انظر الملاحظة في الخطوة 4 |
+| **دور Keycloak** | `realm-admin` على الـ realm المستهدف، أو مسؤول خادم |
+| **Realm** | الـ realm الذي ينتمي إليه مستخدمو digna، وليس بالضرورة `master` |
+| **URI إعادة التوجيه لـ digna** | عنوان URL الذي يعود إليه المستخدمون بعد تسجيل الدخول، مثال: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: اختر الـ Realm
+
+1. افتح وحدة تحكم إدارة Keycloak
+2. استخدم محدد الـ realm في أعلى اليسار للتبديل إلى الـ realm الذي يتواجد فيه المستخدمون لديك
+
+!!! warning "لا تستخدم الـ realm master"
+
+    الـ `master` realm مخصص لإدارة Keycloak نفسه. يجب أن تتبع تطبيقات العملاء وجودها في realm مخصص؛ وضع digna في `master` يمنح مستخدميه طريقًا إلى وحدة إدارة Keycloak.
+
+---
+
+## الخطوة 2: إنشاء العميل
+
+1. اذهب إلى **Clients** وانقر **Create client**
+2. قم بالتكوين:
+   - **Client type**: *OpenID Connect*
+   - **Client ID**: `digna` — هذا يصبح `DIGNA_OIDC_CLIENT_ID`
+3. انقر **Next**
+4. في خطوة **Capability config**، فعّل **Client authentication** **On**
+5. اترك **Standard flow** ممكنًا؛ التدفقات الأخرى غير مطلوبة
+6. انقر **Next**
+
+!!! warning "يجب تفعيل مصادقة العميل"
+
+    مع تعطيل **Client authentication**، ينشئ Keycloak عميلًا *public*، وهو ليس لديه بيانات اعتماد على الإطلاق — تبويب **Credentials** في الخطوة 4 لن يكون موجودًا. digna يحتاج إلى عميل سري (confidential client). يمكنك تغيير هذا الخيار بعد الإنشاء إذا أخطأت.
+
+---
+
+## الخطوة 3: ضبط URI إعادة التوجيه
+
+في خطوة **Login settings** (أو في تبويب **Settings** لاحقًا):
+
+1. **Valid redirect URIs**: أدخل عنوان callback الخاص بـ digna:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+2. **Web origins**: اتركها فارغة، أو اضبطها على `+` لمزامنة عناوين إعادة التوجيه
+3. انقر **Save**
+
+!!! tip "تجنب الـ Wildcards"
+
+    يقبل Keycloak أنماطًا مثل `https://digna.yourdomain.com/*`. تتيح الـ wildcard لأي مسار على ذلك المضيف استلام رمز التفويض، لذا الأفضل استخدام عنوان callback الدقيق.
+
+---
+
+## الخطوة 4: الحصول على سر العميل
+
+1. افتح تبويب **Credentials**
+2. أكد أن **Client Authenticator** هو *Client Id and Secret*
+3. انسخ **Client secret** → يصبح `DIGNA_OIDC_CLIENT_SECRET`
+
+السر يبقى قابلاً للاسترجاع هنا ويمكن إعادة توليده عبر **Regenerate**.
+
+---
+
+## الخطوة 5: بناء عنوان اكتشاف OpenID
+
+استبدل مضيف Keycloak واسم الـ realm الخاصين بك:
+
+```
+https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
+```
+
+على سبيل المثال:
+
+```
+https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
+```
+
+!!! note "في Keycloak 16 والإصدارات الأقدم يتم تضمين /auth"
+
+    قبل Keycloak 17، كانت جميع النهايات (endpoints) تقع تحت بادئة `/auth`:
+
+    ```
+    https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
+    ```
+
+    التوزيعات التي تضبط `KC_HTTP_RELATIVE_PATH=/auth` تحتفظ بتخطيط العناوين القديم على الإصدارات الحالية أيضًا. إذا أعاد العنوان بدون `/auth` 404، جرّبه مع `/auth`.
+
+افتح العنوان في متصفح قبل المتابعة. سيؤكد مستند JSON أن المضيف والـ realm صحيحان.
+
+---
+
+## الخطوة 6: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "keycloak"
+label = "Login with Keycloak"
+```
+
+### `config.toml`
+
+```toml
+[oidc.keycloak]
+DIGNA_OIDC_CLIENT_ID = "digna"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
+```
+
+يجب أن تتطابق قيمة `key` في الملفين — هنا `keycloak`. لاحظ أنها لا يجب أن تتطابق بالضرورة مع Keycloak **Client ID**، رغم أن إبقائهما متطابقين أسهل للمتابعة.
+
+---
+
+## الخطوة 7: الاختبار
+
+أعد تشغيل الـ backend وخادم الويب، ثم افتح لوحة التحكم. انظر [اختبار تسجيل الدخول](overview.md#testing-login) للقائمة الكاملة لفحص الأخطاء والتحقق.
+
+---
+
+## استكشاف أخطاء Keycloak وإصلاحها
+
+### Invalid parameter: redirect_uri
+
+عنوان callback غير مغطى في **Valid redirect URIs**. يسجل Keycloak الـ URI الذي استلمه في سجل الخادم، وهو أسرع طريقة لمعرفة عدم التطابق بالضبط.
+
+### تبويب Credentials مفقود
+
+العميل عام (public). فعّل **Client authentication** تحت **Settings → Capability config**.
+
+### 404 على عنوان الاكتشاف
+
+إما أن اسم الـ realm خاطئ، أو النشر يستخدم بادئة `/auth`. تحقق من قائمة الـ realms في وحدة الإدارة وجرب كلا شكلي العنوانين.
+
+### unauthorized_client or invalid_client
+
+تم تعطيل **Standard flow** تحت **Capability config**، أو تم إعادة توليد السر في Keycloak دون تحديث `config.toml`.
+
+### أخطاء شهادات من الـ Backend
+
+سيفشل استدعاء HTTPS الصادر من digna إلى عنوان الاكتشاف إذا كان Keycloak مستضافًا خلف شهادة خاصة أو موقعة ذاتيًا. قم بتثبيت الجهة المصدرة للشهادة (CA) في مخزن الثقة للجهاز الذي يعمل عليه backend الخاص بـ digna.
+
+---
+
+## انظر أيضًا
+
+- [نظرة عامة على تسجيل الدخول الأحادي](overview.md) — مرجع التكوين، الاختبار واستكشاف الأخطاء العام
+- [Keycloak: Securing applications](https://www.keycloak.org/docs/latest/securing_apps/)
+
+---
+
+# Microsoft Entra ID
+Source: https://docs.digna.ai/ar/sso/microsoft_entra_id_sso_guide/
+
+# إعداد SSO مع Microsoft Entra ID
+
+Microsoft Entra ID (المعروف سابقًا باسم Azure Active Directory) هو مزوّد متوافق تمامًا مع OIDC، لذلك يتكامل digna معه عبر نقطة الاكتشاف القياسية.
+
+يغطي هذا الدليل **جانب Entra ID**: تسجيل التطبيق وجمع القيم الأربع التي يحتاجها digna. جانب digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء وإصلاحها — هو نفسه لكل مزوّد ومُوضّح في [نظرة عامة على تسجيل الدخول الأحادي](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| المتطلب | الملاحظات |
+|---|---|
+| **دور Entra ID** | Application Administrator، Cloud Application Administrator، أو Global Administrator |
+| **digna redirect URI** | عنوان URL الذي يعود إليه المستخدمون بعد تسجيل الدخول، مثال: `https://digna.yourdomain.com/oidc/callback` |
+| **المستأجر** | الدليل الذي يقوم المستخدمون بتسجيل الدخول إليه |
+
+---
+
+## الخطوة 1: تسجيل التطبيق
+
+1. سجّل الدخول إلى [مركز إدارة Microsoft Entra](https://entra.microsoft.com)
+2. اذهب إلى **Identity → Applications → App registrations**
+3. انقر **New registration**
+4. التكوين:
+   - **الاسم**: `digna` (يُعرض للمستخدمين في شاشة الموافقة)
+   - **أنواع الحسابات المدعومة**: *Accounts in this organizational directory only* لنشر خاص بمستأجر واحد
+5. تحت **Redirect URI**، اختر المنصة **Web** وأدخل عنوان callback الخاص بـ digna:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. انقر **Register**
+
+!!! warning "مهم"
+
+    يجب أن تكون المنصة **Web**، لا *Single-page application*. يقوم digna بمبادلة رمز التفويض من الخادم الخلفي باستخدام سر العميل، وهو ما لا تسمح به نوع منصة SPA.
+
+---
+
+## الخطوة 2: جمع معرف العميل والمستأجر
+
+في صفحة **Overview** الخاصة بالتطبيق، انسخ:
+
+- **Application (client) ID** → يصبح `DIGNA_OIDC_CLIENT_ID`
+- **Directory (tenant) ID** → يُستخدم في عنوان URL الخاص بالاكتشاف
+
+---
+
+## الخطوة 3: إنشاء سر عميل
+
+1. اذهب إلى **Certificates & secrets → Client secrets**
+2. انقر **New client secret**
+3. أدخل وصفًا واختر فترة انتهاء صلاحية
+4. انقر **Add**
+5. انسخ عمود **Value** فورًا
+
+!!! warning "انسخ Value، لا Secret ID"
+
+    يُعرض الـ **Value** مرة واحدة فقط، في هذه الصفحة، ولا يمكن استرجاعه لاحقًا. يبدو **Secret ID** المجاور مشابهًا لكنه ليس السر — استخدامه ينتج عنه خطأ `invalid_client` عند تسجيل الدخول. إذا تركت الصفحة قبل النسخ، احذف السر وأنشئ واحدًا جديدًا.
+
+!!! tip "نصيحة"
+
+    يقيّد Entra ID عمر الأسرار إلى 24 شهرًا كحد أقصى، لذا لكل تكامل SSO يوجد تاريخ انتهاء. دوّنه في مكان تراه — انتهاء السر يوقف SSO لجميع المستخدمين دفعة واحدة، دون تحذير على صفحة تسجيل الدخول.
+
+---
+
+## الخطوة 4: تأكيد أذونات API
+
+1. اذهب إلى **API permissions**
+2. تأكد من وجود **Microsoft Graph → User.Read** (delegated) — تُضاف بشكل افتراضي
+
+نطاقات `openid` و`profile` و`email` التي يطلبها digna هي جزء من مجموعة OIDC القياسية ولا تحتاج لمنح منفصل. إذا كان المستأجر يطلب موافقة المسؤول لجميع التطبيقات، انقر **Grant admin consent for &lt;tenant&gt;**.
+
+---
+
+## الخطوة 5: بناء عنوان URL للاكتشاف
+
+استبدل **Directory (tenant) ID** من الخطوة 2:
+
+```
+https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration
+```
+
+!!! note "استخدم نقطة النهاية v2.0"
+
+    جزء `/v2.0/` مهم. نقطة النهاية v1.0 عند `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` تصدر رموزًا بصيغة أقدم ولا تُرجع مطالبات OIDC القياسية التي يتوقعها digna.
+
+افتح عنوان URL في متصفح قبل المتابعة. تؤكد وثيقة JSON أن معرف المستأجر صحيح.
+
+---
+
+## الخطوة 6: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+```
+
+### `config.toml`
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+```
+
+يجب أن يتطابق `key` في الملفين — هنا `microsoft`.
+
+---
+
+## الخطوة 7: الاختبار
+
+أعد تشغيل الخادم الخلفي وخادم الويب، ثم افتح لوحة التحكم. راجع [اختبار تسجيل الدخول](overview.md#testing-login) للقائمة الكاملة للاختبار.
+
+---
+
+## استكشاف أخطاء Entra ID وإصلاحها
+
+### AADSTS50011: Redirect URI Mismatch
+
+العنوان في `DIGNA_OIDC_REDIRECT_URI` يختلف عن المسجل في الخطوة 1. تقارن Entra ID السلسلة كاملة، لذا المسافة المائلة النهائية، `http` مقابل `https`، أو منفذ مختلف كلها تعد اختلافًا. تحقق من **Authentication → Web → Redirect URIs**.
+
+### AADSTS7000215: Invalid Client Secret
+
+إما أنه تم نسخ **Secret ID** بدلًا من **Value**، أو أن السر منتهي الصلاحية. أنشئ سرًا جديدًا ونسخ عمود Value.
+
+### AADSTS650057: Invalid Resource
+
+تم حذف تسجيل التطبيق أو ينتمي إلى مستأجر مختلف عن الموجود في عنوان URL الخاص بالاكتشاف. تحقق من Directory (tenant) ID في صفحة Overview.
+
+### المستخدمون يسجلون الدخول لكن لا يحدث شيء
+
+إذا كان المستأجر يتطلب موافقة المسؤول ولم يتم منحها، فسيعود التحويل دون رمز صالح. امنح موافقة المسؤول تحت **API permissions**.
+
+---
+
+## انظر أيضًا
+
+- [نظرة عامة على تسجيل الدخول الأحادي](overview.md) — مرجع التهيئة، الاختبار واستكشاف الأخطاء العام
+- [Microsoft: تدفق رمز تفويض OAuth 2.0](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
+
+---
+
+# Okta
+Source: https://docs.digna.ai/ar/sso/okta_sso_guide/
+
+# إعداد SSO مع Okta
+
+تلتزم Okta بمواصفات OIDC، مع فارق واحد يواجه معظم التكاملات لأول مرة: تعرض مؤسسة Okta أكثر من خادم تفويض واحد، ولكلٍ منها عنوان اكتشاف خاص به.
+
+يغطي هذا الدليل جانب **Okta**: إنشاء تكامل التطبيق وجمع القيم التي تحتاجها digna. جانب digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء — هو نفسه لكل مزود وهو موضح في [نظرة عامة على تسجيل الدخول الموحد](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| Requirement | Notes |
+|---|---|
+| **Okta role** | Super Administrator, or an admin role permitted to create app integrations |
+| **Okta domain** | e.g. `yourcompany.okta.com`, or a custom domain if configured |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: إنشاء تكامل التطبيق
+
+1. سجّل الدخول إلى لوحة إدارة Okta
+2. اذهب إلى **Applications → Applications**
+3. انقر **Create App Integration**
+4. اختر:
+   - **Sign-in method**: *OIDC - OpenID Connect*
+   - **Application type**: *Web Application*
+5. انقر **Next**
+
+!!! warning "نوع التطبيق لا يمكن تغييره"
+
+    اختيار *Single-Page Application* بدلًا من *Web Application* ينشئ عميلًا عامًا بدون secret، وتبادل رمز الخلفية في digna سيفشل مع `invalid_client`. النوع ثابت عند الإنشاء — الاختيار الخاطئ يعني حذف التطبيق والبدء من جديد.
+
+---
+
+## الخطوة 2: تكوين التكامل
+
+1. **App integration name**: `digna`
+2. **Grant type**: اترك *Authorization Code* محددًا
+3. **Sign-in redirect URIs**: أدخل عنوان استدعاء digna الخاص بك:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. **Sign-out redirect URIs**: اختياري
+5. تحت **Assignments**، اختر من يمكنه استخدام التكامل — مجموعة محددة أكثر أمانًا من *Allow everyone in your organization to access*
+6. انقر **Save**
+
+!!! note "التعيين مطلوب"
+
+    تقوم Okta بمصادقة المستخدم ثم تتحقق مما إذا كان مُعينًا للتطبيق. سيصل المستخدم غير المعين إلى صفحة تسجيل دخول Okta، ويسجل الدخول بنجاح، ثم يُرفض عند إعادة التوجيه. إذا نجح تسجيل الدخول لديك لكنه لا يعمل لزملائك، ففحص التعيين هو أول ما يجب التحقق منه.
+
+---
+
+## الخطوة 3: جمع بيانات الاعتماد
+
+في علامة التبويب **General** للتطبيق، تحت **Client Credentials**:
+
+- **Client ID** → يصبح `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → يصبح `DIGNA_OIDC_CLIENT_SECRET` (انقر على أيقونة العين للكشف)
+
+---
+
+## الخطوة 4: اختيار خادم التفويض
+
+هذه الخطوة هي التي تحدد عنوان الاكتشاف (discovery URL). اذهب إلى **Security → API** لرؤية خوادم التفويض في مؤسستك.
+
+**Org authorization server** — يصدر رموزًا لمؤسسة Okta نفسها:
+
+```
+https://<your_okta_domain>/.well-known/openid-configuration
+```
+
+**Custom authorization server** — بما في ذلك الخادم الذي تنشئه Okta باسم `default`:
+
+```
+https://<your_okta_domain>/oauth2/<auth_server_id>/.well-known/openid-configuration
+```
+
+بالنسبة للخادم المدمج، يكون `<auth_server_id>` حرفيًا `default`:
+
+```
+https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration
+```
+
+!!! tip "أي واحد؟"
+
+    استخدم خادم التفويض الخاص **بالمنظمة (org)** ما لم تكن منظمتك تقرر بالفعل استخدام خادم مخصص لسياسات وصول API. حسابات Okta Developer تُفعل `default` افتراضيًا؛ العديد من المؤسسات تعطّلها. افتح كلا العنوانين في المتصفح — الذي يعيد JSON بدلًا من خطأ هو المتاح لك.
+
+---
+
+## الخطوة 5: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "okta"
+label = "Login with Okta"
+```
+
+### `config.toml`
+
+```toml
+[oidc.okta]
+DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration"
+```
+
+يجب أن يطابق `key` في كلا الملفين — هنا `okta`.
+
+---
+
+## الخطوة 6: الاختبار
+
+أعد تشغيل الbackend وweb server، ثم افتح لوحة التحكم. راجع [اختبار تسجيل الدخول](overview.md#testing-login) للقائمة الكاملة للفحص.
+
+---
+
+## استكشاف أخطاء Okta وإصلاحها
+
+### لم يُسجّل عنوان إعادة التوجيه
+
+تذكر Okta عنوان URI المسبّب للخطأ في رسالة الخطأ. قارنها مع **General → Sign-in redirect URIs**؛ تطابق Okta السلسلة الكاملة بما في ذلك أي شرطة مائلة في النهاية.
+
+### المستخدم غير معين لتطبيق العميل
+
+الحساب غير موجود في قائمة التعيين الخاصة بالتطبيق. أضف المستخدم أو مجموعته تحت **Assignments**.
+
+### 400 Bad Request: Invalid Authorization Server
+
+`<auth_server_id>` في عنوان الاكتشاف غير موجود، غالبًا `default` في مؤسسة تم إزالة هذا الخادم منها. تحقق من **Security → API** للخوادم المتاحة بالفعل.
+
+### invalid_client في خطوة التوكن
+
+تم إنشاء التكامل كـ Single-Page Application وله no client secret. أعد إنشاؤه كتطبيق Web Application.
+
+---
+
+## انظر أيضًا
+
+- [نظرة عامة على تسجيل الدخول الموحد](overview.md) — مرجع التكوين، الاختبار واستكشاف الأخطاء العام
+- [Okta: OpenID Connect & OAuth 2.0](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)
+
+---
+
+# OneLogin
+Source: https://docs.digna.ai/ar/sso/onelogin_sso_guide/
+
+# إعداد SSO مع OneLogin
+
+OneLogin متوافق مع OIDC. ميزته المميزة هي أن نوع الموصل يُختار من الكتالوج عند إنشاء التطبيق ولا يمكن تغييره لاحقًا.
+
+يغطي هذا الدليل جانب **OneLogin**: إنشاء التطبيق وجمع القيم التي يحتاجها digna. جانب digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء وإصلاحها — هو نفسه لكل مزود ويتم وصفه في [نظرة عامة على تسجيل الدخول الموحد](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| المتطلب | ملاحظات |
+|---|---|
+| **دور في OneLogin** | مالك الحساب أو مسؤول مخول بإضافة التطبيقات |
+| **النطاق الفرعي** | على سبيل المثال `yourcompany.onelogin.com` |
+| **URI إعادة توجيه digna** | عنوان URL الذي يعود إليه المستخدمون بعد تسجيل الدخول، على سبيل المثال `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: إنشاء تطبيق OIDC
+
+1. سجّل الدخول إلى بوابة OneLogin الإدارية
+2. اذهب إلى **Applications → Applications**
+3. انقر **Add App**
+4. ابحث عن `OpenId Connect` واختر موصل **OpenId Connect (OIDC)**
+5. عيّن **Display Name** إلى `digna`
+6. انقر **Save**
+
+!!! warning "نوع الموصل ثابت عند الإنشاء"
+
+    لدى OneLogin إدخالات كتالوج منفصلة لـ SAML وOIDC، ولا يمكن تحويل التطبيق من أحدهما إلى الآخر. إذا اخترت موصل SAML عن طريق الخطأ، احذف التطبيق وأعد إضافته — لا توجد إعدادات لتبديل البروتوكولات.
+
+---
+
+## الخطوة 2: تكوين URI إعادة التوجيه
+
+1. افتح علامة التبويب **Configuration**
+2. في **Redirect URI's**، ادخل عنوان الاستدعاء (callback) الخاص بـ digna:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. اختياريًا، عيّن **Post Logout Redirect URIs** إلى عنوان لوحة التحكم (dashboard) الخاص بك
+4. انقر **Save**
+
+!!! note "URI واحد في كل سطر"
+
+    على عكس مزودين يتوقعون قائمة مفصولة بفواصل، حقل OneLogin **Redirect URI's** يقبل URI واحدًا في كل سطر.
+
+---
+
+## الخطوة 3: تعيين نوع التطبيق وطريقة المصادقة
+
+1. افتح علامة التبويب **SSO**
+2. تأكد أن **Application Type** هو *Web*
+3. عيّن **Token Endpoint → Authentication Method** إلى *POST* (`client_secret_post`) أو *Basic* (`client_secret_basic`)
+
+!!! warning "لا تختَر None"
+
+    تعيين طريقة المصادقة إلى *None* يجعل التطبيق عميلًا عامًا بدون سر، وسيُرفض تبادل الكود في خلفية digna. إما POST أو Basic سيعملان.
+
+---
+
+## الخطوة 4: جمع بيانات الاعتماد
+
+ما زلت في علامة التبويب **SSO**:
+
+- **Client ID** → يصبح `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → يصبح `DIGNA_OIDC_CLIENT_SECRET` (انقر **Show client secret**)
+
+تُظهر الصفحة أيضًا **Issuer URL**، الذي يؤكد عنوان الاكتشاف في الخطوة التالية.
+
+---
+
+## الخطوة 5: تعيين المستخدمين
+
+1. افتح علامة التبويب **Access**
+2. أضف الأدوار أو المجموعات التي يُسمح لأعضائها باستخدام digna
+3. انقر **Save**
+
+!!! note "المستخدمون غير المعينين يُرفضون بعد تسجيل الدخول"
+
+    كما هو الحال مع معظم المزودين، يقوم OneLogin بمصادقة المستخدم أولًا ثم التحقق من الاستحقاق ثانيًا. يتمكن المستخدم غير المعين من تسجيل الدخول بنجاح ثم يتم رفضه، مما يبدو كخطأ في digna بدلاً من قرار تحكم في الوصول.
+
+---
+
+## الخطوة 6: بناء عنوان اكتشاف الخدمة (Discovery URL)
+
+استبدل النطاق الفرعي الخاص بك:
+
+```
+https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+على سبيل المثال:
+
+```
+https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+!!! tip "الـ /2 هي إصدار الـ API"
+
+    تنفيذ OIDC الحالي لـ OneLogin يوجد تحت `/oidc/2/`. الوثائق الأقدم تظهر `/oidc/` بدون إصدار، والذي يشير إلى الإصدار الأول المتقاعد. تحقق من **Issuer URL** في علامة التبويب SSO إذا كان لديك شك — عنوان الاكتشاف هو العنوان المعطى في issuer مضافًا إليه `/.well-known/openid-configuration`.
+
+---
+
+## الخطوة 7: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "onelogin"
+label = "Login with OneLogin"
+```
+
+### `config.toml`
+
+```toml
+[oidc.onelogin]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
+```
+
+يجب أن يتطابق `key` في كلا الملفين — هنا `onelogin`.
+
+---
+
+## الخطوة 8: الاختبار
+
+أعد تشغيل الخادم الخلفي وخادم الويب، ثم افتح لوحة التحكم. راجع [اختبار تسجيل الدخول](overview.md#testing-login) للقائمة الكاملة للشيكات.
+
+---
+
+## استكشاف أخطاء OneLogin وإصلاحها
+
+### redirect_uri did not match
+
+عنوان الاستدعاء مفقود من **Configuration → Redirect URI's**، أو كانت المدخلات مفصولة بفواصل بدلًا من أسطر جديدة.
+
+### invalid_client at the Token Step
+
+تم تعيين **Token Endpoint → Authentication Method** إلى *None*، أو أن سر العميل في `config.toml` قديم. اكشف السر في علامة التبويب **SSO** وقارنه.
+
+### التطبيق لا يظهر للمستخدمين
+
+لم تُمنح أي دور أو مجموعة حق الوصول على علامة التبويب **Access**.
+
+### 404 على عنوان الاكتشاف
+
+النطاق الفرعي خاطئ، أو أن العنوان يحذف `/oidc/2/`. قارن مع **Issuer URL** المعروض على علامة التبويب SSO.
+
+---
+
+## انظر أيضًا
+
+- [نظرة عامة على تسجيل الدخول الموحد](overview.md) — مرجع التكوين، الاختبار واستكشاف الأخطاء العامة
+- [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)
+
+---
+
+# Overview
+Source: https://docs.digna.ai/ar/sso/overview/
+
+# نظرة عامة على تسجيل الدخول الأحادي
+
+---
+
+## جدول المحتويات
+
+1. [المقدمة ونظرة عامة](#introduction-and-overview)
+2. [أدلة المزودين](#provider-guides)
+3. [خطوات التهيئة](#configuration-steps)
+4. [تهيئة لوحة القيادة](#dashboard-configuration)
+5. [تهيئة الـ backend](#backend-configuration)
+6. [اختبار تسجيل الدخول](#testing-login)
+7. [استكشاف الأخطاء وإصلاحها](#troubleshooting)
+8. [المزودون المدعومون](#supported-providers)
+
+---
+
+## المقدمة ونظرة عامة {: #introduction-and-overview }
+
+هذا الدليل يقدّم تعليمات خطوة بخطوة لدمج تسجيل الدخول الأحادي (SSO) مع منصة digna باستخدام **OpenID Connect (OIDC)**.
+
+### ما هو SSO؟
+
+يسمح تسجيل الدخول الأحادي للمستخدمين بتسجيل الدخول إلى digna بأمان باستخدام بيانات اعتماد المؤسسة لديهم عبر مزودي الهوية الخارجيين. يمكن للمستخدمين المصادقة باستخدام بيانات اعتماد المؤسسة بدلاً من إدارة كلمات مرور منفصلة لـ digna.
+
+### كيف يعمل
+
+يتم تنفيذ SSO في digna باستخدام بروتوكول OIDC. يمكن تكوين عدة مزوّدي هوية بالتوازي عن طريق تعديل ملفي التهيئة الرئيسيين:
+
+- **`dashboard_config.toml`** — يتحكم بواجهة تسجيل الدخول في الواجهة الأمامية
+- **`config.toml`** — يهيئ اتصالات OIDC في الجانب الخلفي
+
+### المزودون المدعومون {: #supported-providers-overview }
+
+الأمثلة في هذا الدليل تستخدم **Microsoft** و**Google**، لكن **أي مزود متوافق مع OIDC** يمكن دمجه باتباع نفس البنية.
+
+---
+
+## أدلة المزودين {: #provider-guides }
+
+كل مزود يحتاج نفس القيم الأربع — معرف العميل (client ID)، سر العميل (client secret)، URI إعادة التوجيه (redirect URI) ورابط الاكتشاف (discovery URL) — لكن كل مزود يضعها في مكان مختلف داخل وحدة التحكم الإدارية الخاصة به، وبعض المزودين لديهم خطوة خاصة بالمزود لا توجد في الآخرين. الأدلة أدناه تغطي تلك الحصة من العمل؛ هذه الصفحة تغطي جزء digna، وهو متطابق لكل المزودين.
+
+| Provider | Guide | Worth knowing |
+|---|---|---|
+| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
+| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
+| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
+| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
+| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
+| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
+| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
+| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+
+أي مزود آخر متوافق مع OIDC يعمل بنفس الطريقة — انظر [Other OIDC Providers](#supported-providers).
+
+---
+
+## خطوات التهيئة {: #configuration-steps }
+
+يتطلب تكوين SSO تحديث ملفين. تشرح هذه القسم كيفية تهيئة كل منهما.
+
+### نظرة عامة على ملفات التهيئة
+
+| File | Location | Purpose |
+|---|---|---|
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
+| **config.toml** | `/config.toml` | Backend OIDC connections |
+
+يجب تهيئة كلا الملفين ليعمل SSO بشكل صحيح.
+
+---
+
+## تهيئة لوحة القيادة {: #dashboard-configuration }
+
+### موقع الملف
+
+```
+dashboard/dashboard_config.toml
+```
+
+### الخطوة 1: إضافة مزوّدي OIDC
+
+أضف مدخلات تحت مصفوفة `[[login.oidc]]` لكل مزود هوية تريد دعمه.
+
+**مثال مع Microsoft وGoogle:**
+
+```toml
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+```
+
+### الخطوة 2: تكوين خيارات تسجيل الدخول
+
+حدد ما إذا كان يجب السماح بتسجيل الدخول باستخدام كلمة المرور:
+
+```toml
+[login]
+usePassword = true
+```
+
+### معلمات التهيئة
+
+#### قسم `[[login.oidc]]`
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `key` | string | Yes | معرف فريد لاتصال OIDC (يجب أن يتطابق مع المفتاح في config.toml) |
+| `label` | string | Yes | النص المعروض على زر تسجيل الدخول (مثال: "Login with Microsoft") |
+
+#### قسم `[login]`
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `usePassword` | boolean | false | السماح بتسجيل الدخول باستخدام كلمة المرور بالإضافة إلى SSO |
+
+### فهم usePassword
+
+**إذا كان `usePassword = true`:**
+- تعرض شاشة الدخول أزرار SSO (مثل "Login with Microsoft")
+- تعرض شاشة الدخول أيضًا حقول اسم المستخدم وكلمة المرور
+- يمكن للمستخدمين المصادقة بأيٍ من الطريقتين
+- يسمح بإعدادات هجينة حيث يستخدم بعض المستخدمين SSO وآخرون كلمات مرور
+
+**إذا كان `usePassword = false` (أو تم تجاهله):**
+- تعرض شاشة الدخول أزرار SSO فقط
+- لا توجد حقول اسم مستخدم/كلمة مرور
+- المصادقة متاحة فقط عبر OIDC
+
+!!! tip "نصيحة"
+
+    تسجيل الدخول باستخدام كلمة المرور متاح فقط للمستخدمين الذين تم إنشاؤهم بكلمات مرور باستخدام الأمر `digna user add` أو عبر لوحة القيادة.
+
+### مثال كامل
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+
+[[login.oidc]]
+key = "okta"
+label = "Login with Okta"
+```
+
+---
+
+## تهيئة الـ backend {: #backend-configuration }
+
+### موقع الملف
+
+```
+/config.toml
+```
+
+(دليل تثبيت digna الجذر)
+
+### الخطوة 1: إضافة أقسام مزوّدي OIDC
+
+يجب أن يكون لكل مزود قسم مخصص `[oidc.<key>]`. يجب أن يتطابق المفتاح مع `key` المعرفة في `dashboard_config.toml`.
+
+### تكوين Microsoft
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
+```
+
+### تكوين Google
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+### معلمات التهيئة
+
+| Parameter | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID من مزود الهوية | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret من مزود الهوية | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | عنوان callback بعد المصادقة | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | نقطة نهاية تهيئة OIDC | `https://login.microsoftonline.com/...` |
+
+!!! warning "مهم"
+
+    استبدل القيم النائبة (`<client_id>`, `<client_secret>`, `<tenant_id>`) ببيانات الاعتماد الفعلية من بوابة المطورين لمزود الهوية لديك.
+
+### URI إعادة التوجيه
+
+يجب أن يكون URI إعادة التوجيه نفس الموجود في تكوين مزود الهوية:
+
+```
+http://localhost:5173/oidc/callback
+```
+
+إذا كان digna مستضافًا على نطاق مختلف، حدّثه بما يناسب:
+- محليًا: `http://localhost:5173/oidc/callback`
+- الإنتاج: `https://digna.yourdomain.com/oidc/callback`
+
+### مثال كامل
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+---
+
+## اختبار تسجيل الدخول {: #testing-login }
+
+بعد إكمال التهيئة، تحقق من أن SSO يعمل بشكل صحيح.
+
+### قائمة التحقق قبل الاختبار
+
+قبل الاختبار تأكد من:
+
+- [ ] تم تحديث `dashboard_config.toml` بمزوّدي OIDC
+- [ ] تم تحديث `config.toml` ببيانات اعتماد OIDC
+- [ ] تم حفظ كلا الملفين
+- [ ] بيانات الاعتماد صحيحة (client ID, client secret)
+- [ ] URI إعادة التوجيه يطابق عنوان نشر التطبيق
+- [ ] تم تكوين تطبيق مزود الهوية مع URI إعادة التوجيه
+
+### خطوات الاختبار
+
+#### الخطوة 1: إعادة تشغيل الخدمات
+
+أعد تشغيل backend وweb server لتطبيق التغييرات.
+
+**إذا كنت تشغله كخدمة على Windows:**
+```bash
+cd C:\path\to\digna\bin
+stop_service.bat
+start_service.bat
+```
+
+**إذا كنت تشغله كخدمة على Linux أو macOS:**
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+sudo ./start_service.sh
+```
+
+**إذا كنت تشغله يدويًا:**
+```bash
+digna serve --address localhost --port 8082
+```
+
+**أعد تشغيل خادم الويب أيضًا** — IIS أو Tomcat على Windows، nginx أو Apache على Linux وmacOS.
+
+#### الخطوة 2: افتح لوحة القيادة
+
+افتح لوحة digna في متصفحك:
+
+```
+http://localhost:5173
+```
+
+(أو عنوان لوحة القيادة الذي قمت بتكوينه)
+
+#### الخطوة 3: التحقق من أزرار الدخول
+
+تحقق من ظهور أزرار الدخول لكل مزود تم تكوينه:
+
+- يجب أن ترى زر "Login with Microsoft"
+- يجب أن ترى زر "Login with Google"
+- (إذا كان usePassword = true) يجب أن ترى حقول اسم المستخدم/كلمة المرور
+
+إذا لم تظهر الأزرار:
+- تحقق من حفظ `dashboard_config.toml`
+- تحقق من إعادة تشغيل خدمة لوحة القيادة
+- تحقق من وحدة تحكم المتصفح لرؤية الأخطاء (F12)
+
+#### الخطوة 4: اختبار تسجيل الدخول عبر SSO
+
+انقر أحد أزرار SSO (مثال: "Login with Microsoft"):
+
+1. يجب أن يعيد التوجيه إلى صفحة تسجيل مزود الهوية
+2. سجّل الدخول باستخدام بيانات اعتماد مؤسستك
+3. يجب أن يتم إعادة التوجيه إلى digna
+4. يجب أن تكون قد سجّلت الدخول إلى digna
+
+#### الخطوة 5: التحقق من إنشاء المستخدم
+
+بعد نجاح تسجيل الدخول عبر SSO:
+
+- يجب أن يتم إنشاء المستخدم تلقائيًا في digna
+- يجب أن يتم تسجيل دخول المستخدم
+- يجب أن يعرض ملف المستخدم بيانات مزود الهوية
+- يجب أن ترى لوحة digna
+
+#### الخطوة 6: اختبار تسجيل الدخول بكلمة مرور (إذا مفعل)
+
+إذا كان `usePassword = true`:
+
+1. سجّل الخروج من digna
+2. في صفحة الدخول أدخل اسم مستخدم وكلمة مرور
+3. يجب أن تتمكن من تسجيل الدخول باستخدام بيانات كلمة المرور
+
+---
+
+## استكشاف الأخطاء وإصلاحها {: #troubleshooting }
+
+### أزرار الدخول لا تظهر
+
+**الأعراض:**
+- أزرار تسجيل الدخول عبر OIDC غير مرئية في صفحة الدخول
+- ترى حقول كلمة المرور فقط (إذا كان usePassword = true)
+
+**الأسباب والحلول:**
+1. تحقق أن `dashboard_config.toml` موجود في مجلد `dashboard/`
+2. تأكد من وجود أقسام `[[login.oidc]]` بصيغة صحيحة
+3. أعد تشغيل خدمة لوحة القيادة
+4. مسح ذاكرة التخزين المؤقت للمتصفح (Ctrl+Shift+Delete أو Cmd+Shift+Delete)
+5. تحقق من وحدة تحكم المتصفح (F12 → تبويب Console) للأخطاء
+
+---
+
+### خطأ عدم تطابق Redirect URI
+
+**الأعراض:**
+- بعد النقر على زر SSO، يظهر خطأ حول "redirect_uri mismatch"
+- خطأ "The redirect URI is not registered"
+
+**الأسباب والحلول:**
+1. تحقق من أن `DIGNA_OIDC_REDIRECT_URI` في `config.toml` صحيح
+2. تحقق من تسجيل URI إعادة التوجيه في إعدادات مزود الهوية
+3. تأكد من أن كلاهما يستخدمان نفس العنوان تمامًا (بما في ذلك البروتوكول والنطاق والمسار)
+4. راجع الأخطاء الإملائية في URI
+5. إذا كنت تستخدم HTTPS فتأكد من صلاحية الشهادة
+
+---
+
+### خطأ بيانات اعتماد العميل غير صالحة
+
+**الأعراض:**
+- خطأ "Invalid client ID or secret"
+- تفشل المصادقة بخطأ بيانات الاعتماد
+
+**الأسباب والحلول:**
+1. تحقق من أن `DIGNA_OIDC_CLIENT_ID` و `DIGNA_OIDC_CLIENT_SECRET` صحيحان
+2. تأكد من عدم وجود مسافات زائدة أو أحرف غير مقصودة
+3. تحقق من أن البيانات لم تنته صلاحيتها أو لم تُلغَ
+4. أعد تشغيل خدمة الـ backend بعد تحديث التهيئة
+5. تحقق من وحدة تحكم مزود الهوية لتأكيد أن البيانات نشطة
+
+---
+
+### تعليق تسجيل الدخول أو انتهاء المهلة
+
+**الأعراض:**
+- النقر على زر SSO لا يفعل شيئًا
+- انتهاء المهلة بعد عدة ثوانٍ
+- المتصفح يعرض "Failed to connect" أو ما شابه
+
+**الأسباب والحلول:**
+1. تحقق من أن backend الخاص بـ digna يعمل: `digna repo check`
+2. تحقق من الاتصال الشبكي إلى مزود الهوية
+3. تحقق من إمكانية الوصول إلى `DIGNA_OIDC_CONFIGURATION_URL`
+4. تأكد من أن قواعد الجدار الناري تسمح باتصالات HTTPS الصادرة
+5. تحقق من إمكانية اتصال الـ backend والـ dashboard ببعضهما
+
+---
+
+### عدم إنشاء المستخدمين تلقائيًا
+
+**الأعراض:**
+- ينجح تسجيل الدخول عبر SSO لكن لا يتم إنشاء المستخدم في digna
+- تحصل على خطأ أذونات بعد تسجيل الدخول عبر SSO
+
+**الأسباب والحلول:**
+1. تحقق من أن تهيئة OIDC صحيحة
+2. تحقق من إعدادات أذونات المستخدمين
+3. راجع سجلات digna للرسائل الخطأ
+4. أعد تشغيل خدمة الـ backend
+5. اتصل بـ support@digna.ai إذا استمر المشكلة
+
+---
+
+## المزودون المدعومون {: #supported-providers }
+
+### تم الاختبار والدعم
+
+مزودو OIDC التالية تم اختبارهم ومعروف أن يعملوا:
+
+| Provider | Configuration URL | Setup Guide |
+|---|---|---|
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+
+### مزودون آخرون لـ OIDC
+
+أي مزود يدعم OpenID Connect يمكن دمجه. المعلومات المطلوبة:
+
+- Client ID
+- Client secret
+- رابط تهيئة OpenID (عادةً عند `/.well-known/openid-configuration`)
+- الصلاحيات المطلوبة (عادةً `openid profile email`)
+
+اتصل بـ support@digna.ai إذا كنت تحتاج مساعدة بدمج مزود محدد.
+
+---
+
+## أفضل الممارسات
+
+**افعل:**
+- استخدم HTTPS في بيئة الإنتاج (لا تستخدم HTTP)
+- خزّن أسرار العميل بأمان (استخدم متغيرات البيئة إن أمكن)
+- راجع الأسرار بشكل دوري ودوّرها
+- اختبر في بيئة غير إنتاجية أولًا
+- وثّق المزودين المكوّنين
+- راقب سجلات الدخول لنشاط غير اعتيادي
+- حافظ على تزامن إعدادات مزود الهوية مع إعدادات digna
+
+**لا تفعل:**
+- خزّن أسرار العميل في نظام التحكم بالمصدر (version control)
+- استخدم عناوين إعادة توجيه HTTP في الإنتاج
+- قم بتكوين مزودين متعددين بنفس المفتاح
+- اترك بيانات اعتماد افتراضية/تجريبية في بيئة الإنتاج
+- اكشف ملفات التهيئة التي تحتوي أسرارًا
+- اخلط بين بيانات الاعتماد الخاصة بالتطوير والإنتاج
+
+---
+
+## الدعم
+
+تحتاج مساعدة في تهيئة SSO؟
+
+- **البريد الإلكتروني:** support@digna.ai
+- **الوثائق:** https://docs.digna.ai
+- **الموقع:** https://www.digna.ai
+
+---
+
+**آخر تحديث:** August 30, 2026  
+**الإصدار:** 2026.04  
+**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+
+---
+
+# PingOne
+Source: https://docs.digna.ai/ar/sso/pingone_sso_guide/
+
+# إعداد تسجيل الدخول الموحد (SSO) مع PingOne
+
+PingOne متوافق مع OIDC. هناك قيمتان تحتاجان لعناية خاصة: **Environment ID** (معرف البيئة)، الذي يظهر في كل عنوان نهائي، و**regional domain** (المجال الإقليمي)، الذي يختلف بين مستأجري أمريكا الشمالية وأوروبا وكندا وآسيا والمحيط الهادئ وأستراليا.
+
+يغطي هذا الدليل جانب **PingOne**: إنشاء التطبيق وجمع القيم التي تحتاجها digna. جانب digna — `dashboard_config.toml`، الاختبار واستكشاف الأخطاء وإصلاحها — هو نفسه لكل مزود ويُوصَف في [نظرة عامة على تسجيل الدخول الموحد](overview.md).
+
+---
+
+## قبل أن تبدأ
+
+| المتطلب | ملاحظات |
+|---|---|
+| **PingOne role** | Environment Admin أو Identity Data Admin على البيئة المستهدفة |
+| **Environment** | بيئة PingOne التي ينتمي إليها مستخدمو digna |
+| **digna redirect URI** | عنوان URL الذي يعود إليه المستخدمون بعد تسجيل الدخول، مثال: `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## الخطوة 1: إنشاء التطبيق
+
+1. سجّل الدخول إلى وحدة تحكم المشرف في PingOne واختر بيئتك
+2. اذهب إلى **Applications → Applications**
+3. انقر زر **+**
+4. أدخل `digna` كـ **Application Name**
+5. اختر **OIDC Web App**
+6. انقر **Save**
+
+!!! warning "اختر OIDC Web App، وليس Single-Page App"
+
+    *Single-Page App* و *Native App* تنشئان عملاء عامين لا يمكنهم الاحتفاظ بسر. digna تتبادل رمز التفويض من الخلفية وتحتاج إلى النوع السري **OIDC Web App**.
+
+---
+
+## الخطوة 2: تكوين Redirect URI
+
+1. افتح تبويب **Configuration** الخاص بالتطبيق
+2. انقر أيقونة القلم للتعديل
+3. تأكد أن **Response Type** هي *Code* و **Grant Type** هي *Authorization Code*
+4. تحت **Redirect URIs**، أدخل عنوان callback الخاص بـ digna:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+5. اضبط **Token Endpoint Authentication Method** على *Client Secret Post* أو *Client Secret Basic*
+6. انقر **Save**
+
+---
+
+## الخطوة 3: تفعيل التطبيق
+
+في صف التطبيق أو لوحة التفاصيل، قم بتبديل المفتاح إلى **enabled**.
+
+!!! warning "التطبيقات الجديدة تبدأ معطلة"
+
+    يقوم PingOne بإنشاء التطبيقات في حالة معطلة. التطبيق المعطل يسبب خطأ في خطوة التفويض لا يذكر المفتاح، لذا من المفيد التأكد من هذا قبل محاولة استكشاف أي شيء آخر.
+
+---
+
+## الخطوة 4: منح الصلاحيات (Scopes)
+
+1. افتح تبويب **Resources**
+2. تأكد من منح `openid`، وأضف `profile` و `email` من مورد **OpenID Connect**
+3. انقر **Save**
+
+---
+
+## الخطوة 5: إسناد المستخدمين
+
+1. افتح تبويب **Access**
+2. أضف السكان أو المجموعات الذين يُسمح لأعضائهم باستخدام digna
+3. انقر **Save**
+
+---
+
+## الخطوة 6: جمع بيانات الاعتماد ومعرف البيئة
+
+في تبويب **Configuration**، قم بتوسيع **General**:
+
+- **Client ID** → يصبح `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → يصبح `DIGNA_OIDC_CLIENT_SECRET` (انقر أيقونة العين)
+- **Environment ID** → يوضع في عنوان الاكتشاف (discovery URL)
+
+يسرد نفس التبويب أيضًا **OIDC Discovery Endpoint** الجاهز، والذي يمكنك نسخه مباشرة بدل تجميعه يدويًا.
+
+---
+
+## الخطوة 7: بناء عنوان الاكتشاف (Discovery URL)
+
+استبدل معرف البيئة والمجال الخاص بمنطقتك:
+
+```
+https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
+```
+
+| المنطقة | المجال |
+|---|---|
+| أمريكا الشمالية | `auth.pingone.com` |
+| أوروبا | `auth.pingone.eu` |
+| كندا | `auth.pingone.ca` |
+| آسيا والمحيط الهادئ | `auth.pingone.asia` |
+| أستراليا | `auth.pingone.com.au` |
+
+لمؤسسة أوروبية:
+
+```
+https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
+```
+
+!!! tip "انسخها بدلًا من كتابتها"
+
+    المجال الإقليمي هو أكثر الأخطاء شيوعًا في تكامل PingOne، والمجال الخاطئ يعطي خطأ 404 بدل رسالة مفيدة. استخدم قيمة **OIDC Discovery Endpoint** من الخطوة 6.
+
+---
+
+## الخطوة 8: تكوين digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "pingone"
+label = "Login with PingOne"
+```
+
+### `config.toml`
+
+```toml
+[oidc.pingone]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
+```
+
+يجب أن يتطابق الـ `key` في كلا الملفين — هنا هو `pingone`.
+
+---
+
+## الخطوة 9: الاختبار
+
+أعد تشغيل خادم الخلفية وخادم الويب، ثم افتح لوحة التحكم. راجع [اختبار تسجيل الدخول](overview.md#testing-login) للحصول على قائمة التحقق الكاملة.
+
+---
+
+## استكشاف مشكلات PingOne وإصلاحها
+
+### 404 على عنوان الاكتشاف
+
+المجال الإقليمي أو معرف البيئة خاطئان. قارن مع **OIDC Discovery Endpoint** المعروض في تبويب Configuration الخاص بالتطبيق.
+
+### NOT_FOUND أو التطبيق معطل
+
+مفتاح تفعيل التطبيق من الخطوة 3 لا يزال في وضع الإيقاف.
+
+### تطابق Redirect URI
+
+يقوم PingOne بمطابقة السلسلة كاملة. تحقق من **Configuration → Redirect URIs** لوجود شَرطة مائلة نهائية أو فرق في المخطط (scheme).
+
+### تسجيل الدخول نجح لكن لا يصل claim البريد الإلكتروني إلى digna
+
+لم تُمنح scopes `email` و `profile` في تبويب **Resources**.
+
+### المستخدم لا يرى التطبيق
+
+لم تُمنح أي مجموعة أو سكان حق الوصول في تبويب **Access**.
+
+---
+
+## انظر أيضًا
+
+- [نظرة عامة على تسجيل الدخول الموحد](overview.md) — مرجع التكوين، الاختبار والاستكشاف العام للمشكلات
+- [PingOne: تكوين تطبيق OIDC](https://docs.pingidentity.com/pingone/)
 
 ---
 
@@ -7970,1124 +11574,3 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
-
----
-
-# macOS Installation Guide – digna Release 2026.06 | digna Documentation
-Source: https://docs.digna.ai/ar/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/
-
-# macOS Installation Guide for digna Release 2026.06
-
-**Release:** 2026.06
-
-**Last Updated:** September 5, 2026
-
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
-
----
-
-## Introduction {: #introduction }
-
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
-
----
-
-## System Requirements {: #system-requirements }
-
-Before you begin the installation, ensure that your system meets the following minimum requirements:
-
-| Requirement | Specification |
-|---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
-
-### Database Installation Options
-
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
-
-**If installing PostgreSQL on the same machine as digna:**
-
-!!! info "Recommended Specifications"
-
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
-
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
-
-### Checking Your Architecture
-
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
-
-```bash
-uname -m
-```
-
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
-
-!!! tip "Tip"
-
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
-
----
-
-## Pre-Installation Setup {: #pre-installation-setup }
-
-Before installing digna, ensure that three key prerequisites are in place:
-
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
-
-If these components are not already set up, follow the sections below to install and configure them.
-
-### Installing Homebrew
-
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
-
-#### Step 1: Check Whether Homebrew Is Already Installed
-
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
-
-```bash
-brew --version
-```
-
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
-
-#### Step 2: Install Homebrew
-
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
-
-#### Step 3: Add Homebrew to Your PATH
-
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
-
-```bash
-brew --prefix
-```
-
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
-
----
-
-## PostgreSQL Server Setup {: #postgresql-server-setup }
-
-### If You Already Have PostgreSQL
-
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
-
-### Installation Options
-
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
-
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
-
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
-
-#### Step 1: Install the PostgreSQL Formula
-
-```bash
-brew install postgresql@16
-```
-
-#### Step 2: Add PostgreSQL to Your PATH
-
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
-
-```bash
-echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-!!! note "Note"
-
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
-
-#### Step 3: Start the PostgreSQL Service
-
-```bash
-brew services start postgresql@16
-```
-
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
-
-#### Step 4: Verify the Installation
-
-```bash
-psql --version
-```
-
-You should see the PostgreSQL version if the installation was successful.
-
-#### Step 5: Connect to the Server
-
-```bash
-psql postgres
-```
-
-!!! warning "Important — macOS Differs From Windows Here"
-
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
-
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
-
-#### Step 6: Confirm the Port
-
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
-
-```bash
-psql postgres -c "SHOW port;"
-```
-
-Note the value — you will need it when configuring the digna backend.
-
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
-
-If you prefer a graphical installation:
-
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
-
-```bash
-psql --version
-```
-
-Postgres.app also creates a superuser named after your macOS account.
-
----
-
-## Web Server Configuration {: #web-server-configuration }
-
-digna requires a web server to host the dashboard. Choose one of the following options:
-
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
-
-You only need to install and configure **one** of these servers.
-
-Both sections configure two things the dashboard depends on:
-
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
-
-### nginx Setup {: #nginx-setup }
-
-#### Overview
-
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
-
-#### Installation
-
-```bash
-brew install nginx
-```
-
-#### Starting nginx
-
-```bash
-brew services start nginx
-```
-
-#### Verify the Installation
-
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
-
-!!! note "Note — Default Port Is 8080, Not 80"
-
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
-
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
-
-#### Configuring a Site for the Dashboard
-
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
-
-```bash
-nano $(brew --prefix)/etc/nginx/servers/digna.conf
-```
-
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
-
-```nginx
-server {
-    listen       8080;
-    server_name  localhost;
-
-    root   /path/to/digna/dashboard;
-    index  index.html;
-
-    # Serve Markdown files with the correct MIME type.
-    types {
-        text/markdown  md;
-    }
-
-    # Single-page-application fallback: unknown paths return index.html
-    # instead of a 404, so dashboard routes survive a browser refresh.
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
-
-!!! warning "Important"
-
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
-
-#### Apply the Configuration
-
-Test the configuration for syntax errors, then reload nginx:
-
-```bash
-nginx -t
-brew services restart nginx
-```
-
----
-
-### Apache httpd Setup {: #apache-setup }
-
-#### Overview
-
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
-
-#### Starting Apache
-
-```bash
-sudo apachectl start
-```
-
-#### Verify the Installation
-
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
-
-#### Required: Enable mod_rewrite
-
-The dashboard requires URL rewriting. Open the Apache configuration:
-
-```bash
-sudo nano /etc/apache2/httpd.conf
-```
-
-Find the following line and remove the leading `#` to uncomment it:
-
-```apache
-LoadModule rewrite_module libexec/apache2/mod_rewrite.so
-```
-
-#### Required: Allow .htaccess Overrides
-
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
-
-```apache
-AllowOverride None
-```
-
-to:
-
-```apache
-AllowOverride All
-```
-
-#### Required: MIME Type for Markdown Files
-
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
-
-```apache
-AddType text/markdown .md
-```
-
-!!! warning "Important"
-
-    Without this setting, `.md` files may not be served properly.
-
-#### Apply the Configuration
-
-Check the configuration for syntax errors, then restart Apache:
-
-```bash
-sudo apachectl configtest
-sudo apachectl restart
-```
-
----
-
-## Initial Installation {: #initial-installation }
-
-### Step 1: Set Up the digna Repository
-
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
-
-#### Create Repository Schema and User
-
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
-
-```sql
-CREATE SCHEMA <digna_repo_schema>;
-
-CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
-
-GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
-```
-
-**Replace the following placeholders:**
-
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
-
-**Example:**
-
-```sql
-CREATE SCHEMA dignarepo;
-
-CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
-
-GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
-```
-
-To run these from the Terminal in a single step:
-
-```bash
-psql postgres
-```
-
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
-
-!!! tip "Best Practice"
-
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
-
----
-
-### Step 2: Extract the digna Installation Package
-
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
-
-To extract from the Terminal:
-
-```bash
-unzip digna-2026.06-macos.zip -d /opt/digna
-```
-
-#### Make the Executable Runnable
-
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
-
-```bash
-cd /opt/digna
-chmod +x digna
-```
-
-#### If macOS Blocks the Application
-
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
-
-```bash
-xattr -dr com.apple.quarantine /opt/digna
-```
-
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
-
-!!! note "Note"
-
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
-
-### Step 3: Install the License File
-
-!!! warning "Important"
-
-    The license file is **not** included in the installation package and will be provided separately by digna.
-
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
-
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
-
-**Directory structure after setup:**
-
-```
-/opt/digna/
-├── config.toml         (configuration file)
-├── license.toml        (YOUR LICENSE FILE - copy here)
-├── digna               (main executable)
-├── bin/                (service management scripts)
-└── dashboard/          (web interface)
-    └── (dashboard files)
-```
-
----
-
-## Backend Configuration {: #backend-configuration }
-
-### Step 1: Create and Edit the Configuration File
-
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
-
-```bash
-cd /opt/digna
-mv config_template.toml config.toml
-```
-
-**Location:** `/opt/digna/config.toml`
-
-Open `config.toml` in a text editor and configure each section below.
-
-#### [app] Section
-
-This section configures the digna backend application settings:
-
-```toml
-[app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
-digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
-digna_APP_CORS_ALLOW_CREDENTIALS = true
-digna_APP_CORS_ALLOW_METHODS = ["*"]
-digna_APP_CORS_ALLOW_HEADERS = ["*"]
-```
-
-| Parameter | Value | Notes |
-|---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
-
-!!! note "Note"
-
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
-
-#### [repo] Section
-
-This section configures the connection to the PostgreSQL database:
-
-```toml
-[repo]
-digna_REPO_HOST = "localhost"
-digna_REPO_PORT = 5432
-digna_REPO_DB = "postgres"
-digna_REPO_SCHEMA = "dignarepo"
-digna_REPO_USER = "digna_user"
-digna_REPO_PASSWORD = "YourSecurePassword123!"
-```
-
-| Parameter | Value | Notes |
-|---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
-
-#### [base] Section
-
-This section contains security and cookie settings:
-
-```toml
-[base]
-digna_FERNET_KEY = "your-fernet-key"
-digna_COOKIE_DOMAIN = "localhost"
-digna_COOKIE_PATH = "/"
-digna_COOKIE_SECURE = false
-digna_COOKIE_HTTPONLY = true
-digna_COOKIE_SAME_SITE = "lax"
-digna_TOKEN_EXPIRES_IN = 86400
-digna_MAX_WORKERS = 4
-```
-
-| Parameter | Value | Notes |
-|---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-
-!!! tip "Tip"
-
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
-
-#### [logging] Section
-
-This section configures logging behavior:
-
-```toml
-[logging]
-digna_LOGGING_MODE = "INFO"
-digna_LOGGING_BACKUP_COUNT = 10
-```
-
-| Parameter | Value | Notes |
-|---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
-
----
-
-### Step 2: Initialize the Repository
-
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
-
-```bash
-cd /opt/digna
-./digna repo check
-```
-
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
-
-!!! note "Note"
-
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
-
-    ```bash
-    echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
-    source ~/.zshrc
-    ```
-
-### Step 3: Install the Repository Schema
-
-In the same directory, run:
-
-```bash
-./digna repo install
-```
-
-This command installs the necessary tables and schema in your PostgreSQL database.
-
-### Step 4: Start the digna Server
-
-In the digna installation directory, start the server with:
-
-```bash
-./digna serve --address <host> --port <port>
-```
-
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
-
-You should see startup messages confirming the server is running:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-!!! tip "Tip"
-
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
-
-### Step 5: Create an Admin User
-
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
-
-```bash
-./digna user add <username> "<full_name>" <password> --su
-```
-
-**Example:**
-
-```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
-```
-
-This creates a user with username `admin` and full administrative privileges.
-
-!!! tip "Tip"
-
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
-
-!!! tip "Best Practice"
-
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
-
----
-
-## Dashboard Configuration {: #dashboard-configuration }
-
-### Step 1: Deploy Dashboard to Web Server
-
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
-
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
-
-Choose your web server and follow the corresponding deployment steps.
-
-#### Deploying to nginx
-
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
-
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
-
-2. **Ensure the folder is readable**
-   ```bash
-   chmod -R a+rX /opt/digna/dashboard
-   ```
-
-3. **Reload nginx**
-   ```bash
-   nginx -t
-   brew services restart nginx
-   ```
-
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
-
-#### Deploying to Apache httpd
-
-1. **Copy the Dashboard to the Document Root**
-   ```bash
-   sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
-   ```
-
-2. **Add the Rewrite Rules**
-
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
-
-   ```bash
-   sudo nano /Library/WebServer/Documents/digna/.htaccess
-   ```
-
-   Paste the following:
-
-   ```apache
-   RewriteEngine On
-   RewriteBase /digna/
-
-   # Serve existing files and directories as-is.
-   RewriteCond %{REQUEST_FILENAME} -f [OR]
-   RewriteCond %{REQUEST_FILENAME} -d
-   RewriteRule ^ - [L]
-
-   # Everything else falls back to the single-page application entry point.
-   RewriteRule ^ index.html [L]
-   ```
-
-3. **Restart Apache**
-   ```bash
-   sudo apachectl restart
-   ```
-
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
-
----
-
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
-
-### Why Run digna as a Service?
-
-Running the digna backend as a background service ensures it:
-
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
-
-### Service Management Files
-
-All necessary files are located in the digna installation directory under: `bin/`
-
-The following shell scripts are available:
-
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
-
-!!! warning "Administrator Required"
-
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
-
-### Making the Scripts Executable
-
-Extraction may not preserve the executable bit. Before first use:
-
-```bash
-cd /opt/digna/bin
-chmod +x *.sh
-```
-
-### Installing the Service
-
-1. **Open Terminal**
-
-2. **Navigate to the bin Folder**
-   ```bash
-   cd /opt/digna/bin
-   ```
-
-3. **Run the Installation Script**
-   ```bash
-   sudo ./install_service.sh
-   ```
-
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
-
-### Starting and Stopping the Service
-
-#### To Start the Service
-
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
-   ```bash
-   sudo ./start_service.sh
-   ```
-
-#### To Stop the Service
-
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
-   ```bash
-   sudo ./stop_service.sh
-   ```
-
-!!! tip "Tip"
-
-    Always stop the service before updating application files.
-
-### Verifying the Service
-
-To confirm that the service is registered and running:
-
-```bash
-sudo launchctl list | grep digna
-```
-
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
-
-### Moving the Service to a New Directory
-
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
-
-1. **Uninstall the Current Service**
-   ```bash
-   cd /old/path/digna/bin
-   sudo ./uninstall_service.sh
-   ```
-
-2. **Move the Application Files**
-   ```bash
-   sudo mv /old/path/digna /new/path/digna
-   ```
-
-3. **Reinstall the Service**
-   ```bash
-   cd /new/path/digna/bin
-   sudo ./install_service.sh
-   ```
-
-4. **Start the Service**
-   ```bash
-   sudo ./start_service.sh
-   ```
-
-### Uninstalling the Service
-
-1. **Stop the Running Service**
-   ```bash
-   cd /opt/digna/bin
-   sudo ./stop_service.sh
-   ```
-
-2. **Uninstall the Service**
-   ```bash
-   sudo ./uninstall_service.sh
-   ```
-
-The digna server is now unregistered from launchd.
-
----
-
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
-
-### Before You Upgrade
-
-**Creating a digna Repository Backup is Mandatory**
-
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
-
-To create a backup from the Terminal:
-
-```bash
-pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
-```
-
-### Upgrade Process
-
-#### Step 1: Stop the digna Service
-
-If digna is running as a background service, stop it first:
-
-```bash
-cd /opt/digna/bin
-sudo ./stop_service.sh
-```
-
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
-
-#### Step 2: Backup Current Backend Installation
-
-In your digna installation directory:
-
-```bash
-cd /opt/digna
-mv digna digna_old
-```
-```bash
-mv dashboard dashboard_old
-```
-
-#### Step 3: Extract and Deploy New Version
-
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
-
-```bash
-chmod +x /opt/digna/digna
-xattr -dr com.apple.quarantine /opt/digna
-```
-
-!!! warning "Important"
-
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
-
-### Step 4: Restore Your Configuration Files
-
-```bash
-cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
-```
-
-### Step 5: Upgrade the Repository Schema
-
-Navigate to your digna installation directory and run:
-
-```bash
-cd /opt/digna
-./digna repo upgrade
-```
-
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
-
-### Step 6: Restart Services
-
-If running as a background service:
-
-```bash
-cd /opt/digna/bin
-sudo ./start_service.sh
-```
-
-If running manually, restart the server:
-
-```bash
-cd /opt/digna
-./digna serve --address <address> --port <port>
-```
-
-If using nginx or Apache, restart the respective web server:
-
-```bash
-brew services restart nginx
-```
-```bash
-sudo apachectl restart
-```
-
-#### Step 7: Verify the Upgrade
-
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-
----
-
-# digna Data Anomalies | AI-Powered Observability of Data
-Source: https://docs.digna.ai/ar/platform/data_anomalies/
-
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
-
-**AI-powered observability for always-on data trust**
-
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
-
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
-
----
-
-## Key capabilities
-
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
-
----
-
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
-
----
-
-## Example scenarios
-
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
-
----
-
-## Integration with other modules
-
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
-
----
-
-## Typical use cases
-
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
-
----
-
-## Benefits
-
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
-
----
-
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
-
----
-
-## Summary
-
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.

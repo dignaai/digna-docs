@@ -6318,1177 +6318,10 @@ Za razliko od standardnih vzorcev (dnevno, tedensko, mesečno) crontab omogoča 
 
 ---
 
-# Kako konfigurirati enotno prijavo
-Source: https://docs.digna.ai/sl/installation_deployment/sso_integration_guide/
-
-# Single Sign-On Integration Guide
-
----
-
-## Table of Contents
-
-1. [Introduction and Overview](#introduction-and-overview)
-2. [Configuration Steps](#configuration-steps)
-3. [Dashboard Configuration](#dashboard-configuration)
-4. [Backend Configuration](#backend-configuration)
-5. [Testing Login](#testing-login)
-6. [Troubleshooting](#troubleshooting)
-7. [Supported Providers](#supported-providers)
-
----
-
-## Introduction and Overview {: #introduction-and-overview }
-
-Ta vodnik nudi korak za korakom navodila za integracijo Single Sign-On (SSO) s platformo digna z uporabo **OpenID Connect (OIDC)**.
-
-### Kaj je SSO?
-
-Single Sign-On omogoča uporabnikom, da se v digna prijavijo varno z njihovimi korporativnimi poverilnicami prek zunanjih ponudnikov identitete. Uporabniki se lahko avtenticirajo z uporabo svojih podjetniških poverilnic namesto upravljanja ločenih gesel za digna.
-
-### Kako deluje
-
-SSO v digna je implementiran z uporabo protokola OIDC. Več ponudnikov identitete je mogoče konfigurirati vzporedno z nastavitvijo dveh ključnih konfiguracijskih datotek:
-
-- **`dashboard_config.toml`** — nadzoruje prijavni vmesnik v frontend-u
-- **`config.toml`** — konfigurira backend OIDC povezave
-
-### Podprti ponudniki {: #supported-providers-overview }
-
-Primeri v tem vodniku uporabljajo **Microsoft** in **Google**, vendar je mogoče integrirati **kateregakoli ponudnika, združljivega z OIDC**, z uporabo iste strukture.
-
-Pogosti OIDC ponudniki vključujejo:
-- Microsoft Entra ID (Azure AD)
-- Google Workspace
-- Okta
-- Auth0
-- Keycloak
-- Drugi OIDC-kompatibilni ponudniki identitete
-
----
-
-## Configuration Steps {: #configuration-steps }
-
-Konfiguracija SSO zahteva posodobitve dveh datotek. Ta razdelek pojasnjuje, kako konfigurirati vsako od njih.
-
-### Pregled konfiguracijskih datotek
-
-| File | Location | Purpose |
-|---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
-| **config.toml** | `/config.toml` | Backend OIDC connections |
-
-Obe datoteki morata biti konfigurirani, da bo SSO pravilno deloval.
-
----
-
-## Dashboard Configuration {: #dashboard-configuration }
-
-### Lokacija datoteke
-
-```
-dashboard/dashboard_config.toml
-```
-
-### Korak 1: Dodajte OIDC ponudnike
-
-Dodajte vnose pod poljem `[[login.oidc]]` za vsakega ponudnika identitete, ki ga želite podpreti.
-
-**Primer z Microsoft in Google:**
-
-```toml
-[[login.oidc]]
-key = "microsoft"
-label = "Login with Microsoft"
-
-[[login.oidc]]
-key = "google"
-label = "Login with Google"
-```
-
-### Korak 2: Konfigurirajte možnosti prijave
-
-Določite, ali naj bo dovoljena prijava z geslom:
-
-```toml
-[login]
-usePassword = true
-```
-
-### Parametri konfiguracije
-
-#### `[[login.oidc]]` razdelek
-
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `key` | string | Yes | Enolični identifikator za OIDC povezavo (mora ustrezati ključu v config.toml) |
-| `label` | string | Yes | Besedilo, prikazano na gumbu za prijavo (npr. "Login with Microsoft") |
-
-#### `[login]` razdelek
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `usePassword` | boolean | false | Dovoli prijavo z geslom poleg SSO |
-
-### Razumevanje usePassword
-
-**Če je `usePassword = true`:**
-- Na zaslonu za prijavo so prikazani gumbi SSO (npr. "Login with Microsoft")
-- Na zaslonu so tudi polja za uporabniško ime in geslo
-- Uporabniki se lahko avtenticirajo z enim ali drugim načinom
-- Omogoča hibridne nastavitve, kjer nekateri uporabniki uporabljajo SSO, drugi pa gesla
-
-**Če je `usePassword = false` (ali izpuščeno):**
-- Na zaslonu za prijavo so prikazani samo SSO gumbi
-- Ni polj za uporabniško ime/geslo
-- Na voljo je samo OIDC avtentikacija
-
-!!! tip "Nasvet"
-
-    Prijava z geslom je na voljo samo za uporabnike, ki so bili ustvarjeni z gesli z ukazom `digna user add` ali prek nadzorne plošče.
-
-### Celoten primer
-
-```toml
-[login]
-usePassword = true
-
-[[login.oidc]]
-key = "microsoft"
-label = "Login with Microsoft"
-
-[[login.oidc]]
-key = "google"
-label = "Login with Google"
-
-[[login.oidc]]
-key = "okta"
-label = "Login with Okta"
-```
-
----
-
-## Backend Configuration {: #backend-configuration }
-
-### Lokacija datoteke
-
-```
-/config.toml
-```
-
-(Root digna installation directory)
-
-### Korak 1: Dodajte razdelke za OIDC ponudnike
-
-Vsak ponudnik mora imeti namenski razdelek `[oidc.<key>]`. Ključ mora ustrezati `key`, definiranemu v `dashboard_config.toml`.
-
-### Microsoft konfiguracija
-
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
-```
-
-### Google konfiguracija
-
-```toml
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "<client_id>"
-DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
-DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
-```
-
-### Parametri konfiguracije
-
-| Parameter | Type | Required | Description | Example |
-|---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID iz ponudnikovega portala | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret iz ponudnikovega portala | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL po avtentikaciji | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC konfiguracijska točka | `https://login.microsoftonline.com/...` |
-
-!!! warning "Pomembno"
-
-    Zamenjajte nadomestne vrednosti (`<client_id>`, `<client_secret>`, `<tenant_id>`) z dejavnimi poverilnicami iz razvijalskega konzola vašega ponudnika identitete.
-
-### Redirect URI
-
-Redirect URI mora biti enaka kot v konfiguraciji ponudnika identitete:
-
-```
-http://localhost:5173/oidc/callback
-```
-
-Če je digna gostovan na drugačnem domeni, posodobite primerno:
-- Lokalno: `http://localhost:5173/oidc/callback`
-- Produkcija: `https://digna.yourdomain.com/oidc/callback`
-
-### Celoten primer
-
-```toml
-[oidc.microsoft]
-DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
-
-[oidc.google]
-DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
-DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
-```
-
----
-
-## Testing Login {: #testing-login }
-
-Po dokončani konfiguraciji preverite, ali SSO deluje pravilno.
-
-### Predtestni kontrolni seznam
-
-Pred testiranjem zagotovite:
-
-- [ ] `dashboard_config.toml` je posodobljen z OIDC ponudniki
-- [ ] `config.toml` je posodobljen z OIDC poverilnicami
-- [ ] Obe datoteki sta shranjeni
-- [ ] Poverilnice so pravilne (client ID, client secret)
-- [ ] Redirect URI ustreza vaši namestitveni URL
-- [ ] Aplikacija pri ponudniku identitete je konfigurirana z redirect URI
-
-### Koraki testiranja
-
-#### Korak 1: Ponovni zagon storitev
-
-Ponovno zaženite backend in spletni strežnik digna, da uveljavite spremembe.
-
-**Če tečete kot Windows storitev:**
-```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
-```
-
-**Če tečete ročno:**
-```bash
-cd C:\path\to\digna
-digna serve --address localhost --port 8082
-```
-
-**Če uporabljate IIS ali Tomcat:**
-Ponovno zaženite storitev vašega spletnega strežnika.
-
-#### Korak 2: Odprite nadzorno ploščo
-
-Odprite digna nadzorno ploščo v brskalniku:
-
-```
-http://localhost:5173
-```
-
-(ali vaša konfigurirana URL nadzorne plošče)
-
-#### Korak 3: Preverite gumbe za prijavo
-
-Preverite, ali se za vsakega konfiguriranega ponudnika prikažejo gumbi za prijavo:
-
-- Morali bi videti gumb "Login with Microsoft"
-- Morali bi videti gumb "Login with Google"
-- (Če je usePassword = true) Morali bi videti polja za uporabniško ime/geslo
-
-Če se gumbi ne prikažejo:
-- Preverite, da je `dashboard_config.toml` shranjen
-- Preverite, da je storitev nadzorne plošče ponovno zagnana
-- Preverite konzolo brskalnika (F12) za napake
-
-#### Korak 4: Preizkusite SSO prijavo
-
-Kliknite enega od SSO gumbov (npr. "Login with Microsoft"):
-
-1. Preusmerjeni boste na prijavno stran ponudnika identitete
-2. Prijavite se s svojimi podjetniškimi poverilnicami
-3. Preusmerjeni boste nazaj v digna
-4. Prisotni boste prijavljeni v digna
-
-#### Korak 5: Preverite ustvarjanje uporabnika
-
-Po uspešni SSO prijavi:
-
-- Uporabnik bi moral biti samodejno ustvarjen v digna
-- Uporabnik bi moral biti prijavljen
-- Profil uporabnika bi moral prikazati poverilnice ponudnika identitete
-- Videli bi morali digna nadzorno ploščo
-
-#### Korak 6: Preizkus prijave z geslom (če omogočeno)
-
-Če je `usePassword = true`:
-
-1. Odjavite se iz digna
-2. Na strani za prijavo vnesite uporabniško ime in geslo
-3. Morali bi se lahko prijaviti z geselnimi poverilnicami
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Gumbi za prijavo se ne prikažejo
-
-**Simptomi:**
-- OIDC gumbi za prijavo niso vidni na strani za prijavo
-- Vidite samo polja za geslo (če je usePassword = true)
-
-**Vzroki in rešitve:**
-1. Preverite, da je `dashboard_config.toml` v mapi `dashboard/`
-2. Preverite, da so prisotni razdelki `[[login.oidc]]` s pravilno sintakso
-3. Ponovno zaženite storitev nadzorne plošče
-4. Počistite predpomnilnik brskalnika (Ctrl+Shift+Delete ali Cmd+Shift+Delete)
-5. Preverite konzolo brskalnika (F12 → Console) za napake
-
----
-
-### Napaka neusklajenosti Redirect URI
-
-**Simptomi:**
-- Po kliku na SSO gumb napaka o "redirect_uri mismatch"
-- Napaka "The redirect URI is not registered"
-
-**Vzroki in rešitve:**
-1. Preverite, da je `DIGNA_OIDC_REDIRECT_URI` v `config.toml` pravilen
-2. Preverite, da je redirect URI registriran v nastavitvah ponudnika identitete
-3. Zagotovite, da obe strani uporabljata enake URL-je (vključno s protokolom, domeno, potjo)
-4. Preverite tipkarske napake v redirect URI
-5. Če uporabljate HTTPS, zagotovite veljavno potrdilo
-
----
-
-### Napaka neveljavnih odjemalčevih poverilnic
-
-**Simptomi:**
-- Napaka "Invalid client ID or secret"
-- Avtentikacija ne uspe zaradi napake s podatki
-
-**Vzroki in rešitve:**
-1. Preverite, da sta `DIGNA_OIDC_CLIENT_ID` in `DIGNA_OIDC_CLIENT_SECRET` pravilna
-2. Zagotovite, da ni dodatnih presledkov ali neveljavnih znakov
-3. Preverite, da poverilnice niso potekle ali bile preklicane
-4. Ponovno zaženite backend po posodobitvi konfiguracije
-5. Preverite konzolo ponudnika identitete, da potrdite, da so poverilnice aktivne
-
----
-
-### Prijava se zatika ali poteče čas
-
-**Simptomi:**
-- Klik na SSO gumb ne naredi nič
-- Po nekaj sekundah poteče čas
-- Brskalnik prikaže "Failed to connect" ali podobno
-
-**Vzroki in rešitve:**
-1. Preverite, da je digna backend zagnan: `digna repo check`
-2. Preverite omrežno povezljivost do ponudnika identitete
-3. Preverite, da je `DIGNA_OIDC_CONFIGURATION_URL` dostopen
-4. Preverite, da požarni zidovi dovolijo odhodne HTTPS povezave
-5. Preverite, da se backend in nadzorna plošča lahko povežeta med seboj
-
----
-
-### Uporabniki se ne ustvarijo samodejno
-
-**Simptomi:**
-- SSO prijava uspe, vendar uporabnik ni ustvarjen v digna
-- Po SSO prijavi dobite napako o dovoljenjih
-
-**Vzroki in rešitve:**
-1. Preverite pravilnost OIDC konfiguracije
-2. Preverite, ali so ustrezne nastavitve dovoljenj za uporabnike
-3. Preverite digna loge za sporočila o napakah
-4. Ponovno zaženite backend storitev
-5. Kontaktirajte support@digna.ai, če težava ostane
-
----
-
-## Supported Providers {: #supported-providers }
-
-### Preizkušeni in podprti
-
-Naslednji OIDC ponudniki so preizkušeni in delujejo:
-
-| Provider | Configuration URL | Setup Guide |
-|---|---|---|
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft Doc](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google Doc](https://developers.google.com/identity/protocols/oauth2/openid-connect) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta Doc](https://developer.okta.com/docs/guides/implement-oauth/openid-connect) |
-
-### Drugi OIDC ponudniki
-
-Kateri koli ponudnik, ki podpira OpenID Connect, je mogoče integrirati. Potrebne informacije:
-
-- Client ID
-- Client secret
-- OpenID konfiguracijska URL (običajno na `/.well-known/openid-configuration`)
-- Podprti scope-i (običajno `openid profile email`)
-
-Kontaktirajte support@digna.ai, če potrebujete pomoč pri integraciji specifičnega ponudnika.
-
----
-
-## Best Practices
-
-DO:
-- Uporabljajte HTTPS v produkciji (ne HTTP)
-- Hranite client secret varno (po možnosti v okolijskih spremenljivkah)
-- Občasno rotirajte (zamenjajte) skrivnosti
-- Najprej testirajte v neprodukcijskem okolju
-- Dokumentirajte, kateri ponudniki so konfigurirani
-- Spremljajte prijavne zapise zaradi sumljivih dejavnosti
-- Ohranjajte sinhronizacijo nastavitev ponudnika identitete z digna konfiguracijo
-
-DON'T:
-- Ne shranjujte client secret v sistem za nadzor različic
-- Ne uporabljajte HTTP redirect URI v produkciji
-- Ne konfigurirajte več ponudnikov z istim ključem
-- Ne pustite privzetih/testnih poverilnic v produkciji
-- Ne razkrivajte konfiguracijskih datotek, ki vsebujejo skrivnosti
-- Ne mešajte razvojnih in produkcijskih poverilnic
-
----
-
-## Support
-
-Potrebujete pomoč pri konfiguraciji SSO?
-
-- **Email:** support@digna.ai
-- **Dokumentacija:** https://docs.digna.ai
-- **Spletna stran:** https://www.digna.ai
-
----
-
-**Last Updated:** August 30, 2026  
-**Release:** 2026.04  
-**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
-
----
-
 # Release 2026.06
-Source: https://docs.digna.ai/sl/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/
+Source: https://docs.digna.ai/sl/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/
 
-# Navodila za namestitev na Windows za digna Release 2026.06
-
-**Release:** 2026.06
-
-**Zadnja posodobitev:** 30. avgust 2026
-
-
----
-
-## Vsebina
-
-1. [Uvod](#introduction)
-2. [Sistemske zahteve](#system-requirements)
-3. [Prednamestitvena priprava](#pre-installation-setup)
-4. [Nastavitev PostgreSQL strežnika](#postgresql-server-setup)
-5. [Konfiguracija spletnega strežnika](#web-server-configuration)
-6. [Prva namestitev](#initial-installation)
-7. [Konfiguracija backend-a](#backend-configuration)
-8. [Konfiguracija nadzorne plošče](#dashboard-configuration)
-9. [Poganjanje digna kot Windows storitve](#running-digna-as-a-windows-service)
-10. [Nadgradnja na novo različico](#upgrading-to-a-new-release)
-
----
-
-## Uvod {: #introduction }
-
-### O digna
-
-digna je celovita platforma, ki temelji na AI in je zasnovana za optimizacijo upravljanja kakovosti podatkov v različnih podatkovnih okoljih, kot so podatkovni skladi, lakes in lakehousi. Zgrajena za visoko skalabilnost in prilagodljivost, digna naslavlja sodobne podatkovne izzive preko avtomatizacije, spremljanja v realnem času in zaznavanja anomalij.
-
-digna sestavljata dve glavni komponenti:
-
-- **dignabackend**: jedro aplikacije, odgovorno za obdelavo podatkov in izvajanje preverjanj kakovosti.
-- **dignadashboard**: spletni vmesnik gostovan na spletnem strežniku, ki ponuja uporabniku prijazen način za interakcijo s platformo digna in vizualizacijo metrik kakovosti podatkov.
-
-### Novosti v izdaji 2026.06
-
-Ta izdaja prinaša zmožnosti opazovanja podatkov neposredno v vašo kodo, kar omogoča razvijalcem spremljanje kakovosti podatkov pri viru. Celoten seznam sprememb najdete v [release notes](http://docs.digna.ai/changelog/Release_202606/).
-
----
-
-## Sistemske zahteve {: #system-requirements }
-
-Pred začetkom namestitve se prepričajte, da vaš sistem izpolnjuje naslednje minimalne zahteve:
-
-| Zahteva | Specifikacija |
-|---|---|
-| **Operacijski sistem** | Windows Server ali Windows 10/11 |
-| **Pomnilnik (minimalno)** | 16 GB RAM |
-| **Prostor na disku** | 10 GB prostega prostora |
-| **Baza podatkov** | PostgreSQL Server 12 ali novejši |
-| **Spletni strežnik** | IIS, Apache Tomcat ali ekvivalent |
-
-### Možnosti namestitve baze podatkov
-
-**Če je PostgreSQL že nameščen:**
-V obstoječi PostgreSQL strežnik lahko dodate novo bazo za digna.
-
-**Če nameščate PostgreSQL na isti stroj kot digna:**
-
-!!! info "Priporočene specifikacije"
-
-    - **Pomnilnik**: 32 GB RAM (namesto 16 GB)
-    - **Prostor na disku**: 50 GB prostega prostora (namesto 10 GB)
-
-    Te višje specifikacije omogočajo sočasno delovanje digna in PostgreSQL baze.
-
----
-
-## Prednamestitvena priprava {: #pre-installation-setup }
-
-Pred namestitvijo digna poskrbite za naslednji dve ključni predpogoj:
-
-1. **PostgreSQL Server** – za shranjevanje izračunanih metrik in podatkov o zmogljivosti
-2. **Spletni strežnik** – za gostovanje digna Dashboarda
-
-Če ti komponenti še nista nameščeni, sledite spodnjim razdelkom za namestitev in konfiguracijo.
-
----
-
-## Nastavitev PostgreSQL strežnika {: #postgresql-server-setup }
-
-### Če že imate PostgreSQL
-
-Če je PostgreSQL že nameščen in teče na vašem lokalnem stroju ali uporabljate upravljan oddaljen PostgreSQL strežnik, lahko preskočite na [naslednji razdelek](#web-server-configuration).
-
-### Namestitev PostgreSQL
-
-Sledite tem korakom za namestitev PostgreSQL na Windows:
-
-#### Korak 1: Prenesite PostgreSQL
-
-1. Obiščite [PostgreSQL Downloads page](https://www.postgresql.org/download/)
-2. Izberite **Windows**
-3. Prenesite najnovejši installer
-
-#### Korak 2: Zaženite namestitveni program
-
-1. Dvokliknite preneseno datoteko installer
-2. Sledite navodilom v čarovniku za namestitev
-
-#### Korak 3: Izberite namestitveni imenik
-
-Izberite imenik, kamor bo PostgreSQL nameščen. Privzeta lokacija je običajno primerna.
-
-#### Korak 4: Izberite komponente
-
-Za standardno namestitev pustite privzete komponente izbrane.
-
-#### Korak 5: Nastavite geslo superuporabnika PostgreSQL
-
-Vnesite in potrdite geslo za PostgreSQL superuporabnika (`postgres`). **Shranjeno geslo varno** — potrebovali ga boste kasneje.
-
-#### Korak 6: Konfigurirajte številko porta
-
-Privzeti PostgreSQL port je `5432`. Uporabite privzeto ali določite drug port po potrebi.
-
-!!! tip "Namig"
-
-    Če je port 5432 že v uporabi, izberite alternativni port in si ga zabeležite za kasnejšo konfiguracijo.
-
-#### Korak 7: Izberite lokalizacijo
-
-Izberite locale za vašo bazo. Privzeta nastavitev je običajno ustrezna.
-
-#### Korak 8: Dokončajte namestitev
-
-Kliknite **Next** skozi preostale korake, nato kliknite **Finish**.
-
-#### Korak 9: Preverite namestitev
-
-Odprite Command Prompt in preverite, da je PostgreSQL nameščen:
-
-```bash
-psql --version
-```
-
-Če je namestitev uspešna, bi morali videti različico PostgreSQL.
-
----
-
-## Konfiguracija spletnega strežnika {: #web-server-configuration }
-
-digna zahteva spletni strežnik za gostovanje nadzorne plošče. Izberite eno od naslednjih možnosti:
-
-- [Internet Information Services (IIS)](#iis-setup)
-- [Apache Tomcat](#apache-tomcat-setup)
-
-Potrebno je namestiti in konfigurirati samo enega izmed teh strežnikov.
-
-### Nastavitev IIS {: #iis-setup }
-
-#### Pregled
-
-Internet Information Services (IIS) je Microsoftov spletni strežnik za gostovanje spletnih strani in spletnih aplikacij.
-
-#### Vključitev IIS
-
-1. **Odprite Control Panel**
-   - Pritisnite `Win + R`
-   - Vnesite `control` in pritisnite Enter
-
-2. **Pojdite na Windows Features**
-   - Kliknite **Programs**
-   - Izberite **Turn Windows features on or off**
-
-3. **Vključite Internet Information Services**
-   - Pomaknite se navzdol in poiščite **Internet Information Services (IIS)**
-   - Označite polje za omogočanje
-   - Kliknite **+** za razširitev in preverite, da so izbrane naslednje podkomponente:
-     - **Web Management Tools**
-     - **World Wide Web Services**
-
-4. **Kliknite OK** za uveljavitev sprememb
-
-5. **Preverite namestitev IIS**
-   - Odprite brskalnik
-   - Pojdite na `http://localhost`
-   - Videti bi morali IIS Welcome stran
-
-#### Zahtevano: URL Rewrite modul
-
-IIS zahteva komponento URL Rewrite. Prenesite in namestite jo z [uradne Microsoft strani](https://www.iis.net/downloads/microsoft/url-rewrite).
-
-#### Zahtevano: MIME tip za Markdown datoteke
-
-Da se zagotovI pravilno serviranje Markdown datotek (`.md`) v IIS:
-
-1. Odprite **IIS Manager** (pritisnite `Win + R`, vnesite `inetmgr`, pritisnite Enter)
-2. Pomaknite se do **Your Site > MIME Types**
-3. Kliknite **Add...**
-4. Konfigurirajte:
-   - **File name extension**: `.md`
-   - **MIME type**: `text/markdown`
-
-!!! warning "Pomembno"
-
-    Brez te nastavitve se `.md` datoteke morda ne bodo servisirale pravilno.
-
----
-
-### Nastavitev Apache Tomcat {: #apache-tomcat-setup }
-
-#### Pregled
-
-Apache Tomcat je odprtokodni Java servlet container in spletni strežnik.
-
-#### Namestitev
-
-1. **Prenesite Apache Tomcat**
-   - Obiščite [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
-   - Prenesite Windows ZIP distribucijo
-
-2. **Razširite arhiv**
-   - Razširite ZIP datoteko v imenik na vašem sistemu
-   - Primer: `C:\Program Files\Apache Tomcat`
-
-3. **Preverite, da Tomcat teče**
-   - Odprite brskalnik
-   - Pojdite na `http://localhost:8080`
-   - Videti bi morali Apache Tomcat welcome stran
-
-!!! tip "Namig"
-
-    Apache Tomcat se običajno zažene samodejno po namestitvi. Če se ne zažene, pojdite v mapo `bin` in zaženite `startup.bat`.
-
----
-
-## Prva namestitev {: #initial-installation }
-
-### Korak 1: Nastavite digna repozitorij
-
-Digna repozitorij hrani vse metrike, ki jih izračuna digna. Deluje kot centralna baza za analitične in zmogljivostne podatke.
-
-#### Ustvarite shemo repozitorija in uporabnika
-
-Odprite svoj PostgreSQL klient (pgAdmin, psql ali podoben) in izvedite naslednje SQL ukaze:
-
-```sql
-CREATE SCHEMA <digna_repo_schema>;
-
-CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
-
-GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
-```
-
-**Zamenjajte naslednje nadomestne vrednosti:**
-
-- `<digna_repo_schema>` — želeno ime sheme (npr. `dignarepo`)
-- `<digna_repo_user>` — želeno uporabniško ime (npr. `digna_user`)
-- `<digna_repo_password>` — varno geslo za tega uporabnika
-
-**Primer:**
-
-```sql
-CREATE SCHEMA dignarepo;
-
-CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
-
-GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
-```
-
-!!! tip "Najboljša praksa"
-
-    Uporabljajte močna, kompleksna gesla za uporabnike baze podatkov. Izogibajte se enostavnim in lahko ugibljivim poverilnicam.
-
----
-
-### Korak 2: Razširite namestitveni paket digna
-
-1. Poiščite ZIP datoteko z namestitvijo digna, ki vam je bila posredovana
-2. Razširite jo na želeno lokacijo za namestitev
-3. Po razširitvi bi morali videti naslednje elemente:
-   - `dashboard/` — spletni vmesnik nadzorne plošče
-   - `digna` — glavni izvršljivi program (backend + CLI v enem)
-   - `config.toml` — konfiguracijska datoteka
-   - `license.toml` — licenčna datoteka (sem kopirajte svojo)
-
-### Korak 3: Namestite licenčno datoteko
-
-!!! warning "Pomembno"
-
-    Licenčna datoteka **ni** vključena v namestitveni paket in vam bo posredovana ločeno s strani digna.
-
-1. Poiščite datoteko `license.toml`, ki vam je bila posredovana
-2. Kopirajte jo v korenski imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
-
-**Zakaj je to pomembno:**
-Licenčna datoteka vsebuje podatke o stranki, datum poteka licence in digitalni podpis. **Ne spreminjajte te datoteke** — kakršne koli spremembe jo bodo razveljavile.
-
-**Struktura imenika po namestitvi:**
-
-```
-digna_installation/
-├── config.toml         (configuration file)
-├── license.toml        (YOUR LICENSE FILE - copy here)
-├── digna               (main executable)
-└── dashboard/          (web interface)
-    └── (dashboard files)
-```
-
----
-
-## Konfiguracija backend-a {: #backend-configuration }
-
-### Korak 1: Ustvarite in uredite konfiguracijsko datoteko
-
-Datoteka `config_template.toml` je priložena v vašem imeniku za namestitev digna. Preimenujte jo v `config.toml`.
-
-**Lokacija:** `digna_installation/config.toml`
-
-Odprite `config.toml` v urejevalniku besedila in konfigurirajte spodnje odseke.
-
-#### Sekcija [app]
-
-Ta sekcija konfigurira nastavitve aplikacije digna backend:
-
-```toml
-[app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
-digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
-digna_APP_CORS_ALLOW_CREDENTIALS = true
-digna_APP_CORS_ALLOW_METHODS = ["*"]
-digna_APP_CORS_ALLOW_HEADERS = ["*"]
-```
-
-| Parameter | Vrednost | Opombe |
-|---|---|---|
-| `digna_APP_HOST` | `localhost` ali IP naslov | Gostitelj, kjer teče dignabackend |
-| `digna_APP_PORT` | `8082` (privzeto) | Port za REST API endpoint-e |
-| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontenda | Če je dashboard na drugem strežniku, vključite njegov URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Zahtevano za CORS z poverilnicami |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Dovoli vse HTTP metode |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Dovoli vse headerje |
-
-#### Sekcija [repo]
-
-Ta sekcija konfigurira povezavo na PostgreSQL bazo:
-
-```toml
-[repo]
-digna_REPO_HOST = "localhost"
-digna_REPO_PORT = 5432
-digna_REPO_DB = "postgres"
-digna_REPO_SCHEMA = "dignarepo"
-digna_REPO_USER = "digna_user"
-digna_REPO_PASSWORD = "YourSecurePassword123!"
-```
-
-| Parameter | Vrednost | Opombe |
-|---|---|---|
-| `digna_REPO_HOST` | `localhost` ali IP | Hostname/IP PostgreSQL strežnika |
-| `digna_REPO_PORT` | `5432` (privzeto) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Ime baze podatkov |
-| `digna_REPO_SCHEMA` | `dignarepo` | Shema ustvarjena prej |
-| `digna_REPO_USER` | `digna_user` | Uporabnik ustvarjen v PostgreSQL nastavitvi |
-| `digna_REPO_PASSWORD` | Vaše geslo | Geslo nastavljeno ob ustvarjanju sheme |
-
-#### Sekcija [base]
-
-Ta sekcija vsebuje varnostne in cookie nastavitve:
-
-```toml
-[base]
-digna_FERNET_KEY = "your-fernet-key"
-digna_COOKIE_DOMAIN = "localhost"
-digna_COOKIE_PATH = "/"
-digna_COOKIE_SECURE = false
-digna_COOKIE_HTTPONLY = true
-digna_COOKIE_SAME_SITE = "lax"
-digna_TOKEN_EXPIRES_IN = 86400
-digna_MAX_WORKERS = 4
-```
-
-| Parameter | Vrednost | Opombe |
-|---|---|---|
-| `digna_FERNET_KEY` | Šifrirni ključ | Uporablja se za šifriranje tokenov in cookie-jev (privzeto je zagotovljen) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Naj se ujema z vašim frontend domeno |
-| `digna_COOKIE_SECURE` | `false` (lokalno) / `true` (produkcija) | Uporabite `true` za HTTPS povezave |
-| `digna_COOKIE_HTTPONLY` | `true` | Vedno omogočeno zaradi varnosti |
-| `digna_COOKIE_SAME_SITE` | `lax` | Preprečuje CSRF napade |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ure) | Čas poteka seje v sekundah |
-| `digna_MAX_WORKERS` | Število CPU jeder - 1 | Število vzporednih nalog inšpekcij |
-
-#### Sekcija [logging]
-
-Ta sekcija konfigurira vedenje beleženja:
-
-```toml
-[logging]
-digna_LOGGING_MODE = "INFO"
-digna_LOGGING_BACKUP_COUNT = 10
-```
-
-| Parameter | Vrednost | Opombe |
-|---|---|---|
-| `digna_LOGGING_MODE` | `INFO` ali `DEBUG` | `INFO` za produkcijo, `DEBUG` za odpravljanje napak |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Število dnevnih kopij log datotek, ki jih obdržimo |
-
----
-
-### Korak 3: Inicializirajte repozitorij
-
-1. Odprite Command Prompt
-2. Pomaknite se v imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
-3. Zaženite test povezave:
-
-```bash
-digna repo check
-```
-
-Videti bi morali potrditev, da je povezava vzpostavljena (sama shema repozitorija še ni nameščena).
-
-### Korak 4: Namestite shemo repozitorija
-
-V istem imeniku zaženite:
-
-```bash
-digna repo install
-```
-
-Ta ukaz namesti potrebne tabele in shemo v vašo PostgreSQL bazo.
-
-### Korak 5: Zaženite digna strežnik
-
-V imeniku namestitve digna zaženite strežnik z:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Parametri:**
-- `--address` — hostname/IP strežnika
-- `--port` — port strežnika
-
-Videti bi morali zagonska sporočila, ki potrjujejo, da strežnik teče:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### Korak 6: Ustvarite skrbniškega uporabnika
-
-1. Odprite **novo** okno Command Prompt
-2. Pomaknite se v imenik namestitve digna
-3. Zaženite naslednji ukaz za ustvarjanje skrbniškega uporabnika:
-
-```bash
-digna user add <username> "<full_name>" <password> --su
-```
-
-**Primer:**
-
-```bash
-digna user add admin "Admin User" AdminPassword123! --su
-```
-
-Ta ukaz ustvari uporabnika s polnimi administratorskimi pravicami.
-
-!!! tip "Najboljša praksa"
-
-    Uporabljajte močno geslo z mešanico velikih/malih črk, številk in posebnih znakov.
-
----
-
-## Konfiguracija nadzorne plošče {: #dashboard-configuration }
-
-### Korak 1: Namestite dashboard na spletni strežnik
-
-Digna dashboard ima svojo ločeno datoteko `config.toml` v mapi `dashboard/`. Ta konfiguracija je že priložena in običajno ne zahteva sprememb pri začetni namestitvi. Spremeniti jo je potrebno le, če želite prilagoditi povezavo na backend ali za multi-instance postavitve.
-
-Če morate prilagoditi konfiguracijo dashboarda, glejte dokumentacijo dashboarda.
-
-Izberite vaš spletni strežnik in sledite ustreznim korakom za namestitev.
-
-#### Namestitev na IIS
-
-1. **Odprite IIS Manager**
-   - Pritisnite `Win + R`, vnesite `inetmgr`, pritisnite Enter
-
-2. **Ustvarite novo spletno mesto**
-   - V levem panelu z desnim klikom izberite **Sites**
-   - Izberite **Add Website...**
-
-3. **Konfigurirajte spletno mesto**
-   - **Site Name**: Vnesite ime (npr. "dignaDashboard")
-   - **Physical Path**: Kliknite Browse in izberite vašo mapo `dashboard`
-   - **Binding**: Nastavite IP naslov in port (privzeti port 80 za HTTP, 443 za HTTPS)
-
-4. **Zaženite spletno mesto**
-   - Kliknite **OK** za ustvarjanje mesta
-   - Z desnim klikom na novo mesto izberite **Start**
-
-5. **Preizkusite namestitev**
-   - Odprite brskalnik
-   - Pojdite na `http://localhost` (ali vaš konfigurirani URL)
-   - Videti bi morali stran za prijavo digna dashboarda
-
-#### Namestitev na Apache Tomcat
-
-1. **Kopirajte dashboard v Tomcat**
-   - Kopirajte mapo `dashboard` v Tomcat `webapps` imenik
-   - Po potrebi jo preimenujte (npr. v `digna`)
-   - Primer: `C:\Program Files\Apache Tomcat\webapps\digna`
-
-2. **Preverite namestitev**
-   - Osvežite ali ponovno naložite Tomcat upravljalno stran (http://localhost:8080)
-   - Videti bi morali "digna" (ali izbrano ime) na seznamu nameščenih aplikacij
-
-3. **Dostop do dashboarda**
-   - Odprite brskalnik
-   - Pojdite na `http://localhost:8080/digna`
-   - Videti bi morali stran za prijavo digna dashboarda
-
----
-
-## Poganjanje digna kot Windows storitve {: #running-digna-as-a-windows-service }
-
-### Zakaj uporabiti Windows storitev?
-
-Poganjanje digna backend-a kot Windows storitve zagotavlja, da se:
-- Zažene samodejno ob zagonu strežnika
-- Teče v ozadju brez odprtega Command Prompt okna
-- Samodejno ponovno zažene ob morebitnem zrušitvi
-- Lahko upravljate preko Windows Services
-
-### Datoteke za upravljanje storitve
-
-Vse potrebne datoteke so v imeniku namestitve digna v: `bin/`
-
-Na voljo so naslednje batch datoteke:
-- `install_service.bat` — registrira digna kot Windows storitev
-- `uninstall_service.bat` — odstrani registracijo storitve
-- `start_service.bat` — zažene storitev
-- `stop_service.bat` — ustavi storitev
-
-!!! warning "Potrebne so administratorske pravice"
-
-    Vse batch datoteke je treba zagnati z administratorskimi privilegiji.
-
-### Namestitev storitve
-
-1. **Odprite Command Prompt kot Administrator**
-   - Z desnim klikom na Command Prompt
-   - Izberite "Run as Administrator"
-
-2. **Pomaknite se v mapo bin**
-   ```bash
-   cd C:\path\to\digna\bin
-   ```
-
-3. **Zaženite namestitveni skript**
-   ```bash
-   install_service.bat
-   ```
-
-Digna strežnik je sedaj registriran kot Windows storitev z nastavljeno **samodejno zagon**. Storitev se ne zažene takoj — zaženite jo v naslednjem razdelku.
-
-### Zagon in zaustavitev storitve
-
-#### Za zagon storitve
-
-1. Odprite Command Prompt kot Administrator
-2. Pomaknite se v `digna\bin`
-3. Zaženite:
-   ```bash
-   start_service.bat
-   ```
-
-#### Za zaustavitev storitve
-
-1. Odprite Command Prompt kot Administrator
-2. Pomaknite se v `digna\bin`
-3. Zaženite:
-   ```bash
-   stop_service.bat
-   ```
-
-!!! tip "Namig"
-
-    Pred posodobitvijo datotek aplikacije storitev vedno zaustavite.
-
-### Premestitev storitve v nov imenik
-
-Če morate premakniti namestitev digna:
-
-1. **Odstranite obstoječo storitev**
-   ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
-   ```
-
-2. **Premaknite datoteke aplikacije**
-   - Premaknite celotno mapo namestitve digna na novo lokacijo
-
-3. **Ponovno namestite storitev**
-   ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
-   ```
-
-4. **Zaženite storitev**
-   ```bash
-   start_service.bat
-   ```
-
-### Odstranitev storitve
-
-1. **Ustavite tekočo storitev**
-   ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
-   ```
-
-2. **Odstranite storitev**
-   ```bash
-   uninstall_service.bat
-   ```
-
-Digna strežnik je zdaj odregistriran kot Windows storitev.
-
----
-
-## Nadgradnja na novo različico {: #upgrading-to-a-new-release }
-
-### Preden nadgradite
-
-**Obvezno ustvarite varnostno kopijo digna repozitorija**
-
-Pred nadgradnjo digna obvezno naredite varnostno kopijo vašega repozitorija (PostgreSQL), da se zaščitite pred izgubo podatkov.
-Varnostna kopija omogoča obnovitev, če bi nadgradnja naletela na nepričakovane težave.
-
-### Postopek nadgradnje
-
-#### Korak 1: Ustavite digna storitev
-
-Če digna teče kot Windows storitev, jo najprej ustavite:
-
-```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-```
-
-#### Korak 2: Varnostno kopirajte trenutno backend namestitev
-
-V imeniku namestitve digna:
-
-```bash
-# Preimenujte mapo, ki vsebuje dignabackend
-ren dignabackend dignabackend_old
-```
-```bash
-# Preimenujte dashboard
-ren dashboard dashboard_old
-```
-
-#### Korak 3: Razširite in namestite novo različico
-
-1. Razširite nov ZIP paket z namestitvijo digna
-2. Kopirajte novo izvršljivo datoteko `digna` in mapo `dashboard` v vaš imenik namestitve
-
-!!! warning "Pomembno"
-
-    Datoteka `config.toml` **nikoli** ni vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
-
-### Korak 4: Obnovite konfiguracijske datoteke
-
-```bash
-copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
-```
-### Korak 5: Nadgradite shemo repozitorija
-
-Pomaknite se v imenik namestitve digna in zaženite:
-
-```bash
-digna repo upgrade
-```
-
-To posodobi PostgreSQL shemo na najnovejšo različico in hkrati ohrani vse obstoječe podatke.
-
-### Korak 6: Ponovni zagon storitev
-
-Če tečeta kot Windows storitev:
-
-```bash
-cd C:\path\to\digna\bin
-start_service.bat
-```
-
-Če poganjate ročno, znova zaženite strežnik:
-
-```bash
-cd C:\path\to\digna
-digna serve --address <address> --port <port>
-```
-
-Če uporabljate IIS ali Tomcat, ponovno zaženite ustrezen spletni strežnik.
-
-#### Korak 7: Preverite nadgradnjo
-
-1. Dostopajte do digna dashboarda
-2. Preverite, ali se vmesnik pravilno naloži
-3. Preverite strežniške zapise za morebitne napake
-
----
-
-# macOS Installation Guide – digna Release 2026.06 | digna Documentation
-Source: https://docs.digna.ai/sl/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/
-
-# macOS Installation Guide for digna Release 2026.06
+# Linux Installation Guide for digna Release 2026.06
 
 **Release:** 2026.06
 
@@ -7507,7 +6340,7 @@ Source: https://docs.digna.ai/sl/installation_deployment/macOS/Release%202026.06
 6. [Initial Installation](#initial-installation)
 7. [Backend Configuration](#backend-configuration)
 8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
+9. [Running digna as a systemd Service](#running-digna-as-a-systemd-service)
 10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
@@ -7527,9 +6360,18 @@ digna consists of two main components:
 
 This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
 
-### Looking for Windows?
+### Looking for Windows or macOS?
 
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+This guide covers Linux. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
+
+### Which Distribution Does This Guide Cover?
+
+The instructions are written for the two most common server families. Where the two differ, both commands are given:
+
+- **Debian family** — Debian, Ubuntu. Package manager: `apt`.
+- **RHEL family** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Package manager: `dnf`.
+
+Any modern distribution with `systemd` will work; only the package names and a few configuration paths change.
 
 ---
 
@@ -7539,13 +6381,13 @@ Before you begin the installation, ensure that your system meets the following m
 
 | Requirement | Specification |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
+| **Operating System** | Ubuntu 22.04 LTS or later, Debian 12 or later, RHEL 9 / Rocky 9 / AlmaLinux 9 or later |
+| **Architecture** | x86_64 (amd64) or arm64 |
+| **Init System** | systemd |
 | **Memory (Minimal Setup)** | 16 GB RAM |
 | **Disk Space** | 10 GB available storage |
 | **Database** | PostgreSQL Server 12 or higher |
 | **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
 
 ### Database Installation Options
 
@@ -7561,60 +6403,44 @@ You can add a new database for digna to your existing PostgreSQL Server.
 
     These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
 
-### Checking Your Architecture
+### Checking Your Distribution and Architecture
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Several commands in this guide differ between the Debian and RHEL families. To check which you are on, run:
 
 ```bash
+cat /etc/os-release
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
-
-!!! tip "Tip"
-
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+- `ID=ubuntu` or `ID=debian` — use the `apt` commands.
+- `ID=rhel`, `rocky`, `almalinux` or `fedora` — use the `dnf` commands.
+- `x86_64` or `aarch64` — the architecture of the installation package you need.
 
 ---
 
 ## Pre-Installation Setup {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Before installing digna, ensure that two key prerequisites are in place:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **PostgreSQL Server** – for storing calculated metrics and performance data
+2. **Web Server** – for hosting the digna Dashboard
 
 If these components are not already set up, follow the sections below to install and configure them.
 
-### Installing Homebrew
+### Refreshing the Package Index
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
-
-#### Step 1: Check Whether Homebrew Is Already Installed
-
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Update your package lists before installing anything:
 
 ```bash
-brew --version
+sudo apt update
 ```
-
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
-
-#### Step 2: Install Homebrew
-
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
-
-#### Step 3: Add Homebrew to Your PATH
-
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
-
 ```bash
-brew --prefix
+sudo dnf check-update
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+!!! note "Note"
+
+    Throughout this guide, the first command in a pair is for the **Debian family** and the second for the **RHEL family**. Run only the one that matches your system.
 
 ---
 
@@ -7624,86 +6450,119 @@ This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
 
 If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
 
-### Installation Options
+### Installing PostgreSQL
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
-
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
-
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
-
-#### Step 1: Install the PostgreSQL Formula
+#### Step 1: Install the Server Package
 
 ```bash
-brew install postgresql@16
+sudo apt install -y postgresql postgresql-contrib
+```
+```bash
+sudo dnf install -y postgresql-server postgresql-contrib
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+!!! tip "Tip"
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+    Distribution packages may lag behind the current PostgreSQL release. If you need a specific newer version, use the official [PostgreSQL apt or yum repository](https://www.postgresql.org/download/linux/) instead.
+
+#### Step 2: Initialize the Database Cluster
+
+On the **Debian family**, the package creates and starts a cluster automatically — skip to the next step.
+
+On the **RHEL family**, the cluster must be created explicitly:
 
 ```bash
-echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+sudo postgresql-setup --initdb
 ```
 
-!!! note "Note"
-
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
-
-#### Step 3: Start the PostgreSQL Service
+#### Step 3: Start and Enable the Service
 
 ```bash
-brew services start postgresql@16
+sudo systemctl enable --now postgresql
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+This starts PostgreSQL immediately and configures it to start again automatically at boot.
 
 #### Step 4: Verify the Installation
 
 ```bash
 psql --version
+sudo systemctl status postgresql
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+You should see the PostgreSQL version and an `active (running)` service.
 
 #### Step 5: Connect to the Server
 
+A Linux PostgreSQL package creates a `postgres` system account that owns the cluster. Connect through it:
+
 ```bash
-psql postgres
+sudo -u postgres psql
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! note "Note — Linux Differs From Windows Here"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    The Windows installer prompts you to set a password for the `postgres` superuser during setup. Linux packages do not. Instead, local connections are authenticated by **peer authentication**: the `postgres` operating-system user is allowed to connect as the `postgres` database user without a password.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    This is why the command above uses `sudo -u postgres`. The digna backend connects over TCP with a username and password, so you will create an explicit digna user in [Initial Installation](#initial-installation).
 
 #### Step 6: Confirm the Port
 
 The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
 
 ```bash
-psql postgres -c "SHOW port;"
+sudo -u postgres psql -c "SHOW port;"
 ```
 
 Note the value — you will need it when configuring the digna backend.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+#### Step 7: Enable Password Authentication for the digna User
 
-If you prefer a graphical installation:
+digna connects to PostgreSQL over TCP as `digna_user`, which requires password authentication rather than peer authentication. Check that your `pg_hba.conf` permits it.
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+Locate the file:
 
 ```bash
-psql --version
+sudo -u postgres psql -c "SHOW hba_file;"
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Open it in an editor and confirm that the local TCP lines use `scram-sha-256` (or `md5` on older servers) rather than `ident`:
+
+```
+# TYPE  DATABASE  USER  ADDRESS         METHOD
+host    all       all   127.0.0.1/32    scram-sha-256
+host    all       all   ::1/128         scram-sha-256
+```
+
+Reload PostgreSQL after any change:
+
+```bash
+sudo systemctl reload postgresql
+```
+
+!!! warning "Important"
+
+    If digna reports `FATAL: Ident authentication failed for user "digna_user"`, this setting is the cause.
+
+#### Step 8: If PostgreSQL Runs on Another Machine
+
+To accept connections from a different host, set `listen_addresses` in `postgresql.conf` and add a matching `host` line for your network in `pg_hba.conf`:
+
+```
+listen_addresses = '*'
+```
+
+Then open the port in the firewall and restart the service:
+
+```bash
+sudo ufw allow 5432/tcp
+```
+```bash
+sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
+```
+```bash
+sudo systemctl restart postgresql
+```
 
 ---
 
@@ -7711,8 +6570,8 @@ Postgres.app also creates a superuser named after your macOS account.
 
 digna requires a web server to host the dashboard. Choose one of the following options:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — lightweight and recommended
+- [Apache httpd](#apache-setup) — widely deployed alternative
 
 You only need to install and configure **one** of these servers.
 
@@ -7730,43 +6589,52 @@ nginx is a lightweight, high-performance web server well suited to serving the s
 #### Installation
 
 ```bash
-brew install nginx
+sudo apt install -y nginx
+```
+```bash
+sudo dnf install -y nginx
 ```
 
 #### Starting nginx
 
 ```bash
-brew services start nginx
+sudo systemctl enable --now nginx
 ```
 
 #### Verify the Installation
 
 1. Open your browser
-2. Navigate to `http://localhost:8080`
+2. Navigate to `http://localhost`
 3. You should see the nginx welcome page
 
-!!! note "Note — Default Port Is 8080, Not 80"
+#### Opening the Firewall
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+If the server is reached from other machines, allow HTTP traffic:
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+```bash
+sudo ufw allow 'Nginx Full'
+```
+```bash
+sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
+```
 
 #### Configuring a Site for the Dashboard
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+nginx includes every file in its `conf.d` directory on both distribution families. Create a dedicated configuration file for digna there:
 
 ```bash
-nano $(brew --prefix)/etc/nginx/servers/digna.conf
+sudo nano /etc/nginx/conf.d/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Paste the following, replacing `/opt/digna/dashboard` with the actual path to your extracted `dashboard` folder:
 
 ```nginx
 server {
-    listen       8080;
-    server_name  localhost;
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
 
-    root   /path/to/digna/dashboard;
+    root   /opt/digna/dashboard;
     index  index.html;
 
     # Serve Markdown files with the correct MIME type.
@@ -7786,13 +6654,23 @@ server {
 
     Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
 
+#### Disable the Default Site
+
+Only one server block may be the `default_server` for a port. On the **Debian family**, remove the packaged default so it does not conflict:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+```
+
+On the **RHEL family**, comment out or delete the `server { ... }` block inside `/etc/nginx/nginx.conf`.
+
 #### Apply the Configuration
 
 Test the configuration for syntax errors, then reload nginx:
 
 ```bash
-nginx -t
-brew services restart nginx
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
 ---
@@ -7801,37 +6679,61 @@ brew services restart nginx
 
 #### Overview
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+Apache httpd is available in the default repositories of every supported distribution. The package is named `apache2` on the Debian family and `httpd` on the RHEL family.
+
+#### Installation
+
+```bash
+sudo apt install -y apache2
+```
+```bash
+sudo dnf install -y httpd
+```
 
 #### Starting Apache
 
 ```bash
-sudo apachectl start
+sudo systemctl enable --now apache2
+```
+```bash
+sudo systemctl enable --now httpd
 ```
 
 #### Verify the Installation
 
 1. Open your browser
 2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+3. You should see the distribution's default Apache page
 
 #### Required: Enable mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+The dashboard requires URL rewriting.
+
+On the **Debian family**, enable the module and restart:
 
 ```bash
-sudo nano /etc/apache2/httpd.conf
+sudo a2enmod rewrite
+sudo systemctl restart apache2
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+On the **RHEL family**, `mod_rewrite` is loaded by default. Confirm it:
 
-```apache
-LoadModule rewrite_module libexec/apache2/mod_rewrite.so
+```bash
+httpd -M | grep rewrite
 ```
 
 #### Required: Allow .htaccess Overrides
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+Open the configuration file for your document root:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
+```
+
+Locate the `<Directory>` block covering your document root (`/var/www/html` on both families) and change:
 
 ```apache
 AllowOverride None
@@ -7845,7 +6747,7 @@ AllowOverride All
 
 #### Required: MIME Type for Markdown Files
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+In the same file, add the following line so that Markdown files are served correctly:
 
 ```apache
 AddType text/markdown .md
@@ -7861,7 +6763,11 @@ Check the configuration for syntax errors, then restart Apache:
 
 ```bash
 sudo apachectl configtest
-sudo apachectl restart
+sudo systemctl restart apache2
+```
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
 ```
 
 ---
@@ -7900,10 +6806,10 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+To run these from the shell in a single step:
 
 ```bash
-psql postgres
+sudo -u postgres psql
 ```
 
 Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
@@ -7917,18 +6823,23 @@ Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
 ### Step 2: Extract the digna Installation Package
 
 1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
+2. Extract it to your desired installation location — for example `/opt/digna`
 3. After extraction, you should see the following items:
    - `dashboard/` — Web dashboard interface
    - `digna` — Main executable (backend + CLI combined)
    - `config.toml` — Configuration file
    - `license.toml` — License file (copy yours here)
 
-To extract from the Terminal:
+To extract from the shell:
 
 ```bash
-unzip digna-2026.06-macos.zip -d /opt/digna
+sudo mkdir -p /opt/digna
+sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
 ```
+
+!!! note "Note"
+
+    If `unzip` is not installed, add it with `sudo apt install -y unzip` or `sudo dnf install -y unzip`.
 
 #### Make the Executable Runnable
 
@@ -7936,22 +6847,21 @@ Depending on how the archive was transferred, the executable bit may not survive
 
 ```bash
 cd /opt/digna
-chmod +x digna
+sudo chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Create a Service Account
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Running the backend as a dedicated unprivileged user is recommended for production deployments:
 
 ```bash
-xattr -dr com.apple.quarantine /opt/digna
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
+sudo chown -R digna:digna /opt/digna
 ```
-
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
 
 !!! note "Note"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    On the RHEL family the equivalent shell path is `/sbin/nologin`.
 
 ### Step 3: Install the License File
 
@@ -7987,7 +6897,7 @@ The `config_template.toml` file is provided in your digna installation directory
 
 ```bash
 cd /opt/digna
-mv config_template.toml config.toml
+sudo mv config_template.toml config.toml
 ```
 
 **Location:** `/opt/digna/config.toml`
@@ -8019,7 +6929,7 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 !!! note "Note"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    If you serve the dashboard from nginx or Apache on the default HTTP port, the origin to allow is `http://localhost` — or the server's public URL when the dashboard is reached from other machines.
 
 #### [repo] Section
 
@@ -8043,6 +6953,15 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 | `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
 | `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
 | `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+
+!!! tip "Best Practice"
+
+    `config.toml` contains a database password in plain text. Restrict its permissions so that only the service account can read it:
+
+    ```bash
+    sudo chown digna:digna /opt/digna/config.toml
+    sudo chmod 600 /opt/digna/config.toml
+    ```
 
 #### [base] Section
 
@@ -8072,7 +6991,7 @@ digna_MAX_WORKERS = 4
 
 !!! tip "Tip"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    To find the number of CPU cores available on your server, run `nproc`.
 
 #### [logging] Section
 
@@ -8093,7 +7012,7 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ### Step 2: Initialize the Repository
 
-1. Open **Terminal**
+1. Open a terminal
 2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
 3. Run the connection test:
 
@@ -8106,11 +7025,10 @@ You should see a confirmation that the connection is established (the repository
 
 !!! note "Note"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    On Linux, the current directory is not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add a symbolic link:
 
     ```bash
-    echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
-    source ~/.zshrc
+    sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
 ### Step 3: Install the Repository Schema
@@ -8146,11 +7064,18 @@ INFO:     Uvicorn running on http://localhost:8082
 
 !!! tip "Tip"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    If the dashboard is served from a different machine than the backend, open the API port in the firewall as well:
+
+    ```bash
+    sudo ufw allow 8082/tcp
+    ```
+    ```bash
+    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
+    ```
 
 ### Step 5: Create an Admin User
 
-1. Open a **new** Terminal window
+1. Open a **new** terminal window
 2. Navigate to your digna installation directory
 3. Run the following command to create an admin user:
 
@@ -8168,7 +7093,7 @@ This creates a user with username `admin` and full administrative privileges.
 
 !!! tip "Tip"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Wrap the password in single quotes. `bash` and `zsh` treat characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
 
 !!! tip "Best Practice"
 
@@ -8191,30 +7116,30 @@ Choose your web server and follow the corresponding deployment steps.
 If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
 
 1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Open `/etc/nginx/conf.d/digna.conf`
    - Verify that `root` points at your extracted `dashboard` folder
 
 2. **Ensure the folder is readable**
    ```bash
-   chmod -R a+rX /opt/digna/dashboard
+   sudo chmod -R a+rX /opt/digna/dashboard
    ```
 
 3. **Reload nginx**
    ```bash
-   nginx -t
-   brew services restart nginx
+   sudo nginx -t
+   sudo systemctl reload nginx
    ```
 
 4. **Test the Installation**
    - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
+   - Navigate to `http://localhost` (or your configured URL)
    - You should see the digna dashboard login page
 
 #### Deploying to Apache httpd
 
 1. **Copy the Dashboard to the Document Root**
    ```bash
-   sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
+   sudo cp -R /opt/digna/dashboard /var/www/html/digna
    ```
 
 2. **Add the Rewrite Rules**
@@ -8222,7 +7147,7 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
 
    ```bash
-   sudo nano /Library/WebServer/Documents/digna/.htaccess
+   sudo nano /var/www/html/digna/.htaccess
    ```
 
    Paste the following:
@@ -8242,7 +7167,10 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
 
 3. **Restart Apache**
    ```bash
-   sudo apachectl restart
+   sudo systemctl restart apache2
+   ```
+   ```bash
+   sudo systemctl restart httpd
    ```
 
 4. **Access the Dashboard**
@@ -8250,18 +7178,41 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    - Navigate to `http://localhost/digna`
    - You should see the digna dashboard login page
 
+### Step 2: SELinux (RHEL Family Only)
+
+On RHEL, Rocky, AlmaLinux and Fedora, SELinux is enforcing by default and will block the web server from reading files outside its expected locations. Check whether it is active:
+
+```bash
+getenforce
+```
+
+If the result is `Enforcing` and you are serving the dashboard from `/opt/digna/dashboard`, label the directory so the web server may read it:
+
+```bash
+sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+!!! note "Note"
+
+    If `semanage` is not found, install it with `sudo dnf install -y policycoreutils-python-utils`.
+
+!!! warning "Important"
+
+    A dashboard that returns **403 Forbidden** on a freshly configured RHEL server is almost always an SELinux labelling problem rather than a file-permission one. Confirm with `sudo ausearch -m avc -ts recent`.
+
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## Running digna as a systemd Service {: #running-digna-as-a-systemd-service }
 
 ### Why Run digna as a Service?
 
-Running the digna backend as a background service ensures it:
+Running the digna backend as a systemd service ensures it:
 
 - Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
+- Runs in the background without an open terminal window
 - Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Can be managed through `systemctl`, the standard Linux service manager
 
 ### Service Management Files
 
@@ -8269,14 +7220,14 @@ All necessary files are located in the digna installation directory under: `bin/
 
 The following shell scripts are available:
 
-- `install_service.sh` — Registers digna with launchd
+- `install_service.sh` — Registers digna with systemd
 - `uninstall_service.sh` — Unregisters the service
 - `start_service.sh` — Starts the registered service
 - `stop_service.sh` — Stops the running service
 
-!!! warning "Administrator Required"
+!!! warning "Root Privileges Required"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    All scripts must be executed with `sudo`, because registering a service that starts at boot writes a unit file to `/etc/systemd/system`.
 
 ### Making the Scripts Executable
 
@@ -8284,12 +7235,12 @@ Extraction may not preserve the executable bit. Before first use:
 
 ```bash
 cd /opt/digna/bin
-chmod +x *.sh
+sudo chmod +x *.sh
 ```
 
 ### Installing the Service
 
-1. **Open Terminal**
+1. **Open a terminal**
 
 2. **Navigate to the bin Folder**
    ```bash
@@ -8301,13 +7252,13 @@ chmod +x *.sh
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+The digna server is now registered with systemd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
 
 ### Starting and Stopping the Service
 
 #### To Start the Service
 
-1. Open Terminal
+1. Open a terminal
 2. Navigate to `/opt/digna/bin`
 3. Run:
    ```bash
@@ -8316,7 +7267,7 @@ The digna server is now registered with launchd with **automatic startup** enabl
 
 #### To Stop the Service
 
-1. Open Terminal
+1. Open a terminal
 2. Navigate to `/opt/digna/bin`
 3. Run:
    ```bash
@@ -8327,19 +7278,49 @@ The digna server is now registered with launchd with **automatic startup** enabl
 
     Always stop the service before updating application files.
 
+### Managing the Service with systemctl
+
+Once registered, the service can also be controlled with the standard systemd commands from any directory:
+
+```bash
+sudo systemctl start digna
+sudo systemctl stop digna
+sudo systemctl restart digna
+sudo systemctl status digna
+```
+
 ### Verifying the Service
 
 To confirm that the service is registered and running:
 
 ```bash
-sudo launchctl list | grep digna
+systemctl is-enabled digna
+systemctl is-active digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+`enabled` means the service starts at boot; `active` means it is running now.
+
+### Viewing the Service Logs
+
+systemd captures everything the backend writes to the console. To read it:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+To follow the log live while reproducing a problem:
+
+```bash
+sudo journalctl -u digna -f
+```
+
+!!! tip "Tip"
+
+    This is the fastest way to diagnose a service that starts and immediately stops. A repository connection failure or a missing `license.toml` is reported here.
 
 ### Moving the Service to a New Directory
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+The unit file stores the absolute path to the executable, so relocating the installation requires re-registering the service:
 
 1. **Uninstall the Current Service**
    ```bash
@@ -8376,7 +7357,7 @@ launchd stores the absolute path to the executable, so relocating the installati
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+The digna server is now unregistered from systemd.
 
 ---
 
@@ -8389,7 +7370,7 @@ The digna server is now unregistered from launchd.
 Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
 A backup ensures you can recover if the upgrade encounters unexpected issues.
 
-To create a backup from the Terminal:
+To create a backup from the shell:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
@@ -8399,14 +7380,14 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 #### Step 1: Stop the digna Service
 
-If digna is running as a background service, stop it first:
+If digna is running as a systemd service, stop it first:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+If digna is running in the foreground, press `Ctrl + C` in its terminal window.
 
 #### Step 2: Backup Current Backend Installation
 
@@ -8414,21 +7395,21 @@ In your digna installation directory:
 
 ```bash
 cd /opt/digna
-mv digna digna_old
+sudo mv digna digna_old
 ```
 ```bash
-mv dashboard dashboard_old
+sudo mv dashboard dashboard_old
 ```
 
 #### Step 3: Extract and Deploy New Version
 
 1. Extract the new digna installation ZIP file
 2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+3. Restore the executable bit and the ownership of the service account:
 
 ```bash
-chmod +x /opt/digna/digna
-xattr -dr com.apple.quarantine /opt/digna
+sudo chmod +x /opt/digna/digna
+sudo chown -R digna:digna /opt/digna
 ```
 
 !!! warning "Important"
@@ -8438,7 +7419,7 @@ xattr -dr com.apple.quarantine /opt/digna
 ### Step 4: Restore Your Configuration Files
 
 ```bash
-cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
 ### Step 5: Upgrade the Repository Schema
@@ -8454,7 +7435,7 @@ This updates the PostgreSQL schema to the latest version while preserving all ex
 
 ### Step 6: Restart Services
 
-If running as a background service:
+If running as a systemd service:
 
 ```bash
 cd /opt/digna/bin
@@ -8468,7 +7449,1735 @@ cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+If using nginx or Apache, reload the respective web server:
+
+```bash
+sudo systemctl reload nginx
+```
+```bash
+sudo systemctl restart apache2
+```
+
+On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory was replaced:
+
+```bash
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+#### Step 7: Verify the Upgrade
+
+1. Access the digna dashboard
+2. Verify that the interface loads correctly
+3. Check the server logs for any errors:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+---
+
+# Release 2026.06
+Source: https://docs.digna.ai/sl/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/
+
+# Vodnik za namestitev na Windows za digna Release 2026.06
+
+**Release:** 2026.06
+
+**Zadnja posodobitev:** 30. avgusta 2026
+
+
+---
+
+## Vsebina
+
+1. [Uvod](#introduction)
+2. [Sistemske zahteve](#system-requirements)
+3. [Predpriprava pred namestitvijo](#pre-installation-setup)
+4. [Namestitev PostgreSQL strežnika](#postgresql-server-setup)
+5. [Konfiguracija spletnega strežnika](#web-server-configuration)
+6. [Začetna namestitev](#initial-installation)
+7. [Konfiguracija backenda](#backend-configuration)
+8. [Konfiguracija nadzorne plošče](#dashboard-configuration)
+9. [Poganjanje digna kot Windows storitve](#running-digna-as-a-windows-service)
+10. [Nadgradnja na novo izdajo](#upgrading-to-a-new-release)
+
+---
+
+## Uvod {: #introduction }
+
+### O digna
+
+digna je celovita AI-podprta platforma zasnovana za optimizacijo upravljanja kakovosti podatkov v različnih podatkovnih okoljih, kot so podatkovni skladi, jezera in lakehouse rešitve. Zasnovana je za visoko skalabilnost in prilagodljivost ter rešuje sodobne podatkovne izzive s pomočjo avtomatizacije, spremljanja v realnem času in odkrivanja anomalij.
+
+digna je sestavljena iz dveh glavnih komponent:
+
+- **dignabackend**: Jedro aplikacije, odgovorno za obdelavo podatkov in izvajanje kontrol kakovosti.
+- **dignadashboard**: Spletni vmesnik gostovan na spletnem strežniku, ki omogoča uporabnikom prijazen način interakcije s platformo digna in vizualizacijo metrik kakovosti podatkov.
+
+### Novosti v izdaji 2026.06
+
+Ta izdaja vnaša zmožnosti opazovanja podatkov neposredno v vašo kodo, kar razvijalcem omogoča spremljanje kakovosti podatkov pri izvoru. Za popolne podrobnosti glejte [release notes](http://docs.digna.ai/changelog/Release_202606/).
+
+### Iščete macOS ali Linux?
+
+Ta vodič zajema Windows. Za druge platforme si oglejte [Vodnik za namestitev na macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) ali [Vodnik za namestitev na Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Sistemske zahteve {: #system-requirements }
+
+Pred začetkom namestitve se prepričajte, da vaš sistem izpolnjuje naslednje minimalne zahteve:
+
+| Zahteva | Specifikacija |
+|---|---|
+| **Operacijski sistem** | Windows Server ali Windows 10/11 |
+| **Pomnilnik (minimalna konfiguracija)** | 16 GB RAM |
+| **Prostor na disku** | 10 GB prostega prostora |
+| **Baza podatkov** | PostgreSQL Server 12 ali novejši |
+| **Spletni strežnik** | IIS, Apache Tomcat ali ekvivalent |
+
+### Možnosti namestitve baze podatkov
+
+**Če je PostgreSQL že nameščen:**
+Lahko dodate novo podatkovno bazo za digna na obstoječ PostgreSQL strežnik.
+
+**Če nameščate PostgreSQL na isti stroj kot digna:**
+
+!!! info "Priporočene specifikacije"
+
+    - **Pomnilnik**: 32 GB RAM (namesto 16 GB)
+    - **Prostor na disku**: 50 GB prostega prostora (namesto 10 GB)
+
+    Te višje specifikacije omogočajo sočasno delovanje digna in PostgreSQL baze na istem strežniku.
+
+---
+
+## Predpriprava pred namestitvijo {: #pre-installation-setup }
+
+Pred namestitvijo digna se prepričajte, da sta izpolnjeni dve ključni predpogoji:
+
+1. **PostgreSQL Server** – za shranjevanje izračunanih metrik in podatkov o zmogljivosti
+2. **Spletni strežnik** – za gostovanje digna Dashboard
+
+Če ti komponenti še nista nameščeni, sledite spodnjim poglavjem za namestitev in konfiguracijo.
+
+---
+
+## Namestitev PostgreSQL strežnika {: #postgresql-server-setup }
+
+### Če že imate PostgreSQL
+
+Če je PostgreSQL že nameščen in teče na vašem lokalnem stroju ali uporabljate upravljan oddaljeni PostgreSQL strežnik, lahko preskočite na [naslednji razdelek](#web-server-configuration).
+
+### Namestitev PostgreSQL
+
+Sledite tem korakom za namestitev PostgreSQL na Windows:
+
+#### Korak 1: Prenesite PostgreSQL
+
+1. Obiščite [PostgreSQL Downloads page](https://www.postgresql.org/download/)
+2. Izberite **Windows**
+3. Prenesite najnovejši namestitveni program
+
+#### Korak 2: Zaženite namestitveni program
+
+1. Dvokliknite preneseno namestitveno datoteko
+2. Sledite navodilom v čarovniku za namestitev
+
+#### Korak 3: Izberite imenik za namestitev
+
+Izberite imenik, kamor bo PostgreSQL nameščen. Privzeta lokacija je običajno primerna.
+
+#### Korak 4: Izberite komponente
+
+Za standardno namestitev pustite privzete možnosti komponent.
+
+#### Korak 5: Nastavite geslo PostgreSQL superuporabnika
+
+Vnesite in potrdite geslo za PostgreSQL superuporabnika (`postgres`). **Shranjeno geslo varno** — potreben bo pozneje.
+
+#### Korak 6: Konfiguracija številke vrat
+
+Privzeta vrata PostgreSQL so `5432`. Lahko uporabite privzeto ali določite drugačna vrata po potrebi.
+
+!!! tip "Nasvet"
+
+    Če so vrata 5432 že v uporabi, izberite alternativna vrata in si jih zabeležite za kasnejšo konfiguracijo.
+
+#### Korak 7: Izberite jezikovno nastavitev (locale)
+
+Izberite locale za vašo bazo podatkov. Privzeta nastavitev je običajno primerna za večino namestitev.
+
+#### Korak 8: Dokončajte namestitev
+
+Kliknite **Next** skozi preostale korake, nato kliknite **Finish**.
+
+#### Korak 9: Preverite namestitev
+
+Odprite Command Prompt in preverite, ali je PostgreSQL nameščen:
+
+```bash
+psql --version
+```
+
+Če je namestitev uspešna, boste videli prikaz različice PostgreSQL.
+
+---
+
+## Konfiguracija spletnega strežnika {: #web-server-configuration }
+
+digna zahteva spletni strežnik za gostovanje nadzorne plošče. Izberite eno od naslednjih možnosti:
+
+- [Internet Information Services (IIS)](#iis-setup)
+- [Apache Tomcat](#apache-tomcat-setup)
+
+Potrebno je namestiti in konfigurirati le enega izmed teh strežnikov.
+
+### Nastavitev IIS {: #iis-setup }
+
+#### Pregled
+
+Internet Information Services (IIS) je Microsoftov spletni strežnik za gostovanje spletnih mest in spletnih aplikacij.
+
+#### Omogočanje IIS
+
+1. **Odprite Nadzorno ploščo**
+   - Pritisnite `Win + R`
+   - Vnesite `control` in pritisnite Enter
+
+2. **Pojdite na Windows Features**
+   - Kliknite **Programs**
+   - Izberite **Turn Windows features on or off**
+
+3. **Omogočite Internet Information Services**
+   - Pomaknite se navzdol in poiščite **Internet Information Services (IIS)**
+   - Označite polje za omogočanje
+   - Kliknite na **+**, da razširite in preverite, da so izbrane te podkomponente:
+     - **Web Management Tools**
+     - **World Wide Web Services**
+
+4. **Kliknite OK** za uporabo sprememb
+
+5. **Preverite namestitev IIS**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost`
+   - Morali bi videti IIS Welcome stran
+
+#### Obvezno: URL Rewrite modul
+
+IIS zahteva komponento URL Rewrite. Prenesite in namestite jo s [uradne Microsoft strani](https://www.iis.net/downloads/microsoft/url-rewrite).
+
+#### Obvezno: MIME tip za Markdown datoteke
+
+Da se Markdown datoteke (`.md`) pravilno servirajo prek IIS:
+
+1. Odprite **IIS Manager** (pritisnite `Win + R`, vnesite `inetmgr`, pritisnite Enter)
+2. Pomaknite se do **Your Site > MIME Types**
+3. Kliknite **Add...**
+4. Konfigurirajte:
+   - **File name extension**: `.md`
+   - **MIME type**: `text/markdown`
+
+!!! warning "Pomembno"
+
+    Brez te nastavitve se datoteke `.md` morda ne bodo pravilno servirale.
+
+---
+
+### Nastavitev Apache Tomcat {: #apache-tomcat-setup }
+
+#### Pregled
+
+Apache Tomcat je odprtokodni Java servlet container in spletni strežnik.
+
+#### Namestitev
+
+1. **Prenesite Apache Tomcat**
+   - Obiščite [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
+   - Prenesite Windows ZIP distribucijo
+
+2. **Razpakirajte arhiv**
+   - Razpakirajte ZIP datoteko v imenik na vašem sistemu
+   - Primer: `C:\Program Files\Apache Tomcat`
+
+3. **Preverite, ali Tomcat teče**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost:8080`
+   - Videti bi morali Apache Tomcat welcome stran
+
+!!! tip "Nasvet"
+
+    Apache Tomcat se običajno samodejno zažene po namestitvi. Če se ne zažene, pojdite v mapo `bin` in zaženite `startup.bat`.
+
+---
+
+## Začetna namestitev {: #initial-installation }
+
+### Korak 1: Nastavite digna repozitorij
+
+Digna repozitorij shranjuje vse metrike, ki jih izračuna digna. Deluje kot centralna baza za analitične in podatke o zmogljivosti.
+
+#### Ustvarite shemo repozitorija in uporabnika
+
+Odprite svoj PostgreSQL klient (pgAdmin, psql ali podoben) in izvedite naslednje SQL ukaze:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**Zamenjajte naslednje nadomestke:**
+
+- `<digna_repo_schema>` — Ime sheme po vaši želji (npr. `dignarepo`)
+- `<digna_repo_user>` — Želeno uporabniško ime (npr. `digna_user`)
+- `<digna_repo_password>` — Varno geslo za tega uporabnika
+
+**Primer:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+!!! tip "Najboljša praksa"
+
+    Uporabljajte močna, kompleksna gesla za uporabnike baze podatkov. Izogibajte se lahko ugotovljivim poverilnicam.
+
+---
+
+### Korak 2: Razpakirajte namestitveni paket digna
+
+1. Poiščite ZIP datoteko z namestitvijo digna, ki vam je bila posredovana
+2. Razpakirajte jo na želeno lokacijo za namestitev
+3. Po razpakiranju bi morali videti naslednje elemente:
+   - `dashboard/` — Spletni vmesnik nadzorne plošče
+   - `digna` — Glavna izvršljiva datoteka (backend + CLI skupaj)
+   - `config.toml` — Konfiguracijska datoteka
+   - `license.toml` — Licenčna datoteka (sem kopirajte vašo)
+
+### Korak 3: Namestite licenčno datoteko
+
+!!! warning "Pomembno"
+
+    Licenčna datoteka ni vključena v namestitveni paket in vam bo posredovana ločeno s strani digna.
+
+1. Poiščite datoteko `license.toml`, ki vam je bila posredovana
+2. Kopirajte jo v root imenik namestitve digna (kjer se nahajata `config.toml` in izvršljiva datoteka `digna`)
+
+**Zakaj je to pomembno:**
+Licenčna datoteka vsebuje vaše podatke o stranki, datum poteka licence in digitalni podpis. **Ne spreminjajte te datoteke** — sprememba bo veljavnost licenčne datoteke razveljavila.
+
+**Struktura imenikov po nastavitvi:**
+
+```
+digna_installation/
+├── config.toml         (konfiguracijska datoteka)
+├── license.toml        (VAŠA LICENČNA DATOTEKA - kopirajte sem)
+├── digna               (glavna izvršljiva datoteka)
+└── dashboard/          (spletni vmesnik)
+    └── (datoteke nadzorne plošče)
+```
+
+---
+
+## Konfiguracija backenda {: #backend-configuration }
+
+### Korak 1: Ustvarite in uredite konfiguracijsko datoteko
+
+Datoteka `config_template.toml` je priložena v vaši namestitveni mapi digna. Potrebno jo je le preimenovati v `config.toml`.
+
+**Lokacija:** `digna_installation/config.toml`
+
+Odprite `config.toml` v besedilnem urejevalniku in konfigurirajte spodnje razdelke.
+
+#### Sekcija [app]
+
+Ta sekcija konfigurira nastavitve aplikacije digna backend:
+
+```toml
+[app]
+digna_APP_HOST = "localhost"
+digna_APP_PORT = 8082
+digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+digna_APP_CORS_ALLOW_CREDENTIALS = true
+digna_APP_CORS_ALLOW_METHODS = ["*"]
+digna_APP_CORS_ALLOW_HEADERS = ["*"]
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_APP_HOST` | `localhost` ali IP naslov | Gostitelj ali IP, kjer je gostovan dignabackend |
+| `digna_APP_PORT` | `8082` (privzeto) | Vrata za REST API endpoints |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontenda | Če je nadzorna plošča na drugem strežniku, vključite njen URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Zahtevano za CORS s poverilnicami |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Dovoli vse HTTP metode |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Dovoli vse glave |
+
+#### Sekcija [repo]
+
+Ta sekcija konfigurira povezavo na PostgreSQL bazo:
+
+```toml
+[repo]
+digna_REPO_HOST = "localhost"
+digna_REPO_PORT = 5432
+digna_REPO_DB = "postgres"
+digna_REPO_SCHEMA = "dignarepo"
+digna_REPO_USER = "digna_user"
+digna_REPO_PASSWORD = "YourSecurePassword123!"
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_REPO_HOST` | `localhost` ali IP | Ime gostitelja/IP PostgreSQL strežnika |
+| `digna_REPO_PORT` | `5432` (privzeto) | PostgreSQL vrata |
+| `digna_REPO_DB` | `postgres` | Ime podatkovne baze |
+| `digna_REPO_SCHEMA` | `dignarepo` | Shema ustvarjena prej |
+| `digna_REPO_USER` | `digna_user` | Uporabnik ustvarjen v nastavitvi PostgreSQL |
+| `digna_REPO_PASSWORD` | Vaše geslo | Geslo, nastavljeno med ustvarjanjem sheme |
+
+#### Sekcija [base]
+
+Ta sekcija vsebuje varnostne in piškotne nastavitve:
+
+```toml
+[base]
+digna_FERNET_KEY = "your-fernet-key"
+digna_COOKIE_DOMAIN = "localhost"
+digna_COOKIE_PATH = "/"
+digna_COOKIE_SECURE = false
+digna_COOKIE_HTTPONLY = true
+digna_COOKIE_SAME_SITE = "lax"
+digna_TOKEN_EXPIRES_IN = 86400
+digna_MAX_WORKERS = 4
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_FERNET_KEY` | Ključ za šifriranje | Uporablja se za šifriranje tokenov in piškotkov (privzeto priložen) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Ujemajte z domeno frontenda |
+| `digna_COOKIE_SECURE` | `false` (lokalno) / `true` (produkcija) | Uporabite `true` za HTTPS povezave |
+| `digna_COOKIE_HTTPONLY` | `true` | Vedno omogočeno zaradi varnosti |
+| `digna_COOKIE_SAME_SITE` | `lax` | Preprečuje CSRF napade |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ur) | Potek seje v sekundah |
+| `digna_MAX_WORKERS` | Število CPU jeder - 1 | Število paralelnih nalog inšpekcij |
+
+#### Sekcija [logging]
+
+Ta sekcija konfigurira vedenje beleženja (logging):
+
+```toml
+[logging]
+digna_LOGGING_MODE = "INFO"
+digna_LOGGING_BACKUP_COUNT = 10
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_LOGGING_MODE` | `INFO` ali `DEBUG` | `INFO` za produkcijo, `DEBUG` za odpravljanje napak |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Število dnevnih kopij dnevnikov, ki jih obdržimo |
+
+---
+
+### Korak 3: Inicializirajte repozitorij
+
+1. Odprite Command Prompt
+2. Pomaknite se v imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
+3. Zaženite test povezave:
+
+```bash
+digna repo check
+```
+
+Videti bi morali potrditev, da je povezava vzpostavljena (samo repozitorij še ni inicializiran).
+
+### Korak 4: Namestite shemo repozitorija
+
+V istem imeniku zaženite:
+
+```bash
+digna repo install
+```
+
+Ta ukaz namesti potrebne tabele in shemo v vašo PostgreSQL bazo.
+
+### Korak 5: Zaženite digna strežnik
+
+V imeniku namestitve digna zaženite strežnik z:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Parametri:**
+- `--address` — Ime gostitelja/IP strežnika
+- `--port` — Vrata strežnika
+
+Videti bi morali zagonska sporočila, ki potrjujejo zagon strežnika:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+### Korak 6: Ustvarite administratorskega uporabnika
+
+1. Odprite **novo** okno Command Prompt
+2. Pomaknite se v imenik namestitve digna
+3. Zaženite naslednji ukaz za ustvarjanje administratorskega uporabnika:
+
+```bash
+digna user add <username> "<full_name>" <password> --su
+```
+
+**Primer:**
+
+```bash
+digna user add admin "Admin User" AdminPassword123! --su
+```
+
+S tem ustvarite uporabnika s polnimi administracijskimi pravicami.
+
+!!! tip "Najboljša praksa"
+
+    Uporabite močno geslo z mešanico velikih in malih črk, številk in posebnih znakov.
+
+---
+
+## Konfiguracija nadzorne plošče {: #dashboard-configuration }
+
+### Korak 1: Namestite nadzorno ploščo na spletni strežnik
+
+Nadzorna plošča digna ima svojo ločeno datoteko `config.toml`, ki se nahaja v mapi `dashboard/`. Ta konfiguracija je že priložena in običajno ne zahteva sprememb med začetno namestitvijo. Spremenite jo le, če želite prilagoditi povezavo na backend.
+
+Če potrebujete spremembe konfiguracije nadzorne plošče (npr. za večinstančne namestitve), se obrnite na dokumentacijo nadzorne plošče.
+
+Izberite spletni strežnik in sledite ustreznim korakom namestitve.
+
+#### Namestitev na IIS
+
+1. **Odprite IIS Manager**
+   - Pritisnite `Win + R`, vnesite `inetmgr`, pritisnite Enter
+
+2. **Ustvarite novo spletno mesto**
+   - V levem panelu desni klik na **Sites**
+   - Izberite **Add Website...**
+
+3. **Konfigurirajte spletno mesto**
+   - **Site Name**: Vnesite ime (npr. "dignaDashboard")
+   - **Physical Path**: Kliknite Browse in izberite mapo `dashboard`
+   - **Binding**: Nastavite IP naslov in vrata (privzeta vrata 80 za HTTP, 443 za HTTPS)
+
+4. **Zaženite spletno mesto**
+   - Kliknite **OK**, da ustvarite spletno mesto
+   - Desni klik na novo spletno mesto in izberite **Start**
+
+5. **Preizkusite namestitev**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost` (ali na vaš konfiguriran URL)
+   - Prikazati bi se morala prijavna stran digna nadzorne plošče
+
+#### Namestitev na Apache Tomcat
+
+1. **Kopirajte nadzorno ploščo v Tomcat**
+   - Kopirajte mapo `dashboard` v Tomcatovo mapo `webapps`
+   - Po potrebi jo preimenujte (npr. v `digna`)
+   - Primer: `C:\Program Files\Apache Tomcat\webapps\digna`
+
+2. **Preverite namestitev**
+   - Osvežite ali ponovno naložite Tomcat upravljalno stran (http://localhost:8080)
+   - Morali bi videti "digna" (ali izbrano ime) na seznamu nameščenih aplikacij
+
+3. **Dostop do nadzorne plošče**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost:8080/digna`
+   - Prikazati bi se morala prijavna stran digna nadzorne plošče
+
+---
+
+## Poganjanje digna kot Windows storitve {: #running-digna-as-a-windows-service }
+
+### Zakaj uporabljati Windows storitev?
+
+Poganjanje digna backenda kot Windows storitve zagotavlja:
+- Samodejni zagon ob zagonu strežnika
+- Delovanje v ozadju brez odprtega Command Prompt
+- Samodejno ponovni zagon v primeru izpada
+- Upravljanje preko Windows Services
+
+### Datoteke za upravljanje storitve
+
+Vse potrebne datoteke se nahajajo v imeniku namestitve digna pod: `bin/`
+
+Na voljo so naslednje batch datoteke:
+- `install_service.bat` — Registrira digna kot Windows storitev
+- `uninstall_service.bat` — Odstrani registracijo storitve
+- `start_service.bat` — Zažene storitev
+- `stop_service.bat` — Ustavi storitev
+
+!!! warning "Administrator Required"
+
+    Vse batch datoteke je potrebno zagnati z administratorskimi privilegiji.
+
+### Namestitev storitve
+
+1. **Odprite Command Prompt kot administrator**
+   - Desni klik na Command Prompt
+   - Izberite "Run as Administrator"
+
+2. **Pomaknite se v mapo bin**
+   ```bash
+   cd C:\path\to\digna\bin
+   ```
+
+3. **Zaženite namestitveni skript**
+   ```bash
+   install_service.bat
+   ```
+
+Digna strežnik je zdaj registriran kot Windows storitev z omogočenim samodejnim zagonom. Storitev se ne zažene takoj — glejte naslednji razdelek za zagon.
+
+### Zagon in ustavitev storitve
+
+#### Za zagon storitve
+
+1. Odprite Command Prompt kot administrator
+2. Pomaknite se v `digna\bin`
+3. Zaženite:
+   ```bash
+   start_service.bat
+   ```
+
+#### Za ustavitev storitve
+
+1. Odprite Command Prompt kot administrator
+2. Pomaknite se v `digna\bin`
+3. Zaženite:
+   ```bash
+   stop_service.bat
+   ```
+
+!!! tip "Nasvet"
+
+    Pred posodobitvijo datotek aplikacije vedno ustavite storitev.
+
+### Premik storitve v nov imenik
+
+Če potrebujete premestitev namestitve digna:
+
+1. **Odstranite trenutno storitev**
+   ```bash
+   cd C:\old\path\digna\bin
+   uninstall_service.bat
+   ```
+
+2. **Premaknite datoteke aplikacije**
+   - Premaknite celotno mapo namestitve digna na novo lokacijo
+
+3. **Ponovno namestite storitev**
+   ```bash
+   cd C:\new\path\digna\bin
+   install_service.bat
+   ```
+
+4. **Zaženite storitev**
+   ```bash
+   start_service.bat
+   ```
+
+### Odstranitev storitve
+
+1. **Ustavite tekočo storitev**
+   ```bash
+   cd C:\path\to\digna\bin
+   stop_service.bat
+   ```
+
+2. **Odstranite storitev**
+   ```bash
+   uninstall_service.bat
+   ```
+
+Digna strežnik je zdaj odregistriran kot Windows storitev.
+
+---
+
+## Nadgradnja na novo izdajo {: #upgrading-to-a-new-release }
+
+### Pred nadgradnjo
+
+**Obvezno je ustvariti varnostno kopijo digna repozitorija**
+
+Pred nadgradnjo digna varnostno kopirajte svoj repozitorij (PostgreSQL), da se zaščitite pred izgubo podatkov.
+Varnostna kopija omogoča obnovitev, če pride do nepričakovanih težav med nadgradnjo.
+
+### Postopek nadgradnje
+
+#### Korak 1: Ustavite digna storitev
+
+Če digna teče kot Windows storitev, jo najprej ustavite:
+
+```bash
+cd C:\path\to\digna\bin
+stop_service.bat
+```
+
+#### Korak 2: Varno shranite trenutno namestitev backenda
+
+V imeniku namestitve digna:
+
+```bash
+# Preimenujte mapo, ki vsebuje dignabackend
+ren dignabackend dignabackend_old
+```
+```bash
+# Preimenujte dashboard
+ren dashboard dashboard_old
+```
+
+#### Korak 3: Razpakirajte in namestite novo verzijo
+
+1. Razpakirajte nov ZIP paket z namestitvijo digna
+2. Kopirajte novo izvršljivo datoteko `digna` in mapo `dashboard` v vaš namestitveni imenik
+
+
+!!! warning "Pomembno"
+
+    Datoteka `config.toml` NI nikoli vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
+
+### Korak 4: Obnovite konfiguracijske datoteke
+
+```bash
+copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
+```
+### Korak 5: Nadgradite shemo repozitorija
+
+Pomaknite se v imenik namestitve digna in zaženite:
+
+```bash
+digna repo upgrade
+```
+
+To posodobi PostgreSQL shemo na najnovejšo različico, pri tem pa ohrani vse obstoječe podatke.
+
+### Korak 6: Ponovni zagon storitev
+
+Če poganjate kot Windows storitev:
+
+```bash
+cd C:\path\to\digna\bin
+start_service.bat
+```
+
+Če poganjate ročno, ponovno zaženite strežnik:
+
+```bash
+cd C:\path\to\digna
+digna serve --address <address> --port <port>
+```
+
+Če uporabljate IIS ali Tomcat, ponovno zaženite ustrezen spletni strežnik.
+
+#### Korak 7: Preverite nadgradnjo
+
+1. Dostopajte do digna nadzorne plošče
+2. Preverite, ali se vmesnik nalaga pravilno
+3. Preverite strežniške zapise za morebitne napake
+
+---
+
+# Release 2026.06
+Source: https://docs.digna.ai/sl/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/
+
+# Navodila za namestitev na macOS za digna izdajo 2026.06
+
+**Izdaja:** 2026.06
+
+**Zadnja posodobitev:** 5. september 2026
+
+
+---
+
+## Kazalo
+
+1. [Uvod](#introduction)
+2. [Sistemske zahteve](#system-requirements)
+3. [Prednamestitvena priprava](#pre-installation-setup)
+4. [Nastavitev PostgreSQL strežnika](#postgresql-server-setup)
+5. [Konfiguracija spletnega strežnika](#web-server-configuration)
+6. [Začetna namestitev](#initial-installation)
+7. [Konfiguracija backend‑a](#backend-configuration)
+8. [Konfiguracija nadzorne plošče](#dashboard-configuration)
+9. [Zagon digna kot ozadnega servisa](#running-digna-as-a-background-service)
+10. [Nadgradnja na novo izdajo](#upgrading-to-a-new-release)
+
+---
+
+## Uvod {: #introduction }
+
+### O digna
+
+digna je celovita platforma, vodena z umetno inteligenco, namenjena optimizaciji upravljanja kakovosti podatkov v različnih podatkovnih okoljih, kot so podatkovni skladi, podatkovna jezera in lakehouse‑i. Zasnovana je za visoko skalabilnost in prilagodljivost ter rešuje sodobne izzive podatkov s pomočjo avtomatizacije, spremljanja v realnem času in odkrivanja anomalij.
+
+digna sestavljata dve glavni komponenti:
+
+- **dignabackend**: jedro aplikacije, odgovorno za obdelavo podatkov in izvajanje preverjanj kakovosti.
+- **dignadashboard**: spletni vmesnik gostovan na spletnem strežniku, ki omogoča enostavno interakcijo s platformo digna in vizualizacijo meritev kakovosti podatkov.
+
+### Novosti v izdaji 2026.06
+
+Ta izdaja prinaša zmogljivosti opazovanja podatkov neposredno v vašo kodo, kar razvijalcem omogoča spremljanje kakovosti podatkov pri izvoru. Za popolne podrobnosti si oglejte [opombe ob izdaji](http://docs.digna.ai/changelog/Release_202606/).
+
+### Iščete Windows ali Linux?
+
+Ta vodič pokriva macOS. Za druge platforme si oglejte [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) ali [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Sistemske zahteve {: #system-requirements }
+
+Preden začnete z namestitvijo, se prepričajte, da vaš sistem izpolnjuje naslednje minimalne zahteve:
+
+| Zahteva | Specifikacija |
+|---|---|
+| **Operacijski sistem** | macOS 13 (Ventura) ali novejši |
+| **Arhitektura** | Apple Silicon (arm64) ali Intel (x86_64) |
+| **Pomnilnik (minimalna namestitev)** | 16 GB RAM |
+| **Prostor na disku** | 10 GB razpoložljivega prostora |
+| **Baza podatkov** | PostgreSQL Server 12 ali novejši |
+| **Spletni strežnik** | nginx, Apache httpd ali ekvivalent |
+| **Orodja ukazne vrstice** | Xcode Command Line Tools (zahtevano za Homebrew) |
+
+### Možnosti namestitve baze podatkov
+
+**Če je PostgreSQL že nameščen:**
+Lahko dodate novo bazo za digna v obstoječi PostgreSQL strežnik.
+
+**Če nameščate PostgreSQL na isti stroj kot digna:**
+
+!!! info "Priporočene specifikacije"
+
+    - **Pomnilnik**: 32 GB RAM (namesto 16 GB)
+    - **Prostor na disku**: 50 GB razpoložljivega prostora (namesto 10 GB)
+
+    Te višje specifikacije omogočajo hkratno delovanje digna in PostgreSQL baze na istem stroju.
+
+### Preverjanje arhitekture
+
+Nekateri poti v tem vodiču se razlikujejo za Apple Silicon in Intel Mac‑e. Da preverite, katero imate, odprite **Terminal** in zaženite:
+
+```bash
+uname -m
+```
+
+- `arm64` — Apple Silicon. Homebrew se namesti v `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew se namesti v `/usr/local`.
+
+!!! tip "Namig"
+
+    Namesto trdega kodiranja ene od poti ta vodič uporablja `$(brew --prefix)`, ki se razširi na pravilno lokacijo na obeh arhitekturah. Ukaze lahko kopirate nespremenjene.
+
+---
+
+## Prednamestitvena priprava {: #pre-installation-setup }
+
+Pred namestitvijo digna poskrbite, da so prisotni trije ključni predpogoji:
+
+1. **Homebrew** – paketni upravljalnik, uporabljen za namestitev spodnjih komponent
+2. **PostgreSQL Server** – za shranjevanje izračunanih metrik in podatkov o zmogljivosti
+3. **Spletni strežnik** – za gostovanje digna Dashboarda
+
+Če ti sestavni delci še niso nastavljeni, sledite spodnjim razdelkom za namestitev in konfiguracijo.
+
+### Namestitev Homebrew
+
+Homebrew je standardni upravljalnik paketov za macOS in se v celotnem vodiču uporablja za namestitev PostgreSQL in nginx.
+
+#### Korak 1: Preverite, ali je Homebrew že nameščen
+
+Odprite **Terminal** (pritisk `Cmd + Space`, vnesite `Terminal`, pritisnite Enter) in zaženite:
+
+```bash
+brew --version
+```
+
+Če je prikazana številka različice, preskočite na razdelek [Nastavitev PostgreSQL strežnika](#postgresql-server-setup).
+
+#### Korak 2: Namestite Homebrew
+
+Če ukaz ni najden, namestite Homebrew po navodilih na [uradni strani Homebrew](https://brew.sh). Namestitveni program namesti tudi Xcode Command Line Tools, če še niso prisotni.
+
+#### Korak 3: Dodajte Homebrew v svojo PATH
+
+Na Apple Silicon instalator izpiše dva ukaza za dodajanje Homebrew v vaše okolje lupine. Zaženite jih po navodilih, nato potrdite:
+
+```bash
+brew --prefix
+```
+
+To bi moralo izpisati `/opt/homebrew` na Apple Silicon ali `/usr/local` na Intel.
+
+---
+
+## Nastavitev PostgreSQL strežnika {: #postgresql-server-setup }
+
+### Če že imate PostgreSQL
+
+Če je PostgreSQL že nameščen in teče na lokalnem stroju ali če uporabljate upravljan oddaljen PostgreSQL strežnik, lahko preskočite na [naslednji razdelek](#web-server-configuration).
+
+### Možnosti namestitve
+
+macOS ponuja dva preprosta načina za namestitev PostgreSQL. Izberite **eno**:
+
+- [Homebrew](#postgresql-homebrew) — namestitev prek ukazne vrstice, priporočena za strežniške namestitve
+- [Postgres.app](#postgresql-app) — grafična namestitev, priročna za lokalno evalvacijo
+
+### Namestitev PostgreSQL z Homebrew {: #postgresql-homebrew }
+
+#### Korak 1: Namestite formulo PostgreSQL
+
+```bash
+brew install postgresql@16
+```
+
+#### Korak 2: Dodajte PostgreSQL v svojo PATH
+
+Verzionirane formule PostgreSQL so *keg-only*, kar pomeni, da Homebrew njihovih ukazov samodejno ne poveže v vaš PATH. Dodajte jih sami:
+
+```bash
+echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+!!! note "Opomba"
+
+    To predvideva privzeto lupino `zsh`, ki jo uporablja macOS. Če uporabljate `bash`, dodajte isto vrstico v `~/.bash_profile`.
+
+#### Korak 3: Zaženite storitev PostgreSQL
+
+```bash
+brew services start postgresql@16
+```
+
+To takoj zažene PostgreSQL in ga nastavi, da se ob prijavi samodejno ponovno zažene.
+
+#### Korak 4: Preverite namestitev
+
+```bash
+psql --version
+```
+
+Če je namestitev uspela, boste videli različico PostgreSQL.
+
+#### Korak 5: Povežite se s strežnikom
+
+```bash
+psql postgres
+```
+
+!!! warning "Pomembno — macOS se tu razlikuje od Windows"
+
+    Namestitveni program za Windows vas pozove k ustvarjanju superuporabnika `postgres` in gesla. Homebrew tega ne stori. Namesto tega ustvari superuporabnika z imenom vašega **macOS računa**, brez gesla, dostopnega le z lokalnega stroja.
+
+    To pomeni, da na sveži Homebrew namestitvi ni vloge `postgres`. Uporabite svoje uporabniško ime, kadar potrebujete superuporabnika, in ustvarite izrecnega digna uporabnika, kot je opisano v [Začetni namestitvi](#initial-installation).
+
+#### Korak 6: Potrdite vrata
+
+Privzeta pristanišče PostgreSQL je `5432`. Za potrditev, na katerem priključku strežnik posluša:
+
+```bash
+psql postgres -c "SHOW port;"
+```
+
+Zabeležite vrednost — potrebovali jo boste pri konfiguraciji digna backend‑a.
+
+### Namestitev PostgreSQL z aplikacijo Postgres.app {: #postgresql-app }
+
+Če imate raje grafični vmesnik:
+
+1. Prenesite [Postgres.app](https://postgresapp.com) in ga povlecite v mapo **Applications**
+2. Odprite aplikacijo in kliknite **Initialize**, da ustvarite nov strežnik
+3. Sledite navodilom aplikacije za dodajanje njenih orodij ukazne vrstice v vaš PATH
+4. Preverite namestitev:
+
+```bash
+psql --version
+```
+
+Postgres.app prav tako ustvari superuporabnika z imenom vašega macOS računa.
+
+---
+
+## Konfiguracija spletnega strežnika {: #web-server-configuration }
+
+digna zahteva spletni strežnik za gostovanje nadzorne plošče. Izberite eno od naslednjih možnosti:
+
+- [nginx](#nginx-setup) — nameščen prek Homebrew, priporočeno
+- [Apache httpd](#apache-setup) — vključen v macOS
+
+Potrebujete le namestitev in konfiguracijo **enega** izmed teh strežnikov.
+
+Oba razdelka konfigurirata dve stvari, od katerih je odvisna nadzorna plošča:
+
+- **Počasen fallback za enostransko aplikacijo (SPA)**, tako da osvežitev URL‑ja nadzorne plošče ne povzroči 404
+- **MIME tip za `.md`**, da se Markdown datoteke strežejo pravilno
+
+### Nastavitev nginx {: #nginx-setup }
+
+#### Pregled
+
+nginx je lahek, zmogljiv spletni strežnik, primeren za streženje statične digna nadzorne plošče.
+
+#### Namestitev
+
+```bash
+brew install nginx
+```
+
+#### Zagon nginx
+
+```bash
+brew services start nginx
+```
+
+#### Preverjanje namestitve
+
+1. Odprite brskalnik
+2. Pojdite na `http://localhost:8080`
+3. Videzite pozdravno stran nginx
+
+!!! note "Opomba — privzeto priključek je 8080, ne 80"
+
+    Homebrew konfigurira nginx, da posluša na priključku `8080`, da lahko teče brez administratorskih pravic. Na macOS‑u vezanje na priključek `80` ali katerikoli drug priključek pod 1024 zahteva root.
+
+    Če želite streči nadzorno ploščo na priključku 80, spremenite `listen 8080;` v `listen 80;` v spodnji konfiguraciji in zaženite nginx z `sudo brew services start nginx`.
+
+#### Konfiguracija mesta za nadzorno ploščo
+
+Homebrew‑ova konfiguracija nginx vključi vse datoteke v imeniku `servers`. Ustvarite namensko konfiguracijsko datoteko za digna tam:
+
+```bash
+nano $(brew --prefix)/etc/nginx/servers/digna.conf
+```
+
+Prilepite naslednje in zamenjajte `/path/to/digna/dashboard` z dejansko potjo do razširjene mape `dashboard`:
+
+```nginx
+server {
+    listen       8080;
+    server_name  localhost;
+
+    root   /path/to/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "Pomembno"
+
+    Brez direktive `try_files` osvežitev katere koli strani nadzorne plošče, razen korenskega URL‑ja, vrne 404. To je ekvivalent URL Rewrite modula, potrebnega za IIS na Windows.
+
+#### Uveljavitev konfiguracije
+
+Preverite konfiguracijo za sintaktične napake, nato ponovno naložite nginx:
+
+```bash
+nginx -t
+brew services restart nginx
+```
+
+---
+
+### Nastavitev Apache httpd {: #apache-setup }
+
+#### Pregled
+
+macOS vključuje Apache httpd, zato namestitev ni potrebna. Privzeto je onemogočen.
+
+#### Zagon Apache
+
+```bash
+sudo apachectl start
+```
+
+#### Preverjanje namestitve
+
+1. Odprite brskalnik
+2. Pojdite na `http://localhost`
+3. Videli boste sporočilo "It works!"
+
+#### Obvezno: omogočite mod_rewrite
+
+Nadzorna plošča zahteva prepisovanje URL‑jev. Odprite Apache konfiguracijo:
+
+```bash
+sudo nano /etc/apache2/httpd.conf
+```
+
+Poiščite naslednjo vrstico in odstranite vodilni `#`, da jo odkomentirate:
+
+```apache
+LoadModule rewrite_module libexec/apache2/mod_rewrite.so
+```
+
+#### Obvezno: dovolite .htaccess preglasitve
+
+V isti datoteki poiščite blok `<Directory "/Library/WebServer/Documents">` in spremenite:
+
+```apache
+AllowOverride None
+```
+
+v:
+
+```apache
+AllowOverride All
+```
+
+#### Obvezno: MIME tip za Markdown datoteke
+
+Še v `httpd.conf` dodajte naslednjo vrstico, da se Markdown datoteke strežejo pravilno:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "Pomembno"
+
+    Brez te nastavitve se `.md` datoteke morda ne bodo strele pravilno.
+
+#### Uveljavitev konfiguracije
+
+Preverite konfiguracijo za sintaktične napake, nato ponovno zaženite Apache:
+
+```bash
+sudo apachectl configtest
+sudo apachectl restart
+```
+
+---
+
+## Začetna namestitev {: #initial-installation }
+
+### Korak 1: Nastavite digna repozitorij
+
+Repozitorij digna hrani vse meritve, izračunane z digna. Deluje kot centralna baza za analitične in zmogljivostne podatke.
+
+#### Ustvarite shemo repozitorija in uporabnika
+
+Odprite svoj PostgreSQL odjemalec (psql, pgAdmin ali podoben) in izvedite naslednje SQL ukaze:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**Zamenjajte naslednje nadomestne vrednosti:**
+
+- `<digna_repo_schema>` — želeno ime sheme (npr. `dignarepo`)
+- `<digna_repo_user>` — želeno uporabniško ime (npr. `digna_user`)
+- `<digna_repo_password>` — varno geslo za tega uporabnika
+
+**Primer:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+Za izvedbo teh ukazov iz Terminala v enem koraku:
+
+```bash
+psql postgres
+```
+
+Nato prilepite izjave na poziv `postgres=#` in vtipkajte `\q`, da zapustite.
+
+!!! tip "Najboljša praksa"
+
+    Uporabljajte močna, kompleksna gesla za uporabnike baze podatkov. Izogibajte se lahko ugibljivim poverilnicam.
+
+---
+
+### Korak 2: Razširite namestitveni paket digna
+
+1. Poiščite ZIP datoteko namestitvenega paketa digna, ki vam je bila posredovana
+2. Razširite jo na želeno lokacijo namestitve — na primer `/opt/digna` ali `~/digna`
+3. Po razširitvi bi morali videti naslednje elemente:
+   - `dashboard/` — spletni vmesnik nadzorne plošče
+   - `digna` — glavni izvršljivi program (backend + CLI skupaj)
+   - `config.toml` — konfiguracijska datoteka
+   - `license.toml` — licenčna datoteka (kopirajte svojo sem)
+
+Za razširitev iz Terminala:
+
+```bash
+unzip digna-2026.06-macos.zip -d /opt/digna
+```
+
+#### Dovolite zagon izvršljive datoteke
+
+Glede na način prenosa se izvršljiva bit morda ne ohrani. Nastavite ga izrecno:
+
+```bash
+cd /opt/digna
+chmod +x digna
+```
+
+#### Če macOS blokira aplikacijo
+
+Datoteke, prenesene prek brskalnika ali pošiljatelja, imajo lahko priponko karantene. Če macOS poroča, da aplikacije *"ni mogoče odpreti, ker razvijalca ni mogoče preveriti"*, odstranite atribut iz namestitvenega imenika:
+
+```bash
+xattr -dr com.apple.quarantine /opt/digna
+```
+
+Alternativno odprite **System Settings → Privacy & Security**, poiščite blokirano postavko blizu dna strani in kliknite **Open Anyway**.
+
+!!! note "Opomba"
+
+    Ta korak je potreben le, če macOS dejansko blokira izvršljivo datoteko. Paketi, preneseni preko SSH ali iz notranjih deljenih map, običajno niso v karanteni.
+
+### Korak 3: Namestite licenčno datoteko
+
+!!! warning "Pomembno"
+
+    Licenčna datoteka ni vključena v namestitveni paket in vam bo posredovana ločeno s strani digna.
+
+1. Poiščite `license.toml` datoteko, ki vam je bila posredovana
+2. Kopirajte jo v korenski imenik namestitve digna (kjer se nahajata `config.toml` in izvršljiva datoteka `digna`)
+
+**Zakaj je to pomembno:**
+Licenčna datoteka vsebuje informacije o stranki, datum poteka licence in digitalni podpis. **Ne spreminjajte te datoteke** — vsaka sprememba jo bo razveljavila.
+
+**Struktura imenika po nastavitvi:**
+
+```
+/opt/digna/
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+├── bin/                (service management scripts)
+└── dashboard/          (web interface)
+    └── (dashboard files)
+```
+
+---
+
+## Konfiguracija backend‑a {: #backend-configuration }
+
+### Korak 1: Ustvarite in uredite konfiguracijsko datoteko
+
+V namestitvenem imeniku digna je priložena datoteka `config_template.toml`. Preimenujete jo v `config.toml`.
+
+```bash
+cd /opt/digna
+mv config_template.toml config.toml
+```
+
+**Lokacija:** `/opt/digna/config.toml`
+
+Odprite `config.toml` v urejevalniku besedil in konfigurirajte vsak spodnji odsek.
+
+#### Sekcija [app]
+
+Ta sekcija konfigurira nastavitve digna backend aplikacije:
+
+```toml
+[app]
+digna_APP_HOST = "localhost"
+digna_APP_PORT = 8082
+digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+digna_APP_CORS_ALLOW_CREDENTIALS = true
+digna_APP_CORS_ALLOW_METHODS = ["*"]
+digna_APP_CORS_ALLOW_HEADERS = ["*"]
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_APP_HOST` | `localhost` ali IP naslov | Ime gostitelja ali IP, kjer je gostovan dignabackend |
+| `digna_APP_PORT` | `8082` (privzeto) | Pristanišče za REST API končne točke |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontenda | Če je nadzorna plošča na drugem strežniku, vključite njen URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Zahtevano za CORS z poverilnicami |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Dovoli vse HTTP metode |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Dovoli vse glave |
+
+!!! note "Opomba"
+
+    Če strežete nadzorno ploščo iz Homebrew‑ovega nginx na privzetem priključku, je izvor, ki ga je treba dovoliti, `http://localhost:8080`.
+
+#### Sekcija [repo]
+
+Ta sekcija konfigurira povezavo s PostgreSQL bazo podatkov:
+
+```toml
+[repo]
+digna_REPO_HOST = "localhost"
+digna_REPO_PORT = 5432
+digna_REPO_DB = "postgres"
+digna_REPO_SCHEMA = "dignarepo"
+digna_REPO_USER = "digna_user"
+digna_REPO_PASSWORD = "YourSecurePassword123!"
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_REPO_HOST` | `localhost` ali IP | Ime gostitelja/IP PostgreSQL strežnika |
+| `digna_REPO_PORT` | `5432` (privzeto) | Pristanišče PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Ime baze podatkov |
+| `digna_REPO_SCHEMA` | `dignarepo` | Shema, ustvarjena prej |
+| `digna_REPO_USER` | `digna_user` | Uporabnik, ustvarjen v nastavitvi PostgreSQL |
+| `digna_REPO_PASSWORD` | Vaše geslo | Geslo nastavljeno med ustvarjanjem sheme |
+
+#### Sekcija [base]
+
+Ta sekcija vsebuje varnostne nastavitve in nastavitve piškotkov:
+
+```toml
+[base]
+digna_FERNET_KEY = "your-fernet-key"
+digna_COOKIE_DOMAIN = "localhost"
+digna_COOKIE_PATH = "/"
+digna_COOKIE_SECURE = false
+digna_COOKIE_HTTPONLY = true
+digna_COOKIE_SAME_SITE = "lax"
+digna_TOKEN_EXPIRES_IN = 86400
+digna_MAX_WORKERS = 4
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_FERNET_KEY` | Ključ za šifriranje | Uporablja se za šifriranje žetonov in piškotkov (privzeto priložen) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Ujemanje z domeno vašega frontenda |
+| `digna_COOKIE_SECURE` | `false` (lokalno) / `true` (produkcija) | Uporabite `true` za HTTPS povezave |
+| `digna_COOKIE_HTTPONLY` | `true` | Vedno omogočeno zaradi varnosti |
+| `digna_COOKIE_SAME_SITE` | `lax` | Zmanjša tveganje CSRF napadov |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ure) | Čas poteka seje v sekundah |
+| `digna_MAX_WORKERS` | Število CPU jeder - 1 | Število vzporednih nalog inšpekcij |
+
+!!! tip "Namig"
+
+    Za ugotovitev števila CPU jeder na vašem Macu zaženite `sysctl -n hw.ncpu`.
+
+#### Sekcija [logging]
+
+Ta sekcija konfigurira vedenje beleženja:
+
+```toml
+[logging]
+digna_LOGGING_MODE = "INFO"
+digna_LOGGING_BACKUP_COUNT = 10
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `digna_LOGGING_MODE` | `INFO` ali `DEBUG` | `INFO` za produkcijo, `DEBUG` za odpravljanje težav |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Število dnevnih varnostnih kopij dnevnikov za hranjenje |
+
+---
+
+### Korak 2: Inicializirajte repozitorij
+
+1. Odprite **Terminal**
+2. Pojdite v imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
+3. Zaženite test povezave:
+
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+Videli boste potrditev, da je povezava vzpostavljena (sam repozitorij še ni inicializiran).
+
+!!! note "Opomba"
+
+    Na macOS‑u ukazi v trenutnem imeniku niso v vašem PATH, zato se izvršljiva datoteka kliče kot `./digna` namesto `digna`. Če želite krajšo obliko uporabljati povsod, dodajte imenik namestitve v PATH:
+
+    ```bash
+    echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+
+### Korak 3: Namestite shemo repozitorija
+
+V istem imeniku zaženite:
+
+```bash
+./digna repo install
+```
+
+Ta ukaz namesti potrebne tabele in shemo v vašo PostgreSQL bazo podatkov.
+
+### Korak 4: Zaženite digna strežnik
+
+V imeniku namestitve digna zaženite strežnik z:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**Parametri:**
+- `--address` — ime gostitelja/IP strežnika
+- `--port` — pristanišče strežnika
+
+Videli boste začetna sporočila, ki potrjujejo zagon strežnika:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "Namig"
+
+    Ob prvem zagonu strežnika vas lahko macOS vpraša, ali želite, da aplikacija sprejema dohodne omrežne povezave. Kliknite **Allow**, sicer nadzorna plošča ne bo mogla doseči backend‑a.
+
+### Korak 5: Ustvarite skrbniškega uporabnika
+
+1. Odprite **novo** okno Terminala
+2. Pojdite v imenik namestitve digna
+3. Zaženite naslednji ukaz za ustvarjanje skrbniškega uporabnika:
+
+```bash
+./digna user add <username> "<full_name>" <password> --su
+```
+
+**Primer:**
+
+```bash
+./digna user add admin "Admin User" 'AdminPassword123!' --su
+```
+
+To ustvari uporabnika z uporabniškim imenom `admin` in polnimi skrbniškimi pravicami.
+
+!!! tip "Namig"
+
+    Geslo zavijte v enojne navednice. `zsh` obravnava znake kot `!`, `$` in `*` posebej, zato nezavito geslo, ki jih vsebuje, ne bo poslano tako, kot ste ga vnesli.
+
+!!! tip "Najboljša praksa"
+
+    Uporabite močno geslo z mešanico velikih in malih črk, številk in posebnih znakov.
+
+---
+
+## Konfiguracija nadzorne plošče {: #dashboard-configuration }
+
+### Korak 1: Razmestitev nadzorne plošče na spletni strežnik
+
+Nadzorna plošča digna ima svojo ločeno datoteko `config.toml` v imeniku `dashboard/`. Ta konfiguracija je že priložena in med začetno namestitvijo običajno ni potrebna sprememba. Konfigurirate jo le, če želite prilagoditi povezavo na backend ali pri večinstančnih nameščanjih.
+
+Če morate spremeniti konfiguracijo nadzorne plošče, si oglejte dokumentacijo nadzorne plošče.
+
+Izberite spletni strežnik in sledite ustreznim korakom za namestitev.
+
+#### Razmestitev na nginx
+
+Če ste sledili razdelku [nginx Setup](#nginx-setup), strežniški blok že kaže na vašo mapo `dashboard` in kopiranje ni potrebno.
+
+1. **Potrdite pot**
+   - Odprite `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Preverite, da `root` kaže na vašo razširjeno mapo `dashboard`
+
+2. **Poskrbite, da je mapa berljiva**
+   ```bash
+   chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **Ponovno naložite nginx**
+   ```bash
+   nginx -t
+   brew services restart nginx
+   ```
+
+4. **Preizkus namestitve**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost:8080` (ali vaš konfigurirani URL)
+   - Videti bi morali prijavno stran digna nadzorne plošče
+
+#### Razmestitev na Apache httpd
+
+1. **Kopirajte nadzorno ploščo v Document Root**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
+   ```
+
+2. **Dodajte pravila za prepisovanje**
+
+   Ustvarite `.htaccess` datoteko v razmestjeni mapi, da poti nadzorne plošče preživijo osvežitev brskalnika:
+
+   ```bash
+   sudo nano /Library/WebServer/Documents/digna/.htaccess
+   ```
+
+   Prilepite naslednje:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **Ponovno zaženite Apache**
+   ```bash
+   sudo apachectl restart
+   ```
+
+4. **Dostop do nadzorne plošče**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost/digna`
+   - Videli bi morali prijavno stran digna nadzorne plošče
+
+---
+
+## Zagon digna kot ozadnega servisa {: #running-digna-as-a-background-service }
+
+### Zakaj zagnati digna kot storitev?
+
+Zagon digna backend‑a kot ozadnega servisa zagotavlja, da se:
+
+- začne samodejno ob zagonu sistema
+- teče v ozadju brez odprtega Terminal okna
+- samodejno ponovno zažene v primeru zrušitve
+- upravlja preko `launchctl`, upravitelja storitev macOS
+
+### Datoteke za upravljanje storitve
+
+Vse potrebne datoteke so v imeniku namestitve digna v: `bin/`
+
+Na voljo so naslednji shell skripti:
+
+- `install_service.sh` — registrira digna pri launchd
+- `uninstall_service.sh` — odstrani registracijo storitve
+- `start_service.sh` — zažene registrirano storitev
+- `stop_service.sh` — ustavi tekočo storitev
+
+!!! warning "Zahteva skrbniške pravice"
+
+    Vse skripte je treba izvajati z `sudo`, ker registracija storitve, ki se zažene ob zagonu, zapisuje v `/Library/LaunchDaemons`.
+
+### Naredite skripte izvršljive
+
+Pri razširitvi morda izvršljiv bit ni ohranjen. Pred prvo uporabo:
+
+```bash
+cd /opt/digna/bin
+chmod +x *.sh
+```
+
+### Namestitev storitve
+
+1. **Odprite Terminal**
+
+2. **Pojdite v mapo bin**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **Zaženite namestitveni skript**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+digna strežnik je zdaj registriran pri launchd z omogočenim **samodejnim zagonom**. Storitve se ne zažene neposredno — naslednji razdelek prikazuje, kako jo zagnati.
+
+### Zagon in ustavitev storitve
+
+#### Za zagon storitve
+
+1. Odprite Terminal
+2. Pojdite v `/opt/digna/bin`
+3. Zaženite:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### Zaustavitev storitve
+
+1. Odprite Terminal
+2. Pojdite v `/opt/digna/bin`
+3. Zaženite:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "Namig"
+
+    Pred posodobitvijo datotek aplikacije vedno ustavite storitev.
+
+### Preverjanje storitve
+
+Za potrditev, da je storitev registrirana in teče:
+
+```bash
+sudo launchctl list | grep digna
+```
+
+Vrstica, ki se začne s procesnim ID‑jem, pomeni, da storitev teče. `-` v prvem stolpcu pomeni, da je registrirana, a ustavljena.
+
+### Premik storitve v nov imenik
+
+launchd shrani absolutno pot do izvršljive datoteke, zato premestitev namestitve zahteva ponovno registracijo storitve:
+
+1. **Odstranite obstoječo storitev**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **Premaknite aplikacijske datoteke**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **Ponovno namestite storitev**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **Zaženite storitev**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### Odstranitev storitve
+
+1. **Ustavite tekočo storitev**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **Odstranite storitev**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+digna strežnik je sedaj odregistriran pri launchd.
+
+---
+
+## Nadgradnja na novo izdajo {: #upgrading-to-a-new-release }
+
+### Pred nadgradnjo
+
+**Obvezno ustvarite varnostno kopijo digna repozitorija**
+
+Pred nadgradnjo digna varnostno kopirajte vaš repozitorij (PostgreSQL), da se zaščitite pred izgubo podatkov.
+Varnostna kopija omogoča obnovitev, če pride pri nadgradnji do nepričakovanih težav.
+
+Za ustvarjanje varnostne kopije iz Terminala:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+### Postopek nadgradnje
+
+#### Korak 1: Ustavite digna storitev
+
+Če digna teče kot ozadna storitev, jo najprej ustavite:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+Če digna teče v ospredju, pritisnite `Ctrl + C` v Terminal oknu, kjer teče.
+
+#### Korak 2: Varnostno kopirajte trenutno backend namestitev
+
+V imeniku namestitve digna:
+
+```bash
+cd /opt/digna
+mv digna digna_old
+```
+```bash
+mv dashboard dashboard_old
+```
+
+#### Korak 3: Razširite in razmestite novo različico
+
+1. Razširite nov namestitveni ZIP paket digna
+2. Kopirajte nov izvršljiv `digna` in mapo `dashboard` v imenik namestitve
+3. Obnovite izvršljivi bit in po potrebi odstranite atribut karantene:
+
+```bash
+chmod +x /opt/digna/digna
+xattr -dr com.apple.quarantine /opt/digna
+```
+
+!!! warning "Pomembno"
+
+    Datoteka `config.toml` **nikoli** ni vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
+
+### Korak 4: Obnovite konfiguracijske datoteke
+
+```bash
+cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+### Korak 5: Nadgradite shemo repozitorija
+
+Pojdite v imenik namestitve digna in zaženite:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+To posodobi PostgreSQL shemo na najnovejšo različico ob ohranitvi vseh obstoječih podatkov.
+
+### Korak 6: Ponovni zagon storitev
+
+Če tečete kot ozadna storitev:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+Če tečete ročno, ponovno zaženite strežnik:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+Če uporabljate nginx ali Apache, ponovno zaženite ustrezen spletni strežnik:
 
 ```bash
 brew services restart nginx
@@ -8477,11 +9186,11 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### Korak 7: Preverite nadgradnjo
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. Dostopajte do digna nadzorne plošče
+2. Preverite, ali se vmesnik naloži pravilno
+3. Preverite dnevniške datoteke strežnika za morebitne napake
 
 ---
 
@@ -9094,3 +9803,1778 @@ Z zagotavljanjem preglednosti pri razvoju shem digna organizacijam pomaga ohranj
 
 1. **Zajem posnetka** – digna zajame trenutne metapodatke sheme.  
 2. **Primerjava** – nov posnetek se primerja
+
+---
+
+# Keycloak
+Source: https://docs.digna.ai/sl/sso/keycloak_sso_guide/
+
+# Nastavite SSO z Keycloak
+
+Keycloak je samostojno gostujoč ponudnik identitete, popolnoma skladen z OIDC. Ker ga gostite sami, je discovery URL sestavljen iz vaše lastne domene in imena realm, ne iz domene ponudnika.
+
+Ta vodnik pokriva **stran Keycloak**: ustvarjanje klienta in zbiranje vrednosti, ki jih potrebuje digna. Stran digna — `dashboard_config.toml`, testiranje in odpravljanje napak — je enaka za vse ponudnike in je opisana v [Single Sign-On Overview](overview.md).
+
+---
+
+## Preden začnete
+
+| Zahteva | Opombe |
+|---|---|
+| **Keycloak verzija** | 17 ali novejša za URL poti uporabljene tukaj — glejte opombo v 4. koraku |
+| **Vloga v Keycloak** | `realm-admin` na ciljnem realm, ali strežniški administrator |
+| **Realm** | Realm, kateremu pripadajo vaši digna uporabniki, ne nujno `master` |
+| **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Korak 1: Izberite realm
+
+1. Odprite Keycloak admin konzolo
+2. Uporabite izbirnik realm v zgornjem levem kotu, da preklopite na realm, v katerem so vaši uporabniki
+
+!!! warning "Ne uporabljajte reama master"
+
+    Realm `master` je namenjen upravljanju samega Keycloak-a. Aplikacijski klienti naj bodo v namenskem realm; postavitev digna v `master` daje njegovim uporabnikom pot v Keycloak administracijsko konzolo.
+
+---
+
+## Korak 2: Ustvarite klienta
+
+1. Pojdite na **Clients** in kliknite **Create client**
+2. Konfigurirajte:
+   - **Client type**: *OpenID Connect*
+   - **Client ID**: `digna` — to postane `DIGNA_OIDC_CLIENT_ID`
+3. Kliknite **Next**
+4. Na koraku **Capability config** vklopite **Client authentication** (**On**)
+5. Pustite omogočen **Standard flow**; drugi flovi niso potrebni
+6. Kliknite **Next**
+
+!!! warning "Client authentication mora biti vklopljen"
+
+    Ko je **Client authentication** izklopljen, Keycloak ustvari *public* klienta, ki nima nobenih poverilnic — zavihka **Credentials** v Koraku 4 ne bo. digna potrebuje zaupnega (confidential) klienta. Ta stikalo se da spremeniti tudi po kreaciji, če ste naredili napako.
+
+---
+
+## Korak 3: Nastavite Redirect URI
+
+Na koraku **Login settings** (ali kasneje na zavihku **Settings**):
+
+1. **Valid redirect URIs**: vnesite vaš digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+2. **Web origins**: pustite prazno, ali nastavite na `+`, da zrcali redirect URIs
+3. Kliknite **Save**
+
+!!! tip "Izogibajte se wildcardom"
+
+    Keycloak sprejema vzorce kot `https://digna.yourdomain.com/*`. Wildcard dovoli katerikoli path na tem gostitelju, da prejme avtentikacijsko kodo, zato raje uporabite točen callback URL.
+
+---
+
+## Korak 4: Pridobite client secret
+
+1. Odprite zavihek **Credentials**
+2. Potrdite, da je **Client Authenticator** *Client Id and Secret*
+3. Kopirajte **Client secret** → postane `DIGNA_OIDC_CLIENT_SECRET`
+
+Skrivnost je tukaj dostopna in se jo da tudi regenerirati z **Regenerate**.
+
+---
+
+## Korak 5: Sestavite Discovery URL
+
+Zamenjajte svoj Keycloak host in ime realm:
+
+```
+https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
+```
+
+Na primer:
+
+```
+https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
+```
+
+!!! note "Keycloak 16 in starejši vključujejo /auth"
+
+    Pred Keycloak 17 so bili vsi endpointi pod prefiksom `/auth`:
+
+    ```
+    https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
+    ```
+
+    Distribucije, ki nastavijo `KC_HTTP_RELATIVE_PATH=/auth`, obdržijo staro postavitev tudi na trenutnih verzijah. Če URL brez `/auth` vrne 404, poskusite z `/auth`.
+
+Odprite URL v brskalniku preden nadaljujete. JSON dokument potrdi, da sta host in realm pravilna.
+
+---
+
+## Korak 6: Konfigurirajte digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "keycloak"
+label = "Prijava z Keycloak"
+```
+
+### `config.toml`
+
+```toml
+[oidc.keycloak]
+DIGNA_OIDC_CLIENT_ID = "digna"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
+```
+
+Ključ `key` v obeh datotekah se mora ujemati — tukaj `keycloak`. Upoštevajte, da ni nujno enak Keycloak **Client ID**, čeprav je lažje slediti, če sta enaka.
+
+---
+
+## Korak 7: Testirajte
+
+Ponovno zaženite backend in spletni strežnik, nato odprite dashboard. Za celoten kontrolni seznam glejte [Testing Login](overview.md#testing-login).
+
+---
+
+## Odpravljanje težav s Keycloak
+
+### Invalid parameter: redirect_uri
+
+Callback URL ni zajet v **Valid redirect URIs**. Keycloak zabeleži URI, ki ga je prejel, v strežniški log, kar je najhitrejši način za odkrivanje natanko neskladja.
+
+### Zavihek Credentials manjka
+
+Klient je public. Vklopite **Client authentication** v **Settings → Capability config**.
+
+### 404 na Discovery URL
+
+Bodisi je ime realm napačno, bodisi deployment uporablja prefix `/auth`. Preverite seznam realm v admin konzoli in poskusite oboje.
+
+### unauthorized_client ali invalid_client
+
+**Standard flow** je onemogočen v **Capability config**, ali pa je bila skrivnost regenerirana v Keycloak brez posodobitve v `config.toml`.
+
+### Napake s certifikatom iz backend-a
+
+Samostojno gostovan Keycloak za zasebnim ali samopodpisanim certifikatom bo odpovedal odhodne HTTPS klice digna na discovery URL. Namestite izdajni CA v trust store stroja, na katerem teče digna backend.
+
+---
+
+## Povezave
+
+- [Single Sign-On Overview](overview.md) — referenca konfiguracije, testiranje in splošno odpravljanje napak
+- [Keycloak: Securing applications](https://www.keycloak.org/docs/latest/securing_apps/)
+
+---
+
+# Okta
+Source: https://docs.digna.ai/sl/sso/okta_sso_guide/
+
+# Nastavite SSO z Okta
+
+Okta je združljiva z OIDC, z eno posebnostjo, ki zmede večino tistih, ki integrirajo prvič: Okta org razkriva več avtentikacijskih strežnikov, pri čemer ima vsak svoj discovery URL.
+
+Ta vodič zajema **Okta stran**: ustvarjanje integracije aplikacije in zbiranje vrednosti, ki jih potrebuje digna. Digna stran — `dashboard_config.toml`, testiranje in odpravljanje napak — je enaka za vse ponudnike in je opisana v [Pregled Single Sign-On](overview.md).
+
+---
+
+## Preden začnete
+
+| Zahteva | Opombe |
+|---|---|
+| **Vloga v Okta** | Super Administrator, ali vloga skrbnika z dovoljenjem za ustvarjanje integracij aplikacij |
+| **Okta domena** | npr. `yourcompany.okta.com`, ali prilagojena domena, če je nastavljena |
+| **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 1. korak: Ustvarite integracijo aplikacije
+
+1. Prijavite se v Okta Admin Console
+2. Pojdite na **Applications → Applications**
+3. Kliknite **Create App Integration**
+4. Izberite:
+   - **Sign-in method**: *OIDC - OpenID Connect*
+   - **Application type**: *Web Application*
+5. Kliknite **Next**
+
+!!! warning "Tip aplikacije ni mogoče spremeniti"
+
+    Če izberete *Single-Page Application* namesto *Web Application*, ustvarite javnega klienta brez skrivnosti, in dignajev strežnik za izmenjavo kode ne bo uspel z napako `invalid_client`. Tip je fiksiran ob ustvarjanju — napačna izbira pomeni brisanje aplikacije in začetek znova.
+
+---
+
+## 2. korak: Konfigurirajte integracijo
+
+1. **Ime integracije aplikacije**: `digna`
+2. **Grant type**: pustite izbran *Authorization Code*
+3. **Sign-in redirect URIs**: vnesite vaš digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. **Sign-out redirect URIs**: neobvezno
+5. Pod **Assignments**, izberite, kdo sme uporabljati integracijo — določena skupina je varnejša kot *Allow everyone in your organization to access*
+6. Kliknite **Save**
+
+!!! note "Dodelitev je obvezna"
+
+    Okta avtenticira uporabnika in nato preveri, ali je dodeljen aplikaciji. Nedodeljen uporabnik pride do Okta strani za prijavo, se uspešno prijavi in mu je zavrnjen dostop ob preusmeritvi nazaj. Če se vam prijava uspe, sodelavcem pa ne, je prva stvar, ki jo preverite — dodelitev.
+
+---
+
+## 3. korak: Zberite poverilnice
+
+Na zavihku **General** aplikacije, pod **Client Credentials**:
+
+- **Client ID** → postane `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → postane `DIGNA_OIDC_CLIENT_SECRET` (kliknite ikono očesa za razkritje)
+
+---
+
+## 4. korak: Izberite avtentikacijski strežnik
+
+To je korak, ki določi vaš discovery URL. Pojdite na **Security → API**, da vidite avtentikacijske strežnike v vaši organizaciji.
+
+**Org authorization server** — izdaja žetone za samo Okta org:
+
+```
+https://<your_okta_domain>/.well-known/openid-configuration
+```
+
+**Custom authorization server** — vključno s tistim, ki ga Okta ustvari z imenom `default`:
+
+```
+https://<your_okta_domain>/oauth2/<auth_server_id>/.well-known/openid-configuration
+```
+
+Za vgrajeni strežnik je `<auth_server_id>` dobesedno `default`:
+
+```
+https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration
+```
+
+!!! tip "Kateri izbrati?"
+
+    Uporabite **org** avtentikacijski strežnik, razen če vaša organizacija že standardizira na prilagojenem za politike dostopa do API-jev. Okta Developer računi privzeto uporabljajo `default`; mnoge podjetne organizacije ga onemogočijo. Odprite oba URL-ja v brskalniku — tisti, ki vrne JSON namesto napake, je tisti, ki je na voljo vam.
+
+---
+
+## 5. korak: Konfigurirajte digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "okta"
+label = "Prijava z Okta"
+```
+
+### `config.toml`
+
+```toml
+[oidc.okta]
+DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
+DIGNA_OIDC_CLIENT_SECRET = "<skrivnost odjemalca, kopirana v 3. koraku>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration"
+```
+
+Ključ v obeh datotekah se mora ujemati — tukaj `okta`.
+
+---
+
+## 6. korak: Testirajte
+
+Znova zaženite backend in spletni strežnik, nato odprite nadzorno ploščo. Oglejte si [Testiranje prijave](overview.md#testing-login) za celoten kontrolni seznam.
+
+---
+
+## Odpravljanje težav z Okta
+
+### Preusmeritveni URI ni registriran
+
+Okta v napaki navede problematični URI. Primerjajte ga z **General → Sign-in redirect URIs**; Okta primerja celoten niz, vključno z morebitno poševnico na koncu.
+
+### Uporabnik ni dodeljen aplikaciji
+
+Račun ni na seznamu dodelitev aplikacije. Dodajte uporabnika ali njegovo skupino pod **Assignments**.
+
+### 400 Bad Request: Invalid Authorization Server
+
+`<auth_server_id>` v discovery URL-ju ne obstaja, najpogosteje `default` na organizaciji, kjer je bil odstranjen. Preverite **Security → API** za strežnike, ki so dejansko na voljo.
+
+### invalid_client pri koraku tokena
+
+Integracija je bila ustvarjena kot Single-Page Application in nima skrivnosti klienta. Ustvarite jo znova kot Web Application.
+
+---
+
+## Povezane vsebine
+
+- [Pregled Single Sign-On](overview.md) — referenca konfiguracije, testiranje in splošno odpravljanje težav
+- [Okta: OpenID Connect & OAuth 2.0](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)
+
+---
+
+# OneLogin
+Source: https://docs.digna.ai/sl/sso/onelogin_sso_guide/
+
+# Nastavitev SSO z OneLogin
+
+OneLogin je združljiv z OIDC. Njegova posebnost je, da se tip konektorja izbere iz kataloga ob ustvarjanju aplikacije in ga pozneje ni mogoče spremeniti.
+
+Ta vodič pokriva **OneLogin stran**: ustvarjanje aplikacije in zbiranje vrednosti, ki jih potrebuje digna. Digna stran — `dashboard_config.toml`, testiranje in odpravljanje težav — je enaka za vse ponudnike in je opisana v [Pregledu Single Sign-On](overview.md).
+
+---
+
+## Preden začnete
+
+| Zahteva | Opombe |
+|---|---|
+| **Vloga v OneLogin** | Lastnik računa ali skrbnik z dovoljenjem za dodajanje aplikacij |
+| **Poddomena** | npr. `yourcompany.onelogin.com` |
+| **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Korak 1: Ustvarite OIDC aplikacijo
+
+1. Prijavite se v OneLogin Admin portal
+2. Pojdite na **Applications → Applications**
+3. Kliknite **Add App**
+4. Poiščite `OpenId Connect` in izberite konektor **OpenId Connect (OIDC)**
+5. Nastavite **Display Name** na `digna`
+6. Kliknite **Save**
+
+!!! warning "Vrsta konektorja je določena ob ustvarjanju"
+
+    OneLogin ima ločene vnose v katalogu za SAML in OIDC, aplikacije pa ni mogoče pretvoriti iz enega protokola v drugega. Če po pomoti izberete SAML konektor, izbrišite aplikacijo in jo dodajte znova — ni nastavitve za preklop protokolov.
+
+---
+
+## Korak 2: Konfigurirajte Redirect URI
+
+1. Odprite zavihek **Configuration**
+2. V polje **Redirect URI's** vnesite vaš digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. Po želji nastavite **Post Logout Redirect URIs** na URL nadzorne plošče
+4. Kliknite **Save**
+
+!!! note "En URI na vrstico"
+
+    Za razliko od ponudnikov, ki pričakujejo seznam ločen z vejicami, polje OneLogin **Redirect URI's** sprejme en URI na vrstico.
+
+---
+
+## Korak 3: Nastavite tip aplikacije in metodo overjanja
+
+1. Odprite zavihek **SSO**
+2. Potrdite, da je **Application Type** *Web*
+3. Nastavite **Token Endpoint → Authentication Method** na *POST* (`client_secret_post`) ali *Basic* (`client_secret_basic`)
+
+!!! warning "Ne izberite None"
+
+    Nastavitev metode overjanja na *None* naredi aplikacijo javnega odjemalca brez skrivnosti, in izmenjava kode na digna backendu bo zavrnjena. Tako POST kot Basic delujeta.
+
+---
+
+## Korak 4: Zberite poverilnice
+
+Še vedno na zavihku **SSO**:
+
+- **Client ID** → postane `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → postane `DIGNA_OIDC_CLIENT_SECRET` (kliknite **Show client secret**)
+
+Stran prikazuje tudi **Issuer URL**, ki potrjuje discovery URL v naslednjem koraku.
+
+---
+
+## Korak 5: Dodelite uporabnike
+
+1. Odprite zavihek **Access**
+2. Dodajte vloge ali skupine, katerih člani smejo uporabljati digna
+3. Kliknite **Save**
+
+!!! note "Ne dodeljeni uporabniki so po prijavi zavrnjeni"
+
+    Kot pri večini ponudnikov, OneLogin najprej overi uporabnika in šele nato preveri upravičenost. Nedodeljen uporabnik se uspešno prijavi in je nato zavrnjen, kar izgleda kot napaka digna namesto odločitev nadzora dostopa.
+
+---
+
+## Korak 6: Sestavite Discovery URL
+
+Zamenjajte vašo OneLogin poddomeno:
+
+```
+https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+Na primer:
+
+```
+https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
+```
+
+!!! tip "/2 je različica API-ja"
+
+    Trenutna OIDC implementacija OneLogin živi pod `/oidc/2/`. Starejša dokumentacija prikazuje `/oidc/` brez različice, kar kaže na upokojeno prvo različico. Če niste prepričani, preverite **Issuer URL** na zavihku SSO — discovery URL je issuer plus `/.well-known/openid-configuration`.
+
+---
+
+## Korak 7: Konfigurirajte digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "onelogin"
+label = "Prijava z OneLogin"
+```
+
+### `config.toml`
+
+```toml
+[oidc.onelogin]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
+```
+
+Ključ `key` v obeh datotekah mora biti enak — tukaj `onelogin`.
+
+---
+
+## Korak 8: Testiranje
+
+Znova zaženite backend in spletni strežnik, nato odprite nadzorno ploščo. Celoten kontrolni seznam najdete v [Preizkušanje prijave](overview.md#testing-login).
+
+---
+
+## Odpravljanje težav z OneLogin
+
+### redirect_uri did not match
+
+Callback URL manjka v **Configuration → Redirect URI's**, ali so vnosi ločeni z vejicami namesto z novimi vrsticami.
+
+### invalid_client at the Token Step
+
+**Token Endpoint → Authentication Method** je nastavljen na *None*, ali pa je klientska skrivnost v `config.toml` zastarela. Razkrijte skrivnost na zavihku **SSO** in primerjajte.
+
+### Aplikacija se ne prikaže uporabnikom
+
+Nobenemu vlogi ali skupini ni dodeljen dostop na zavihku **Access**.
+
+### 404 na Discovery URL
+
+Poddomena je napačna, ali pa URL izpušča `/oidc/2/`. Primerjajte z **Issuer URL** na zavihku SSO.
+
+---
+
+## Glej tudi
+
+- [Pregled Single Sign-On](overview.md) — referenca konfiguracije, testiranje in splošno odpravljanje težav
+- [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)
+
+---
+
+# Overview
+Source: https://docs.digna.ai/sl/sso/overview/
+
+# Pregled enotne prijave (SSO)
+
+---
+
+## Vsebina
+
+1. [Uvod in pregled](#introduction-and-overview)
+2. [Vodniki za ponudnike](#provider-guides)
+3. [Koraki konfiguracije](#configuration-steps)
+4. [Konfiguracija nadzorne plošče](#dashboard-configuration)
+5. [Konfiguracija zaledja](#backend-configuration)
+6. [Testiranje prijave](#testing-login)
+7. [Odpravljanje težav](#troubleshooting)
+8. [Podprti ponudniki](#supported-providers)
+
+---
+
+## Uvod in pregled {: #introduction-and-overview }
+
+Ta vodič vsebuje korak-po-korak navodila za integracijo enotne prijave (SSO) s platformo digna z uporabo **OpenID Connect (OIDC)**.
+
+### Kaj je SSO?
+
+Enotna prijava omogoča uporabnikom, da se v digna prijavijo varno z uporabo svojih podjetniških poverilnic prek zunanjih ponudnikov identitete. Uporabniki se lahko overijo s svojimi korporativnimi poverilnicami, namesto da upravljajo ločena digna gesla.
+
+### Kako deluje
+
+SSO v digna je implementiran z uporabo protokola OIDC. Več ponudnikov identitete je mogoče konfigurirati vzporedno z urejanjem dveh ključnih konfiguracijskih datotek:
+
+- **`dashboard_config.toml`** — Nadzoruje vmesnik za prijavo na sprednji strani
+- **`config.toml`** — Konfigurira OIDC povezave na zaledju
+
+### Podprti ponudniki {: #supported-providers-overview }
+
+Primeri v tem vodiču uporabljajo **Microsoft** in **Google**, vendar je mogoče integrirati **kateregakoli ponudnika, ki podpira OIDC**, z enako strukturo konfiguracije.
+
+---
+
+## Vodniki za ponudnike {: #provider-guides }
+
+Vsak ponudnik zahteva iste štiri vrednosti — ID odjemalca, skrivnost odjemalca, preusmeritveni URI in URL za discovery — vendar jih vsak ponudnik postavi na drugo mesto v svojem skrbniškem konzolu, nekateri pa imajo tudi korak specifičen za ponudnika, ki ga drugi nimajo. Spodnji vodiči pokrivajo to polovico dela; ta stran pokriva digna polovico, ki je za vse enaka.
+
+| Provider | Guide | Worth knowing |
+|---|---|---|
+| **AD FS** | [Nastavitev SSO z AD FS](adfs_sso_guide.md) | Samostojno gostovanje; edini ponudnik tukaj, kjer vi nadzirate storitev za žetone |
+| **Auth0** | [Nastavitev SSO z Auth0](auth0_sso_guide.md) | Discovery URL je vezan na najemnika, lastne domene ga spremenijo |
+| **Google Workspace** | [Nastavitev SSO z Google Workspace](google_workspace_sso_guide.md) | Zaslon za soglasje mora biti objavljen, preden se lahko prijavijo ne-testni uporabniki |
+| **Keycloak** | [Nastavitev SSO s Keycloak](keycloak_sso_guide.md) | Samostojno gostovanje; discovery URL je vezan na realm |
+| **Microsoft Entra ID** | [Nastavitev SSO z Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | ID najemnika se pojavi v discovery URL; skrivnosti potečejo |
+| **Okta** | [Nastavitev SSO z Okta](okta_sso_guide.md) | Izbira avtentikacijskega strežnika spremeni discovery URL |
+| **OneLogin** | [Nastavitev SSO z OneLogin](onelogin_sso_guide.md) | Vrsta OIDC aplikacije se mora izbrati ob kreaciji in je ni mogoče spremeniti |
+| **PingOne** | [Nastavitev SSO s PingOne](pingone_sso_guide.md) | ID okolja se pojavi v discovery URL |
+
+Kateri koli drug ponudnik, ki podpira OIDC, deluje enako — glejte [Drugi ponudniki OIDC](#supported-providers).
+
+---
+
+## Koraki konfiguracije {: #configuration-steps }
+
+Konfiguracija SSO zahteva posodobitve dveh datotek. Ta razdelek pojasnjuje, kako konfigurirati vsako izmed njiju.
+
+### Pregled konfiguracijskih datotek
+
+| Datoteka | Lokacija | Namen |
+|---|---|---|
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Vmesnik za prijavo na sprednji strani |
+| **config.toml** | `/config.toml` | OIDC povezave na zaledju |
+
+Obe datoteki morata biti konfigurirani, da SSO deluje pravilno.
+
+---
+
+## Konfiguracija nadzorne plošče {: #dashboard-configuration }
+
+### Lokacija datoteke
+
+```
+dashboard/dashboard_config.toml
+```
+
+### 1. korak: Dodajte OIDC ponudnike
+
+Dodajte vnose pod poljem `[[login.oidc]]` za vsakega ponudnika identitete, ki ga želite podpreti.
+
+**Primer z Microsoft in Google:**
+
+```toml
+[[login.oidc]]
+key = "microsoft"
+label = "Prijava z Microsoftom"
+
+[[login.oidc]]
+key = "google"
+label = "Prijava z Google"
+```
+
+### 2. korak: Konfigurirajte možnosti prijave
+
+Določite, ali naj bo dopuščena prijava z geslom:
+
+```toml
+[login]
+usePassword = true
+```
+
+### Parametri konfiguracije
+
+#### `[[login.oidc]]` razdelek
+
+| Parameter | Tip | Obvezno | Opis |
+|---|---|---|---|
+| `key` | string | Da | Edinstven identifikator za OIDC povezavo (mora se ujemati s ključem v config.toml) |
+| `label` | string | Da | Besedilo, prikazano na gumbu za prijavo (npr. "Prijava z Microsoftom") |
+
+#### `[login]` razdelek
+
+| Parameter | Tip | Privzeto | Opis |
+|---|---|---|---|
+| `usePassword` | boolean | false | Dovoli prijavo z geslom poleg SSO |
+
+### Razumevanje usePassword
+
+**Če je `usePassword = true`:**
+- Na zaslonu za prijavo se prikažejo gumbi za SSO (npr. "Prijava z Microsoftom")
+- Na zaslonu za prijavo so tudi polja za uporabniško ime in geslo
+- Uporabniki se lahko overijo z obema metodama
+- Omogoča hibridne nastavitve, kjer nekateri uporabniki uporabljajo SSO, drugi pa gesla
+
+**Če je `usePassword = false` (ali izpuščeno):**
+- Na zaslonu za prijavo se prikazujejo le gumbi za SSO
+- Ni polj za uporabniško ime/geslo
+- Na voljo je samo OIDC avtentikacija
+
+!!! tip "Namig"
+
+    Prijava z geslom je na voljo samo za uporabnike, ki so bili ustvarjeni z gesli z ukazom `digna user add` ali prek nadzorne plošče.
+
+### Popoln primer
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Prijava z Microsoftom"
+
+[[login.oidc]]
+key = "google"
+label = "Prijava z Google"
+
+[[login.oidc]]
+key = "okta"
+label = "Prijava z Okta"
+```
+
+---
+
+## Konfiguracija zaledja {: #backend-configuration }
+
+### Lokacija datoteke
+
+```
+/config.toml
+```
+
+(Rodovitna namestitvena mapa digna)
+
+### 1. korak: Dodajte razdelke za ponudnike OIDC
+
+Za vsakega ponudnika mora obstajati namenski razdelek `[oidc.<key>]`. Ključ se mora ujemati s `key`, določenim v `dashboard_config.toml`.
+
+### Konfiguracija za Microsoft
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
+```
+
+### Konfiguracija za Google
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "<client_id>"
+DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
+DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+### Parametri konfiguracije
+
+| Parameter | Tip | Obvezno | Opis | Primer |
+|---|---|---|---|---|
+| `DIGNA_OIDC_CLIENT_ID` | string | Da | Client ID od ponudnika identitete | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Da | Client secret od ponudnika identitete | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Da | URL za klic nazaj po avtentikaciji | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Da | OIDC konfiguracijska točka | `https://login.microsoftonline.com/...` |
+
+!!! warning "Pomembno"
+
+    Zamenjajte nadomestne vrednosti (`<client_id>`, `<client_secret>`, `<tenant_id>`) z dejavnimi poverilnicami iz konzole ponudnika identitete.
+
+### Redirect URI
+
+Preusmeritveni URI mora biti enak kot v konfiguraciji ponudnika identitete:
+
+```
+http://localhost:5173/oidc/callback
+```
+
+Če je digna gostovan na drugem domeni, ustrezno posodobite:
+- Lokalno: `http://localhost:5173/oidc/callback`
+- Produkcija: `https://digna.yourdomain.com/oidc/callback`
+
+### Popoln primer
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+---
+
+## Testiranje prijave {: #testing-login }
+
+Po dokončani konfiguraciji preverite, ali SSO pravilno deluje.
+
+### Predtestni seznam
+
+Pred testiranjem zagotovite:
+
+- [ ] `dashboard_config.toml` je posodobljen z OIDC ponudniki
+- [ ] `config.toml` je posodobljen z OIDC poverilnicami
+- [ ] Obe datoteki sta shranjeni
+- [ ] Poverilnice so pravilne (client ID, client secret)
+- [ ] Redirect URI se ujema z vašo nameščeno lokacijo
+- [ ] Aplikacija pri ponudniku identitete je konfigurirana s preusmeritvenim URI
+
+### Koraki testiranja
+
+#### 1. korak: Ponovni zagon storitev
+
+Ponovno zaženite digna zaledje in spletni strežnik, da uveljavite spremembe.
+
+**Če tečete kot storitev na Windows:**
+```bash
+cd C:\path\to\digna\bin
+stop_service.bat
+start_service.bat
+```
+
+**Če tečete kot storitev na Linux ali macOS:**
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+sudo ./start_service.sh
+```
+
+**Če tečete ročno:**
+```bash
+digna serve --address localhost --port 8082
+```
+
+**Ponovno zaženite tudi spletni strežnik** — IIS ali Tomcat na Windows, nginx ali Apache na Linux in macOS.
+
+#### 2. korak: Odprite nadzorno ploščo
+
+Odprite digna nadzorno ploščo v brskalniku:
+
+```
+http://localhost:5173
+```
+
+(ali vaš konfiguriran URL nadzorne plošče)
+
+#### 3. korak: Preverite gumbe za prijavo
+
+Preverite, ali se prikažejo gumbi za prijavo za vsakega konfiguriranega ponudnika:
+
+- Moral bi videti gumb "Prijava z Microsoftom"
+- Moral bi videti gumb "Prijava z Google"
+- (Če je usePassword = true) Moral bi videti polja za uporabniško ime/geslo
+
+Če se gumbi ne prikažejo:
+- Preverite, da je `dashboard_config.toml` shranjen
+- Preverite, da je bila storitev nadzorne plošče ponovno zagnana
+- Preverite konzolo brskalnika (F12) za napake
+
+#### 4. korak: Preizkusite SSO prijavo
+
+Kliknite enega izmed SSO gumbov (npr. "Prijava z Microsoftom"):
+
+1. Preusmerjeni boste na stran za prijavo ponudnika identitete
+2. Prijavite se s svojimi podjetniškimi poverilnicami
+3. Preusmerjeni boste nazaj v digna
+4. Vpis v digna bi bil uspešen
+
+#### 5. korak: Preverite ustvarjanje uporabnika
+
+Po uspešni SSO prijavi:
+
+- Uporabnik bi moral biti samodejno ustvarjen v digna
+- Uporabnik bi moral biti vpisan
+- Profil uporabnika bi moral prikazati poverilnice ponudnika identitete
+- Videli bi nadzorno ploščo digna
+
+#### 6. korak: Preizkus prijave z geslom (če omogočeno)
+
+Če je `usePassword = true`:
+
+1. Odjavite se iz digna
+2. Na strani za prijavo vnesite uporabniško ime in geslo
+3. Morali bi se lahko prijaviti z geslom
+
+---
+
+## Odpravljanje težav {: #troubleshooting }
+
+### Gumbi za prijavo se ne prikažejo
+
+**Simptomi:**
+- Gumbi za OIDC prijavo niso vidni na strani za prijavo
+- Vidite le polja za geslo (če je usePassword = true)
+
+**Vzroki in rešitve:**
+1. Preverite, ali je `dashboard_config.toml` v mapi `dashboard/`
+2. Preverite, ali so prisotni razdelki `[[login.oidc]]` s pravilno sintakso
+3. Ponovno zaženite storitev nadzorne plošče
+4. Počistite predpomnilnik brskalnika (Ctrl+Shift+Delete ali Cmd+Shift+Delete)
+5. Preverite konzolo brskalnika (F12 → Console) za napake
+
+---
+
+### Napaka neujemanja Redirect URI
+
+**Simptomi:**
+- Po kliku gumba SSO se pojavi napaka o "redirect_uri mismatch"
+- Napaka "The redirect URI is not registered"
+
+**Vzroki in rešitve:**
+1. Preverite, ali je `DIGNA_OIDC_REDIRECT_URI` v `config.toml` pravilen
+2. Preverite, ali je redirect URI registriran v nastavitvah ponudnika identitete
+3. Zagotovite, da obe strani uporabljata identične URL-je (vključno s protokolom, domeno, potjo)
+4. Preverite morebitne tipkarske napake v redirect URI
+5. Če uporabljate HTTPS, preverite, ali je potrdilo veljavno
+
+---
+
+### Napaka neveljavnih poverilnic odjemalca
+
+**Simptomi:**
+- Napaka "Invalid client ID or secret"
+- Avtentikacija neuspešna zaradi napake poverilnic
+
+**Vzroki in rešitve:**
+1. Preverite, ali sta `DIGNA_OIDC_CLIENT_ID` in `DIGNA_OIDC_CLIENT_SECRET` pravilna
+2. Prepričajte se, da ni dodatnih presledkov ali posebnih znakov
+3. Preverite, ali poverilnice niso potekle ali bile razveljavljene
+4. Ponovno zaženite zaledno storitev po posodobitvi konfiguracije
+5. Preverite konzolo ponudnika identitete, da potrdite, da so poverilnice aktivne
+
+---
+
+### Prijava se zmrzne ali poteče čas
+
+**Simptomi:**
+- Klik gumba SSO ne naredi nič
+- Potek časa po nekaj sekundah
+- Brskalnik prikaže "Failed to connect" ali podobno
+
+**Vzroki in rešitve:**
+1. Preverite, ali digna zaledje teče: `digna repo check`
+2. Preverite omrežno povezljivost do ponudnika identitete
+3. Preverite, ali je `DIGNA_OIDC_CONFIGURATION_URL` dostopen
+4. Preverite pravilnike požarnega zidu, ki dovoljujejo odhodne HTTPS povezave
+5. Preverite, ali zaledje in nadzorna plošča medsebojno dostopata
+
+---
+
+### Uporabniki se ne ustvarijo samodejno
+
+**Simptomi:**
+- SSO prijava uspe, vendar uporabnik ni ustvarjen v digna
+- Po SSO prijavi se pojavi napaka o dovoljenjih
+
+**Vzroki in rešitve:**
+1. Preverite, ali je OIDC konfiguracija pravilna
+2. Preverite, ali so nastavljena dovoljenja uporabnikov
+3. Preučite dnevnike digna za morebitna sporočila o napakah
+4. Ponovno zaženite zaledno storitev
+5. Če težava vztraja, kontaktirajte support@digna.ai
+
+---
+
+## Podprti ponudniki {: #supported-providers }
+
+### Testirano in podprto
+
+Naslednji OIDC ponudniki so testirani in jih poznamo:
+
+| Provider | Configuration URL | Setup Guide |
+|---|---|---|
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Nastavitev SSO z AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Nastavitev SSO z Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Nastavitev SSO z Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Nastavitev SSO s Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Nastavitev SSO z Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Nastavitev SSO z Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Nastavitev SSO z OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Nastavitev SSO s PingOne](pingone_sso_guide.md) |
+
+### Drugi ponudniki OIDC
+
+Kateri koli ponudnik, ki podpira OpenID Connect, je mogoče integrirati. Potrebne informacije:
+
+- Client ID
+- Client secret
+- OpenID konfiguracijski URL (običajno na `/.well-known/openid-configuration`)
+- Podprti obsegi (običajno `openid profile email`)
+
+Kontaktirajte support@digna.ai, če potrebujete pomoč pri integraciji določenega ponudnika.
+
+---
+
+## Priporočene prakse
+
+**NALOGE:**
+- Uporabljajte HTTPS v produkciji (ne HTTP)
+- Shrani skrivnosti odjemalca varno (po možnosti uporabite okoljske spremenljivke)
+- Občasno obračajte (rotate) skrivnosti
+- Najprej testirajte v neprodukcijskem okolju
+- Dokumentirajte, kateri ponudniki so konfigurirani
+- Spremljajte dnevnike prijav zaradi sumljive aktivnosti
+- Sinhronizirajte nastavitve ponudnika identitete s konfiguracijo digna
+
+**NE DELAJTE:**
+- Ne shranjujte skrivnosti odjemalca v upravljanju različic
+- Ne uporabljajte HTTP redirect URI v produkciji
+- Ne konfigurirajte več ponudnikov z istim ključem
+- Ne puščajte privzetih/testnih poverilnic v produkciji
+- Ne izpostavljajte konfiguracijskih datotek, ki vsebujejo skrivnosti
+- Ne mešajte razvojnih in produkcijskih poverilnic
+
+---
+
+## Podpora
+
+Potrebujete pomoč pri konfiguraciji SSO?
+
+- **Email:** support@digna.ai
+- **Dokumentacija:** https://docs.digna.ai
+- **Spletna stran:** https://www.digna.ai
+
+---
+
+**Zadnja posodobitev:** August 30, 2026  
+**Različica:** 2026.04  
+**© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+
+---
+
+# AD FS
+Source: https://docs.digna.ai/sl/sso/adfs_sso_guide/
+
+# Set up SSO with AD FS
+
+Active Directory Federation Services is the on-premises option: your own servers issue the tokens, and the discovery URL is your own host name. AD FS supports OpenID Connect from **Windows Server 2016** onwards.
+
+This guide covers the **AD FS side**: creating the application group and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **AD FS version** | Windows Server 2016 or later — earlier versions have no OIDC support |
+| **Access** | Local administrator on the AD FS server |
+| **Federation service name** | e.g. `adfs.yourdomain.com` |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the Application Group
+
+1. On the AD FS server, open **AD FS Management**
+2. Right-click **Application Groups** and choose **Add Application Group**
+3. Enter `digna` as the name
+4. Under **Standalone applications** — or **Client-Server applications** depending on your version — select **Server application accessing a web API**
+5. Click **Next**
+
+---
+
+## Step 2: Configure the Server Application
+
+1. **Name**: `digna backend`
+2. **Client Identifier**: AD FS generates a GUID. Copy it — this becomes `DIGNA_OIDC_CLIENT_ID`
+3. **Redirect URI**: enter your digna callback URL and click **Add**:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+4. Click **Next**
+
+!!! warning "Click Add, Not Just Next"
+
+    The redirect URI field has its own **Add** button. Typing a URI and clicking **Next** without pressing **Add** discards it, and the wizard gives no warning. Confirm the URI appears in the list below the field before continuing.
+
+---
+
+## Step 3: Generate the Shared Secret
+
+1. Tick **Generate a shared secret**
+2. Copy the generated secret → becomes `DIGNA_OIDC_CLIENT_SECRET`
+3. Click **Next**
+
+!!! warning "The Secret Is Shown Once"
+
+    AD FS displays the shared secret only on this wizard page and cannot show it again. If you lose it, reset it later from the application group's properties.
+
+---
+
+## Step 4: Configure the Web API
+
+1. **Identifier**: enter the same client identifier from Step 2 and click **Add**
+2. Click **Next**
+3. Choose an **Access Control Policy** — *Permit everyone* is the simplest starting point; restrict it to a group for production
+4. Click **Next**
+
+---
+
+## Step 5: Grant the Permitted Scopes
+
+On the **Configure Application Permissions** step, tick:
+
+- `openid`
+- `profile`
+- `email`
+
+Then click **Next** and complete the wizard.
+
+!!! warning "openid Is Not Ticked by Default"
+
+    AD FS pre-selects only `user_impersonation` in some versions. Without `openid`, the token endpoint returns an OAuth access token rather than an ID token, and digna cannot identify the user.
+
+---
+
+## Step 6: Confirm the Discovery Endpoint
+
+Substitute your federation service name:
+
+```
+https://<adfs_host>/adfs/.well-known/openid-configuration
+```
+
+For example:
+
+```
+https://adfs.yourdomain.com/adfs/.well-known/openid-configuration
+```
+
+Open it in a browser. A JSON document confirms OIDC is enabled and the host name is right.
+
+!!! note "The Backend Must Trust the Certificate"
+
+    An internal certificate authority is common for AD FS. The machine running the digna backend makes its own outbound HTTPS call to this URL, so the issuing CA must be in that machine's trust store — not only in the browsers of the people logging in.
+
+---
+
+## Step 7: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "adfs"
+label = "Login with Active Directory"
+```
+
+### `config.toml`
+
+```toml
+[oidc.adfs]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://adfs.yourdomain.com/adfs/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `adfs` here.
+
+---
+
+## Step 8: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting AD FS
+
+### MSIS9611: The Client Is Not Allowed to Access the Resource
+
+The web API identifier in Step 4 does not match the client identifier, or the scopes in Step 5 were not granted. Both are editable from the application group's properties.
+
+### MSIS9602: Invalid redirect_uri
+
+The URI was typed but not added with the **Add** button, or differs from `DIGNA_OIDC_REDIRECT_URI`. Check **Application Groups → digna → digna backend → Properties**.
+
+### No ID Token Is Returned
+
+The `openid` scope is missing from the application permissions.
+
+### The Backend Cannot Reach the Discovery URL
+
+Either DNS on the backend host does not resolve the federation service name, or the AD FS certificate is not trusted there. Test with `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` from the digna server itself.
+
+### Events to Check
+
+The AD FS server logs failures to **Applications and Services Logs → AD FS → Admin** in Event Viewer, usually with a more specific reason than the browser shows.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Microsoft: AD FS OpenID Connect scenarios](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)
+
+---
+
+# Auth0
+Source: https://docs.digna.ai/sl/sso/auth0_sso_guide/
+
+# Set up SSO with Auth0
+
+Auth0 is OIDC-compliant and exposes a discovery endpoint per tenant. The main thing to get right is the tenant domain, which appears in the discovery URL and changes if you enable a custom domain.
+
+This guide covers the **Auth0 side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Auth0 role** | Admin on the tenant |
+| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the Application
+
+1. Sign in to the [Auth0 Dashboard](https://manage.auth0.com)
+2. Go to **Applications → Applications**
+3. Click **Create Application**
+4. Name it `digna` and choose **Regular Web Applications**
+5. Click **Create**
+
+!!! warning "Choose Regular Web Applications"
+
+    *Single Page Application* and *Native* create public clients with no secret. digna performs the code exchange from its backend and needs a confidential client, so **Regular Web Applications** is the correct type. Unlike some providers, Auth0 does let you change the type later under **Settings → Application Type**.
+
+---
+
+## Step 2: Add the Callback URL
+
+On the application's **Settings** tab:
+
+1. Find **Allowed Callback URLs**
+2. Enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+3. Optionally set **Allowed Logout URLs** to your dashboard URL
+4. Scroll to the bottom and click **Save Changes**
+
+!!! note "Comma-Separated, Not Newline-Separated"
+
+    Auth0 accepts several callback URLs in this field, separated by commas. A list separated only by newlines is read as one malformed URL and silently matches nothing.
+
+---
+
+## Step 3: Collect the Credentials
+
+Still on **Settings**, in the **Basic Information** panel:
+
+- **Domain** → goes into the discovery URL
+- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click to reveal)
+
+---
+
+## Step 4: Confirm the Grant Type
+
+1. Go to **Settings → Advanced Settings → Grant Types**
+2. Confirm **Authorization Code** is ticked
+
+It is enabled by default for Regular Web Applications. If it has been unticked, digna's login fails with `unauthorized_client`.
+
+---
+
+## Step 5: Build the Discovery URL
+
+Substitute the **Domain** from Step 3:
+
+```
+https://<your_tenant_domain>/.well-known/openid-configuration
+```
+
+For example:
+
+```
+https://yourcompany.eu.auth0.com/.well-known/openid-configuration
+```
+
+!!! warning "Custom Domains Change the Issuer"
+
+    If your tenant uses a custom domain such as `login.yourcompany.com`, use that domain in the discovery URL. Mixing the two — the canonical domain in the discovery URL, the custom one in the browser — produces an issuer mismatch, and the token is rejected after an otherwise successful login.
+
+---
+
+## Step 6: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "auth0"
+label = "Login with Auth0"
+```
+
+### `config.toml`
+
+```toml
+[oidc.auth0]
+DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `auth0` here.
+
+---
+
+## Step 7: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Auth0
+
+### Callback URL Mismatch
+
+Auth0's error page names the URL it received. Add it to **Allowed Callback URLs**, checking that entries are comma-separated.
+
+### unauthorized_client
+
+**Authorization Code** is not enabled under **Advanced Settings → Grant Types**, or the application type is not Regular Web Applications.
+
+### Access Denied After a Successful Login
+
+A Rule, Action or Post-Login trigger in the tenant is rejecting the user. Check **Actions → Flows → Login** and the tenant logs under **Monitoring → Logs**, which show the exact reason.
+
+### Issuer Mismatch
+
+The discovery URL and the domain the browser was sent to differ — usually the canonical tenant domain versus a custom domain. Use one consistently.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)
+
+---
+
+# Google Workspace
+Source: https://docs.digna.ai/sl/sso/google_workspace_sso_guide/
+
+# Set up SSO with Google Workspace
+
+Google's identity platform is OIDC-compliant and uses a single, well-known discovery URL for every customer, so the only per-organization values are the client ID and secret.
+
+This guide covers the **Google side**: creating the OAuth client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Google Cloud project** | Any project in the same organization as your Workspace domain |
+| **Role** | Editor or Owner on the project |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Configure the OAuth Consent Screen
+
+Google will not issue credentials until the consent screen exists.
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com) and select your project
+2. Go to **APIs & Services → OAuth consent screen**
+3. Choose the user type:
+   - **Internal** — only accounts in your Workspace domain can log in. Recommended.
+   - **External** — any Google account can attempt to log in.
+4. Fill in the app name, user support email and developer contact email
+5. On the **Scopes** step, add `openid`, `.../auth/userinfo.email` and `.../auth/userinfo.profile`
+6. Save
+
+!!! warning "External Apps Must Be Published"
+
+    An **External** consent screen starts in *Testing* status, where only accounts explicitly added to the test-user list can complete a login. Everyone else sees "digna has not completed the Google verification process". Either switch the app to **In production** under **Publishing status**, or use **Internal** — which has no such restriction and is the right choice for a Workspace-only deployment.
+
+---
+
+## Step 2: Create the OAuth Client
+
+1. Go to **APIs & Services → Credentials**
+2. Click **Create Credentials → OAuth client ID**
+3. Set **Application type** to **Web application**
+4. Give it a name, e.g. `digna`
+5. Under **Authorized redirect URIs**, click **Add URI** and enter:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. Click **Create**
+
+!!! note "Authorized JavaScript Origins Are Not Needed"
+
+    digna exchanges the authorization code from the backend, not the browser, so the **Authorized JavaScript origins** field can be left empty. Only the redirect URI matters.
+
+---
+
+## Step 3: Collect the Credentials
+
+The dialog that appears after creation shows:
+
+- **Client ID** — ends in `.apps.googleusercontent.com` → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
+
+Both remain retrievable later from the credential's detail page, unlike most other providers.
+
+---
+
+## Step 4: The Discovery URL
+
+Google uses one discovery URL for all customers — there is nothing to substitute:
+
+```
+https://accounts.google.com/.well-known/openid-configuration
+```
+
+---
+
+## Step 5: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "google"
+label = "Login with Google"
+```
+
+### `config.toml`
+
+```toml
+[oidc.google]
+DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `google` here.
+
+---
+
+## Step 6: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Google Workspace
+
+### Error 400: redirect_uri_mismatch
+
+The URI in `DIGNA_OIDC_REDIRECT_URI` is not in the **Authorized redirect URIs** list, or differs by a trailing slash or scheme. Google's error page shows the URI it received — compare it character for character with the registered one.
+
+### This App Is Blocked / Has Not Completed Verification
+
+The consent screen is **External** and still in *Testing*. Publish it, or switch the app to **Internal**.
+
+### Access Blocked: Authorization Error
+
+The account attempting to log in is outside your Workspace domain while the consent screen is **Internal**. This is the intended behaviour — Internal apps accept only accounts in the organization.
+
+### Changes Take Several Minutes
+
+Google propagates credential and consent-screen changes asynchronously. A newly added redirect URI can take a few minutes to take effect; if a change looks ignored, wait and retry before investigating further.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
+
+---
+
+# Microsoft Entra ID
+Source: https://docs.digna.ai/sl/sso/microsoft_entra_id_sso_guide/
+
+# Set up SSO with Microsoft Entra ID
+
+Microsoft Entra ID (formerly Azure Active Directory) is a fully OIDC-compliant provider, so digna integrates with it through the standard discovery endpoint.
+
+This guide covers the **Entra ID side**: registering the application and collecting the four values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **Entra ID role** | Application Administrator, Cloud Application Administrator, or Global Administrator |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Tenant** | The directory your users sign in to |
+
+---
+
+## Step 1: Register the Application
+
+1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com)
+2. Go to **Identity → Applications → App registrations**
+3. Click **New registration**
+4. Configure:
+   - **Name**: `digna` (shown to users on the consent screen)
+   - **Supported account types**: *Accounts in this organizational directory only* for a single-tenant deployment
+5. Under **Redirect URI**, select platform **Web** and enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+6. Click **Register**
+
+!!! warning "Important"
+
+    The platform must be **Web**, not *Single-page application*. digna exchanges the authorization code from the backend using a client secret, which the SPA platform type does not permit.
+
+---
+
+## Step 2: Collect the Client and Tenant IDs
+
+On the application's **Overview** page, copy:
+
+- **Application (client) ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Directory (tenant) ID** → goes into the discovery URL
+
+---
+
+## Step 3: Create a Client Secret
+
+1. Go to **Certificates & secrets → Client secrets**
+2. Click **New client secret**
+3. Enter a description and choose an expiry
+4. Click **Add**
+5. Copy the **Value** column immediately
+
+!!! warning "Copy the Value, Not the Secret ID"
+
+    The **Value** is shown only once, on this page, and cannot be retrieved afterwards. The **Secret ID** next to it looks similar but is not the secret — using it produces an `invalid_client` error at login. If you navigate away before copying, delete the secret and create a new one.
+
+!!! tip "Tip"
+
+    Entra ID caps secret lifetime at 24 months, so every SSO integration has an expiry date. Note it somewhere you will see it — an expired secret takes SSO down for every user at once, with no warning on the login page.
+
+---
+
+## Step 4: Confirm the API Permissions
+
+1. Go to **API permissions**
+2. Confirm that **Microsoft Graph → User.Read** (delegated) is present — it is added by default
+
+The `openid`, `profile` and `email` scopes digna requests are part of the standard OIDC set and need no separate grant. If your tenant requires admin consent for all applications, click **Grant admin consent for &lt;tenant&gt;**.
+
+---
+
+## Step 5: Build the Discovery URL
+
+Substitute the **Directory (tenant) ID** from Step 2:
+
+```
+https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration
+```
+
+!!! note "Use the v2.0 Endpoint"
+
+    The `/v2.0/` segment matters. The v1.0 endpoint at `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` issues tokens in an older format and does not return the standard OIDC claims digna expects.
+
+Open the URL in a browser before continuing. A JSON document confirms the tenant ID is correct.
+
+---
+
+## Step 6: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "microsoft"
+label = "Login with Microsoft"
+```
+
+### `config.toml`
+
+```toml
+[oidc.microsoft]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `microsoft` here.
+
+---
+
+## Step 7: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting Entra ID
+
+### AADSTS50011: Redirect URI Mismatch
+
+The URI in `DIGNA_OIDC_REDIRECT_URI` differs from the one registered in Step 1. Entra ID compares the full string, so a trailing slash, `http` versus `https`, or a different port all count as a mismatch. Check **Authentication → Web → Redirect URIs**.
+
+### AADSTS7000215: Invalid Client Secret
+
+Either the **Secret ID** was copied instead of the **Value**, or the secret has expired. Create a new secret and copy the Value column.
+
+### AADSTS650057: Invalid Resource
+
+The application registration was deleted or belongs to a different tenant than the one in the discovery URL. Confirm the Directory (tenant) ID on the Overview page.
+
+### Users Log In but Nothing Happens
+
+If the tenant requires admin consent and it has not been granted, the redirect returns without a usable token. Grant admin consent under **API permissions**.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Microsoft: OAuth 2.0 authorization code flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
+
+---
+
+# PingOne
+Source: https://docs.digna.ai/sl/sso/pingone_sso_guide/
+
+# Set up SSO with PingOne
+
+PingOne is OIDC-compliant. Two of its values need care: the **environment ID**, which appears in every endpoint URL, and the **regional domain**, which differs between the North American, European, Canadian, Asia-Pacific and Australian tenants.
+
+This guide covers the **PingOne side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+
+---
+
+## Before You Start
+
+| Requirement | Notes |
+|---|---|
+| **PingOne role** | Environment Admin or Identity Data Admin on the target environment |
+| **Environment** | The PingOne environment your digna users belong to |
+| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## Step 1: Create the Application
+
+1. Sign in to the PingOne admin console and select your environment
+2. Go to **Applications → Applications**
+3. Click the **+** button
+4. Enter `digna` as the **Application Name**
+5. Select **OIDC Web App**
+6. Click **Save**
+
+!!! warning "Pick OIDC Web App, Not Single-Page App"
+
+    *Single-Page App* and *Native App* create public clients that cannot hold a secret. digna exchanges the authorization code from its backend and needs the confidential **OIDC Web App** type.
+
+---
+
+## Step 2: Configure the Redirect URI
+
+1. Open the application's **Configuration** tab
+2. Click the pencil icon to edit
+3. Confirm **Response Type** is *Code* and **Grant Type** is *Authorization Code*
+4. Under **Redirect URIs**, enter your digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+5. Set **Token Endpoint Authentication Method** to *Client Secret Post* or *Client Secret Basic*
+6. Click **Save**
+
+---
+
+## Step 3: Enable the Application
+
+On the application's row or detail panel, switch the toggle to **enabled**.
+
+!!! warning "New Applications Start Disabled"
+
+    PingOne creates applications in a disabled state. A disabled application produces an error at the authorization step that does not mention the toggle, so this is worth confirming before debugging anything else.
+
+---
+
+## Step 4: Grant the Scopes
+
+1. Open the **Resources** tab
+2. Confirm that `openid` is granted, and add `profile` and `email` from the **OpenID Connect** resource
+3. Click **Save**
+
+---
+
+## Step 5: Assign Users
+
+1. Open the **Access** tab
+2. Add the population or groups whose members may use digna
+3. Click **Save**
+
+---
+
+## Step 6: Collect the Credentials and Environment ID
+
+On the **Configuration** tab, expand **General**:
+
+- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon)
+- **Environment ID** → goes into the discovery URL
+
+The same tab lists the ready-made **OIDC Discovery Endpoint**, which you can copy directly instead of assembling it by hand.
+
+---
+
+## Step 7: Build the Discovery URL
+
+Substitute the environment ID and the domain for your region:
+
+```
+https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
+```
+
+| Region | Domain |
+|---|---|
+| North America | `auth.pingone.com` |
+| Europe | `auth.pingone.eu` |
+| Canada | `auth.pingone.ca` |
+| Asia-Pacific | `auth.pingone.asia` |
+| Australia | `auth.pingone.com.au` |
+
+For a European environment:
+
+```
+https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
+```
+
+!!! tip "Copy It Rather Than Type It"
+
+    The regional domain is the single most common mistake in a PingOne integration, and a wrong region gives a 404 rather than a helpful message. Use the **OIDC Discovery Endpoint** value from Step 6.
+
+---
+
+## Step 8: Configure digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "pingone"
+label = "Login with PingOne"
+```
+
+### `config.toml`
+
+```toml
+[oidc.pingone]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
+```
+
+The `key` in both files must match — `pingone` here.
+
+---
+
+## Step 9: Test
+
+Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+
+---
+
+## Troubleshooting PingOne
+
+### 404 on the Discovery URL
+
+The regional domain or the environment ID is wrong. Compare with the **OIDC Discovery Endpoint** shown on the application's Configuration tab.
+
+### NOT_FOUND or Application Disabled
+
+The application toggle from Step 3 is still off.
+
+### Redirect URI Mismatch
+
+PingOne matches the full string. Check **Configuration → Redirect URIs** for a trailing slash or a scheme difference.
+
+### Login Succeeds but No Email Claim Reaches digna
+
+The `email` and `profile` scopes have not been granted on the **Resources** tab.
+
+### The User Cannot See the Application
+
+No population or group has been granted access on the **Access** tab.
+
+---
+
+## See Also
+
+- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [PingOne: OIDC application configuration](https://docs.pingidentity.com/pingone/)

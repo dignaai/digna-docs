@@ -1,115 +1,115 @@
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# digna Data Anomalies – データ品質問題のAIベース検出
 
-**AI-powered observability for always-on data trust**
+**常時稼働するデータ信頼性のためのAI対応可観測性**
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
+digna Data Anomalies は **digna Data Observability Platform** の一部であり、データセットの振る舞いを継続的に解析することで **データの品質** を向上させるモジュール型ソリューションです。
 
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+静的な閾値を定義したりルールを1つも書かなくても、自動的にデータの「正常」を学習して振る舞いが変わった際に通知します。  
+モジュールはデータベース内で直接実行されるため、データが外部に出ることはありません。
 
 ---
 
-## Key capabilities
+## digna Data Anomalies の目的
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+**digna Data Anomalies** モジュールは、以下のような事前定義された統計指標を計算・追跡することで、継続的な **データの可観測性** を提供します:
 
----
+- データ量およびレコード数  
+- 欠損値比率  
+- 値の分布とヒストグラム  
+- 数値の範囲と平均値  
+- 列の一意性およびテキスト長  
 
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+これらのメトリクスはすべてのデータセットについて自動的に収集されます。  
+それらを用いて、digna は各メトリクスの典型的な振る舞いを表すモデルを構築し、日次、週次、季節的なパターンを学習します。  
+学習が完了すると、新しいデータに対する期待値を予測し、品質問題、プロセス障害、あるいは上流の変更を示す偏差を検出します。
 
 ---
 
-## Example scenarios
+## 主な機能
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+- AI を用いて期待されるデータ挙動を自動学習 — 閾値設定は不要。  
+- データ量や分布における急激な減少、急増、ドリフトを検出。  
+- 列の入れ替わりや属性間の誤マッピングを識別。  
+- 予期しないカテゴリ値（例：新しい地域やコード）を強調表示。  
+- 数値、カテゴリ、未特定など、すべての列タイプをサポート。  
+- 完全に顧客環境内で動作 — データ移動なし。  
+- 長期的なトレンド解析のために **digna Data Analytics** と統合。
 
 ---
 
-## Integration with other modules
+## 動作の仕組み
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+### ステップ 1 – メトリクスの計算
+digna は各テーブルと列に対して一連のプロファイルメトリクスを計算します。  
+これらのメトリクスはデータの構造と統計的な振る舞いを記述し、さらなる解析のために保存されます。
 
----
+### ステップ 2 – モデル訓練
+過去のメトリクス値に基づき、digna は各メトリクスの正常範囲を捉えるコンパクトな機械学習モデル（シグネチャモデル）を訓練します。
 
-## Typical use cases
+### ステップ 3 – 自動閾値設定
+*conformal inference* を用いて、digna はデータとともに進化する適応的な信頼区間（自動閾値）を算出します。  
+新しいメトリクス値が予測範囲の外に出た場合、それらは異常としてフラグ付けされます。
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+この継続的なフィードバックループにより、データ量やパターンが自然に変化しても監視が有効であり続けます。
 
 ---
 
-## Benefits
+## 事例
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+### レコード数の予期しない急減
+あるデータセットは通常、1日あたり約 500,000 レコードを含みます。  
+新しい納品で 50,000 レコードしか含まれていなかった場合、digna は異常を検出し、学習された範囲からどれだけ外れているかを示します。
 
----
+### 列の入れ替わりを検出
+`last_name` の平均文字列長が突然 `first_name` と同じになった。  
+digna はメトリクスパターンの偏差を認識し、列の入れ替わりの可能性を示します。
 
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+### 予期しないカテゴリを検出
+オーストリアの都市を列挙する列に突如 “Zurich” が含まれていた。  
+過去の分布を基に、digna はその新しい値を予期しないものとしてマークし、ユーザーに通知します。
 
 ---
 
-## Summary
+## 他モジュールとの統合
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+- **digna Data Analytics** — 異常履歴や変動性メトリクスを集約して長期トレンドを明らかにします。  
+- **digna Data Validation** — 決定論的な品質チェックのための明示的なビジネスルールを適用します。  
+- **digna Data Timeliness** — データ到着時間を監視し、遅延と異常発生を相関付けします。  
+- **digna Data Schema Tracker** — 新たな異常を説明する可能性のある構造変更を検出します。
+
+---
+
+## 典型的なユースケース
+
+- 欠損または重複したデータロードの検出。  
+- 列の入れ替わりや切り詰め（トランケーション）の識別。  
+- 数値・カテゴリ特徴の分布ドリフト検出。  
+- 予期しない参照値やコードの発見。  
+- 継続的な取り込みパイプラインの不整合監視。  
+- ドメイン横断での **データの品質と可観測性** の追跡。
+
+---
+
+## 利点
+
+- 異常なデータ挙動を即時に検出。  
+- 手動での閾値調整を排除。  
+- 大規模データ環境の運用負荷を軽減。  
+- 分析およびレポーティングシステムへの信頼を構築。  
+- **データの品質** とエンドツーエンドの **データ可観測性** を強化。
+
+---
+
+## 関連する digna モジュール
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — 傾向と変動性のメトリクス。  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — ルールベースのデータ検証。  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — データ配信スケジュールの監視。  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — スキーマ変更の検出。
+
+---
+
+## まとめ
+
+**digna Data Anomalies** モジュールは、digna の AI駆動の **Data Observability Platform** の中核を成します。  
+主要メトリクスを継続的に監視し、パターンを学習して偏差を特定することで、組織が **データの品質** を手動設定なしで信頼可能、安定、説明可能に保つのを支援します。

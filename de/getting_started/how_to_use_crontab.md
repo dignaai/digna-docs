@@ -1,6 +1,6 @@
 # Erweiterte Planung mit Crontab
 
-Dieser Leitfaden zeigt, wie Sie in *digna* Jobs mit **Crontab-Ausdrücken** planen.  
+Dieser Leitfaden zeigt, wie man Jobs in *digna* mithilfe von **Crontab-Ausdrücken** plant.  
 Im Gegensatz zu den Standardmustern (täglich, wöchentlich, monatlich) bietet Crontab volle Flexibilität, um benutzerdefinierte Zeitpläne zu definieren.
 
 ---
@@ -13,29 +13,29 @@ Im Gegensatz zu den Standardmustern (täglich, wöchentlich, monatlich) bietet C
 
 ## Was Sie lernen werden
 
-- Wie Sie den Bereich **Scheduling** im Dashboard öffnen  
+- Wie Sie den Abschnitt **Scheduling** im Dashboard öffnen  
 - Wie Sie einen neuen Job mit einem **Crontab-Ausdruck** erstellen  
-- Wie Sie einen Zeitplan festlegen, der nur an **Wochenenden um 10:00** ausgeführt wird  
+- Wie Sie einen Zeitplan einstellen, der nur an **Wochenenden um 10:00** läuft  
 
 ---
 
-## Beispiel: Wochenend-Zeitplan
+## Beispiel: Wochenend-Planung
 
-Um einen Job so zu planen, dass er jeden **Samstag und Sonntag um 10:00 Uhr** ausgeführt wird, verwenden Sie den folgenden Ausdruck:
+Um einen Job so zu planen, dass er jeden **Samstag und Sonntag um 10:00 Uhr** läuft, verwenden Sie folgenden Ausdruck:
 
 
 - `0` → Minute (zur vollen Stunde)  
 - `10` → Stunde (10 Uhr)  
 - `*` → jeder Tag des Monats  
 - `*` → jeder Monat  
-- `sat,sun` → nur an Samstagen und Sonntagen  
+- `sat,sun` → nur samstags und sonntags  
 
 ---
 
 ## Warum Crontab verwenden?
 
-- Erstellen Sie Zeitpläne, die über standardmäßige tägliche, wöchentliche oder monatliche Muster hinausgehen  
+- Erstellen Sie Zeitpläne, die über die Standardmuster täglich, wöchentlich oder monatlich hinausgehen  
 - Definieren Sie präzise Ausführungszeiten (bestimmte Tage, Stunden oder Intervalle)  
-- Nützlich für Wochenend-Jobs, Prüfungen außerhalb der Geschäftszeiten oder häufiges Monitoring  
+- Nützlich für Wochenend-Jobs, Prüfungen außerhalb der Geschäftszeit oder häufige Überwachungen  
 
 ---

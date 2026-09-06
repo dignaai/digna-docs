@@ -1,78 +1,82 @@
-# Windows Installation Guide for digna Release 2026.06
+# Windows Installatiehandleiding voor digna Release 2026.06
 
 **Release:** 2026.06
 
-**Last Updated:** August 30, 2026
+**Laatst bijgewerkt:** 30 augustus 2026
 
 
 ---
 
-## Table of Contents
+## Inhoudsopgave
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
+1. [Inleiding](#introduction)
+2. [Systeemeisen](#system-requirements)
+3. [Voorbereiding vóór installatie](#pre-installation-setup)
 4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Windows Service](#running-digna-as-a-windows-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
+5. [Webserverconfiguratie](#web-server-configuration)
+6. [Initiële installatie](#initial-installation)
+7. [Backendconfiguratie](#backend-configuration)
+8. [Dashboardconfiguratie](#dashboard-configuration)
+9. [digna als Windows-service uitvoeren](#running-digna-as-a-windows-service)
+10. [Upgraden naar een nieuwe release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Inleiding {: #introduction }
 
-### About digna
+### Over digna
 
-digna is een uitgebreide, door AI aangedreven platform dat is ontworpen om datakwaliteitsbeheer te optimaliseren in verschillende dataomgevingen zoals warehouses, lakes en lakehouses. Het is gebouwd om schaalbaar en aanpasbaar te zijn en pakt moderne data-uitdagingen aan via automatisering, realtime monitoring en anomaliedetectie.
+digna is een uitgebreid AI-gestuurd platform ontworpen om het beheer van datakwaliteit te optimaliseren in verschillende dataomgevingen zoals warehouses, lakes en lakehouses. Ontworpen voor hoge schaalbaarheid en aanpasbaarheid, lost digna moderne dataproblemen op via automatisering, realtime monitoring en anomaliedetectie.
 
-digna bestaat uit twee hoofdcomponenten:
+digna bestaat uit twee hoofcomponenten:
 
 - **dignabackend**: De kernengine van de applicatie, verantwoordelijk voor het verwerken van data en het uitvoeren van kwaliteitscontroles.
-- **dignadashboard**: Een webgebaseerde interface gehost op een webserver, die een gebruiksvriendelijke manier biedt om met het digna-platform te werken en datakwaliteitsstatistieken te visualiseren.
+- **dignadashboard**: Een webgebaseerde interface gehost op een webserver, die een gebruiksvriendelijke manier biedt om met het digna-platform te werken en datakwaliteitsmetriek te visualiseren.
 
-### What's New in Release 2026.06
+### Wat is nieuw in Release 2026.06
 
-Deze release brengt data observability-mogelijkheden rechtstreeks in je code, waardoor ontwikkelaars datakwaliteit bij de bron kunnen monitoren. Zie de [release notes](http://docs.digna.ai/changelog/Release_202606/) voor volledige details.
+Deze release brengt data-observability mogelijkheden direct in je code, waarmee ontwikkelaars datakwaliteit bij de bron kunnen monitoren. Zie de [release notes](http://docs.digna.ai/changelog/Release_202606/) voor volledige details.
+
+### Op zoek naar macOS of Linux?
+
+Deze handleiding behandelt Windows. Voor andere platforms, zie de [macOS Installatiehandleiding](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) of de [Linux Installatiehandleiding](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
-## System Requirements {: #system-requirements }
+## Systeemeisen {: #system-requirements }
 
-Voordat je begint met de installatie, zorg dat je systeem voldoet aan de volgende minimale vereisten:
+Voordat je met de installatie begint, zorg dat je systeem voldoet aan de volgende minimale vereisten:
 
-| Requirement | Specification |
+| Vereiste | Specificatie |
 |---|---|
-| **Operating System** | Windows Server of Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB beschikbare opslag |
+| **Besturingssysteem** | Windows Server of Windows 10/11 |
+| **Geheugen (Minimale setup)** | 16 GB RAM |
+| **Schijfruimte** | 10 GB beschikbare opslag |
 | **Database** | PostgreSQL Server 12 of hoger |
-| **Web Server** | IIS, Apache Tomcat of equivalent |
+| **Webserver** | IIS, Apache Tomcat of equivalent |
 
-### Database Installation Options
+### Opties voor database-installatie
 
-**If PostgreSQL is already installed:**
-Je kunt een nieuwe database voor digna toevoegen aan je bestaande PostgreSQL-server.
+**Als PostgreSQL al geïnstalleerd is:**
+Je kunt een nieuwe database voor digna toevoegen aan je bestaande PostgreSQL Server.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Als je PostgreSQL op dezelfde machine als digna installeert:**
 
-!!! info "Recommended Specifications"
+!!! info "Aanbevolen specificaties"
 
-    - **Memory**: 32 GB RAM (in plaats van 16 GB)
-    - **Disk Space**: 50 GB beschikbare opslag (in plaats van 10 GB)
+    - **Geheugen**: 32 GB RAM (in plaats van 16 GB)
+    - **Schijfruimte**: 50 GB beschikbare opslag (in plaats van 10 GB)
 
-    Deze hogere specificaties zijn aanbevolen wanneer zowel digna als PostgreSQL tegelijk op dezelfde machine draaien.
+    Deze hogere specificaties accommoderen zowel digna als de PostgreSQL-database die gelijktijdig draaien.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Voorbereiding vóór installatie {: #pre-installation-setup }
 
 Voordat je digna installeert, zorg dat twee belangrijke vereisten aanwezig zijn:
 
-1. **PostgreSQL Server** – voor het opslaan van berekende metrics en prestatiegegevens
-2. **Web Server** – voor het hosten van het digna Dashboard
+1. **PostgreSQL Server** – voor het opslaan van berekende metriek en prestatiegegevens
+2. **Webserver** – voor het hosten van het digna Dashboard
 
 Als deze componenten nog niet zijn ingesteld, volg dan de onderstaande secties om ze te installeren en te configureren.
 
@@ -80,56 +84,56 @@ Als deze componenten nog niet zijn ingesteld, volg dan de onderstaande secties o
 
 ## PostgreSQL Server Setup {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Als je al PostgreSQL hebt
 
-Als PostgreSQL al geïnstalleerd en actief is op je lokale machine of als je een beheerde externe PostgreSQL-server gebruikt, kun je doorgaan naar de [volgende sectie](#web-server-configuration).
+Als PostgreSQL al is geïnstalleerd en draait op je lokale machine of als je een beheerde externe PostgreSQL-server gebruikt, kun je doorgaan naar de [volgende sectie](#web-server-configuration).
 
-### Installing PostgreSQL
+### PostgreSQL installeren
 
 Volg deze stappen om PostgreSQL op Windows te installeren:
 
-#### Step 1: Download PostgreSQL
+#### Stap 1: Download PostgreSQL
 
-1. Bezoek de [PostgreSQL Downloads page](https://www.postgresql.org/download/)
+1. Bezoek de [PostgreSQL-downloadpagina](https://www.postgresql.org/download/)
 2. Selecteer **Windows**
-3. Download de nieuwste installer
+3. Download de meest recente installer
 
-#### Step 2: Run the Installer
+#### Stap 2: Start de installer
 
-1. Dubbelklik op het gedownloade installatiebestand
+1. Dubbelklik op het gedownloade installerbestand
 2. Volg de aanwijzingen in de setup-wizard
 
-#### Step 3: Choose Installation Directory
+#### Stap 3: Kies installatiefolder
 
-Selecteer de map waar PostgreSQL geïnstalleerd wordt. De standaardlocatie is meestal geschikt.
+Selecteer de map waar PostgreSQL wordt geïnstalleerd. De standaardlocatie is meestal geschikt.
 
-#### Step 4: Select Components
+#### Stap 4: Selecteer componenten
 
-Voor een standaardopstelling laat je de standaardcomponenten geselecteerd.
+Voor een standaardopstelling kun je de standaardcomponentopties behouden.
 
-#### Step 5: Set PostgreSQL Superuser Password
+#### Stap 5: Stel het PostgreSQL superuser-wachtwoord in
 
-Voer een wachtwoord in en bevestig dit voor de PostgreSQL superuser (`postgres`). **Sla dit wachtwoord veilig op** — je hebt het later nodig.
+Voer een wachtwoord in en bevestig dit voor de PostgreSQL superuser (`postgres`). **Bewaar dit wachtwoord veilig** — je hebt het later nodig.
 
-#### Step 6: Configure Port Number
+#### Stap 6: Configureer poortnummer
 
-De standaard PostgreSQL-poort is `5432`. Je kunt de standaardpoort gebruiken of een andere poort opgeven indien nodig.
+De standaard PostgreSQL-poort is `5432`. Je kunt de standaard gebruiken of een andere poort opgeven indien nodig.
 
 !!! tip "Tip"
 
-    Als poort 5432 al in gebruik is, kies dan een alternatieve poort en noteer deze voor latere configuratie.
+    Als poort 5432 al in gebruik is, kies een alternatieve poort en noteer deze voor latere configuratie.
 
-#### Step 7: Choose Locale
+#### Stap 7: Kies locale
 
-Selecteer de locale voor je database. De standaardinstelling is voor de meeste installaties geschikt.
+Selecteer de locale voor je database. De standaardinstelling is meestal geschikt voor de meeste installaties.
 
-#### Step 8: Complete Installation
+#### Stap 8: Voltooi de installatie
 
-Klik **Next** door de resterende stappen en klik vervolgens **Finish**.
+Klik **Volgende** door de resterende stappen en klik vervolgens op **Voltooien**.
 
-#### Step 9: Verify Installation
+#### Stap 9: Verifieer installatie
 
-Open de Opdrachtprompt en controleer of PostgreSQL is geïnstalleerd:
+Open Opdrachtprompt en controleer of PostgreSQL is geïnstalleerd:
 
 ```bash
 psql --version
@@ -139,61 +143,61 @@ Je zou de PostgreSQL-versie moeten zien als de installatie succesvol was.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Webserverconfiguratie {: #web-server-configuration }
 
 digna vereist een webserver om het dashboard te hosten. Kies een van de volgende opties:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-Je hoeft slechts **één** van deze servers te installeren en configureren.
+Je hoeft maar één van deze servers te installeren en te configureren.
 
 ### IIS Setup {: #iis-setup }
 
-#### Overview
+#### Overzicht
 
 Internet Information Services (IIS) is Microsofts webserver voor het hosten van websites en webapplicaties.
 
-#### Enabling IIS
+#### IIS inschakelen
 
-1. **Open Control Panel**
+1. **Open Configuratiescherm**
    - Druk `Win + R`
    - Typ `control` en druk op Enter
 
-2. **Navigate to Windows Features**
-   - Klik **Programs**
-   - Selecteer **Turn Windows features on or off**
+2. **Navigeer naar Windows-onderdelen**
+   - Klik **Programma's**
+   - Selecteer **Windows-onderdelen in- of uitschakelen**
 
-3. **Enable Internet Information Services**
+3. **Schakel Internet Information Services in**
    - Scroll naar beneden en vind **Internet Information Services (IIS)**
    - Vink het selectievakje aan om het in te schakelen
-   - Klik op de **+** om uit te vouwen en controleer of de subcomponenten geselecteerd zijn:
+   - Klik op het **+** om uit te vouwen en controleer of de volgende subcomponenten zijn geselecteerd:
      - **Web Management Tools**
      - **World Wide Web Services**
 
 4. **Klik OK** om de wijzigingen toe te passen
 
-5. **Verify IIS Installation**
+5. **Verifieer IIS-installatie**
    - Open je browser
    - Navigeer naar `http://localhost`
    - Je zou de IIS-welkomstpagina moeten zien
 
-#### Required: URL Rewrite Module
+#### Verplicht: URL Rewrite-module
 
 IIS vereist de URL Rewrite-component. Download en installeer deze vanaf de [officiële Microsoft-pagina](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Required: MIME Type for Markdown Files
+#### Verplicht: MIME-type voor Markdown-bestanden
 
 Om ervoor te zorgen dat Markdown-bestanden (`.md`) correct door IIS worden geserveerd:
 
-1. Open **IIS Manager** (druk `Win + R`, typ `inetmgr`, druk op Enter)
-2. Navigeer naar **Your Site > MIME Types**
-3. Klik **Add...**
+1. Open **IIS Manager** (druk `Win + R`, typ `inetmgr`, druk Enter)
+2. Navigeer naar **Uw Site > MIME Types**
+3. Klik **Toevoegen...**
 4. Configureer:
-   - **File name extension**: `.md`
-   - **MIME type**: `text/markdown`
+   - **Bestandsextensie**: `.md`
+   - **MIME-type**: `text/markdown`
 
-!!! warning "Important"
+!!! warning "Belangrijk"
 
     Zonder deze instelling kunnen `.md`-bestanden mogelijk niet correct worden geserveerd.
 
@@ -201,38 +205,38 @@ Om ervoor te zorgen dat Markdown-bestanden (`.md`) correct door IIS worden geser
 
 ### Apache Tomcat Setup {: #apache-tomcat-setup }
 
-#### Overview
+#### Overzicht
 
-Apache Tomcat is een open-source Java servletcontainer en webserver.
+Apache Tomcat is een open-source Java servlet-container en webserver.
 
-#### Installation
+#### Installatie
 
 1. **Download Apache Tomcat**
    - Bezoek [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
    - Download de Windows ZIP-distributie
 
-2. **Extract the Archive**
+2. **Pak het archief uit**
    - Pak het ZIP-bestand uit naar een map op je systeem
    - Voorbeeld: `C:\Program Files\Apache Tomcat`
 
-3. **Verify Tomcat is Running**
+3. **Verifieer dat Tomcat draait**
    - Open je browser
    - Navigeer naar `http://localhost:8080`
    - Je zou de Apache Tomcat-welkomstpagina moeten zien
 
 !!! tip "Tip"
 
-    Apache Tomcat start meestal automatisch na installatie. Als dat niet het geval is, navigeer dan naar de `bin`-map en voer `startup.bat` uit.
+    Apache Tomcat start normaal gesproken automatisch na installatie. Als dat niet het geval is, navigeer dan naar de `bin`-map en voer `startup.bat` uit.
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Initiële installatie {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Stap 1: Richt de digna-repository in
 
-De digna repository slaat alle door digna berekende metrics op. Het fungeert als de centrale database voor analyse- en prestatiegegevens.
+De digna-repository slaat alle door digna berekende metriek op. Het fungeert als de centrale database voor analytische- en prestatiegegevens.
 
-#### Create Repository Schema and User
+#### Maak repository-schema en gebruiker aan
 
 Open je PostgreSQL-client (pgAdmin, psql of vergelijkbaar) en voer de volgende SQL-commando's uit:
 
@@ -246,9 +250,9 @@ GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 
 **Vervang de volgende placeholders:**
 
-- `<digna_repo_schema>` — de gewenste schemanaam (bijv. `dignarepo`)
-- `<digna_repo_user>` — de gewenste gebruikersnaam (bijv. `digna_user`)
-- `<digna_repo_password>` — een veilig wachtwoord voor deze gebruiker
+- `<digna_repo_schema>` — De gewenste schemanaam (bijv. `dignarepo`)
+- `<digna_repo_user>` — De gewenste gebruikersnaam (bijv. `digna_user`)
+- `<digna_repo_password>` — Een veilig wachtwoord voor deze gebruiker
 
 **Voorbeeld:**
 
@@ -260,35 +264,35 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Best Practice"
+!!! tip "Beste werkwijze"
 
     Gebruik sterke, complexe wachtwoorden voor databasegebruikers. Vermijd gemakkelijk te raden inloggegevens.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Stap 2: Pak het digna-installatiepakket uit
 
-1. Zoek het digna-installatie-ZIP-bestand dat aan je is geleverd
-2. Pak het uit naar je gewenste installatieplaats
+1. Zoek het aan jou geleverde digna-installatie-ZIP-bestand
+2. Pak het uit naar de gewenste installatieplek
 3. Na het uitpakken zou je de volgende items moeten zien:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Hoofdexecutable (backend + CLI gecombineerd)
+   - `dashboard/` — Webdashboard-interface
+   - `digna` — Hoofduitvoerbaar bestand (backend + CLI gecombineerd)
    - `config.toml` — Configuratiebestand
-   - `license.toml` — Licentiebestand (plaats hier jouw licentie)
+   - `license.toml` — Licentiebestand (kopieer jouw bestand hierheen)
 
-### Step 3: Install the License File
+### Stap 3: Installeer het licentiebestand
 
-!!! warning "Important"
+!!! warning "Belangrijk"
 
-    Het licentiebestand is **niet** opgenomen in het installatiepakket en wordt apart door digna verstrekt.
+    Het licentiebestand is **niet** opgenomen in het installatiepakket en wordt afzonderlijk door digna geleverd.
 
-1. Zoek het `license.toml`-bestand dat aan je is geleverd
-2. Kopieer het naar de hoofdmap van de digna-installatie (waar `config.toml` en de `digna`-executable zich bevinden)
+1. Zoek het `license.toml`-bestand dat aan jou is geleverd
+2. Kopieer het naar de root van de digna-installatiemap (waar `config.toml` en het `digna`-uitvoerbare bestand zich bevinden)
 
 **Waarom dit belangrijk is:**
-Het licentiebestand bevat klantinformatie, de vervaldatum van de licentie en een digitale handtekening. **Wijzig dit bestand niet** — wijzigingen maken de licentie ongeldig.
+Het licentiebestand bevat je klantgegevens, vervaldatum van de licentie en digitale handtekening. **Wijzig dit bestand niet** — elke wijziging ongeldigt de licentie.
 
-**Mapstructuur na setup:**
+**Mapstructuur na installatie:**
 
 ```
 digna_installation/
@@ -301,19 +305,19 @@ digna_installation/
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backendconfiguratie {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Stap 1: Maak en bewerk het configuratiebestand
 
 Het bestand `config_template.toml` wordt meegeleverd in je digna-installatiemap. Je hoeft het alleen te hernoemen naar `config.toml`.
 
 **Locatie:** `digna_installation/config.toml`
 
-Open `config.toml` in een teksteditor en configureer elk van de onderstaande secties.
+Open `config.toml` in een teksteditor en configureer elke sectie hieronder.
 
-#### [app] Section
+#### [app] Sectie
 
-Deze sectie configureert de instellingen van de digna backend-applicatie:
+Deze sectie configureert de digna-backend applicatie-instellingen:
 
 ```toml
 [app]
@@ -325,16 +329,16 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Waarde | Opmerkingen |
 |---|---|---|
 | `digna_APP_HOST` | `localhost` of IP-adres | Hostnaam of IP waar dignabackend gehost wordt |
-| `digna_APP_PORT` | `8082` (standaard) | Poort voor REST API-endpoints |
+| `digna_APP_PORT` | `8082` (standaard) | Poort voor REST API-eindpunten |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Als het dashboard op een andere server staat, voeg dan de URL toe |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Vereist voor CORS met credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Sta alle HTTP-methoden toe |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Sta alle HTTP-methodes toe |
 | `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Sta alle headers toe |
 
-#### [repo] Section
+#### [repo] Sectie
 
 Deze sectie configureert de verbinding naar de PostgreSQL-database:
 
@@ -348,16 +352,16 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Waarde | Opmerkingen |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` of IP | PostgreSQL-server hostname/IP |
+| `digna_REPO_HOST` | `localhost` of IP | PostgreSQL-server hostnaam/IP |
 | `digna_REPO_PORT` | `5432` (standaard) | PostgreSQL-poort |
 | `digna_REPO_DB` | `postgres` | Databasenaam |
-| `digna_REPO_SCHEMA` | `dignarepo` | Eerder aangemaakte schema |
-| `digna_REPO_USER` | `digna_user` | Gebruiker aangemaakt in de PostgreSQL-setup |
-| `digna_REPO_PASSWORD` | Je wachtwoord | Wachtwoord ingesteld tijdens het aanmaken van de gebruiker |
+| `digna_REPO_SCHEMA` | `dignarepo` | Eerder aangemaakt schema |
+| `digna_REPO_USER` | `digna_user` | Gebruiker aangemaakt in PostgreSQL-setup |
+| `digna_REPO_PASSWORD` | Je wachtwoord | Wachtwoord ingesteld tijdens schema-creatie |
 
-#### [base] Section
+#### [base] Sectie
 
 Deze sectie bevat beveiligings- en cookie-instellingen:
 
@@ -373,7 +377,7 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Waarde | Opmerkingen |
 |---|---|---|
 | `digna_FERNET_KEY` | Encryptiesleutel | Gebruikt om tokens en cookies te versleutelen (standaard meegeleverd) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Komt overeen met je frontend-domein |
@@ -383,7 +387,7 @@ digna_MAX_WORKERS = 4
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 uur) | Sessie-timeout in seconden |
 | `digna_MAX_WORKERS` | Aantal CPU-cores - 1 | Aantal parallelle inspectietaken |
 
-#### [logging] Section
+#### [logging] Sectie
 
 Deze sectie configureert het loggedrag:
 
@@ -393,36 +397,36 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Waarde | Opmerkingen |
 |---|---|---|
 | `digna_LOGGING_MODE` | `INFO` of `DEBUG` | `INFO` voor productie, `DEBUG` voor probleemoplossing |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Aantal bewaarde dagelijkse logbackups |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Aantal dagelijkse logbackups om te bewaren |
 
 ---
 
-### Step 3: Initialize the Repository
+### Stap 3: Initialiseer de repository
 
-1. Open de Opdrachtprompt
-2. Navigeer naar je digna-installatiemap (waar `config.toml` en de `digna`-executable staan)
+1. Open Opdrachtprompt
+2. Navigeer naar je digna-installatiemap (waar `config.toml` en het `digna`-uitvoerbare bestand zich bevinden)
 3. Voer de verbindingscontrole uit:
 
 ```bash
 digna repo check
 ```
 
-Je zou een bevestiging moeten zien dat de verbinding is gemaakt (de repository zelf is nog niet geïnitialiseerd).
+Je zou een bevestiging moeten zien dat de verbinding tot stand is gebracht (de repository zelf is nog niet geïnitialiseerd).
 
-### Step 4: Install the Repository Schema
+### Stap 4: Installeer het repository-schema
 
-Voer in dezelfde map het volgende uit:
+Voer in dezelfde map uit:
 
 ```bash
 digna repo install
 ```
 
-Dit commando maakt de benodigde tabellen en schema's aan in je PostgreSQL-database.
+Dit commando installeert de benodigde tabellen en het schema in je PostgreSQL-database.
 
-### Step 5: Start the digna Server
+### Stap 5: Start de digna-server
 
 Start in de digna-installatiemap de server met:
 
@@ -432,7 +436,7 @@ digna serve --address <host> --port <port>
 
 **Parameters:**
 - `--address` — Server hostname/IP
-- `--port` — Serverpoort
+- `--port` — Serverpoort 
 
 Je zou opstartberichten moeten zien die bevestigen dat de server draait:
 
@@ -443,7 +447,7 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### Step 6: Create an Admin User
+### Stap 6: Maak een admin-gebruiker aan
 
 1. Open een **nieuw** Opdrachtprompt-venster
 2. Navigeer naar je digna-installatiemap
@@ -459,110 +463,110 @@ digna user add <username> "<full_name>" <password> --su
 digna user add admin "Admin User" AdminPassword123! --su
 ```
 
-Dit maakt een gebruiker met volledige administratieve rechten.
+Dit maakt een gebruiker aan met volledige beheerdersrechten.
 
-!!! tip "Best Practice"
+!!! tip "Beste werkwijze"
 
     Gebruik een sterk wachtwoord met een mix van hoofdletters, kleine letters, cijfers en speciale tekens.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboardconfiguratie {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Stap 1: Zet het dashboard uit naar de webserver
 
-Het digna-dashboard heeft een apart `config.toml`-bestand in de `dashboard/`-map. Deze configuratie wordt al meegeleverd en hoeft tijdens de initiële setup meestal niet te worden aangepast. Je hoeft het alleen te configureren als je de backend-verbinding wilt aanpassen.
+Het digna-dashboard heeft een eigen separaat `config.toml`-bestand in de `dashboard/`-map. Deze configuratie wordt al meegeleverd en vereist geen wijzigingen tijdens de initiële setup. Je hoeft dit alleen te wijzigen als je de backendverbinding wilt aanpassen.
 
-Als je de dashboardconfiguratie moet wijzigen (bijv. voor multi-instance deployments), raadpleeg dan de documentatie van het dashboard.
+Als je de dashboardconfiguratie wilt aanpassen (bijv. bij multi-instance deployments), raadpleeg dan de documentatie van het dashboard.
 
-Kies je webserver en volg de bijbehorende deployment-stappen.
+Kies je webserver en volg de bijbehorende deploymentstappen.
 
-#### Deploying to IIS
+#### Deployen naar IIS
 
 1. **Open IIS Manager**
-   - Druk `Win + R`, typ `inetmgr`, druk op Enter
+   - Druk `Win + R`, typ `inetmgr`, druk Enter
 
-2. **Create a New Website**
-   - Klik in het linkerpaneel met de rechtermuisknop op **Sites**
-   - Selecteer **Add Website...**
+2. **Maak een nieuwe website**
+   - Klik met de rechtermuisknop op **Sites** in het linkerpaneel
+   - Selecteer **Website toevoegen...**
 
-3. **Configure the Website**
-   - **Site Name**: Voer een naam in (bijv. "dignaDashboard")
-   - **Physical Path**: Klik op Browse en selecteer je `dashboard`-map
+3. **Configureer de website**
+   - **Sitenaam**: Voer een naam in (bijv. "dignaDashboard")
+   - **Fysiek pad**: Klik Bladeren en selecteer je `dashboard`-map
    - **Binding**: Stel IP-adres en poort in (standaard poort 80 voor HTTP, 443 voor HTTPS)
 
-4. **Start the Website**
-   - Klik **OK** om de site aan te maken
+4. **Start de website**
+   - Klik **OK** om de site te maken
    - Klik met de rechtermuisknop op de nieuwe site en selecteer **Start**
 
-5. **Test the Installation**
+5. **Test de installatie**
    - Open je browser
    - Navigeer naar `http://localhost` (of je geconfigureerde URL)
-   - Je zou de digna-dashboard loginpagina moeten zien
+   - Je zou de inlogpagina van het digna-dashboard moeten zien
 
-#### Deploying to Apache Tomcat
+#### Deployen naar Apache Tomcat
 
-1. **Copy Dashboard to Tomcat**
-   - Kopieer de `dashboard`-map naar de Tomcat `webapps`-map
+1. **Kopieer Dashboard naar Tomcat**
+   - Kopieer de `dashboard`-map naar de `webapps`-directory van Tomcat
    - Hernoem indien nodig (bijv. naar `digna`)
    - Voorbeeld: `C:\Program Files\Apache Tomcat\webapps\digna`
 
-2. **Verify Deployment**
-   - Vernieuw of herlaad de Tomcat-beheerpagina (http://localhost:8080)
-   - Je zou "digna" (of je gekozen naam) moeten zien in de lijst met gedeployde applicaties
+2. **Verifieer deployment**
+   - Ververs of herlaad de Tomcat-beheerpagina (http://localhost:8080)
+   - Je zou "digna" (of de door jou gekozen naam) moeten zien in de lijst met gedeployde applicaties
 
-3. **Access the Dashboard**
+3. **Toegang tot het dashboard**
    - Open je browser
    - Navigeer naar `http://localhost:8080/digna`
-   - Je zou de digna-dashboard loginpagina moeten zien
+   - Je zou de inlogpagina van het digna-dashboard moeten zien
 
 ---
 
-## Running digna as a Windows Service {: #running-digna-as-a-windows-service }
+## digna als Windows-service uitvoeren {: #running-digna-as-a-windows-service }
 
-### Why Use a Windows Service?
+### Waarom een Windows-service gebruiken?
 
-Het draaien van de digna-backend als Windows-service zorgt ervoor dat deze:
+Het draaien van de digna-backend als een Windows-service zorgt ervoor dat deze:
 - Automatisch start wanneer de server opstart
 - Op de achtergrond draait zonder een open Opdrachtprompt
-- Automatisch herstart als deze crasht
+- Automatisch opnieuw start als deze crasht
 - Beheerd kan worden via Windows Services
 
-### Service Management Files
+### Bestanden voor servicemanagement
 
 Alle benodigde bestanden bevinden zich in de digna-installatiemap onder: `bin/`
 
 De volgende batchbestanden zijn beschikbaar:
-- `install_service.bat` — Registreert digna als Windows-service
-- `uninstall_service.bat` — Deïnstalleert de service
+- `install_service.bat` — Registreert digna als een Windows-service
+- `uninstall_service.bat` — Deregistreert de service
 - `start_service.bat` — Start de service
 - `stop_service.bat` — Stopt de service
 
-!!! warning "Administrator Required"
+!!! warning "Beheerdersrechten vereist"
 
-    Alle batchbestanden moeten met Administrator-rechten worden uitgevoerd.
+    Alle batchbestanden moeten worden uitgevoerd met Administrator-rechten.
 
-### Installing the Service
+### De service installeren
 
-1. **Open Command Prompt as Administrator**
+1. **Open Opdrachtprompt als Administrator**
    - Klik met de rechtermuisknop op Opdrachtprompt
-   - Selecteer "Run as Administrator"
+   - Kies "Als administrator uitvoeren"
 
-2. **Navigate to the bin Folder**
+2. **Navigeer naar de bin-map**
    ```bash
    cd C:\path\to\digna\bin
    ```
 
-3. **Run the Installation Script**
+3. **Voer het installatiescript uit**
    ```bash
    install_service.bat
    ```
 
-De digna-server is nu geregistreerd als Windows-service met **automatic startup** ingeschakeld. De service start niet direct — zie de volgende sectie om deze te starten.
+De digna-server is nu geregistreerd als een Windows-service met **automatische opstart** ingeschakeld. De service start niet direct — zie de volgende sectie om deze te starten.
 
-### Starting and Stopping the Service
+### De service starten en stoppen
 
-#### To Start the Service
+#### Om de service te starten
 
 1. Open Opdrachtprompt als Administrator
 2. Navigeer naar `digna\bin`
@@ -571,7 +575,7 @@ De digna-server is nu geregistreerd als Windows-service met **automatic startup*
    start_service.bat
    ```
 
-#### To Stop the Service
+#### Om de service te stoppen
 
 1. Open Opdrachtprompt als Administrator
 2. Navigeer naar `digna\bin`
@@ -582,61 +586,61 @@ De digna-server is nu geregistreerd als Windows-service met **automatic startup*
 
 !!! tip "Tip"
 
-    Stop altijd de service voordat je applicatiebestanden bijwerkt.
+    Stop de service altijd voordat je applicatiebestanden bijwerkt.
 
-### Moving the Service to a New Directory
+### De service naar een nieuwe map verplaatsen
 
-Als je de digna-installatie moet verplaatsen:
+Als je de digna-installatie wilt verplaatsen:
 
-1. **Uninstall the Current Service**
+1. **De huidige service deïnstalleren**
    ```bash
    cd C:\old\path\digna\bin
    uninstall_service.bat
    ```
 
-2. **Move the Application Files**
+2. **Verplaats de applicatiebestanden**
    - Verplaats de volledige digna-installatiemap naar de nieuwe locatie
 
-3. **Reinstall the Service**
+3. **Installeer de service opnieuw**
    ```bash
    cd C:\new\path\digna\bin
    install_service.bat
    ```
 
-4. **Start the Service**
+4. **Start de service**
    ```bash
    start_service.bat
    ```
 
-### Uninstalling the Service
+### De service verwijderen
 
-1. **Stop the Running Service**
+1. **Stop de draaiende service**
    ```bash
    cd C:\path\to\digna\bin
    stop_service.bat
    ```
 
-2. **Uninstall the Service**
+2. **Deïnstalleer de service**
    ```bash
    uninstall_service.bat
    ```
 
-De digna-server is nu gederegistreerd als Windows-service.
+De digna-server is nu afgehandeld als Windows-service.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Upgraden naar een nieuwe release {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Voordat je upgrade
 
-**Creating a digna Repository Backup is Mandatory**
+**Het maken van een digna-repositorybackup is verplicht**
 
-Voordat je digna upgradet, maak een back-up van je repository (PostgreSQL) om dataverlies te voorkomen.
-Een back-up zorgt dat je kunt herstellen als de upgrade onverwachte problemen veroorzaakt.
+Maak vóór het upgraden van digna een back-up van je repository (PostgreSQL) om gegevensverlies te voorkomen.
+Een back-up zorgt dat je kunt herstellen als de upgrade onverwachte problemen tegenkomt.
 
-### Upgrade Process
+### Upgradeproces
 
-#### Step 1: Stop digna Service
+#### Stap 1: Stop de digna-service
 
 Als digna als Windows-service draait, stop deze dan eerst:
 
@@ -645,35 +649,35 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Step 2: Backup Current Backend Installation
+#### Stap 2: Backup van de huidige backend-installatie
 
 In je digna-installatiemap:
 
 ```bash
-# Rename folder containing dignabackend
+# Hernoem map met dignabackend
 ren dignabackend dignabackend_old
 ```
 ```bash
-# Rename dashboard
+# Hernoem dashboard
 ren dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### Stap 3: Pak de nieuwe versie uit en deploy
 
 1. Pak het nieuwe digna-installatie-ZIP-bestand uit
-2. Kopieer de nieuwe `digna`-executable en de `dashboard`-map naar je installatiemap
+2. Kopieer het nieuwe `digna`-uitvoerbare bestand en de `dashboard`-map naar je installatiemap
 
 
-!!! warning "Important"
+!!! warning "Belangrijk"
 
-    Het `config.toml`-bestand wordt **nooit** opgenomen in het installatie-ZIP. Je bestaande configuratie blijft behouden.
+    Het `config.toml`-bestand is **nooit** inbegrepen in het installatie-ZIP. Je bestaande configuratie blijft veilig.
 
-### Step 4: Restore Your Configuration Files
+### Stap 4: Herstel je configuratiebestanden
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Step 5: Upgrade the Repository Schema
+### Stap 5: Upgrade het repository-schema
 
 Navigeer naar je digna-installatiemap en voer uit:
 
@@ -681,9 +685,9 @@ Navigeer naar je digna-installatiemap en voer uit:
 digna repo upgrade
 ```
 
-Dit werkt het PostgreSQL-schema bij naar de nieuwste versie en bewaart alle bestaande data.
+Dit werkt het PostgreSQL-schema bij naar de nieuwste versie terwijl alle bestaande data behouden blijven.
 
-### Step 6: Restart Services
+### Stap 6: Herstart services
 
 Als je draait als Windows-service:
 
@@ -699,10 +703,10 @@ cd C:\path\to\digna
 digna serve --address <address> --port <port>
 ```
 
-Als je IIS of Tomcat gebruikt, herstart de betreffende webserver.
+Als je IIS of Tomcat gebruikt, herstart dan de betreffende webserver.
 
-#### Step 7: Verify the Upgrade
+#### Stap 7: Verifieer de upgrade
 
 1. Open het digna-dashboard
-2. Controleer dat de interface correct laadt
+2. Controleer of de interface correct laadt
 3. Controleer de serverlogs op eventuele fouten

@@ -1,44 +1,44 @@
-# digna CLI Referenz 2025.04
+# digna CLI-Referenz 2025.04
 **2025-04-01**
 
-Diese Seite dokumentiert die vollständige Menge der in der ***digna*** CLI-Version **2025.04** verfügbaren Befehle, einschließlich Anwendungsbeispielen und Optionen.
+Auf dieser Seite sind alle Befehle der ***digna*** CLI-Version **2025.04** dokumentiert, einschließlich Anwendungsbeispielen und Optionen.
 
 ---
 
-## CLI Grundlagen
+## CLI-Grundlagen
 
 ---
 
-## Verwendung der Option `help`
+## Verwendung der `--help`-Option
 
-Die Option `--help` liefert Informationen über verfügbare Befehle und deren Verwendung. Es gibt zwei Hauptarten, diese Option zu verwenden:
+Die `--help`-Option liefert Informationen über verfügbare Befehle und deren Verwendung. Es gibt zwei Hauptarten, diese Option zu nutzen:
 
 1. **Allgemeine Hilfe anzeigen:**
    
-    Verwenden Sie --help unmittelbar nach dem Befehl ***dignacli***  
+   Verwenden Sie `--help` unmittelbar nach dem Wort `dignacli`  
    ```bash
    dignacli --help
    ```
 
-2. **Hilfe für bestimmte Befehle erhalten:**  
+2. **Hilfe für einen spezifischen Befehl abrufen:**  
   
-    Für detaillierte Informationen zu einem bestimmten Befehl fügen Sie `--help` an diesen Befehl an.
-    Zum Beispiel, um Hilfe zum Befehl `add-user` zu erhalten, führen Sie aus:
-     ```bash
-     dignacli add-user --help
-     ```
+   Für detaillierte Informationen zu einem bestimmten Befehl hängen Sie `--help` an diesen Befehl an.
+   Zum Beispiel, um Hilfe zum Befehl `add-user` zu erhalten, führen Sie aus:
+   ```bash
+   dignacli add-user --help
+   ```
 
-     ### Ausgabe:
+   ### Ausgabe:
       
-     - **Befehlsbeschreibung:** Liefert eine detaillierte Beschreibung dessen, was der Befehl tut.  
-     - **Syntax:** Zeigt die genaue Syntax, einschließlich erforderlicher und optionaler Argumente.  
-     - **Optionen:** Listet alle optionsspezifischen Optionen mit ihren Erläuterungen auf.  
-     - **Beispiele:** Bietet Beispiele dafür, wie der Befehl effektiv ausgeführt wird.
+   - **Befehlsbeschreibung:** Bietet eine detaillierte Beschreibung der Funktion des Befehls.  
+   - **Syntax:** Zeigt die genaue Syntax, inklusive erforderlicher und optionaler Argumente.  
+   - **Optionen:** Listet alle spezifischen Optionen des Befehls und deren Erklärungen auf.  
+   - **Beispiele:** Gibt Beispiele, wie der Befehl effektiv ausgeführt wird.
 
   
-## Verwendung des Befehls `check-repo-connection`
+## Verwendung des `check-repo-connection`-Befehls
 
-Der Befehl check-repo-connection ist ein Hilfswerkzeug innerhalb des ***digna*** CLI-Tools, das dazu dient, die Konnektivität und den Zugriff auf ein angegebenes ***digna*** Repository zu testen. Dieser Befehl stellt sicher, dass die CLI mit dem Repository interagieren kann.
+Der Befehl `check-repo-connection` ist ein Dienstprogramm innerhalb der ***digna*** CLI, mit dem die Konnektivität und der Zugriff auf ein angegebenes ***digna*** Repository getestet werden. Dieser Befehl stellt sicher, dass die CLI mit dem Repository kommunizieren kann.
       
 #### Befehlsverwendung
 ```bash
@@ -47,11 +47,11 @@ dignacli check-repo-connection
 
 Bei erfolgreicher Ausführung gibt der Befehl eine Bestätigung der Verbindung sowie Details zum Repository aus: Repository-Version, Host, Datenbank und Schema.  
   
-Wenn die Repository-Verbindung nicht erfolgreich ist, überprüfen Sie die Datei config.toml auf korrekte Konfigurationseinstellungen.
+Wenn die Repository-Verbindung nicht erfolgreich ist, prüfen Sie die Datei config.toml auf korrekte Konfigurationseinstellungen.
 
-## Verwendung des Befehls `version`
+## Verwendung des `--version`-Befehls
 
-Um die installierte Version von *dignacli* zu prüfen, verwenden Sie die Option --version.  
+Um die installierte Version von *dignacli* zu prüfen, verwenden Sie die Option `--version`.  
   
 #### Befehlsverwendung
 ```bash
@@ -63,21 +63,21 @@ dignacli --version
 dignacli version 2025.04
 ```
 
-## Verwendung von Logging-Optionen
+## Verwendung der Logging-Optionen
   
-Standardmäßig ist die Konsolenausgabe der ***digna*** Befehle minimalistisch gehalten. Die meisten Befehle bieten die Möglichkeit, zusätzliche Informationen auszugeben, mithilfe der folgenden Optionen:  
+Standardmäßig ist die Konsolenausgabe der ***digna***-Befehle minimal gehalten. Die meisten Befehle bieten jedoch die Möglichkeit, zusätzliche Informationen bereitzustellen. Die folgenden Optionen stehen dafür zur Verfügung:  
   
---verbose (-v)  
---debug (-d)  
---logfile (lf)  
+-- verbose (-v)  
+-- debug (-d)  
+-- logfile (lf)  
  
-„verbose“ und „debug“ legen den Detaillierungsgrad fest, während der Schalter „logfile“ es ermöglicht, die Ausgabe in eine Datei umzuleiten, anstatt sie im Konsolenfenster anzuzeigen.
+„verbose“ und „debug“ legen das Detaillierungsniveau fest, während die Option „logfile“ die Ausgabe in eine Datei umleitet, anstatt sie im Konsolenfenster anzuzeigen.
 
 ## Benutzerverwaltung
 
-### Verwendung des Befehls `add-user`
+### Verwendung des `add-user`-Befehls
   
-Der Befehl add-user in der ***digna*** CLI wird verwendet, um einen neuen Benutzer zum ***digna*** System hinzuzufügen.
+Der Befehl `add-user` in der ***digna*** CLI wird verwendet, um einen neuen Benutzer im ***digna***-System anzulegen.
   
 #### Befehlsverwendung
 ```bash
@@ -92,25 +92,25 @@ dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 
 #### Optionen
 
-- `--is_superuser`, `-su`: Flag, um den neuen Benutzer als Administrator zu kennzeichnen.
-- `--valid_until`, `-vu`: Legt ein Ablaufdatum für das Benutzerkonto im Format `YYYY-MM-DD HH:MI:SS` fest. Wenn nicht gesetzt, hat das Konto kein Ablaufdatum.
+- `--is_superuser`, `-su`: Kennzeichnet den neuen Benutzer als Administrator.
+- `--valid_until`, `-vu`: Setzt ein Ablaufdatum für das Benutzerkonto im Format `YYYY-MM-DD HH:MI:SS`. Wenn nicht gesetzt, hat das Konto kein Ablaufdatum.
 
 #### Beispiel
 
-Um einen neuen Benutzer mit dem Benutzernamen `jdoe`, dem vollständigen Namen `John Doe` und dem Passwort `password123` hinzuzufügen:
+Um einen neuen Benutzer mit dem Benutzernamen `jdoe`, vollständigem Namen `John Doe` und Passwort `password123` hinzuzufügen:
 
 ```bash
 dignacli add-user [OPTIONS] USER_NAME USER_FULL_NAME USER_PASSWORD
 ```
   
-Um einen neuen Benutzer hinzuzufügen und ein Ablaufdatum für das Konto festzulegen:
+Um einen neuen Benutzer hinzuzufügen und ein Ablaufdatum für das Konto zu setzen:
 ```bash
 dignacli add-user jdoe "John Doe" password123 --valid_until "2024-12-31 23:59:59"
 ```
 
-### Verwendung des Befehls `delete-user`
+### Verwendung des `delete-user`-Befehls
   
-Der Befehl `delete-user` in der ***digna*** CLI wird verwendet, um einen vorhandenen Benutzer aus dem ***digna*** System zu entfernen.
+Der Befehl `delete-user` in der ***digna*** CLI wird verwendet, um einen bestehenden Benutzer aus dem ***digna***-System zu entfernen.
   
 #### Befehlsverwendung
 ```bash
@@ -125,11 +125,11 @@ dignacli delete-user USER_NAME
 dignacli delete-user jdoe
 ```
   
-Bei Ausführung dieses Befehls wird der Benutzer `jdoe` aus dem ***digna*** System entfernt, sein Zugriff wird widerrufen und seine zugehörigen Daten sowie Berechtigungen im Repository werden gelöscht.
+Durch Ausführen dieses Befehls wird der Benutzer `jdoe` aus dem ***digna***-System entfernt; damit werden sein Zugriff sowie die zugehörigen Daten und Berechtigungen im Repository widerrufen bzw. gelöscht.
 
-### Verwendung des Befehls `modify-user`
+### Verwendung des `modify-user`-Befehls
 
-Der Befehl `modify-user` in der ***digna*** CLI wird verwendet, um die Details eines vorhandenen Benutzers im ***digna*** System zu aktualisieren.
+Der Befehl `modify-user` in der ***digna*** CLI wird verwendet, um die Daten eines bestehenden Benutzers im ***digna***-System zu aktualisieren.
 
 #### Befehlsverwendung
   
@@ -144,8 +144,8 @@ dignacli modify-user <USER_NAME> <USER_FULL_NAME> [options]
   
 #### Optionen  
   
-- `--is_superuser`, `-su`: Setzt den Benutzer als Superuser und gewährt erhöhte Berechtigungen. Dieses Flag benötigt keinen Wert.  
-- `--valid_until`, `-vu`: Legt ein Ablaufdatum für das Benutzerkonto im Format YYYY-MM-DD HH:MI:SS fest. Wenn nicht angegeben, bleibt das Konto unbegrenzt gültig.  
+- `--is_superuser`, `-su`: Setzt den Benutzer als Superuser und gewährt erweiterte Rechte. Dieser Schalter benötigt keinen Wert.  
+- `--valid_until`, `-vu`: Setzt ein Ablaufdatum für das Benutzerkonto im Format YYYY-MM-DD HH:MI:SS. Wenn nicht angegeben, bleibt das Konto unbegrenzt gültig.  
   
 #### Beispiel
   
@@ -154,9 +154,9 @@ Um den vollständigen Namen des Benutzers `jdoe` in „Johnathan Doe“ zu ände
 dignacli modify-user jdoe "Johnathan Doe" --is_superuser
 ```
 
-### Verwendung des Befehls `modify-user-pwd`
+### Verwendung des `modify-user-pwd`-Befehls
   
-Der Befehl `modify-user-pwd` in der ***digna*** CLI wird verwendet, um das Passwort eines vorhandenen Benutzers im ***digna*** System zu ändern.
+Der Befehl `modify-user-pwd` in der ***digna*** CLI wird verwendet, um das Passwort eines bestehenden Benutzers im ***digna***-System zu ändern.
   
 #### Befehlsverwendung
 ```bash
@@ -170,14 +170,14 @@ dignacli modify-user-pwd <USER_NAME> <USER_PWD>
   
 #### Beispiel
   
-Um das Passwort für den Benutzer `jdoe` in `newpassword123` zu ändern:
+Um das Passwort des Benutzers `jdoe` auf `newpassword123` zu ändern:
 ```bash
 dignacli modify-user-pwd jdoe newpassword123
 ```
 
-### Verwendung des Befehls `list-users`
+### Verwendung des `list-users`-Befehls
 
-Der Befehl `list-users` in der ***digna*** CLI zeigt eine Liste aller im ***digna*** System registrierten Benutzer an.
+Der Befehl `list-users` in der ***digna*** CLI zeigt eine Liste aller im ***digna***-System registrierten Benutzer an.
 
 #### Befehlsverwendung
 
@@ -185,13 +185,13 @@ Der Befehl `list-users` in der ***digna*** CLI zeigt eine Liste aller im ***dign
 dignacli list-users
 ```
 
-Bei Ausführung dieses Befehls verbindet sich die ***digna*** CLI mit dem ***digna*** Repository und listet alle Benutzer auf, wobei deren ID, Benutzername, vollständiger Name, Superuser-Status und Ablaufzeitstempel angezeigt werden.
+Bei Ausführung verbindet sich dieser Befehl mit dem ***digna***-Repository und listet alle Benutzer auf, einschließlich ihrer ID, des Benutzernamens, des vollständigen Namens, des Superuser-Status und der Ablaufzeitpunkte.
 
 ## Repository-Verwaltung
 
-### Verwendung des Befehls `upgrade-repo`
+### Verwendung des `upgrade-repo`-Befehls
   
-Der Befehl `upgrade-repo` in der ***digna*** CLI dient zum Aktualisieren oder Initialisieren des ***digna*** Repositories. Dieser Befehl ist essenziell, um Updates anzuwenden oder die Repository-Infrastruktur zum ersten Mal einzurichten.
+Der Befehl `upgrade-repo` in der ***digna*** CLI wird verwendet, um das ***digna***-Repository zu aktualisieren oder zu initialisieren. Dieser Befehl ist erforderlich, um Updates anzuwenden oder die Repository-Infrastruktur erstmals einzurichten.
   
 #### Befehlsverwendung
 
@@ -201,25 +201,25 @@ dignacli upgrade-repo [options]
   
 #### Optionen
   
-- `--simulation-mode`, `-s`: Wenn aktiviert, führt dieser Schalter den Befehl im Simulationsmodus aus, druckt die SQL-Anweisungen, die ausgeführt würden, führt sie aber nicht tatsächlich aus. Dies ist nützlich, um Änderungen vorab zu prüfen, ohne das Repository zu verändern.  
+- `--simulation-mode`, `-s`: Führt den Befehl im Simulationsmodus aus. Dabei werden die SQL-Anweisungen angezeigt, die ausgeführt würden, aber nicht tatsächlich ausgeführt. Nützlich, um Änderungen vorzuschauen, ohne das Repository zu verändern.  
 
   
 #### Beispiel
   
-Um das ***digna*** Repository zu aktualisieren, können Sie den Befehl ohne Optionen ausführen:
+Um das ***digna***-Repository zu aktualisieren, können Sie den Befehl ohne Optionen ausführen:
   
 ```bash
 dignacli upgrade-repo
 ```  
-Um das Upgrade im Simulationsmodus auszuführen (um die SQL-Anweisungen ohne Anwendung zu sehen):
+Um das Upgrade im Simulationsmodus auszuführen (um die SQL-Anweisungen zu sehen, ohne sie anzuwenden):
   
 ```bash
 dignacli upgrade-repo --simulation-mode
 ```
   
-Dieser Befehl ist wichtig für die Wartung des ***digna*** Systems und stellt sicher, dass das Datenbankschema und andere Repository-Komponenten mit der neuesten Softwareversion übereinstimmen.
+Dieser Befehl ist wichtig für die Wartung des ***digna***-Systems und stellt sicher, dass das Datenbankschema und andere Repository-Komponenten mit der neuesten Softwareversion übereinstimmen.
 
-### Verwendung des Befehls `encrypt`
+### Verwendung des `encrypt`-Befehls
   
 Der Befehl `encrypt` in der ***digna*** CLI wird verwendet, um ein Passwort zu verschlüsseln.
   
@@ -234,16 +234,16 @@ dignacli encrypt <PASSWORD>
   
 #### Beispiel
   
-Um ein Passwort zu verschlüsseln, müssen Sie das Passwort als Argument angeben.   
-Zum Beispiel, um das Passwort `mypassword123` zu verschlüsseln, würden Sie verwenden:
+Um ein Passwort zu verschlüsseln, geben Sie das Passwort als Argument an.   
+Beispielsweise, um das Passwort `mypassword123` zu verschlüsseln, verwenden Sie:
 ```bash
 dignacli encrypt mypassword123
 ```
-Dieser Befehl gibt die verschlüsselte Version des angegebenen Passworts aus, die dann in sicheren Kontexten verwendet werden kann. Wenn das Passwort-Argument nicht angegeben wird, zeigt die CLI einen Fehler an, der auf das fehlende Argument hinweist.
+Dieser Befehl gibt die verschlüsselte Version des angegebenen Passworts aus, die dann in sicheren Kontexten verwendet werden kann. Wird das Passwort-Argument nicht angegeben, meldet die CLI einen Fehler wegen des fehlenden Arguments.
 
-## Verwendung des Befehls `generate-key`
+## Verwendung des `generate-key`-Befehls
   
-Der Befehl `generate-key` wird verwendet, um einen Fernet-Schlüssel zu generieren, der für die Sicherung von Passwörtern im ***digna*** Repository erforderlich ist.
+Der Befehl `generate-key` erzeugt einen Fernet-Schlüssel, der zur Sicherung von Passwörtern im ***digna***-Repository benötigt wird.
   
 #### Befehlsverwendung
 ```bash
@@ -252,9 +252,9 @@ dignacli generate-key
   
 ## Datenverwaltung
 
-## Verwendung des Befehls `clean-up`
+## Verwendung des `clean-up`-Befehls
 
-Der Befehl `clean-up` in der ***digna*** CLI wird verwendet, um Profile, Vorhersagen und Daten des Ampelsystems (Traffic Light System) für eine oder mehrere Datenquellen innerhalb eines angegebenen Projekts zu entfernen. Dieser Befehl ist wichtig für das Datenlebenszyklus-Management und hilft, eine organisierte und effiziente Datenumgebung durch das Löschen veralteter oder unnötiger Daten aufrechtzuerhalten.
+Der Befehl `clean-up` in der ***digna*** CLI wird verwendet, um Profile, Vorhersagen und Daten des Ampelsystems für eine oder mehrere Datenquellen innerhalb eines angegebenen Projekts zu löschen. Dieser Befehl ist wichtig für das Daten-Lifecycle-Management und hilft, eine organisierte und effiziente Datenumgebung zu erhalten, indem veraltete oder unnötige Daten bereinigt werden.
 
 #### Befehlsverwendung
 
@@ -264,16 +264,16 @@ dignacli clean-up <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 #### Argumente
   
-- **PROJECT_NAME**: Der Name des Projekts, aus dem Daten entfernt werden sollen (erforderlich). Die Verwendung des Schlüsselworts all-projects in diesem Argument weist ***digna*** an, über alle bestehenden Projekte zu iterieren und diesen Befehl anzuwenden.
-- **FROM_DATE**: Das Startdatum und die Startuhrzeit für die Datenlöschung. Zulässige Formate sind %Y-%m-%d, %Y-%m-%dT%H:%M:%S oder %Y-%m-%d %H:%M:%S (erforderlich).
-- **TO_DATE**: Das Enddatum und die Enduhrzeit für die Datenlöschung, entsprechend denselben Formaten wie FROM_DATE (erforderlich).
+- **PROJECT_NAME**: Der Name des Projekts, aus dem Daten gelöscht werden sollen (erforderlich). Die Verwendung des Schlüsselworts all-projects in diesem Argument weist ***digna*** an, über alle vorhandenen Projekte zu iterieren und den Befehl anzuwenden.
+- **FROM_DATE**: Das Startdatum und die Startzeit für die Datenlöschung. Zulässige Formate umfassen %Y-%m-%d, %Y-%m-%dT%H:%M:%S oder %Y-%m-%d %H:%M:%S (erforderlich).
+- **TO_DATE**: Das Enddatum und die Endzeit für die Datenlöschung, in denselben Formaten wie FROM_DATE (erforderlich).
   
 #### Optionen
   
 - `--table-name`, `-tn`: Beschränkt die Clean-up-Operation auf eine bestimmte Tabelle innerhalb des Projekts.
-- `--table-filter`, `-tf`: Filtert, um das Clean-up auf Tabellen zu beschränken, die die angegebene Teilzeichenfolge im Namen enthalten.
-- `--timing`, `-tm`: Zeigt die Dauer des Clean-up-Prozesses nach Abschluss an.
-- `--help`: Zeigt Hilfsinformationen für den Clean-up-Befehl an und beendet die Ausführung.
+- `--table-filter`, `-tf`: Filtert und begrenzt die Bereinigung auf Tabellen, deren Namen die angegebene Teilzeichenfolge enthalten.
+- `--timing`, `-tm`: Zeigt nach Abschluss die Dauer des Clean-up-Prozesses an.
+- `--help`: Zeigt Hilfsinformationen zum Clean-up-Befehl an und beendet die Ausführung.
   
 #### Beispiel
   
@@ -291,9 +291,9 @@ dignacli clean-up ProjectA 2023-01-01 2023-06-30 --table-name Table1
   
 Dieser Befehl hilft bei der Verwaltung des Datenspeichers und stellt sicher, dass das Repository nur relevante Informationen enthält.
 
-## Verwendung des Befehls `list-projects`
+## Verwendung des `list-projects`-Befehls
   
-Der Befehl `list-projects` in der ***digna*** CLI wird verwendet, um eine Liste aller verfügbaren Projekte im ***digna*** System anzuzeigen.
+Der Befehl `list-projects` in der ***digna*** CLI zeigt eine Liste aller verfügbaren Projekte im ***digna***-System an.
   
 #### Befehlsverwendung
   
@@ -301,11 +301,11 @@ Der Befehl `list-projects` in der ***digna*** CLI wird verwendet, um eine Liste 
 dignacli list-projects
 ```
 
-Dieser Befehl ist insbesondere für Administratoren und Benutzer, die mehrere Projekte verwalten, nützlich und bietet einen schnellen Überblick über die im ***digna*** Repository verfügbaren Projekte.
+Dieser Befehl ist besonders nützlich für Administratoren und Benutzer, die mehrere Projekte verwalten, da er einen schnellen Überblick über die im ***digna***-Repository verfügbaren Projekte bietet.
 
-## Verwendung des Befehls `list-ds`
+## Verwendung des `list-ds`-Befehls
 
-Der Befehl `list-ds` in der ***digna*** CLI wird verwendet, um eine Liste aller verfügbaren Datenquellen innerhalb eines angegebenen Projekts anzuzeigen. Dieser Befehl ist nützlich, um die für Analyse und Verwaltung verfügbaren Datenbestände im ***digna*** System zu verstehen.
+Der Befehl `list-ds` in der ***digna*** CLI zeigt eine Liste aller verfügbaren Datenquellen innerhalb eines angegebenen Projekts an. Dieser Befehl ist nützlich, um die für Analyse und Verwaltung verfügbaren Datenbestände im ***digna***-System zu überblicken.
 
 #### Befehlsverwendung
   
@@ -318,18 +318,18 @@ dignacli list-ds <PROJECT_NAME>
   
 #### Beispiel
   
-Um alle Datenquellen im Projekt mit dem Namen `ProjectA` aufzulisten:
+Um alle Datenquellen im Projekt `ProjectA` aufzulisten:
   
 ```bash
 dignacli list-ds ProjectA
 ```
   
-Dieser Befehl gibt den Benutzern einen Überblick über die im Projekt verfügbaren Datenquellen und unterstützt sie dabei, die Datenlandschaft effektiver zu navigieren und zu verwalten.
+Dieser Befehl gibt Nutzern einen Überblick über die im Projekt verfügbaren Datenquellen und unterstützt sie dabei, die Datenlandschaft besser zu navigieren und zu verwalten.
 
 
-## Verwendung des Befehls `inspect`
+## Verwendung des `inspect`-Befehls
 
-Der Befehl `inspect` in der ***digna*** CLI wird verwendet, um Profile, Vorhersagen und Daten des Ampelsystems (Traffic Light System) für eine oder mehrere Datenquellen innerhalb eines angegebenen Projekts zu erstellen. Dieser Befehl hilft bei der Analyse und Überwachung von Daten über einen definierten Zeitraum.
+Der Befehl `inspect` in der ***digna*** CLI wird verwendet, um Profile, Vorhersagen und Daten des Ampelsystems für eine oder mehrere Datenquellen innerhalb eines angegebenen Projekts zu erstellen. Dieser Befehl hilft bei der Analyse und Überwachung von Daten über einen definierten Zeitraum.
 
 #### Befehlsverwendung
 
@@ -339,24 +339,24 @@ dignacli inspect <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 #### Argumente
   
-- **PROJECT_NAME**: Der Name des Projekts, für das Daten inspiziert werden sollen (erforderlich). Die Verwendung des Schlüsselworts all-projects in diesem Argument weist ***digna*** an, über alle bestehenden Projekte zu iterieren und diesen Befehl anzuwenden.
-- **FROM_DATE**: Das Startdatum und die Startuhrzeit für die Dateninspektion. Zulässige Formate sind %Y-%m-%d, %Y-%m-%dT%H:%M:%S oder %Y-%m-%d %H:%M:%S (erforderlich).
-- **TO_DATE**: Das Enddatum und die Enduhrzeit für die Dateninspektion, entsprechend denselben Formaten wie FROM_DATE (erforderlich).
+- **PROJECT_NAME**: Der Name des Projekts, für das Daten inspiziert werden sollen (erforderlich). Die Verwendung des Schlüsselworts all-projects in diesem Argument weist ***digna*** an, über alle vorhandenen Projekte zu iterieren und den Befehl anzuwenden.
+- **FROM_DATE**: Das Startdatum und die Startzeit für die Dateninspektion. Zulässige Formate umfassen %Y-%m-%d, %Y-%m-%dT%H:%M:%S oder %Y-%m-%d %H:%M:%S (erforderlich).
+- **TO_DATE**: Das Enddatum und die Endzeit für die Dateninspektion, in denselben Formaten wie FROM_DATE (erforderlich).
   
 #### Optionen
 
 - `--table-name`, `-tn`: Beschränkt die Inspektion auf eine bestimmte Tabelle innerhalb des Projekts.
-- `--table-filter`, `-tf`: Filter, um nur Tabellen zu inspizieren, die die angegebene Teilzeichenfolge im Namen enthalten.
+- `--table-filter`, `-tf`: Filtert und inspiziert nur Tabellen, deren Namen die angegebene Teilzeichenfolge enthalten.
 - `--do-profile`: Löst die Neuerfassung von Profilen aus. Standard ist do-profile.
 - `--no-do-profile`: Verhindert die Neuerfassung von Profilen.
 - `--do-prediction`: Löst die Neuberechnung von Vorhersagen aus. Standard ist do-prediction.
 - `--no-do-prediction`: Verhindert die Neuberechnung von Vorhersagen.
-- `--do-alert-status`: Löst die Neuberechnung der Alarmstatus aus. Standard ist do-alert-status.
-- `--no-do-alert-status`: Verhindert die Neuberechnung der Alarmstatus.
+- `--do-alert-status`: Löst die Neuberechnung von Alarmstatus aus. Standard ist do-alert-status.
+- `--no-do-alert-status`: Verhindert die Neuberechnung von Alarmstatus.
 - `--iterative`: Löst die Inspektion eines Zeitraums in täglichen Iterationen aus. Standard ist iterative.
 - `--no-iterative`: Löst die Inspektion des gesamten Zeitraums in einem Durchlauf aus.
-- `--enable_notification`, `-en`: Aktiviert das Versenden von Benachrichtigungen im Falle von Alarmen.
-- `--timing`, `-tm`: Zeigt die Dauer des Inspektionsprozesses nach Abschluss an.
+- `--enable_notification`, `-en`: Ermöglicht das Versenden von Benachrichtigungen im Falle von Alerts.
+- `--timing`, `-tm`: Zeigt nach Abschluss die Dauer des Inspektionsprozesses an.
   
 #### Beispiel
   
@@ -371,11 +371,11 @@ Um nur eine bestimmte Tabelle zu inspizieren und die Neuberechnung der Vorhersag
 ```bash
 dignacli inspect ProjectA 2024-01-01 2024-01-31 --table-name Table1 --force-prediction
 ```
-Dieser Befehl ist nützlich, um aktualisierte Profile und Vorhersagen zu erzeugen, die Datenintegrität zu überwachen und Alarmmechanismen innerhalb eines definierten Projektzeitraums zu verwalten.
+Dieser Befehl ist nützlich, um aktualisierte Profile und Vorhersagen zu erzeugen, die Datenintegrität zu überwachen und Alarmsysteme innerhalb eines definierten Projektzeitraums zu verwalten.
 
-## Verwendung des Befehls `tls-status`
+## Verwendung des `tls-status`-Befehls
 
-Der Befehl `tls-status` in der ***digna*** CLI wird verwendet, um den Status des Ampelsystems (Traffic Light System, TLS) für eine bestimmte Tabelle innerhalb eines Projekts an einem angegebenen Datum abzufragen. Das Ampelsystem liefert Einblicke in die Gesundheit und Qualität der Daten und weist auf mögliche Probleme oder Alarme hin, die Aufmerksamkeit erfordern.
+Der Befehl `tls-status` in der ***digna*** CLI wird verwendet, um den Status des Ampelsystems (TLS) für eine bestimmte Tabelle innerhalb eines Projekts an einem bestimmten Datum abzufragen. Das Ampelsystem liefert Einblicke in die Gesundheit und Qualität der Daten und zeigt eventuelle Probleme oder Alarme an, die Aufmerksamkeit erfordern.
   
 #### Befehlsverwendung
   
@@ -386,7 +386,7 @@ dignacli tls-status <PROJECT_NAME> <TABLE_NAME> <DATE>
 #### Argumente
   
 - **PROJECT_NAME**: Der Name des Projekts, für das der TLS-Status abgefragt wird (erforderlich).
-- **TABLE_NAME**: Die spezifische Tabelle innerhalb des Projekts, für die der TLS-Status benötigt wird (erforderlich).
+- **TABLE_NAME**: Die konkrete Tabelle innerhalb des Projekts, für die der TLS-Status benötigt wird (erforderlich).
 - **DATE**: Das Datum, für das der TLS-Status abgefragt wird, typischerweise im Format %Y-%m-%d (erforderlich).
   
 #### Beispiel
@@ -397,11 +397,11 @@ Um den TLS-Status für eine Tabelle namens UserData im Projekt ProjectA am 1. Ju
 dignacli tls-status ProjectA UserData 2024-07-01
 ```
 
-Dieser Befehl hilft Benutzern dabei, die Datenqualität zu überwachen und zu pflegen, indem er einen klaren und umsetzbaren Statusbericht auf Basis vordefinierter Kriterien liefert.
+Dieser Befehl hilft Nutzern, die Datenqualität zu überwachen und zu erhalten, indem er einen klaren und umsetzbaren Statusbericht basierend auf vordefinierten Kriterien liefert.
 
-## Verwendung des Befehls `inspect-async`
+## Verwendung des `inspect-async`-Befehls
 
-Der Befehl `inspect-async` in der ***digna*** CLI wird verwendet, um das Backend anzuweisen, die Inspektion für eine oder mehrere Datenquellen eines Projekts asynchron durchzuführen. Wenn project_name auf all-projects gesetzt ist, iteriert die Inspektion über alle verfügbaren Projekte und führt die Inspektion durch. Er liefert eine Request-ID zurück, mit der der Fortschritt der Inspektion verfolgt werden kann.
+Der Befehl `inspect-async` in der ***digna*** CLI weist das Backend an, die Inspektion für eine oder mehrere Datenquellen eines Projekts asynchron auszuführen. Wenn PROJECT_NAME auf all-projects gesetzt ist, wird die Inspektion über alle verfügbaren Projekte iteriert und ausgeführt. Der Befehl gibt eine Request-ID zurück, mit der der Fortschritt der Inspektion nachverfolgt werden kann.
 
 #### Befehlsverwendung
 
@@ -411,27 +411,27 @@ dignacli inspect-async <PROJECT_NAME> <FROM_DATE> <TO_DATE> [options]
   
 #### Argumente
   
-- **PROJECT_NAME**: Der Name des Projekts, für das Daten inspiziert werden sollen (erforderlich). Die Verwendung des Schlüsselworts all-projects in diesem Argument weist ***digna*** an, über alle bestehenden Projekte zu iterieren und diesen Befehl anzuwenden.
-- **FROM_DATE**: Das Startdatum und die Startuhrzeit für die Dateninspektion. Zulässige Formate sind %Y-%m-%d, %Y-%m-%dT%H:%M:%S oder %Y-%m-%d %H:%M:%S (erforderlich).
-- **TO_DATE**: Das Enddatum und die Enduhrzeit für die Dateninspektion, entsprechend denselben Formaten wie FROM_DATE (erforderlich).
+- **PROJECT_NAME**: Der Name des Projekts, für das Daten inspiziert werden sollen (erforderlich). Die Verwendung des Schlüsselworts all-projects in diesem Argument weist ***digna*** an, über alle vorhandenen Projekte zu iterieren und den Befehl anzuwenden.
+- **FROM_DATE**: Das Startdatum und die Startzeit für die Dateninspektion. Zulässige Formate umfassen %Y-%m-%d, %Y-%m-%dT%H:%M:%S oder %Y-%m-%d %H:%M:%S (erforderlich).
+- **TO_DATE**: Das Enddatum und die Endzeit für die Dateninspektion, in denselben Formaten wie FROM_DATE (erforderlich).
   
 #### Optionen
 
 - `--table-name`, `-tn`: Beschränkt die Inspektion auf eine bestimmte Tabelle innerhalb des Projekts.
-- `--table-filter`, `-tf`: Filter, um nur Tabellen zu inspizieren, die die angegebene Teilzeichenfolge im Namen enthalten.
+- `--table-filter`, `-tf`: Filtert und inspiziert nur Tabellen, deren Namen die angegebene Teilzeichenfolge enthalten.
 
   
 #### Beispiel
   
-Um Daten für das Projekt `ProjectA` vom 1. Januar 2024 bis zum 31. Januar 2024 asynchron zu inspizieren:
+Um Daten für das Projekt `ProjectA` vom 1. Januar 2024 bis zum 31. Januar 2024 asynchron inspizieren zu lassen:
   
 ```bash
 dignacli inspect-async ProjectA 2024-01-01 2024-01-31
 ```
   
-## Verwendung des Befehls `inspect-status`
+## Verwendung des `inspect-status`-Befehls
 
-Der Befehl `inspect-status` in der ***digna*** CLI wird verwendet, um den Fortschritt einer asynchronen Inspektion anhand der Request-ID zu prüfen.
+Der Befehl `inspect-status` in der ***digna*** CLI wird verwendet, um den Fortschritt einer asynchronen Inspektion anhand der Request-ID zu überprüfen.
 
 #### Befehlsverwendung
 
@@ -445,19 +445,19 @@ dignacli inspect-status <REQUEST ID> [options]
   
 #### Optionen
 
-- `--report_level`, `-rl`: Setzt das Berichtslevel: 'task' oder 'step' [Standard: task]
+- `--report_level`, `-rl`: Setzt das Berichtsniveau: 'task' oder 'step' [Standard: task]
   
 #### Beispiel
   
-Um den Fortschritt einer Inspektion mit der Request-ID 12345 auf detaillierter Schritt-Ebene zu prüfen:
+Um den Fortschritt einer Inspektion mit der Request-ID 12345 auf detaillierter Schrittebene zu prüfen:
   
 ```bash
 dignacli inspect-status 12345 --report-level step
 ```
   
-## Verwendung des Befehls `export-ds`
+## Verwendung des `export-ds`-Befehls
 
-Der Befehl `export-ds` in der ***digna*** CLI wird verwendet, um einen Export von Datenquellen aus dem ***digna*** Repository zu erstellen. Standardmäßig werden alle Datenquellen eines angegebenen Projekts exportiert.
+Der Befehl `export-ds` in der ***digna*** CLI wird verwendet, um einen Export von Datenquellen aus dem ***digna***-Repository zu erstellen. Standardmäßig werden alle Datenquellen eines Projekts exportiert.
 
 #### Befehlsverwendung
   
@@ -475,16 +475,16 @@ dignacli export-ds <PROJECT_NAME> [options]
     
 #### Beispiel
   
-Um alle Datenquellen aus dem Projekt mit dem Namen `ProjectA` zu exportieren:
+Um alle Datenquellen des Projekts `ProjectA` zu exportieren:
   
 ```bash
 dignacli export-ds ProjectA
 ```
   
-Dieser Befehl exportiert alle Datenquellen aus `ProjectA` als JSON-Dokument, das in ein anderes Projekt oder ein anderes ***digna*** Repository importiert werden kann.
+Dieser Befehl exportiert alle Datenquellen aus `ProjectA` als JSON-Dokument, das in ein anderes Projekt oder Repository von ***digna*** importiert werden kann.
 
 
-## Verwendung des Befehls `import-ds`
+## Verwendung des `import-ds`-Befehls
 
 Der Befehl `import-ds` in der ***digna*** CLI wird verwendet, um Datenquellen in ein Zielprojekt zu importieren und einen Importbericht zu erstellen.
 
@@ -496,12 +496,12 @@ dignacli import-ds <PROJECT_NAME> <EXPORT_FILE> [options]
 
 #### Argumente
 - **PROJECT_NAME**: Der Name des Projekts, in das die Datenquellen importiert werden sollen.
-- **EXPORT_FILE**: Der Dateiname des zu importierenden Datenquellen-Exports.
+- **EXPORT_FILE**: Der Dateiname der zu importierenden Datenquellen-Exportdatei.
 
 #### Optionen
 
-- `--output-file`, `-o`: Datei, in der der Importbericht gespeichert wird (falls nicht angegeben, wird der Bericht tabellarisch im Terminal ausgegeben).
-- `--output-format`, `-f`: Format, in dem der Importbericht gespeichert werden soll (json, csv).
+- `--output-file`, `-o`: Datei, in der der Importbericht gespeichert wird (wenn nicht angegeben, wird der Bericht tabellarisch im Terminal ausgegeben).
+- `--output-format`, `-f`: Format zur Speicherung des Importberichts (json, csv).
     
 #### Beispiel
   
@@ -511,11 +511,11 @@ Um alle Datenquellen aus der Exportdatei `my_export.json` in `ProjectB` zu impor
 dignacli import-ds ProjectB my_export.json
 ```
   
-Nach dem Import zeigt dieser Befehl auch einen Bericht über importierte und übersprungene Objekte an. Nur neue Datenquellen werden in `ProjectB` importiert. Um herauszufinden, welche Objekte importiert und welche übersprungen würden, können Sie den Befehl `plan-import-ds` verwenden.
+Nach dem Import zeigt dieser Befehl zudem einen Bericht über importierte und übersprungene Objekte an. Es werden nur neue Datenquellen in `ProjectB` importiert. Um herauszufinden, welche Objekte importiert und welche übersprungen würden, können Sie den Befehl `plan-import-ds` verwenden.
 
-## Verwendung des Befehls `plan-import-ds`
+## Verwendung des `plan-import-ds`-Befehls
 
-Der Befehl `plan-import-ds` in der ***digna*** CLI wird verwendet, um das Importieren von Datenquellen in ein Zielprojekt zu planen und einen Importbericht zu erstellen.
+Der Befehl `plan-import-ds` in der ***digna*** CLI wird verwendet, um einen Importplan für Datenquellen in ein Zielprojekt zu erstellen und einen Bericht zu generieren, ohne tatsächlich zu importieren.
 
 #### Befehlsverwendung
   
@@ -525,12 +525,12 @@ dignacli plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [options]
 
 #### Argumente
 - **PROJECT_NAME**: Der Name des Projekts, in das die Datenquellen importiert werden würden.
-- **EXPORT_FILE**: Der Dateiname des zu analysierenden Datenquellen-Exports vor dem Import.
+- **EXPORT_FILE**: Der Dateiname der zu analysierenden Exportdatei vor dem Import.
 
 #### Optionen
 
-- `--output-file`, `-o`: Datei, in der der Importbericht gespeichert wird (falls nicht angegeben, wird der Bericht tabellarisch im Terminal ausgegeben).
-- `--output-format`, `-f`: Format, in dem der Importbericht gespeichert werden soll (json, csv).
+- `--output-file`, `-o`: Datei, in der der Importbericht gespeichert wird (wenn nicht angegeben, wird der Bericht tabellarisch im Terminal ausgegeben).
+- `--output-format`, `-f`: Format zur Speicherung des Importberichts (json, csv).
     
 #### Beispiel
   
@@ -540,4 +540,4 @@ Um zu prüfen, welche Datenquellen aus der Exportdatei `my_export.json` beim Imp
 dignacli plan-import-ds ProjectB my_export.json
 ```
   
-Dieser Befehl zeigt nur einen Importplan der zu importierenden und zu überspringenden Objekte an.
+Dieser Befehl zeigt lediglich einen Importplan der Objekte, die importiert bzw. übersprungen werden würden.

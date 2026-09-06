@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# macOS용 digna 설치 안내 Release 2026.06
 
-**Release:** 2026.06
+**릴리스:** 2026.06
 
-**Last Updated:** September 5, 2026
+**최종 업데이트:** 2026년 9월 5일
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## 목차
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows?
-
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+1. [소개](#introduction)
+2. [시스템 요구사항](#system-requirements)
+3. [사전 설치 준비](#pre-installation-setup)
+4. [PostgreSQL 서버 설정](#postgresql-server-setup)
+5. [웹 서버 구성](#web-server-configuration)
+6. [초기 설치](#initial-installation)
+7. [백엔드 구성](#backend-configuration)
+8. [대시보드 구성](#dashboard-configuration)
+9. [digna를 백그라운드 서비스로 실행하기](#running-digna-as-a-background-service)
+10. [새 릴리스로 업그레이드하기](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## 소개 {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### digna에 관하여
 
-| Requirement | Specification |
+digna는 데이터 웨어하우스, 데이터 레이크, 레이크하우스 등 다양한 데이터 환경에서 데이터 품질 관리를 최적화하도록 설계된 AI 기반 플랫폼입니다. 자동화, 실시간 모니터링 및 이상 탐지를 통해 현대 데이터 문제를 해결할 수 있도록 높은 확장성과 적응성을 갖추고 있습니다.
+
+digna는 두 가지 주요 구성 요소로 이루어져 있습니다:
+
+- **dignabackend**: 데이터 처리 및 품질 검사를 담당하는 핵심 엔진입니다.
+- **dignadashboard**: 웹 서버에 호스팅되는 웹 기반 인터페이스로, digna 플랫폼과 상호작용하고 데이터 품질 지표를 시각화하는 사용자 친화적 수단을 제공합니다.
+
+### Release 2026.06의 변경 사항
+
+이번 릴리스는 데이터 관찰 가능성(data observability) 기능을 코드 안으로 직접 제공하여 개발자가 소스에서 데이터 품질을 모니터링할 수 있게 합니다. 전체 내용은 [릴리스 노트](http://docs.digna.ai/changelog/Release_202606/)를 참조하세요.
+
+### Windows 또는 Linux용 안내를 찾고 계신가요?
+
+이 가이드는 macOS를 다룹니다. 다른 플랫폼은 [Windows 설치 안내](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) 또는 [Linux 설치 안내](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md)를 참조하세요.
+
+---
+
+## 시스템 요구사항 {: #system-requirements }
+
+설치를 시작하기 전에 시스템이 다음 최소 요구사항을 충족하는지 확인하세요:
+
+| 요구사항 | 사양 |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **운영체제** | macOS 13 (Ventura) 이상 |
+| **아키텍처** | Apple Silicon (arm64) 또는 Intel (x86_64) |
+| **메모리 (최소 구성)** | 16 GB RAM |
+| **디스크 공간** | 10 GB 사용 가능 저장소 |
+| **데이터베이스** | PostgreSQL Server 12 이상 |
+| **웹 서버** | nginx, Apache httpd 또는 동등한 서버 |
+| **명령줄 도구** | Xcode Command Line Tools (Homebrew에서 필요) |
 
-### Database Installation Options
+### 데이터베이스 설치 옵션
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**PostgreSQL가 이미 설치되어 있는 경우:**
+기존 PostgreSQL 서버에 digna용 새 데이터베이스를 추가할 수 있습니다.
 
-**If installing PostgreSQL on the same machine as digna:**
+**digna와 동일한 머신에 PostgreSQL을 설치하는 경우:**
 
-!!! info "Recommended Specifications"
+!!! info "권장 사양"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **메모리**: 32 GB RAM (16 GB 대신)
+    - **디스크 공간**: 50 GB 사용 가능 저장소 (10 GB 대신)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    이 권장 사양은 digna와 PostgreSQL 데이터베이스가 동시에 실행될 때를 고려한 것입니다.
 
-### Checking Your Architecture
+### 아키텍처 확인 방법
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+이 가이드의 여러 경로는 Apple Silicon과 Intel Mac 간에 다릅니다. 어느 쪽인지 확인하려면 **터미널**을 열고 다음을 실행하세요:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew는 `/opt/homebrew`에 설치됩니다.
+- `x86_64` — Intel. Homebrew는 `/usr/local`에 설치됩니다.
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    어느 경로든 하드코딩하기보다는, 이 가이드에서는 `$(brew --prefix)`를 사용합니다. 이 명령은 두 아키텍처 모두에서 올바른 위치로 확장되므로 명령을 그대로 복사해서 사용할 수 있습니다.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## 사전 설치 준비 {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+digna를 설치하기 전에 다음 세 가지 주요 필수 요소가 준비되어 있는지 확인하세요:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – 아래 구성 요소를 설치하는 데 사용되는 패키지 관리자
+2. **PostgreSQL 서버** – 계산된 메트릭 및 성능 데이터를 저장하기 위한 데이터베이스
+3. **웹 서버** – digna 대시보드를 호스팅하기 위한 서버
 
-If these components are not already set up, follow the sections below to install and configure them.
+이들 구성 요소가 아직 설정되어 있지 않다면, 아래 섹션을 따라 설치 및 구성하세요.
 
-### Installing Homebrew
+### Homebrew 설치
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew는 macOS의 표준 패키지 관리자이며 이 가이드 전반에서 PostgreSQL과 nginx를 설치하는 데 사용됩니다.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### 1단계: Homebrew가 이미 설치되어 있는지 확인
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+**터미널**을 열고(유틸리티에서 또는 `Cmd + Space` 후 Terminal 입력) 다음을 실행하세요:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+버전 번호가 반환되면 [PostgreSQL 서버 설정](#postgresql-server-setup) 섹션으로 건너뛰세요.
 
-#### Step 2: Install Homebrew
+#### 2단계: Homebrew 설치
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+명령을 찾을 수 없는 경우, [공식 Homebrew 사이트](https://brew.sh)의 지침에 따라 Homebrew를 설치하세요. 설치 프로그램은 Xcode Command Line Tools가 없는 경우 이를 함께 설치합니다.
 
-#### Step 3: Add Homebrew to Your PATH
+#### 3단계: Homebrew를 PATH에 추가
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Apple Silicon에서는 설치 프로그램이 Homebrew를 셸 환경에 추가하기 위한 두 명령을 출력합니다. 지시에 따라 해당 명령을 실행한 후 다음을 확인하세요:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Apple Silicon에서는 `/opt/homebrew`를, Intel에서는 `/usr/local`을 출력해야 합니다.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL 서버 설정 {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### 이미 PostgreSQL이 있는 경우
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+PostgreSQL이 로컬 머신에서 이미 실행 중이거나 관리형 원격 PostgreSQL 서버를 사용하는 경우, [다음 섹션](#web-server-configuration)으로 건너뛰세요.
 
-### Installation Options
+### 설치 옵션
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS에서는 PostgreSQL을 설치하는 두 가지 간단한 방법이 있습니다. 하나만 선택하세요:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — 명령줄 설치, 서버 배포에 권장
+- [Postgres.app](#postgresql-app) — 그래픽 설치, 로컬 평가에 편리
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Homebrew로 PostgreSQL 설치 {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### 1단계: PostgreSQL 포뮬러 설치
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### 2단계: PostgreSQL을 PATH에 추가
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+버전 지정 포뮬러는 *keg-only*이므로 Homebrew가 자동으로 명령을 PATH에 연결하지 않습니다. 직접 추가하세요:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "참고"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    macOS의 기본 셸인 `zsh`를 가정한 예입니다. `bash`를 사용하는 경우 동일한 줄을 `~/.bash_profile`에 추가하세요.
 
-#### Step 3: Start the PostgreSQL Service
+#### 3단계: PostgreSQL 서비스 시작
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+이 명령은 PostgreSQL을 즉시 시작하고 로그인할 때 자동으로 다시 시작되도록 구성합니다.
 
-#### Step 4: Verify the Installation
+#### 4단계: 설치 확인
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+설치가 성공했다면 PostgreSQL 버전이 표시됩니다.
 
-#### Step 5: Connect to the Server
+#### 5단계: 서버에 연결
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "중요 — macOS는 이 부분에서 Windows와 다릅니다"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Windows 설치 관리자는 `postgres` 슈퍼유저와 비밀번호를 생성하도록 안내합니다. Homebrew는 그렇지 않습니다. 대신 macOS 계정 이름으로 된 슈퍼유저를 생성하며 비밀번호가 없고 로컬 머신에서만 접근할 수 있습니다.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    따라서 초기 Homebrew 설치에는 `postgres` 역할이 없습니다. 슈퍼유저가 필요할 때는 자신의 계정 이름을 사용하고, [초기 설치](#initial-installation)에 설명된 대로 명시적인 digna 사용자를 생성하세요.
 
-#### Step 6: Confirm the Port
+#### 6단계: 포트 확인
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+기본 PostgreSQL 포트는 `5432`입니다. 서버가 어느 포트를 수신하는지 확인하려면:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+이 값을 기록해 두세요 — digna 백엔드를 구성할 때 필요합니다.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Postgres.app로 PostgreSQL 설치 {: #postgresql-app }
 
-If you prefer a graphical installation:
+그래픽 설치를 선호하는 경우:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. [Postgres.app](https://postgresapp.com)을 다운로드하여 **Applications** 폴더로 드래그합니다.
+2. 앱을 열고 **Initialize**를 클릭하여 새 서버를 만듭니다.
+3. 앱의 지침에 따라 명령줄 도구를 PATH에 추가합니다.
+4. 설치 확인:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Postgres.app은 macOS 계정 이름으로 된 슈퍼유저도 생성합니다.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## 웹 서버 구성 {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna는 대시보드를 호스팅하기 위해 웹 서버가 필요합니다. 다음 옵션 중 하나를 선택하세요:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — Homebrew로 설치, 권장
+- [Apache httpd](#apache-setup) — macOS에 포함
 
-You only need to install and configure **one** of these servers.
+이 중 하나만 설치하고 구성하면 됩니다.
 
-Both sections configure two things the dashboard depends on:
+두 섹션 모두 대시보드가 의존하는 두 가지를 구성합니다:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **단일 페이지 애플리케이션(fallback)** — 대시보드 URL을 새로고침해도 404가 반환되지 않도록 함
+- **`.md` MIME 타입** — Markdown 파일이 올바르게 제공되도록 함
 
-### nginx Setup {: #nginx-setup }
+### nginx 설정 {: #nginx-setup }
 
-#### Overview
+#### 개요
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx는 정적 digna 대시보드를 제공하는 데 적합한 가볍고 고성능의 웹 서버입니다.
 
-#### Installation
+#### 설치
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### nginx 시작
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### 설치 확인
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. 브라우저를 엽니다.
+2. `http://localhost:8080`로 이동합니다.
+3. nginx 환영 페이지가 표시되어야 합니다.
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "참고 — 기본 포트는 8080이며 80이 아닙니다"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew는 관리자 권한 없이 실행할 수 있도록 nginx를 포트 `8080`으로 설정합니다. macOS에서 포트 `80` 또는 1024 미만의 다른 포트에 바인딩하려면 루트 권한이 필요합니다.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    대시보드를 포트 80에서 제공하려면 아래 구성에서 `listen 8080;`을 `listen 80;`으로 변경하고 대신 `sudo brew services start nginx`로 시작하세요.
 
-#### Configuring a Site for the Dashboard
+#### 대시보드용 사이트 구성
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Homebrew의 nginx 구성은 `servers` 디렉터리의 모든 파일을 포함합니다. digna용 전용 구성 파일을 생성하세요:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+다음 내용을 붙여넣고 `/path/to/digna/dashboard`를 압축을 푼 `dashboard` 폴더의 실제 경로로 바꾸세요:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "중요"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    `try_files` 지시어가 없으면 루트 URL이 아닌 대시보드 페이지를 새로고침할 때 404가 반환됩니다. 이는 Windows의 IIS에서 요구되는 URL Rewrite 모듈과 동등한 nginx 설정입니다.
 
-#### Apply the Configuration
+#### 구성 적용
 
-Test the configuration for syntax errors, then reload nginx:
+구성 문법 오류가 없는지 테스트한 다음 nginx를 다시 로드하세요:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd 설정 {: #apache-setup }
 
-#### Overview
+#### 개요
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS에는 Apache httpd가 포함되어 있어 별도 설치가 필요 없습니다. 기본적으로 비활성화되어 있습니다.
 
-#### Starting Apache
+#### Apache 시작
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### 설치 확인
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. 브라우저를 엽니다.
+2. `http://localhost`로 이동합니다.
+3. "It works!" 메시지가 표시되어야 합니다.
 
-#### Required: Enable mod_rewrite
+#### 필수: mod_rewrite 활성화
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+대시보드는 URL 재작성 기능이 필요합니다. Apache 구성 파일을 엽니다:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+다음 줄을 찾아 앞의 `#`를 제거하여 주석을 해제하세요:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### 필수: .htaccess 재정의 허용
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+같은 파일에서 `<Directory "/Library/WebServer/Documents">` 블록을 찾아 다음을 변경하세요:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+다음으로:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### 필수: Markdown 파일용 MIME 타입
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+여전히 `httpd.conf`에서 Markdown 파일이 올바르게 제공되도록 다음 줄을 추가하세요:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "중요"
 
-    Without this setting, `.md` files may not be served properly.
+    이 설정이 없으면 `.md` 파일이 제대로 제공되지 않을 수 있습니다.
 
-#### Apply the Configuration
+#### 구성 적용
 
-Check the configuration for syntax errors, then restart Apache:
+구성 문법 오류를 검사한 다음 Apache를 다시 시작하세요:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## 초기 설치 {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### 1단계: digna 리포지토리 설정
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+digna 리포지토리는 digna가 계산한 모든 메트릭을 저장합니다. 분석 및 성능 데이터의 중앙 데이터베이스 역할을 합니다.
 
-#### Create Repository Schema and User
+#### 리포지토리 스키마 및 사용자 생성
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+PostgreSQL 클라이언트(psql, pgAdmin 등)를 열고 다음 SQL 명령을 실행하세요:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**다음 플레이스홀더를 교체하세요:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — 원하는 스키마 이름(예: `dignarepo`)
+- `<digna_repo_user>` — 원하는 사용자 이름(예: `digna_user`)
+- `<digna_repo_password>` — 이 사용자의 안전한 비밀번호
 
-**Example:**
+**예시:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,72 +410,72 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+터미널에서 한 번에 실행하려면:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+그런 다음 `postgres=#` 프롬프트에 위 명령들을 붙여넣고 `\q`를 입력하여 종료하세요.
 
-!!! tip "Best Practice"
+!!! tip "권장 사항"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    데이터베이스 사용자에는 강력하고 복잡한 비밀번호를 사용하세요. 쉽게 추측 가능한 자격증명은 피하세요.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### 2단계: digna 설치 패키지 압축 해제
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+1. 제공된 digna 설치 ZIP 파일을 찾습니다.
+2. 예를 들어 `/opt/digna` 또는 `~/digna`와 같은 원하는 설치 위치에 압축을 풉니다.
+3. 압축을 풀면 다음 항목이 보여야 합니다:
+   - `dashboard/` — 웹 대시보드 인터페이스
+   - `digna` — 메인 실행 파일(백엔드 + CLI 통합)
+   - `config.toml` — 구성 파일
+   - `license.toml` — 라이선스 파일(별도로 복사)
 
-To extract from the Terminal:
+터미널에서 압축을 풀려면:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### 실행 파일에 실행 권한 부여
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+아카이브 전송 방법에 따라 실행 비트가 유지되지 않을 수 있습니다. 명시적으로 설정하세요:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### macOS가 애플리케이션을 차단하는 경우
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+브라우저나 메일 클라이언트를 통해 다운로드된 파일에는 격리(quarantine) 속성이 추가됩니다. macOS에서 앱을 *"개발자를 확인할 수 없어 열 수 없습니다"*라고 보고하면 설치 디렉터리에서 해당 속성을 제거하세요:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+또는 **시스템 설정 → 개인정보 및 보안**을 열어 페이지 하단 근처에서 차단된 항목을 찾아 **열기 허용(Open Anyway)** 을 클릭하세요.
 
-!!! note "Note"
+!!! note "참고"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    이 단계는 macOS가 실제로 실행 파일을 차단할 때만 필요합니다. SSH로 전송되었거나 내부 파일 공유로 전달된 패키지는 일반적으로 격리되지 않습니다.
 
-### Step 3: Install the License File
+### 3단계: 라이선스 파일 설치
 
-!!! warning "Important"
+!!! warning "중요"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    라이선스 파일은 설치 패키지에 포함되어 있지 않으며 digna에서 별도로 제공합니다.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. 제공된 `license.toml` 파일을 찾습니다.
+2. `config.toml` 및 `digna` 실행 파일이 있는 digna 설치 루트 디렉터리에 복사합니다.
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**이유:**
+라이선스 파일에는 고객 정보, 라이선스 만료일 및 디지털 서명이 포함되어 있습니다. **이 파일을 수정하지 마세요** — 변경하면 무효화됩니다.
 
-**Directory structure after setup:**
+**설치 후 디렉터리 구조 예시:**
 
 ```
 /opt/digna/
@@ -489,24 +489,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## 백엔드 구성 {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### 1단계: 구성 파일 생성 및 편집
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+`config_template.toml` 파일이 digna 설치 디렉터리에 제공됩니다. 이를 `config.toml`로 이름만 변경하면 됩니다.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**위치:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+텍스트 편집기에서 `config.toml`을 열고 아래 각 섹션을 구성하세요.
 
-#### [app] Section
+#### [app] 섹션
 
-This section configures the digna backend application settings:
+이 섹션은 digna 백엔드 애플리케이션 설정을 구성합니다:
 
 ```toml
 [app]
@@ -518,22 +518,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` 또는 IP 주소 | dignabackend가 호스팅되는 호스트명 또는 IP |
+| `digna_APP_PORT` | `8082` (기본) | REST API 엔드포인트 포트 |
+| `digna_APP_CORS_ALLOW_ORIGINS` | 프론트엔드 URL | 대시보드가 다른 서버에 있다면 해당 URL 포함 |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | 자격증명 있는 CORS에 필요 |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | 모든 HTTP 메서드를 허용 |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | 모든 헤더를 허용 |
 
-!!! note "Note"
+!!! note "참고"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Homebrew의 nginx 기본 포트에서 대시보드를 제공하는 경우 허용할 origin은 `http://localhost:8080`입니다.
 
-#### [repo] Section
+#### [repo] 섹션
 
-This section configures the connection to the PostgreSQL database:
+이 섹션은 PostgreSQL 데이터베이스 연결을 구성합니다:
 
 ```toml
 [repo]
@@ -545,18 +545,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` 또는 IP | PostgreSQL 서버 호스트명/IP |
+| `digna_REPO_PORT` | `5432` (기본) | PostgreSQL 포트 |
+| `digna_REPO_DB` | `postgres` | 데이터베이스 이름 |
+| `digna_REPO_SCHEMA` | `dignarepo` | 이전에 생성한 스키마 |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL 설정에서 생성한 사용자 |
+| `digna_REPO_PASSWORD` | 비밀번호 | 스키마 생성 시 설정한 비밀번호 |
 
-#### [base] Section
+#### [base] 섹션
 
-This section contains security and cookie settings:
+이 섹션은 보안 및 쿠키 설정을 포함합니다:
 
 ```toml
 [base]
@@ -570,23 +570,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | 암호화 키 | 토큰과 쿠키 암호화에 사용 (기본값 제공) |
+| `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킴 |
+| `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결에서는 `true` 사용 |
+| `digna_COOKIE_HTTPONLY` | `true` | 보안을 위해 항상 활성화 |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF 공격 방지 목적 |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24시간) | 세션 만료 시간(초) |
+| `digna_MAX_WORKERS` | CPU 코어 수 - 1 | 병렬 검사 작업 수 |
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Mac에서 사용 가능한 CPU 코어 수를 확인하려면 `sysctl -n hw.ncpu`를 실행하세요.
 
-#### [logging] Section
+#### [logging] 섹션
 
-This section configures logging behavior:
+이 섹션은 로깅 동작을 구성합니다:
 
 ```toml
 [logging]
@@ -594,58 +594,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| 매개변수 | 값 | 설명 |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` 또는 `DEBUG` | 운영 환경은 `INFO`, 문제 해결 시 `DEBUG` |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | 보관할 일별 로그 백업 수 |
 
 ---
 
-### Step 2: Initialize the Repository
+### 2단계: 리포지토리 초기화
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. **터미널**을 엽니다.
+2. digna 설치 디렉터리(예: `config.toml`과 `digna` 실행 파일이 있는 위치)로 이동합니다.
+3. 연결 테스트를 실행하세요:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+연결이 설정되었다는 확인 메시지가 표시되어야 합니다(리포지토리 자체는 아직 초기화되지 않았습니다).
 
-!!! note "Note"
+!!! note "참고"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    macOS에서는 현재 디렉터리의 명령이 PATH에 포함되지 않으므로 실행 파일을 `digna`가 아닌 `./digna`로 호출합니다. 모든 곳에서 짧은 형태를 사용하려면 설치 디렉터리를 PATH에 추가하세요:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### 3단계: 리포지토리 스키마 설치
 
-In the same directory, run:
+같은 디렉터리에서 다음을 실행하세요:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+이 명령은 PostgreSQL 데이터베이스에 필요한 테이블과 스키마를 설치합니다.
 
-### Step 4: Start the digna Server
+### 4단계: digna 서버 시작
 
-In the digna installation directory, start the server with:
+digna 설치 디렉터리에서 서버를 시작하세요:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**매개변수:**
+- `--address` — 서버 호스트명/IP
+- `--port` — 서버 포트
 
-You should see startup messages confirming the server is running:
+다음과 같은 시작 메시지가 표시되어 서버가 실행 중임을 확인할 수 있습니다:
 
 ```
 INFO:     Started server process [1234]
@@ -654,88 +654,88 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    서버를 처음 시작할 때 macOS가 애플리케이션의 수신 네트워크 연결 허용을 묻는 경우 **허용(Allow)** 을 클릭하세요. 허용하지 않으면 대시보드가 백엔드에 접근할 수 없습니다.
 
-### Step 5: Create an Admin User
+### 5단계: 관리자 사용자 생성
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. **새로운** 터미널 창을 엽니다.
+2. digna 설치 디렉터리로 이동합니다.
+3. 관리자 사용자를 생성하려면 다음 명령을 실행하세요:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**예시:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+이 명령은 `admin`이라는 사용자 이름과 전체 관리자 권한을 가진 계정을 생성합니다.
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    비밀번호를 작은따옴표로 묶어 사용하세요. `zsh`는 `!`, `$`, `*` 같은 문자를 특별하게 처리하므로 따옴표로 묶지 않으면 의도한 대로 전달되지 않을 수 있습니다.
 
-!!! tip "Best Practice"
+!!! tip "권장 사항"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    대소문자, 숫자 및 특수 문자를 혼합한 강력한 비밀번호를 사용하세요.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## 대시보드 구성 {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### 1단계: 대시보드를 웹 서버에 배포
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+digna 대시보드에는 별도의 `config.toml` 파일이 `dashboard/` 디렉터리에 있습니다. 초기 설정에서는 이 구성 파일이 이미 제공되어 있으며 변경이 필요하지 않습니다. 백엔드 연결을 사용자화해야 하는 경우에만 수정하면 됩니다.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+대시보드 구성이 필요하거나(예: 다중 인스턴스 배포) 수정해야 하는 경우에는 대시보드 문서를 참조하세요.
 
-Choose your web server and follow the corresponding deployment steps.
+웹 서버를 선택한 다음 해당 배포 단계를 따르세요.
 
-#### Deploying to nginx
+#### nginx에 배포
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+[nginx 설정](#nginx-setup) 섹션을 따랐다면 서버 블록이 이미 `dashboard` 폴더를 가리키므로 복사할 필요가 없습니다.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **경로 확인**
+   - `$(brew --prefix)/etc/nginx/servers/digna.conf` 파일을 엽니다.
+   - `root`가 압축을 푼 `dashboard` 폴더를 가리키는지 확인합니다.
 
-2. **Ensure the folder is readable**
+2. **폴더가 읽기 가능하도록 설정**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **nginx 재로드**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **설치 테스트**
+   - 브라우저를 엽니다.
+   - `http://localhost:8080`(또는 구성한 URL)로 이동합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
 
-#### Deploying to Apache httpd
+#### Apache httpd에 배포
 
-1. **Copy the Dashboard to the Document Root**
+1. **대시보드를 문서 루트로 복사**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **재작성 규칙 추가**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   대시보드 경로가 새로고침 시 유지되도록 배포된 폴더 안에 `.htaccess` 파일을 만듭니다:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   다음 내용을 붙여넣으세요:
 
    ```apache
    RewriteEngine On
@@ -750,177 +750,176 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Apache 재시작**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **대시보드 접속**
+   - 브라우저를 엽니다.
+   - `http://localhost/digna`로 이동합니다.
+   - digna 대시보드 로그인 페이지가 표시되어야 합니다.
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## digna를 백그라운드 서비스로 실행하기 {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### 왜 digna를 서비스로 실행해야 하나요?
 
-Running the digna backend as a background service ensures it:
+digna 백엔드를 백그라운드 서비스로 실행하면 다음과 같은 이점이 있습니다:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- 머신 부팅 시 자동으로 시작됩니다.
+- 열린 터미널 창 없이 백그라운드에서 실행됩니다.
+- 충돌 시 자동으로 재시작됩니다.
+- macOS의 서비스 관리자 `launchctl`을 통해 관리할 수 있습니다.
 
-### Service Management Files
+### 서비스 관리 파일
 
-All necessary files are located in the digna installation directory under: `bin/`
+필요한 모든 파일은 digna 설치 디렉터리의 `bin/` 아래에 있습니다.
 
-The following shell scripts are available:
+다음 셸 스크립트들이 제공됩니다:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — digna를 launchd에 등록
+- `uninstall_service.sh` — 서비스 등록 해제
+- `start_service.sh` — 등록된 서비스 시작
+- `stop_service.sh` — 실행 중인 서비스 중지
 
-!!! warning "Administrator Required"
+!!! warning "관리자 권한 필요"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    부팅 시 시작되도록 서비스를 등록하려면 `/Library/LaunchDaemons`에 기록해야 하므로 모든 스크립트는 `sudo`로 실행해야 합니다.
 
-### Making the Scripts Executable
+### 스크립트에 실행 권한 부여
 
-Extraction may not preserve the executable bit. Before first use:
+추출 과정에서 실행 비트가 유지되지 않을 수 있습니다. 처음 사용하기 전에:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### 서비스 설치
 
-1. **Open Terminal**
+1. **터미널을 엽니다.**
 
-2. **Navigate to the bin Folder**
+2. **bin 폴더로 이동**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **설치 스크립트 실행**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+이제 digna 서버가 자동 시작이 활성화된 상태로 launchd에 등록됩니다. 서비스는 즉시 시작되지 않으니, 다음 섹션을 참조하여 시작하세요.
 
-### Starting and Stopping the Service
+### 서비스 시작 및 중지
 
-#### To Start the Service
+#### 서비스를 시작하려면
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. 터미널을 엽니다.
+2. `/opt/digna/bin`으로 이동합니다.
+3. 다음을 실행하세요:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### 서비스를 중지하려면
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. 터미널을 엽니다.
+2. `/opt/digna/bin`으로 이동합니다.
+3. 다음을 실행하세요:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "팁"
 
-    Always stop the service before updating application files.
+    애플리케이션 파일을 업데이트하기 전에 항상 서비스를 중지하세요.
 
-### Verifying the Service
+### 서비스 확인
 
-To confirm that the service is registered and running:
+서비스가 등록되고 실행 중인지 확인하려면:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+프로세스 ID로 시작하는 줄이 있으면 서비스가 실행 중입니다. 첫 번째 열에 `-`가 있으면 등록은 되어 있으나 중지된 상태입니다.
 
-### Moving the Service to a New Directory
+### 설치 위치를 변경하는 경우
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd는 실행 파일의 절대 경로를 저장하므로 설치 위치를 옮기면 서비스를 다시 등록해야 합니다:
 
-1. **Uninstall the Current Service**
+1. **현재 서비스 제거**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **애플리케이션 파일 이동**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **서비스 재설치**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **서비스 시작**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### 서비스 제거
 
-1. **Stop the Running Service**
+1. **실행 중인 서비스 중지**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **서비스 등록 해제**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+이제 digna 서버가 launchd에서 등록 해제되었습니다.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## 새 릴리스로 업그레이드하기 {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### 업그레이드 전에
 
-**Creating a digna Repository Backup is Mandatory**
+**digna 리포지토리 백업은 필수입니다**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+업그레이드하기 전에 데이터 손실을 방지하기 위해 리포지토리(PostgreSQL)를 백업하세요. 백업은 업그레이드 중 문제가 발생할 경우 복구할 수 있게 해줍니다.
 
-To create a backup from the Terminal:
+터미널에서 백업을 생성하려면:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### 업그레이드 절차
 
-#### Step 1: Stop the digna Service
+#### 1단계: digna 서비스 중지
 
-If digna is running as a background service, stop it first:
+digna가 백그라운드 서비스로 실행 중이면 먼저 중지하세요:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+포그라운드에서 실행 중이면 해당 터미널 창에서 `Ctrl + C`를 누르세요.
 
-#### Step 2: Backup Current Backend Installation
+#### 2단계: 현재 백엔드 설치 백업
 
-In your digna installation directory:
+digna 설치 디렉터리에서:
 
 ```bash
 cd /opt/digna
@@ -930,55 +929,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### 3단계: 새 버전 압축 해제 및 배포
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. 새 digna 설치 ZIP 파일의 압축을 풉니다.
+2. 새 `digna` 실행 파일과 `dashboard` 폴더를 설치 디렉터리에 복사합니다.
+3. 실행 비트를 복원하고 필요한 경우 격리 속성을 제거합니다:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "중요"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
 
-### Step 4: Restore Your Configuration Files
+### 4단계: 구성 파일 복원
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### 5단계: 리포지토리 스키마 업그레이드
 
-Navigate to your digna installation directory and run:
+digna 설치 디렉터리로 이동하여 다음을 실행하세요:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+이 명령은 기존 데이터를 보존하면서 PostgreSQL 스키마를 최신 버전으로 업데이트합니다.
 
-### Step 6: Restart Services
+### 6단계: 서비스 재시작
 
-If running as a background service:
+백그라운드 서비스로 실행 중이었다면:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+수동으로 실행하는 경우 서버를 다시 시작하세요:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+nginx 또는 Apache를 사용하는 경우 해당 웹 서버도 재시작하세요:
 
 ```bash
 brew services restart nginx
@@ -987,8 +986,8 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### 7단계: 업그레이드 확인
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. digna 대시보드에 접속합니다.
+2. 인터페이스가 정상적으로 로드되는지 확인합니다.
+3. 서버 로그에서 오류가 있는지 확인합니다.

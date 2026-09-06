@@ -28,10 +28,19 @@
 
 ## インストールとデプロイメント
 
+### オペレーティングシステム
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/ja/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Linux に digna リリース 2026.06 をインストールするためのステップバイステップガイド — システム要件、PostgreSQL の設定、nginx または Apache の構成、バックエンドとダッシュボードの設定、systemd サービスとしての digna の実行、リリースへのアップグレード方法
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/ja/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): macOS に digna Release 2026.06 をインストールする手順ガイド — システム要件、Homebrew と PostgreSQL のセットアップ、nginx または Apache の設定、バックエンドとダッシュボードの構成、digna をバックグラウンドサービスとして実行する方法、リリースのアップグレード手順
+
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/ja/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Windows に digna Release 2026.06 をインストールするための手順ガイド — システム要件、PostgreSQL のセットアップ、Web サーバー構成、バックエンドとダッシュボードの設定、Windows サービスとしての起動、リリースのアップグレード手順
-- [シングルサインオンを設定する方法](https://docs.digna.ai/ja/installation_deployment/sso_integration_guide/): OpenID Connect (OIDC) を使用して digna のシングルサインオン（SSO）を構成する手順ガイド。ダッシュボードとバックエンドの設定、テスト、トラブルシューティング、Microsoft Entra ID、Google Workspace、Okta などのサポートプロバイダを網羅。
+- [Release 2026.06](https://docs.digna.ai/ja/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Windows に digna リリース 2026.06 をインストールするためのステップバイステップガイド — システム要件、PostgreSQL のセットアップ、Web サーバーの構成、バックエンドとダッシュボードの設定、digna を Windows サービスとして実行する方法、リリースへのアップグレード方法を含む
 
 ## はじめに
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/ja/databases/snowflake_connector_guide/): Python コネクタまたは Snowflake ODBC ドライバーを使用して digna を Snowflake に接続する方法を設定します。DSN または DSN-less 構成でのパスワード認証に対応しています。
 - [MS SQL Server](https://docs.digna.ai/ja/databases/sqlserver_connector_guide/): pymssql Python ドライバーまたは SQL Server ODBC ドライバーを使用して Microsoft SQL Server に接続するよう digna を構成する方法。DSN ベースおよび DSN-less のパスワード認証をサポートします。
 - [Teradata](https://docs.digna.ai/ja/databases/teradata_connector_guide/): teradatasql Python ドライバーまたは Teradata ODBC ドライバーを使って digna を Teradata に接続するように設定します。DSN または DSN-less の構成でパスワード認証に対応しています。
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/ja/sso/overview/): OpenID Connect (OIDC) を使った digna のシングルサインオンの仕組み。ダッシュボードとバックエンドの設定、テスト、トラブルシューティング、Microsoft Entra ID、Google Workspace、Okta、Auth0、Keycloak、OneLogin、PingOne、AD FS 各プロバイダー別セットアップガイドへのリンクを含みます。
+- [AD FS](https://docs.digna.ai/ja/sso/adfs_sso_guide/): Active Directory Federation Services を使用した OpenID Connect による digna のシングルサインオンを設定します — アプリケーショングループ、サーバーアプリケーション、共有シークレット、許可されたスコープ、および対応する digna 設定。
+- [Auth0](https://docs.digna.ai/ja/sso/auth0_sso_guide/): digna を Auth0 の OpenID Connect でシングルサインオンに設定する手順 — Regular Web Application の設定、許可されたコールバック URL、クライアント認証情報、テナントドメイン、および対応する digna 設定を扱います。
+- [Google Workspace](https://docs.digna.ai/ja/sso/google_workspace_sso_guide/): OpenID Connect を使って Google Workspace で digna のシングルサインオンを設定する方法 — OAuth 同意画面、OAuth クライアント ID、承認済みリダイレクト URI と対応する digna の設定
+- [Keycloak](https://docs.digna.ai/ja/sso/keycloak_sso_guide/): OpenID Connectを使ってKeycloakでdignaのシングルサインオンを設定する方法 — realmとクライアントの設定、クライアント認証、有効なリダイレクトURI、クライアントシークレット、及びdigna側の設定。
+- [Microsoft Entra ID](https://docs.digna.ai/ja/sso/microsoft_entra_id_sso_guide/): digna を Microsoft Entra ID (旧 Azure AD) の OpenID Connect でシングルサインオンに設定する方法 — アプリ登録、リダイレクト URI、クライアントシークレット、テナント ID と digna の対応設定。
+- [Okta](https://docs.digna.ai/ja/sso/okta_sso_guide/): OpenID Connect を使用して Okta で digna のシングルサインオンを設定する — アプリ統合、サインインのリダイレクト URI、クライアント資格情報、認可サーバーの選択、および対応する digna の設定。
+- [OneLogin](https://docs.digna.ai/ja/sso/onelogin_sso_guide/): OpenID Connect を使って OneLogin で digna のシングルサインオンを構成します — OIDC アプリの作成、リダイレクトURI、クライアント資格情報、トークンエンドポイント認証、および対応する digna の設定。
+- [PingOne](https://docs.digna.ai/ja/sso/pingone_sso_guide/): PingOneを使ったOpenID Connectによるdignaのシングルサインオンを設定する — OIDC Webアプリの設定、リダイレクトURI、クライアント認証情報、Environment ID、地域ドメイン、およびそれに対応するdignaの設定
 
 ## CLI リファレンス
 

@@ -9,43 +9,43 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
+1. [Introduktion](#introduction)
+2. [Systemkrav](#system-requirements)
+3. [Forudgående opsætning](#pre-installation-setup)
+4. [PostgreSQL-serveropsætning](#postgresql-server-setup)
+5. [Webserverkonfiguration](#web-server-configuration)
+6. [Initial installation](#initial-installation)
+7. [Backend-konfiguration](#backend-configuration)
+8. [Dashboard-konfiguration](#dashboard-configuration)
+9. [Køre digna som baggrundstjeneste](#running-digna-as-a-background-service)
+10. [Opgradering til en ny release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Introduktion {: #introduction }
 
-### About digna
+### Om digna
 
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
+digna er en omfattende AI-drevet platform designet til at optimere data-kvalitetsstyring på tværs af forskellige data-miljøer som warehouses, lakes og lakehouses. Bygget til at være højt skalerbar og tilpasningsdygtig, adresserer digna moderne dataudfordringer gennem automatisering, realtidsovervågning og anomalidetektion.
 
-digna consists of two main components:
+digna består af to hovedkomponenter:
 
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
+- **dignabackend**: Applikationens kerneengine, ansvarlig for at behandle data og udføre kvalitetskontroller.
+- **dignadashboard**: Et webbaseret interface hostet på en webserver, som giver en brugervenlig måde at interagere med digna-platformen og visualisere datakvalitetsmålinger.
 
-### What's New in Release 2026.06
+### Hvad er nyt i Release 2026.06
 
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
+Denne release bringer data-observability-funktionalitet direkte ind i din kode, så udviklere kan overvåge datakvalitet ved kilden. Se [release notes](http://docs.digna.ai/changelog/Release_202606/) for fulde detaljer.
 
-### Looking for Windows?
+### Leder du efter Windows eller Linux?
 
-This guide covers macOS. For a Windows Server or Windows 10/11 installation, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md).
+Denne vejledning dækker macOS. For andre platforme, se [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) eller [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
-## System Requirements {: #system-requirements }
+## Systemkrav {: #system-requirements }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+Før du begynder installationen, sørg for at dit system opfylder følgende minimumskrav:
 
 | Requirement | Specification |
 |---|---|
@@ -57,185 +57,185 @@ Before you begin the installation, ensure that your system meets the following m
 | **Web Server** | nginx, Apache httpd, or equivalent |
 | **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
 
-### Database Installation Options
+### Database-installationsmuligheder
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Hvis PostgreSQL allerede er installeret:**
+Du kan tilføje en ny database til digna på din eksisterende PostgreSQL-server.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Hvis du installerer PostgreSQL på samme maskine som digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Anbefalede specifikationer"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Hukommelse**: 32 GB RAM (i stedet for 16 GB)
+    - **Diskplads**: 50 GB ledig lagerplads (i stedet for 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Disse højere specifikationer rummer både digna og PostgreSQL-databasen kørende samtidigt.
 
-### Checking Your Architecture
+### Tjek din arkitektur
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Flere stier i denne vejledning adskiller sig mellem Apple Silicon og Intel Macs. For at tjekke hvilken du har, åbn **Terminal** og kør:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew installeres til `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew installeres til `/usr/local`.
 
 !!! tip "Tip"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    I stedet for at hardkode en af stierne, bruger denne vejledning `$(brew --prefix)`, som udvider til den korrekte placering på begge arkitekturer. Du kan kopiere kommandoerne ordret.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Forudgående opsætning {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Før du installerer digna, skal du sikre, at tre nøgleforudsætninger er på plads:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – pakkestyringsværktøjet brugt til at installere komponenterne nedenfor
+2. **PostgreSQL Server** – til lagring af beregnede metrikker og performance-data
+3. **Web Server** – til hosting af digna Dashboard
 
-If these components are not already set up, follow the sections below to install and configure them.
+Hvis disse komponenter ikke allerede er opsat, følg afsnittene nedenfor for at installere og konfigurere dem.
 
-### Installing Homebrew
+### Installation af Homebrew
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew er standard pakkestyringsværktøj for macOS og bruges i hele denne vejledning til at installere PostgreSQL og nginx.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### Trin 1: Tjek om Homebrew allerede er installeret
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Åbn **Terminal** (tryk `Cmd + Space`, skriv `Terminal`, tryk Enter) og kør:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Hvis der returneres et versionsnummer, spring videre til afsnittet [PostgreSQL-serveropsætning](#postgresql-server-setup).
 
-#### Step 2: Install Homebrew
+#### Trin 2: Installer Homebrew
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Hvis kommandoen ikke blev fundet, installer Homebrew ved at følge instruktionerne på [den officielle Homebrew-side](https://brew.sh). Installationsprogrammet installerer også Xcode Command Line Tools, hvis de ikke allerede er til stede.
 
-#### Step 3: Add Homebrew to Your PATH
+#### Trin 3: Tilføj Homebrew til din PATH
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+På Apple Silicon printer installatøren to kommandoer til at tilføje Homebrew til dit shell-miljø. Kør dem som instrueret, og bekræft derefter:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Dette bør udskrive `/opt/homebrew` på Apple Silicon eller `/usr/local` på Intel.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL-serveropsætning {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Hvis du allerede har PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Hvis PostgreSQL allerede er installeret og kører på din lokale maskine, eller hvis du bruger en administreret fjern-PostgreSQL-server, kan du springe til [næste afsnit](#web-server-configuration).
 
-### Installation Options
+### Installationsmuligheder
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS tilbyder to ligetil måder at installere PostgreSQL på. Vælg **én**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — kommandolinjeinstallation, anbefalet til serverudrulninger
+- [Postgres.app](#postgresql-app) — grafisk installation, praktisk til lokal evaluering
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Installation af PostgreSQL med Homebrew {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### Trin 1: Installer PostgreSQL-formulaen
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### Trin 2: Tilføj PostgreSQL til din PATH
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+Versionerede PostgreSQL-formulaer er *keg-only*, hvilket betyder, at Homebrew ikke linker deres kommandoer ind i din PATH automatisk. Tilføj dem selv:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Bemærk"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Dette antager standard `zsh`-shellen brugt af macOS. Hvis du bruger `bash`, tilføj den samme linje til `~/.bash_profile` i stedet.
 
-#### Step 3: Start the PostgreSQL Service
+#### Trin 3: Start PostgreSQL-tjenesten
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+Dette starter PostgreSQL med det samme og konfigurerer den til at starte automatisk, når du logger ind.
 
-#### Step 4: Verify the Installation
+#### Trin 4: Verificer installationen
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Du bør se PostgreSQL-versionen, hvis installationen lykkedes.
 
-#### Step 5: Connect to the Server
+#### Trin 5: Forbind til serveren
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Vigtigt — macOS adskiller sig fra Windows her"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Windows-installationsprogrammet beder dig om at oprette en `postgres` superuser og et password. Homebrew gør ikke det. I stedet opretter den en superuser med navnet på din **macOS-konto**, uden password, tilgængelig kun fra den lokale maskine.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    Det betyder, at der ikke er en `postgres`-rolle på en frisk Homebrew-installation. Brug dit eget kontonavn, når du har brug for en superuser, og opret en eksplicit digna-bruger som beskrevet i [Initial installation](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### Trin 6: Bekræft porten
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Standard PostgreSQL-port er `5432`. For at bekræfte hvilken port din server lytter på:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Notér værdien — du skal bruge den når du konfigurerer digna-backenden.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Installation af PostgreSQL med Postgres.app {: #postgresql-app }
 
-If you prefer a graphical installation:
+Hvis du foretrækker en grafisk installation:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Download [Postgres.app](https://postgresapp.com) og træk den ind i din **Applications**-mappe
+2. Åbn appen og klik **Initialize** for at oprette en ny server
+3. Følg appens instruktioner for at tilføje dens kommandolinjeværktøjer til din PATH
+4. Verificer installationen:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Postgres.app opretter også en superuser med navnet på din macOS-konto.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Webserverkonfiguration {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna kræver en webserver til at hoste dashboardet. Vælg én af følgende muligheder:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — installeret via Homebrew, anbefalet
+- [Apache httpd](#apache-setup) — inkluderet i macOS
 
-You only need to install and configure **one** of these servers.
+Du behøver kun at installere og konfigurere **én** af disse servere.
 
-Both sections configure two things the dashboard depends on:
+Begge sektioner konfigurerer to ting, som dashboardet afhænger af:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **En single-page-application fallback**, så en opdatering af en dashboard-URL ikke returnerer en 404
+- **En `.md` MIME-type**, så Markdown-filer serveres korrekt
 
-### nginx Setup {: #nginx-setup }
+### nginx-opsætning {: #nginx-setup }
 
-#### Overview
+#### Oversigt
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx er en letvægts, højtydende webserver velegnet til at serve det statiske digna-dashboard.
 
 #### Installation
 
@@ -243,33 +243,33 @@ nginx is a lightweight, high-performance web server well suited to serving the s
 brew install nginx
 ```
 
-#### Starting nginx
+#### Start nginx
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Bekræft installationen
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Åbn din browser
+2. Navigér til `http://localhost:8080`
+3. Du bør se nginx-velkomstsiden
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Bemærk — standardport er 8080, ikke 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew konfigurerer nginx til at lytte på port `8080`, så den kan køre uden administratorrettigheder. På macOS kræver binding til port `80` eller andre porte under 1024 root-adgang.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    For at serve dashboardet på port 80, ændr `listen 8080;` til `listen 80;` i konfigurationen nedenfor og start nginx med `sudo brew services start nginx` i stedet.
 
-#### Configuring a Site for the Dashboard
+#### Konfiguration af et site til dashboardet
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Homebrew's nginx-konfiguration inkluderer alle filer i dens `servers`-mappe. Opret en dedikeret konfigurationsfil til digna der:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Indsæt følgende, og erstat `/path/to/digna/dashboard` med den faktiske sti til din udpakkede `dashboard`-mappe:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Vigtigt"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Uden `try_files`-direktivet returnerer genindlæsning af enhver dashboard-side andet end rod-URL'en en 404. Dette er nginx-ekvivalenten til URL Rewrite-modulet, der kræves af IIS på Windows.
 
-#### Apply the Configuration
+#### Anvend konfigurationen
 
-Test the configuration for syntax errors, then reload nginx:
+Test konfigurationen for syntaksfejl, og genindlæs derefter nginx:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd-opsætning {: #apache-setup }
 
-#### Overview
+#### Oversigt
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS inkluderer Apache httpd, så ingen installation er påkrævet. Den er deaktiveret som standard.
 
-#### Starting Apache
+#### Start Apache
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Bekræft installationen
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Åbn din browser
+2. Navigér til `http://localhost`
+3. Du bør se beskeden "It works!"
 
-#### Required: Enable mod_rewrite
+#### Påkrævet: Aktivér mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+Dashboardet kræver URL-omskrivning. Åbn Apache-konfigurationen:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Find følgende linje og fjern den indledende `#` for at gøre den aktiv:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Påkrævet: Tillad .htaccess-overrides
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+I samme fil, lokaliser `<Directory "/Library/WebServer/Documents">`-blokken og ændr:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+til:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Påkrævet: MIME-type for Markdown-filer
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Stadig i `httpd.conf`, tilføj følgende linje, så Markdown-filer serveres korrekt:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Vigtigt"
 
-    Without this setting, `.md` files may not be served properly.
+    Uden denne indstilling kan `.md`-filer muligvis ikke serveres korrekt.
 
-#### Apply the Configuration
+#### Anvend konfigurationen
 
-Check the configuration for syntax errors, then restart Apache:
+Tjek konfigurationen for syntaksfejl, og genstart derefter Apache:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Initial installation {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Trin 1: Opret digna-repositoriet
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Digna-repositoriet lagrer alle metrikker beregnet af digna. Det fungerer som den centrale database for analytiske og performance-data.
 
-#### Create Repository Schema and User
+#### Opret repositorieschema og bruger
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Åbn din PostgreSQL-klient (psql, pgAdmin eller lignende) og udfør følgende SQL-kommandoer:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Erstat følgende pladsholdere:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — Dit ønskede schema-navn (fx `dignarepo`)
+- `<digna_repo_user>` — Dit ønskede brugernavn (fx `digna_user`)
+- `<digna_repo_password>` — Et sikkert password til denne bruger
 
-**Example:**
+**Eksempel:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,72 +410,72 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+For at køre disse fra Terminal i ét trin:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Indsæt derefter statements ved prompten `postgres=#` og skriv `\q` for at afslutte.
 
-!!! tip "Best Practice"
+!!! tip "Bedste praksis"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Brug stærke, komplekse passwords til databasebrugere. Undgå let gættelige legitimationsoplysninger.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Trin 2: Pak digna-installationspakken ud
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
+1. Find digna-installations-ZIP-filen leveret til dig
+2. Pak den ud til din ønskede installationsplacering — for eksempel `/opt/digna` eller `~/digna`
+3. Efter udpakning bør du se følgende elementer:
    - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+   - `digna` — Hoved-eksekverbar (backend + CLI kombineret)
+   - `config.toml` — Konfigurationsfil
+   - `license.toml` — Licensfil (kopiér din hertil)
 
-To extract from the Terminal:
+For at udpakke fra Terminal:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Gør den eksekverbare fil kørbar
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+Afhængig af hvordan arkivet blev overført, overlever den eksekverbare bit måske ikke ved udpakning. Sæt den eksplicit:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Hvis macOS blokerer applikationen
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Filer downloadet gennem en browser eller mailklient er mærket med et quarantine-attribut. Hvis macOS rapporterer, at appen *"cannot be opened because the developer cannot be verified"*, fjern attributten fra installationsmappen:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Alternativt, åbn **System Settings → Privacy & Security**, find det blokerede element nær bunden af siden, og klik **Open Anyway**.
 
-!!! note "Note"
+!!! note "Bemærk"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Dette trin er kun nødvendigt, hvis macOS rent faktisk blokerer den eksekverbare fil. Pakker overført via SSH eller fra interne filshares er normalt ikke quarantined.
 
-### Step 3: Install the License File
+### Trin 3: Installér licensfilen
 
-!!! warning "Important"
+!!! warning "Vigtigt"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Licensfilen er **ikke** inkluderet i installationspakken og vil blive leveret separat af digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Find den `license.toml`-fil der er leveret til dig
+2. Kopiér den ind i root af digna-installationsmappen (hvor `config.toml` og den eksekverbare `digna` ligger)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Hvorfor det er vigtigt:**
+Licensfilen indeholder dine kundeoplysninger, licensens udløbsdato og et digitalt signatur. **Ændr ikke filen** — enhver ændring vil ugyldiggøre den.
 
-**Directory structure after setup:**
+**Mappe-struktur efter opsætning:**
 
 ```
 /opt/digna/
@@ -489,24 +489,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backend-konfiguration {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Trin 1: Opret og rediger konfigurationsfilen
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+Filen `config_template.toml` leveres i din digna-installationsmappe. Du skal blot omdøbe den til `config.toml`.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Placering:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Åbn `config.toml` i en teksteditor og konfigurer hver sektion nedenfor.
 
-#### [app] Section
+#### [app] Sektionen
 
-This section configures the digna backend application settings:
+Denne sektion konfigurerer digna-backend applikationsindstillinger:
 
 ```toml
 [app]
@@ -518,22 +518,22 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_HOST` | `localhost` eller IP-adresse | Hostnavn eller IP hvor dignabackend hostes |
+| `digna_APP_PORT` | `8082` (default) | Port for REST API-endpoints |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboardet er på en anden server, inkluder dens URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Krævet for CORS med legitimationsoplysninger |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillad alle HTTP-metoder |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Tillad alle headers |
 
-!!! note "Note"
+!!! note "Bemærk"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Hvis du serverer dashboardet fra Homebrew's nginx på standardporten, er origin der skal tillades `http://localhost:8080`.
 
-#### [repo] Section
+#### [repo] Sektionen
 
-This section configures the connection to the PostgreSQL database:
+Denne sektion konfigurerer forbindelsen til PostgreSQL-databasen:
 
 ```toml
 [repo]
@@ -545,18 +545,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` eller IP | PostgreSQL-serverens hostname/IP |
+| `digna_REPO_PORT` | `5432` (default) | PostgreSQL-port |
+| `digna_REPO_DB` | `postgres` | Databasenavn |
+| `digna_REPO_SCHEMA` | `dignarepo` | Schema oprettet tidligere |
+| `digna_REPO_USER` | `digna_user` | Bruger oprettet i PostgreSQL-opsætningen |
+| `digna_REPO_PASSWORD` | Dit password | Password sat under schema-oprettelsen |
 
-#### [base] Section
+#### [base] Sektionen
 
-This section contains security and cookie settings:
+Denne sektion indeholder sikkerheds- og cookie-indstillinger:
 
 ```toml
 [base]
@@ -570,23 +570,23 @@ digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `digna_FERNET_KEY` | Encryptionsnøgle | Bruges til at kryptere tokens og cookies (standard leveret) |
+| `digna_COOKIE_DOMAIN` | `localhost` | Match dit frontend-domæne |
+| `digna_COOKIE_SECURE` | `false` (lokalt) / `true` (produktion) | Brug `true` for HTTPS-forbindelser |
+| `digna_COOKIE_HTTPONLY` | `true` | Altid aktiveret for sikkerhed |
+| `digna_COOKIE_SAME_SITE` | `lax` | Forhindrer CSRF-angreb |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 timer) | Session timeout i sekunder |
+| `digna_MAX_WORKERS` | Antal CPU-kerner - 1 | Antal parallelle inspectionsopgaver |
 
 !!! tip "Tip"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    For at finde antal CPU-kerner på din Mac, kør `sysctl -n hw.ncpu`.
 
-#### [logging] Section
+#### [logging] Sektionen
 
-This section configures logging behavior:
+Denne sektion konfigurerer logningsadfærden:
 
 ```toml
 [logging]
@@ -594,58 +594,58 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Værdi | Noter |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` eller `DEBUG` | `INFO` til produktion, `DEBUG` til fejlsøgning |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Antal daglige log-backups der bevares |
 
 ---
 
-### Step 2: Initialize the Repository
+### Trin 2: Initialisér repositoriet
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Åbn **Terminal**
+2. Navigér til din digna-installationsmappe (hvor `config.toml` og den eksekverbare `digna` ligger)
+3. Kør forbindelsestesten:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Du bør se en bekræftelse på, at forbindelsen er etableret (selve repositoriet er endnu ikke initialiseret).
 
-!!! note "Note"
+!!! note "Bemærk"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    På macOS er kommandoer i den aktuelle mappe ikke på din PATH, så den eksekverbare fil påkaldes som `./digna` i stedet for `digna`. For at kunne bruge den korte form overalt, tilføj installationsmappen til din PATH:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 3: Install the Repository Schema
+### Trin 3: Installer repositorieschemaet
 
-In the same directory, run:
+I samme mappe, kør:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Denne kommando installerer de nødvendige tabeller og schema i din PostgreSQL-database.
 
-### Step 4: Start the digna Server
+### Trin 4: Start digna-serveren
 
-In the digna installation directory, start the server with:
+I digna-installationsmappen, start serveren med:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
+**Parametre:**
 - `--address` — Server hostname/IP
-- `--port` — Server port
+- `--port` — Serverport
 
-You should see startup messages confirming the server is running:
+Du bør se opstartsbeskeder, der bekræfter at serveren kører:
 
 ```
 INFO:     Started server process [1234]
@@ -656,86 +656,86 @@ INFO:     Uvicorn running on http://localhost:8082
 
 !!! tip "Tip"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    Første gang du starter serveren, kan macOS spørge om du vil tillade, at applikationen modtager indgående netværksforbindelser. Klik **Allow**, ellers kan dashboardet ikke nå backenden.
 
-### Step 5: Create an Admin User
+### Trin 5: Opret en admin-bruger
 
-1. Open a **new** Terminal window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
+1. Åbn et **nyt** Terminal-vindue
+2. Navigér til din digna-installationsmappe
+3. Kør følgende kommando for at oprette en admin-bruger:
 
 ```bash
 ./digna user add <username> "<full_name>" <password> --su
 ```
 
-**Example:**
+**Eksempel:**
 
 ```bash
 ./digna user add admin "Admin User" 'AdminPassword123!' --su
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+Dette opretter en bruger med brugernavn `admin` og fulde administrative rettigheder.
 
 !!! tip "Tip"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Indkapsl passwordet i enkeltanførselstegn. `zsh` behandler tegn som `!`, `$` og `*` særligt, og et uindkapslet password med sådanne tegn vil ikke blive videregivet som skrevet.
 
-!!! tip "Best Practice"
+!!! tip "Bedste praksis"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Brug et stærkt password med en blanding af store og små bogstaver, tal og specialtegn.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboard-konfiguration {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Trin 1: Deploy dashboardet til webserveren
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+Digna-dashboardet har sin egen separate `config.toml`-fil placeret i `dashboard/`-mappen. Denne konfiguration leveres allerede og kræver ikke ændringer under initial opsætning. Du skal kun konfigurere den, hvis du vil tilpasse backend-forbindelsen.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Hvis du har behov for at ændre dashboard-konfigurationen (fx ved multi-instance udrulninger), se dashboardets dokumentation.
 
-Choose your web server and follow the corresponding deployment steps.
+Vælg din webserver og følg de tilsvarende deployments-steps.
 
-#### Deploying to nginx
+#### Deploy til nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Hvis du fulgte afsnittet [nginx Setup](#nginx-setup), peger server-blokken allerede på din `dashboard`-mappe og der er ingen kopiering nødvendig.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Bekræft stien**
+   - Åbn `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Bekræft at `root` peger på din udpakkede `dashboard`-mappe
 
-2. **Ensure the folder is readable**
+2. **Sørg for at mappen er læsbar**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Genindlæs nginx**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Test installationen**
+   - Åbn din browser
+   - Navigér til `http://localhost:8080` (eller din konfigurerede URL)
+   - Du bør se digna-dashboardets login-side
 
-#### Deploying to Apache httpd
+#### Deploy til Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Kopier dashboardet til document root**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Tilføj rewrite-reglerne**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Opret en `.htaccess`-fil inde i den deployerede mappe, så dashboard-routes overlever en browser-refresh:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Indsæt følgende:
 
    ```apache
    RewriteEngine On
@@ -750,177 +750,177 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Genstart Apache**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Adgang til dashboardet**
+   - Åbn din browser
+   - Navigér til `http://localhost/digna`
+   - Du bør se digna-dashboardets login-side
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## Køre digna som baggrundstjeneste {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### Hvorfor køre digna som en tjeneste?
 
-Running the digna backend as a background service ensures it:
+At køre digna-backenden som en baggrundstjeneste sikrer, at den:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Starter automatisk når maskinen booter
+- Kører i baggrunden uden et åbent Terminal-vindue
+- Genstarter automatisk, hvis den crasher
+- Kan administreres via `launchctl`, macOS's tjenestestyring
 
-### Service Management Files
+### Tjeneste-styringsfiler
 
-All necessary files are located in the digna installation directory under: `bin/`
+Alle nødvendige filer ligger i digna-installationsmappen under: `bin/`
 
-The following shell scripts are available:
+Følgende shell-scripts er tilgængelige:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — registrerer digna hos launchd
+- `uninstall_service.sh` — af-registrerer tjenesten
+- `start_service.sh` — starter den registrerede tjeneste
+- `stop_service.sh` — stopper den kørende tjeneste
 
-!!! warning "Administrator Required"
+!!! warning "Administrator kræves"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Alle scripts skal eksekveres med `sudo`, fordi registrering af en tjeneste der starter ved boot skriver til `/Library/LaunchDaemons`.
 
-### Making the Scripts Executable
+### Gør scripts kørbare
 
-Extraction may not preserve the executable bit. Before first use:
+Udpakning bevarer måske ikke den eksekverbare bit. Før første brug:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### Installér tjenesten
 
-1. **Open Terminal**
+1. **Åbn Terminal**
 
-2. **Navigate to the bin Folder**
+2. **Navigér til bin-mappen**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Kør installationsscriptet**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Digna-serveren er nu registreret hos launchd med **automatisk opstart** aktiveret. Tjenesten starter ikke umiddelbart — se næste afsnit for at starte den.
 
-### Starting and Stopping the Service
+### Start og stop af tjenesten
 
-#### To Start the Service
+#### For at starte tjenesten
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Åbn Terminal
+2. Navigér til `/opt/digna/bin`
+3. Kør:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### For at stoppe tjenesten
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Åbn Terminal
+2. Navigér til `/opt/digna/bin`
+3. Kør:
    ```bash
    sudo ./stop_service.sh
    ```
 
 !!! tip "Tip"
 
-    Always stop the service before updating application files.
+    Stop altid tjenesten før opdatering af applikationsfiler.
 
-### Verifying the Service
+### Verificér tjenesten
 
-To confirm that the service is registered and running:
+For at bekræfte at tjenesten er registreret og kørende:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+En linje der begynder med et proces-ID indikerer, at tjenesten kører. Et `-` i den første kolonne betyder, at den er registreret men stoppet.
 
-### Moving the Service to a New Directory
+### Flyt tjenesten til en ny mappe
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd gemmer den absolutte sti til den eksekverbare fil, så flytning af installationen kræver gen-registrering af tjenesten:
 
-1. **Uninstall the Current Service**
+1. **Afinstaller den nuværende tjeneste**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Flyt applikationsfilerne**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Geninstalér tjenesten**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Start tjenesten**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Afinstallér tjenesten
 
-1. **Stop the Running Service**
+1. **Stop den kørende tjeneste**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Afinstallér tjenesten**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+Digna-serveren er nu af-registreret fra launchd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Opgradering til en ny release {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Før du opgraderer
 
-**Creating a digna Repository Backup is Mandatory**
+**Det er obligatorisk at lave en backup af digna-repositoriet**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Før du opgraderer digna, sikkerhedskopier dit repositorie (PostgreSQL) for at beskytte imod datatab.
+En backup sikrer, at du kan gendanne, hvis opgraderingen støder på uventede problemer.
 
-To create a backup from the Terminal:
+For at lave en backup fra Terminal:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Opgraderingsproces
 
-#### Step 1: Stop the digna Service
+#### Trin 1: Stop digna-tjenesten
 
-If digna is running as a background service, stop it first:
+Hvis digna kører som en baggrundstjeneste, stop den først:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Hvis digna kører i forgrunden, tryk `Ctrl + C` i dets Terminal-vindue.
 
-#### Step 2: Backup Current Backend Installation
+#### Trin 2: Backup af nuværende backend-installation
 
-In your digna installation directory:
+I din digna-installationsmappe:
 
 ```bash
 cd /opt/digna
@@ -930,55 +930,55 @@ mv digna digna_old
 mv dashboard dashboard_old
 ```
 
-#### Step 3: Extract and Deploy New Version
+#### Trin 3: Udpak og deploy den nye version
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Udpak den nye digna-installations-ZIP-fil
+2. Kopiér den nye `digna`-eksekverbare og `dashboard`-mappen til din installationsmappe
+3. Genskab den eksekverbare bit og, hvis nødvendigt, fjern quarantine-attributten:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Vigtigt"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    Filen `config.toml` medtages **aldrig** i installations-ZIP'en. Din eksisterende konfiguration er derfor sikker.
 
-### Step 4: Restore Your Configuration Files
+### Trin 4: Gendan dine konfigurationsfiler
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+### Trin 5: Opgrader repositorieschemaet
 
-Navigate to your digna installation directory and run:
+Navigér til din digna-installationsmappe og kør:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Dette opdaterer PostgreSQL-schemaet til den nyeste version samtidig med, at alle eksisterende data bevares.
 
-### Step 6: Restart Services
+### Trin 6: Genstart tjenesterne
 
-If running as a background service:
+Hvis du kører som baggrundstjeneste:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Hvis du kører manuelt, genstart serveren:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Hvis du bruger nginx eller Apache, genstart den respektive webserver:
 
 ```bash
 brew services restart nginx
@@ -987,8 +987,8 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 7: Verify the Upgrade
+#### Trin 7: Verificér opgraderingen
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
+1. Åbn digna-dashboardet
+2. Bekræft at interfacet indlæses korrekt
+3. Tjek serverens logs for eventuelle fejl

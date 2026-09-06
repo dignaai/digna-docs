@@ -28,10 +28,19 @@
 
 ## Diegimas ir diegimas
 
+### Operacinės sistemos
+
+### Linux
+
+- [Release 2026.06](https://docs.digna.ai/lt/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Žingsnis po žingsnio vadovas, kaip įdiegti digna leidimą 2026.06 Linux — sistemos reikalavimai, PostgreSQL nustatymas, nginx arba Apache konfigūracija, backend ir dashboard konfigūracija, digna paleidimas kaip systemd paslauga ir atnaujinimas į naują leidimą.
+
+### macOS
+
+- [Release 2026.06](https://docs.digna.ai/lt/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Žingsnis po žingsnio gidas, kaip įdiegti digna leidimą 2026.06 macOS — sistemos reikalavimai, Homebrew ir PostgreSQL nustatymas, nginx arba Apache konfigūracija, backend ir dashboard konfigūracija, digna paleidimas kaip foninė paslauga ir atnaujinimas į naują leidimą.
+
 ### Windows
 
 - [Release 2026.06](https://docs.digna.ai/lt/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Žingsnis po žingsnio vadovas, kaip įdiegti digna Release 2026.06 sistemoje Windows — sistemos reikalavimai, PostgreSQL nustatymai, žiniatinklio serverio konfigūracija, backend ir dashboard konfigūracija, digna paleidimas kaip Windows paslauga ir atnaujinimas į naują leidimą.
-- [Kaip konfigūruoti vienodą prisijungimą](https://docs.digna.ai/lt/installation_deployment/sso_integration_guide/): Žingsnis po žingsnio vadovas, kaip sukonfigūruoti Single Sign-On (SSO) digna naudojant OpenID Connect (OIDC). Apima informacijas apie dashboard ir backend konfigūraciją, testavimą, trikčių šalinimą ir palaikomus identiteto tiekėjus, tokius kaip Microsoft Entra ID, Google Workspace ir Okta.
 
 ## Pradžia
 
@@ -60,6 +69,18 @@
 - [Snowflake](https://docs.digna.ai/lt/databases/snowflake_connector_guide/): Konfigūruokite digna prisijungimui prie Snowflake naudojant Python jungtį arba Snowflake ODBC tvarkyklę. Palaikoma autentifikacija su slaptažodžiu naudojant DSN arba be DSN.
 - [MS SQL Server](https://docs.digna.ai/lt/databases/sqlserver_connector_guide/): Konfigūruokite digna prisijungimui prie Microsoft SQL Server naudodami pymssql Python tvarkyklę arba SQL Server ODBC tvarkyklę. Palaikoma autentifikacija su slaptažodžiu per DSN arba be DSN.
 - [Teradata](https://docs.digna.ai/lt/databases/teradata_connector_guide/): Konfigūruokite digna prisijungimui prie Teradata, naudojant teradatasql Python draiverį arba Teradata ODBC draiverį. Palaiko autentifikaciją slaptažodžiu su DSN arba be DSN.
+
+### Single Sign-On
+
+- [Overview](https://docs.digna.ai/lt/sso/overview/): Kaip veikia vienkartinis prisijungimas (SSO) digna platformoje naudojant OpenID Connect (OIDC). Apima prietaisų skydelio ir serverio konfigūraciją, testavimą, trikčių šalinimą ir nuorodas į atskirus tiekėjų nustatymų vadovus Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne ir AD FS.
+- [AD FS](https://docs.digna.ai/lt/sso/adfs_sso_guide/): Konfigūruokite vienkartinį prisijungimą (Single Sign-On) digna su Active Directory Federation Services naudojant OpenID Connect — aplikacijos grupė, serverio aplikacija, bendras slaptasis raktas, leidžiami scopes ir atitinkama digna konfigūracija.
+- [Auth0](https://docs.digna.ai/lt/sso/auth0_sso_guide/): Konfigūruokite vienkartinį prisijungimą (SSO) digna su Auth0 naudojant OpenID Connect — paprastasis žiniatinklio programos nustatymas, leistini grąžinimo URL, kliento kredencialai, nuomininko domenas ir atitinkama digna konfigūracija.
+- [Google Workspace](https://docs.digna.ai/lt/sso/google_workspace_sso_guide/): Sukonfigūruokite Single Sign-On (SSO) digna su Google Workspace naudojant OpenID Connect — OAuth sutikimo ekraną, OAuth kliento ID, autorizuotus peradresavimo URI ir atitinkamą digna konfigūraciją.
+- [Keycloak](https://docs.digna.ai/lt/sso/keycloak_sso_guide/): Konfigūruokite digna vieno prisijungimo (SSO) naudojant Keycloak per OpenID Connect — realm ir kliento nustatymai, kliento autentifikacija, galiojančios peradresavimo URI, kliento slaptasis raktas ir atitinkama digna konfigūracija.
+- [Microsoft Entra ID](https://docs.digna.ai/lt/sso/microsoft_entra_id_sso_guide/): Konfigūruokite vieno prisijungimo (Single Sign-On) funkciją digna naudojant Microsoft Entra ID (anksčiau Azure AD) per OpenID Connect — programos registracija, redirect URI, kliento slaptasis raktas, tenant ID ir atitinkama digna konfigūracija.
+- [Okta](https://docs.digna.ai/lt/sso/okta_sso_guide/): Sukonfigūruokite Vieningą prisijungimą (Single Sign-On) digna naudojant Okta per OpenID Connect — programos integracija, prisijungimo peradresavimo URI, kliento kredencialai, autorizacijos serverio pasirinkimas ir atitinkama digna konfigūracija.
+- [OneLogin](https://docs.digna.ai/lt/sso/onelogin_sso_guide/): Sukonfigūruokite vienkartinį prisijungimą (SSO) digna su OneLogin naudojant OpenID Connect — OIDC programos kūrimas, peradresavimo URI, kliento kredencialai, tokenų endpoint autentifikacija ir atitinkama digna konfigūracija.
+- [PingOne](https://docs.digna.ai/lt/sso/pingone_sso_guide/): Configure Single Sign-On for digna with PingOne using OpenID Connect — OIDC web app setup, redirect URIs, client credentials, environment ID, regional domains and the matching digna configuration.
 
 ## CLI nuoroda
 

@@ -1,115 +1,115 @@
-# digna Data Anomalies – AI-Based Detection of Data Quality Issues
+# digna Data Anomalies – dirbtinio intelekto pagrindu atliekamas duomenų kokybės problemų aptikimas
 
-**AI-powered observability for always-on data trust**
+**Dirbtiniu intelektu pagrįsta stebėsena dėl nuolatinio pasitikėjimo duomenimis**
 
-digna Data Anomalies is part of the **digna Data Observability Platform** — a modular solution that improves the **quality of data** by continuously analyzing how datasets behave over time.
+digna Data Anomalies yra dalis **digna Duomenų stebėjimo platformos** — modulinio sprendimo, kuris gerina **duomenų kokybę** nuolat analizuodamas, kaip duomenų rinkiniai elgiasi laikui bėgant.
 
-It automatically learns what “normal” looks like for your data and alerts you when behavior changes — without defining static thresholds or writing a single rule.  
-The module runs directly inside your database, so data never leaves your environment.
-
----
-
-## Purpose of digna Data Anomalies
-
-The **digna Data Anomalies** module provides continuous **observability of data** by calculating and tracking predefined statistical metrics such as:
-
-- Data volume and record counts  
-- Missing value ratios  
-- Value distributions and histograms  
-- Numeric ranges and averages  
-- Column uniqueness and text length  
-
-These metrics are collected automatically for every dataset.  
-Using them, digna builds models that represent the typical behavior of each metric — learning daily, weekly, or seasonal patterns.  
-Once trained, the module predicts expected values for new data and detects deviations that may indicate quality issues, process failures, or upstream changes.
+Ji automatiškai išmoksta, kaip jūsų duomenyse atrodo „normalu“, ir įspėja, kai elgsena pasikeičia — be statinių ribų nustatymo ar vienos taisyklės rašymo.  
+Modulis veikia tiesiogiai jūsų duomenų bazėje, todėl duomenys niekada neišeina iš jūsų aplinkos.
 
 ---
 
-## Key capabilities
+## digna Data Anomalies paskirtis
 
-- Learns expected data behavior automatically using AI — no configuration of thresholds.  
-- Detects sudden drops, spikes, or drifts in data volume and distributions.  
-- Identifies swapped columns or incorrect mappings between attributes.  
-- Highlights unexpected categorical values (e.g., new regions or codes).  
-- Supports all column types: numerical, categorical, or unspecified.  
-- Operates entirely in the customer environment — no data movement.  
-- Integrates with **digna Data Analytics** for long-term trend analysis.
+**digna Data Anomalies** modulis užtikrina nuolatinę **duomenų stebėseną** apskaičiuodamas ir sekdamas iš anksto apibrėžtus statistinius rodiklius, tokius kaip:
 
----
+- Duomenų apimtis ir įrašų skaičius  
+- Trūkstamų reikšmių santykiai  
+- Reikšmių pasiskirstymai ir histogramos  
+- Skaitiniai intervalai ir vidurkiai  
+- Stulpelio unikalumas ir teksto ilgis  
 
-## How it works
-
-### Step 1 – Metric calculation
-digna computes a set of profile metrics for each table and column.  
-These metrics describe the structure and statistical behavior of your data and are stored for further analysis.
-
-### Step 2 – Model training
-Based on historical metric values, digna trains compact machine-learning models (signature models) that capture the normal range of each metric.
-
-### Step 3 – Automatic thresholding
-Using *conformal inference*, digna calculates adaptive confidence intervals (auto-thresholds) that evolve with your data.  
-If new metric values fall outside the predicted range, they are flagged as anomalies.
-
-This continuous feedback loop ensures that monitoring stays relevant even when data volumes or patterns naturally grow.
+Šie rodikliai renkami automatiškai kiekvienam duomenų rinkiniui.  
+Remdamasi jais, digna kuria modelius, reprezentuojančius tipinę kiekvieno rodiklio elgseną — išmokdama dieninius, savaitinius ar sezoninius modelius.  
+Kartą apmokytas, modulis prognozuoja laukiamas reikšmes naujiems duomenims ir aptinka nukrypimus, kurie gali reikšti kokybės problemas, procesų gedimus arba upstream pakeitimus.
 
 ---
 
-## Example scenarios
+## Pagrindinės galimybės
 
-### Unexpected drop in record volume
-A dataset typically contains around 500 000 records per day.  
-When a new delivery includes only 50 000 records, digna flags an anomaly and shows how far the value deviates from its learned range.
-
-### Swapped columns detected
-The average string length of `last_name` suddenly matches that of `first_name`.  
-digna recognizes the deviation in metric patterns and signals a potential column swap.
-
-### Unexpected category detected
-A column listing Austrian cities suddenly contains “Zurich”.  
-Based on historical distributions, digna marks the new value as unexpected and alerts the user.
+- Automatiškai išmoksta laukiamą duomenų elgseną naudojant DI — nereikia konfigūruoti ribų.  
+- Aptinka staigius kritimus, šuolius ar dreifus duomenų apimtyje ir pasiskirstymuose.  
+- Nustato sukeistus stulpelius arba neteisingus atributų atitikimus.  
+- Išryškina netikėtas kategorines reikšmes (pvz., naujos regionų reikšmės arba kodai).  
+- Palaiko visų tipų stulpelius: skaitinius, kategorinius ar nenustatytus.  
+- Veikia visiškai kliento aplinkoje — be duomenų judėjimo.  
+- Integruojasi su **digna Data Analytics** ilgalaikei tendencijų analizei.
 
 ---
 
-## Integration with other modules
+## Kaip tai veikia
 
-- **digna Data Analytics** — aggregates anomaly history and volatility metrics to reveal long-term trends.  
-- **digna Data Validation** — enforces explicit business rules for deterministic quality checks.  
-- **digna Data Timeliness** — monitors arrival times of data and correlates delays with anomaly occurrences.  
-- **digna Data Schema Tracker** — detects structural changes that may explain new anomalies.
+### 1 žingsnis – rodiklių skaičiavimas
+digna apskaičiuoja profilio rodiklių rinkinį kiekvienai lentelei ir stulpeliui.  
+Šie rodikliai apibūdina jūsų duomenų struktūrą ir statistinę elgseną ir saugomi tolimesnei analizei.
 
----
+### 2 žingsnis – modelio apmokymas
+Remiantis istorinėmis rodiklių reikšmėmis, digna apmoko kompaktiškus mašininio mokymosi modelius (signature models), kurie fiksuoja normalaus kiekvieno rodiklio intervalą.
 
-## Typical use cases
+### 3 žingsnis – automatinis ribų nustatymas
+Naudodama *conformal inference*, digna apskaičiuoja adaptuojamus pasitikėjimo intervalus (auto-thresholds), kurie kinta kartu su jūsų duomenimis.  
+Jei naujos rodiklių reikšmės patenka už prognozuoto intervalo ribų, jos žymimos kaip anomalijos.
 
-- Detecting missing or duplicate data loads.  
-- Identifying swapped or truncated columns.  
-- Detecting distribution drift in numeric or categorical features.  
-- Finding unexpected reference values or codes.  
-- Monitoring continuous ingestion pipelines for irregularities.  
-- Tracking the overall **quality and observability of data** across domains.
+Šis nuolatinis atsiliepimų ciklas užtikrina, kad stebėsena išliktų aktuali net ir tada, kai duomenų apimtys arba modeliai natūraliai auga.
 
 ---
 
-## Benefits
+## Pritaikymo pavyzdžiai
 
-- Immediate detection of abnormal data behavior.  
-- Eliminates manual threshold tuning.  
-- Reduces operational effort for large data environments.  
-- Builds confidence in analytics and reporting systems.  
-- Strengthens the **quality of data** and end-to-end **data observability**.
+### Netikėtas įrašų apimties sumažėjimas
+Duomenų rinkinys paprastai turi apie 500 000 įrašų per dieną.  
+Kai naujas tiekimas turi tik 50 000 įrašų, digna pažymi anomaliją ir parodo, kiek reikšmė nukrypo nuo išmokto intervalo.
 
----
+### Nustatytas stulpelių sukeitimas
+Stulpelio `last_name` vidutinis simbolių ilgis staiga atitinka `first_name` ilgį.  
+digna atpažįsta nukrypimą rodiklių modeliuose ir signalizuoja apie galimą stulpelių sukeitimą.
 
-## Related digna Modules
-
-- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend and volatility metrics.  
-- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — rule-based data verification.  
-- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — monitoring data delivery schedules.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schema change detection.
+### Nustatyta netikėta kategorija
+Stulpelyje, kuriame buvo Austrijos miestų sąrašas, staiga pasirodo „Zurich“.  
+Remiantis istoriniais pasiskirstymais, digna pažymi naują reikšmę kaip netikėtą ir įspėja vartotoją.
 
 ---
 
-## Summary
+## Integracija su kitais moduliais
 
-The **digna Data Anomalies** module forms the core of digna’s AI-driven **Data Observability Platform**.  
-By continuously monitoring key metrics, learning patterns, and identifying deviations, it helps organizations ensure that the **quality of data** remains trustworthy, stable, and explainable — without manual configuration.
+- **digna Data Analytics** — agreguoja anomalijų istoriją ir kintamumo rodiklius, atskleidžiant ilgalaikes tendencijas.  
+- **digna Data Validation** — taiko aiškias verslo taisykles deterministinėms kokybės patikroms.  
+- **digna Data Timeliness** — stebi duomenų atvykimo laikus ir koreliuoja vėlavimus su anomalijų įvykiais.  
+- **digna Data Schema Tracker** — aptinka struktūrinius pakeitimus, kurie gali paaiškinti naujas anomalijas.
+
+---
+
+## Tipiniai naudojimo atvejai
+
+- Trūkstamų arba pasikartojančių duomenų užkrovimų aptikimas.  
+- Sukeistų arba nutrumpintų stulpelių identifikavimas.  
+- Skaitinių ar kategorinių požymių pasiskirstymo dreifo aptikimas.  
+- Netikėtų referencinių reikšmių arba kodų radimas.  
+- Nuolatinių įkėlimo srautų stebėjimas dėl nereguliarumų.  
+- Bendros **duomenų kokybės** ir end-to-end **duomenų stebėsenos** sekimas per domenus.
+
+---
+
+## Privalumai
+
+- Greitas nenormalaus duomenų elgesio aptikimas.  
+- Pašalina rankinį ribų derinimą.  
+- Sumažina operacinę veiklą didelėse duomenų aplinkose.  
+- Didina pasitikėjimą analizės ir ataskaitų sistemomis.  
+- Stiprina **duomenų kokybę** ir visapusišką **duomenų stebėseną**.
+
+---
+
+## Susiję digna moduliai
+
+- [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — tendencijų ir kintamumo rodikliai.  
+- [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — taisyklėmis pagrįsta duomenų patikra.  
+- [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — duomenų pristatymo grafikų stebėsena.  
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — schemos pakeitimų aptikimas.
+
+---
+
+## Santrauka
+
+**digna Data Anomalies** modulis sudaro kertinę digna DI varomos **Duomenų stebėjimo platformos** dalį.  
+Nuolat stebėdamas pagrindinius rodiklius, išmokdamas modelius ir identifikuodamas nukrypimus, jis padeda organizacijoms užtikrinti, kad **duomenų kokybė** išliktų patikima, stabili ir paaiškinama — be rankinės konfigūracijos.
