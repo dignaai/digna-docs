@@ -4082,159 +4082,151 @@ Ta ukaz bo prikazal le načrt uvoza objektov, ki bodo uvoženi in preskočeni.
 # Release 2026.06
 Source: https://docs.digna.ai/sl/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# Referenca CLI digna 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Ta stran dokumentira celoten nabor ukazov, ki so na voljo v izdaji **2026.06** vmesnika CLI ***digna***, vključno s primeri uporabe in možnostmi.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Izvršljiva datoteka se imenuje `digna`.
 
 ---
 
-### Overview & Syntax
+## Osnove CLI
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Pregled in sintaksa
+
+CLI izdaje **2026.06** uporablja strukturirano hierarhijo ukazov, urejeno po kategorijah:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` in `serve` sta samostojna ukaza brez podukaza:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Globalne možnosti
 
-The following global options apply across all commands:
+Naslednje globalne možnosti veljajo za vse ukaze:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Prikaže pomoč za CLI ali za določeno kategorijo ukazov oziroma podukaz.
+- `--stacktrace`: Ob napaki prikaže celotno verigo napak namesto zgolj sporočila najvišje ravni.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` je globalna možnost v strogem pomenu besede: navesti jo je treba **pred** kategorijo ukaza, ne za njo.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Zastavice `--version` ni. Namesto nje uporabite ukaz [`version`](#version).
 
-### Prerequisites
+### Predpogoji
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+Večina ukazov potrebuje berljivo in veljavno datoteko `config.toml`; nekateri poleg tega zahtevajo veljavno licenco.
+Naslednja tabela beleži, kaj vsaka kategorija ukazov naloži, preden sploh kaj stori:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Kategorija ukazov | Potrebuje `config.toml` | Potrebuje veljavno licenco |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | ne | ne |
+| `config check` | ne (prav o tem ukaz poroča) | ne |
+| `license check` | ne | to *je* preverjanje |
+| `crypt` | da | ne |
+| `serve` | da | ne |
+| `project` | da | ne |
+| `user` | da | da |
+| `inspection` | da | da |
+| `repo` | da | da |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Kjer je licenca zahtevana, se preverita tako njen podpis kot datum poteka, in če katero koli od tega ne uspe, se ukaz prekine, še preden se dotakne repozitorija.
 
-### Exit Codes
+### Izhodne kode
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: ukaz je uspel.
+- `1`: ukaz ni uspel. Sporočilo o napaki se izpiše na stderr s predpono `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Možnost `--help` ponuja informacije o razpoložljivih kategorijah ukazov, podukazih in možnostih:
 
-1. **Displaying General Help:**
+1. **Prikaz splošne pomoči:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Pridobivanje pomoči za določene kategorije in ukaze:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Izpis vključuje:**
+   - **Opis ukaza:** Povzetek namena ukaza.
+   - **Sintakso:** Obvezne in neobvezne argumente.
+   - **Možnosti:** Zastavice in parametre, značilne za ukaz.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Ukaz `version` izpiše nameščeno izdajo ***digna***. Ne bere nobene konfiguracije in ne preverja licence, zato deluje tudi v namestitvi, v kateri datoteka `config.toml` ali licenca manjka oziroma je neveljavna.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Različica izdaje je neodvisna od različice sheme repozitorija, ki jo javi [`repo check`](#repo-check).
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Upravljanje konfiguracije
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Ukaz `config check` preveri konfiguracijsko datoteko (`config.toml`) in ugotovi, ali so vsi obvezni razdelki in nastavitve prisotni ter pravilno oblikovani. Vsak razdelek se preveri zase, tako da pokvarjen razdelek `[app]` ne prekrije stanja razdelka `[repo]`.
 
-The sections reported are:
+Poročani razdelki so:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — neobvezen; manjkajoč ključ preverjanje prestane, prisoten, a napačno oblikovan seznam pa ne
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Ukaz namenoma ne naloži konfiguracije aplikacije tako, kot to storijo drugi ukazi, da lahko diagnosticira datoteko `config.toml`, ki bi ***digna*** sploh preprečila zagon.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Možnosti
+- `--configpath`, `-c`: Pot do konfiguracijske datoteke ali do imenika, ki vsebuje `config.toml` (privzeto `./config.toml`).
+- `--json`: Izpiše poročilo o preverjanju v obliki JSON. Ima prednost pred `--quiet`.
+- `--quiet`, `-q`: Zatre poročilo in se opira izključno na izhodno kodo.
 
-#### Example
+#### Primer
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Preverjanje določene konfiguracijske datoteke z izpisom v obliki JSON:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4248,49 +4240,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Manjkajoča datoteka ali skladenjska napaka TOML ne pusti ničesar, kar bi bilo mogoče preveriti razdelek za razdelkom, in je sporočena kot ena sama napaka namesto poročila, ne glede na `--quiet` ali `--json`.
 
 ---
 
-## Repository Management
+## Upravljanje repozitorija
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Ukaz `repo check` preizkusi povezavo z zbirko podatkov ter preveri namestitev in različico repozitorija. Ne uspe, če nastavljena shema ne obstaja ali če obstaja, a ne vsebuje repozitorija ***digna***.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Javljena različica je različica sheme repozitorija, ki se različicira ločeno od izdaje ***digna***, ki jo izpiše [`version`](#version).
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Ukaz `repo install` namesti nov repozitorij ***digna*** v shemo, nastavljeno v `config.toml`, in pri tem ustvari vsa potrebna zaporedja, tabele, indekse, omejitve in začetne zapise.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Sheme same ta ukaz **ne** ustvari — obstajati mora že prej. Ukaz se prav tako ne izvede, če je v tej shemi repozitorij že nameščen, in napoti na [`repo upgrade`](#repo-upgrade), če je nameščena različica starejša.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4302,19 +4287,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Ukaz `repo upgrade` uveljavi migracije sheme zbirke podatkov, da obstoječi repozitorij posodobi na različico, ki jo pričakuje nameščena izdaja. Nadgradnje se uveljavljajo po en preskok različice naenkrat po ustaljeni poti nadgradnje, vsak dokončan preskok pa se zabeleži v repozitoriju.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Če je repozitorij že v pričakovani različici, ukaz sporoči, da nadgradnja ni potrebna, in ne spremeni ničesar.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4323,112 +4305,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Upravljanje šifriranja
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Ukaz `crypt gen-key` ustvari nov šifrirni ključ AES-GCM, namenjen uporabi kot šifrirni ključ v `config.toml`. Datoteka `config.toml`, ki jo je mogoče naložiti, mora že obstajati, čeprav ustvarjeni ključ od nje ni odvisen.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Ukaz `crypt encrypt` šifrira niz (na primer geslo za zbirko podatkov) s ključem AES-GCM, nastavljenim v `config.toml`, in izpiše šifrirano besedilo.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argumenti
+- **VALUE**: Nešifriran niz, ki naj se šifrira (obvezno).
 
-#### Example
+#### Primer
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Ukaz `crypt decrypt` dešifrira niz, šifriran z AES-GCM, s ključem, nastavljenim v `config.toml`, in izpiše nešifrirano besedilo.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argumenti
+- **VALUE**: Šifrirani niz, ki naj se dešifrira (obvezno).
 
-#### Example
+#### Primer
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Upravljanje uporabnikov
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Ukaz `user add` ustvari nov uporabniški račun v repozitoriju ***digna***. Ukaz ne uspe, če uporabnik z navedenim e-poštnim naslovom že obstaja.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika (obvezno).
+- **PASSWORD**: Začetno geslo uporabnika (obvezno).
+- **DISPLAY_NAME**: Polno prikazno ime uporabnika (obvezno).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Možnosti
+- `--admin`, `-a`: Ustvari uporabnika s skrbniškimi pravicami (superuporabnik).
 
-#### Example
+#### Primer
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Za ustvarjanje skrbniškega računa:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Ukaz `user list` v obliki tabele izpiše vse registrirane uporabnike z ID-jem, e-poštnim naslovom, prikaznim imenom in skrbniško zastavico.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4438,88 +4414,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Ukaz `user modify` posodobi prikazno ime in skrbniške pravice obstoječega uporabniškega računa, določenega z e-poštnim naslovom.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Tako prikazno ime kot skrbniška zastavica se zapišeta vsakič. `--admin` je stikalo in ne vrednost: **če ga izpustite, se skrbniške pravice odvzamejo**, zato ga navedite vsakič, ko naj jih uporabnik obdrži ali pridobi.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika, ki ga želite spremeniti (obvezno).
+- **DISPLAY_NAME**: Posodobljeno prikazno ime (obvezno).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Možnosti
+- `--admin`, `-a`: Dodeli skrbniške pravice. Izpustite, da jih odvzamete.
+- `--valid-until`, `-v`: Sprejeto zaradi združljivosti, vendar se **trenutno ne uporablja**. Če ga navedete, se izpiše opozorilo in ne spremeni se nič.
 
-#### Example
+#### Primer
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Ukaz `user modify-pwd` posodobi geslo obstoječega uporabniškega računa.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika, čigar geslo naj se posodobi (obvezno).
+- **PASSWORD**: Novo geslo (obvezno).
 
-#### Example
+#### Primer
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Ukaz `user delete` odstrani uporabniški račun iz sistema.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika, ki naj se izbriše (obvezno).
 
-#### Example
+#### Primer
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Upravljanje projektov in podatkovnih virov
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Ukaz `project list` izpiše vse projekte, ki so na voljo v repozitoriju, skupaj z njihovim ID-jem, imenom in opisom.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4529,23 +4501,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Ukaz `project list-ds` izpiše vse podatkovne vire, povezane z danim projektom, in prikaže njihov ID, ime, vrsto, shemo in ime tabele.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argumenti
+- **PROJECT_NAME**: Ime projekta, katerega podatkovne vire je treba izpisati (obvezno). Ime se mora ujemati natanko.
 
-#### Example
+#### Primer
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4555,149 +4526,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Ukaz `project export-ds` izvozi podatkovne vire projekta v dokument JSON.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Če nista navedena ne `--table-name` ne `--table-id`, se izvozijo vsi podatkovni viri projekta.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argumenti
+- **PROJECT_NAME**: Ime projekta, iz katerega naj se izvozijo podatkovni viri (obvezno).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Možnosti
+- `--table-name`, `-n`: Imena podatkovnih virov za izvoz. Navedete lahko več imen, ločenih s presledki.
+- `--table-id`, `-i`: ID-ji podatkovnih virov za izvoz. Navedete lahko več ID-jev, ločenih s presledki.
+- `--exportfile`, `-f`: Pot, na katero naj se shranijo izvoženi podatkovni viri (privzeto: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Primer
+Za izvoz vseh podatkovnih virov iz projekta `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Za izvoz določenih tabel:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Ukaz `project import-ds` uvozi podatkovne vire iz izvozne datoteke v ciljni projekt in za vsak objekt sporoči, kaj je bilo ustvarjeno, posodobljeno ali preskočeno.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argumenti
+- **PROJECT_NAME**: Ime ciljnega projekta, v katerega naj se uvozi (obvezno).
+- **EXPORT_FILE**: Pot do izvozne datoteke JSON (obvezno).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Možnosti
+- `--output-file`, `-o`: Datoteka, v katero naj se zapiše poročilo o uvozu. Brez nje gre poročilo na stdout.
+- `--output-format`, `-f`: Oblika poročila o uvozu — `table`, `json` ali `csv` (privzeto: `table`).
 
-#### Example
+#### Primer
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Za strojno berljivo poročilo:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Poročilo zajema štiri ravni objektov — podatkovni vir, definicijo podatkovnega niza, atribut in pravilo preverjanja — vsako z njeno uvozno akcijo, rezultatom, ID-jem nastalega objekta in morebitnimi dodatnimi informacijami.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Ukaz `project plan-import-ds` predogleda uvoz podatkovnih virov v ciljni projekt in pokaže, kateri objekti bi bili ustvarjeni, posodobljeni ali preskočeni, ne da bi kar koli spremenil. Sprejme isto izvozno datoteko in iste možnosti poročanja kot [`project import-ds`](#project-import-ds), poleg tega pa doda še številko koraka za vsak načrtovani objekt.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argumenti
+- **PROJECT_NAME**: Ime ciljnega projekta (obvezno).
+- **EXPORT_FILE**: Pot do izvozne datoteke (obvezno).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Možnosti
+- `--output-file`, `-o`: Datoteka, v katero naj se zapiše načrt uvoza. Brez nje gre načrt na stdout.
+- `--output-format`, `-f`: Oblika načrta uvoza — `table`, `json` ali `csv` (privzeto: `table`).
 
-#### Example
+#### Primer
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Upravljanje pregledov
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Ukaz `inspection run` ustvari zahtevo za pregled za projekt in datumski razpon, nato pa — odvisno od navedenih možnosti — bodisi počaka nanjo, se takoj vrne ali jo izvede v lastnem procesu.
 
-The three execution modes are:
+Trije načini izvajanja so:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Privzeti (brez zastavice)**: zahteva se uvrsti v čakalno vrsto za zaledje, CLI pa jo vsaki dve sekundi poizveduje in izpisuje napredek opravil, dokler pregled ne doseže končnega stanja. Potreben je zagnan `digna serve`, sicer zahteve ne prevzame nič.
+- **`--async-mode`**: zahteva se uvrsti v čakalno vrsto, njen ID pa se izpiše takoj. Za spremljanje uporabite [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: pregled izvede sam proces CLI in se ne uvrsti v čakalno vrsto, zato zagnan strežnik ni potreben.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` in `--bypass-backend` se medsebojno izključujeta.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+V vseh načinih se ukaz konča z izhodno kodo, različno od nič, če se pregled ni uspešno zaključil.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argumenti
+- **PROJECT_NAME**: Ime ciljnega projekta (obvezno). Ime se mora ujemati natanko.
+- **START_DATE**: Začetni datum razpona v obliki `YYYY-MM-DD` (obvezno).
+- **END_DATE**: Končni datum razpona v obliki `YYYY-MM-DD` (obvezno).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Možnosti
+- `--table-name`: Omeji pregled na en sam podatkovni vir projekta, določen z imenom tega podatkovnega vira. Brez nje se pregledajo vsi podatkovni viri projekta.
+- `--async-mode`: Uvrsti pregled v čakalno vrsto in izpiše ID zahteve, namesto da bi čakal nanjo. Ni ga mogoče kombinirati z `--bypass-backend`.
+- `--bypass-backend`: Izvede pregled neposredno v procesu CLI, namesto da bi ga uvrstil v čakalno vrsto za zaledje. Ni ga mogoče kombinirati z `--async-mode`.
 
-#### Example
+#### Primer
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Za oddajo asinhronega pregleda:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Za pregled enega samega podatkovnega vira:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Primer izpisa
+Privzeti način:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4706,30 +4670,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Asinhroni način:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Ukaz `inspection status` po ID-ju zahteve poizve o stanju in napredku opravil zahteve za pregled.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argumenti
+- **INSPECTION_REQUEST_ID**: Številčni ID zahteve za pregled (obvezno).
 
-#### Example
+#### Primer
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4740,92 +4703,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Ukaz `inspection abort` zahteva preklic pregledov, ki se izvajajo ali čakajo. Za vsako prizadeto zahtevo zabeleži dogodek ustavitve; nanj se odzove zaledje, zato je prekinitev prošnja za ustavitev in ne takojšnja prekinitev procesa.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argumenti
+- **INSPECTION_REQUEST_ID**: ID zahteve za pregled, ki naj se prekine. Obvezen, razen če je naveden `--killall`.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Možnosti
+- `--killall`: Prekine vse trenutno izvajane in čakajoče zahteve za pregled. Ima prednost pred ID-jem zahteve, navedenim skupaj z njim.
 
-#### Example
-To abort a specific request:
+#### Primer
+Za prekinitev določene zahteve:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Za prekinitev vseh dejavnih in čakajočih pregledov:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Primer izpisa
+`--killall` sporoči, kaj je storil; prekinitev ene same zahteve ne izpiše ničesar in o uspehu poroča z izhodno kodo.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Upravljanje licenc
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Ukaz `license check` preveri datoteko `license.toml`: njen podpis preveri z javnim ključem, priloženim namestitvi, in ugotovi, ali ni potekla. Ne bere nobene konfiguracije aplikacije, zato deluje tudi, preden je `config.toml` nastavljen.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Neveljaven podpis in potekla licenca sta sporočena kot ločeni napaki, obe z izhodno kodo 1.
 
 ---
 
-## Server & Background Services
+## Strežnik in storitve v ozadju
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Ukaz `serve` zažene strežnik REST API ***digna*** skupaj z razporejevalnikom pregledov in upravljalnikom pregledov, ki tečeta v ozadju. Ob zagonu tudi označi kot neuspešen vsak pregled, ki ga repozitorij še vedno beleži kot izvajan, saj iz prejšnjega procesa ni moglo nič preživeti.
 
-The command runs in the foreground until it is stopped.
+Ukaz teče v ospredju, dokler ga ne ustavite.
 
-#### Command Usage
+#### Uporaba ukaza
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Možnosti
+- `--address`: Omrežni naslov, na katerega naj se veže strežnik API (privzeto: `127.0.0.1`).
+- `--port`: Številka vrat, na katerih posluša (privzeto: `8000`).
 
-#### Example
+#### Primer
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Primer izpisa
 ```text
 Server running on http://0.0.0.0:8000
 ```

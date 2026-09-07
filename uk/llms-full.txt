@@ -4083,159 +4083,151 @@ dignacli plan-import-ds ProjectB my_export.json
 # Release 2026.06
 Source: https://docs.digna.ai/uk/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# Довідник CLI digna 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+На цій сторінці описано повний набір команд, доступних у випуску **2026.06** CLI ***digna***, разом із прикладами використання та параметрами.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Виконуваний файл має назву `digna`.
 
 ---
 
-### Overview & Syntax
+## Основи CLI
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Огляд і синтаксис
+
+CLI випуску **2026.06** використовує структуровану ієрархію команд, побудовану за категоріями:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` і `serve` — це окремі команди без підкоманди:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Глобальні параметри
 
-The following global options apply across all commands:
+Наведені нижче глобальні параметри діють для всіх команд:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Показує довідкову інформацію про CLI або про конкретну категорію команд чи підкоманду.
+- `--stacktrace`: У разі помилки показує весь ланцюжок помилок замість самого лише повідомлення верхнього рівня.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` є глобальним параметром у строгому сенсі: його потрібно вказувати **перед** категорією команд, а не після неї.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Прапорця `--version` не існує. Натомість скористайтеся командою [`version`](#version).
 
-### Prerequisites
+### Передумови
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+Більшість команд потребують придатного до читання й коректного файлу `config.toml`; деякі додатково вимагають чинної ліцензії.
+У наведеній нижче таблиці зафіксовано, що завантажує кожна категорія команд, перш ніж що-небудь зробити:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Категорія команд | Потрібен `config.toml` | Потрібна чинна ліцензія |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | ні | ні |
+| `config check` | ні (саме про нього команда й звітує) | ні |
+| `license check` | ні | вона *і є* цією перевіркою |
+| `crypt` | так | ні |
+| `serve` | так | ні |
+| `project` | так | ні |
+| `user` | так | так |
+| `inspection` | так | так |
+| `repo` | так | так |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Там, де потрібна ліцензія, перевіряються і її підпис, і термін дії, і команда завершується, не торкаючись репозиторію, якщо бодай одна з цих перевірок не пройдена.
 
-### Exit Codes
+### Коди завершення
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: команда виконана успішно.
+- `1`: команда завершилася помилкою. Повідомлення про помилку записується до stderr із префіксом `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Параметр `--help` надає відомості про доступні категорії команд, підкоманди та параметри:
 
-1. **Displaying General Help:**
+1. **Показ загальної довідки:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Отримання довідки для конкретних категорій і команд:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Вивід містить:**
+   - **Опис команди:** Стислий виклад призначення команди.
+   - **Синтаксис:** Обов'язкові та необов'язкові аргументи.
+   - **Параметри:** Прапорці та параметри, властиві саме цій команді.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Команда `version` виводить встановлений випуск ***digna***. Вона не читає конфігурації й не перевіряє ліцензії, тому працює й у встановленні, де файл `config.toml` чи ліцензія відсутні або некоректні.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Версія випуску не пов'язана з версією схеми репозиторію, про яку звітує [`repo check`](#repo-check).
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Керування конфігурацією
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Команда `config check` перевіряє файл конфігурації (`config.toml`), встановлюючи, чи всі обов'язкові розділи та налаштування наявні й правильно оформлені. Кожен розділ перевіряється окремо, тож пошкоджений розділ `[app]` не приховує стану розділу `[repo]`.
 
-The sections reported are:
+Звіт охоплює такі розділи:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — необов'язковий; відсутній ключ перевірку проходить, а наявний, але хибно оформлений список — ні
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Команда навмисно не завантажує конфігурацію застосунку так, як це роблять інші команди, щоб мати змогу діагностувати файл `config.toml`, який узагалі не дав би ***digna*** запуститися.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Параметри
+- `--configpath`, `-c`: Шлях до файлу конфігурації або до каталогу, що містить `config.toml` (типово `./config.toml`).
+- `--json`: Виводить звіт перевірки у форматі JSON. Має пріоритет над `--quiet`.
+- `--quiet`, `-q`: Приховує звіт і покладається виключно на код завершення.
 
-#### Example
+#### Приклад
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Перевірити конкретний файл конфігурації та вивести результат у форматі JSON:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4249,49 +4241,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Відсутній файл або синтаксична помилка TOML не лишають нічого, що можна було б перевіряти розділ за розділом, і повідомляються як одна помилка замість звіту — незалежно від `--quiet` чи `--json`.
 
 ---
 
-## Repository Management
+## Керування репозиторієм
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Команда `repo check` перевіряє з'єднання з базою даних, а також встановлення та версію репозиторію. Вона завершується помилкою, якщо налаштованої схеми не існує або якщо схема існує, але не містить репозиторію ***digna***.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Версія, про яку звітує команда, — це версія схеми репозиторію, що версіонується окремо від випуску ***digna***, який виводить [`version`](#version).
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Команда `repo install` встановлює новий репозиторій ***digna*** у схему, налаштовану в `config.toml`, створюючи всі потрібні послідовності, таблиці, індекси, обмеження та початкові записи.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Саму схему ця команда **не** створює — вона має існувати заздалегідь. Команда також відмовляється виконуватися, якщо репозиторій у цій схемі вже встановлено, і вказує на [`repo upgrade`](#repo-upgrade), якщо встановлено старішу версію.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4303,19 +4288,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Команда `repo upgrade` застосовує міграції схеми бази даних, щоб привести наявний репозиторій до версії, якої очікує встановлений випуск. Оновлення застосовуються по одному переходу між версіями за раз уздовж фіксованого шляху оновлення, і кожен завершений перехід записується в репозиторії.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Якщо репозиторій уже має очікувану версію, команда повідомляє, що оновлення не потрібне, і нічого не змінює.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4324,112 +4306,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Керування шифруванням
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Команда `crypt gen-key` генерує новий ключ шифрування AES-GCM для використання як ключа шифрування у `config.toml`. Придатний до завантаження файл `config.toml` уже має бути наявним, хоча згенерований ключ від нього й не залежить.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Команда `crypt encrypt` шифрує рядок (наприклад, пароль до бази даних) за допомогою ключа AES-GCM, налаштованого у `config.toml`, і виводить шифротекст.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Аргументи
+- **VALUE**: Відкритий рядок, який потрібно зашифрувати (обов'язковий).
 
-#### Example
+#### Приклад
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Команда `crypt decrypt` розшифровує рядок, зашифрований алгоритмом AES-GCM, за допомогою ключа, налаштованого у `config.toml`, і виводить відкритий текст.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Аргументи
+- **VALUE**: Зашифрований рядок, який потрібно розшифрувати (обов'язковий).
 
-#### Example
+#### Приклад
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Керування користувачами
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Команда `user add` створює новий обліковий запис користувача в репозиторії ***digna***. Команда завершується помилкою, якщо користувач із вказаною адресою електронної пошти вже існує.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Аргументи
+- **EMAIL**: Адреса електронної пошти користувача (обов'язковий).
+- **PASSWORD**: Початковий пароль користувача (обов'язковий).
+- **DISPLAY_NAME**: Повне відображуване ім'я користувача (обов'язковий).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Параметри
+- `--admin`, `-a`: Створює користувача з правами адміністратора (суперкористувача).
 
-#### Example
+#### Приклад
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Створення облікового запису адміністратора:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Команда `user list` виводить усіх зареєстрованих користувачів у вигляді таблиці з ідентифікатором, адресою електронної пошти, відображуваним іменем і ознакою адміністратора.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4439,88 +4415,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Команда `user modify` оновлює відображуване ім'я та права адміністратора наявного облікового запису користувача, визначеного за адресою електронної пошти.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+І відображуване ім'я, і ознака адміністратора записуються завжди. `--admin` — це перемикач, а не значення: **якщо його не вказати, права адміністратора буде відкликано**, тож вказуйте його щоразу, коли користувач має зберегти або отримати ці права.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Аргументи
+- **EMAIL**: Адреса електронної пошти користувача, якого потрібно змінити (обов'язковий).
+- **DISPLAY_NAME**: Оновлене відображуване ім'я (обов'язковий).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Параметри
+- `--admin`, `-a`: Надає права адміністратора. Не вказуйте, щоб відкликати їх.
+- `--valid-until`, `-v`: Приймається задля сумісності, але **наразі не застосовується**. Його передавання виводить попередження й нічого не змінює.
 
-#### Example
+#### Приклад
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Команда `user modify-pwd` оновлює пароль наявного облікового запису користувача.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Аргументи
+- **EMAIL**: Адреса електронної пошти користувача, чий пароль потрібно оновити (обов'язковий).
+- **PASSWORD**: Новий пароль (обов'язковий).
 
-#### Example
+#### Приклад
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Команда `user delete` вилучає обліковий запис користувача із системи.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Аргументи
+- **EMAIL**: Адреса електронної пошти користувача, якого потрібно видалити (обов'язковий).
 
-#### Example
+#### Приклад
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Керування проєктами та джерелами даних
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Команда `project list` виводить усі доступні в репозиторії проєкти з їхнім ідентифікатором, назвою та описом.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4530,23 +4502,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Команда `project list-ds` виводить усі джерела даних, пов'язані з певним проєктом, показуючи їхній ідентифікатор, назву, вид, схему та назву таблиці.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Аргументи
+- **PROJECT_NAME**: Назва проєкту, джерела даних якого потрібно вивести (обов'язковий). Назва має збігатися точно.
 
-#### Example
+#### Приклад
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4556,149 +4527,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Команда `project export-ds` експортує джерела даних проєкту до документа JSON.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Якщо не вказано ні `--table-name`, ні `--table-id`, експортуються всі джерела даних проєкту.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Аргументи
+- **PROJECT_NAME**: Назва проєкту, з якого експортуються джерела даних (обов'язковий).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Параметри
+- `--table-name`, `-n`: Назви джерел даних для експорту. Кілька назв можна вказати через пробіл.
+- `--table-id`, `-i`: Ідентифікатори джерел даних для експорту. Кілька ідентифікаторів можна вказати через пробіл.
+- `--exportfile`, `-f`: Шлях, за яким зберігаються експортовані джерела даних (типово: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Приклад
+Щоб експортувати всі джерела даних із `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Щоб експортувати окремі таблиці:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Команда `project import-ds` імпортує джерела даних із файлу експорту до цільового проєкту й повідомляє щодо кожного об'єкта, що було створено, оновлено чи пропущено.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Аргументи
+- **PROJECT_NAME**: Назва цільового проєкту, до якого виконується імпорт (обов'язковий).
+- **EXPORT_FILE**: Шлях до файлу експорту у форматі JSON (обов'язковий).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Параметри
+- `--output-file`, `-o`: Файл, до якого записується звіт про імпорт. Без нього звіт виводиться до stdout.
+- `--output-format`, `-f`: Формат звіту про імпорт — `table`, `json` або `csv` (типово: `table`).
 
-#### Example
+#### Приклад
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Щоб отримати звіт у машинозчитуваному вигляді:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Звіт охоплює чотири рівні об'єктів — джерело даних, визначення набору даних, атрибут і правило перевірки — і для кожного містить дію імпорту, результат, ідентифікатор отриманого об'єкта та будь-які додаткові відомості.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Команда `project plan-import-ds` показує попередній перегляд імпорту джерел даних до цільового проєкту: які об'єкти було б створено, оновлено чи пропущено, — не змінюючи при цьому нічого. Вона приймає той самий файл експорту й ті самі параметри звітування, що й [`project import-ds`](#project-import-ds), і додатково подає номер кроку для кожного запланованого об'єкта.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Аргументи
+- **PROJECT_NAME**: Назва цільового проєкту (обов'язковий).
+- **EXPORT_FILE**: Шлях до файлу експорту (обов'язковий).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Параметри
+- `--output-file`, `-o`: Файл, до якого записується план імпорту. Без нього план виводиться до stdout.
+- `--output-format`, `-f`: Формат плану імпорту — `table`, `json` або `csv` (типово: `table`).
 
-#### Example
+#### Приклад
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Керування інспекціями
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Команда `inspection run` створює запит на інспекцію для проєкту та діапазону дат, а потім — залежно від указаних параметрів — або очікує на нього, або одразу завершується, або виконує інспекцію у власному процесі.
 
-The three execution modes are:
+Є три режими виконання:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Типовий (без прапорця)**: запит ставиться в чергу для серверної частини, а CLI опитує його кожні дві секунди, виводячи перебіг завдань, доки інспекція не досягне кінцевого стану. Потрібен запущений `digna serve`, інакше запит ніхто не підхопить.
+- **`--async-mode`**: запит ставиться в чергу, а його ідентифікатор виводиться негайно. Для стеження скористайтеся [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: інспекцію виконує сам процес CLI, і вона не ставиться в чергу, тож запущений сервер не потрібен.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` і `--bypass-backend` є взаємовиключними.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+У будь-якому режимі команда завершується ненульовим кодом завершення, якщо інспекція не була успішно завершена.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Аргументи
+- **PROJECT_NAME**: Назва цільового проєкту (обов'язковий). Назва має збігатися точно.
+- **START_DATE**: Початкова дата діапазону у форматі `YYYY-MM-DD` (обов'язковий).
+- **END_DATE**: Кінцева дата діапазону у форматі `YYYY-MM-DD` (обов'язковий).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Параметри
+- `--table-name`: Обмежує інспекцію одним джерелом даних проєкту, вказаним за назвою цього джерела. Без нього інспектуються всі джерела даних проєкту.
+- `--async-mode`: Ставить інспекцію в чергу й виводить ідентифікатор запиту замість того, щоб очікувати на нього. Не можна поєднувати з `--bypass-backend`.
+- `--bypass-backend`: Виконує інспекцію безпосередньо в процесі CLI замість того, щоб ставити її в чергу для серверної частини. Не можна поєднувати з `--async-mode`.
 
-#### Example
+#### Приклад
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Щоб надіслати асинхронну інспекцію:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Щоб проінспектувати одне джерело даних:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Приклад виводу
+Типовий режим:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4707,30 +4671,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Асинхронний режим:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Команда `inspection status` запитує стан і перебіг завдань запиту на інспекцію за його ідентифікатором.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Аргументи
+- **INSPECTION_REQUEST_ID**: Числовий ідентифікатор запиту на інспекцію (обов'язковий).
 
-#### Example
+#### Приклад
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4741,92 +4704,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Команда `inspection abort` запитує скасування запитів на інспекцію, які виконуються або очікують. Вона записує подію зупинення для кожного відповідного запиту; діє за нею серверна частина, тож переривання є проханням зупинитися, а не негайним припиненням.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Аргументи
+- **INSPECTION_REQUEST_ID**: Ідентифікатор запиту на інспекцію, який потрібно перервати. Обов'язковий, якщо не вказано `--killall`.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Параметри
+- `--killall`: Перериває всі запити на інспекцію, які виконуються та очікують. Має пріоритет над ідентифікатором запиту, вказаним разом із ним.
 
-#### Example
-To abort a specific request:
+#### Приклад
+Щоб перервати конкретний запит:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Щоб перервати всі активні інспекції та ті, що стоять у черзі:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Приклад виводу
+`--killall` повідомляє про виконане; переривання одного запиту нічого не виводить і сигналізує про успіх своїм кодом завершення.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Керування ліцензіями
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Команда `license check` перевіряє файл `license.toml`, звіряючи його підпис із відкритим ключем, який постачається разом зі встановленням, і переконуючись, що термін його дії не минув. Вона не читає конфігурації застосунку, тож працює й до того, як налаштовано `config.toml`.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Недійсний підпис і ліцензія з вичерпаним терміном дії повідомляються як окремі помилки, обидві з кодом завершення 1.
 
 ---
 
-## Server & Background Services
+## Сервер і фонові служби
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Команда `serve` запускає сервер REST API ***digna*** разом із фоновим планувальником інспекцій і менеджером інспекцій. Під час запуску вона також позначає як невдалі всі інспекції, які репозиторій досі вважає такими, що виконуються, оскільки від попереднього процесу ніщо не могло вціліти.
 
-The command runs in the foreground until it is stopped.
+Команда працює на передньому плані, доки її не зупинять.
 
-#### Command Usage
+#### Використання команди
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Параметри
+- `--address`: Мережева адреса, до якої прив'язується сервер API (типово: `127.0.0.1`).
+- `--port`: Номер порту для прослуховування (типово: `8000`).
 
-#### Example
+#### Приклад
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Приклад виводу
 ```text
 Server running on http://0.0.0.0:8000
 ```

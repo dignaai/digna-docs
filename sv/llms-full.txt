@@ -4077,159 +4077,151 @@ Detta kommando visar endast en importplan över objekt som kommer att importeras
 # Release 2026.06
 Source: https://docs.digna.ai/sv/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# digna CLI-referens 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Den här sidan dokumenterar hela uppsättningen kommandon som finns i ***digna*** CLI-release **2026.06**, inklusive användningsexempel och alternativ.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Den körbara filen heter `digna`.
 
 ---
 
-### Overview & Syntax
+## CLI-grunder
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Översikt & syntax
+
+CLI:t i release **2026.06** använder en strukturerad, kategoribaserad kommandohierarki:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` och `serve` är fristående kommandon utan underkommando:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Globala alternativ
 
-The following global options apply across all commands:
+Följande globala alternativ gäller för samtliga kommandon:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Visar hjälpinformation för CLI:t eller för en specifik kommandokategori eller ett underkommando.
+- `--stacktrace`: Visar hela felkedjan vid fel i stället för enbart meddelandet på översta nivån.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` är ett globalt alternativ i strikt mening: det måste anges **före** kommandokategorin, inte efter den.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Det finns ingen flagga `--version`. Använd kommandot [`version`](#version) i stället.
 
-### Prerequisites
+### Förutsättningar
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+De flesta kommandon behöver en läsbar, giltig `config.toml`; vissa kräver dessutom en giltig licens.
+Följande tabell visar vad varje kommandokategori läser in innan den gör något över huvud taget:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Kommandokategori | Behöver `config.toml` | Behöver giltig licens |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | nej | nej |
+| `config check` | nej (det är just den kommandot rapporterar om) | nej |
+| `license check` | nej | det *är* kontrollen |
+| `crypt` | ja | nej |
+| `serve` | ja | nej |
+| `project` | ja | nej |
+| `user` | ja | ja |
+| `inspection` | ja | ja |
+| `repo` | ja | ja |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Där en licens krävs kontrolleras både dess signatur och dess utgångsdatum, och kommandot avbryts innan det rör repositoryt om någon av dem underkänns.
 
-### Exit Codes
+### Slutkoder
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: kommandot lyckades.
+- `1`: kommandot misslyckades. Felmeddelandet skrivs till stderr, med prefixet `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+Alternativet `--help` ger information om tillgängliga kommandokategorier, underkommandon och alternativ:
 
-1. **Displaying General Help:**
+1. **Visa allmän hjälp:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Hämta hjälp för specifika kategorier och kommandon:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **Utdata omfattar:**
+   - **Kommandobeskrivning:** Sammanfattning av kommandots syfte.
+   - **Syntax:** Obligatoriska och valfria argument.
+   - **Alternativ:** Flaggor och parametrar som är specifika för kommandot.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+Kommandot `version` skriver ut den installerade ***digna***-releasen. Det läser ingen konfiguration och validerar ingen licens, så det fungerar även på en installation vars `config.toml` eller licens saknas eller är ogiltig.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+Releaseversionen är oberoende av den version av repositoryschemat som rapporteras av [`repo check`](#repo-check).
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Konfigurationshantering
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+Kommandot `config check` validerar konfigurationsfilen (`config.toml`) och kontrollerar att alla obligatoriska sektioner och inställningar finns och är korrekt formaterade. Varje sektion valideras för sig, så att en trasig `[app]`-sektion inte döljer tillståndet för `[repo]`.
 
-The sections reported are:
+De sektioner som rapporteras är:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — valfri; en nyckel som saknas godkänns, medan en lista som finns men är felformad underkänns
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+Kommandot läser medvetet inte in applikationskonfigurationen på det sätt som de andra kommandona gör, så att det kan diagnostisera en `config.toml` som skulle hindra ***digna*** från att starta över huvud taget.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Alternativ
+- `--configpath`, `-c`: Sökväg till konfigurationsfilen, eller till en katalog som innehåller `config.toml` (standard är `./config.toml`).
+- `--json`: Skriver ut valideringsrapporten som JSON. Har företräde framför `--quiet`.
+- `--quiet`, `-q`: Undertrycker rapporten och förlitar sig enbart på slutkoden.
 
-#### Example
+#### Exempel
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Validera en specifik konfigurationsfil och formatera utdata som JSON:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4243,49 +4235,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+En fil som saknas eller ett TOML-syntaxfel lämnar ingenting att validera sektion för sektion och rapporteras som ett enda fel i stället för som en rapport, oavsett `--quiet` eller `--json`.
 
 ---
 
-## Repository Management
+## Repositoryhantering
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+Kommandot `repo check` testar databasanslutningen och verifierar repositoryts installation och version. Det misslyckas om det konfigurerade schemat inte finns, eller om det finns men inte innehåller något ***digna***-repository.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+Den version som rapporteras är versionen av repositoryschemat, som versionshanteras separat från den ***digna***-release som skrivs ut av [`version`](#version).
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+Kommandot `repo install` installerar ett nytt ***digna***-repository i det schema som konfigurerats i `config.toml` och skapar alla sekvenser, tabeller, index, villkor och initiala poster som krävs.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Själva schemat skapas **inte** av det här kommandot — det måste finnas i förväg. Kommandot vägrar också köra om ett repository redan är installerat i det schemat, och hänvisar till [`repo upgrade`](#repo-upgrade) om den installerade versionen är äldre.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4297,19 +4282,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+Kommandot `repo upgrade` tillämpar migreringar av databasschemat för att lyfta ett befintligt repository till den version som den installerade releasen förväntar sig. Uppgraderingar tillämpas ett versionssteg i taget längs en fast uppgraderingsväg, och varje avslutat steg registreras i repositoryt.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Om repositoryt redan har den förväntade versionen rapporterar kommandot att ingen uppgradering behövs och gör inga ändringar.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4318,112 +4300,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Krypteringshantering
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+Kommandot `crypt gen-key` genererar en ny AES-GCM-krypteringsnyckel, avsedd att användas som krypteringsnyckel i `config.toml`. En läsbar `config.toml` måste redan finnas, även om den genererade nyckeln inte är beroende av den.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+Kommandot `crypt encrypt` krypterar en sträng (till exempel ett databaslösenord) med den AES-GCM-nyckel som konfigurerats i `config.toml` och skriver ut chiffertexten.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argument
+- **VALUE**: Klartextsträngen som ska krypteras (obligatoriskt).
 
-#### Example
+#### Exempel
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+Kommandot `crypt decrypt` dekrypterar en AES-GCM-krypterad sträng med den nyckel som konfigurerats i `config.toml` och skriver ut klartexten.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argument
+- **VALUE**: Den krypterade chiffertextsträng som ska dekrypteras (obligatoriskt).
 
-#### Example
+#### Exempel
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Användarhantering
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+Kommandot `user add` skapar ett nytt användarkonto i ***digna***-repositoryt. Kommandot misslyckas om en användare med den angivna e-postadressen redan finns.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argument
+- **EMAIL**: Användarens e-postadress (obligatoriskt).
+- **PASSWORD**: Användarens initiala lösenord (obligatoriskt).
+- **DISPLAY_NAME**: Användarens fullständiga visningsnamn (obligatoriskt).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Alternativ
+- `--admin`, `-a`: Skapar användaren med administratörsbehörighet (superanvändare).
 
-#### Example
+#### Exempel
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Så här skapar du ett administratörskonto:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+Kommandot `user list` listar alla registrerade användare i tabellform med ID, e-postadress, visningsnamn och administratörsflagga.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4433,88 +4409,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+Kommandot `user modify` uppdaterar visningsnamn och administratörsbehörighet för ett befintligt användarkonto, identifierat via e-postadress.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Både visningsnamnet och administratörsflaggan skrivs alltid. `--admin` är en brytare, inte ett värde: **att utelämna den återkallar administratörsbehörigheten**, så ange den varje gång användaren ska behålla eller få den.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argument
+- **EMAIL**: E-postadressen för den användare som ska ändras (obligatoriskt).
+- **DISPLAY_NAME**: Det uppdaterade visningsnamnet (obligatoriskt).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Alternativ
+- `--admin`, `-a`: Ger administratörsbehörighet. Utelämna den för att återkalla den.
+- `--valid-until`, `-v`: Accepteras av kompatibilitetsskäl men **tillämpas för närvarande inte**. Om den anges skrivs en varning ut och ingenting ändras.
 
-#### Example
+#### Exempel
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+Kommandot `user modify-pwd` uppdaterar lösenordet för ett befintligt användarkonto.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argument
+- **EMAIL**: E-postadressen för den användare vars lösenord ska uppdateras (obligatoriskt).
+- **PASSWORD**: Det nya lösenordet (obligatoriskt).
 
-#### Example
+#### Exempel
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+Kommandot `user delete` tar bort ett användarkonto från systemet.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argument
+- **EMAIL**: E-postadressen för den användare som ska tas bort (obligatoriskt).
 
-#### Example
+#### Exempel
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Projekt- och datakällhantering
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+Kommandot `project list` listar alla tillgängliga projekt i repositoryt och visar deras ID, namn och beskrivning.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4524,23 +4496,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+Kommandot `project list-ds` listar alla datakällor som hör till ett visst projekt och visar deras ID, namn, typ, schema och tabellnamn.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argument
+- **PROJECT_NAME**: Namnet på det projekt vars datakällor ska listas (obligatoriskt). Namnet måste stämma exakt.
 
-#### Example
+#### Exempel
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4550,149 +4521,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+Kommandot `project export-ds` exporterar datakällor från ett projekt till ett JSON-dokument.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Om varken `--table-name` eller `--table-id` anges exporteras alla datakällor i projektet.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argument
+- **PROJECT_NAME**: Namnet på det projekt vars datakällor ska exporteras (obligatoriskt).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Alternativ
+- `--table-name`, `-n`: Namn på de datakällor som ska exporteras. Flera namn kan anges åtskilda med mellanslag.
+- `--table-id`, `-i`: ID:n för de datakällor som ska exporteras. Flera ID:n kan anges åtskilda med mellanslag.
+- `--exportfile`, `-f`: Sökväg där de exporterade datakällorna ska sparas (standard: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Exempel
+Så här exporterar du alla datakällor från `ProjectA`:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Så här exporterar du specifika tabeller:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+Kommandot `project import-ds` importerar datakällor från en exportfil till ett målprojekt och rapporterar per objekt vad som skapades, uppdaterades eller hoppades över.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argument
+- **PROJECT_NAME**: Namnet på det målprojekt som ska importeras till (obligatoriskt).
+- **EXPORT_FILE**: Sökväg till JSON-exportfilen (obligatoriskt).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Alternativ
+- `--output-file`, `-o`: Fil att skriva importrapporten till. Utan den går rapporten till stdout.
+- `--output-format`, `-f`: Format på importrapporten — `table`, `json` eller `csv` (standard: `table`).
 
-#### Example
+#### Exempel
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Så här fångar du en maskinläsbar rapport:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Rapporten täcker fyra objektnivåer — datakälla, datamängdsdefinition, attribut och valideringsregel — var och en med sin importåtgärd, sitt resultat, det resulterande objektets ID och eventuell ytterligare information.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+Kommandot `project plan-import-ds` förhandsvisar en import av datakällor till ett målprojekt och visar vilka objekt som skulle skapas, uppdateras eller hoppas över, utan att ändra någonting. Det tar samma exportfil och samma rapportalternativ som [`project import-ds`](#project-import-ds), och lägger till ett stegnummer per planerat objekt.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argument
+- **PROJECT_NAME**: Namnet på målprojektet (obligatoriskt).
+- **EXPORT_FILE**: Sökväg till exportfilen (obligatoriskt).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Alternativ
+- `--output-file`, `-o`: Fil att skriva importplanen till. Utan den går planen till stdout.
+- `--output-format`, `-f`: Format på importplanen — `table`, `json` eller `csv` (standard: `table`).
 
-#### Example
+#### Exempel
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Inspektionshantering
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+Kommandot `inspection run` skapar en inspektionsbegäran för ett projekt och ett datumintervall och — beroende på vilka alternativ som anges — antingen väntar på den, återvänder omedelbart eller kör den i den egna processen.
 
-The three execution modes are:
+De tre körlägena är:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Standard (ingen flagga)**: begäran köas för backend, och CLI:t pollar den varannan sekund och skriver ut uppgifternas förlopp tills inspektionen når ett sluttillstånd. Ett körande `digna serve` krävs, annars är det ingenting som plockar upp begäran.
+- **`--async-mode`**: begäran köas och dess ID skrivs ut omedelbart. Använd [`inspection status`](#inspection-status) för att följa den.
+- **`--bypass-backend`**: inspektionen körs av CLI-processen själv och köas inte, så ingen körande server behövs.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` och `--bypass-backend` utesluter varandra.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+I samtliga lägen avslutas kommandot med en slutkod som inte är noll om inspektionen inte slutfördes utan fel.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argument
+- **PROJECT_NAME**: Namnet på målprojektet (obligatoriskt). Namnet måste stämma exakt.
+- **START_DATE**: Startdatum för datumintervallet i formatet `YYYY-MM-DD` (obligatoriskt).
+- **END_DATE**: Slutdatum för datumintervallet i formatet `YYYY-MM-DD` (obligatoriskt).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Alternativ
+- `--table-name`: Begränsar inspektionen till en enda datakälla i projektet, angiven med datakällans namn. Utan den inspekteras alla datakällor i projektet.
+- `--async-mode`: Köar inspektionen och skriver ut begärans ID i stället för att vänta på den. Kan inte kombineras med `--bypass-backend`.
+- `--bypass-backend`: Kör inspektionen direkt i CLI-processen i stället för att köa den för backend. Kan inte kombineras med `--async-mode`.
 
-#### Example
+#### Exempel
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Så här skickar du en asynkron inspektion:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Så här inspekterar du en enda datakälla:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Exempelutdata
+Standardläge:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4701,30 +4665,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Asynkront läge:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+Kommandot `inspection status` frågar efter tillstånd och uppgiftsförlopp för en inspektionsbegäran med hjälp av dess begäran-ID.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argument
+- **INSPECTION_REQUEST_ID**: Det numeriska ID:t för inspektionsbegäran (obligatoriskt).
 
-#### Example
+#### Exempel
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4735,92 +4698,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+Kommandot `inspection abort` begär att körande eller väntande inspektionsbegäranden avbryts. Det registrerar en stopphändelse för varje berörd begäran; det är backend som agerar på den, så ett avbrott är en begäran om att stoppa snarare än ett omedelbart avslut.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argument
+- **INSPECTION_REQUEST_ID**: ID:t för den inspektionsbegäran som ska avbrytas. Obligatoriskt om inte `--killall` anges.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Alternativ
+- `--killall`: Avbryter alla inspektionsbegäranden som körs eller väntar. Har företräde framför ett begäran-ID som anges tillsammans med den.
 
-#### Example
-To abort a specific request:
+#### Exempel
+Så här avbryter du en specifik begäran:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Så här avbryter du alla aktiva och köade inspektioner:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Exempelutdata
+`--killall` rapporterar vad den gjorde; att avbryta en enskild begäran ger ingen utdata och signalerar att det gick bra via slutkoden.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Licenshantering
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+Kommandot `license check` validerar `license.toml` genom att verifiera dess signatur mot den publika nyckel som följer med installationen och kontrollera att den inte har gått ut. Det läser ingen applikationskonfiguration, så det fungerar även innan `config.toml` är uppsatt.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+En ogiltig signatur och en utgången licens rapporteras som två skilda fel, båda med slutkod 1.
 
 ---
 
-## Server & Background Services
+## Server & bakgrundstjänster
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+Kommandot `serve` startar ***digna*** REST API-servern tillsammans med schemaläggaren för inspektioner och inspektionshanteraren som körs i bakgrunden. Vid uppstart markerar det också varje inspektion som repositoryt fortfarande registrerar som körande som misslyckad, eftersom ingenting kan ha överlevt från en tidigare process.
 
-The command runs in the foreground until it is stopped.
+Kommandot körs i förgrunden tills det stoppas.
 
-#### Command Usage
+#### Kommandoanvändning
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Alternativ
+- `--address`: Nätverksadress som API-servern ska bindas till (standard: `127.0.0.1`).
+- `--port`: Portnummer att lyssna på (standard: `8000`).
 
-#### Example
+#### Exempel
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Exempelutdata
 ```text
 Server running on http://0.0.0.0:8000
 ```

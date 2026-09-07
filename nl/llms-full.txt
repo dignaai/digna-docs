@@ -4077,159 +4077,151 @@ Dit commando toont alleen een importplan van objecten die geïmporteerd en overg
 # Release 2026.06
 Source: https://docs.digna.ai/nl/cli/Command_Line_Interface_202606/
 
-# digna CLI Reference 2026.06
+# digna CLI-referentie 2026.06
 **2026-09-05**
 
-This page documents the full set of commands available in ***digna*** CLI release **2026.06**, including usage examples and options.
+Deze pagina documenteert de volledige set opdrachten die beschikbaar is in ***digna*** CLI-release **2026.06**, inclusief gebruiksvoorbeelden en opties.
 
-The executable is called `digna`.
-
----
-
-## CLI Basics
+Het uitvoerbare bestand heet `digna`.
 
 ---
 
-### Overview & Syntax
+## CLI-basisprincipes
 
-The release **2026.06** CLI uses a structured, category-based command hierarchy:
+---
+
+### Overzicht & syntaxis
+
+De CLI van release **2026.06** gebruikt een gestructureerde, op categorieën gebaseerde opdrachthiërarchie:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-`version` and `serve` are single commands without a subcommand:
+`version` en `serve` zijn losse opdrachten zonder subopdracht:
 
 ```bash
 digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
 ```
 
-### Global Options
+### Globale opties
 
-The following global options apply across all commands:
+De volgende globale opties gelden voor alle opdrachten:
 
-- `--help`, `-h`: Display help information for the CLI or a specific command category or subcommand.
-- `--stacktrace`: Display the full error chain on failure instead of only the top-level message.
+- `--help`, `-h`: Toont hulpinformatie over de CLI of over een specifieke opdrachtcategorie of subopdracht.
+- `--stacktrace`: Toont bij een fout de volledige foutketen in plaats van alleen het bovenste bericht.
 
-`--stacktrace` is a global option in the strict sense: it has to be given **before** the command
-category, not after it.
+`--stacktrace` is in strikte zin een globale optie: hij moet **vóór** de opdrachtcategorie worden opgegeven, niet erna.
 
 ```bash
 digna --stacktrace repo check     # correct
 digna repo check --stacktrace     # rejected: unknown argument
 ```
 
-There is no `--version` flag. Use the [`version`](#version) command instead.
+Er is geen `--version`-vlag. Gebruik in plaats daarvan de opdracht [`version`](#version).
 
-### Prerequisites
+### Vereisten
 
-Most commands need a readable, valid `config.toml`; some additionally require a valid license.
-The following table records what each command category loads before it does anything:
+De meeste opdrachten hebben een leesbare, geldige `config.toml` nodig; sommige vereisen daarnaast een geldige licentie.
+De volgende tabel legt vast wat elke opdrachtcategorie laadt voordat ze ook maar iets doet:
 
-| Command category | Needs `config.toml` | Needs a valid license |
+| Opdrachtcategorie | Vereist `config.toml` | Vereist een geldige licentie |
 |---|---|---|
-| `version` | no | no |
-| `config check` | no (it is what the command reports on) | no |
-| `license check` | no | it *is* the check |
-| `crypt` | yes | no |
-| `serve` | yes | no |
-| `project` | yes | no |
-| `user` | yes | yes |
-| `inspection` | yes | yes |
-| `repo` | yes | yes |
+| `version` | nee | nee |
+| `config check` | nee (het is precies waarover de opdracht rapporteert) | nee |
+| `license check` | nee | het *is* de controle |
+| `crypt` | ja | nee |
+| `serve` | ja | nee |
+| `project` | ja | nee |
+| `user` | ja | ja |
+| `inspection` | ja | ja |
+| `repo` | ja | ja |
 
-Where a license is required, both its signature and its expiry date are checked, and the command
-aborts before touching the repository if either fails.
+Waar een licentie vereist is, worden zowel de handtekening als de vervaldatum gecontroleerd, en de opdracht breekt af voordat ze de repository aanraakt als een van beide faalt.
 
-### Exit Codes
+### Afsluitcodes
 
-- `0`: the command succeeded.
-- `1`: the command failed. The error message is written to stderr, prefixed with `Error: `.
+- `0`: de opdracht is geslaagd.
+- `1`: de opdracht is mislukt. Het foutbericht wordt naar stderr geschreven, voorafgegaan door `Error: `.
 
 ### help
 
-The `--help` option provides information about available command categories, subcommands, and options:
+De optie `--help` geeft informatie over beschikbare opdrachtcategorieën, subopdrachten en opties:
 
-1. **Displaying General Help:**
+1. **Algemene hulp weergeven:**
    ```bash
    digna --help
    ```
 
-2. **Getting Help for Specific Categories and Commands:**
+2. **Hulp opvragen voor specifieke categorieën en opdrachten:**
    ```bash
    digna user --help
    digna user add --help
    ```
 
-   **Output Includes:**
-   - **Command Description:** Summary of the command purpose.
-   - **Syntax:** Required and optional arguments.
-   - **Options:** Flags and parameters specific to the command.
+   **De uitvoer bevat:**
+   - **Opdrachtbeschrijving:** Samenvatting van het doel van de opdracht.
+   - **Syntaxis:** Vereiste en optionele argumenten.
+   - **Opties:** Vlaggen en parameters die specifiek zijn voor de opdracht.
 
 ### version
 
-The `version` command prints the installed ***digna*** release. It reads no configuration and
-validates no license, so it also works on an installation whose `config.toml` or license is
-missing or invalid.
+De opdracht `version` toont de geïnstalleerde ***digna***-release. Ze leest geen configuratie en valideert geen licentie, dus ze werkt ook op een installatie waarvan de `config.toml` of de licentie ontbreekt of ongeldig is.
 
-The release version is independent of the repository schema version reported by
-[`repo check`](#repo-check).
+De releaseversie staat los van de versie van het repositoryschema die door [`repo check`](#repo-check) wordt gemeld.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna version
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 2026.06
 ```
 
 ---
 
-## Configuration Management
+## Configuratiebeheer
 
 ---
 
 ### config check
 
-The `config check` command validates the configuration file (`config.toml`), verifying that all
-mandatory sections and settings are present and properly formatted. Each section is validated on
-its own, so a broken `[app]` section does not hide the state of `[repo]`.
+De opdracht `config check` valideert het configuratiebestand (`config.toml`) en controleert of alle verplichte secties en instellingen aanwezig en correct opgemaakt zijn. Elke sectie wordt afzonderlijk gevalideerd, zodat een defecte `[app]`-sectie de toestand van `[repo]` niet verbergt.
 
-The sections reported are:
+De gerapporteerde secties zijn:
 
 - `App config` (`[app]`)
 - `Repository config` (`[repo]`)
 - `Base config` (`[base]`)
 - `Logging config` (`[logging]`)
 - `Encryption config` (`[encryption]`)
-- `OIDC config(s)` (`oidc_clients`) — optional; an absent key passes, a present but malformed list fails
+- `OIDC config(s)` (`oidc_clients`) — optioneel; een ontbrekende sleutel slaagt, een aanwezige maar onjuist opgemaakte lijst faalt
 
-The command deliberately does not load the application configuration the way the other commands
-do, so it can diagnose a `config.toml` that would stop ***digna*** from starting at all.
+De opdracht laadt de applicatieconfiguratie bewust niet op de manier waarop de andere opdrachten dat doen, zodat ze een `config.toml` kan diagnosticeren die ***digna*** volledig zou beletten te starten.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna config check [OPTIONS]
 ```
 
-#### Options
-- `--configpath`, `-c`: Path to the configuration file, or to a directory containing `config.toml` (defaults to `./config.toml`).
-- `--json`: Output the validation report as JSON. Takes precedence over `--quiet`.
-- `--quiet`, `-q`: Suppress the report and rely solely on the exit code.
+#### Opties
+- `--configpath`, `-c`: Pad naar het configuratiebestand of naar een map die `config.toml` bevat (standaard `./config.toml`).
+- `--json`: Geeft het validatierapport als JSON uit. Heeft voorrang op `--quiet`.
+- `--quiet`, `-q`: Onderdrukt het rapport en vertrouwt uitsluitend op de afsluitcode.
 
-#### Example
+#### Voorbeeld
 ```bash
 digna config check
 ```
 
-Validate a specific configuration file and format output as JSON:
+Een specifiek configuratiebestand valideren en de uitvoer als JSON opmaken:
 ```bash
 digna config check --configpath /etc/digna/config.toml --json
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Configuration validation report (source: config.toml):
  - App config: OK
@@ -4243,49 +4235,42 @@ Configuration validation report (source: config.toml):
 Overall: FAILED
 ```
 
-A missing file or a TOML syntax error leaves nothing to validate section by section and is
-reported as a single error instead of a report, regardless of `--quiet` or `--json`.
+Een ontbrekend bestand of een TOML-syntaxisfout laat niets over om sectie voor sectie te valideren en wordt als één enkele fout gerapporteerd in plaats van als een rapport, ongeacht `--quiet` of `--json`.
 
 ---
 
-## Repository Management
+## Repositorybeheer
 
 ---
 
 ### repo check
 
-The `repo check` command tests the database connection and verifies repository installation and
-version. It fails if the configured schema does not exist, or if it exists but holds no ***digna***
-repository.
+De opdracht `repo check` test de databaseverbinding en verifieert de installatie en versie van de repository. Ze mislukt als het geconfigureerde schema niet bestaat, of als het wel bestaat maar geen ***digna***-repository bevat.
 
-The version reported is the version of the repository schema, which is versioned separately from
-the ***digna*** release printed by [`version`](#version).
+De gemelde versie is de versie van het repositoryschema, dat los van de door [`version`](#version) getoonde ***digna***-release wordt geversioneerd.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna repo check
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Repo version 3.0.0 installed
 ```
 
 ### repo install
 
-The `repo install` command installs a new ***digna*** repository into the schema configured in
-`config.toml`, creating all required sequences, tables, indices, constraints, and initial records.
+De opdracht `repo install` installeert een nieuwe ***digna***-repository in het schema dat in `config.toml` is geconfigureerd en maakt daarbij alle vereiste sequenties, tabellen, indices, constraints en initiële records aan.
 
-The schema itself is **not** created by this command — it has to exist beforehand. The command also
-refuses to run if a repository is already installed in that schema, and points at
-[`repo upgrade`](#repo-upgrade) if the installed version is an older one.
+Het schema zelf wordt **niet** door deze opdracht aangemaakt — het moet vooraf bestaan. De opdracht weigert ook te draaien als er al een repository in dat schema is geïnstalleerd, en verwijst naar [`repo upgrade`](#repo-upgrade) als de geïnstalleerde versie een oudere is.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna repo install
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Installing repo version 3.0.0
 ✅ Sequences created.
@@ -4297,19 +4282,16 @@ Installing repo version 3.0.0
 
 ### repo upgrade
 
-The `repo upgrade` command applies database schema migrations to bring an existing repository up to
-the version expected by the installed release. Upgrades are applied one version hop at a time along
-a fixed upgrade path, and each completed hop is recorded in the repository.
+De opdracht `repo upgrade` past databaseschemamigraties toe om een bestaande repository op de versie te brengen die de geïnstalleerde release verwacht. Upgrades worden één versiestap tegelijk toegepast langs een vast upgradepad, en elke voltooide stap wordt in de repository vastgelegd.
 
-If the repository is already at the expected version, the command reports that no upgrade is needed
-and makes no changes.
+Als de repository al op de verwachte versie staat, meldt de opdracht dat er geen upgrade nodig is en brengt ze geen wijzigingen aan.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna repo upgrade
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
@@ -4318,112 +4300,106 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
-## Encryption Management
+## Versleutelingsbeheer
 
 ---
 
 ### crypt gen-key
 
-The `crypt gen-key` command generates a new AES-GCM encryption key, for use as the encryption key
-in `config.toml`. A loadable `config.toml` must already be present, even though the generated key
-does not depend on it.
+De opdracht `crypt gen-key` genereert een nieuwe AES-GCM-versleutelingssleutel, bedoeld voor gebruik als versleutelingssleutel in `config.toml`. Er moet al een laadbare `config.toml` aanwezig zijn, ook al is de gegenereerde sleutel er niet van afhankelijk.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna crypt gen-key
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Encryption key: <base64-encoded key>
 ```
 
 ### crypt encrypt
 
-The `crypt encrypt` command encrypts a string (such as a database password) using the AES-GCM key
-configured in `config.toml`, and prints the ciphertext.
+De opdracht `crypt encrypt` versleutelt een tekenreeks (zoals een databasewachtwoord) met de AES-GCM-sleutel die in `config.toml` is geconfigureerd, en toont de versleutelde tekst.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna crypt encrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The plaintext string to encrypt (required).
+#### Argumenten
+- **VALUE**: De platte tekst die versleuteld moet worden (vereist).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna crypt encrypt mysecretpassword
 ```
 
 ### crypt decrypt
 
-The `crypt decrypt` command decrypts an AES-GCM encrypted string using the key configured in
-`config.toml`, and prints the plaintext.
+De opdracht `crypt decrypt` ontsleutelt een met AES-GCM versleutelde tekenreeks met de sleutel die in `config.toml` is geconfigureerd, en toont de platte tekst.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna crypt decrypt <VALUE>
 ```
 
-#### Arguments
-- **VALUE**: The encrypted ciphertext string to decrypt (required).
+#### Argumenten
+- **VALUE**: De versleutelde tekenreeks die ontsleuteld moet worden (vereist).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna crypt decrypt "encrypted_string_here"
 ```
 
 ---
 
-## User Management
+## Gebruikersbeheer
 
 ---
 
 ### user add
 
-The `user add` command creates a new user account in the ***digna*** repository. The command fails
-if a user with the given email address already exists.
+De opdracht `user add` maakt een nieuw gebruikersaccount aan in de ***digna***-repository. De opdracht mislukt als er al een gebruiker met het opgegeven e-mailadres bestaat.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email address for the user (required).
-- **PASSWORD**: The initial password for the user (required).
-- **DISPLAY_NAME**: The full display name of the user (required).
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de gebruiker (vereist).
+- **PASSWORD**: Het initiële wachtwoord van de gebruiker (vereist).
+- **DISPLAY_NAME**: De volledige weergavenaam van de gebruiker (vereist).
 
-#### Options
-- `--admin`, `-a`: Create the user with administrator (superuser) privileges.
+#### Opties
+- `--admin`, `-a`: Maakt de gebruiker aan met beheerdersrechten (superuser).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna user add jdoe@example.com "SecurePass123!" "John Doe"
 ```
 
-To create an administrator account:
+Een beheerdersaccount aanmaken:
 ```bash
 digna user add admin@example.com "AdminPass123!" "Admin User" --admin
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 User created with ID: 42
 ```
 
 ### user list
 
-The `user list` command lists all registered users in tabular format with ID, email, display name,
-and administrator flag.
+De opdracht `user list` toont alle geregistreerde gebruikers in tabelvorm met ID, e-mailadres, weergavenaam en beheerdersvlag.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna user list
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 ID                   EMAIL                          DISPLAY NAME                   ADMIN
 -----------------------------------------------------------------------------------------------
@@ -4433,88 +4409,84 @@ ID                   EMAIL                          DISPLAY NAME                
 
 ### user modify
 
-The `user modify` command updates the display name and administrator privileges of an existing user
-account, identified by email address.
+De opdracht `user modify` werkt de weergavenaam en de beheerdersrechten van een bestaand gebruikersaccount bij, geïdentificeerd op e-mailadres.
 
-Both the display name and the administrator flag are always written. `--admin` is a switch, not a
-value: **omitting it revokes administrator privileges**, so pass it whenever the user should keep
-or gain them.
+Zowel de weergavenaam als de beheerdersvlag worden altijd weggeschreven. `--admin` is een schakelaar, geen waarde: **wanneer u hem weglaat, worden de beheerdersrechten ingetrokken**, dus geef hem mee telkens wanneer de gebruiker die rechten moet behouden of krijgen.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to modify (required).
-- **DISPLAY_NAME**: The updated display name (required).
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de te wijzigen gebruiker (vereist).
+- **DISPLAY_NAME**: De bijgewerkte weergavenaam (vereist).
 
-#### Options
-- `--admin`, `-a`: Grant administrator privileges. Omit to revoke them.
-- `--valid-until`, `-v`: Accepted for compatibility but **not currently applied**. Passing it prints a warning and changes nothing.
+#### Opties
+- `--admin`, `-a`: Kent beheerdersrechten toe. Weglaten om ze in te trekken.
+- `--valid-until`, `-v`: Wordt om compatibiliteitsredenen geaccepteerd, maar **momenteel niet toegepast**. Meegeven levert een waarschuwing op en verandert niets.
 
-#### Example
+#### Voorbeeld
 ```bash
 digna user modify jdoe@example.com "Johnathan Doe" --admin
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 User jdoe@example.com modified successfully
 ```
 
 ### user modify-pwd
 
-The `user modify-pwd` command updates the password for an existing user account.
+De opdracht `user modify-pwd` werkt het wachtwoord van een bestaand gebruikersaccount bij.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna user modify-pwd <EMAIL> <PASSWORD>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user whose password is to be updated (required).
-- **PASSWORD**: The new password (required).
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de gebruiker wiens wachtwoord bijgewerkt moet worden (vereist).
+- **PASSWORD**: Het nieuwe wachtwoord (vereist).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna user modify-pwd jdoe@example.com "NewSecurePass456!"
 ```
 
 ### user delete
 
-The `user delete` command removes a user account from the system.
+De opdracht `user delete` verwijdert een gebruikersaccount uit het systeem.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna user delete <EMAIL>
 ```
 
-#### Arguments
-- **EMAIL**: The email of the user to delete (required).
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de te verwijderen gebruiker (vereist).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna user delete jdoe@example.com
 ```
 
 ---
 
-## Project & Data Source Management
+## Project- en gegevensbronbeheer
 
 ---
 
 ### project list
 
-The `project list` command lists all available projects in the repository, showing their ID, name,
-and description.
+De opdracht `project list` toont alle beschikbare projecten in de repository, met hun ID, naam en beschrijving.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna project list
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 ID                   NAME                           DESCRIPTION
 ------------------------------------------------------------------------------------------------------
@@ -4524,23 +4496,22 @@ ID                   NAME                           DESCRIPTION
 
 ### project list-ds
 
-The `project list-ds` command lists all data sources associated with a given project, displaying
-their ID, name, kind, schema, and table name.
+De opdracht `project list-ds` toont alle gegevensbronnen die bij een bepaald project horen, met hun ID, naam, soort, schema en tabelnaam.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna project list-ds <PROJECT_NAME>
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project whose data sources should be listed (required). The name must match exactly.
+#### Argumenten
+- **PROJECT_NAME**: De naam van het project waarvan de gegevensbronnen getoond moeten worden (vereist). De naam moet exact overeenkomen.
 
-#### Example
+#### Voorbeeld
 ```bash
 digna project list-ds ProjectA
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 ID                   NAME                           KIND            SCHEMA               TABLE
 -------------------------------------------------------------------------------------------------------------
@@ -4550,149 +4521,142 @@ ID                   NAME                           KIND            SCHEMA      
 
 ### project export-ds
 
-The `project export-ds` command exports data sources from a project into a JSON document.
+De opdracht `project export-ds` exporteert gegevensbronnen van een project naar een JSON-document.
 
-If neither `--table-name` nor `--table-id` is given, all data sources of the project are exported.
+Als noch `--table-name` noch `--table-id` wordt opgegeven, worden alle gegevensbronnen van het project geëxporteerd.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna project export-ds <PROJECT_NAME> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The name of the project to export data sources from (required).
+#### Argumenten
+- **PROJECT_NAME**: De naam van het project waaruit gegevensbronnen geëxporteerd moeten worden (vereist).
 
-#### Options
-- `--table-name`, `-n`: Data source names to export. Multiple names can be given separated by spaces.
-- `--table-id`, `-i`: Data source IDs to export. Multiple IDs can be given separated by spaces.
-- `--exportfile`, `-f`: Path to save the exported data sources to (default: `data_sources_export.json`).
+#### Opties
+- `--table-name`, `-n`: Namen van de te exporteren gegevensbronnen. Meerdere namen kunnen gescheiden door spaties worden opgegeven.
+- `--table-id`, `-i`: ID's van de te exporteren gegevensbronnen. Meerdere ID's kunnen gescheiden door spaties worden opgegeven.
+- `--exportfile`, `-f`: Pad waarnaar de geëxporteerde gegevensbronnen worden opgeslagen (standaard: `data_sources_export.json`).
 
-#### Example
-To export all data sources from `ProjectA`:
+#### Voorbeeld
+Om alle gegevensbronnen uit `ProjectA` te exporteren:
 ```bash
 digna project export-ds ProjectA --exportfile my_export.json
 ```
 
-To export specific tables:
+Om specifieke tabellen te exporteren:
 ```bash
 digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Successfully exported 2 data source(s) to users_orders_export.json
 ```
 
 ### project import-ds
 
-The `project import-ds` command imports data sources from an export file into a target project, and
-reports per object what was created, updated, or skipped.
+De opdracht `project import-ds` importeert gegevensbronnen uit een exportbestand in een doelproject en rapporteert per object wat er is aangemaakt, bijgewerkt of overgeslagen.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name to import into (required).
-- **EXPORT_FILE**: Path to the JSON export file (required).
+#### Argumenten
+- **PROJECT_NAME**: Naam van het doelproject waarin geïmporteerd wordt (vereist).
+- **EXPORT_FILE**: Pad naar het JSON-exportbestand (vereist).
 
-#### Options
-- `--output-file`, `-o`: File to write the import report to. Without it, the report goes to stdout.
-- `--output-format`, `-f`: Format of the import report — `table`, `json`, or `csv` (default: `table`).
+#### Opties
+- `--output-file`, `-o`: Bestand waarnaar het importrapport wordt geschreven. Zonder deze optie gaat het rapport naar stdout.
+- `--output-format`, `-f`: Formaat van het importrapport — `table`, `json` of `csv` (standaard: `table`).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna project import-ds ProjectB my_export.json
 ```
 
-To capture a machine-readable report:
+Om een machineleesbaar rapport vast te leggen:
 ```bash
 digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
 ```
 
-The report covers four object levels — data source, data set definition, attribute, and validation
-rule — each with its import action, result, resulting object ID, and any additional information.
+Het rapport beslaat vier objectniveaus — gegevensbron, definitie van de gegevensset, attribuut en validatieregel — elk met de bijbehorende importactie, het resultaat, het resulterende object-ID en eventuele aanvullende informatie.
 
 ### project plan-import-ds
 
-The `project plan-import-ds` command previews a data source import into a target project, showing
-which objects would be created, updated, or skipped, without changing anything. It takes the same
-export file and the same reporting options as [`project import-ds`](#project-import-ds), and adds a
-step number per planned object.
+De opdracht `project plan-import-ds` toont een voorbeeld van een gegevensbronimport in een doelproject en laat zien welke objecten zouden worden aangemaakt, bijgewerkt of overgeslagen, zonder iets te wijzigen. Ze neemt hetzelfde exportbestand en dezelfde rapportageopties als [`project import-ds`](#project-import-ds), en voegt per gepland object een stapnummer toe.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: Target project name (required).
-- **EXPORT_FILE**: Path to the export file (required).
+#### Argumenten
+- **PROJECT_NAME**: Naam van het doelproject (vereist).
+- **EXPORT_FILE**: Pad naar het exportbestand (vereist).
 
-#### Options
-- `--output-file`, `-o`: File to write the import plan to. Without it, the plan goes to stdout.
-- `--output-format`, `-f`: Format of the import plan — `table`, `json`, or `csv` (default: `table`).
+#### Opties
+- `--output-file`, `-o`: Bestand waarnaar het importplan wordt geschreven. Zonder deze optie gaat het plan naar stdout.
+- `--output-format`, `-f`: Formaat van het importplan — `table`, `json` of `csv` (standaard: `table`).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna project plan-import-ds ProjectB my_export.json
 ```
 
 ---
 
-## Inspection Management
+## Inspectiebeheer
 
 ---
 
 ### inspection run
 
-The `inspection run` command creates an inspection request for a project and a date range, and then
-— depending on the options given — either waits for it, returns immediately, or runs it in-process.
+De opdracht `inspection run` maakt een inspectieverzoek aan voor een project en een datumbereik, en wacht er vervolgens — afhankelijk van de opgegeven opties — op, keert onmiddellijk terug of voert het uit binnen het eigen proces.
 
-The three execution modes are:
+De drie uitvoeringsmodi zijn:
 
-- **Default (no flag)**: the request is queued for the backend, and the CLI polls it every two seconds, printing task progress until the inspection reaches a final state. A running `digna serve` is required, otherwise nothing picks the request up.
-- **`--async-mode`**: the request is queued and its ID is printed immediately. Use [`inspection status`](#inspection-status) to follow it.
-- **`--bypass-backend`**: the inspection is executed by the CLI process itself and is not queued, so no running server is needed.
+- **Standaard (geen vlag)**: het verzoek wordt in de wachtrij geplaatst voor de backend, en de CLI pollt het elke twee seconden en toont de voortgang van de taken totdat de inspectie een eindtoestand bereikt. Een draaiende `digna serve` is vereist, anders pikt niets het verzoek op.
+- **`--async-mode`**: het verzoek wordt in de wachtrij geplaatst en het ID wordt onmiddellijk getoond. Gebruik [`inspection status`](#inspection-status) om het te volgen.
+- **`--bypass-backend`**: de inspectie wordt door het CLI-proces zelf uitgevoerd en niet in de wachtrij geplaatst, zodat er geen draaiende server nodig is.
 
-`--async-mode` and `--bypass-backend` are mutually exclusive.
+`--async-mode` en `--bypass-backend` sluiten elkaar uit.
 
-In every mode the command ends with a non-zero exit code if the inspection did not complete
-successfully.
+In elke modus eindigt de opdracht met een afsluitcode die niet nul is als de inspectie niet succesvol is afgerond.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
 ```
 
-#### Arguments
-- **PROJECT_NAME**: The target project name (required). The name must match exactly.
-- **START_DATE**: Start date of the date range in `YYYY-MM-DD` format (required).
-- **END_DATE**: End date of the date range in `YYYY-MM-DD` format (required).
+#### Argumenten
+- **PROJECT_NAME**: De naam van het doelproject (vereist). De naam moet exact overeenkomen.
+- **START_DATE**: Begindatum van het datumbereik in de notatie `YYYY-MM-DD` (vereist).
+- **END_DATE**: Einddatum van het datumbereik in de notatie `YYYY-MM-DD` (vereist).
 
-#### Options
-- `--table-name`: Restrict the inspection to a single data source of the project, given by its data source name. Without it, all data sources of the project are inspected.
-- `--async-mode`: Queue the inspection and print the request ID instead of waiting for it. Cannot be combined with `--bypass-backend`.
-- `--bypass-backend`: Run the inspection directly in the CLI process instead of queueing it for the backend. Cannot be combined with `--async-mode`.
+#### Opties
+- `--table-name`: Beperkt de inspectie tot één gegevensbron van het project, opgegeven met de naam van die gegevensbron. Zonder deze optie worden alle gegevensbronnen van het project geïnspecteerd.
+- `--async-mode`: Plaatst de inspectie in de wachtrij en toont het verzoek-ID in plaats van erop te wachten. Kan niet worden gecombineerd met `--bypass-backend`.
+- `--bypass-backend`: Voert de inspectie rechtstreeks uit in het CLI-proces in plaats van ze in de wachtrij te plaatsen voor de backend. Kan niet worden gecombineerd met `--async-mode`.
 
-#### Example
+#### Voorbeeld
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31
 ```
 
-To submit an asynchronous inspection:
+Om een asynchrone inspectie in te dienen:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
 ```
 
-To inspect a single data source:
+Om één enkele gegevensbron te inspecteren:
 ```bash
 digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
 ```
 
-#### Example Output
-Default mode:
+#### Voorbeelduitvoer
+Standaardmodus:
 ```text
 Inspection request submitted. Waiting for completion (Request ID: 1024)...
 Progress: 3/10 tasks completed (0 failed)
@@ -4701,30 +4665,29 @@ Inspection completed successfully.
 Inspection successful for project: ProjectA
 ```
 
-Asynchronous mode:
+Asynchrone modus:
 ```text
 Inspection request submitted successfully. Request ID: 1024
 ```
 
 ### inspection status
 
-The `inspection status` command queries the state and task progress of an inspection request by its
-request ID.
+De opdracht `inspection status` vraagt de toestand en de taakvoortgang van een inspectieverzoek op aan de hand van het verzoek-ID.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna inspection status <INSPECTION_REQUEST_ID>
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The numerical inspection request ID (required).
+#### Argumenten
+- **INSPECTION_REQUEST_ID**: Het numerieke ID van het inspectieverzoek (vereist).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna inspection status 1024
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Inspection Request ID: 1024
 Status: Running
@@ -4735,92 +4698,85 @@ Progress: 3/10 tasks completed (0 failed)
 
 ### inspection abort
 
-The `inspection abort` command requests cancellation of running or pending inspection requests. It
-records a stop event for each affected request; the backend acts on it, so an abort is a request to
-stop rather than an immediate kill.
+De opdracht `inspection abort` vraagt de annulering aan van lopende of wachtende inspectieverzoeken. Ze legt voor elk betrokken verzoek een stopgebeurtenis vast; de backend handelt daarop, dus een afbreking is een verzoek om te stoppen en geen onmiddellijke beëindiging.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
 ```
 
-#### Arguments
-- **INSPECTION_REQUEST_ID**: The inspection request ID to abort. Required unless `--killall` is given.
+#### Argumenten
+- **INSPECTION_REQUEST_ID**: Het ID van het af te breken inspectieverzoek. Vereist tenzij `--killall` wordt opgegeven.
 
-#### Options
-- `--killall`: Abort all currently running and pending inspection requests. Takes precedence over a request ID given alongside it.
+#### Opties
+- `--killall`: Breekt alle momenteel lopende en wachtende inspectieverzoeken af. Heeft voorrang op een verzoek-ID dat er tegelijk mee wordt opgegeven.
 
-#### Example
-To abort a specific request:
+#### Voorbeeld
+Om een specifiek verzoek af te breken:
 ```bash
 digna inspection abort 1024
 ```
 
-To abort all active and queued inspections:
+Om alle actieve en in de wachtrij staande inspecties af te breken:
 ```bash
 digna inspection abort --killall
 ```
 
-#### Example Output
-`--killall` reports what it did; aborting a single request produces no output and reports success
-through its exit code.
+#### Voorbeelduitvoer
+`--killall` rapporteert wat het heeft gedaan; het afbreken van één enkel verzoek levert geen uitvoer op en meldt succes via de afsluitcode.
 ```text
 All running and pending inspections have been aborted.
 ```
 
 ---
 
-## License Management
+## Licentiebeheer
 
 ---
 
 ### license check
 
-The `license check` command validates `license.toml`, verifying its signature against the public
-key shipped with the installation and checking that it has not expired. It reads no application
-configuration, so it also works before `config.toml` is set up.
+De opdracht `license check` valideert `license.toml`, verifieert de handtekening ervan aan de hand van de openbare sleutel die met de installatie wordt meegeleverd, en controleert of de licentie niet is verlopen. Ze leest geen applicatieconfiguratie, dus ze werkt ook voordat `config.toml` is ingesteld.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna license check
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 License is valid
 ```
 
-An invalid signature and an expired license are reported as distinct errors, both with exit code 1.
+Een ongeldige handtekening en een verlopen licentie worden als afzonderlijke fouten gerapporteerd, beide met afsluitcode 1.
 
 ---
 
-## Server & Background Services
+## Server- en achtergrondservices
 
 ---
 
 ### serve
 
-The `serve` command launches the ***digna*** REST API server along with the background inspection
-scheduler and inspection manager. At startup it also fails any inspection the repository still
-records as running, since nothing can have survived from an earlier process.
+De opdracht `serve` start de ***digna*** REST API-server samen met de achtergrondplanner voor inspecties en de inspectiebeheerder. Bij het opstarten laat ze ook elke inspectie mislukken die de repository nog als lopend registreert, aangezien niets een eerder proces kan hebben overleefd.
 
-The command runs in the foreground until it is stopped.
+De opdracht draait op de voorgrond totdat ze wordt gestopt.
 
-#### Command Usage
+#### Gebruik van de opdracht
 ```bash
 digna serve [OPTIONS]
 ```
 
-#### Options
-- `--address`: Network address to bind the API server to (default: `127.0.0.1`).
-- `--port`: Port number to listen on (default: `8000`).
+#### Opties
+- `--address`: Netwerkadres waaraan de API-server wordt gebonden (standaard: `127.0.0.1`).
+- `--port`: Poortnummer waarop geluisterd wordt (standaard: `8000`).
 
-#### Example
+#### Voorbeeld
 ```bash
 digna serve --address 0.0.0.0 --port 8000
 ```
 
-#### Example Output
+#### Voorbeelduitvoer
 ```text
 Server running on http://0.0.0.0:8000
 ```
