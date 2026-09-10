@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/ja/platform/overview/): 欧州発のAIプラットフォーム digna のコアモジュールを紹介します。各モジュールがオンプレミスやプライベートクラウド環境でどのようにデータの品質、可観測性、信頼性を向上させるかを説明します。
 
+### プロファイリング
+
+- [イントロダクション](https://docs.digna.ai/ja/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [仕組み](https://docs.digna.ai/ja/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [統計](https://docs.digna.ai/ja/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [データセット](https://docs.digna.ai/ja/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [イントロダクション](https://docs.digna.ai/ja/platform/data_anomalies/Introduction/): digna Data Anomalies がルールを手動で書くことなく、ボリュームの急落、欠損値、分布の変化、予期しないパターンを自動検出する仕組みを学びます。AI駆動の異常検出により、データパイプラインのデータ品質と可観測性を向上させます。
+- [仕組み](https://docs.digna.ai/ja/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [ユースケース](https://docs.digna.ai/ja/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [イントロダクション](https://docs.digna.ai/ja/platform/data_analytics/Introduction/): Learn how digna Data Analytics reveals long-term trends, volatility, and data stability across KPIs. Detect shifts in the quality and observability of data, uncover hidden anomalies, and turn statistics into actionable insights.
+- [仕組み](https://docs.digna.ai/ja/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [ユースケース](https://docs.digna.ai/ja/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [イントロダクション](https://docs.digna.ai/ja/platform/data_validation/Introduction/): dignaのData Validationは、閾値、範囲、参照リストを用いた決定論的なルールベースチェックを強制します。金融・医療などの規制業界でのコンプライアンス、監査可能性、報告要件を確保します。
+- [仕組み](https://docs.digna.ai/ja/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [ユースケース](https://docs.digna.ai/ja/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [イントロダクション](https://docs.digna.ai/ja/platform/data_timeliness/Introduction/): digna Data Timeliness はデータが期待どおりの時間に到着することを保証します。遅延や欠落を検出し、SLA を監視し、サイレントな遅延からビジネスプロセスを保護します。AI による検出でデータ品質とパイプラインの可観測性を向上させます。
+- [仕組み](https://docs.digna.ai/ja/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [ユースケース](https://docs.digna.ai/ja/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [イントロダクション](https://docs.digna.ai/ja/platform/schema_tracker/Introduction/): digna Data Schema Tracker がカラムの変更、データ型の更新、スキーマドリフトをどのように監視するかを学びます。ETL の失敗、ダッシュボードの破損、データ可観測性の喪失を防ぐために、意図的・非意図的なスキーマ変更の検出とアラートを行います。
+- [仕組み](https://docs.digna.ai/ja/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [ユースケース](https://docs.digna.ai/ja/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### リファレンス
+
+- [ステータスとアラート](https://docs.digna.ai/ja/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [異常検知のチューニング](https://docs.digna.ai/ja/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## インストールとデプロイメント
 

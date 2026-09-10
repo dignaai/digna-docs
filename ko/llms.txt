@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/ko/platform/overview/): 온프레미스 또는 프라이빗 클라우드 환경에서 데이터의 품질, 관측성 및 신뢰성을 개선하는 digna의 핵심 모듈을 살펴보세요.
 
+### 프로파일링
+
+- [소개](https://docs.digna.ai/ko/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [작동 방식](https://docs.digna.ai/ko/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [통계](https://docs.digna.ai/ko/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [데이터셋](https://docs.digna.ai/ko/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [소개](https://docs.digna.ai/ko/platform/data_anomalies/Introduction/): digna Data Anomalies가 수동 규칙 코딩 없이 볼륨 감소, 결측값, 분포 변화 및 예기치 않은 패턴을 자동으로 감지하는 방법을 알아보세요. AI 기반 이상 탐지로 데이터 파이프라인의 데이터 품질과 관측성을 향상시키세요.
+- [작동 방식](https://docs.digna.ai/ko/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [활용 사례](https://docs.digna.ai/ko/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [소개](https://docs.digna.ai/ko/platform/data_analytics/Introduction/): digna Data Analytics가 KPI 전반에서 장기 추세, 변동성 및 데이터 안정성을 어떻게 드러내는지 알아보세요. 데이터 품질과 관찰성의 변화를 감지하고 숨겨진 이상을 발견하여 통계 정보를 실행 가능한 인사이트로 전환하는 방법을 설명합니다.
+- [작동 방식](https://docs.digna.ai/ko/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [활용 사례](https://docs.digna.ai/ko/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [소개](https://docs.digna.ai/ko/platform/data_validation/Introduction/): digna Data Validation이 임계값, 범위, 참조 목록을 포함한 결정론적 규칙 기반 검사를 어떻게 적용하는지 알아보세요. 금융, 의료 및 기타 데이터 민감 산업에서 컴플라이언스, 감사 가능성 및 규제 보고를 보장합니다.
+- [작동 방식](https://docs.digna.ai/ko/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [활용 사례](https://docs.digna.ai/ko/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [소개](https://docs.digna.ai/ko/platform/data_timeliness/Introduction/): digna Data Timeliness가 데이터가 예상 시점에 도착하는지 어떻게 보장하는지 알아보세요. 지연되거나 누락된 전달을 감지하고 SLA를 모니터링하며 비즈니스 프로세스를 은밀한 지연으로부터 보호합니다. 향상된 데이터 품질과 파이프라인 관찰을 위한 AI 기반 감지.
+- [작동 방식](https://docs.digna.ai/ko/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [활용 사례](https://docs.digna.ai/ko/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [소개](https://docs.digna.ai/ko/platform/schema_tracker/Introduction/): digna Data Schema Tracker가 컬럼 변경, 데이터 타입 업데이트 및 스키마 드리프트를 어떻게 모니터링하는지 알아보세요. 의도적이든 비의도적이든 스키마 변경을 감지하고 경고하여 ETL 실패, 깨진 대시보드 및 관찰성 상실을 방지합니다.
+- [작동 방식](https://docs.digna.ai/ko/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [활용 사례](https://docs.digna.ai/ko/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### 참조
+
+- [상태 및 알림](https://docs.digna.ai/ko/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [이상 탐지 튜닝](https://docs.digna.ai/ko/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## 설치 및 배포
 

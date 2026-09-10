@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/sl/platform/overview/): Raziščite jedrne module digna — evropske AI platforme za kakovost podatkov in opazovanje. Naučite se, kako vsak modul izboljšuje kakovost, opazljivost in zanesljivost podatkov v vašem lokalnem ali zasebnem oblačnem okolju.
 
+### Profiliranje
+
+- [Uvod](https://docs.digna.ai/sl/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [Kako deluje](https://docs.digna.ai/sl/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [Statistika](https://docs.digna.ai/sl/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [Podatkovni nabori](https://docs.digna.ai/sl/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [Uvod](https://docs.digna.ai/sl/platform/data_anomalies/Introduction/): Spoznajte, kako digna Data Anomalies samodejno zaznava padce volumna, manjkajoče vrednosti, premike porazdelitev in nepričakovane vzorce brez ročnega pisanja pravil. Izboljšajte kakovost in observabilnost podatkovnih cevovodov z odkrivanjem anomalij, ki ga poganja AI.
+- [Kako deluje](https://docs.digna.ai/sl/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [Primeri uporabe](https://docs.digna.ai/sl/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [Uvod](https://docs.digna.ai/sl/platform/data_analytics/Introduction/): Izvedite, kako digna Data Analytics razkriva dolgoročne trende, nihajnost in stabilnost podatkov preko KPI-jev. Zaznajte premike v kakovosti in opazljivosti podatkov, odkrijte skrite anomalije in spremenite statistiko v uporabne vpoglede.
+- [Kako deluje](https://docs.digna.ai/sl/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [Primeri uporabe](https://docs.digna.ai/sl/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [Uvod](https://docs.digna.ai/sl/platform/data_validation/Introduction/): Odkrijte, kako digna Data Validation izvaja deterministične preverjave na osnovi pravil z mejami, razponi in referenčnimi seznami. Zagotovite skladnost, revizijsko sledljivost in poročanje za regulirana področja, kot so finance in zdravstvo.
+- [Kako deluje](https://docs.digna.ai/sl/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [Primeri uporabe](https://docs.digna.ai/sl/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [Uvod](https://docs.digna.ai/sl/platform/data_timeliness/Introduction/): Izvedite, kako digna Data Timeliness zagotavlja, da podatki prispejo pravočasno. Zaznajte zamude ali manjkajoče dostave, spremljajte SLA in zaščitite poslovne procese pred tihimi zamudami. AI-podprta zaznava za izboljšano kakovost podatkov in opaznost podatkovnih tokov.
+- [Kako deluje](https://docs.digna.ai/sl/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Primeri uporabe](https://docs.digna.ai/sl/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [Uvod](https://docs.digna.ai/sl/platform/schema_tracker/Introduction/): Spoznajte, kako digna Data Schema Tracker spremlja spremembe stolpcev, posodobitve podatkovnih tipov in drift shem. Odkrijte in opozorite na namerne in nenamerne spremembe sheme, da preprečite napake ETL, pokvarjene nadzorne plošče in izgubo opazljivosti podatkov.
+- [Kako deluje](https://docs.digna.ai/sl/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [Primeri uporabe](https://docs.digna.ai/sl/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### Referenca
+
+- [Stanja in opozorila](https://docs.digna.ai/sl/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [Nastavitev anomalij](https://docs.digna.ai/sl/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Namestitev in razmestitev
 

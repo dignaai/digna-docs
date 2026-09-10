@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/ar/platform/overview/): استعرض الوحدات الأساسية في digna — المنصة الأوروبية المعتمدة على الذكاء الاصطناعي لجودة البيانات والملاحَظة. تعرّف كيف تحسّن كل وحدة جودة البيانات، قابليتها للملاحَظة، وموثوقيتها في بيئتك المحلية أو السحابة الخاصة.
 
+### تحليل البيانات
+
+- [المقدمة](https://docs.digna.ai/ar/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [كيف يعمل](https://docs.digna.ai/ar/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [الإحصاءات](https://docs.digna.ai/ar/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [مجموعات البيانات](https://docs.digna.ai/ar/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [المقدمة](https://docs.digna.ai/ar/platform/data_anomalies/Introduction/): تعلّم كيف تقوم وحدة digna Data Anomalies باكتشاف انخفاضات الحجم، القيم المفقودة، انحرافات التوزيع، والأنماط غير المتوقعة تلقائيًا دون كتابة قواعد يدوية. حسّن جودة البيانات وقابلية رصد خطوط البيانات باستخدام كشف الشواذ المدفوع بالذكاء الاصطناعي.
+- [كيف يعمل](https://docs.digna.ai/ar/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [حالات الاستخدام](https://docs.digna.ai/ar/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [المقدمة](https://docs.digna.ai/ar/platform/data_analytics/Introduction/): تعرّف على كيفية كشف digna Data Analytics للاتجاهات الطويلة الأمد، والتقلب، واستقرار البيانات عبر مؤشرات الأداء. اكتشف كيفية اكتشاف التحولات في جودة وقابلية ملاحظة البيانات، وكشف الشذوذ المخفي، وتحويل الإحصاءات إلى رؤى قابلة للتنفيذ.
+- [كيف يعمل](https://docs.digna.ai/ar/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [حالات الاستخدام](https://docs.digna.ai/ar/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [المقدمة](https://docs.digna.ai/ar/platform/data_validation/Introduction/): اكتشف كيف تقوم digna Data Validation بفرض فحوصات حتمية قائمة على قواعد مع حدود ونطاقات وقوائم مرجعية. ضَمِن الامتثال، وقابلية التدقيق، والتقارير التنظيمية في القطاع المالي والرعاية الصحية والصناعات الحساسة للبيانات الأخرى.
+- [كيف يعمل](https://docs.digna.ai/ar/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [حالات الاستخدام](https://docs.digna.ai/ar/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [المقدمة](https://docs.digna.ai/ar/platform/data_timeliness/Introduction/): Learn how digna Data Timeliness ensures data arrives when expected. Detect late or missing deliveries, monitor SLAs, and protect business processes from silent delays. AI-powered detection for improved data quality and observability of data pipelines.
+- [كيف يعمل](https://docs.digna.ai/ar/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [حالات الاستخدام](https://docs.digna.ai/ar/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [المقدمة](https://docs.digna.ai/ar/platform/schema_tracker/Introduction/): تعرّف على كيفية قيام digna Data Schema Tracker بمراقبة تغييرات الأعمدة، تحديثات أنواع البيانات، وانحراف المخطط. اكتشف ونبه بشأن التغييرات المقصودة وغير المقصودة في المخطط لمنع فشل مهام ETL، تحطّم اللوحات المعلوماتية، وفقدان قابلية الملاحظة للبيانات.
+- [كيف يعمل](https://docs.digna.ai/ar/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [حالات الاستخدام](https://docs.digna.ai/ar/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### المرجع
+
+- [الحالات والتنبيهات](https://docs.digna.ai/ar/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [ضبط الحالات الشاذة](https://docs.digna.ai/ar/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## التثبيت والنشر
 

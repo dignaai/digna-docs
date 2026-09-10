@@ -11530,3 +11530,1927 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-
 
 - [نظرة عامة على تسجيل الدخول الموحد](overview.md) — مرجع التكوين، الاختبار والاستكشاف العام للمشكلات
 - [PingOne: تكوين تطبيق OIDC](https://docs.pingidentity.com/pingone/)
+
+---
+
+# كيف يعمل
+Source: https://docs.digna.ai/ar/platform/data_analytics/how_it_works/
+
+# Data Analytics – How It Works
+
+---
+
+## The Idea
+
+[Data Anomalies](../data_anomalies/how_it_works.md) asks whether *today* deviates from expectation. **Data Analytics asks what the last N observations, taken together, are doing** — and answers it with a straight line fitted through them.
+
+Two properties of that line matter:
+
+- Its **slope** is the trend — where the metric is heading.
+- The **scatter around it** is the volatility — how consistently it gets there.
+
+Both are computed from statistics [profiling](../profiling/Introduction.md) has already collected, so the module adds analytical depth without a second pass over your data.
+
+---
+
+## Defining an Analytics Rule
+
+A rule names four things:
+
+| Part | Meaning |
+|---|---|
+| **The series** | Which table, column, and statistic to analyse |
+| **The metric** | Absolute change, relative change, absolute volatility, or relative volatility |
+| **The window** | A range and a unit — how much history the line is fitted through |
+| **The limits** | Optional lower and upper bounds on the resulting value |
+
+### Window units
+
+| Unit | Meaning |
+|---|---|
+| **DAY** | The last *N* days |
+| **WEEK** | The last *N* weeks |
+| **MONTH** | The last *N* months |
+| **OBSERVATION** | The last *N* observations, whenever they happened |
+
+**OBSERVATION** is the one to use for irregular series. A monthly delivery analysed over "the last 30 days" has one or two points; analysed over "the last 12 observations" it has a year of behaviour. Calendar units are the better choice when the *rate* matters — a source whose delivery frequency itself is changing tells you more per day than per observation.
+
+---
+
+## The Four Metrics
+
+A regression is fitted with time on the x-axis, scaled so the window spans the unit interval. That scaling is what makes the metrics comparable: a slope is expressed **per window**, not per second, so the same limit means the same thing on a 30-day and a 90-day rule.
+
+| Metric | Definition | Reads as |
+|---|---|---|
+| **Absolute Change** | The slope of the fitted line | How much the metric moves across the window, in its own units |
+| **Relative Change** | Slope ÷ intercept, as a percentage | The same movement as a percentage of where the window started |
+| **Absolute Volatility** | Mean absolute deviation from the fitted line | Typical distance between observation and trend, in the metric's own units |
+| **Relative Volatility** | That deviation ÷ the mean of the series, as a percentage | Scatter as a percentage of the typical level |
+
+### Choosing absolute or relative
+
+**Relative** metrics are what you want in almost every case where series are compared or one rule is applied across many columns — a 5 % drift means the same thing on a table of 500 rows and one of 5 million. **Absolute** metrics are right when the quantity itself has meaning: "this null count must not grow by more than 100 per month" is an absolute statement, and expressing it as a percentage would be an awkward way to say it.
+
+Relative metrics are guarded against a near-zero denominator: when the intercept, or the mean of the series, is effectively zero, the relative value is reported as zero rather than exploding. A metric that spends time near zero should be monitored with its absolute counterpart.
+
+---
+
+## Evaluation
+
+Each computed value is compared against the rule's limits:
+
+| Condition | Status |
+|---|---|
+| Below the lower limit, or above the upper limit | **Failed** |
+| Otherwise | **Passed** |
+
+A limit left empty is simply not evaluated, so a rule with neither limit set records the value and never fails. That is a legitimate configuration — it gives you the trend series in the interface without alerting on it, which is a good way to observe a metric's normal range before deciding what the limit should be.
+
+There is no Uncertain status here. Unlike anomaly detection, whose band is learned and therefore has a natural inner and outer edge, an analytics limit is a line a person drew.
+
+Statuses roll up the same way as everywhere else — **check → attribute → dataset → data source**, worst result winning.
+
+---
+
+## Practical Setup
+
+1. **Create the rule with no limits.** Let it run for a few weeks and watch what the metric actually does on your data.
+2. **Set the limit outside the observed range**, not at the edge of it. A limit set to the highest value you have seen will fire on the next ordinary week.
+3. **Prefer one-sided limits where only one direction is a problem.** A rising null rate is a defect; a falling one is a fix, and does not need an alert.
+4. **Use volatility for pipeline health, trend for data health.** Rising volatility on a stable metric is usually an infrastructure story — retries, contention, an unreliable upstream job. A moving trend is usually a data or business story.
+
+!!! tip "Read the two together"
+    Flat trend with rising volatility means instability, not change. A moving trend with low volatility is an orderly change — growth, a migration, a decommissioning. A moving trend *and* rising volatility is usually a defect: partial loads, duplicated batches, a source in transition.
+
+---
+
+## Related Pages
+
+- [Data Analytics – Introduction](Introduction.md)
+- [Data Analytics – Use Cases](use_cases.md)
+- [Profiling – The Foundation](../profiling/Introduction.md)
+- [Statistics](../profiling/statistics.md)
+- [Statuses and Alerts](../reference/statuses.md)
+
+---
+
+---
+
+# حالات الاستخدام
+Source: https://docs.digna.ai/ar/platform/data_analytics/use_cases/
+
+# Data Analytics – Use Cases
+
+---
+
+## When to Reach for This Module
+
+[*Data Anomalies*](../data_anomalies/Introduction.md) answers *"is today unusual?"*. **Data Analytics answers the questions that only make sense over a longer window:**
+
+- Is this metric **trending** in a direction nobody decided on?
+- Has this pipeline become **more volatile** than it used to be, even though no single day looks wrong?
+- Which parts of the estate are **stable**, and which need attention first?
+
+It calculates higher-level statistics — **trend** and **volatility** — on the core column statistics *digna* already collects: record counts, missing values, min, max, sum, average, and the rest. Nothing extra needs to be configured on the data source; the analytical layer sits on metrics that exist as soon as profiling runs.
+
+The result is **one view for data health and for business and operational KPIs**, which is why the module is aimed at data owners, analysts, and decision-makers rather than only at the engineering team.
+
+---
+
+## Banking and Financial Services
+
+### Volume patterns across departments
+
+Every department loads into the same warehouse, and every department is convinced its own volumes are fine. Trend analysis over record counts makes the comparison objective: which sources are growing, which are flat, and which have been quietly shrinking for six weeks.
+
+### Financial KPI fluctuation
+
+Sums and averages of monetary columns — exposure, provisions, fee income, transaction value — are tracked the same way as quality metrics. A rising **volatility** score on a KPI that used to be steady is an early signal, both for the business and for the team that suspects an upstream process has changed.
+
+### Distinguishing seasonality from decay
+
+Month-end and quarter-end peaks are normal in finance. What matters is whether the *baseline between peaks* is moving. Separating trend from volatility makes that visible instead of leaving it buried under the peaks.
+
+---
+
+## Retail and E-Commerce
+
+### Rising NULL rates after a migration
+
+A platform migration completes and everything passes. Weeks later, the missing-value rate on a handful of columns has climbed steadily from near zero. No single day crossed a threshold; the **trend** is the finding.
+
+### Sales trends and top-performing SKUs
+
+The same statistics that guard data quality also describe the business. Sum and average over order-value columns, sliced by product group or channel, expose which SKUs are carrying growth and which are declining — from the warehouse, without exporting anything to a separate analytics tool.
+
+### Stability comparison between periods
+
+Comparing a promotional period against a normal one shows whether the pipeline coped. High volatility during a peak that did not exist the year before usually means a capacity or scheduling problem, not a demand story.
+
+---
+
+## Healthcare
+
+- **Completeness decay in clinical datasets** — a diagnosis or outcome field whose missing-value ratio creeps upward across releases points at a feeder system that changed, not at a single bad load.
+- **Long-horizon comparability** — before a dataset is used for research or reporting across several years, trend and volatility over its key metrics show whether the series is actually comparable end to end.
+
+---
+
+## Telecommunications
+
+- **Network and usage metrics** carry heavy seasonality; volatility scoring separates *noisy but healthy* sources from ones that have genuinely destabilised.
+- **Per-region and per-product trends** built on filtered subsets keep a shrinking region visible instead of averaged away in the national figure.
+- **Capacity planning** benefits from the same trend series that quality monitoring produces — record-count growth per source is a free by-product of profiling.
+
+---
+
+## Public Sector
+
+- **Register growth and processing backlogs** are naturally slow-moving; trend is the appropriate lens, and the stored metric history provides the evidence trail an audit expects.
+- **Cross-agency data sharing** works better when both sides can point at the same stability record for a dataset instead of exchanging assurances.
+
+---
+
+## Reading Trend and Volatility Together
+
+| Trend | Volatility | Typical interpretation |
+|---|---|---|
+| Flat | Low | Healthy, stable source — safe to monitor lightly |
+| Flat | **Rising** | Process instability: retries, contention, an unreliable upstream job |
+| **Rising / falling** | Low | A real, orderly change — business growth, decommissioning, a migration |
+| **Rising / falling** | **Rising** | Usually a defect: partial loads, duplicated batches, a source in transition |
+
+!!! tip "Configure alerts where the trend matters"
+    Flexible alert configuration means you can route trend and volatility findings differently from day-to-day anomalies — a gradual decay rarely needs a night-time page, but it does need to reach the data owner.
+
+---
+
+## Where This Module Fits
+
+*Data Analytics* is the interpretive layer over [*Data Anomalies*](../data_anomalies/Introduction.md). Anomalies tell you a delivery deviated; analytics tells you whether that deviation is an isolated event, the newest point on a trend, or a symptom of a source that has become unstable.
+
+---
+
+## Related Pages
+
+- [Data Analytics – Introduction](Introduction.md)
+- [Data Analytics – How It Works](how_it_works.md)
+- [Data Anomalies – Use Cases](../data_anomalies/use_cases.md)
+- [digna Modules – Technical Overview](../overview.md)
+
+---
+
+---
+
+# كيف يعمل
+Source: https://docs.digna.ai/ar/platform/data_anomalies/how_it_works/
+
+# Data Anomalies – How It Works
+
+---
+
+## The Pipeline
+
+Each inspection runs the same four steps for every data source:
+
+```
+1. Profile     measure the enabled statistics, in-database
+2. Predict     fit a model per series and predict the current value
+3. Bound       derive a tolerance from how wrong recent predictions were
+4. Status      compare, then roll the result up to the data source
+```
+
+---
+
+## Step 1 – Profiling
+
+Profiling is what produces the numbers this module reasons about. digna builds a snapshot of the data source, applies each dataset's filter and grouping expressions, and computes every enabled statistic as an aggregate — inside your database, with only the aggregated results coming back.
+
+*Data Anomalies* adds nothing to this step and reads nothing else. Every finding it produces is a statement about a statistic that profiling measured, which is why **the statistics you enable determine what this module is able to see**.
+
+See [How Profiling Works](../profiling/how_it_works.md) for the mechanics, including the snapshot filter, the `#date#` marker, work tables, and query modes.
+
+---
+
+## Step 2 – Prediction
+
+Every combination of dataset, column, and statistic is its own time series, and each gets its own model.
+
+The model is a **robust regression** fitted to the history of that series. It always carries an intercept and a level-shift term for each detected structural break; beyond that, it selects its own structure from a set of candidates — a linear trend, the previous one or two observations, weekday effects, within-month and within-year seasonality, and month-boundary spikes.
+
+Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a short series does not get seasonality at all. Below five usable observations no model is fitted and the median is used instead.
+
+Robustness is what keeps a single bad day from poisoning the following ones: observations are reweighted across several passes, so a spike is downweighted rather than fitted, and a downweighted observation can be replaced by its fitted value before it becomes the *previous observation* of the next prediction.
+
+Up to two structural breaks may be absorbed. That is what lets the model follow a genuine step change — a migration, a new source system, a business change — instead of averaging across it indefinitely.
+
+See [Anomaly Tuning](../reference/tuning.md) for the seven dials that shape this.
+
+---
+
+## Step 3 – The Tolerance Band
+
+digna does not compare the observation to the prediction directly. It compares it against a band derived from **how wrong recent predictions have been on this very series**:
+
+```
+bound  =  multiplier  ×  weighted mean absolute error of recent predictions
+```
+
+- The **multiplier** comes from [Sensitivity](../reference/tuning.md#sensitivity) — a tail probability from 1 % to 10 %.
+- The **weighting** comes from [Memory](../reference/tuning.md#memory) — flat, linear decay, or quadratic decay over a rolling window of just over a year.
+
+This is why a genuinely noisy series is not permanently red: its band is wide because its predictions have genuinely been that wrong. A precise series gets a narrow band, and a real deviation on it is caught early.
+
+### Clamps
+
+Four optional limits on the statistic mapping constrain the result:
+
+| Setting | Applied to |
+|---|---|
+| `min_threshold` / `max_threshold` | The **width** of the bound |
+| `lower_limit` / `upper_limit` | The **prediction and its bands** |
+
+In addition, statistics that cannot be negative have their whole band floored at zero — a count is never predicted to go below zero. Only **Sum** and **Average** are exempt, because they legitimately can.
+
+---
+
+## Step 4 – Status and Rollup
+
+The band gives four edges, and the observation falls into one of five regions:
+
+| Observed value | Status |
+|---|---|
+| Below `predicted − 2 × bound` | **Failed** |
+| Between `−2 ×` and `−1 × bound` | **Uncertain** |
+| Within `± 1 × bound` | **Passed** |
+| Between `+1 ×` and `+2 × bound` | **Uncertain** |
+| Above `predicted + 2 × bound` | **Failed** |
+
+Statuses then roll up — **check → attribute → dataset → data source** — with the worst status winning at each level, alongside the count of checks that passed, were uncertain, and failed.
+
+Checks whose mapping has anomaly detection switched off are excluded from the rollup entirely, which is what makes disabling a noisy statistic effective rather than merely cosmetic.
+
+---
+
+## What Is Stored
+
+For every check and every inspection date, digna records the observed value, the predicted value, all four band edges, and the resulting status. Nothing about a finding has to be reconstructed later — the expectation it was judged against is stored beside it.
+
+Re-inspecting a date is safe: an inspection cleans up its own previous results for that date range before writing new ones, so a data source can be re-run without duplicating history.
+
+---
+
+## Related Pages
+
+- [Data Anomalies – Introduction](Introduction.md)
+- [Data Anomalies – Use Cases](use_cases.md)
+- [Profiling – The Foundation](../profiling/Introduction.md)
+- [Statistics](../profiling/statistics.md)
+- [Datasets](../profiling/datasets.md)
+- [Anomaly Tuning](../reference/tuning.md)
+- [Statuses and Alerts](../reference/statuses.md)
+
+---
+
+---
+
+# حالات الاستخدام
+Source: https://docs.digna.ai/ar/platform/data_anomalies/use_cases/
+
+# Data Anomalies – Use Cases
+
+---
+
+## When to Reach for This Module
+
+*digna Data Anomalies* is the right module when **you cannot describe in advance what "wrong" looks like**.
+
+It learns the natural patterns in your data and alerts you whenever something looks implausible — with **no thresholds and no rules to maintain**. That makes it the default starting point for any table you have just onboarded, and the only practical option for environments where hand-written checks would run into the hundreds.
+
+The same engine covers two purposes that are usually split across separate tools:
+
+- **Data quality** — is this delivery complete, well-formed, and consistent with every delivery before it?
+- **Business and operational KPIs** — has a number that the business steers by moved in a way nobody expected?
+
+Both are computed from the same column metrics, in-database, so adding KPI monitoring on top of quality monitoring costs no extra profiling run.
+
+!!! tip "Rules still have their place"
+    Use *Data Anomalies* for the unknown unknowns and [*Data Validation*](../data_validation/Introduction.md) for the requirements you can write down — a mandatory VAT code, a currency in `{EUR, USD}`, an amount that must be positive. Most production projects run both.
+
+---
+
+## Banking and Financial Services
+
+### Incomplete overnight loads before risk reporting
+
+A core banking table normally receives around 500 000 transaction records per night. One morning the load completes without error, but only 50 000 rows arrived — an upstream extract silently truncated.
+
+| | |
+|---|---|
+| **Metric that moves** | Record count |
+| **What digna does** | Compares the value against the learned range for that weekday and flags the deviation with a confidence score |
+| **Why it matters** | Risk and regulatory reports are built before anyone opens the source table; a short load becomes a wrong submission |
+
+### Balances and exposure drifting out of range
+
+Average account balance, total exposure per segment, or the sum of a position column shifts gradually rather than breaking. Because *digna* tracks `sum`, `avg`, `min`, and `max` per column over time, the drift is visible as an anomaly long before it is visible in a quarterly report.
+
+### Swapped or misaligned columns after an ETL change
+
+A pipeline change reverses `first_name` and `last_name`. No job fails, no null appears, and row counts are perfect. What changes is the **average string length and value distribution** of each column — which is exactly what *digna* profiles, so the swap surfaces as a paired anomaly on both columns.
+
+### Unexpected categorical values
+
+A `city` column that has only ever contained Austrian cities suddenly contains *Zurich*. *digna* classifies the column as **categorical**, learns its value distribution, and flags the new member as unexpected.
+
+---
+
+## Healthcare
+
+### Clinical and claims data completeness
+
+Patient, encounter, and claims tables are assembled from many feeder systems, each with its own release cycle. A missing-value ratio that jumps from 0.2 % to 11 % on a diagnosis code column is not a schema break and not a rule violation — it is a change in behaviour, and it is what this module is built to catch.
+
+### Reference data that quietly changes meaning
+
+Code lists (diagnosis, procedure, department) are updated by external bodies. When the distribution across a coded column reshapes after such an update, *digna* reports it, giving analytics teams a chance to check whether historical comparisons are still valid.
+
+!!! note "No data leaves your environment"
+    All profiling and detection run **inside your database**. *digna* reads and stores metrics, never patient records — which is what makes the module usable on regulated clinical data at all.
+
+---
+
+## Telecommunications
+
+Telecommunications teams move high volumes of customer and operational data through distributed pipelines, so a small change at one source can create widespread downstream errors.
+
+- **CDR and usage volumes** — call, message, and data-usage counts have strong daily and weekly seasonality. *digna* learns that shape, so a genuine drop on a Tuesday is flagged while the normal Sunday dip is not.
+- **Per-region deliveries** — with metrics defined on **filtered subsets (Datasets)**, each region, product line, or network element is monitored on its own baseline instead of disappearing into a national total.
+- **Churn and activation KPIs** — the same profiling run that guards data quality also watches the operational numbers built from it.
+
+---
+
+## Retail and E-Commerce
+
+- **Sales and order volumes** per store, channel, or SKU group, each with its own learned pattern.
+- **Rising NULL rates after a migration** — a classic post-cutover failure where the job succeeds and the content degrades.
+- **Duplicate batch loads** — an ingestion replay doubles a day's revenue; the record count and the sum of the amount column both move together, which reads unmistakably as a duplicated load rather than a good day.
+
+---
+
+## Public Sector
+
+Public sector agencies typically need **traceability across systems** rather than speed alone. *digna Data Anomalies* contributes the audit trail: every flagged anomaly carries the metric, the observed value, the learned expected range, a timestamp, and a confidence score, so a data issue raised months later can be reconstructed rather than argued about.
+
+Register and case-management data also tends to be **irregular by nature** — filing peaks at deadlines, quiet periods between them. Learned seasonality handles this without an analyst maintaining a calendar of exceptions.
+
+---
+
+## Choosing What to Monitor
+
+Broad coverage is the point of this module, but not every column deserves attention. *digna* lets you **disable metrics per column, per table, or per project**, which keeps profiling fast and the alert list credible.
+
+A practical starting point:
+
+| Priority | What to keep monitored |
+|---|---|
+| **Always** | Record counts on every fact and transaction table |
+| **Always** | Missing-value ratios on business-critical columns |
+| **High** | Sums and averages of columns that feed reported KPIs |
+| **High** | Distributions of categorical columns used as report dimensions |
+| **Selective** | Free-text and technical columns — usually noise, disable unless a swap risk exists |
+
+---
+
+## Where This Module Fits
+
+| Question | Module |
+|---|---|
+| Did something change that nobody expected? | **Data Anomalies** |
+| Is that change part of a longer trend, or a one-off? | [Data Analytics](../data_analytics/Introduction.md) |
+| Does every row still satisfy the rules we wrote down? | [Data Validation](../data_validation/Introduction.md) |
+| Did the data arrive at all, and on time? | [Data Timeliness](../data_timeliness/Introduction.md) |
+| Did the structure change underneath us? | [Schema Tracker](../schema_tracker/Introduction.md) |
+
+---
+
+## Related Pages
+
+- [Data Anomalies – Introduction](Introduction.md)
+- [Data Anomalies – How It Works](how_it_works.md)
+- [digna Modules – Technical Overview](../overview.md)
+- [How to add a datasource to a project](../../getting_started/how_to_add_a_datasource_to_project.md)
+
+---
+
+---
+
+# كيف يعمل
+Source: https://docs.digna.ai/ar/platform/data_timeliness/how_it_works/
+
+# Data Timeliness – How It Works
+
+---
+
+## What Counts as a Delivery
+
+A **delivery** is any inspection of this data source that profiled rows — whether it was started by the scheduler, through the API, from the CLI, or as a backfill. The only gate is that the Timeliness module is enabled on the data source.
+
+Two consequences follow, and both matter in practice:
+
+!!! warning "digna records when it *observed* the rows, not when they landed"
+    The delivery timestamp is the moment the inspection ran. A job scheduled at 06:00 cannot see that the data actually arrived at 03:00 — it can only report that by 06:00 it was there. **The precision of timeliness monitoring is therefore bounded by your inspection cadence.** A source inspected once a day supports day-level expectations, not hour-level ones.
+
+!!! warning "Manual runs and re-inspections move the expectation"
+    Because the timestamp is a clock reading, a delivery cannot be deduplicated. Re-inspecting an old date, or triggering a run by hand outside the normal window, records a delivery at *that* moment and carries the expectation with it. Expect a manual run at an unusual hour to disturb the learned pattern.
+
+Delivery history is retained for three years.
+
+---
+
+## Two Modes
+
+Each data source is judged in one of two modes.
+
+### AI Based
+
+digna learns the arrival pattern from the delivery history and predicts the next one. Two quantities are predicted separately:
+
+- **The gap** — how many days until the next delivery.
+- **The minute of day** — what time within that day it should land.
+
+Both use the same modelling machinery as [Data Anomalies](../data_anomalies/how_it_works.md), so a source that delivers Monday to Friday learns that Friday means three days rather than one, without anyone configuring it.
+
+Gaps are indexed forward — the days from each delivery to the *next* one are attached to the earlier date — which is what lets the weekday effects be learned at all.
+
+### Rule Based
+
+The expectation is stated rather than learned. Four shapes are available:
+
+| Rule mode | Configuration | Describes |
+|---|---|---|
+| **Daily** | A time and a time zone | "Every day by 06:00 Europe/Vienna" |
+| **Weekly** | A time, a set of weekdays, a time zone | "Mondays and Thursdays by 22:00" |
+| **Monthly** | A time, a set of days of the month (including **Last day**), a time zone | "The 1st and the 15th by 09:00", or "the last day of the month" |
+| **Time Between** | A value and a **Window Type** — hour, day, week, or month | "At most 4 hours between deliveries" |
+
+The first three are calendar deadlines and honour the configured time zone, including its daylight-saving transitions. **Time Between** is different in kind: it has no calendar at all, only a maximum interval since the last delivery, which is what makes it the right choice for a source that delivers many times a day.
+
+A rule that no schedule can honour — an empty weekday list, an unrecognised time zone — is rejected loudly when it is used, rather than leaving a data source silently unmonitored.
+
+!!! tip "Which mode to pick"
+    Use **Rule Based** where a contract, an SLA, or a regulation states the deadline — there, "usually on time" is not the standard, and a learned expectation would drift toward whatever actually happens. Use **AI Based** everywhere else, especially across a large landscape where hand-scheduling every source is not realistic.
+
+---
+
+## The Alert Margin
+
+The predicted arrival time and the deadline are deliberately two different things:
+
+```
+deadline  =  expected delivery time  +  alert margin
+```
+
+The expectation is the bare point prediction. The margin is the slack allowed on top of it before a delivery counts as late.
+
+- In **Rule Based** mode the margin is zero — the rule states its deadline outright.
+- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same [sensitivity and memory](../reference/tuning.md#the-tolerance-band) settings as anomaly detection.
+
+Keeping the two apart is what stops the deadline from inflating. If each margin were folded into the stored expectation, the next margin would be fitted to deviations from the previous *deadline* rather than from a prediction, and the slack would compound on every delivery.
+
+The margin also has floors and ceilings, because a fitted value alone is not safe at the extremes:
+
+| Guard | Purpose |
+|---|---|
+| At least a tenth of the predicted gap | A source that has been landing exactly on time would otherwise get a near-zero margin — and a monthly source needs more slack than a daily one |
+| One hour on an empty history | The very first prediction has no gap to take a fraction of |
+| Capped at the length of the error window it was fitted over | A margin wider than its own reference window is not a meaningful margin |
+
+---
+
+## Sub-Daily Deliveries in AI Based Mode
+
+The prediction model is indexed by calendar date, so a source delivering several times a day cannot be represented directly. AI Based mode collapses each date to **the last delivery of that date**, which is the conservative choice — the deadline should cover the latest arrival that is still normal.
+
+If a source genuinely delivers many times a day and each one matters, that is what **Time Between** is for.
+
+---
+
+## Status
+
+Timeliness reads the shared status scale with its own vocabulary, and it has no middle ground:
+
+| Condition | Status |
+|---|---|
+| The delivery arrived on or before its deadline | **In Time** |
+| It arrived after | **Delayed** |
+| The module is not enabled on this data source | **Not Tracked** |
+
+An **early** delivery is In Time. digna does not flag data that arrives ahead of schedule — if a re-processing upstream is a concern for you, the signal to watch is a duplicate-load anomaly in [Data Anomalies](../data_anomalies/how_it_works.md), where row count and column sums move together.
+
+Every recorded delivery stores the timestamp, the expectation it was judged against, the next expectation, and the margin — so a status can be explained later without re-deriving anything.
+
+---
+
+## A Delivery That Never Arrives
+
+Every other finding in digna is produced by an inspection. A **missing** delivery has no inspection to produce it, so it is handled separately.
+
+A background monitor checks **every minute** for data sources whose deadline has passed with no delivery recorded, and raises the alert. Each missed deadline is claimed exactly once before its message is sent, so a source that stays missing alerts once rather than every minute.
+
+A data source whose inspection ran but whose tasks all failed reaches the same place: nothing was profiled, so nothing was delivered, and the monitor reports it as missed — which is what it is.
+
+### Viewing the past
+
+The timeliness overview supports **time travel**: setting an *as of* point shows the status of every data source as it stood at that moment, rather than as it stands now. That is how you reconstruct what was actually late on the morning a report went out, instead of inferring it from the current state.
+
+### Skipping a delivery
+
+When you know no delivery is coming — a holiday, a planned outage, a source retired for a period — a delivery can be declared skipped. The expectation advances to the next slot without a missed-delivery alert being raised.
+
+---
+
+## Configuration Caveat on Import
+
+!!! warning "Project import resets some rule-mode settings"
+    Exporting a project and importing it elsewhere carries the timeliness **mode**, and the **TIME_BETWEEN** value and unit. It does **not** carry the rule mode, rule time, weekdays, days of month, or time zone — those return to their defaults on the imported side (`DAILY`, `00:00`, `UTC`, empty day sets).
+
+    After importing a project, re-check the timeliness configuration of any data source that used a **Daily**, **Weekly**, or **Monthly** rule.
+
+---
+
+## Related Pages
+
+- [Data Timeliness – Introduction](Introduction.md)
+- [Data Timeliness – Use Cases](use_cases.md)
+- [Statuses and Alerts](../reference/statuses.md)
+- [Anomaly Tuning](../reference/tuning.md)
+- [How to schedule a daily job](../../getting_started/how_to_schedule_a_daily_job.md)
+
+---
+
+---
+
+# حالات الاستخدام
+Source: https://docs.digna.ai/ar/platform/data_timeliness/use_cases/
+
+# Data Timeliness – Use Cases
+
+---
+
+## When to Reach for This Module
+
+Every other quality check assumes the data is there. *Timeliness* is the module that checks that assumption.
+
+It **automatically learns delivery patterns whenever data is delivered** and detects when data arrives late or does not arrive at all — with no configuration for the ordinary case. Where a delivery is governed by a **strict data contract**, you define the exact expectation instead and let the schedule be the authority.
+
+Most landscapes need both, and the two combine per source:
+
+| Approach | Use it when |
+|---|---|
+| **AI-learned arrival patterns** | Delivery time varies naturally, or there are too many sources to schedule by hand |
+| **User-defined schedules** | A contractual or regulatory window exists and "usually on time" is not the standard |
+
+The two failures it reports:
+
+- **Late** — the delivery arrives, but after its deadline.
+- **Missing** — the deadline passed and nothing arrived; a background monitor raises this one, since there is no inspection to report it.
+
+An **early** delivery counts as on time. If upstream re-processing is a concern, the signal to watch is a duplicate-load anomaly in [Data Anomalies](../data_anomalies/use_cases.md), where row count and column sums move together.
+
+---
+
+## Large Multi-Source Warehouses
+
+This is the module's home ground. The published *ITSV* deployment monitors the **timeliness and freshness of around 50 GB of data from 30 different sources in 500 different structures**, loaded daily into their data warehouse.
+
+At that scale the problem is not detecting a single delay, it is **triage**: nobody can hand-schedule 500 structures, and an alert list that treats every source as equally urgent is ignored within a week. Learned patterns give each structure its own baseline, so only genuine deviations surface, and defined schedules are reserved for the deliveries that carry a contract.
+
+### Prioritising remediation across regions
+
+A mobility data hub ingests from several regional sources. Timeliness monitoring shows the state of each one side by side — one region delivering on time, another sitting on a **five-day backlog**. The value is not only the alert; it is knowing which region to fix first, and being able to show that the others are healthy.
+
+---
+
+## Banking and Financial Services
+
+- **Overnight batch windows** — end-of-day feeds have to land before risk, treasury, and regulatory processing begins. A schedule-based expectation makes a missed window an incident rather than something discovered by a failed downstream job.
+- **Market and reference data** — rates, prices, and reference files sourced from external providers, where the provider's punctuality is outside your control but very much your problem.
+- **Reporting deadlines** — supervisory submissions depend on a chain of upstream deliveries; monitoring the chain gives the reporting team time to react rather than to explain.
+
+---
+
+## Healthcare
+
+- **Clinical feeds from multiple systems** — laboratory results, admissions, and device data arrive on different cadences, each learned separately instead of forced onto a common assumption.
+- **Freshness of decision-support datasets** — if a dashboard informs clinical or operational decisions, stale data is more dangerous than an empty dashboard, because nothing signals that it is stale.
+- **External reporting obligations** — registry and authority submissions with fixed windows, monitored as strict schedules.
+
+---
+
+## Telecommunications
+
+- **Distributed collection points** — usage and network data arrives from many nodes; learned patterns per node keep a single silent collector from disappearing into an otherwise healthy total.
+- **Billing cycle inputs** — a feed that misses the billing run has direct revenue and customer consequences.
+- **Re-processing detection** — a collector that replays a period delivers the same data twice; the duplicate shows up in [Data Anomalies](../data_anomalies/use_cases.md) as row count and usage sums moving together, before it reaches aggregation.
+
+---
+
+## Public Sector
+
+- **Statutory reporting windows** — deliveries between agencies with dates set by law, best expressed as explicit schedules.
+- **Cross-agency dependencies** — where one agency's output is another's input, timeliness monitoring makes the handover observable to both sides.
+- **Evidence of compliance** — the arrival record is itself the proof that a delivery obligation was met, and when it was met.
+
+---
+
+## Practical Rollout
+
+1. **Start with learning.** Onboard sources and let *digna* learn their arrival behaviour; you get coverage across the whole landscape immediately, with no schedule design.
+2. **Promote the critical few.** For deliveries with a contract or a deadline, replace the learned expectation with an explicit schedule.
+3. **Separate the alert routes.** A missing overnight load needs someone awake; a source drifting half an hour later each week needs the data owner in the morning.
+4. **Match the expectation to your inspection cadence.** A delivery is timestamped when digna observed the rows, not when they landed, so a source inspected once a day supports day-level expectations rather than hour-level ones.
+
+!!! note "Runs where your data is"
+    Like every *digna* module, timeliness monitoring operates within your infrastructure — nothing is sent out to determine whether a delivery arrived.
+
+---
+
+## Where This Module Fits
+
+*Timeliness* answers **"did it arrive, and when?"** before the other modules ask whether the content is right. A missing delivery reported as a record-count anomaly is a confusing way to learn that a pipeline is down; reported as a missing delivery, it is unambiguous.
+
+---
+
+## Related Pages
+
+- [Data Timeliness – Introduction](Introduction.md)
+- [Data Timeliness – How It Works](how_it_works.md)
+- [How to schedule a daily job](../../getting_started/how_to_schedule_a_daily_job.md)
+- [How to use crontab definition](../../getting_started/how_to_use_crontab.md)
+- [digna Modules – Technical Overview](../overview.md)
+
+---
+
+---
+
+# كيف يعمل
+Source: https://docs.digna.ai/ar/platform/data_validation/how_it_works/
+
+# Data Validation – How It Works
+
+---
+
+## Three Kinds of Rule
+
+Every validation rule is one of three kinds. They exist separately because each becomes a different shape of SQL, and each answers a different question.
+
+| Kind | Question it answers |
+|---|---|
+| **Rule** | Does each row satisfy this condition? |
+| **Uniqueness** | Is this key actually unique? |
+| **Referential Integrity** | Does every value here exist in that other table? |
+
+All three are evaluated **per row**, inside the source database, and all three report a count of passing and failing records.
+
+!!! warning "Uniqueness and Referential Integrity skip NULLs"
+    Both checks are executed **only on populated (non-`NULL`) values**. A key column full of nulls will not fail a uniqueness check, and null foreign keys will not fail referential integrity. If a value being present is itself a requirement, that is a **Rule** — `col IS NOT NULL` — and it belongs in a rule of its own.
+
+---
+
+## Rule Expressions
+
+A rule is built in the **Rule Builder** rather than typed as SQL, which is what lets a business user author one. It compares a left-hand side with a right-hand side, each of which may be a simple value or a calculated expression, and conditions can be nested with parentheses to any depth.
+
+Whatever you build is translated into SQL and shown in the **Expression** field, so the rule stays reviewable. The builder supports:
+
+| Element | Available |
+|---|---|
+| **Comparison** | `=`, `<>`, `<`, `<=`, `>`, `>=`, `IS`, `IS NOT`, `IN`, `NOT IN`, `LIKE`, `NOT LIKE` |
+| **Logic** | `AND`, `OR`, nested to any depth |
+| **Arithmetic** | `+`, `−`, `×`, `÷` |
+| **Operands** | An **Attribute** (column), **Number**, **String**, **Boolean**, **Null**, **Enumeration**, or **Custom** — a SQL expression executed on the source, e.g. `length(mycolumn)` |
+
+```sql
+price > 0                                    -- simple comparison
+status IN ('active', 'pending')              -- allowed values
+delivery_date IS NOT NULL                    -- presence
+(revenue / customers) >= (cost / items)      -- calculated on both sides
+discount > 0.2 OR (quantity > 0 AND price > 0)
+(region = 'EU' AND (revenue > 1000 OR discount > 0.1))
+  OR (region = 'US' AND revenue > 5000)      -- different thresholds per region
+```
+
+Every one of these is assembled by selecting rather than typing.
+
+The escape hatch is the **Custom** operand, which passes SQL through untouched — useful for a source-specific function, and the one operand that ties a rule to a particular technology.
+
+### Enumerations
+
+A reference list — currencies, country codes, product categories, status values — is stored once as an **enumeration** and referenced by rules rather than being retyped into each one. Changing the list changes every rule that uses it, which is what keeps "valid currency" meaning the same thing across a project.
+
+### Rule templates
+
+A **template** is a rule expression with a placeholder where the column goes. "Must not be null", "must be positive", "must match this pattern" are written once and then applied to as many columns as needed. Each application is a real rule with its own thresholds and its own results — the template only supplies the shape.
+
+---
+
+## Uniqueness
+
+Given one or more columns, digna groups the snapshot by them and keeps only the groups occurring exactly once. Rows that join to that set pass; everything else fails.
+
+The consequence worth knowing: **every row of a duplicated key is counted as failing**, not just the surplus copies. A key appearing three times contributes three failed records. That is the honest count — you cannot tell which of the three is the right one — but it matters when setting an absolute threshold.
+
+Multiple columns make a composite key. The check is on the combination, not on each column separately.
+
+---
+
+## Referential Integrity
+
+Given a set of columns here and a matching set on another table, digna keeps the distinct values from the other table and fails any row that does not join.
+
+The two column lists must be the same length. A mismatch is rejected outright rather than silently checking a weaker condition — a two-column key compared against one column would let through records the full key would have caught.
+
+---
+
+## Thresholds
+
+Counting failures is not the same as deciding whether the run is acceptable. Each rule carries its own thresholds in one of two modes:
+
+| Mode | Compared quantity | Suits |
+|---|---|---|
+| **Absolute** | The number of failed records | Rules where any breach matters, and small fixed tolerances |
+| **Relative** | Failed records ÷ records evaluated | Rules applied across tables of very different sizes |
+
+Each mode has two levels:
+
+| Condition | Status |
+|---|---|
+| Above the **Warn threshold** | **Failed** |
+| Above the **Info threshold** | **Uncertain** |
+| Otherwise | **Passed** |
+
+Both default to zero, so a new rule fails on a single bad record until you say otherwise. That is the right default for a compliance rule and the wrong one for a rule over data with a known, accepted tail of exceptions — set the **Info threshold** to that tail and the **Warn threshold** above it.
+
+!!! warning "Relative thresholds are fractions, not percentages"
+    A relative threshold of `0.01` means one per cent. It is compared directly against `failed ÷ (passed + failed)`.
+
+---
+
+## Inspecting Failures
+
+An aggregate count tells you a rule broke; it does not tell you what to fix. For every rule digna can return **the failing records themselves** — the same query, with the pass condition negated instead of counted.
+
+This is how a finding becomes actionable: the process owner receives the rows, not the number. Results are exportable, which is also what makes them usable as audit evidence rather than only as an operational signal.
+
+---
+
+## Portability
+
+From **Release 2026.06**, validation rules can be exported and imported. That turns a rule set into something you can promote between environments, keep in version control, and reuse across projects — see the [Release 2026.06 changelog](../../changelog/Release_202606.md).
+
+---
+
+## Where It Runs
+
+Like every digna module, validation executes **inside the source database**. digna sends SQL and receives counts, plus the failing rows when you ask for them. No table is copied out to be checked.
+
+Validation is also **independent of the other modules**. It reads none of the [profiling statistics](../profiling/Introduction.md) — its rules are evaluated row by row against the same snapshot, in the same pass, but the two produce entirely separate results. A data source can therefore run validation with anomaly detection switched off, and its statuses roll up the same way: check → attribute → dataset → data source, worst result winning.
+
+---
+
+## Related Pages
+
+- [Data Validation – Introduction](Introduction.md)
+- [Data Validation – Use Cases](use_cases.md)
+- [Statuses and Alerts](../reference/statuses.md)
+- [Datasets](../profiling/datasets.md)
+- [Changelog – Release 2026.06](../../changelog/Release_202606.md)
+
+---
+
+---
+
+# حالات الاستخدام
+Source: https://docs.digna.ai/ar/platform/data_validation/use_cases/
+
+# Data Validation – Use Cases
+
+---
+
+## When to Reach for This Module
+
+Use *Data Validation* whenever **the requirement can be written down**. Not "does this look unusual", but:
+
+> `invoice_amount` must be positive.
+> `currency_code` must be in `{EUR, USD}`.
+> `vat_code` must be present.
+
+These are not statistical questions and should not be answered statistically. *Data Validation* checks **every single row** against rules you define, and reports exactly which records failed and how many — deterministically, with no assumptions and no learning period.
+
+Rules can be created by **technical or business users** through the interface, which matters more than it sounds: the person who knows the regulation is usually not the person who writes SQL.
+
+The module **works independently of the other modules**. A project can run validation alone, or run it alongside AI-based detection.
+
+!!! info "The complementary pairing"
+    [*Data Anomalies*](../data_anomalies/Introduction.md) catches what you did not think to check. *Data Validation* proves what you are required to check. Compliance work needs the second; it is not satisfied by "the model saw nothing unusual".
+
+---
+
+## Finance and Regulatory Reporting
+
+### Invoice and transaction compliance
+
+A typical invoice dataset is validated with a small set of rules:
+
+| Rule | Type |
+|---|---|
+| `vat_code` must be present | Null / presence check |
+| `currency_code` must be in `{EUR, USD}` | Reference list |
+| `invoice_amount` must be positive | Threshold |
+| `invoice_amount` must not exceed the approval limit | Threshold |
+| `invoice_date` must fall in the reporting period | Range |
+
+A run against a real month's data returns not just a pass/fail but the **count of non-compliant records and the records themselves** — for example, 31 rows failing across the five rules. That list is what gets handed to the process owner; the aggregate number alone is not actionable.
+
+### Pre-submission checks before risk reporting
+
+A financial services team validates transaction records against business rules **before** risk reporting is published, rather than discovering the breach in a regulator's response. Because validation results are inspectable and exportable, the same run doubles as the evidence that the check was performed.
+
+### Reference data integrity
+
+Country codes, currency codes, product codes, counterparty classifications — all natural reference-list rules. A value outside the list is unambiguously wrong, and treating it as an anomaly to be scored would only add doubt.
+
+---
+
+## Healthcare
+
+- **Mandatory clinical fields** — a diagnosis code, an admission date, or a consent flag that must never be null on a submitted record.
+- **Coded value conformance** — procedure and diagnosis columns validated against the official code list in force, so a retired or mistyped code is caught at the row rather than in aggregate.
+- **Plausibility ranges** — dates of birth, admission and discharge ordering, and measurement ranges that must hold for a record to be usable.
+
+---
+
+## Telecommunications
+
+- **Billing correctness** — usage quantities and charged amounts constrained to sensible ranges before an invoice run, since a billing error reaches customers directly.
+- **Contract and tariff conformance** — tariff codes validated against the active catalogue, catching records created against a plan that no longer exists.
+- **High-volume, distributed sources** — where a small change at one source creates widespread downstream errors, explicit rules at the entry point stop the error spreading rather than merely reporting it later.
+
+---
+
+## Public Sector
+
+Public sector work typically requires **traceability across systems**. *Data Validation* is the module that supplies it directly: **every rule run logs its results**, including how many records failed and which ones, and all outcomes are **inspectable, exportable, and easy to trace**.
+
+That makes it suitable for statutory reporting, eligibility and entitlement checks, and any process where "the data was correct" has to be demonstrable months later.
+
+---
+
+## Governing Rules Across Environments
+
+From **Release 2026.06**, validation rules can be **imported and exported**, which changes how rule sets are managed at scale:
+
+- Promote a rule set from development to test to production without re-entering it.
+- Reuse a standard set — mandatory fields, currency and country lists, sign conventions — across projects.
+- Keep rule definitions in version control alongside the rest of your configuration.
+- Share a curated set between teams so that "compliant" means the same thing in each of them.
+
+See the [Release 2026.06 changelog](../../changelog/Release_202606.md) for the details.
+
+---
+
+## Designing a Rule Set That Stays Useful
+
+| Do | Instead of |
+|---|---|
+| Write one rule per requirement, named after the requirement | One large rule that fails for several unrelated reasons |
+| Encode the regulation or contract that motivates the rule in its description | Leaving future readers to infer the intent |
+| Use reference lists for closed value sets | Chains of exact-value comparisons |
+| Reserve validation for stated requirements | Re-implementing anomaly detection as thresholds you have to keep tuning |
+
+---
+
+## Where This Module Fits
+
+| Question | Module |
+|---|---|
+| Does every row satisfy a rule we can state? | **Data Validation** |
+| Did something change that nobody expected? | [Data Anomalies](../data_anomalies/Introduction.md) |
+| Is a metric trending or destabilising? | [Data Analytics](../data_analytics/Introduction.md) |
+| Did the data arrive on time? | [Data Timeliness](../data_timeliness/Introduction.md) |
+| Did a column or type change? | [Schema Tracker](../schema_tracker/Introduction.md) |
+
+---
+
+## Related Pages
+
+- [Data Validation – Introduction](Introduction.md)
+- [Data Validation – How It Works](how_it_works.md)
+- [digna Modules – Technical Overview](../overview.md)
+- [Changelog – Release 2026.06](../../changelog/Release_202606.md)
+
+---
+
+---
+
+# المقدمة
+Source: https://docs.digna.ai/ar/platform/profiling/Introduction/
+
+# Profiling – The Foundation
+
+---
+
+## What Profiling Is
+
+**Profiling is the step where digna measures your data.**
+
+It reads each data source and computes a set of numbers describing it — how many rows arrived, how many values were missing, what the totals and averages were, how the values in a categorical column were distributed. Those numbers are called **statistics**, and they are the raw material two of the digna modules are built on.
+
+Profiling is not something you schedule, license, or run separately. **It is part of running the modules that need it.** When *digna Data Anomalies* or *digna Data Analytics* is enabled on a data source, the inspection profiles that data source as part of its work — there is no second job to configure and no extra pass over your data.
+
+---
+
+## Who Reads the Statistics
+
+| Module | Relationship to profiling |
+|---|---|
+| **[Data Anomalies](../data_anomalies/Introduction.md)** | Built on it — predicts the next value of each statistic and compares the observation against it |
+| **[Data Analytics](../data_analytics/Introduction.md)** | Built on it — fits trend and volatility across a window of past statistic values |
+| **[Data Validation](../data_validation/Introduction.md)** | Independent — evaluates its own rules row by row and does not read the statistics |
+| **[Timeliness](../data_timeliness/Introduction.md)** | Independent — concerned with *when* data arrived, not what is in it |
+| **[Schema Tracker](../schema_tracker/Introduction.md)** | Independent — reads the database catalogue, not the data |
+
+This is why understanding profiling is worth the few minutes: it explains what *Data Anomalies* and *Data Analytics* can and cannot see. Both modules are exactly as good as the statistics they were given. A column with no statistics enabled is a column those two modules cannot say anything about — however obviously wrong its contents may be.
+
+The other three modules stand on their own. A data source can run *Data Validation*, *Timeliness*, or *Schema Tracker* without anomaly detection at all.
+
+!!! tip "The practical consequence"
+    If *Data Anomalies* is not catching something you expected it to catch, the first question is not "how do I tune it?" but **"is there a statistic that would have moved?"** A swapped `first_name` / `last_name` pair changes no row count and creates no null — it changes string lengths. If the string-length statistics are not enabled on those columns, no amount of tuning will find it.
+
+---
+
+## What Profiling Produces
+
+Every inspection, for every data source, profiling produces:
+
+- **A row count** for each dataset and for the data source as a whole. This always happens, for every data source, with no module enabled at all.
+- **The enabled statistics**, computed per dataset and per column, for the data sources whose modules need them.
+
+Both are stored with the date they describe, so each one becomes a point in a time series. A single measurement is not interesting; the series is what allows a prediction, a trend, or a volatility figure.
+
+See [Statistics](statistics.md) for the full list of what can be measured, and [Datasets](datasets.md) for how one table can be split into several independently measured subsets.
+
+---
+
+## Your Data Stays Where It Is
+
+Profiling is executed **inside your database**. digna sends SQL and receives numbers.
+
+What comes back is aggregates — a count, a sum, an average, a count per category. **No rows are copied out, and no raw values are transmitted or stored by digna.** The one exception is deliberate and user-initiated: when a validation rule fails, you can ask to see the records that failed it, because a count alone is not something anyone can act on.
+
+This is the property that makes digna usable on regulated data — clinical records, transaction data, personal data under GDPR — and it is a consequence of the architecture rather than a policy layered on top. digna is installed on-premises or in your private cloud, so there is no external service for data to be sent to.
+
+---
+
+## Related Pages
+
+- [How Profiling Works](how_it_works.md) — the mechanics, and the settings that shape them
+- [Statistics](statistics.md) — every statistic digna can compute
+- [Datasets](datasets.md) — filters and grouping
+- [digna Modules – Technical Overview](../overview.md)
+
+---
+
+---
+
+# مجموعات البيانات
+Source: https://docs.digna.ai/ar/platform/profiling/datasets/
+
+# Datasets – Filters and Grouping
+
+---
+
+## Why Datasets Exist
+
+Monitoring a table as a single whole hides everything that happens inside it. A national total stays healthy while one region delivers nothing; an overall null rate stays flat while one product line degrades.
+
+A **Dataset** is a named subset of a data source that gets its own statistics, its own learned baseline, and its own status. One data source can carry several, and each behaves as an independently monitored series.
+
+---
+
+## The Three Kinds
+
+A dataset is defined by two SQL fragments, and **the kind you choose decides which of them you get**:
+
+| Kind | Fragment(s) | Behaves like |
+|---|---|---|
+| **Static** | Filter expression | A `WHERE` condition — one series over a chosen subset of rows |
+| **Dynamic** | Grouping expression | A `GROUP BY` — one series per distinct value |
+| **Hybrid** | Both | Filter first, then group the remainder |
+
+Conceptually, every statistic is computed as:
+
+```sql
+SELECT
+    <grouping expression>,
+    <statistic>
+FROM
+    (<snapshot of the data source>)
+WHERE
+    <filter expression>
+GROUP BY
+    <grouping expression>
+```
+
+Both fragments are written in **the SQL dialect of the source database**, without the `WHERE` or `GROUP BY` keyword — digna supplies those.
+
+---
+
+### Static — filter only
+
+```
+Kind:   Static
+Filter: status <> 'CANCELLED'
+```
+
+One series, over the rows that matter. Cancelled orders no longer drag the sums and averages of a dataset that is supposed to describe live business.
+
+Other typical filters:
+
+```sql
+type = 'retail'
+country = 'AT' AND status = 'active'
+created_at >= DATE '2024-01-01'
+```
+
+### Dynamic — grouping only
+
+```
+Kind:      Dynamic
+Grouping:  region_code
+```
+
+One series **per region**, each with its own baseline. A region that normally delivers 40 000 rows and delivers 400 is flagged on its own scale, instead of being absorbed by a national figure that barely moves.
+
+A grouping expression does not have to be a bare column:
+
+```sql
+country
+DATE(created_at)
+EXTRACT(YEAR FROM created_at)
+```
+
+To group by more than one column, concatenate them into a single expression — `firstname || ' ' || lastname` — since the grouping is a single value.
+
+### Hybrid — both
+
+```
+Kind:      Hybrid
+Filter:    channel = 'ONLINE'
+Grouping:  country_code
+```
+
+Online orders, monitored per country.
+
+!!! tip "Preview before you save"
+    Both fields have a **Preview** button that runs the expression against the source and shows what comes back. Use it — a filter that silently matches nothing produces an empty dataset, and a grouping expression over the wrong column produces hundreds of series.
+
+!!! warning "The expressions run on your source database"
+    Keep them cheap. An expression over an indexed column is free; one wrapping a column in a function may prevent index use on a large table. A grouping expression over a high-cardinality column (an ID, a timestamp to the second) produces one monitored series per distinct value, which is almost never what you want.
+
+---
+
+## Relevance Rules
+
+A dataset can also carry an optional **relevance rule** — a condition that controls whether an anomaly status is produced at all.
+
+The distinction matters:
+
+- **Statistics are always calculated**, whether or not a relevance rule is set and whether or not it is met.
+- If the condition is **not met**, [Data Anomalies](../data_anomalies/how_it_works.md) produces **no status** for that dataset — no green, no yellow, no red.
+
+This is the tool for a dataset that is only meaningful some of the time. A partition that is legitimately empty at weekends, a regional feed that is expected only in season, a subset that exists only after a monthly close — each would otherwise generate a failure every time it is correctly absent. A relevance rule suppresses the verdict without suppressing the measurement, so the history stays complete and the status stays honest.
+
+---
+
+## Grouping and the Distribution Statistic
+
+Grouping and the **Count** statistic operate at different levels, and they compose.
+
+- The **grouping expression** of a Dynamic or Hybrid dataset splits the data source into datasets.
+- The **Count** statistic additionally groups by the value of the column it is measuring, so a categorical column produces one measured value per distinct category *within* each dataset.
+
+A dataset grouped by `region_code`, with Count on a `customer_type` column, therefore tracks the retail/business mix **per region** — and reports the region whose mix shifted, not just that the national mix moved.
+
+That composition is powerful and multiplies quickly. A high-cardinality grouping expression combined with a high-cardinality categorical column produces a very large number of series; both should stay in the tens, not the thousands.
+
+---
+
+## Practical Guidance
+
+| Situation | Suggested setup |
+|---|---|
+| Table with a natural partition (region, channel, product line, source system) | **Dynamic**, grouped on that column |
+| Table containing rows that should not count (cancelled, test, soft-deleted) | **Static**, filtering them out |
+| One segment of a partitioned table, watched on its own | **Hybrid** — filter to the segment, group within it |
+| Table serving two purposes with different expectations | Two **Static** datasets, each with its own filter |
+| Small, homogeneous table | One dataset with no expressions is enough |
+| A dataset that is legitimately empty some of the time | Add a **relevance rule** rather than lowering sensitivity |
+| Column with thousands of distinct values | Do **not** group by it |
+
+---
+
+## Related Pages
+
+- [Profiling – The Foundation](Introduction.md)
+- [How Profiling Works](how_it_works.md)
+- [Statistics](statistics.md)
+- [Statuses and Alerts](../reference/statuses.md)
+- [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
+- [How to add a datasource to a project](../../getting_started/how_to_add_a_datasource_to_project.md)
+
+---
+
+---
+
+# كيف يعمل
+Source: https://docs.digna.ai/ar/platform/profiling/how_it_works/
+
+# How Profiling Works
+
+---
+
+## One Pass Over the Data
+
+Whatever an inspection ends up reporting, it reads your data **once**:
+
+```
+1. Build a snapshot     what rows are in scope for this date
+2. Materialise          optionally, into a work table
+3. Measure              row counts, then the enabled statistics
+4. Store                one value per dataset, column, and statistic
+```
+
+The modules then work from what step 3 produced. *Data Anomalies* and *Data Analytics* read the statistics; *Data Validation*, when it is enabled, evaluates its own rules against the same snapshot in the same pass, so it too needs no separate trip to the source.
+
+---
+
+## Step 1 – The Snapshot
+
+The snapshot is the set of rows the inspection considers. How it is built depends on what the data source is:
+
+| Data source kind | Snapshot |
+|---|---|
+| **TABLE** or **VIEW** | A `SELECT` over the object, restricted to the columns with statistics enabled |
+| **QUERY** | The SQL you supplied, used as-is |
+
+For tables and views, an optional **snapshot filter** narrows it further. This is the place to exclude rows that should never count toward any measurement — test records, soft-deleted rows, a partition that is not yet complete.
+
+!!! note "Only the columns in use are read"
+    The snapshot selects the columns that actually carry statistics, not `SELECT *`. Adding a column to a table therefore changes nothing until you give that column a category and statistics of its own.
+
+### Snapshot query tags
+
+A snapshot query is a **template**, not a fixed statement. Tags let one query serve every inspection date and stay portable between environments:
+
+| Tag | Resolves to |
+|---|---|
+| `#db_name#` | The database name from the connection |
+| `#schema_name#` | The schema name from the connection |
+| `#date#` | The date being inspected, as `YYYY-MM-DD` |
+| `#date+N#` | *N* days after the inspected date |
+| `#date-N#` | *N* days before it |
+
+```sql
+select * from #db_name#.#schema_name#.orders
+where load_date = '#date#'
+```
+
+The date offsets are what let a source be described whose data lands a day late, or whose window spans a boundary:
+
+```sql
+select * from #db_name#.#schema_name#.events
+where ts >= date('#date#') and ts < date('#date+1#')
+```
+
+An offset that cannot be resolved is reported as an error rather than quietly falling back to the unshifted date — a wrong window would silently measure the wrong rows.
+
+This is what makes inspections **per-date and re-runnable**. Each date is measured on its own, a range can be backfilled, and re-inspecting a date replaces that date's results rather than duplicating them.
+
+!!! note "The inspection offset is a different setting"
+    A scheduled job also has an **Offset**, which decides *which* date an inspection run is for. Offset `0` inspects the day the job runs; offset `-1` inspects yesterday. The offset picks the date; the `#date#` tag is how your query receives it.
+
+---
+
+## Step 2 – Work Tables
+
+A snapshot may be read many times in one inspection — once per statistic, or once per dataset. Whether it is materialised first is a property of the database connection:
+
+| Profiling mode | What happens | Suits |
+|---|---|---|
+| **Standard** | No work table; statistics are computed directly against the snapshot query | Simple sources, cheap snapshots |
+| **Session** | The snapshot is written to a connection-scoped temporary table, which disappears when the connection closes | The usual choice where the technology supports it |
+| **Permanent** | The snapshot is written to a real table, created and dropped around the profiling run | Technologies where a session-scoped table is not usable |
+
+**Session** is the mode to prefer where it is available: the snapshot is evaluated once instead of being re-evaluated by every statistic, and nothing is left behind afterwards. **Permanent** achieves the same thing on technologies that do not offer a usable temporary table, at the cost of creating and dropping a real object.
+
+The work table is dropped even when profiling fails, so a failed inspection does not leave an object behind that blocks the next one.
+
+---
+
+## Step 3 – Measuring
+
+Each dataset's [filter and grouping expressions](datasets.md) are applied, and every enabled statistic becomes an aggregate over the result:
+
+```sql
+SELECT
+    <grouping expression>,
+    <statistic>
+FROM
+    (<snapshot>)
+WHERE
+    <filter expression>
+GROUP BY
+    <grouping expression>
+```
+
+### Query mode
+
+How those aggregates are packed into SQL is set per data source:
+
+| Query mode | Behaviour |
+|---|---|
+| **Combined** | Every statistic is computed within a single SQL query |
+| **Single** | Each statistic is computed by its own dedicated query |
+
+**Combined** reduces the number of queries and the round trips they cost, and is the better fit when the source can comfortably hold the combined query in memory. **Single** issues more queries, each with a smaller memory footprint, which is what large data sources need when a combined query risks running into out-of-memory or spool limits.
+
+Query mode changes only how the work is packaged. The statistics it produces are identical either way, so switching modes on an existing data source does not create a discontinuity in its history.
+
+---
+
+## Row Counts
+
+Row counting is the one measurement that is **not** conditional on any module.
+
+Every inspection counts the rows in each dataset and in the data source as a whole, and stores those counts as statuses at dataset and data source level. This happens with no module enabled, because a data source that delivered no rows is worth knowing about regardless of what else you have configured — and because it is what [Timeliness](../data_timeliness/how_it_works.md) keys off to decide whether a delivery happened at all.
+
+These counts have their own switch in a [subscription](../reference/statuses.md#subscriptions), so they can be routed or silenced separately from anomaly findings.
+
+### Report Empty Datasets
+
+A data source carries a **Report Empty Datasets** option. With it enabled, digna raises an alert when the snapshot query returns no rows at all for the inspected date — the signal of a missing extraction or a failed upstream job, which is otherwise easy to mistake for a quiet day.
+
+!!! note "Row counts and the Row Count statistic"
+    The two are related but not the same thing. The always-on count reports the volume that arrived. The **Row Count** [statistic](statistics.md) is the same number treated as a time series, so that [Data Anomalies](../data_anomalies/how_it_works.md) can predict it and flag a short load — which needs the *Data Anomalies* module.
+
+---
+
+## Step 4 – Storage and Re-Running
+
+Each measured value is stored against the dataset, column, statistic, and date it belongs to. Nothing is aggregated away, so any statistic can be read back later as a full time series.
+
+Before writing, an inspection removes its own previous results for the dates in scope. That is what makes a data source safe to re-inspect: running the same date twice leaves one set of results, not two. Delivery history for [Timeliness](../data_timeliness/how_it_works.md) is deliberately exempt — re-inspecting an old date must not erase the record of what was delivered that day.
+
+---
+
+## Getting Profiling Right
+
+1. **Categorise columns deliberately.** The [attribute category](statistics.md#attribute-categories-decide-the-default-set) decides which statistics a column gets. The default set is a reasonable start, not an answer for every column.
+2. **Add the statistic that would move.** Work backwards from the failure you want to catch — a swapped column moves string lengths, a truncated load moves row counts, a broken lookup moves the distribution.
+3. **Turn off what nobody acts on.** A statistic producing findings nobody investigates makes the whole data source look unhealthy and trains people to ignore the colour.
+4. **Use the snapshot filter for rows that should never count**, and [dataset filters](datasets.md) for subsets you want measured separately. They are different tools: the first removes rows from all measurement, the second creates a measurement of its own.
+
+---
+
+## Related Pages
+
+- [Profiling – The Foundation](Introduction.md)
+- [Statistics](statistics.md)
+- [Datasets](datasets.md)
+- [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
+- [Statuses and Alerts](../reference/statuses.md)
+
+---
+
+---
+
+# الإحصاءات
+Source: https://docs.digna.ai/ar/platform/profiling/statistics/
+
+# Profiling Statistics Reference
+
+---
+
+## What a Statistic Is
+
+Every digna module is built on the same foundation: a small set of **statistics** computed per dataset and per column, in-database, on each inspection.
+
+Profiling is the one step that always runs — it is not gated behind a module flag. The modules then differ only in what they do with the numbers profiling produced:
+
+| Module | What it does with the statistics |
+|---|---|
+| **Data Anomalies** | Predicts the next value and compares the observation against it |
+| **Data Analytics** | Fits trend and volatility over a window of past values |
+| **Data Volume** | Reports row counts at dataset and data source level (always on) |
+
+Because the statistics are shared, enabling a second module costs no extra profiling work on the source.
+
+---
+
+## The Statistics
+
+| Statistic | Group | Level | SQL it becomes |
+|---|---|---|---|
+| **Row Count** | Data volume | Table | `count(*)` |
+| **Null Count** | Missing values | Column | `count(CASE WHEN col IS NULL THEN 1 END)` |
+| **Sum** | Numerical metrics | Column | `sum(col)` |
+| **Average** | Numerical metrics | Column | `avg(col)` |
+| **Minimum String Length** | Text length | Column | `min(length(col))` |
+| **Average String Length** | Text length | Column | `avg(length(col))` |
+| **Maximum String Length** | Text length | Column | `max(length(col))` |
+| **Count** | Distribution | Column | `count(col)`, grouped by the column's own value |
+| **Number of Unique Values** | Distribution | Column | `count(distinct col)` |
+| **Number of Negative Values** | Distribution | Column | `count(CASE WHEN col < 0 THEN 1 END)` |
+| **Number of Zero Values** | Distribution | Column | `count(CASE WHEN col = 0 THEN 1 END)` |
+| **Number of Positive Values** | Distribution | Column | `count(CASE WHEN col > 0 THEN 1 END)` |
+
+The SQL above is the PostgreSQL rendering. Each supported technology carries its own template set, so the same statistic is expressed in the dialect of Teradata, Snowflake, Databricks, Oracle, MS SQL Server, Netezza, Hive, or Impala as appropriate — but the meaning is identical across all of them.
+
+!!! note "Count is the distribution statistic"
+    **Count** is the only statistic that also groups by the value of the column itself, producing one measured value per distinct category. That is what lets digna learn the *shape* of a categorical column and flag an unexpected member — not just how many non-null values it has.
+
+---
+
+## Attribute Categories Decide the Default Set
+
+When an attribute (column) is added to a data source it is given a **category**, and the category determines which statistics are switched on automatically:
+
+| Category | Typical content | Statistics enabled by default |
+|---|---|---|
+| **Numerical** | Amounts, quantities, measurements | Null Count, Sum, Average |
+| **Categorical** | Discrete labels, types, classifications | Null Count, Count |
+| **Unspecified** | Free text, IDs, mixed or unstructured values | Null Count, Average String Length, Number of Unique Values |
+| **Custom** | Anything needing a specific set | Exactly the statistics you select — nothing is inferred |
+
+**Unspecified** is the default for a column that is neither clearly numerical nor clearly categorical.
+
+**Row Count** sits outside this table. It is table-level, belongs to no category, and is always computed.
+
+Use **Custom** when the defaults do not fit — for example to add **Minimum** and **Maximum String Length** to a code column where a width change matters, or **Number of Negative Values** to an amount column that should never go below zero.
+
+!!! tip "The column-swap signal"
+    A swapped `first_name` / `last_name` pair produces no null, no row-count change, and no rule violation. What moves is **Average String Length** on both columns at once. Categorising those columns as **Unspecified** — or adding the string-length statistics through **Custom** — is what makes that failure visible.
+
+---
+
+## Positive Statistics
+
+Each statistic carries a flag saying whether it can legitimately be negative. All of them are non-negative by construction **except Sum and Average**, which follow the data.
+
+For the non-negative ones, digna floors the whole predicted band at zero, so a prediction interval never suggests that a count could be below zero. For Sum and Average it does not, because a negative total is a real possibility.
+
+---
+
+## Turning Statistics Off
+
+Not every column deserves every statistic. Each combination of **table + column + statistic** is a mapping that can be switched off individually, and switching one off removes it from anomaly detection without removing the profiled value.
+
+The same mapping also carries four optional numeric limits used by [Data Anomalies](../data_anomalies/how_it_works.md):
+
+| Setting | Effect |
+|---|---|
+| `lower_limit` / `upper_limit` | Clamp the predicted value and its bands into a range you know the metric cannot leave |
+| `min_threshold` / `max_threshold` | Put a floor and a ceiling on the *width* of the tolerance band |
+
+`min_threshold` is the practical answer to a metric that is almost perfectly stable: without a floor, a series that has been identical for weeks produces a near-zero band, and the first ordinary fluctuation is reported. `max_threshold` is the opposite guard, for a noisy series whose band would otherwise grow wide enough to hide a genuine problem.
+
+---
+
+## Related Pages
+
+- [Profiling – The Foundation](Introduction.md)
+- [How Profiling Works](how_it_works.md)
+- [Datasets](datasets.md) — how filters and grouping split a table into monitored subsets
+- [Statuses and Alerts](../reference/statuses.md) — how measured values become Passed, Uncertain, or Failed
+- [Anomaly Tuning](../reference/tuning.md) — the dials behind prediction and tolerance
+- [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
+
+---
+
+---
+
+# الحالات والتنبيهات
+Source: https://docs.digna.ai/ar/platform/reference/statuses/
+
+# Statuses and Alerts
+
+---
+
+## The Four Statuses
+
+Every check digna evaluates ends in one of four states, and the same vocabulary is used by all five modules:
+
+| Status | Meaning |
+|---|---|
+| **Not tested** | No result — the check did not run, or there was not enough history to evaluate it |
+| **Passed** | The observation is within expectations |
+| **Uncertain** | Outside the inner tolerance but inside the outer one — worth a look, not yet a failure |
+| **Failed** | Outside the outer tolerance, or a rule was breached beyond its threshold |
+
+**Uncertain** is the status that makes continuous monitoring usable. Without a middle state, every tolerance is a cliff edge: a metric one unit past the line is indistinguishable from one that collapsed. Which modules can produce it differs, and the difference is not arbitrary:
+
+| Module | Can report Uncertain? | Why |
+|---|---|---|
+| **Data Anomalies** | Yes | The tolerance is a band with an inner and an outer edge |
+| **Data Validation** | Yes | Rules carry both an info and a warning threshold |
+| **Data Analytics** | No | Limits are user-defined lines — inside or outside |
+| **Schema Tracker** | No | The structure either changed or it did not |
+| **Timeliness** | No | The delivery either met its deadline or it did not — reported as **In Time** / **Delayed** |
+
+---
+
+## How a Status Is Reached
+
+### Data Anomalies — a band around a prediction
+
+The model predicts the next value and derives a tolerance `bound` from how wrong it has recently been. Four edges follow:
+
+```
+       ├──── Failed ────┼─ Uncertain ─┼──────── Passed ────────┼─ Uncertain ─┼──── Failed ────┤
+                    predicted        predicted             predicted      predicted
+                    − 2 × bound      − 1 × bound           + 1 × bound    + 2 × bound
+```
+
+An observation inside ±1 bound passes; between one and two bounds it is uncertain; beyond two it fails. See [Anomaly Tuning](tuning.md) for what sets the width of `bound`.
+
+### Data Validation — two thresholds on the failure count
+
+Each rule counts passing and failing records, then compares that count against its own thresholds. Two modes are available:
+
+| Threshold mode | Compared quantity |
+|---|---|
+| **Absolute** | The number of failed records |
+| **Relative** | Failed records as a fraction of all records evaluated |
+
+Above the **Info threshold** gives **Uncertain**; above the **Warn threshold** gives **Failed**. Both default to zero, so out of the box a single failing record is a failure — deliberately strict, and easy to relax where a small tail of exceptions is expected.
+
+### Data Analytics — user-defined limits
+
+A trend or volatility value outside its configured lower or upper limit is **Failed**; anything else is **Passed**. A limit left empty is not evaluated, so a rule with neither limit set never fails.
+
+### Schema Tracker and Timeliness — binary by nature
+
+A structural change that matches an enabled event type is **Failed**. A delivery arriving after its deadline is **Delayed**. Neither has a meaningful middle state.
+
+---
+
+## Rollup: Worst Result Wins
+
+Statuses are produced at check level and then aggregated upward:
+
+```
+check  →  attribute (column)  →  dataset  →  data source
+```
+
+At each level the status is the **worst** of the statuses below it, alongside a count of how many checks passed, were uncertain, and failed. One failing check therefore turns its column, its dataset, and its data source red.
+
+That is the correct default — a data source with a known problem is not healthy — but it is also why disabling irrelevant statistics matters. A noisy check nobody acts on makes the whole data source look broken and trains people to ignore the colour.
+
+---
+
+## Alerts
+
+### Channels
+
+Notifications are delivered through configured channels:
+
+| Channel | Typical use |
+|---|---|
+| **Email** | Data owners, wide distribution, daily digests |
+| **Slack** | The operational channel that handles pipelines |
+| **Jira** | Findings that need a tracked ticket and an assignee |
+
+### Subscriptions
+
+A subscription binds a channel to a project and decides what reaches it. It covers either **all tables** in the project or a named list, and each module can be switched on or off independently:
+
+| Subscription setting | Reports |
+|---|---|
+| Notify Errors | Inspection failures — the job itself did not complete |
+| Notify Data Volume | Row-count findings |
+| Data anomalies | AI-detected deviations |
+| Data validation | Rule breaches |
+| Data analytics | Trend and volatility limit breaches |
+| Delayed delivery | Missed timeliness deadlines |
+| Schema change | Structural changes |
+
+A subscription can also be set to notify on **every** inspection rather than only when something is wrong — useful for a low-volume critical feed where silence is ambiguous, and unhelpful for anything else.
+
+!!! tip "Split the routes by urgency, not by team"
+    A missed overnight delivery and a slow upward drift in a null rate are both real findings, and they need different destinations. Route timeliness and inspection errors to the channel someone is watching, and anomalies, analytics, and schema changes to the data owner's queue.
+
+### Missed deliveries are a special case
+
+Every other status is produced by an inspection. A **missing** delivery, by definition, has no inspection to produce it — so a background monitor checks every minute for deadlines that have passed, and raises the alert independently.
+
+Each missed deadline is claimed exactly once before its message is sent, so a delivery that stays missing does not re-alert on every tick.
+
+---
+
+## Related Pages
+
+- [Anomaly Tuning](tuning.md)
+- [Statistics](../profiling/statistics.md)
+- [How Profiling Works](../profiling/how_it_works.md)
+- [Data Timeliness – How It Works](../data_timeliness/how_it_works.md)
+- [Data Validation – How It Works](../data_validation/how_it_works.md)
+
+---
+
+---
+
+# ضبط الحالات الشاذة
+Source: https://docs.digna.ai/ar/platform/reference/tuning/
+
+# Anomaly Tuning
+
+---
+
+## Two Questions, Two Sets of Dials
+
+Anomaly detection asks two separate questions, and they are tuned separately:
+
+| Question | Answered by | Where |
+|---|---|---|
+| **What should this value be?** | The prediction model | **Model Configuration** — seven dials |
+| **How far may it stray before we say something?** | The tolerance band | **Threshold Configuration** — Sensitivity and Memory |
+
+Reaching for the wrong set is the most common tuning mistake. If the *expected* value is wrong — the model missed a step change, or is still averaging across a migration — widening the band only hides the problem. If the expected value is right and ordinary noise keeps being reported, the band is what needs adjusting.
+
+Both sets live on the data source's **Data Anomalies** configuration, under the **Model Configuration** and **Threshold Configuration** tabs, and each has a **Restore Defaults** action. **A data source that has never been configured behaves exactly as one explicitly set to the defaults.**
+
+---
+
+## The Tolerance Band
+
+The band is `predicted ± bound`, where the bound is the recent prediction error, weighted and scaled:
+
+```
+bound  =  multiplier  ×  weighted mean absolute error of recent predictions
+```
+
+### Sensitivity
+
+Sensitivity sets the multiplier. It is expressed as the tail probability the band is drawn at:
+
+| Setting | Tail probability | Band width | Effect |
+|---|---|---|---|
+| **very low** | 1 % | ≈ 4.6 × error | Only severe deviations are reported |
+| **low** | 2.5 % | ≈ 3.7 × error | Quiet |
+| **moderate** *(default)* | 5 % | ≈ 3.0 × error | Balanced |
+| **high** | 7.5 % | ≈ 2.6 × error | Eager |
+| **very high** | 10 % | ≈ 2.3 × error | Reports small deviations |
+
+Remember that the band has two edges: an observation past **one** bound is Uncertain, past **two** it is Failed. Raising sensitivity narrows both.
+
+### Memory
+
+Memory decides how quickly an old prediction error stops counting toward the bound. Errors are weighted over a rolling window of just over a year:
+
+| Setting | Weighting | Best for |
+|---|---|---|
+| **short** | Fades quadratically — the last few weeks dominate | Series that legitimately change character; recent behaviour is the only relevant reference |
+| **moderate** *(default)* | Fades linearly over the year | Most data sources |
+| **long** | Flat — an error from a year ago counts as much as yesterday's | Stable, seasonal series where a full year of behaviour is the right reference |
+
+!!! tip "The quiet-series trap"
+    A metric that has been perfectly steady produces a near-zero bound, and the first ordinary fluctuation is reported as a failure. The fix is not a lower sensitivity — it is a **`min_threshold`** on the statistic mapping, which puts a floor on how narrow the band may become. See [Profiling Statistics](../profiling/statistics.md#turning-statistics-off).
+
+---
+
+## The Prediction Model
+
+Before the band is applied, digna predicts what the value should be. The model is a robust regression fitted per series, and it selects its own structure:
+
+- **Always in the design:** an intercept, plus a level-shift dummy for each detected structural break.
+- **Candidates that must earn their place:** a linear trend, the previous observation, the one before that, weekday effects, within-month seasonality, month-boundary spikes, and within-year seasonality.
+
+Candidates are admitted by forward selection under a penalised criterion, so a weekly pattern enters the model only when the data genuinely shows one. A seasonal category is estimated only when at least three observations fall into it, and a series with fewer than five usable observations gets no model at all — its median is used instead.
+
+The fit is robust: observations are reweighted over several passes so a single spike cannot drag the line, and up to two structural breaks may be absorbed.
+
+---
+
+## The Seven Prediction Dials
+
+Every dial runs from `0.0` to `1.0` and defaults to `0.5`, which is the setting the model was tuned and backtested at. **Higher always means more sensitive** — quicker to see a regime change, quicker to call something an outlier, tighter around the recent level.
+
+| Dial | What it decides | Low `0.0` | High `1.0` |
+|---|---|---|---|
+| **Break Sensitivity** | How readily a level shift is accepted as a structural break, after which the model predicts from the new level instead of averaging across the step | Only extreme jumps qualify | Ordinary noise starts being split into regimes |
+| **Outlier Sensitivity** | How readily a single observation is dismissed rather than fitted | Essentially a plain least-squares fit that any spike drags with it | A good share of clean data is discarded |
+| **Memory** | How quickly older observations fade from the fit | Short memory — recent behaviour only | Long memory — years of history still counts |
+| **Ridge Strength** | How hard the fit is stabilised when its features tell nearly the same story | Safety net effectively off; a degenerate fit fails outright | Coefficients shrunk harder |
+| **Gap Tolerance** | How stale the previous observation may be before the model stops reading anything into it | Even regular observations are rejected; nothing is carried over | The last value is trusted no matter how old |
+| **Outlier Correction** | When a downweighted observation is replaced by its fitted value, so an outlier cannot leak into the next prediction by being the previous observation | Nothing is ever corrected | Nearly the whole series is fed back as fitted values |
+| **Plausible Range Tightness** | How tightly the prediction is held to the range the series has recently occupied — the last guard against a trend running away | A wide band lets an extrapolation run | Little beyond what has already been observed is allowed |
+
+**Ridge Strength** is a safety net rather than a modelling choice; it keeps the solution well defined and is rarely the right dial to turn.
+
+---
+
+## Which Dial to Reach For
+
+| Symptom | Likely cause | First thing to try |
+|---|---|---|
+| Every day after a migration or replatform is flagged | The model is averaging across a step change | Raise **Break Sensitivity** |
+| A one-off spike causes alerts for days afterwards | The spike entered the fit and became the previous observation | Raise **Outlier Sensitivity**, then **Outlier Correction** |
+| A source with weekend gaps alerts every Monday | The gap is being treated as a stale value | Raise **Gap Tolerance** |
+| Predictions drift far above anything the series has done | An extrapolating trend | Raise **Plausible Range Tightness** |
+| The model is still using behaviour from before a permanent change | Too much history in the fit | Lower **Memory** |
+| A perfectly steady metric alerts on trivial movement | The bound collapsed to near zero | Set a **`min_threshold`** on the mapping |
+| Too many small deviations reported across the board | The band is too narrow for this source | Lower **Sensitivity** |
+
+!!! warning "Change one dial at a time"
+    The dials interact — Break Sensitivity and Memory in particular both change what the model considers current. Move one, let a few inspections run, and judge the result before moving another. If several are off the defaults and the behaviour is worse than when you started, reset them and change one.
+
+---
+
+## Related Pages
+
+- [Statuses and Alerts](statuses.md)
+- [Statistics](../profiling/statistics.md)
+- [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
+- [Data Timeliness – How It Works](../data_timeliness/how_it_works.md) — the same band machinery applied to arrival times
+
+---
+
+---
+
+# كيف يعمل
+Source: https://docs.digna.ai/ar/platform/schema_tracker/how_it_works/
+
+# Schema Tracker – How It Works
+
+---
+
+## Baseline and Comparison
+
+Schema Tracker keeps a **baseline**: the set of columns and their data types, as read from the source catalogue.
+
+On every inspection it reads the catalogue again and compares:
+
+```
+1. Read the current columns and types from the source catalogue
+2. Compare against the stored baseline
+3. Report the differences that match an enabled event type
+4. Advance the baseline
+```
+
+The very first inspection has nothing to compare against. It records the baseline and reports **Passed** — a new data source is never flagged for existing.
+
+The comparison is against the catalogue, not against the data, so it costs one metadata query regardless of how large the table is.
+
+---
+
+## The Three Events
+
+| Event | Raised when |
+|---|---|
+| **NEW** | A column exists now that was not in the baseline |
+| **REMOVED** | A column was in the baseline and is gone |
+| **TYPE_CHANGE** | A column exists in both, with a different data type |
+
+Each is recorded with the column name, and a type change additionally stores **both the old and the new type**, so the change history says what it changed from rather than only what it is now.
+
+!!! note "A rename is reported as a removal plus an addition"
+    Column identity is the column name. Renaming `is_subscribed` to `subscribed` produces a **REMOVED** event for the old name and a **NEW** event for the new one — digna cannot know they are the same column, and neither can the catalogue.
+
+    This is the right behaviour for the failure that matters: everything downstream referencing the old name is broken either way, and a rename reported as a rename would understate that.
+
+---
+
+## Enabling Events Individually
+
+The three event types are switched on and off independently per data source. That is more useful than it first appears, because the three have very different signal-to-noise ratios in different environments.
+
+| Situation | Suggested configuration |
+|---|---|
+| A shared table other teams consume | All three on |
+| A table under active development where columns are added routinely | **NEW** off, **REMOVED** and **TYPE_CHANGE** on |
+| A stable reporting source | All three on |
+| A source where only breaking changes matter | **NEW** off |
+
+**TYPE_CHANGE** is the one to keep on almost everywhere. A removed column breaks something loudly and gets found; a `DATE` silently becoming a `STRING` keeps loading, and the reports built on it are quietly wrong.
+
+---
+
+## How the Baseline Advances
+
+This is the part worth understanding, because it decides what happens to a change you have chosen not to watch.
+
+The baseline is updated **only when a reportable change is found** — that is, a difference matching an event type you have enabled.
+
+The consequence: if a column is added while **NEW** is switched off, the baseline is not advanced, and the addition is still pending. Switch **NEW** on later and it will be reported then. A change you are not watching is not discarded; it is deferred.
+
+---
+
+## Status
+
+| Condition | Status |
+|---|---|
+| No reportable change | **Passed** |
+| One or more reportable changes | **Failed** |
+
+There is no middle state — a structure either changed or it did not.
+
+---
+
+## Scope and Timing
+
+**Applies to tables and views only.** A data source defined as a query has no catalogue entry to track, and Schema Tracker skips it.
+
+Schema tracking runs **once per data source per inspection request**, not once per inspected date. It describes the structure as it is right now, which has no per-date meaning — and unlike the date-scoped modules, its history is never removed by re-inspecting a date range.
+
+It also works across every technology digna connects to. The check reads the catalogue through the same metadata layer used for connection setup, so it needs no per-technology configuration of its own — see the [database connector guides](../../databases/snowflake_connector_guide.md).
+
+---
+
+## Using It Well
+
+1. **Track the tables other people consume**, not only the ones you own — the cost of a change is carried downstream.
+2. **Check the change history first when an anomaly appears.** A distribution shift on the same day as a type conversion is not two problems.
+3. **Route structural alerts to the owning team**, so the person who can explain the change receives it.
+4. **Read a REMOVED/NEW pair on the same inspection as a probable rename**, and check the names before assuming a column was dropped.
+
+---
+
+## Related Pages
+
+- [Schema Tracker – Introduction](Introduction.md)
+- [Schema Tracker – Use Cases](use_cases.md)
+- [Statuses and Alerts](../reference/statuses.md)
+- [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
+
+---
+
+---
+
+# حالات الاستخدام
+Source: https://docs.digna.ai/ar/platform/schema_tracker/use_cases/
+
+# Schema Tracker – Use Cases
+
+---
+
+## When to Reach for This Module
+
+Schema changes are different from every other data problem: they are usually **someone's intentional work**, made in one place, that turns into an unintended failure somewhere else entirely. The person who dropped the column had no list of who depended on it.
+
+*Schema Tracker* continuously monitors database structure and reports **added columns, removed columns, and data type changes** — whether intentional or accidental. Every change is **timestamped, attributed, and stored**, so the question "when did this change and who changed it" has an answer instead of a discussion.
+
+A rename appears as a removal plus an addition, because a column is identified by its name — see [How It Works](how_it_works.md#the-three-events).
+
+Two distinct failure shapes make this worth monitoring on its own:
+
+- **Loud breaks** — a removed or renamed column; the job fails, and the only cost is the time spent finding out why.
+- **Silent breaks** — a type change that still loads. `DATE` becomes `STRING`, sorting and date arithmetic quietly change behaviour, and reports are wrong for weeks before anyone notices. These are the **invisible errors** that cost the most.
+
+---
+
+## The Canonical Example
+
+A `customer_profiles` table changes overnight:
+
+| Change | Type | Consequence |
+|---|---|---|
+| `is_subscribed` removed | Removed column | **12 downstream reports** reference the field |
+| `signup_date` converted `DATE` → `STRING` | Risky type conversion | Loads succeed; cohort and retention calculations silently degrade |
+
+The removal is discovered eventually, because something fails. The conversion is the dangerous one: nothing fails, and the numbers stay plausible. *Schema Tracker* surfaces both at the moment they happen, with the timestamp and the attribution that make the follow-up conversation short.
+
+---
+
+## Banking and Financial Services
+
+- **Core banking and risk models** — a datatype narrowing on an amount or identifier column can truncate values without an error; the resulting figures are wrong but not obviously wrong.
+- **Regulatory reporting lineage** — supervisory submissions are built on a fixed structural contract. A stored, attributed change history is the evidence that the structure was stable across a reporting period, or the record of exactly when it was not.
+- **Change control across environments** — structural differences between development, test, and production are a recurring cause of "it worked in test"; drift detection makes the divergence visible rather than inferred.
+
+---
+
+## Healthcare
+
+- **Feeder system upgrades** — clinical source systems are updated on their own schedule and vendors add or rename fields as part of routine releases. The receiving warehouse learns about it from *Schema Tracker*, not from a broken nightly load.
+- **Coded field type changes** — a code column changing type or width can silently truncate or reformat values that must match a national code list exactly.
+- **Auditability** — for regulated clinical data, knowing when a structure changed is part of being able to defend the data derived from it.
+
+---
+
+## Telecommunications
+
+Telecommunications landscapes have the exact profile this module protects against: **high-volume data through distributed pipelines, where a small source change creates widespread downstream errors**.
+
+- A field added by a network element vendor propagates into ingestion jobs that were not expecting it.
+- A rename in a customer or subscription source breaks joins across several domains at once, and surfaces as a removal and an addition on the same inspection.
+- Type changes on usage counters affect billing aggregation before they affect anything visible.
+
+---
+
+## Retail and E-Commerce
+
+- **Platform migrations and replatforming** — the period with the highest structural churn and the lowest tolerance for broken reporting.
+- **Third-party and marketplace feeds** — external partners change their export structure without a release note; the change arrives as data.
+- **Seasonal readiness** — a structural check before a peak trading period is cheap; discovering drift during it is not.
+
+---
+
+## Public Sector
+
+- **Shared data contracts between agencies** — where several consumers depend on one structure, *Schema Tracker* keeps the contract observable to the provider and the consumers alike.
+- **Long-lived registers** — datasets maintained across decades accumulate structural changes; a stored change history is what keeps historical comparisons defensible.
+- **Traceability requirements** — timestamped, attributed change records are the form of evidence public sector audits expect.
+
+---
+
+## Making It Actionable
+
+1. **Track the tables other people consume**, not just your own. The cost of a change is carried downstream.
+2. **Treat type changes as findings in their own right.** They will not announce themselves in a job log.
+3. **Route structural alerts to the owning team**, so the person who can explain the change is the person who receives it.
+4. **Check the change history first when an anomaly appears.** A distribution shift on the same day as a type conversion is not two problems.
+
+!!! tip "Pair it with anomaly detection"
+    *Schema Tracker* tells you the structure changed; [*Data Anomalies*](../data_anomalies/Introduction.md) tells you the content changed. Together they usually explain each other, and having both turns a two-day investigation into a two-minute one.
+
+---
+
+## Coverage
+
+Structural monitoring works across the data platforms *digna* connects to — Teradata, Snowflake, Databricks, Oracle, PostgreSQL, MS SQL Server, Azure Synapse, and the rest of the supported list. See the [database connector guides](../../databases/snowflake_connector_guide.md) for connection setup.
+
+---
+
+## Where This Module Fits
+
+| Question | Module |
+|---|---|
+| Did the structure change? | **Schema Tracker** |
+| Did the content change unexpectedly? | [Data Anomalies](../data_anomalies/Introduction.md) |
+| Is a metric trending or destabilising? | [Data Analytics](../data_analytics/Introduction.md) |
+| Does every row satisfy our rules? | [Data Validation](../data_validation/Introduction.md) |
+| Did the data arrive on time? | [Data Timeliness](../data_timeliness/Introduction.md) |
+
+---
+
+## Related Pages
+
+- [Schema Tracker – Introduction](Introduction.md)
+- [Schema Tracker – How It Works](how_it_works.md)
+- [digna Modules – Technical Overview](../overview.md)
+- [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
+
+---

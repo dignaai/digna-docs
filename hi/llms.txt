@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/hi/platform/overview/): digna के मुख्य मॉड्यूल जानें — Data Quality और Observability के लिए यूरोपीय AI प्लेटफ़ॉर्म। जानें कि प्रत्येक मॉड्यूल आपके on-premises या private cloud वातावरण में डेटा की गुणवत्ता, observability और विश्वसनीयता को कैसे बेहतर बनाता है।
 
+### प्रोफ़ाइलिंग
+
+- [परिचय](https://docs.digna.ai/hi/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [सांख्यिकी](https://docs.digna.ai/hi/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [डेटासेट](https://docs.digna.ai/hi/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [परिचय](https://docs.digna.ai/hi/platform/data_anomalies/Introduction/): जानें कि कैसे digna Data Anomalies मैन्युअल नियम लिखे बिना वॉल्यूम ड्रॉप, मिसिंग वैल्यूज़, वितरण परिवर्तन और अनपेक्षित पैटर्न को स्वचालित रूप से पहचानता है। AI-आधारित अनियमितता पहचान के साथ डेटा पाइपलाइनों की डेटा गुणवत्ता और observability में सुधार करें।
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [उपयोग के मामले](https://docs.digna.ai/hi/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [परिचय](https://docs.digna.ai/hi/platform/data_analytics/Introduction/): Learn how digna Data Analytics reveals long-term trends, volatility, and data stability across KPIs. Detect shifts in the quality and observability of data, uncover hidden anomalies, and turn statistics into actionable insights.
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [उपयोग के मामले](https://docs.digna.ai/hi/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [परिचय](https://docs.digna.ai/hi/platform/data_validation/Introduction/): जानें कि digna Data Validation कैसे निर्धारक, नियम-आधारित जांचें थ्रेसहोल्ड, रेंज, और संदर्भ सूचियों के साथ लागू करता है। वित्त, स्वास्थ्य और अन्य संवेदनशील डेटा वाले उद्योगों में अनुपालन, ऑडिटेबिलिटी और नियामक रिपोर्टिंग सुनिश्चित करें।
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [उपयोग के मामले](https://docs.digna.ai/hi/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [परिचय](https://docs.digna.ai/hi/platform/data_timeliness/Introduction/): जानें कि digna Data Timeliness कैसे सुनिश्चित करता है कि डेटा अपेक्षित समय पर पहुँचे। देरी से आने वाली या अनुपस्थित डिलीवरी का पता लगाएँ, SLA की निगरानी करें और व्यावसायिक प्रक्रियाओं को मौन देरी से बचाएँ। डेटा पाइपलाइनों की डेटा गुणवत्ता और observability सुधारने के लिए AI-आधारित पहचान।
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [उपयोग के मामले](https://docs.digna.ai/hi/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [परिचय](https://docs.digna.ai/hi/platform/schema_tracker/Introduction/): जानें कि digna Data Schema Tracker कैसे कॉलम परिवर्तनों, datatype अपडेट्स और स्कीमा ड्रिफ्ट की निगरानी करता है। नियत या अनियोजित स्कीमा परिवर्तनों का पता लगाएँ और अलर्ट प्राप्त करें ताकि ETL विफलताओं, टूटे हुए डैशबोर्ड और डेटा ऑब्ज़रवेबिलिटी की हानि से बचा जा सके।
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [उपयोग के मामले](https://docs.digna.ai/hi/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### संदर्भ
+
+- [स्थिति और अलर्ट](https://docs.digna.ai/hi/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [विसंगति ट्यूनिंग](https://docs.digna.ai/hi/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## इंस्टॉलेशन और तैनाती
 

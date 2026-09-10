@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/de/platform/overview/): Entdecken Sie die Kernmodule von digna — der europäischen KI‑Plattform für Data Quality und Observability. Erfahren Sie, wie jedes Modul die Qualität, Beobachtbarkeit und Zuverlässigkeit Ihrer Daten in Ihrer On‑Premises‑ oder Private‑Cloud‑Umgebung verbessert.
 
+### Profiling
+
+- [Einführung](https://docs.digna.ai/de/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [Funktionsweise](https://docs.digna.ai/de/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [Statistiken](https://docs.digna.ai/de/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [Datasets](https://docs.digna.ai/de/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [Einführung](https://docs.digna.ai/de/platform/data_anomalies/Introduction/): Erfahren Sie, wie digna Data Anomalies Volumenabfälle, fehlende Werte, Verschiebungen in Verteilungen und unerwartete Muster automatisch erkennt — ganz ohne manuelles Regelwerk. Verbessern Sie die Datenqualität und Beobachtbarkeit von Datenpipelines mit KI-gestützter Anomalieerkennung.
+- [Funktionsweise](https://docs.digna.ai/de/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [Anwendungsfälle](https://docs.digna.ai/de/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [Einführung](https://docs.digna.ai/de/platform/data_analytics/Introduction/): Erfahren Sie, wie digna Data Analytics langfristige Trends, Volatilität und Stabilität in Datenbeständen aufdeckt. Erkennen Sie Veränderungen in der Datenqualität und Beobachtbarkeit von Datenpipelines und verwandeln Sie Statistiken in umsetzbare Erkenntnisse.
+- [Funktionsweise](https://docs.digna.ai/de/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [Anwendungsfälle](https://docs.digna.ai/de/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [Einführung](https://docs.digna.ai/de/platform/data_validation/Introduction/): Entdecken Sie, wie digna Data Validation deterministische, regelbasierte Prüfungen mit Schwellenwerten, Bereichen und Referenzlisten durchsetzt. Gewährleisten Sie Compliance, Prüfbarkeit und regulatorische Berichterstattung in Finanzwesen, Gesundheitswesen und anderen datensensitiven Branchen.
+- [Funktionsweise](https://docs.digna.ai/de/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [Anwendungsfälle](https://docs.digna.ai/de/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [Einführung](https://docs.digna.ai/de/platform/data_timeliness/Introduction/): Erfahren Sie, wie digna Data Timeliness sicherstellt, dass Daten zum erwarteten Zeitpunkt eintreffen. Erkennen Sie verspätete oder fehlende Lieferungen, überwachen Sie SLAs und schützen Sie Geschäftsprozesse vor stillen Verzögerungen. KI-gestützte Erkennung für verbesserte Datenqualität und Observability von Datenpipelines.
+- [Funktionsweise](https://docs.digna.ai/de/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Anwendungsfälle](https://docs.digna.ai/de/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [Einführung](https://docs.digna.ai/de/platform/schema_tracker/Introduction/): Erfahren Sie, wie digna Data Schema Tracker Spaltenänderungen, Datentyp-Updates und Schema-Drift überwacht. Erkennen und alarmieren Sie bei sowohl beabsichtigten als auch unbeabsichtigten Schemaänderungen, um ETL-Ausfälle, fehlerhafte Dashboards und den Verlust der Datenbeobachtbarkeit zu verhindern.
+- [Funktionsweise](https://docs.digna.ai/de/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [Anwendungsfälle](https://docs.digna.ai/de/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### Referenz
+
+- [Status & Alarme](https://docs.digna.ai/de/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [Anomalie-Tuning](https://docs.digna.ai/de/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Installation & Bereitstellung
 

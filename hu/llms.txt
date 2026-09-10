@@ -6,25 +6,47 @@
 
 - [Overview](https://docs.digna.ai/hu/platform/overview/): Fedezze fel a digna alapmoduljait — az európai MI-alapú platformot az adatminőség és megfigyelhetőség terén. Ismerje meg, hogyan javítja az egyes modul a adatok minőségét, megfigyelhetőségét és megbízhatóságát helyszíni vagy privát felhős környezetben.
 
+### Profilozás
+
+- [Bevezetés](https://docs.digna.ai/hu/platform/profiling/Introduction/): Profiling is the step that measures your data and produces the statistics digna Data Anomalies and digna Data Analytics are built on. It runs as part of those modules, entirely inside your database, and only aggregated numbers ever leave the source.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
+- [Statisztikák](https://docs.digna.ai/hu/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
+- [Adathalmazok](https://docs.digna.ai/hu/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+
 ### digna Data Anomalies
 
 - [Bevezetés](https://docs.digna.ai/hu/platform/data_anomalies/Introduction/): Ismerd meg, hogyan észleli a digna Data Anomalies automatikusan a volumencsökkenéseket, hiányzó értékeket, eloszláseltolódásokat és váratlan mintázatokat manuális szabályírás nélkül. Javítsd az adatok minőségét és az adati folyamatok megfigyelhetőségét AI-alapú anomáliafelismeréssel.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [Használati esetek](https://docs.digna.ai/hu/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics
 
 - [Bevezetés](https://docs.digna.ai/hu/platform/data_analytics/Introduction/): Tudja meg, hogyan tárja fel a digna Data Analytics a hosszú távú trendeket, volatilitást és az adatok stabilitását KPI-kon keresztül. Észlelje az adatminőség és megfigyelhetőség változásait, fedezze fel a rejtett anomáliákat, és alakítsa a statisztikákat cselekvésre váltható betekintésekké.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/data_analytics/how_it_works/): How digna Data Analytics works — a regression fitted over a configurable window of profiled statistics, producing absolute and relative change and volatility, evaluated against user-defined limits.
+- [Használati esetek](https://docs.digna.ai/hu/platform/data_analytics/use_cases/): Practical use cases for digna Data Analytics. See how trend and volatility analysis over column metrics reveals gradual data quality decay, unstable pipelines, and shifting business KPIs in banking, retail, healthcare, telecommunications, and the public sector.
 
 ### digna Data Validation
 
 - [Bevezetés](https://docs.digna.ai/hu/platform/data_validation/Introduction/): Fedezze fel, hogyan érvényesíti a digna Data Validation determinisztikus, szabályalapú ellenőrzéseket küszöbértékekkel, tartományokkal és referencialistákkal. Biztosítsa a megfelelést, az auditálhatóságot és a szabályozói jelentéstételt a pénzügyi, egészségügyi és más adatszenzitív iparágakban.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/data_validation/how_it_works/): How digna Data Validation works — the three rule kinds (rule expressions, uniqueness, referential integrity), how each becomes SQL, absolute and relative thresholds, rule templates, enumerations, and failed-record inspection.
+- [Használati esetek](https://docs.digna.ai/hu/platform/data_validation/use_cases/): Practical use cases for digna Data Validation. Record-level rules for invoice compliance, regulatory reporting, reference data integrity, and audit evidence in finance, healthcare, telecommunications, and the public sector.
 
 ### digna Timeliness
 
 - [Bevezetés](https://docs.digna.ai/hu/platform/data_timeliness/Introduction/): Ismerje meg, hogyan biztosítja a digna Data Timeliness, hogy az adatok a vártnak megfelelően érkezzenek. Észlelje a késői vagy hiányzó kézbesítéseket, figyelje az SLA-kat, és védje az üzleti folyamatokat a néma késésektől. MI-alapú észlelés a jobb adatminőségért és a csővezetékek megfigyelhetőségéért.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Használati esetek](https://docs.digna.ai/hu/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
 
 - [Bevezetés](https://docs.digna.ai/hu/platform/schema_tracker/Introduction/): Ismerje meg, hogyan figyeli a digna Data Schema Tracker az oszlopváltozásokat, adattípus-frissítéseket és a séma driftet. Észlelje és riasztson szándékos és szándékolatlan sémaváltozások esetén, hogy megelőzze az ETL-hibákat, törött dashboardokat és az adatok megfigyelhetőségének elvesztését.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
+- [Használati esetek](https://docs.digna.ai/hu/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### Referencia
+
+- [Állapotok és riasztások](https://docs.digna.ai/hu/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
+- [Anomália-hangolás](https://docs.digna.ai/hu/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Telepítés és telepítés
 
