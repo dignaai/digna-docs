@@ -54,16 +54,34 @@ nav:
   - "": index.md
   - Platform:
       - Overview: platform/overview.md
+      - Profiling:
+          - Introduction: platform/profiling/Introduction.md
+          - How It Works: platform/profiling/how_it_works.md
+          - Statistics: platform/profiling/statistics.md
+          - Datasets: platform/profiling/datasets.md
       - digna Data Anomalies:
           - Introduction: platform/data_anomalies/Introduction.md
+          - How It Works: platform/data_anomalies/how_it_works.md
+          - Use Cases: platform/data_anomalies/use_cases.md
       - digna Data Analytics:
           - Introduction: platform/data_analytics/Introduction.md
+          - How It Works: platform/data_analytics/how_it_works.md
+          - Use Cases: platform/data_analytics/use_cases.md
       - digna Data Validation:
           - Introduction: platform/data_validation/Introduction.md
+          - How It Works: platform/data_validation/how_it_works.md
+          - Use Cases: platform/data_validation/use_cases.md
       - digna Timeliness:
           - Introduction: platform/data_timeliness/Introduction.md
+          - How It Works: platform/data_timeliness/how_it_works.md
+          - Use Cases: platform/data_timeliness/use_cases.md
       - digna Schema Tracker:
           - Introduction: platform/schema_tracker/Introduction.md
+          - How It Works: platform/schema_tracker/how_it_works.md
+          - Use Cases: platform/schema_tracker/use_cases.md
+      - Reference:
+          - Statuses & Alerts: platform/reference/statuses.md
+          - Anomaly Tuning: platform/reference/tuning.md
   - Installation & Deployment:
       # Platforms are grouped by kind and listed alphabetically within a group.
       # There is no default platform, so none is promoted to the top.
@@ -239,6 +257,14 @@ plugins:
             Platform: Plattform
             Databases: Datenbanken
             Introduction: Einführung
+            Use Cases: Anwendungsfälle
+            How It Works: Funktionsweise
+            Profiling: Profiling
+            Reference: Referenz
+            Statistics: Statistiken
+            Datasets: Datasets
+            Statuses & Alerts: Status & Alarme
+            Anomaly Tuning: Anomalie-Tuning
             Installation & Deployment: Installation & Bereitstellung
             Operating Systems: Betriebssysteme
             Windows: Windows
@@ -260,6 +286,14 @@ plugins:
             Platform: Plateforme
             Databases: Bases de données
             Introduction: Introduction
+            Use Cases: Cas d'usage
+            How It Works: Fonctionnement
+            Profiling: Profilage
+            Reference: Référence
+            Statistics: Statistiques
+            Datasets: Datasets
+            Statuses & Alerts: Statuts et alertes
+            Anomaly Tuning: Réglage des anomalies
             Installation & Deployment: Installation et déploiement
             Operating Systems: Systèmes d'exploitation
             Windows: Windows
@@ -281,6 +315,14 @@ plugins:
              Platform: Plataforma
              Databases: Bases de datos
              Introduction: Introducción
+             Use Cases: Casos de uso
+             How It Works: Cómo funciona
+             Profiling: Perfilado
+             Reference: Referencia
+             Statistics: Estadísticas
+             Datasets: Datasets
+             Statuses & Alerts: Estados y alertas
+             Anomaly Tuning: Ajuste de anomalías
              Installation & Deployment: Instalación e implementación
              Operating Systems: Sistemas operativos
              Windows: Windows
@@ -302,6 +344,14 @@ plugins:
               Platform: Piattaforma
               Databases: Basi di dati
               Introduction: Introduzione
+              Use Cases: Casi d'uso
+              How It Works: Come funziona
+              Profiling: Profilazione
+              Reference: Riferimento
+              Statistics: Statistiche
+              Datasets: Dataset
+              Statuses & Alerts: Stati e avvisi
+              Anomaly Tuning: Ottimizzazione anomalie
               Installation & Deployment: Installazione e distribuzione
               Operating Systems: Sistemi operativi
               Windows: Windows
@@ -323,6 +373,14 @@ plugins:
             Platform: Platforma
             Databases: Bazy danych
             Introduction: Wprowadzenie
+            Use Cases: Przypadki użycia
+            How It Works: Jak to działa
+            Profiling: Profilowanie
+            Reference: Dokumentacja
+            Statistics: Statystyki
+            Datasets: Zbiory danych
+            Statuses & Alerts: Statusy i alerty
+            Anomaly Tuning: Strojenie anomalii
             Installation & Deployment: Instalacja i wdrażanie
             Operating Systems: Systemy operacyjne
             Windows: Windows
@@ -344,6 +402,14 @@ plugins:
             Platform: Plataforma
             Databases: Bancos de dados
             Introduction: Introdução
+            Use Cases: Casos de uso
+            How It Works: Como funciona
+            Profiling: Perfilagem
+            Reference: Referência
+            Statistics: Estatísticas
+            Datasets: Datasets
+            Statuses & Alerts: Estados e alertas
+            Anomaly Tuning: Ajuste de anomalias
             Installation & Deployment: Instalação e implementação
             Operating Systems: Sistemas operativos
             Windows: Windows
@@ -364,6 +430,14 @@ plugins:
               Platform: Plattform
               Databases: Databaser
               Introduction: Introduktion
+              Use Cases: Användningsfall
+              How It Works: Så fungerar det
+              Profiling: Profilering
+              Reference: Referens
+              Statistics: Statistik
+              Datasets: Dataset
+              Statuses & Alerts: Status och varningar
+              Anomaly Tuning: Avvikelsejustering
               Installation & Deployment: Installation och distribution
               Operating Systems: Operativsystem
               Windows: Windows
@@ -385,6 +459,14 @@ plugins:
             Platform: Plattform
             Databases: Databaser
             Introduction: Introduksjon
+            Use Cases: Bruksområder
+            How It Works: Slik fungerer det
+            Profiling: Profilering
+            Reference: Referanse
+            Statistics: Statistikk
+            Datasets: Datasett
+            Statuses & Alerts: Status og varsler
+            Anomaly Tuning: Avviksjustering
             Installation & Deployment: Installasjon og distribusjon
             Operating Systems: Operativsystemer
             Windows: Windows
@@ -406,6 +488,14 @@ plugins:
             Platform: Platform
             Databases: Databaser
             Introduction: Introduktion
+            Use Cases: Anvendelsestilfælde
+            How It Works: Sådan virker det
+            Profiling: Profilering
+            Reference: Reference
+            Statistics: Statistik
+            Datasets: Datasæt
+            Statuses & Alerts: Status og alarmer
+            Anomaly Tuning: Afvigelsesjustering
             Installation & Deployment: Installation og implementering
             Operating Systems: Operativsystemer
             Windows: Windows
@@ -427,6 +517,14 @@ plugins:
             Platform: Alusta
             Databases: Tietokannat
             Introduction: Johdanto
+            Use Cases: Käyttötapaukset
+            How It Works: Näin se toimii
+            Profiling: Profilointi
+            Reference: Viitetiedot
+            Statistics: Tilastot
+            Datasets: Tietojoukot
+            Statuses & Alerts: Tilat ja hälytykset
+            Anomaly Tuning: Poikkeamien säätö
             Installation & Deployment: Asennus ja käyttöönotto
             Operating Systems: Käyttöjärjestelmät
             Windows: Windows
@@ -448,6 +546,14 @@ plugins:
             Platform: Platvorm
             Databases: Andmebaasid
             Introduction: Sissejuhatus
+            Use Cases: Kasutusjuhud
+            How It Works: Kuidas see töötab
+            Profiling: Profileerimine
+            Reference: Viide
+            Statistics: Statistika
+            Datasets: Andmestikud
+            Statuses & Alerts: Olekud ja teated
+            Anomaly Tuning: Anomaaliate häälestus
             Installation & Deployment: Paigaldamine ja juurutamine
             Operating Systems: Operatsioonisüsteemid
             Windows: Windows
@@ -469,6 +575,14 @@ plugins:
             Platform: Platforma
             Databases: Duomenų bazės
             Introduction: Įvadas
+            Use Cases: Naudojimo atvejai
+            How It Works: Kaip tai veikia
+            Profiling: Profiliavimas
+            Reference: Nuorodos
+            Statistics: Statistika
+            Datasets: Duomenų rinkiniai
+            Statuses & Alerts: Būsenos ir įspėjimai
+            Anomaly Tuning: Anomalijų derinimas
             Installation & Deployment: Diegimas ir diegimas
             Operating Systems: Operacinės sistemos
             Windows: Windows
@@ -490,6 +604,14 @@ plugins:
             Platform: Platforma
             Databases: Datu bāzes
             Introduction: Ievads
+            Use Cases: Lietojuma gadījumi
+            How It Works: Kā tas darbojas
+            Profiling: Profilēšana
+            Reference: Atsauce
+            Statistics: Statistika
+            Datasets: Datu kopas
+            Statuses & Alerts: Statusi un brīdinājumi
+            Anomaly Tuning: Anomāliju regulēšana
             Installation & Deployment: Instalācija un izvietošana
             Operating Systems: Operētājsistēmas
             Windows: Windows
@@ -511,6 +633,14 @@ plugins:
             Platform: Platform
             Databases: Databanken
             Introduction: Inleiding
+            Use Cases: Toepassingen
+            How It Works: Hoe het werkt
+            Profiling: Profilering
+            Reference: Referentie
+            Statistics: Statistieken
+            Datasets: Datasets
+            Statuses & Alerts: Statussen en meldingen
+            Anomaly Tuning: Anomalie-afstemming
             Installation & Deployment: Installatie en implementatie
             Operating Systems: Besturingssystemen
             Windows: Windows
@@ -532,6 +662,14 @@ plugins:
             Platform: Platforma
             Databases: Databáze
             Introduction: Úvod
+            Use Cases: Případy použití
+            How It Works: Jak to funguje
+            Profiling: Profilování
+            Reference: Reference
+            Statistics: Statistiky
+            Datasets: Datové sady
+            Statuses & Alerts: Stavy a upozornění
+            Anomaly Tuning: Ladění anomálií
             Installation & Deployment: Instalace a nasazení
             Operating Systems: Operační systémy
             Windows: Windows
@@ -553,6 +691,14 @@ plugins:
               Platform: Platforma
               Databases: Adatbázisok
               Introduction: Bevezetés
+              Use Cases: Használati esetek
+              How It Works: Hogyan működik
+              Profiling: Profilozás
+              Reference: Referencia
+              Statistics: Statisztikák
+              Datasets: Adathalmazok
+              Statuses & Alerts: Állapotok és riasztások
+              Anomaly Tuning: Anomália-hangolás
               Installation & Deployment: Telepítés és telepítés
               Operating Systems: Operációs rendszerek
               Windows: Windows
@@ -574,6 +720,14 @@ plugins:
             Platform: Platform
             Databases: Veritabanları
             Introduction: Giriş
+            Use Cases: Kullanım Senaryoları
+            How It Works: Nasıl Çalışır
+            Profiling: Profilleme
+            Reference: Referans
+            Statistics: İstatistikler
+            Datasets: Veri Kümeleri
+            Statuses & Alerts: Durumlar ve Uyarılar
+            Anomaly Tuning: Anomali Ayarı
             Installation & Deployment: Kurulum ve dağıtım
             Operating Systems: İşletim sistemleri
             Windows: Windows
@@ -595,6 +749,14 @@ plugins:
             Platform: Platformă
             Databases: Baze de date
             Introduction: Introducere
+            Use Cases: Cazuri de utilizare
+            How It Works: Cum funcționează
+            Profiling: Profilare
+            Reference: Referință
+            Statistics: Statistici
+            Datasets: Seturi de date
+            Statuses & Alerts: Stări și alerte
+            Anomaly Tuning: Reglarea anomaliilor
             Installation & Deployment: Instalare și implementare
             Operating Systems: Sisteme de operare
             Windows: Windows
@@ -616,6 +778,14 @@ plugins:
             Platform: Platforma
             Databases: Podatkovne baze
             Introduction: Uvod
+            Use Cases: Primeri uporabe
+            How It Works: Kako deluje
+            Profiling: Profiliranje
+            Reference: Referenca
+            Statistics: Statistika
+            Datasets: Podatkovni nabori
+            Statuses & Alerts: Stanja in opozorila
+            Anomaly Tuning: Nastavitev anomalij
             Installation & Deployment: Namestitev in razmestitev
             Operating Systems: Operacijski sistemi
             Windows: Windows
@@ -637,6 +807,14 @@ plugins:
             Platform: Πλατφόρμα
             Databases: Βάσεις δεδομένων
             Introduction: Εισαγωγή
+            Use Cases: Περιπτώσεις χρήσης
+            How It Works: Πώς λειτουργεί
+            Profiling: Προφίλ δεδομένων
+            Reference: Αναφορά
+            Statistics: Στατιστικά
+            Datasets: Σύνολα δεδομένων
+            Statuses & Alerts: Καταστάσεις και ειδοποιήσεις
+            Anomaly Tuning: Ρύθμιση ανωμαλιών
             Installation & Deployment: Εγκατάσταση και ανάπτυξη
             Operating Systems: Λειτουργικά συστήματα
             Windows: Windows
@@ -658,6 +836,14 @@ plugins:
             Platform: Платформа
             Databases: Бази даних
             Introduction: Вступ
+            Use Cases: Сценарії використання
+            How It Works: Як це працює
+            Profiling: Профілювання
+            Reference: Довідник
+            Statistics: Статистики
+            Datasets: Набори даних
+            Statuses & Alerts: Статуси та сповіщення
+            Anomaly Tuning: Налаштування аномалій
             Installation & Deployment: Установка та розгортання
             Operating Systems: Операційні системи
             Windows: Windows
@@ -679,6 +865,14 @@ plugins:
             Platform: Платформа
             Databases: Базы данных
             Introduction: Введение
+            Use Cases: Сценарии использования
+            How It Works: Как это работает
+            Profiling: Профилирование
+            Reference: Справочник
+            Statistics: Статистики
+            Datasets: Наборы данных
+            Statuses & Alerts: Статусы и оповещения
+            Anomaly Tuning: Настройка аномалий
             Installation & Deployment: Установка и развертывание
             Operating Systems: Операционные системы
             Windows: Windows
@@ -700,6 +894,14 @@ plugins:
             Platform: プラットフォーム
             Databases: データベース
             Introduction: イントロダクション
+            Use Cases: ユースケース
+            How It Works: 仕組み
+            Profiling: プロファイリング
+            Reference: リファレンス
+            Statistics: 統計
+            Datasets: データセット
+            Statuses & Alerts: ステータスとアラート
+            Anomaly Tuning: 異常検知のチューニング
             Installation & Deployment: インストールとデプロイメント
             Operating Systems: オペレーティングシステム
             Windows: Windows
@@ -721,6 +923,14 @@ plugins:
             Platform: 플랫폼
             Databases: 데이터베이스
             Introduction: 소개
+            Use Cases: 활용 사례
+            How It Works: 작동 방식
+            Profiling: 프로파일링
+            Reference: 참조
+            Statistics: 통계
+            Datasets: 데이터셋
+            Statuses & Alerts: 상태 및 알림
+            Anomaly Tuning: 이상 탐지 튜닝
             Installation & Deployment: 설치 및 배포
             Operating Systems: 운영 체제
             Windows: Windows
@@ -742,6 +952,14 @@ plugins:
             Platform: प्लेटफ़ॉर्म
             Databases: डेटाबेस
             Introduction: परिचय
+            Use Cases: उपयोग के मामले
+            How It Works: यह कैसे काम करता है
+            Profiling: प्रोफ़ाइलिंग
+            Reference: संदर्भ
+            Statistics: सांख्यिकी
+            Datasets: डेटासेट
+            Statuses & Alerts: स्थिति और अलर्ट
+            Anomaly Tuning: विसंगति ट्यूनिंग
             Installation & Deployment: इंस्टॉलेशन और तैनाती
             Operating Systems: ऑपरेटिंग सिस्टम
             Windows: Windows
@@ -763,6 +981,14 @@ plugins:
             Platform: المنصة
             Databases: قواعد البيانات
             Introduction: المقدمة
+            Use Cases: حالات الاستخدام
+            How It Works: كيف يعمل
+            Profiling: تحليل البيانات
+            Reference: المرجع
+            Statistics: الإحصاءات
+            Datasets: مجموعات البيانات
+            Statuses & Alerts: الحالات والتنبيهات
+            Anomaly Tuning: ضبط الحالات الشاذة
             Installation & Deployment: التثبيت والنشر
             Operating Systems: أنظمة التشغيل
             Windows: Windows
