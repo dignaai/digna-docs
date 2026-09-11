@@ -245,6 +245,61 @@ Upgrading from 2.3.2 to 3.0.0...
 
 ---
 
+### repo prune
+
+The `repo prune` command removes rows that outlived the project or data source they belonged to.
+Deleting a project or a data source removes the object itself but leaves its profiles, predictions,
+statuses and row counts behind — a deliberate trade, since a delete that also swept those tables
+would keep the user waiting. `repo prune` is the housekeeping pass that clears them, and it is safe
+to run at any time: it only ever removes rows whose project or data source no longer exists.
+
+Rows written by the Python backend into tables the current release no longer uses are left alone.
+
+#### Command Usage
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Options
+- `--dry-run`: Report what would be removed without removing anything.
+
+Only tables with orphaned rows are listed. If there are none, the command reports
+`No orphaned rows found.` and exits.
+
+#### Example
+```bash
+digna repo prune
+```
+
+#### Example Output
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+To see the same report without removing anything:
+```bash
+digna repo prune --dry-run
+```
+
+The row counts are identical; only the closing line differs:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
 ## Encryption Management
 
 ---
@@ -564,6 +619,78 @@ digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
 #### Example
 ```bash
 digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+The `project cleanup` command removes the inspection results a project accumulated over a date
+range — profiles, predictions, row counts and every check, attribute, dataset and data source
+status. It removes exactly what an inspection of those dates wrote, so the range can be
+re-inspected afterwards to rebuild it.
+
+Timeliness and schema tracker history are **not** removed: those record what digna observed on a
+given day rather than a result derived from it, so a clean-up of a past date range leaves them
+intact.
+
+Each data source is cleaned in its own transaction, so an interrupted run leaves whole data sources
+rather than a half-cleaned one.
+
+#### Command Usage
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Arguments
+- **PROJECT_NAME**: Project to clean up (required). One project per invocation.
+- **FROM_DATE**: First date to remove results for, `YYYY-MM-DD` (required).
+- **TO_DATE**: Last date to remove results for, inclusive, `YYYY-MM-DD` (required).
+
+#### Options
+- `--table-name`, `-n`: Limit the clean-up to these data sources. Multiple names can be given
+  separated by spaces.
+- `--table-filter`: Limit the clean-up to data sources whose name contains this substring.
+- `--dry-run`: List the data sources that would be cleaned up without removing anything.
+- `--timing`: Display how long the clean-up took.
+
+`--table-name` and `--table-filter` combine as an OR — a data source is cleaned if it is named or
+if the substring matches. The command fails if no data source matches, rather than reporting
+success on a clean-up that did nothing.
+
+#### Example
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Limited to one data source:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Example Output
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+To see which data sources would be cleaned up without removing anything:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Every line is marked, so a dry run cannot be mistaken for a real one:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
 ```
 
 ---
