@@ -433,7 +433,27 @@ digna repo install
 
 This command installs the necessary tables and schema in your PostgreSQL database.
 
-### Step 5: Start the digna Server
+### Step 5: Create an Admin User
+
+The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+
+```bash
+digna user add <username> "<full_name>" <password> --su
+```
+
+**Example:**
+
+```bash
+digna user add admin "Admin User" AdminPassword123! --su
+```
+
+This creates a user with full administrative privileges.
+
+!!! tip "Best Practice"
+
+    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+
+### Step 6: Start the digna Server
 
 In the digna installation directory, start the server with:
 
@@ -454,27 +474,9 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-### Step 6: Create an Admin User
+!!! note "The server holds the terminal"
 
-1. Open a **new** Command Prompt window
-2. Navigate to your digna installation directory
-3. Run the following command to create an admin user:
-
-```bash
-digna user add <username> "<full_name>" <password> --su
-```
-
-**Example:**
-
-```bash
-digna user add admin "Admin User" AdminPassword123! --su
-```
-
-This creates a user with full administrative privileges.
-
-!!! tip "Best Practice"
-
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a Windows Service](#running-digna-as-a-windows-service) to start it automatically at boot instead.
 
 ---
 
