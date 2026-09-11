@@ -667,16 +667,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Выполните команду для создания администратора:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Пример:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Это создаст пользователя с именем `admin` и полными административными привилегиями.
+Это создаёт пользователя с адресом электронной почты `admin@example.com` и полными правами администратора.
 
 !!! tip "Совет"
 

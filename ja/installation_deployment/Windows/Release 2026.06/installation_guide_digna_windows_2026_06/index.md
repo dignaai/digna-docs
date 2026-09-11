@@ -454,13 +454,13 @@ INFO:     Uvicorn running on http://localhost:8082
 3. 管理者ユーザーを作成するコマンドを実行:
 
 ```bash
-digna user add <username> "<full_name>" <password> --su
+digna user add <email> <password> "<display_name>" --admin
 ```
 
 **例:**
 
 ```bash
-digna user add admin "Admin User" AdminPassword123! --su
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
 これで完全な管理権限を持つユーザーが作成されます。

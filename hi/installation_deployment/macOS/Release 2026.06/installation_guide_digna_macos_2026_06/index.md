@@ -665,16 +665,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. एक एडमिन यूज़र बनाने के लिए निम्न कमांड चलाएँ:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **उदाहरण:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-यह `admin` नाम का यूज़र और पूर्ण प्रशासकीय विशेषाधिकार के साथ एक यूज़र बनाएगा।
+इससे `admin@example.com` ईमेल पते और पूर्ण प्रशासनिक अधिकारों वाला एक उपयोगकर्ता बनता है।
 
 !!! tip "सुझाव"
 

@@ -757,16 +757,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Führen Sie folgenden Befehl aus, um einen Admin-Benutzer anzulegen:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Beispiel:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Dies legt einen Benutzer mit dem Benutzernamen `admin` und vollen administrativen Rechten an.
+Dies legt einen Benutzer mit der E-Mail-Adresse `admin@example.com` und vollen administrativen Rechten an.
 
 !!! tip "Tipp"
 

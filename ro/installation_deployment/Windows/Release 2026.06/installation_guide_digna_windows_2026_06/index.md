@@ -450,13 +450,13 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Rulează următoarea comandă pentru a crea un utilizator admin:
 
 ```bash
-digna user add <username> "<full_name>" <password> --su
+digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Exemplu:**
 
 ```bash
-digna user add admin "Admin User" AdminPassword123! --su
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
 Aceasta creează un utilizator cu privilegii administrative complete.

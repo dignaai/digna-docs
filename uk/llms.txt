@@ -34,7 +34,7 @@
 ### digna Timeliness
 
 - [Вступ](https://docs.digna.ai/uk/platform/data_timeliness/Introduction/): Дізнайтеся, як digna Data Timeliness гарантує надходження даних у очікуваний час. Виявляйте запізнення доставок, моніторте SLAs та захищайте бізнес-процеси від прихованих затримок і відсутності даних.
-- [Як це працює](https://docs.digna.ai/uk/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Як це працює](https://docs.digna.ai/uk/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and how a delivery that never arrived is reported.
 - [Сценарії використання](https://docs.digna.ai/uk/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
@@ -42,11 +42,6 @@
 - [Вступ](https://docs.digna.ai/uk/platform/schema_tracker/Introduction/): Дізнайтеся, як digna Data Schema Tracker відстежує зміни стовпців, оновлення типів даних та дрейф схеми. Отримуйте сповіщення про умисні та ненавмисні зміни, щоб запобігти збоям ETL та помилкам на дашбордах.
 - [Як це працює](https://docs.digna.ai/uk/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
 - [Сценарії використання](https://docs.digna.ai/uk/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
-
-### Довідник
-
-- [Статуси та сповіщення](https://docs.digna.ai/uk/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
-- [Налаштування аномалій](https://docs.digna.ai/uk/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Установка та розгортання
 

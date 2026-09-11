@@ -34,7 +34,7 @@
 ### digna Timeliness
 
 - [Úvod](https://docs.digna.ai/cs/platform/data_timeliness/Introduction/): Zjistěte, jak modul digna Data Timeliness zajišťuje, že data přicházejí v očekávaném čase. Detekujte opožděná nebo chybějící doručení, sledujte SLA a chraňte obchodní procesy před tichými zpožděními. AI-poháněné detekce pro lepší kvalitu dat a observabilitu datových pipeline.
-- [Jak to funguje](https://docs.digna.ai/cs/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Jak to funguje](https://docs.digna.ai/cs/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and how a delivery that never arrived is reported.
 - [Případy použití](https://docs.digna.ai/cs/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
@@ -42,11 +42,6 @@
 - [Úvod](https://docs.digna.ai/cs/platform/schema_tracker/Introduction/): Zjistěte, jak digna Data Schema Tracker monitoruje změny sloupců, aktualizace datových typů a drift schématu. Detekujte a upozorněte na úmyslné i neúmyslné změny schématu, aby nedošlo k selhání ETL, rozbitým dashboardům nebo ztrátě observability dat.
 - [Jak to funguje](https://docs.digna.ai/cs/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
 - [Případy použití](https://docs.digna.ai/cs/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
-
-### Reference
-
-- [Stavy a upozornění](https://docs.digna.ai/cs/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
-- [Ladění anomálií](https://docs.digna.ai/cs/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Instalace a nasazení
 

@@ -7031,16 +7031,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Kör följande kommando för att skapa en administratörsanvändare:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Exempel:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Detta skapar en användare med användarnamn `admin` och fullständiga administrativa rättigheter.
+Detta skapar en användare med e-postadressen `admin@example.com` och fullständiga administratörsrättigheter.
 
 !!! tip "Tips"
 
@@ -7882,13 +7882,13 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Kör följande kommando för att skapa en admin-användare:
 
 ```bash
-digna user add <username> "<full_name>" <password> --su
+digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Exempel:**
 
 ```bash
-digna user add admin "Admin User" AdminPassword123! --su
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
 Detta skapar en användare med fullständiga administrativa privilegier.
@@ -8811,16 +8811,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Kör följande kommando för att skapa en admin-användare:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Exempel:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Detta skapar en användare med användarnamnet `admin` och fullständiga administratörsrättigheter.
+Detta skapar en användare med e-postadressen `admin@example.com` och fullständiga administratörsrättigheter.
 
 !!! tip "Tips"
 
@@ -9385,7 +9385,6 @@ Statuses roll up the same way as everywhere else — **check → attribute → d
 - [Data Analytics – Use Cases](use_cases.md)
 - [Profiling – The Foundation](../profiling/Introduction.md)
 - [Statistics](../profiling/statistics.md)
-- [Statuses and Alerts](../reference/statuses.md)
 
 ---
 
@@ -9773,28 +9772,28 @@ Every combination of dataset, column, and statistic is its own time series, and 
 
 The model is a **robust regression** fitted to the history of that series. It always carries an intercept and a level-shift term for each detected structural break; beyond that, it selects its own structure from a set of candidates — a linear trend, the previous one or two observations, weekday effects, within-month and within-year seasonality, and month-boundary spikes.
 
-Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a short series does not get seasonality at all. Below five usable observations no model is fitted and the median is used instead.
+Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a series too short to show seasonality does not get seasonal terms at all.
 
-Robustness is what keeps a single bad day from poisoning the following ones: observations are reweighted across several passes, so a spike is downweighted rather than fitted, and a downweighted observation can be replaced by its fitted value before it becomes the *previous observation* of the next prediction.
+Robustness is what keeps a single bad day from poisoning the following ones: a spike is downweighted rather than fitted, so it does not drag the prediction that follows it.
 
-Up to two structural breaks may be absorbed. That is what lets the model follow a genuine step change — a migration, a new source system, a business change — instead of averaging across it indefinitely.
-
-See [Anomaly Tuning](../reference/tuning.md) for the seven dials that shape this.
+The model can also absorb a **structural break** — a genuine step change such as a migration, a new source system, or a business change — and predict from the new level instead of averaging across the step indefinitely.
 
 ---
 
 ## Step 3 – The Tolerance Band
 
-digna does not compare the observation to the prediction directly. It compares it against a band derived from **how wrong recent predictions have been on this very series**:
-
-```
-bound  =  multiplier  ×  weighted mean absolute error of recent predictions
-```
-
-- The **multiplier** comes from [Sensitivity](../reference/tuning.md#sensitivity) — a tail probability from 1 % to 10 %.
-- The **weighting** comes from [Memory](../reference/tuning.md#memory) — flat, linear decay, or quadratic decay over a rolling window of just over a year.
+digna does not compare the observation to the prediction directly. It compares it against a tolerance band derived from **how wrong recent predictions have been on this very series** — recent errors weighted so that newer ones count for more.
 
 This is why a genuinely noisy series is not permanently red: its band is wide because its predictions have genuinely been that wrong. A precise series gets a narrow band, and a real deviation on it is caught early.
+
+Two settings on the data source adjust the band:
+
+| Setting | Effect |
+|---|---|
+| **Sensitivity** | How far an observation may stray before it is reported. Higher reports smaller deviations. |
+| **Memory** | How far back the errors behind the band still count. Longer remembers more history. |
+
+Both default to **Moderate**, and both can be restored to their defaults at any time.
 
 ### Clamps
 
@@ -9811,15 +9810,15 @@ In addition, statistics that cannot be negative have their whole band floored at
 
 ## Step 4 – Status and Rollup
 
-The band gives four edges, and the observation falls into one of five regions:
+The observation is compared against the band and reported as one of three statuses:
 
-| Observed value | Status |
+| Observation | Status |
 |---|---|
-| Below `predicted − 2 × bound` | **Failed** |
-| Between `−2 ×` and `−1 × bound` | **Uncertain** |
-| Within `± 1 × bound` | **Passed** |
-| Between `+1 ×` and `+2 × bound` | **Uncertain** |
-| Above `predicted + 2 × bound` | **Failed** |
+| Within the expected band | **Passed** |
+| Outside it, but not far outside | **Uncertain** |
+| Well outside it | **Failed** |
+
+**Uncertain** is what makes continuous monitoring usable. Without a middle state every tolerance is a cliff edge, and a metric one unit past the line reads the same as one that collapsed.
 
 Statuses then roll up — **check → attribute → dataset → data source** — with the worst status winning at each level, alongside the count of checks that passed, were uncertain, and failed.
 
@@ -9829,7 +9828,7 @@ Checks whose mapping has anomaly detection switched off are excluded from the ro
 
 ## What Is Stored
 
-For every check and every inspection date, digna records the observed value, the predicted value, all four band edges, and the resulting status. Nothing about a finding has to be reconstructed later — the expectation it was judged against is stored beside it.
+For every check and every inspection date, digna records the observed value, the predicted value, the band it was judged against, and the resulting status. Nothing about a finding has to be reconstructed later — the expectation it was judged against is stored beside it.
 
 Re-inspecting a date is safe: an inspection cleans up its own previous results for that date range before writing new ones, so a data source can be re-run without duplicating history.
 
@@ -9842,8 +9841,6 @@ Re-inspecting a date is safe: an inspection cleans up its own previous results f
 - [Profiling – The Foundation](../profiling/Introduction.md)
 - [Statistics](../profiling/statistics.md)
 - [Datasets](../profiling/datasets.md)
-- [Anomaly Tuning](../reference/tuning.md)
-- [Statuses and Alerts](../reference/statuses.md)
 
 ---
 
@@ -10157,7 +10154,7 @@ deadline  =  expected delivery time  +  alert margin
 The expectation is the bare point prediction. The margin is the slack allowed on top of it before a delivery counts as late.
 
 - In **Rule Based** mode the margin is zero — the rule states its deadline outright.
-- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same [sensitivity and memory](../reference/tuning.md#the-tolerance-band) settings as anomaly detection.
+- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same **Sensitivity** and **Memory** settings as [anomaly detection](../data_anomalies/how_it_works.md#step-3-the-tolerance-band).
 
 Keeping the two apart is what stops the deadline from inflating. If each margin were folded into the stored expectation, the next margin would be fitted to deviations from the previous *deadline* rather than from a prediction, and the slack would compound on every delivery.
 
@@ -10199,7 +10196,7 @@ Every recorded delivery stores the timestamp, the expectation it was judged agai
 
 Every other finding in digna is produced by an inspection. A **missing** delivery has no inspection to produce it, so it is handled separately.
 
-A background monitor checks **every minute** for data sources whose deadline has passed with no delivery recorded, and raises the alert. Each missed deadline is claimed exactly once before its message is sent, so a source that stays missing alerts once rather than every minute.
+A background monitor watches for data sources whose deadline has passed with no delivery recorded, and raises the alert. Each missed deadline alerts once, so a source that stays missing does not raise the same alert repeatedly.
 
 A data source whose inspection ran but whose tasks all failed reaches the same place: nothing was profiled, so nothing was delivered, and the monitor reports it as missed — which is what it is.
 
@@ -10226,8 +10223,6 @@ When you know no delivery is coming — a holiday, a planned outage, a source re
 
 - [Data Timeliness – Introduction](Introduction.md)
 - [Data Timeliness – Use Cases](use_cases.md)
-- [Statuses and Alerts](../reference/statuses.md)
-- [Anomaly Tuning](../reference/tuning.md)
 - [How to schedule a daily job](../../getting_started/how_to_schedule_a_daily_job.md)
 
 ---
@@ -10511,7 +10506,6 @@ Validation is also **independent of the other modules**. It reads none of the [p
 
 - [Data Validation – Introduction](Introduction.md)
 - [Data Validation – Use Cases](use_cases.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [Datasets](../profiling/datasets.md)
 - [Changelog – Release 2026.06](../../changelog/Release_202606.md)
 
@@ -10854,7 +10848,6 @@ That composition is powerful and multiplies quickly. A high-cardinality grouping
 - [Profiling – The Foundation](Introduction.md)
 - [How Profiling Works](how_it_works.md)
 - [Statistics](statistics.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
 - [How to add a datasource to a project](../../getting_started/how_to_add_a_datasource_to_project.md)
 
@@ -10984,7 +10977,7 @@ Row counting is the one measurement that is **not** conditional on any module.
 
 Every inspection counts the rows in each dataset and in the data source as a whole, and stores those counts as statuses at dataset and data source level. This happens with no module enabled, because a data source that delivered no rows is worth knowing about regardless of what else you have configured — and because it is what [Timeliness](../data_timeliness/how_it_works.md) keys off to decide whether a delivery happened at all.
 
-These counts have their own switch in a [subscription](../reference/statuses.md#subscriptions), so they can be routed or silenced separately from anomaly findings.
+These counts have their own switch in a notification subscription, so they can be routed or silenced separately from anomaly findings.
 
 ### Report Empty Datasets
 
@@ -11018,7 +11011,6 @@ Before writing, an inspection removes its own previous results for the dates in 
 - [Statistics](statistics.md)
 - [Datasets](datasets.md)
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
-- [Statuses and Alerts](../reference/statuses.md)
 
 ---
 
@@ -11109,10 +11101,10 @@ The same mapping also carries four optional numeric limits used by [Data Anomali
 
 | Setting | Effect |
 |---|---|
-| `lower_limit` / `upper_limit` | Clamp the predicted value and its bands into a range you know the metric cannot leave |
-| `min_threshold` / `max_threshold` | Put a floor and a ceiling on the *width* of the tolerance band |
+| **Lower Limit** / **Upper Limit** | Clamp the predicted value and its bands into a range you know the metric cannot leave |
+| **Min Threshold** / **Max Threshold** | Put a floor and a ceiling on the *width* of the tolerance band |
 
-`min_threshold` is the practical answer to a metric that is almost perfectly stable: without a floor, a series that has been identical for weeks produces a near-zero band, and the first ordinary fluctuation is reported. `max_threshold` is the opposite guard, for a noisy series whose band would otherwise grow wide enough to hide a genuine problem.
+**Min Threshold** is the practical answer to a metric that is almost perfectly stable: without a floor, a series that has been identical for weeks produces a near-zero band, and the first ordinary fluctuation is reported. **Max Threshold** is the opposite guard, for a noisy series whose band would otherwise grow wide enough to hide a genuine problem.
 
 ---
 
@@ -11121,257 +11113,7 @@ The same mapping also carries four optional numeric limits used by [Data Anomali
 - [Profiling – The Foundation](Introduction.md)
 - [How Profiling Works](how_it_works.md)
 - [Datasets](datasets.md) — how filters and grouping split a table into monitored subsets
-- [Statuses and Alerts](../reference/statuses.md) — how measured values become Passed, Uncertain, or Failed
-- [Anomaly Tuning](../reference/tuning.md) — the dials behind prediction and tolerance
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
-
----
-
----
-
-# Status och varningar
-Source: https://docs.digna.ai/sv/platform/reference/statuses/
-
-# Statuses and Alerts
-
----
-
-## The Four Statuses
-
-Every check digna evaluates ends in one of four states, and the same vocabulary is used by all five modules:
-
-| Status | Meaning |
-|---|---|
-| **Not tested** | No result — the check did not run, or there was not enough history to evaluate it |
-| **Passed** | The observation is within expectations |
-| **Uncertain** | Outside the inner tolerance but inside the outer one — worth a look, not yet a failure |
-| **Failed** | Outside the outer tolerance, or a rule was breached beyond its threshold |
-
-**Uncertain** is the status that makes continuous monitoring usable. Without a middle state, every tolerance is a cliff edge: a metric one unit past the line is indistinguishable from one that collapsed. Which modules can produce it differs, and the difference is not arbitrary:
-
-| Module | Can report Uncertain? | Why |
-|---|---|---|
-| **Data Anomalies** | Yes | The tolerance is a band with an inner and an outer edge |
-| **Data Validation** | Yes | Rules carry both an info and a warning threshold |
-| **Data Analytics** | No | Limits are user-defined lines — inside or outside |
-| **Schema Tracker** | No | The structure either changed or it did not |
-| **Timeliness** | No | The delivery either met its deadline or it did not — reported as **In Time** / **Delayed** |
-
----
-
-## How a Status Is Reached
-
-### Data Anomalies — a band around a prediction
-
-The model predicts the next value and derives a tolerance `bound` from how wrong it has recently been. Four edges follow:
-
-```
-       ├──── Failed ────┼─ Uncertain ─┼──────── Passed ────────┼─ Uncertain ─┼──── Failed ────┤
-                    predicted        predicted             predicted      predicted
-                    − 2 × bound      − 1 × bound           + 1 × bound    + 2 × bound
-```
-
-An observation inside ±1 bound passes; between one and two bounds it is uncertain; beyond two it fails. See [Anomaly Tuning](tuning.md) for what sets the width of `bound`.
-
-### Data Validation — two thresholds on the failure count
-
-Each rule counts passing and failing records, then compares that count against its own thresholds. Two modes are available:
-
-| Threshold mode | Compared quantity |
-|---|---|
-| **Absolute** | The number of failed records |
-| **Relative** | Failed records as a fraction of all records evaluated |
-
-Above the **Info threshold** gives **Uncertain**; above the **Warn threshold** gives **Failed**. Both default to zero, so out of the box a single failing record is a failure — deliberately strict, and easy to relax where a small tail of exceptions is expected.
-
-### Data Analytics — user-defined limits
-
-A trend or volatility value outside its configured lower or upper limit is **Failed**; anything else is **Passed**. A limit left empty is not evaluated, so a rule with neither limit set never fails.
-
-### Schema Tracker and Timeliness — binary by nature
-
-A structural change that matches an enabled event type is **Failed**. A delivery arriving after its deadline is **Delayed**. Neither has a meaningful middle state.
-
----
-
-## Rollup: Worst Result Wins
-
-Statuses are produced at check level and then aggregated upward:
-
-```
-check  →  attribute (column)  →  dataset  →  data source
-```
-
-At each level the status is the **worst** of the statuses below it, alongside a count of how many checks passed, were uncertain, and failed. One failing check therefore turns its column, its dataset, and its data source red.
-
-That is the correct default — a data source with a known problem is not healthy — but it is also why disabling irrelevant statistics matters. A noisy check nobody acts on makes the whole data source look broken and trains people to ignore the colour.
-
----
-
-## Alerts
-
-### Channels
-
-Notifications are delivered through configured channels:
-
-| Channel | Typical use |
-|---|---|
-| **Email** | Data owners, wide distribution, daily digests |
-| **Slack** | The operational channel that handles pipelines |
-| **Jira** | Findings that need a tracked ticket and an assignee |
-
-### Subscriptions
-
-A subscription binds a channel to a project and decides what reaches it. It covers either **all tables** in the project or a named list, and each module can be switched on or off independently:
-
-| Subscription setting | Reports |
-|---|---|
-| Notify Errors | Inspection failures — the job itself did not complete |
-| Notify Data Volume | Row-count findings |
-| Data anomalies | AI-detected deviations |
-| Data validation | Rule breaches |
-| Data analytics | Trend and volatility limit breaches |
-| Delayed delivery | Missed timeliness deadlines |
-| Schema change | Structural changes |
-
-A subscription can also be set to notify on **every** inspection rather than only when something is wrong — useful for a low-volume critical feed where silence is ambiguous, and unhelpful for anything else.
-
-!!! tip "Split the routes by urgency, not by team"
-    A missed overnight delivery and a slow upward drift in a null rate are both real findings, and they need different destinations. Route timeliness and inspection errors to the channel someone is watching, and anomalies, analytics, and schema changes to the data owner's queue.
-
-### Missed deliveries are a special case
-
-Every other status is produced by an inspection. A **missing** delivery, by definition, has no inspection to produce it — so a background monitor checks every minute for deadlines that have passed, and raises the alert independently.
-
-Each missed deadline is claimed exactly once before its message is sent, so a delivery that stays missing does not re-alert on every tick.
-
----
-
-## Related Pages
-
-- [Anomaly Tuning](tuning.md)
-- [Statistics](../profiling/statistics.md)
-- [How Profiling Works](../profiling/how_it_works.md)
-- [Data Timeliness – How It Works](../data_timeliness/how_it_works.md)
-- [Data Validation – How It Works](../data_validation/how_it_works.md)
-
----
-
----
-
-# Avvikelsejustering
-Source: https://docs.digna.ai/sv/platform/reference/tuning/
-
-# Anomaly Tuning
-
----
-
-## Two Questions, Two Sets of Dials
-
-Anomaly detection asks two separate questions, and they are tuned separately:
-
-| Question | Answered by | Where |
-|---|---|---|
-| **What should this value be?** | The prediction model | **Model Configuration** — seven dials |
-| **How far may it stray before we say something?** | The tolerance band | **Threshold Configuration** — Sensitivity and Memory |
-
-Reaching for the wrong set is the most common tuning mistake. If the *expected* value is wrong — the model missed a step change, or is still averaging across a migration — widening the band only hides the problem. If the expected value is right and ordinary noise keeps being reported, the band is what needs adjusting.
-
-Both sets live on the data source's **Data Anomalies** configuration, under the **Model Configuration** and **Threshold Configuration** tabs, and each has a **Restore Defaults** action. **A data source that has never been configured behaves exactly as one explicitly set to the defaults.**
-
----
-
-## The Tolerance Band
-
-The band is `predicted ± bound`, where the bound is the recent prediction error, weighted and scaled:
-
-```
-bound  =  multiplier  ×  weighted mean absolute error of recent predictions
-```
-
-### Sensitivity
-
-Sensitivity sets the multiplier. It is expressed as the tail probability the band is drawn at:
-
-| Setting | Tail probability | Band width | Effect |
-|---|---|---|---|
-| **very low** | 1 % | ≈ 4.6 × error | Only severe deviations are reported |
-| **low** | 2.5 % | ≈ 3.7 × error | Quiet |
-| **moderate** *(default)* | 5 % | ≈ 3.0 × error | Balanced |
-| **high** | 7.5 % | ≈ 2.6 × error | Eager |
-| **very high** | 10 % | ≈ 2.3 × error | Reports small deviations |
-
-Remember that the band has two edges: an observation past **one** bound is Uncertain, past **two** it is Failed. Raising sensitivity narrows both.
-
-### Memory
-
-Memory decides how quickly an old prediction error stops counting toward the bound. Errors are weighted over a rolling window of just over a year:
-
-| Setting | Weighting | Best for |
-|---|---|---|
-| **short** | Fades quadratically — the last few weeks dominate | Series that legitimately change character; recent behaviour is the only relevant reference |
-| **moderate** *(default)* | Fades linearly over the year | Most data sources |
-| **long** | Flat — an error from a year ago counts as much as yesterday's | Stable, seasonal series where a full year of behaviour is the right reference |
-
-!!! tip "The quiet-series trap"
-    A metric that has been perfectly steady produces a near-zero bound, and the first ordinary fluctuation is reported as a failure. The fix is not a lower sensitivity — it is a **`min_threshold`** on the statistic mapping, which puts a floor on how narrow the band may become. See [Profiling Statistics](../profiling/statistics.md#turning-statistics-off).
-
----
-
-## The Prediction Model
-
-Before the band is applied, digna predicts what the value should be. The model is a robust regression fitted per series, and it selects its own structure:
-
-- **Always in the design:** an intercept, plus a level-shift dummy for each detected structural break.
-- **Candidates that must earn their place:** a linear trend, the previous observation, the one before that, weekday effects, within-month seasonality, month-boundary spikes, and within-year seasonality.
-
-Candidates are admitted by forward selection under a penalised criterion, so a weekly pattern enters the model only when the data genuinely shows one. A seasonal category is estimated only when at least three observations fall into it, and a series with fewer than five usable observations gets no model at all — its median is used instead.
-
-The fit is robust: observations are reweighted over several passes so a single spike cannot drag the line, and up to two structural breaks may be absorbed.
-
----
-
-## The Seven Prediction Dials
-
-Every dial runs from `0.0` to `1.0` and defaults to `0.5`, which is the setting the model was tuned and backtested at. **Higher always means more sensitive** — quicker to see a regime change, quicker to call something an outlier, tighter around the recent level.
-
-| Dial | What it decides | Low `0.0` | High `1.0` |
-|---|---|---|---|
-| **Break Sensitivity** | How readily a level shift is accepted as a structural break, after which the model predicts from the new level instead of averaging across the step | Only extreme jumps qualify | Ordinary noise starts being split into regimes |
-| **Outlier Sensitivity** | How readily a single observation is dismissed rather than fitted | Essentially a plain least-squares fit that any spike drags with it | A good share of clean data is discarded |
-| **Memory** | How quickly older observations fade from the fit | Short memory — recent behaviour only | Long memory — years of history still counts |
-| **Ridge Strength** | How hard the fit is stabilised when its features tell nearly the same story | Safety net effectively off; a degenerate fit fails outright | Coefficients shrunk harder |
-| **Gap Tolerance** | How stale the previous observation may be before the model stops reading anything into it | Even regular observations are rejected; nothing is carried over | The last value is trusted no matter how old |
-| **Outlier Correction** | When a downweighted observation is replaced by its fitted value, so an outlier cannot leak into the next prediction by being the previous observation | Nothing is ever corrected | Nearly the whole series is fed back as fitted values |
-| **Plausible Range Tightness** | How tightly the prediction is held to the range the series has recently occupied — the last guard against a trend running away | A wide band lets an extrapolation run | Little beyond what has already been observed is allowed |
-
-**Ridge Strength** is a safety net rather than a modelling choice; it keeps the solution well defined and is rarely the right dial to turn.
-
----
-
-## Which Dial to Reach For
-
-| Symptom | Likely cause | First thing to try |
-|---|---|---|
-| Every day after a migration or replatform is flagged | The model is averaging across a step change | Raise **Break Sensitivity** |
-| A one-off spike causes alerts for days afterwards | The spike entered the fit and became the previous observation | Raise **Outlier Sensitivity**, then **Outlier Correction** |
-| A source with weekend gaps alerts every Monday | The gap is being treated as a stale value | Raise **Gap Tolerance** |
-| Predictions drift far above anything the series has done | An extrapolating trend | Raise **Plausible Range Tightness** |
-| The model is still using behaviour from before a permanent change | Too much history in the fit | Lower **Memory** |
-| A perfectly steady metric alerts on trivial movement | The bound collapsed to near zero | Set a **`min_threshold`** on the mapping |
-| Too many small deviations reported across the board | The band is too narrow for this source | Lower **Sensitivity** |
-
-!!! warning "Change one dial at a time"
-    The dials interact — Break Sensitivity and Memory in particular both change what the model considers current. Move one, let a few inspections run, and judge the result before moving another. If several are off the defaults and the behaviour is worse than when you started, reset them and change one.
-
----
-
-## Related Pages
-
-- [Statuses and Alerts](statuses.md)
-- [Statistics](../profiling/statistics.md)
-- [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
-- [Data Timeliness – How It Works](../data_timeliness/how_it_works.md) — the same band machinery applied to arrival times
 
 ---
 
@@ -11552,7 +11294,6 @@ It also works across every technology digna connects to. The check reads the cat
 
 - [Schema Tracker – Introduction](Introduction.md)
 - [Schema Tracker – Use Cases](use_cases.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
 
 ---

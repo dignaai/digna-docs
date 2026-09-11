@@ -665,16 +665,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. 관리자 사용자를 생성하려면 다음 명령을 실행하세요:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **예시:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-이 명령은 `admin`이라는 사용자 이름과 전체 관리자 권한을 가진 계정을 생성합니다.
+이렇게 하면 이메일 주소가 `admin@example.com`이고 전체 관리자 권한을 가진 사용자가 생성됩니다.
 
 !!! tip "팁"
 

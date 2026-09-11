@@ -34,7 +34,7 @@
 ### digna Timeliness
 
 - [Einführung](https://docs.digna.ai/de/platform/data_timeliness/Introduction/): Erfahren Sie, wie digna Data Timeliness sicherstellt, dass Daten zum erwarteten Zeitpunkt eintreffen. Erkennen Sie verspätete oder fehlende Lieferungen, überwachen Sie SLAs und schützen Sie Geschäftsprozesse vor stillen Verzögerungen. KI-gestützte Erkennung für verbesserte Datenqualität und Observability von Datenpipelines.
-- [Funktionsweise](https://docs.digna.ai/de/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Funktionsweise](https://docs.digna.ai/de/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and how a delivery that never arrived is reported.
 - [Anwendungsfälle](https://docs.digna.ai/de/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
@@ -42,11 +42,6 @@
 - [Einführung](https://docs.digna.ai/de/platform/schema_tracker/Introduction/): Erfahren Sie, wie digna Data Schema Tracker Spaltenänderungen, Datentyp-Updates und Schema-Drift überwacht. Erkennen und alarmieren Sie bei sowohl beabsichtigten als auch unbeabsichtigten Schemaänderungen, um ETL-Ausfälle, fehlerhafte Dashboards und den Verlust der Datenbeobachtbarkeit zu verhindern.
 - [Funktionsweise](https://docs.digna.ai/de/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
 - [Anwendungsfälle](https://docs.digna.ai/de/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
-
-### Referenz
-
-- [Status & Alarme](https://docs.digna.ai/de/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
-- [Anomalie-Tuning](https://docs.digna.ai/de/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Installation & Bereitstellung
 

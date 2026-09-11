@@ -137,7 +137,6 @@ That composition is powerful and multiplies quickly. A high-cardinality grouping
 - [Profiling – The Foundation](Introduction.md)
 - [How Profiling Works](how_it_works.md)
 - [Statistics](statistics.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
 - [How to add a datasource to a project](../../getting_started/how_to_add_a_datasource_to_project.md)
 

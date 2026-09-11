@@ -663,16 +663,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Luo ylläpitäjäkäyttäjä seuraavalla komennolla:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Esimerkki:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Tämä luo käyttäjän nimellä `admin` ja täyden ylläpitäjäoikeuden.
+Tämä luo käyttäjän sähköpostiosoitteella `admin@example.com` ja täysillä järjestelmänvalvojan oikeuksilla.
 
 !!! tip "Vinkki"
 

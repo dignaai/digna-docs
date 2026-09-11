@@ -117,7 +117,7 @@ Row counting is the one measurement that is **not** conditional on any module.
 
 Every inspection counts the rows in each dataset and in the data source as a whole, and stores those counts as statuses at dataset and data source level. This happens with no module enabled, because a data source that delivered no rows is worth knowing about regardless of what else you have configured — and because it is what [Timeliness](../data_timeliness/how_it_works.md) keys off to decide whether a delivery happened at all.
 
-These counts have their own switch in a [subscription](../reference/statuses.md#subscriptions), so they can be routed or silenced separately from anomaly findings.
+These counts have their own switch in a notification subscription, so they can be routed or silenced separately from anomaly findings.
 
 ### Report Empty Datasets
 
@@ -151,6 +151,5 @@ Before writing, an inspection removes its own previous results for the dates in 
 - [Statistics](statistics.md)
 - [Datasets](datasets.md)
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
-- [Statuses and Alerts](../reference/statuses.md)
 
 ---

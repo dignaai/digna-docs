@@ -34,7 +34,7 @@
 ### digna Timeliness
 
 - [Bevezetés](https://docs.digna.ai/hu/platform/data_timeliness/Introduction/): Ismerje meg, hogyan biztosítja a digna Data Timeliness, hogy az adatok a vártnak megfelelően érkezzenek. Észlelje a késői vagy hiányzó kézbesítéseket, figyelje az SLA-kat, és védje az üzleti folyamatokat a néma késésektől. MI-alapú észlelés a jobb adatminőségért és a csővezetékek megfigyelhetőségéért.
-- [Hogyan működik](https://docs.digna.ai/hu/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [Hogyan működik](https://docs.digna.ai/hu/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and how a delivery that never arrived is reported.
 - [Használati esetek](https://docs.digna.ai/hu/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
@@ -42,11 +42,6 @@
 - [Bevezetés](https://docs.digna.ai/hu/platform/schema_tracker/Introduction/): Ismerje meg, hogyan figyeli a digna Data Schema Tracker az oszlopváltozásokat, adattípus-frissítéseket és a séma driftet. Észlelje és riasztson szándékos és szándékolatlan sémaváltozások esetén, hogy megelőzze az ETL-hibákat, törött dashboardokat és az adatok megfigyelhetőségének elvesztését.
 - [Hogyan működik](https://docs.digna.ai/hu/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
 - [Használati esetek](https://docs.digna.ai/hu/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
-
-### Referencia
-
-- [Állapotok és riasztások](https://docs.digna.ai/hu/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
-- [Anomália-hangolás](https://docs.digna.ai/hu/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## Telepítés és telepítés
 

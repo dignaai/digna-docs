@@ -80,10 +80,10 @@ The same mapping also carries four optional numeric limits used by [Data Anomali
 
 | Setting | Effect |
 |---|---|
-| `lower_limit` / `upper_limit` | Clamp the predicted value and its bands into a range you know the metric cannot leave |
-| `min_threshold` / `max_threshold` | Put a floor and a ceiling on the *width* of the tolerance band |
+| **Lower Limit** / **Upper Limit** | Clamp the predicted value and its bands into a range you know the metric cannot leave |
+| **Min Threshold** / **Max Threshold** | Put a floor and a ceiling on the *width* of the tolerance band |
 
-`min_threshold` is the practical answer to a metric that is almost perfectly stable: without a floor, a series that has been identical for weeks produces a near-zero band, and the first ordinary fluctuation is reported. `max_threshold` is the opposite guard, for a noisy series whose band would otherwise grow wide enough to hide a genuine problem.
+**Min Threshold** is the practical answer to a metric that is almost perfectly stable: without a floor, a series that has been identical for weeks produces a near-zero band, and the first ordinary fluctuation is reported. **Max Threshold** is the opposite guard, for a noisy series whose band would otherwise grow wide enough to hide a genuine problem.
 
 ---
 
@@ -92,8 +92,6 @@ The same mapping also carries four optional numeric limits used by [Data Anomali
 - [Profiling – The Foundation](Introduction.md)
 - [How Profiling Works](how_it_works.md)
 - [Datasets](datasets.md) — how filters and grouping split a table into monitored subsets
-- [Statuses and Alerts](../reference/statuses.md) — how measured values become Passed, Uncertain, or Failed
-- [Anomaly Tuning](../reference/tuning.md) — the dials behind prediction and tolerance
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
 
 ---

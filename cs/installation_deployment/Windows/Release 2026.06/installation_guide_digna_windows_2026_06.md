@@ -454,13 +454,13 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Spusťte následující příkaz pro vytvoření admin uživatele:
 
 ```bash
-digna user add <username> "<full_name>" <password> --su
+digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Příklad:**
 
 ```bash
-digna user add admin "Admin User" AdminPassword123! --su
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
 Tím vytvoříte uživatele s plnými administrátorskými právy.

@@ -34,7 +34,7 @@
 ### digna Timeliness
 
 - [소개](https://docs.digna.ai/ko/platform/data_timeliness/Introduction/): digna Data Timeliness가 데이터가 예상 시점에 도착하는지 어떻게 보장하는지 알아보세요. 지연되거나 누락된 전달을 감지하고 SLA를 모니터링하며 비즈니스 프로세스를 은밀한 지연으로부터 보호합니다. 향상된 데이터 품질과 파이프라인 관찰을 위한 AI 기반 감지.
-- [작동 방식](https://docs.digna.ai/ko/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+- [작동 방식](https://docs.digna.ai/ko/platform/data_timeliness/how_it_works/): How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and how a delivery that never arrived is reported.
 - [활용 사례](https://docs.digna.ai/ko/platform/data_timeliness/use_cases/): Real-world use cases for digna Timeliness. Detect late and missing deliveries across large multi-source landscapes — with AI-learned arrival patterns and user-defined schedules for strict data contracts.
 
 ### digna Schema Tracker
@@ -42,11 +42,6 @@
 - [소개](https://docs.digna.ai/ko/platform/schema_tracker/Introduction/): digna Data Schema Tracker가 컬럼 변경, 데이터 타입 업데이트 및 스키마 드리프트를 어떻게 모니터링하는지 알아보세요. 의도적이든 비의도적이든 스키마 변경을 감지하고 경고하여 ETL 실패, 깨진 대시보드 및 관찰성 상실을 방지합니다.
 - [작동 방식](https://docs.digna.ai/ko/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
 - [활용 사례](https://docs.digna.ai/ko/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
-
-### 참조
-
-- [상태 및 알림](https://docs.digna.ai/ko/platform/reference/statuses/): How digna turns measured values into Passed, Uncertain, and Failed statuses, how those roll up from check to attribute, dataset, and data source, and how subscriptions route each module's findings to email, Slack, or Jira.
-- [이상 탐지 튜닝](https://docs.digna.ai/ko/platform/reference/tuning/): Reference for tuning digna anomaly detection. Threshold Configuration sets the width of the tolerance band with Sensitivity and Memory; Model Configuration exposes seven prediction dials covering break detection, outlier rejection, memory, gap tolerance, and plausibility clamping.
 
 ## 설치 및 배포
 
