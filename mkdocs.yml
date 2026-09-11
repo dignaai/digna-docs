@@ -107,10 +107,12 @@ nav:
           - How to schedule a daily job: getting_started/how_to_schedule_a_daily_job.md
           - How to use crontab definition: getting_started/how_to_use_crontab.md
   - Integration:
+      # Technologies are alphabetical. The Overview leads because it holds the
+      # DSN-less ODBC configuration every technology shares.
       - Databases:
+          - Overview: databases/overview.md
           - Azure Synapse: databases/azure_synapse_connector_guide.md
           - Databricks: databases/databricks_connector_guide.md
-          - Databricks Legacy: databases/databricks_legacy_connector_guide.md
           - Hive: databases/hive_connector_guide.md
           - Netezza: databases/netezza_connector_guide.md
           - Oracle: databases/oracle_connector_guide.md
