@@ -54,28 +54,28 @@ Every combination of dataset, column, and statistic is its own time series, and 
 
 The model is a **robust regression** fitted to the history of that series. It always carries an intercept and a level-shift term for each detected structural break; beyond that, it selects its own structure from a set of candidates — a linear trend, the previous one or two observations, weekday effects, within-month and within-year seasonality, and month-boundary spikes.
 
-Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a short series does not get seasonality at all. Below five usable observations no model is fitted and the median is used instead.
+Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a series too short to show seasonality does not get seasonal terms at all.
 
-Robustness is what keeps a single bad day from poisoning the following ones: observations are reweighted across several passes, so a spike is downweighted rather than fitted, and a downweighted observation can be replaced by its fitted value before it becomes the *previous observation* of the next prediction.
+Robustness is what keeps a single bad day from poisoning the following ones: a spike is downweighted rather than fitted, so it does not drag the prediction that follows it.
 
-Up to two structural breaks may be absorbed. That is what lets the model follow a genuine step change — a migration, a new source system, a business change — instead of averaging across it indefinitely.
-
-See [Anomaly Tuning](../reference/tuning.md) for the seven dials that shape this.
+The model can also absorb a **structural break** — a genuine step change such as a migration, a new source system, or a business change — and predict from the new level instead of averaging across the step indefinitely.
 
 ---
 
 ## Step 3 – The Tolerance Band
 
-digna does not compare the observation to the prediction directly. It compares it against a band derived from **how wrong recent predictions have been on this very series**:
-
-```
-bound  =  multiplier  ×  weighted mean absolute error of recent predictions
-```
-
-- The **multiplier** comes from [Sensitivity](../reference/tuning.md#sensitivity) — a tail probability from 1 % to 10 %.
-- The **weighting** comes from [Memory](../reference/tuning.md#memory) — flat, linear decay, or quadratic decay over a rolling window of just over a year.
+digna does not compare the observation to the prediction directly. It compares it against a tolerance band derived from **how wrong recent predictions have been on this very series** — recent errors weighted so that newer ones count for more.
 
 This is why a genuinely noisy series is not permanently red: its band is wide because its predictions have genuinely been that wrong. A precise series gets a narrow band, and a real deviation on it is caught early.
+
+Two settings on the data source adjust the band:
+
+| Setting | Effect |
+|---|---|
+| **Sensitivity** | How far an observation may stray before it is reported. Higher reports smaller deviations. |
+| **Memory** | How far back the errors behind the band still count. Longer remembers more history. |
+
+Both default to **Moderate**, and both can be restored to their defaults at any time.
 
 ### Clamps
 
@@ -123,7 +123,6 @@ Re-inspecting a date is safe: an inspection cleans up its own previous results f
 - [Profiling – The Foundation](../profiling/Introduction.md)
 - [Statistics](../profiling/statistics.md)
 - [Datasets](../profiling/datasets.md)
-- [Anomaly Tuning](../reference/tuning.md)
 - [Statuses and Alerts](../reference/statuses.md)
 
 ---

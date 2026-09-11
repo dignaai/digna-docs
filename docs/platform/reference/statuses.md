@@ -59,7 +59,7 @@ The model predicts the next value and derives a tolerance `bound` from how wrong
                     − 2 × bound      − 1 × bound           + 1 × bound    + 2 × bound
 ```
 
-An observation inside ±1 bound passes; between one and two bounds it is uncertain; beyond two it fails. See [Anomaly Tuning](tuning.md) for what sets the width of `bound`.
+An observation inside ±1 bound passes; between one and two bounds it is uncertain; beyond two it fails. The width of `bound` follows from the recent prediction error on that series, adjusted by the data source's **Sensitivity** and **Memory** settings — see [Data Anomalies – How It Works](../data_anomalies/how_it_works.md#step-3-the-tolerance-band).
 
 ### Data Validation — two thresholds on the failure count
 
@@ -137,7 +137,6 @@ Each missed deadline is claimed exactly once before its message is sent, so a de
 
 ## Related Pages
 
-- [Anomaly Tuning](tuning.md)
 - [Statistics](../profiling/statistics.md)
 - [How Profiling Works](../profiling/how_it_works.md)
 - [Data Timeliness – How It Works](../data_timeliness/how_it_works.md)

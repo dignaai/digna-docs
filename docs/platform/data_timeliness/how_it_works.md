@@ -87,7 +87,7 @@ deadline  =  expected delivery time  +  alert margin
 The expectation is the bare point prediction. The margin is the slack allowed on top of it before a delivery counts as late.
 
 - In **Rule Based** mode the margin is zero — the rule states its deadline outright.
-- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same [sensitivity and memory](../reference/tuning.md#the-tolerance-band) settings as anomaly detection.
+- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same **Sensitivity** and **Memory** settings as [anomaly detection](../data_anomalies/how_it_works.md#step-3-the-tolerance-band).
 
 Keeping the two apart is what stops the deadline from inflating. If each margin were folded into the stored expectation, the next margin would be fitted to deviations from the previous *deadline* rather than from a prediction, and the slack would compound on every delivery.
 
@@ -157,7 +157,6 @@ When you know no delivery is coming — a holiday, a planned outage, a source re
 - [Data Timeliness – Introduction](Introduction.md)
 - [Data Timeliness – Use Cases](use_cases.md)
 - [Statuses and Alerts](../reference/statuses.md)
-- [Anomaly Tuning](../reference/tuning.md)
 - [How to schedule a daily job](../../getting_started/how_to_schedule_a_daily_job.md)
 
 ---
