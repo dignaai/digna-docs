@@ -766,16 +766,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Kjør følgende kommando for å opprette en admin-bruker:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Eksempel:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Dette oppretter en bruker med brukernavn `admin` og fulle administrative rettigheter.
+Dette oppretter en bruker med e-postadressen `admin@example.com` og fulle administratorrettigheter.
 
 !!! tip "Tips"
 

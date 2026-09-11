@@ -730,16 +730,16 @@ This command installs the necessary tables and schema in your PostgreSQL databas
 The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Example:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with username `admin` and full administrative privileges.
+This creates a user with email `admin@example.com` and full administrative privileges.
 
 !!! tip "Tip"
 

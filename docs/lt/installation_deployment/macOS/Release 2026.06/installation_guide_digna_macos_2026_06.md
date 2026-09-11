@@ -672,16 +672,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Vykdykite komandą administratoriaus vartotojui sukurti:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Pavyzdys:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Tai sukurs vartotoją su vardu `admin` ir pilnais administraciniais įgaliojimais.
+Taip sukuriamas naudotojas su el. pašto adresu `admin@example.com` ir visomis administratoriaus teisėmis.
 
 !!! tip "Patarimas"
 

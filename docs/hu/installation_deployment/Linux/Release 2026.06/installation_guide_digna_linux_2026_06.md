@@ -764,16 +764,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Futtassa a következő parancsot admin felhasználó létrehozásához:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Példa:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Ez létrehoz egy `admin` felhasználót teljes adminisztratív jogosultságokkal.
+Ezzel létrejön egy felhasználó `admin@example.com` e-mail-címmel és teljes rendszergazdai jogosultságokkal.
 
 !!! tip "Tipp"
 

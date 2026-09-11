@@ -672,16 +672,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Zaženite naslednji ukaz za ustvarjanje skrbniškega uporabnika:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Primer:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-To ustvari uporabnika z uporabniškim imenom `admin` in polnimi skrbniškimi pravicami.
+S tem se ustvari uporabnik z e-poštnim naslovom `admin@example.com` in polnimi skrbniškimi pravicami.
 
 !!! tip "Namig"
 

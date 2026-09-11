@@ -764,16 +764,16 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Käivitage järgmine käsk admin-kasutaja loomiseks:
 
 ```bash
-./digna user add <username> "<full_name>" <password> --su
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Näide:**
 
 ```bash
-./digna user add admin "Admin User" 'AdminPassword123!' --su
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-See loob kasutaja nimega `admin` täielike administraatoriõigustega.
+See loob kasutaja e-posti aadressiga `admin@example.com` ja täielike administraatoriõigustega.
 
 !!! tip "Vihje"
 

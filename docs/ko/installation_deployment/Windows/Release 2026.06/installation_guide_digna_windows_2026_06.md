@@ -461,13 +461,13 @@ INFO:     Uvicorn running on http://localhost:8082
 3. 관리자 사용자 생성 명령을 실행합니다:
 
 ```bash
-digna user add <username> "<full_name>" <password> --su
+digna user add <email> <password> "<display_name>" --admin
 ```
 
 **예시:**
 
 ```bash
-digna user add admin "Admin User" AdminPassword123! --su
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
 이렇게 하면 전체 관리자 권한을 가진 사용자가 생성됩니다.

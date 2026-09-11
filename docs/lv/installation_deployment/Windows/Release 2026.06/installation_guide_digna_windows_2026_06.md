@@ -461,13 +461,13 @@ INFO:     Uvicorn running on http://localhost:8082
 3. Palaidiet šādu komandu, lai izveidotu administratora lietotāju:
 
 ```bash
-digna user add <username> "<full_name>" <password> --su
+digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Piemērs:**
 
 ```bash
-digna user add admin "Admin User" AdminPassword123! --su
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
 Šī komanda izveido lietotāju ar pilnām administratīvām tiesībām.
