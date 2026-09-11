@@ -1,6 +1,6 @@
 ---
 title: Data Timeliness – How It Works | digna Documentation
-description: How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and the background monitor that reports a delivery that never arrived.
+description: How digna Timeliness works — what counts as a delivery, AI-learned arrival prediction versus rule-based schedules, the alert margin, and how a delivery that never arrived is reported.
 image: /assets/logo_square.png
 keywords:
   - data timeliness how it works
@@ -129,7 +129,7 @@ Every recorded delivery stores the timestamp, the expectation it was judged agai
 
 Every other finding in digna is produced by an inspection. A **missing** delivery has no inspection to produce it, so it is handled separately.
 
-A background monitor checks **every minute** for data sources whose deadline has passed with no delivery recorded, and raises the alert. Each missed deadline is claimed exactly once before its message is sent, so a source that stays missing alerts once rather than every minute.
+A background monitor watches for data sources whose deadline has passed with no delivery recorded, and raises the alert. Each missed deadline alerts once, so a source that stays missing does not raise the same alert repeatedly.
 
 A data source whose inspection ran but whose tasks all failed reaches the same place: nothing was profiled, so nothing was delivered, and the monitor reports it as missed — which is what it is.
 
@@ -156,7 +156,6 @@ When you know no delivery is coming — a holiday, a planned outage, a source re
 
 - [Data Timeliness – Introduction](Introduction.md)
 - [Data Timeliness – Use Cases](use_cases.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [How to schedule a daily job](../../getting_started/how_to_schedule_a_daily_job.md)
 
 ---

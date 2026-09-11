@@ -92,15 +92,15 @@ In addition, statistics that cannot be negative have their whole band floored at
 
 ## Step 4 – Status and Rollup
 
-The band gives four edges, and the observation falls into one of five regions:
+The observation is compared against the band and reported as one of three statuses:
 
-| Observed value | Status |
+| Observation | Status |
 |---|---|
-| Below `predicted − 2 × bound` | **Failed** |
-| Between `−2 ×` and `−1 × bound` | **Uncertain** |
-| Within `± 1 × bound` | **Passed** |
-| Between `+1 ×` and `+2 × bound` | **Uncertain** |
-| Above `predicted + 2 × bound` | **Failed** |
+| Within the expected band | **Passed** |
+| Outside it, but not far outside | **Uncertain** |
+| Well outside it | **Failed** |
+
+**Uncertain** is what makes continuous monitoring usable. Without a middle state every tolerance is a cliff edge, and a metric one unit past the line reads the same as one that collapsed.
 
 Statuses then roll up — **check → attribute → dataset → data source** — with the worst status winning at each level, alongside the count of checks that passed, were uncertain, and failed.
 
@@ -110,7 +110,7 @@ Checks whose mapping has anomaly detection switched off are excluded from the ro
 
 ## What Is Stored
 
-For every check and every inspection date, digna records the observed value, the predicted value, all four band edges, and the resulting status. Nothing about a finding has to be reconstructed later — the expectation it was judged against is stored beside it.
+For every check and every inspection date, digna records the observed value, the predicted value, the band it was judged against, and the resulting status. Nothing about a finding has to be reconstructed later — the expectation it was judged against is stored beside it.
 
 Re-inspecting a date is safe: an inspection cleans up its own previous results for that date range before writing new ones, so a data source can be re-run without duplicating history.
 
@@ -123,6 +123,5 @@ Re-inspecting a date is safe: an inspection cleans up its own previous results f
 - [Profiling – The Foundation](../profiling/Introduction.md)
 - [Statistics](../profiling/statistics.md)
 - [Datasets](../profiling/datasets.md)
-- [Statuses and Alerts](../reference/statuses.md)
 
 ---

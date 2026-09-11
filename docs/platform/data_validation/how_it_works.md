@@ -147,7 +147,6 @@ Validation is also **independent of the other modules**. It reads none of the [p
 
 - [Data Validation – Introduction](Introduction.md)
 - [Data Validation – Use Cases](use_cases.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [Datasets](../profiling/datasets.md)
 - [Changelog – Release 2026.06](../../changelog/Release_202606.md)
 

@@ -116,6 +116,5 @@ Statuses roll up the same way as everywhere else — **check → attribute → d
 - [Data Analytics – Use Cases](use_cases.md)
 - [Profiling – The Foundation](../profiling/Introduction.md)
 - [Statistics](../profiling/statistics.md)
-- [Statuses and Alerts](../reference/statuses.md)
 
 ---

@@ -79,7 +79,6 @@ nav:
           - Introduction: platform/schema_tracker/Introduction.md
           - How It Works: platform/schema_tracker/how_it_works.md
           - Use Cases: platform/schema_tracker/use_cases.md
-      - Statuses & Alerts: platform/reference/statuses.md
   - Installation & Deployment:
       # Platforms are grouped by kind and listed alphabetically within a group.
       # There is no default platform, so none is promoted to the top.
@@ -260,7 +259,6 @@ plugins:
             Profiling: Profiling
             Statistics: Statistiken
             Datasets: Datasets
-            Statuses & Alerts: Status & Alarme
             Installation & Deployment: Installation & Bereitstellung
             Operating Systems: Betriebssysteme
             Windows: Windows
@@ -287,7 +285,6 @@ plugins:
             Profiling: Profilage
             Statistics: Statistiques
             Datasets: Datasets
-            Statuses & Alerts: Statuts et alertes
             Installation & Deployment: Installation et déploiement
             Operating Systems: Systèmes d'exploitation
             Windows: Windows
@@ -314,7 +311,6 @@ plugins:
              Profiling: Perfilado
              Statistics: Estadísticas
              Datasets: Datasets
-             Statuses & Alerts: Estados y alertas
              Installation & Deployment: Instalación e implementación
              Operating Systems: Sistemas operativos
              Windows: Windows
@@ -341,7 +337,6 @@ plugins:
               Profiling: Profilazione
               Statistics: Statistiche
               Datasets: Dataset
-              Statuses & Alerts: Stati e avvisi
               Installation & Deployment: Installazione e distribuzione
               Operating Systems: Sistemi operativi
               Windows: Windows
@@ -368,7 +363,6 @@ plugins:
             Profiling: Profilowanie
             Statistics: Statystyki
             Datasets: Zbiory danych
-            Statuses & Alerts: Statusy i alerty
             Installation & Deployment: Instalacja i wdrażanie
             Operating Systems: Systemy operacyjne
             Windows: Windows
@@ -395,7 +389,6 @@ plugins:
             Profiling: Perfilagem
             Statistics: Estatísticas
             Datasets: Datasets
-            Statuses & Alerts: Estados e alertas
             Installation & Deployment: Instalação e implementação
             Operating Systems: Sistemas operativos
             Windows: Windows
@@ -421,7 +414,6 @@ plugins:
               Profiling: Profilering
               Statistics: Statistik
               Datasets: Dataset
-              Statuses & Alerts: Status och varningar
               Installation & Deployment: Installation och distribution
               Operating Systems: Operativsystem
               Windows: Windows
@@ -448,7 +440,6 @@ plugins:
             Profiling: Profilering
             Statistics: Statistikk
             Datasets: Datasett
-            Statuses & Alerts: Status og varsler
             Installation & Deployment: Installasjon og distribusjon
             Operating Systems: Operativsystemer
             Windows: Windows
@@ -475,7 +466,6 @@ plugins:
             Profiling: Profilering
             Statistics: Statistik
             Datasets: Datasæt
-            Statuses & Alerts: Status og alarmer
             Installation & Deployment: Installation og implementering
             Operating Systems: Operativsystemer
             Windows: Windows
@@ -502,7 +492,6 @@ plugins:
             Profiling: Profilointi
             Statistics: Tilastot
             Datasets: Tietojoukot
-            Statuses & Alerts: Tilat ja hälytykset
             Installation & Deployment: Asennus ja käyttöönotto
             Operating Systems: Käyttöjärjestelmät
             Windows: Windows
@@ -529,7 +518,6 @@ plugins:
             Profiling: Profileerimine
             Statistics: Statistika
             Datasets: Andmestikud
-            Statuses & Alerts: Olekud ja teated
             Installation & Deployment: Paigaldamine ja juurutamine
             Operating Systems: Operatsioonisüsteemid
             Windows: Windows
@@ -556,7 +544,6 @@ plugins:
             Profiling: Profiliavimas
             Statistics: Statistika
             Datasets: Duomenų rinkiniai
-            Statuses & Alerts: Būsenos ir įspėjimai
             Installation & Deployment: Diegimas ir diegimas
             Operating Systems: Operacinės sistemos
             Windows: Windows
@@ -583,7 +570,6 @@ plugins:
             Profiling: Profilēšana
             Statistics: Statistika
             Datasets: Datu kopas
-            Statuses & Alerts: Statusi un brīdinājumi
             Installation & Deployment: Instalācija un izvietošana
             Operating Systems: Operētājsistēmas
             Windows: Windows
@@ -610,7 +596,6 @@ plugins:
             Profiling: Profilering
             Statistics: Statistieken
             Datasets: Datasets
-            Statuses & Alerts: Statussen en meldingen
             Installation & Deployment: Installatie en implementatie
             Operating Systems: Besturingssystemen
             Windows: Windows
@@ -637,7 +622,6 @@ plugins:
             Profiling: Profilování
             Statistics: Statistiky
             Datasets: Datové sady
-            Statuses & Alerts: Stavy a upozornění
             Installation & Deployment: Instalace a nasazení
             Operating Systems: Operační systémy
             Windows: Windows
@@ -664,7 +648,6 @@ plugins:
               Profiling: Profilozás
               Statistics: Statisztikák
               Datasets: Adathalmazok
-              Statuses & Alerts: Állapotok és riasztások
               Installation & Deployment: Telepítés és telepítés
               Operating Systems: Operációs rendszerek
               Windows: Windows
@@ -691,7 +674,6 @@ plugins:
             Profiling: Profilleme
             Statistics: İstatistikler
             Datasets: Veri Kümeleri
-            Statuses & Alerts: Durumlar ve Uyarılar
             Installation & Deployment: Kurulum ve dağıtım
             Operating Systems: İşletim sistemleri
             Windows: Windows
@@ -718,7 +700,6 @@ plugins:
             Profiling: Profilare
             Statistics: Statistici
             Datasets: Seturi de date
-            Statuses & Alerts: Stări și alerte
             Installation & Deployment: Instalare și implementare
             Operating Systems: Sisteme de operare
             Windows: Windows
@@ -745,7 +726,6 @@ plugins:
             Profiling: Profiliranje
             Statistics: Statistika
             Datasets: Podatkovni nabori
-            Statuses & Alerts: Stanja in opozorila
             Installation & Deployment: Namestitev in razmestitev
             Operating Systems: Operacijski sistemi
             Windows: Windows
@@ -772,7 +752,6 @@ plugins:
             Profiling: Προφίλ δεδομένων
             Statistics: Στατιστικά
             Datasets: Σύνολα δεδομένων
-            Statuses & Alerts: Καταστάσεις και ειδοποιήσεις
             Installation & Deployment: Εγκατάσταση και ανάπτυξη
             Operating Systems: Λειτουργικά συστήματα
             Windows: Windows
@@ -799,7 +778,6 @@ plugins:
             Profiling: Профілювання
             Statistics: Статистики
             Datasets: Набори даних
-            Statuses & Alerts: Статуси та сповіщення
             Installation & Deployment: Установка та розгортання
             Operating Systems: Операційні системи
             Windows: Windows
@@ -826,7 +804,6 @@ plugins:
             Profiling: Профилирование
             Statistics: Статистики
             Datasets: Наборы данных
-            Statuses & Alerts: Статусы и оповещения
             Installation & Deployment: Установка и развертывание
             Operating Systems: Операционные системы
             Windows: Windows
@@ -853,7 +830,6 @@ plugins:
             Profiling: プロファイリング
             Statistics: 統計
             Datasets: データセット
-            Statuses & Alerts: ステータスとアラート
             Installation & Deployment: インストールとデプロイメント
             Operating Systems: オペレーティングシステム
             Windows: Windows
@@ -880,7 +856,6 @@ plugins:
             Profiling: 프로파일링
             Statistics: 통계
             Datasets: 데이터셋
-            Statuses & Alerts: 상태 및 알림
             Installation & Deployment: 설치 및 배포
             Operating Systems: 운영 체제
             Windows: Windows
@@ -907,7 +882,6 @@ plugins:
             Profiling: प्रोफ़ाइलिंग
             Statistics: सांख्यिकी
             Datasets: डेटासेट
-            Statuses & Alerts: स्थिति और अलर्ट
             Installation & Deployment: इंस्टॉलेशन और तैनाती
             Operating Systems: ऑपरेटिंग सिस्टम
             Windows: Windows
@@ -934,7 +908,6 @@ plugins:
             Profiling: تحليل البيانات
             Statistics: الإحصاءات
             Datasets: مجموعات البيانات
-            Statuses & Alerts: الحالات والتنبيهات
             Installation & Deployment: التثبيت والنشر
             Operating Systems: أنظمة التشغيل
             Windows: Windows

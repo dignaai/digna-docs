@@ -117,7 +117,6 @@ The same mapping also carries four optional numeric limits used by [Data Anomali
 - [Profiling – The Foundation](Introduction.md)
 - [How Profiling Works](how_it_works.md)
 - [Datasets](datasets.md) — how filters and grouping split a table into monitored subsets
-- [Statuses and Alerts](../reference/statuses.md) — how measured values become Passed, Uncertain, or Failed
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
 
 ---

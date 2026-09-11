@@ -120,7 +120,6 @@ It also works across every technology digna connects to. The check reads the cat
 
 - [Schema Tracker – Introduction](Introduction.md)
 - [Schema Tracker – Use Cases](use_cases.md)
-- [Statuses and Alerts](../reference/statuses.md)
 - [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
 
 ---
