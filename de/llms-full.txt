@@ -5559,6 +5559,15 @@ The property names differ per driver, and each technology has one or two details
 others do not have. The guides below cover that part; this page covers the *digna* side, which
 is the same for all of them.
 
+!!! important "The property sets in the guides are examples"
+
+    Each guide shows one combination that is known to work — the one *digna* is tested against.
+    It is a starting point, not a specification: the properties belong to the ODBC driver, and
+    which ones exist, what they are called and which values they accept differs between driver
+    versions and vendors, between Windows, Linux and macOS, and with how the source server is
+    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
+    and treat the documentation of the driver version you installed as the authority.
+
 | Technology | Guide | Worth knowing |
 |---|---|---|
 | **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
@@ -5639,9 +5648,11 @@ connection can serve several projects.
 ## ODBC Properties {: #odbc-properties }
 
 Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists the properties that technology needs.
+the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
+which you adapt to your driver version and server — see
+[the note above](#technology-guides).
 
-What every property set has in common:
+Whatever the driver, a property set covers the same four things:
 
 - **`Driver`** — the registered driver name, as described [above](#install-the-driver).
 - **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,

@@ -25,6 +25,14 @@ for the `DRIVER` property below.
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    psqlODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what your server demands — SSL in particular — may differ too.
+    Use this as a starting point and check the documentation of the driver version you
+    installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |

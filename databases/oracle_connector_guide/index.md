@@ -25,6 +25,13 @@ installation, so read the exact name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the Oracle
+    ODBC driver, so their names, defaults and accepted values differ between client versions,
+    and the driver name in particular depends on the Oracle home on your host. Use this as a
+    starting point and check the documentation of the client version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |

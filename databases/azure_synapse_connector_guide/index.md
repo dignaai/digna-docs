@@ -27,6 +27,14 @@ and read the exact registered driver name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what the workspace requires depends on how it is configured —
+    pool type, authentication method, firewall. Use this as a starting point and check the
+    documentation of the driver version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |

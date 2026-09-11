@@ -48,6 +48,14 @@ Tokens belong to a user or service principal, and that principal needs `USE CATA
 
 ## 3. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
+    versions — the driver has been renamed and its authentication options extended more than
+    once — and between platforms. Use this as a starting point and check the documentation of
+    the driver version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |

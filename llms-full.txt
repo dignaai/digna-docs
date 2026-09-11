@@ -5043,6 +5043,14 @@ and read the exact registered driver name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what the workspace requires depends on how it is configured —
+    pool type, authentication method, firewall. Use this as a starting point and check the
+    documentation of the driver version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |
@@ -5222,6 +5230,14 @@ Tokens belong to a user or service principal, and that principal needs `USE CATA
 
 ## 3. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
+    versions — the driver has been renamed and its authentication options extended more than
+    once — and between platforms. Use this as a starting point and check the documentation of
+    the driver version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |
@@ -5349,6 +5365,14 @@ Read the exact registered driver name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
+    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
+    point and check the documentation of the driver version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |
@@ -5467,6 +5491,14 @@ Read the exact registered driver name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    NetezzaSQL driver, so their names, defaults and accepted values differ between client
+    versions and platforms, and a TLS-secured appliance needs more than the properties shown
+    here. Use this as a starting point and check the documentation of the client version you
+    installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |
@@ -5569,6 +5601,13 @@ installation, so read the exact name off your host as described in
 ---
 
 ## 2. ODBC Properties
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the Oracle
+    ODBC driver, so their names, defaults and accepted values differ between client versions,
+    and the driver name in particular depends on the Oracle home on your host. Use this as a
+    starting point and check the documentation of the client version you installed.
 
 Add the following properties in the **Add DB Connection** screen:
 
@@ -5713,6 +5752,15 @@ The property names differ per driver, and each technology has one or two details
 others do not have. The guides below cover that part; this page covers the *digna* side, which
 is the same for all of them.
 
+!!! important "The property sets in the guides are examples"
+
+    Each guide shows one combination that is known to work — the one *digna* is tested against.
+    It is a starting point, not a specification: the properties belong to the ODBC driver, and
+    which ones exist, what they are called and which values they accept differs between driver
+    versions and vendors, between Windows, Linux and macOS, and with how the source server is
+    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
+    and treat the documentation of the driver version you installed as the authority.
+
 | Technology | Guide | Worth knowing |
 |---|---|---|
 | **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
@@ -5793,9 +5841,11 @@ connection can serve several projects.
 ## ODBC Properties {: #odbc-properties }
 
 Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists the properties that technology needs.
+the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
+which you adapt to your driver version and server — see
+[the note above](#technology-guides).
 
-What every property set has in common:
+Whatever the driver, a property set covers the same four things:
 
 - **`Driver`** — the registered driver name, as described [above](#install-the-driver).
 - **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
@@ -6062,6 +6112,14 @@ for the `DRIVER` property below.
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    psqlODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what your server demands — SSL in particular — may differ too.
+    Use this as a starting point and check the documentation of the driver version you
+    installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |
@@ -6164,6 +6222,14 @@ host as described in [Install the ODBC Driver on the digna Host](overview.md#ins
 Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
 *digna* is verified against, and the one Snowflake requires for accounts on which
 password-only sign-in is blocked.
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and which authentication options your account permits is decided by
+    the account's security policy. Use this as a starting point and check the documentation of
+    the driver version you installed.
 
 | Key | Example value | Notes |
 |---|---|---|
@@ -6295,6 +6361,14 @@ Read the exact registered driver name off your host as described in
 ---
 
 ## 2. ODBC Properties
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
+    platforms. Use this as a starting point and check the documentation of the driver version
+    you installed.
 
 Add the following properties in the **Add DB Connection** screen:
 
@@ -6431,6 +6505,13 @@ described in [Install the ODBC Driver on the digna Host](overview.md#install-the
 ---
 
 ## 2. ODBC Properties
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
+    versions — the version is part of the driver name itself — and between platforms. Use this
+    as a starting point and check the documentation of the driver version you installed.
 
 Add the following properties in the **Add DB Connection** screen:
 
