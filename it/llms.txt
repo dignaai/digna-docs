@@ -76,9 +76,9 @@
 
 ### Basi di dati
 
+- [Overview](https://docs.digna.ai/it/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/it/databases/azure_synapse_connector_guide/): Configura digna per connettersi ad Azure Synapse Analytics utilizzando il driver Python nativo o il driver ODBC. Supporta pool SQL serverless e dedicati.
 - [Databricks](https://docs.digna.ai/it/databases/databricks_connector_guide/): Configura digna per connettersi a Databricks con Unity Catalog usando il connector nativo Python o il driver ODBC. Supporta autenticazione basata su token e connettività flessibile.
-- [Databricks Legacy](https://docs.digna.ai/it/databases/databricks_legacy_connector_guide/): Configura digna per connettersi a Databricks senza Unity Catalog usando il connettore Python nativo o il driver ODBC Simba Spark. Supporta l'autenticazione tramite token e connettività flessibile.
 - [Hive](https://docs.digna.ai/it/databases/hive_connector_guide/): Configura digna per connettersi ad Apache Hive usando il driver Python nativo PyHive o il driver ODBC di Cloudera. Supporta l'autenticazione basata su password e configurazioni con DSN o senza DSN.
 - [Netezza](https://docs.digna.ai/it/databases/netezza_connector_guide/): Configura digna per connettersi a Netezza usando il driver ODBC NetezzaSQL. Supporta l'autenticazione tramite password con configurazioni DSN o DSN-less per una connettività flessibile.
 - [Oracle](https://docs.digna.ai/it/databases/oracle_connector_guide/): Configura digna per connettersi a Oracle usando il driver python-oracledb o il driver ODBC di Oracle. Supporta l'autenticazione basata su password con configurazioni DSN o senza DSN.

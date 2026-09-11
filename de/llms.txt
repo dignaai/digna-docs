@@ -76,9 +76,9 @@
 
 ### Datenbanken
 
+- [Overview](https://docs.digna.ai/de/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/de/databases/azure_synapse_connector_guide/): Konfigurieren Sie digna, um sich mit Azure Synapse Analytics über den nativen Python-Treiber oder den ODBC-Treiber zu verbinden. Unterstützt sowohl serverlose als auch dedizierte SQL-Pools.
 - [Databricks](https://docs.digna.ai/de/databases/databricks_connector_guide/): Konfigurieren Sie *digna*, um sich mit Databricks und Unity Catalog über den nativen Python-Connector oder den ODBC-Treiber zu verbinden. Unterstützt tokenbasierte Authentifizierung und flexible Konnektivität.
-- [Databricks Legacy](https://docs.digna.ai/de/databases/databricks_legacy_connector_guide/): Konfigurieren Sie digna, um eine Verbindung zu Databricks ohne Unity Catalog entweder mit dem nativen Python-Connector oder dem Simba Spark ODBC-Treiber herzustellen. Unterstützt tokenbasierte Authentifizierung und flexible Konnektivität.
 - [Hive](https://docs.digna.ai/de/databases/hive_connector_guide/): Konfigurieren Sie digna so, dass es sich über den nativen PyHive-Treiber oder den Cloudera ODBC-Treiber mit Apache Hive verbindet. Unterstützt passwortbasierte Authentifizierung sowie DSN- und DSN-less-Konfigurationen.
 - [Netezza](https://docs.digna.ai/de/databases/netezza_connector_guide/): Konfigurieren Sie digna so, dass eine Verbindung zu Netezza über den ODBC-Treiber NetezzaSQL hergestellt wird. Unterstützt passwortbasierte Authentifizierung mit DSN- oder DSN-losen Setups für flexible Konnektivität.
 - [Oracle](https://docs.digna.ai/de/databases/oracle_connector_guide/): Konfigurieren Sie digna zur Verbindung mit Oracle mithilfe des python-oracledb-Treibers oder des Oracle ODBC-Treibers. Unterstützt passwortbasierte Authentifizierung mit DSN- oder DSN-less-Konfigurationen.

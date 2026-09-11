@@ -76,9 +76,9 @@
 
 ### डेटाबेस
 
+- [Overview](https://docs.digna.ai/hi/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/hi/databases/azure_synapse_connector_guide/): *digna* को Azure Synapse Analytics से कनेक्ट करने के लिए कॉन्फ़िगर करें, चाहे आप नेटिव Python ड्राइवर का उपयोग कर रहे हों या ODBC ड्राइवर का। सर्वरलेस और डेडिकेटेड दोनों SQL पूल्स समर्थित हैं।
 - [Databricks](https://docs.digna.ai/hi/databases/databricks_connector_guide/): नатив Python कनेक्टर या ODBC ड्राइवर का उपयोग करके Unity Catalog के साथ Databricks से कनेक्ट करने के लिए digna को कॉन्फ़िगर करें। टोकन-आधारित प्रमाणीकरण और लचीली कनेक्टिविटी का समर्थन।
-- [Databricks Legacy](https://docs.digna.ai/hi/databases/databricks_legacy_connector_guide/): नैटिव Python कनेक्टर या Simba Spark ODBC ड्राइवर का उपयोग करके Unity Catalog के बिना Databricks से कनेक्ट करने के लिए digna को कॉन्फ़िगर करें। टोकन-आधारित प्रमाणीकरण और लचीली कनेक्टिविटी का समर्थन करता है।
 - [Hive](https://docs.digna.ai/hi/databases/hive_connector_guide/): नेटिव PyHive ड्राइवर या Cloudera ODBC ड्राइवर का उपयोग करके digna को Apache Hive से कनेक्ट करने के लिए कॉन्फ़िगर करें। पासवर्ड-आधारित प्रमाणीकरण और DSN या DSN-लेस सेटअप सपोर्ट करता है।
 - [Netezza](https://docs.digna.ai/hi/databases/netezza_connector_guide/): digna को NetezzaSQL ODBC ड्राइवर का उपयोग करके Netezza से कनेक्ट करने के लिए कॉन्फ़िगर करें। फ्लेक्सिबल कनेक्टिविटी के लिए DSN या DSN-less सेटअप के साथ पासवर्ड-आधारित प्रमाणीकरण का समर्थन।
 - [Oracle](https://docs.digna.ai/hi/databases/oracle_connector_guide/): python-oracledb ड्राइवर या Oracle ODBC ड्राइवर का उपयोग करके digna को Oracle से कनेक्ट करने के लिए कॉन्फ़िगर करें। DSN या DSN-less सेटअप के साथ पासवर्ड-आधारित प्रमाणीकरण का समर्थन।

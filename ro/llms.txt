@@ -76,9 +76,9 @@
 
 ### Baze de date
 
+- [Overview](https://docs.digna.ai/ro/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/ro/databases/azure_synapse_connector_guide/): Configurați digna pentru a se conecta la Azure Synapse Analytics folosind fie driverul nativ Python, fie driverul ODBC. Suportă atât pool-urile SQL serverless, cât și cele dedicate.
 - [Databricks](https://docs.digna.ai/ro/databases/databricks_connector_guide/): Configurează digna pentru a se conecta la Databricks cu Unity Catalog folosind conectorul Python nativ sau driverul ODBC. Suportă autentificare bazată pe token și conectivitate flexibilă.
-- [Databricks Legacy](https://docs.digna.ai/ro/databases/databricks_legacy_connector_guide/): Configurează digna pentru a se conecta la Databricks fără Unity Catalog folosind conectorul nativ Python sau driverul Simba Spark ODBC. Suportă autentificare bazată pe token și conectivitate flexibilă.
 - [Hive](https://docs.digna.ai/ro/databases/hive_connector_guide/): Configurează digna pentru a se conecta la Apache Hive folosind driverul nativ PyHive sau driverul ODBC Cloudera. Suportă autentificare pe bază de parolă și configurații cu DSN sau fără DSN.
 - [Netezza](https://docs.digna.ai/ro/databases/netezza_connector_guide/): Configurează digna pentru a se conecta la Netezza folosind driverul ODBC NetezzaSQL. Suportă autentificare pe bază de parolă cu configurări DSN sau DSN-less pentru conectivitate flexibilă.
 - [Oracle](https://docs.digna.ai/ro/databases/oracle_connector_guide/): Configurează digna pentru a se conecta la Oracle folosind driverul python-oracledb sau driverul Oracle ODBC. Suportă autentificare pe bază de parolă cu configurații DSN sau fără DSN.

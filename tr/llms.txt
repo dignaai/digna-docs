@@ -76,9 +76,9 @@
 
 ### Veritabanları
 
+- [Overview](https://docs.digna.ai/tr/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/tr/databases/azure_synapse_connector_guide/): digna'yı, yerel Python sürücüsü veya ODBC sürücüsü kullanarak Azure Synapse Analytics'e bağlanacak şekilde yapılandırın. Hem sunucusuz hem de özel SQL havuzlarını destekler.
 - [Databricks](https://docs.digna.ai/tr/databases/databricks_connector_guide/): digna'yı Databricks ile Unity Catalog kullanarak, yerel Python connector veya ODBC sürücüsü aracılığıyla bağlanacak şekilde yapılandırma. Token tabanlı kimlik doğrulamayı ve esnek bağlantı seçeneklerini destekler.
-- [Databricks Legacy](https://docs.digna.ai/tr/databases/databricks_legacy_connector_guide/): Native Python bağlayıcısı veya Simba Spark ODBC sürücüsü kullanarak Unity Catalog olmadan Databricks'e bağlanmak için digna'yı yapılandırın. Token tabanlı kimlik doğrulamayı ve esnek bağlantı seçeneklerini destekler.
 - [Hive](https://docs.digna.ai/tr/databases/hive_connector_guide/): digna'yı yerel PyHive sürücüsü veya Cloudera ODBC sürücüsünü kullanarak Apache Hive'a bağlanacak şekilde yapılandırın. Parola tabanlı kimlik doğrulamayı ve DSN veya DSN-less kurulumlarını destekler.
 - [Netezza](https://docs.digna.ai/tr/databases/netezza_connector_guide/): digna'yı NetezzaSQL ODBC sürücüsünü kullanarak Netezza'ya bağlanacak şekilde yapılandırın. Esnek bağlantı için DSN veya DSN-less kurulumlarla parola tabanlı kimlik doğrulamayı destekler.
 - [Oracle](https://docs.digna.ai/tr/databases/oracle_connector_guide/): digna'yı python-oracledb sürücüsü veya Oracle ODBC sürücüsü kullanarak Oracle'a bağlanacak şekilde yapılandırın. DSN veya DSN'siz kurulumlarla parola tabanlı kimlik doğrulamayı destekler.

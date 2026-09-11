@@ -76,9 +76,9 @@
 
 ### Tietokannat
 
+- [Overview](https://docs.digna.ai/fi/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/fi/databases/azure_synapse_connector_guide/): Konfiguroi digna yhdistämään Azure Synapse Analyticsiin joko natiivilla Python-ajurilla tai ODBC-ajurilla. Tukee sekä serverless- että dedikoituja SQL-pooloja.
 - [Databricks](https://docs.digna.ai/fi/databases/databricks_connector_guide/): Konfiguroi digna yhdistämään Databricksiin Unity Catalogin kautta käyttäen natiivista Python-yhdistäjää tai ODBC-ajuria. Tukee token-pohjaista todennusta ja joustavia yhteysvaihtoehtoja.
-- [Databricks Legacy](https://docs.digna.ai/fi/databases/databricks_legacy_connector_guide/): Konfiguroi digna yhdistämään Databricksiin ilman Unity Catalogia käyttäen natiivista Python-liitintä tai Simba Spark ODBC -ajuria. Tukee token-pohjaista todennusta ja joustavia yhteysvaihtoehtoja.
 - [Hive](https://docs.digna.ai/fi/databases/hive_connector_guide/): Konfiguroi digna yhdistämään Apache Hiveen natiivin PyHive-ajurin tai Cloudera ODBC -ajurin avulla. Tukee salasanaan perustuvaa todennusta sekä DSN- ja DSN-vapaita (DSN-less) asetuksia.
 - [Netezza](https://docs.digna.ai/fi/databases/netezza_connector_guide/): Määritä *digna* yhdistämään Netezzaan NetezzaSQL ODBC -ajurin avulla. Tukee salasanapohjaista todennusta sekä DSN- että DSN-less-asetuksilla joustavaan yhteyden muodostukseen.
 - [Oracle](https://docs.digna.ai/fi/databases/oracle_connector_guide/): Konfiguroi digna yhdistämään Oracleen käyttäen python-oracledb-ajuria tai Oracle ODBC -ajuria. Tukee salasanaperusteista todennusta sekä DSN- että DSN-loseja määrityksiä.

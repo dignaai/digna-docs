@@ -1,53 +1,106 @@
 # Source Connector for MS SQL Server
 
-This guide describes how to configure *digna* to connect to SQLServer using either the native Python connector or the ODBC driver.
+This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
+using a **DSN-less** connection string.
 
-It refers to the screen **"Create a Database Connection"**.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to SQL Server.
 
-![Create a database connection](images/data_source_config_input_mask.png)
+!!! note "Azure Synapse Analytics"
+
+    Synapse is configured as a SQL Server connection as well, with a different host name and a
+    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## Native Python Driver
+## 1. Install the ODBC Driver
 
-**Library:** `pymssql`  
-**Supported Authentication:** Password-based authentication only
+Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
+following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-> For other authentication methods, please use the ODBC driver.
+The driver that ships with Windows under the plain name **SQL Server** also works, but it is
+long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
+where installing the current driver is not an option.
 
-### *digna* Configuration (Native Driver)
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-Provide the following information in the **"Create a Database Connection"** screen:
+---
+
+## 2. ODBC Properties
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
+| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
+| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
+```
+
+### Encryption with ODBC Driver 18
+
+Driver 18 encrypts connections by default and validates the server certificate. Against a
+server with a certificate that your *digna* host does not trust — a self-signed certificate,
+typically — the connect fails with a certificate-chain error. Add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
+| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+
+### Windows Authentication
+
+To connect as the account that runs the *digna* service instead of with a SQL login, drop
+`UID` and `PWD` and add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+
+---
+
+## 3. *digna* Configuration
+
+In the **Add DB Connection** screen, provide the following:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
-Technology:         MS SQL Server
-Host Address:       Server name or IP address
-Host Port:          Port number, e.g. 1433
-Database Name:      Database name
-User Name:          Database user name
-User Password:      Password for the user
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Disabled (default)
+Technology:         SQL Server
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
 
 ---
 
-## ODBC Driver
+## 4. Notes on MS SQL Server
 
-The ODBC driver may support a broader range of authentication and connectivity options. This section focuses on password-based authentication using the driver **SQL Server**.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
+  in another database need their own connection.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
+  does not touch **Work Schema**. *Standard* needs read access only.
+- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
+  SQL Server Browser service to be reachable; `host,port` avoids that.
 
-### 1. Install the ODBC Driver
+---
 
-Install the driver **SQL Server** (or similar) by following the vendor’s official installation guide.
+## 5. Verifying the Driver (optional)
 
-### 2. Configure the ODBC Data Source
-
-Follow these steps to configure a new ODBC data source using password-based authentication:
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own wizard is a convenient way to confirm that the driver works and that the server accepts
+your credentials before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
@@ -79,72 +132,7 @@ and click the **Finish** button.
 Now click the **Test datasource** button.
 
 #### Step 6
-![Step 1](images/sqlserver/create_odbc_data_source_step6.png)
+![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-When you receive the success screen, ODBC is configured properly.
-
----
-
-Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
-
----
-
-### A. DSN-Based Configuration
-
-#### *digna* Configuration
-
-In the **"Create a Database Connection"** screen, provide the following:
-
-```
-Name:               Name of the connection. This is used for referencing the connection in other screens.
-Technology:         MS SQL Server
-Database Name:      Database that contains the source schemata
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",        value: "sqlserver-1"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-
-```
-
-> The `DSN` must match the name defined in your ODBC driver configuration.
-
----
-
-### B. DSN-less Configuration
-
-#### *digna* Configuration
-
-In the **"Create a Database Connection"** screen, provide the following:
-
-```
-Name:               Name of the connection. This is used for referencing the connection in other screens.
-Technology:         MS SQL Server
-Database Name:      Name of the database that contains the source data schemata
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DRIVER",     value: "SQL Server"
-name: "SERVER",     value: "your server name or IP address"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schemata"
-```
+A success screen confirms that the driver and the credentials work. The values you entered are
+exactly the values the properties in [section 2](#2-odbc-properties) take.

@@ -76,9 +76,9 @@
 
 ### Bazy danych
 
+- [Overview](https://docs.digna.ai/pl/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/pl/databases/azure_synapse_connector_guide/): Skonfiguruj digna, aby łączyła się z Azure Synapse Analytics za pomocą natywnego sterownika Python lub sterownika ODBC. Obsługuje zarówno serverless, jak i dedicated SQL pools.
 - [Databricks](https://docs.digna.ai/pl/databases/databricks_connector_guide/): Skonfiguruj digna, aby łączyła się z Databricks z Unity Catalog przy użyciu natywnego konektora Python lub sterownika ODBC. Obsługuje uwierzytelnianie oparte na tokenach i elastyczną łączność.
-- [Databricks Legacy](https://docs.digna.ai/pl/databases/databricks_legacy_connector_guide/): Skonfiguruj digna, aby łączyło się z Databricks bez Unity Catalog, używając natywnego konektora Python lub sterownika Simba Spark ODBC. Obsługuje uwierzytelnianie oparte na tokenie oraz elastyczne możliwości łączenia.
 - [Hive](https://docs.digna.ai/pl/databases/hive_connector_guide/): Skonfiguruj digna do łączenia się z Apache Hive przy użyciu natywnego sterownika PyHive lub sterownika ODBC firmy Cloudera. Obsługuje uwierzytelnianie za pomocą hasła oraz konfiguracje DSN i bez DSN.
 - [Netezza](https://docs.digna.ai/pl/databases/netezza_connector_guide/): Skonfiguruj digna, aby łączyło się z Netezza za pomocą sterownika ODBC NetezzaSQL. Wspiera uwierzytelnianie na podstawie hasła przy konfiguracjach z DSN lub bez DSN dla elastycznej łączności.
 - [Oracle](https://docs.digna.ai/pl/databases/oracle_connector_guide/): Skonfiguruj digna do łączenia się z Oracle przy użyciu sterownika python-oracledb lub sterownika Oracle ODBC. Obsługuje uwierzytelnianie za pomocą hasła przy konfiguracjach z DSN lub bez DSN.

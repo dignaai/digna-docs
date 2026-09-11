@@ -76,9 +76,9 @@
 
 ### Databanken
 
+- [Overview](https://docs.digna.ai/nl/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/nl/databases/azure_synapse_connector_guide/): Configureer *digna* om verbinding te maken met Azure Synapse Analytics met behulp van de native Python-driver of de ODBC-driver. Ondersteunt zowel serverless als dedicated SQL-pools.
 - [Databricks](https://docs.digna.ai/nl/databases/databricks_connector_guide/): Configureer *digna* om verbinding te maken met Databricks en Unity Catalog met behulp van de native Python-connector of de ODBC-driver. Ondersteunt token-gebaseerde authenticatie en flexibele connectiviteit.
-- [Databricks Legacy](https://docs.digna.ai/nl/databases/databricks_legacy_connector_guide/): Configureer digna om te verbinden met Databricks zonder Unity Catalog met de native Python-connector of de Simba Spark ODBC-driver. Ondersteunt token-gebaseerde authenticatie en flexibele connectiviteit.
 - [Hive](https://docs.digna.ai/nl/databases/hive_connector_guide/): Configureer digna om verbinding te maken met Apache Hive met de native PyHive-driver of de Cloudera ODBC-driver. Ondersteunt wachtwoordgebaseerde authenticatie en DSN- of DSN-loze configuraties.
 - [Netezza](https://docs.digna.ai/nl/databases/netezza_connector_guide/): Configureer digna om verbinding te maken met Netezza met de NetezzaSQL ODBC-driver. Ondersteunt wachtwoordgebaseerde authenticatie met DSN- of DSN-less configuraties voor flexibele connectiviteit.
 - [Oracle](https://docs.digna.ai/nl/databases/oracle_connector_guide/): Configureer digna om verbinding te maken met Oracle met de python-oracledb-driver of de Oracle ODBC-driver. Ondersteunt wachtwoordgebaseerde authenticatie met DSN- of DSN-loze configuraties.

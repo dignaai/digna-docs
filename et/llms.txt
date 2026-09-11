@@ -76,9 +76,9 @@
 
 ### Andmebaasid
 
+- [Overview](https://docs.digna.ai/et/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/et/databases/azure_synapse_connector_guide/): Seadista digna ühenduma Azure Synapse Analyticsiga kas natiivse Pythoni draiveri või ODBC-draiveri kaudu. Toetab nii serverless kui ka pühendatud SQL-poolide kasutamist.
 - [Databricks](https://docs.digna.ai/et/databases/databricks_connector_guide/): Konfigureeri *digna* ühenduma Databricksiga, kasutades Unity Catalogut kas natiivse Pythoni konnektori või ODBC draiveri kaudu. Toetab token-põhist autentimist ja paindlikku ühenduvust.
-- [Databricks Legacy](https://docs.digna.ai/et/databases/databricks_legacy_connector_guide/): Konfigureeri digna ühenduma Databricksiga ilma Unity Catalogita, kasutades natiivset Python-ühendajat või Simba Spark ODBC-draiverit. Toetab tokenipõhist autentimist ja paindlikku ühenduvust.
 - [Hive](https://docs.digna.ai/et/databases/hive_connector_guide/): Konfigureerige digna ühenduma Apache Hive'iga, kasutades natiivset PyHive draiverit või Cloudera ODBC draiverit. Toetab paroolipõhist autentimist ning DSN- ja DSN-vabu seadistusi.
 - [Netezza](https://docs.digna.ai/et/databases/netezza_connector_guide/): Konfigureerige digna ühendamaks Netezzaga, kasutades NetezzaSQL ODBC-draiverit. Toetab paroolipõhist autentimist nii DSN- kui DSN-vabade seadistuste puhul paindlikuks ühenduseks.
 - [Oracle](https://docs.digna.ai/et/databases/oracle_connector_guide/): Konfigureerige digna ühenduma Oracle'iga, kasutades python-oracledb draiverit või Oracle ODBC draiverit. Toetab paroolipõhist autentimist DSN-iga või DSN-ita seadistustes.

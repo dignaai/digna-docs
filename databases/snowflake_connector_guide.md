@@ -1,130 +1,120 @@
 # Source Connector for Snowflake
 
-This guide describes how to configure *digna* to connect to Snowflake using either the native Python connector or the ODBC driver.
+This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
+**DSN-less** connection string.
 
-It refers to the screen **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Snowflake.
 
 ---
 
-## Native Python Driver
+## 1. Install the ODBC Driver
 
-**Library:** `snowflake-connector-python`  
-**Supported Authentication:** Password-based authentication only
+Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
+[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-> For other authentication methods, please use the ODBC driver.
+The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
+host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-### *digna* Configuration (Native Driver)
+---
 
-Provide the following information in the **"Create a Database Connection"** screen:
+## 2. ODBC Properties
+
+Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
+*digna* is verified against, and the one Snowflake requires for accounts on which
+password-only sign-in is blocked.
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
+| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake user the token belongs to |
+| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
+| `Schema` | `PUBLIC` | Default schema of the session |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
+| `token` | `<programmatic access token>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
+```
+
+### Warehouse and role
+
+Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
+session picks them up and nothing has to be configured. Otherwise add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
+| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+
+!!! tip "Give digna its own warehouse"
+
+    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
+    *digna* from competing with interactive users for compute.
+
+### Password authentication
+
+Where the account still allows it, a password works in place of the token — drop `authenticator`
+and `token` and add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+---
+
+## 3. *digna* Configuration
+
+In the **Add DB Connection** screen, provide the following:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Snowflake
-Host Address:       Snowflake account name
-Host Port:          Not needed
-Database Name:      Database that contains the source schema
-User Name:          User name and warehouse in the format "user<@>warehouse"
-User Password:      Password for the user
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Disabled (default)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "PUBLIC"
 ```
 
 ---
 
-## ODBC Driver
+## 4. Notes on Snowflake
 
-The ODBC driver may support a broader range of authentication and connectivity options. This section focuses on password-based authentication using the **SnowflakeDSIIDriver**.
+- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
+  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
+  `token` property — encrypted values can be replaced but not read back.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
+  another database need their own connection.
+- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
+  Snowflake reports them.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
+  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only — and no write grants at all.
 
-### 1. Install the ODBC Driver
+---
 
-Install the **SnowflakeDSIIDriver** by following the vendor’s official installation guide.
+## 5. Verifying the Driver (optional)
 
-### 2. Configure the ODBC Data Source
-
-Follow these steps to configure a new ODBC data source using password-based authentication:
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the account URL and your
+credentials work before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes: 
-- If you do not provide values for Database, Schema and Warehouse, then you will need to provide them as ODBC properties during the *digna* data source configuration.
-- The value for "Server" consists of your snowflake account name followed by ".snowflakecomputing.com"
+Notes:
+
+- The value for **Server** consists of your Snowflake account identifier followed by
+  `.snowflakecomputing.com`.
+- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
+  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
 
 #### Step 2 – Test the connection
 
 Click the **TEST** button. A successful connection should look like this:
 
 ![Step 2](images/snowflake/create_odbc_data_source_step2.png)
-
----
-
-Now you can configure *digna* to use the ODBC connection, either with a **DSN (Data Source Name)** or a **DSN-less** setup.
-
----
-
-### A. DSN-Based Configuration
-
-#### *digna* Configuration
-
-In the **"Create a Database Connection"** screen, provide the following:
-
-```
-Name:               Name of the connection. This is used for referencing the connection in other screens.
-Technology:         Snowflake
-Database Name:      Database that contains the source schemas
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",            value: "snowflake_demo_2"
-name: "PWD",            value: "{your password in curly braces}"
-
-optionally:
-name: "Database",       value: "Database that contains the source schemas"
-name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
-```
-
-> The `DSN` must match the name defined in your ODBC driver configuration.
-
----
-
-### B. DSN-less Configuration
-
-#### *digna* Configuration
-
-In the **"Create a Database Connection"** screen, provide the following:
-
-```
-Technology:         Snowflake
-Database Name:      Database that contains the source schemas
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "Driver",     value: "{SnowflakeDSIIDriver}"
-name: "Server",     value: "your-account-name.snowflakecomputing.com'
-name: "UID",        value: "your snowflake user'
-name: "PWD",        value: "your snowflake password"
-name: "Database",   value: "Database that contains the source schema"
-name: "Warehouse",  value: "Warehouse to use for the execution of the SQLs"
-```

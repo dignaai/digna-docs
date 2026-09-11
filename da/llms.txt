@@ -76,9 +76,9 @@
 
 ### Databaser
 
+- [Overview](https://docs.digna.ai/da/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/da/databases/azure_synapse_connector_guide/): Konfigurer digna til at oprette forbindelse til Azure Synapse Analytics enten ved hjælp af den native Python-driver eller ODBC-driveren. Understøtter både serverløse og dedikerede SQL-pools.
 - [Databricks](https://docs.digna.ai/da/databases/databricks_connector_guide/): Configure digna to connect to Databricks with Unity Catalog using the native Python connector or ODBC driver. Supports token-based authentication and flexible connectivity.
-- [Databricks Legacy](https://docs.digna.ai/da/databases/databricks_legacy_connector_guide/): Konfigurer *digna* til at oprette forbindelse til Databricks uden Unity Catalog ved hjælp af den native Python-connector eller Simba Spark ODBC-driver. Understøtter token-baseret autentifikation og fleksibel tilslutning.
 - [Hive](https://docs.digna.ai/da/databases/hive_connector_guide/): Konfigurer *digna* til at oprette forbindelse til Apache Hive ved hjælp af den native PyHive-driver eller Cloudera ODBC-driveren. Understøtter adgangskodebaseret autentificering samt DSN og DSN-less konfigurationer.
 - [Netezza](https://docs.digna.ai/da/databases/netezza_connector_guide/): Konfigurer digna til at forbinde til Netezza ved hjælp af NetezzaSQL ODBC-driveren. Understøtter adgangskodebaseret autentificering med DSN eller DSN-less opsætninger for fleksibel tilslutning.
 - [Oracle](https://docs.digna.ai/da/databases/oracle_connector_guide/): Konfigurer digna til at oprette forbindelse til Oracle ved hjælp af python-oracledb-driveren eller Oracle ODBC-driveren. Understøtter adgangskodebaseret autentificering med DSN eller DSN-less opsætninger.

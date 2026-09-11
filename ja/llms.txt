@@ -76,9 +76,9 @@
 
 ### データベース
 
+- [Overview](https://docs.digna.ai/ja/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/ja/databases/azure_synapse_connector_guide/): ネイティブの Python ドライバーまたは ODBC ドライバーを使用して digna を Azure Synapse Analytics に接続する方法を構成します。サーバーレスおよび専用の SQL プールの両方をサポートします。
 - [Databricks](https://docs.digna.ai/ja/databases/databricks_connector_guide/): digna を Databricks の Unity Catalog に接続する方法。ネイティブ Python コネクタまたは ODBC ドライバを使用したトークン認証と柔軟な接続方法をサポートします。
-- [Databricks Legacy](https://docs.digna.ai/ja/databases/databricks_legacy_connector_guide/): ネイティブの Python コネクタまたは Simba Spark ODBC ドライバを使用して Unity Catalog なしの Databricks に接続するよう digna を設定します。トークンベース認証と柔軟な接続性をサポートします。
 - [Hive](https://docs.digna.ai/ja/databases/hive_connector_guide/): Configure digna to connect to Apache Hive using the native PyHive driver or the Cloudera ODBC driver. Supports password-based authentication and DSN or DSN-less setups.
 - [Netezza](https://docs.digna.ai/ja/databases/netezza_connector_guide/): NetezzaSQL ODBC ドライバーを使用して digna を Netezza に接続する方法を設定します。DSN ベースまたは DSN-less の構成によるパスワード認証をサポートし、柔軟な接続性を提供します。
 - [Oracle](https://docs.digna.ai/ja/databases/oracle_connector_guide/): python-oracledb ドライバまたは Oracle ODBC ドライバを使用して digna を Oracle に接続する方法を設定します。DSN または DSN-less 構成によるパスワード認証に対応しています。

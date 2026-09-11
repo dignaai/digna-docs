@@ -76,9 +76,9 @@
 
 ### قواعد البيانات
 
+- [Overview](https://docs.digna.ai/ar/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/ar/databases/azure_synapse_connector_guide/): قم بتكوين digna للاتصال بـ Azure Synapse Analytics باستخدام إما الموصل الأصلي لـ Python أو برنامج تشغيل ODBC. يدعم كلًا من SQL pools بدون خادم والمخصصة.
 - [Databricks](https://docs.digna.ai/ar/databases/databricks_connector_guide/): تكوين *digna* للاتصال بـ Databricks باستخدام Unity Catalog عبر الموصل الأصلي لـ Python أو برنامج تشغيل ODBC. يدعم المصادقة عبر الرموز (token) وخيارات اتصال مرنة.
-- [Databricks Legacy](https://docs.digna.ai/ar/databases/databricks_legacy_connector_guide/): قم بتكوين digna للاتصال بـ Databricks بدون Unity Catalog باستخدام الموصل الأصلي لـ Python أو برنامج تشغيل Simba Spark ODBC. يدعم المصادقة عبر الرموز وإمكانيات اتصال مرنة.
 - [Hive](https://docs.digna.ai/ar/databases/hive_connector_guide/): تكوين digna للاتصال بـ Apache Hive باستخدام برنامج PyHive الأصلي أو برنامج تشغيل Cloudera ODBC. يدعم المصادقة المعتمدة على كلمة المرور وإعدادات DSN أو بدون DSN.
 - [Netezza](https://docs.digna.ai/ar/databases/netezza_connector_guide/): قم بتكوين digna للاتصال بـ Netezza باستخدام برنامج تشغيل ODBC NetezzaSQL. يدعم المصادقة بكلمة المرور عبر إعدادات DSN أو إعدادات بدون DSN لمرونة الاتصال.
 - [Oracle](https://docs.digna.ai/ar/databases/oracle_connector_guide/): قم بتكوين digna للاتصال بـ Oracle باستخدام برنامج التشغيل python-oracledb أو برنامج تشغيل Oracle ODBC. يدعم المصادقة المعتمدة على كلمة المرور سواء عبر إعدادات DSN أو بدون DSN.

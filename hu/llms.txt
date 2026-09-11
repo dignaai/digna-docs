@@ -76,9 +76,9 @@
 
 ### Adatbázisok
 
+- [Overview](https://docs.digna.ai/hu/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/hu/databases/azure_synapse_connector_guide/): Állítsa be a digna-t, hogy csatlakozzon az Azure Synapse Analyticshez a natív Python driver vagy az ODBC driver használatával. Mind a serverless, mind a dedicated SQL pool támogatott.
 - [Databricks](https://docs.digna.ai/hu/databases/databricks_connector_guide/): Configure digna to connect to Databricks with Unity Catalog using the native Python connector or ODBC driver. Supports token-based authentication and flexible connectivity.
-- [Databricks Legacy](https://docs.digna.ai/hu/databases/databricks_legacy_connector_guide/): Konfigurálja a digna-t Databrickshez Unity Catalog nélkül a natív Python connectorral vagy a Simba Spark ODBC driverrel. Támogatja a token-alapú hitelesítést és rugalmas csatlakozást.
 - [Hive](https://docs.digna.ai/hu/databases/hive_connector_guide/): Konfigurálja a digna-t az Apache Hive-hoz való csatlakozáshoz a natív PyHive driver vagy a Cloudera ODBC driver használatával. Támogatja a jelszó alapú hitelesítést, valamint DSN-es és DSN-nélküli beállításokat.
 - [Netezza](https://docs.digna.ai/hu/databases/netezza_connector_guide/): Konfigurálja a digna-t Netezza-hez való csatlakozáshoz a NetezzaSQL ODBC-illesztőprogram használatával. Támogatja a jelszó alapú hitelesítést DSN vagy DSN nélküli beállításokkal a rugalmas csatlakoztathatóság érdekében.
 - [Oracle](https://docs.digna.ai/hu/databases/oracle_connector_guide/): Konfigurálja a digna-t, hogy Oracle-hoz csatlakozzon a python-oracledb driverrel vagy az Oracle ODBC driverrel. Támogatja a jelszó alapú hitelesítést DSN-es és DSN-less beállításokkal.

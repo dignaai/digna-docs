@@ -76,9 +76,9 @@
 
 ### Bases de données
 
+- [Overview](https://docs.digna.ai/fr/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/fr/databases/azure_synapse_connector_guide/): Configurez digna pour se connecter à Azure Synapse Analytics en utilisant soit le pilote Python natif, soit le pilote ODBC. Prend en charge les pools SQL serverless et dédiés.
 - [Databricks](https://docs.digna.ai/fr/databases/databricks_connector_guide/): Configurez digna pour se connecter à Databricks avec Unity Catalog en utilisant le connecteur Python natif ou le pilote ODBC. Prend en charge l'authentification par jeton et une connectivité flexible.
-- [Databricks Legacy](https://docs.digna.ai/fr/databases/databricks_legacy_connector_guide/): Configurez digna pour se connecter à Databricks sans Unity Catalog en utilisant le connecteur Python natif ou le pilote ODBC Simba Spark. Prend en charge l’authentification par token et une connectivité flexible.
 - [Hive](https://docs.digna.ai/fr/databases/hive_connector_guide/): Configurer digna pour se connecter à Apache Hive en utilisant le pilote PyHive natif ou le pilote ODBC Cloudera. Prend en charge l'authentification par mot de passe et les configurations avec ou sans DSN.
 - [Netezza](https://docs.digna.ai/fr/databases/netezza_connector_guide/): Configurez digna pour se connecter à Netezza en utilisant le pilote ODBC NetezzaSQL. Prend en charge l’authentification par mot de passe avec des configurations DSN ou sans DSN pour une connectivité flexible.
 - [Oracle](https://docs.digna.ai/fr/databases/oracle_connector_guide/): Configure digna to connect to Oracle using the python-oracledb driver or the Oracle ODBC driver. Supports password-based authentication with DSN or DSN-less setups.

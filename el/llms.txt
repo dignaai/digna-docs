@@ -76,9 +76,9 @@
 
 ### Βάσεις δεδομένων
 
+- [Overview](https://docs.digna.ai/el/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
 - [Azure Synapse](https://docs.digna.ai/el/databases/azure_synapse_connector_guide/): Διαμορφώστε το digna για σύνδεση με το Azure Synapse Analytics χρησιμοποιώντας είτε τον native Python driver είτε τον ODBC driver. Υποστηρίζει τόσο serverless όσο και dedicated SQL pools.
 - [Databricks](https://docs.digna.ai/el/databases/databricks_connector_guide/): Διαμορφώστε το digna για σύνδεση με Databricks και Unity Catalog χρησιμοποιώντας τον native Python connector ή τον ODBC driver. Υποστηρίζει ταυτοποίηση με token και ευέλικτη συνδεσιμότητα.
-- [Databricks Legacy](https://docs.digna.ai/el/databases/databricks_legacy_connector_guide/): Διαμορφώστε το digna για σύνδεση με το Databricks χωρίς Unity Catalog χρησιμοποιώντας τον native Python connector ή τον Simba Spark ODBC driver. Υποστηρίζει πιστοποίηση με token και ευέλικτη συνδεσιμότητα.
 - [Hive](https://docs.digna.ai/el/databases/hive_connector_guide/): Ρυθμίστε το digna για σύνδεση με το Apache Hive χρησιμοποιώντας τον εγγενή οδηγό PyHive ή τον ODBC οδηγό της Cloudera. Υποστηρίζει έλεγχο ταυτότητας με κωδικό πρόσβασης και ρυθμίσεις με DSN ή χωρίς DSN.
 - [Netezza](https://docs.digna.ai/el/databases/netezza_connector_guide/): Διαμορφώστε το digna ώστε να συνδεθεί με το Netezza χρησιμοποιώντας τον ODBC driver NetezzaSQL. Υποστηρίζει αυθεντικοποίηση με κωδικό μέσω DSN ή DSN-less ρυθμίσεων για ευέλικτη συνδεσιμότητα.
 - [Oracle](https://docs.digna.ai/el/databases/oracle_connector_guide/): Διαμορφώστε το digna για σύνδεση με Oracle χρησιμοποιώντας τον python-oracledb driver ή τον Oracle ODBC driver. Υποστηρίζει αυθεντικοποίηση με κωδικό (password) είτε με DSN είτε χωρίς DSN.
