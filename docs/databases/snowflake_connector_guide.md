@@ -33,6 +33,14 @@ Snowflake is reached with a **programmatic access token (PAT)** — the authenti
 *digna* is verified against, and the one Snowflake requires for accounts on which
 password-only sign-in is blocked.
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and which authentication options your account permits is decided by
+    the account's security policy. Use this as a starting point and check the documentation of
+    the driver version you installed.
+
 | Key | Example value | Notes |
 |---|---|---|
 | `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |

@@ -29,6 +29,14 @@ Read the exact registered driver name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
+    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
+    point and check the documentation of the driver version you installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |

@@ -29,6 +29,14 @@ Read the exact registered driver name off your host as described in
 
 ## 2. ODBC Properties
 
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    NetezzaSQL driver, so their names, defaults and accepted values differ between client
+    versions and platforms, and a TLS-secured appliance needs more than the properties shown
+    here. Use this as a starting point and check the documentation of the client version you
+    installed.
+
 Add the following properties in the **Add DB Connection** screen:
 
 | Key | Example value | Notes |
