@@ -1197,7 +1197,7 @@ sudo chown -R digna:digna /opt/digna
 
     The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
 
-### Step 4: Restore Your Configuration Files
+#### Step 4: Restore Your Configuration Files
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
@@ -1220,7 +1220,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     See [Backend Configuration](#backend-configuration) for what each setting does.
 
-### Step 5: Validate the Configuration
+#### Step 5: Validate the Configuration
 
 Confirm that the updated `config.toml` is complete before touching the repository:
 
@@ -1230,7 +1230,7 @@ Confirm that the updated `config.toml` is complete before touching the repositor
 
 Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
 
-### Step 6: Upgrade the Repository Schema
+#### Step 6: Upgrade the Repository Schema
 
 Navigate to your digna installation directory and run:
 
@@ -1241,7 +1241,7 @@ cd /opt/digna
 
 This updates the PostgreSQL schema to the latest version while preserving all existing data.
 
-### Step 7: Restart Services
+#### Step 7: Restart Services
 
 If running as a systemd service:
 
