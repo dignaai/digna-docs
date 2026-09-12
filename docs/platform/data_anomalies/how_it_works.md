@@ -60,6 +60,18 @@ Robustness is what keeps a single bad day from poisoning the following ones: a s
 
 The model can also absorb a **structural break** — a genuine step change such as a migration, a new source system, or a business change — and predict from the new level instead of averaging across the step indefinitely.
 
+Release 2026.06 opens the model up to configuration. Seven parameters steer how the prediction is fitted:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+The defaults suit the great majority of series, and each parameter can be restored to its default at any time. For guidance on when to reach for one and how to set it, contact digna.
+
 ---
 
 ## Step 3 – The Tolerance Band
