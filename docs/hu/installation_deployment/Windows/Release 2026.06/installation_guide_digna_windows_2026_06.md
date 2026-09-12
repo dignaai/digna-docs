@@ -37,7 +37,7 @@ digna egy átfogó, mesterséges intelligencia által vezérelt platform, amely 
 
 A digna két fő komponensből áll:
 
-- **dignabackend**: az alkalmazás magja, amely feldolgozza az adatokat és végrehajtja a minőség-ellenőrzéseket.
+- **digna**: az alkalmazás magja, amely az adatok feldolgozásáért és a minőségi ellenőrzések végrehajtásáért felel. Egyetlen futtatható fájlban egyesíti a háttérrendszert és a parancssori felületet, felváltva a korábbi kiadások különálló `dignabackend` és `dignacli` programjait.
 - **dignadashboard**: webalapú felület, amely webkiszolgálón fut és felhasználóbarát módon biztosít hozzáférést a digna platformhoz és az adatok minőségi metrikáinak megjelenítéséhez.
 
 ### Mi újság a 2026.06-os kiadásban
@@ -374,7 +374,6 @@ Ez a rész a biztonsági és cookie beállításokat tartalmazza:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -382,17 +381,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_FERNET_KEY` | Titkosítási kulcs | Tokenek és sütik titkosításához (alapértelmezett megadható) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Illeszkedjen a frontend domainhez |
 | `digna_COOKIE_SECURE` | `false` (lokális) / `true` (éles) | Éles környezetben HTTPS esetén állítsd `true`-ra |
 | `digna_COOKIE_HTTPONLY` | `true` | Biztonsági okokból mindig engedélyezett |
 | `digna_COOKIE_SAME_SITE` | `lax` | CSRF elleni védelem |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 óra) | Munkamenet lejárata másodpercben |
 | `digna_MAX_WORKERS` | CPU magok száma - 1 | Párhuzamos ellenőrzési feladatok száma |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximális késleltetés másodpercben, amelyet az ütemező hozzáadhat egy esedékes feladat indítása előtt |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Napszak (24 órás `HH:MM` formátum), amikor a napi takarítás indul |
+
+#### [encryption] szekció
+
+Ez a szekció tartalmazza azt a kulcsot, amellyel a tárolóban őrzött érzékeny értékek titkosítva vannak. **Kötelező** — a `config check` FAILED állapotúnak jelenti az `[encryption]` szekciót, ha a kulcs hiányzik.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Paraméter | Érték | Megjegyzés |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 kódolású kulcs | Titkosítja a digna tárolóban őrzött érzékeny értékeket |
+
+!!! warning "Védje a config.toml fájlt"
+
+    Ez a kulcs rögzített érték, amely minden digna telepítésben azonos, és éppen ez fejti vissza a tárolóban lévő érzékeny értékeket. Korlátozza a `config.toml` hozzáférését arra a fiókra, amely alatt a digna fut, tartsa a fájlt verziókövetésen és megosztott meghajtókon kívül, és hagyja ki minden olyan mentésből, amelyet a tárolónál kevésbé biztonságosan őriznek.
 
 #### [logging] szekció
 
@@ -410,6 +429,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | A megtartott napi naplómentések száma |
 
 ---
+
+### 2. lépés: Ellenőrizze a konfigurációt
+
+A tároló inicializálása előtt ellenőrizze, hogy a `config.toml` teljes és helyesen felépített. A digna telepítési könyvtárában futtassa:
+
+```bash
+digna config check
+```
+
+Minden szekció külön kerül ellenőrzésre, így egyetlen hiba nem takarja el a többi állapotát:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Javítson ki mindent, amit FAILED állapotúként jelent, és a folytatás előtt futtassa újra a parancsot. A beállítások teljes listája a [CLI-referenciában](../../../cli/Command_Line_Interface_202606.md) található.
 
 ### 3. lépés: Inicializáld az adattárat (repository)
 
@@ -433,28 +476,7 @@ digna repo install
 
 Ez a parancs létrehozza a szükséges táblákat és sémát a PostgreSQL adatbázisban.
 
-### 5. lépés: Indítsd el a digna szervert
-
-A digna telepítési könyvtárában indítsd el a szervert:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Paraméterek:**
-- `--address` — szerver hosztneve/IP-je
-- `--port` — szerver portja 
-
-Induláskor a következő típusú üzeneteket kell látnod:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### 6. lépés: Hozz létre egy admin felhasználót
+### 5. lépés: Hozz létre egy admin felhasználót
 
 1. Nyiss meg egy **új** Parancssor ablakot
 2. Navigálj a digna telepítési könyvtárába
@@ -477,6 +499,31 @@ Ez létrehoz egy teljes adminisztrátori jogosultságokkal rendelkező felhaszn�
     Használj erős jelszót, amely tartalmaz nagy- és kisbetűket, számokat és speciális karaktereket.
 
 ---
+
+### 6. lépés: Indítsd el a digna szervert
+
+A digna telepítési könyvtárában indítsd el a szervert:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Paraméterek:**
+- `--address` — szerver hosztneve/IP-je
+- `--port` — szerver portja 
+
+Induláskor a következő típusú üzeneteket kell látnod:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "A kiszolgáló lefoglalja a terminált"
+
+    A `serve` az előtérben fut, és addig működik, amíg le nem állítja a ++ctrl+c++ billentyűkkel. Hagyja futni, amíg befejezi a beállítást; ha inkább rendszerindításkor indulna automatikusan, lásd: [A digna futtatása Windows-szolgáltatásként](#running-digna-as-a-windows-service).
 
 ## Dashboard konfiguráció {: #dashboard-configuration }
 
@@ -640,6 +687,27 @@ A digna szerver mostantól nincs regisztrálva Windows szolgáltatásként.
 
 ### Mielőtt frissítenél
 
+**Először ellenőrizze az összes adatbázis-kapcsolatot**
+
+A 2026.06 kiadástól a digna minden forrástechnológiát **ODBC**-n keresztül ér el. A korábbi kiadások választást kínáltak a technológiánkénti illesztőprogram és az ODBC között, a **Use ODBC** kapcsolóval. A digna csapata úgy döntött, hogy kizárólag az ODBC-re épít, mert egyetlen szabványos felület többet ad, mint egy sor testreszabott illesztőprogram:
+
+- **Hitelesítés** — a hitelesítés az ODBC része, így egy kapcsolat mindent használhat, amit az illesztőprogramja támogat: jelszavakat, tokeneket és PAT-okat, Kerberost és Active Directoryt, MFA-t és böngészőalapú egyszeri bejelentkezést, felhőidentitásokat, ügyféltanúsítványokat és TLS-t. Az új módszerek az illesztőprogram frissítésével érkeznek, nem pedig egy digna kiadásra várva.
+- **Az adatbázis-gyártók által karbantartott illesztőprogramok** — a gyártó saját illesztőprogramja követi az új kiszolgálóverziókat és a biztonsági javításokat, és Ön a saját ütemezése szerint frissítheti, a dignától függetlenül.
+- **Egyetlen mód mindent beállítani** — minden technológia kulcs-érték tulajdonságok listája, ugyanazzal a felülettel, az érzékeny értékek ugyanolyan titkosításával és ugyanazzal a hibakereséssel, ahelyett hogy forrásonként más mezőkészlet lenne.
+- **Hangolás és lefedettség** — az illesztőprogram-szintű beállítások, mint az időtúllépések, a TLS-beállítások, a proxyk és a lekérési méretek minden forráshoz elérhetők, és bármely technológia csatlakoztatható, amelyhez szabványos ODBC-illesztőprogram létezik, azok is, amelyekhez a digna nem ad ki külön útmutatót.
+
+A gyakorlatban ez azt jelenti, hogy a **Use ODBC** kapcsoló, valamint a külön gazdagép-, port-, adatbázis-, felhasználó- és jelszómezők már nem léteznek. **Minden olyan kapcsolatot, amely még nem ODBC-t használ, át kell állítani ODBC-re** — automatikus átalakítás nincs, ezért tervezze ezt a frissítés előtt:
+
+1. Tekintse át a telepítésében meghatározott valamennyi adatbázis-kapcsolatot, és jegyezze fel azokat, amelyek még nem ODBC-t használnak — mindegyiket újra kell konfigurálni.
+2. Telepítse a megfelelő ODBC-illesztőprogramot a digna gazdagépre — a kapcsolatokat az a kiszolgáló nyitja meg, amelyen a digna háttérrendszer fut, nem a böngésző. Lásd: [Az ODBC-illesztőprogram telepítése a digna gazdagépre](../../../databases/overview.md#install-the-driver).
+3. Készítse elő az ODBC-tulajdonságokat minden érintett kapcsolathoz. A [technológiai útmutatók](../../../databases/overview.md#technology-guides) forrásonként egy bevált tulajdonságkészletet sorolnak fel.
+
+A frissítés után állítsa át ODBC-re minden érintett kapcsolatot, és tesztelje az irányítópultról — lásd: [Adatbázis-kapcsolat létrehozása](../../../databases/overview.md#create-a-database-connection) és [Kapcsolat tesztelése](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy kapcsolatok"
+
+    A Databricks Legacy csatlakozót ebben a kiadásban eltávolítottuk. Költöztesse át ezeket a kapcsolatokat a [Databricks](../../../databases/databricks_connector_guide.md) csatlakozóra.
+
 **A digna adattár biztonsági mentése kötelező**
 
 A frissítés előtt készíts biztonsági mentést az adattárról (PostgreSQL), hogy védve legyél az adatvesztés ellen. A mentés biztosítja, hogy vissza tudod állítani az állapotot, ha a frissítés közben váratlan problémák merülnének fel.
@@ -655,18 +723,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### 2. lépés: Készíts biztonsági mentést a jelenlegi backend telepítésről
+#### 2. lépés: Mentse a jelenlegi telepítést
 
-A digna telepítési könyvtárban:
+A digna telepítési könyvtárában nevezze át a jelenlegi telepítés mappáit, hogy az új kiadás melléjük telepíthető legyen:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "a dignabackend és a dignacli már nem használatos"
+
+    A 2026.06 kiadástól a `dignabackend` és a `dignacli` helyét az egyetlen `digna` futtatható fájl veszi át, amely egyesíti a háttérrendszert és a CLI-t. A `dignabackend_old` és a `dignacli_old` mappát csak addig tartsa meg, amíg a frissítést ellenőrizte — utána mindkettőt törölheti. A `dashboard_old` mappát tartsa meg, amíg vissza nem állította belőle a konfigurációs fájljait (lásd a 4. lépést).
 
 #### 3. lépés: Csomagold ki és telepítsd az új verziót
 
@@ -678,12 +754,39 @@ ren dashboard dashboard_old
 
     A `config.toml` fájl **soha** nincs benne a telepítési ZIP-ben. A meglévő konfigurációd biztonságban marad.
 
-### 4. lépés: Állítsd vissza a konfigurációs fájlokat
+#### 4. lépés: Állítsd vissza a konfigurációs fájlokat
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### 5. lépés: Frissítsd az adattár sémáját
+!!! warning "A 2026.06 kiadás módosítja a config.toml fájlt"
+
+    Három beállítás új és kötelező, egy pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután **távolítsa el a `digna_FERNET_KEY` kulcsot** a `[base]` szekcióból — már nem használatos.
+
+    Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
+
+#### 5. lépés: Ellenőrizze a konfigurációt
+
+Mielőtt hozzányúlna a tárolóhoz, győződjön meg róla, hogy a frissített `config.toml` teljes:
+
+```bash
+digna config check
+```
+
+Minden szekciónak OK állapotot kell jelentenie. Javítson ki mindent, amit FAILED állapotúként jelent, és a folytatás előtt futtassa újra a parancsot.
+
+#### 6. lépés: Frissítsd az adattár sémáját
 
 Navigálj a digna telepítési könyvtárába és futtasd:
 
@@ -693,7 +796,7 @@ digna repo upgrade
 
 Ez frissíti a PostgreSQL sémát a legújabb verzióra, miközben megőrzi a meglévő adatokat.
 
-### 6. lépés: Indítsd újra a szolgáltatásokat
+#### 7. lépés: Indítsd újra a szolgáltatásokat
 
 Ha Windows szolgáltatásként fut:
 
@@ -711,8 +814,9 @@ digna serve --address <address> --port <port>
 
 Ha IIS-t vagy Tomcat-et használsz, indítsd újra a megfelelő webkiszolgálót.
 
-#### 7. lépés: Ellenőrizd a frissítést
+#### 8. lépés: Ellenőrizd a frissítést
 
 1. Nyisd meg a digna dashboardot
 2. Ellenőrizd, hogy a felület betöltődik-e rendesen
 3. Nézd át a szerver naplóit hibák után kutatva
+4. Állítsa át ODBC-re mindazokat a kapcsolatokat, amelyek még nem használták, majd tesztelje az összes kapcsolatot — lásd: [Kapcsolat tesztelése](../../../databases/overview.md#testing-a-connection)

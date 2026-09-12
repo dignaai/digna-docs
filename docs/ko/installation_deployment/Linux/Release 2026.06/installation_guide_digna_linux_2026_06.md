@@ -37,7 +37,7 @@ digna는 데이터 웨어하우스, 데이터 레이크, 레이크하우스 등 
 
 digna는 두 가지 주요 구성요소로 이루어져 있습니다:
 
-- **dignabackend**: 데이터 처리 및 품질 검사를 수행하는 애플리케이션의 핵심 엔진입니다.
+- **digna**: 애플리케이션의 핵심으로, 데이터 처리와 품질 검사 수행을 담당합니다. 백엔드와 명령줄 인터페이스를 단일 실행 파일로 통합하여 이전 릴리스의 별도 프로그램인 `dignabackend`와 `dignacli`를 대체합니다.
 - **dignadashboard**: 웹 서버에 호스팅되는 웹 기반 인터페이스로, digna 플랫폼과 상호작용하고 데이터 품질 지표를 시각화하는 사용자 친화적인 방법을 제공합니다.
 
 ### 릴리스 2026.06의 새로운 기능
@@ -653,7 +653,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -661,21 +660,41 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | 매개변수 | 값 | 메모 |
 |---|---|---|
-| `digna_FERNET_KEY` | 암호화 키 | 토큰 및 쿠키 암호화에 사용 (기본값 제공) |
 | `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킬 것 |
 | `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결에서는 `true` 사용 |
 | `digna_COOKIE_HTTPONLY` | `true` | 보안을 위해 항상 활성화 |
 | `digna_COOKIE_SAME_SITE` | `lax` | CSRF 공격 방지 |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24시간) | 세션 만료 시간(초) |
 | `digna_MAX_WORKERS` | CPU 코어 수 - 1 | 병렬 검사 작업 수 |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | 스케줄러가 예정된 작업을 시작하기 전에 추가할 수 있는 최대 지연 시간(초) |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | 일일 정리가 시작되는 시각(24시간 형식 `HH:MM`) |
 
 !!! tip "팁"
 
     서버에서 사용 가능한 CPU 코어 수를 확인하려면 `nproc`를 실행하십시오.
+
+#### [encryption] 섹션
+
+이 섹션에는 리포지터리에 저장된 민감한 값을 암호화하는 데 사용되는 키가 들어 있습니다. **필수**입니다 — 키가 없으면 `config check`는 `[encryption]` 섹션을 FAILED로 보고합니다.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| 매개변수 | 값 | 메모 |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64로 인코딩된 키 | digna 리포지터리에 저장된 민감한 값을 암호화합니다 |
+
+!!! warning "config.toml 보호"
+
+    이 키는 고정된 값으로 모든 digna 설치에서 동일하며, 리포지터리의 민감한 값을 복호화하는 것이 바로 이 키입니다. `config.toml` 접근을 digna를 실행하는 계정으로 제한하고, 버전 관리와 공유 드라이브에서 제외하며, 리포지터리 자체보다 덜 안전하게 보관되는 백업에서는 반드시 빼십시오.
 
 #### [logging] 섹션
 
@@ -694,7 +713,31 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ---
 
-### 2단계: 저장소 초기화
+### 2단계: 구성 검증
+
+리포지터리를 초기화하기 전에 `config.toml`이 완전하고 올바르게 구성되었는지 확인하십시오. digna 설치 디렉터리에서 다음을 실행합니다:
+
+```bash
+digna config check
+```
+
+각 섹션은 개별적으로 검증되므로 하나의 오류가 나머지 상태를 가리지 않습니다:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+FAILED로 보고된 모든 항목을 수정한 뒤, 계속하기 전에 명령을 다시 실행하십시오. 전체 옵션 목록은 [CLI 참조](../../../cli/Command_Line_Interface_202606.md)에 있습니다.
+
+### 3단계: 저장소 초기화
 
 1. 터미널을 엽니다.
 2. digna 설치 디렉터리( `config.toml` 및 `digna` 실행 파일이 있는 곳)로 이동합니다.
@@ -715,7 +758,7 @@ cd /opt/digna
     sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
-### 3단계: 저장소 스키마 설치
+### 4단계: 저장소 스키마 설치
 
 같은 디렉터리에서 다음을 실행하십시오:
 
@@ -725,7 +768,35 @@ cd /opt/digna
 
 이 명령은 PostgreSQL 데이터베이스에 필요한 테이블과 스키마를 설치합니다.
 
-### 4단계: digna 서버 시작
+### 5단계: 관리자 사용자 생성
+
+1. **새로운** 터미널 창을 엽니다.
+2. digna 설치 디렉터리로 이동합니다.
+3. 관리자 사용자를 생성하려면 다음 명령을 실행하십시오:
+
+```bash
+./digna user add <email> <password> "<display_name>" --admin
+```
+
+**예시:**
+
+```bash
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
+```
+
+이렇게 하면 이메일 주소가 `admin@example.com`이고 전체 관리자 권한을 가진 사용자가 생성됩니다.
+
+!!! tip "팁"
+
+    비밀번호는 작은따옴표로 감싸십시오. `bash`와 `zsh`는 `!`, `$`, `*` 같은 문자를 특별하게 취급하므로 인용하지 않으면 원래 문자열대로 전달되지 않습니다.
+
+!!! tip "권장 사항"
+
+    대문자, 소문자, 숫자 및 특수 문자를 섞어 강력한 비밀번호를 사용하십시오.
+
+---
+
+### 6단계: digna 서버 시작
 
 digna 설치 디렉터리에서 서버를 시작합니다:
 
@@ -757,33 +828,9 @@ INFO:     Uvicorn running on http://localhost:8082
     sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
     ```
 
-### 5단계: 관리자 사용자 생성
+!!! note "서버가 터미널을 점유합니다"
 
-1. **새로운** 터미널 창을 엽니다.
-2. digna 설치 디렉터리로 이동합니다.
-3. 관리자 사용자를 생성하려면 다음 명령을 실행하십시오:
-
-```bash
-./digna user add <email> <password> "<display_name>" --admin
-```
-
-**예시:**
-
-```bash
-./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
-```
-
-이렇게 하면 이메일 주소가 `admin@example.com`이고 전체 관리자 권한을 가진 사용자가 생성됩니다.
-
-!!! tip "팁"
-
-    비밀번호는 작은따옴표로 감싸십시오. `bash`와 `zsh`는 `!`, `$`, `*` 같은 문자를 특별하게 취급하므로 인용하지 않으면 원래 문자열대로 전달되지 않습니다.
-
-!!! tip "권장 사항"
-
-    대문자, 소문자, 숫자 및 특수 문자를 섞어 강력한 비밀번호를 사용하십시오.
-
----
+    `serve`는 포그라운드에서 실행되며 ++ctrl+c++로 중지할 때까지 계속 동작합니다. 설정을 마칠 때까지 실행 상태로 두십시오. 대신 부팅 시 자동으로 시작하려면 다음을 참조하십시오: [digna를 systemd 서비스로 실행](#running-digna-as-a-systemd-service).
 
 ## 대시보드 구성 {: #dashboard-configuration }
 
@@ -1049,6 +1096,27 @@ sudo journalctl -u digna -f
 
 ### 업그레이드 전에
 
+**먼저 모든 데이터베이스 연결을 확인하십시오**
+
+릴리스 2026.06부터 digna는 모든 소스 기술에 **ODBC**로 접근합니다. 이전 릴리스에서는 기술별 전용 드라이버와 ODBC 중에서 **Use ODBC** 스위치로 선택할 수 있었습니다. digna 팀은 오직 ODBC만을 기반으로 삼기로 결정했습니다. 단일 표준 인터페이스가 맞춤 제작된 드라이버 모음보다 더 많은 것을 제공하기 때문입니다:
+
+- **인증** — 인증은 ODBC의 일부이므로 연결은 해당 드라이버가 지원하는 모든 방식을 사용할 수 있습니다. 암호, 토큰과 PAT, Kerberos와 Active Directory, MFA와 브라우저 기반 싱글 사인온, 클라우드 ID, 클라이언트 인증서, TLS 등입니다. 새로운 방식은 digna 릴리스를 기다릴 필요 없이 드라이버 업데이트와 함께 제공됩니다.
+- **데이터베이스 공급업체가 관리하는 드라이버** — 공급업체의 드라이버가 새 서버 버전과 보안 수정 사항을 따라가며, digna와 무관하게 원하는 일정에 맞춰 업데이트할 수 있습니다.
+- **모든 것을 구성하는 단일한 방식** — 모든 기술이 키/값 속성 목록이며, 동일한 인터페이스, 동일한 민감 값 암호화, 동일한 문제 해결 방식을 사용합니다. 소스마다 다른 입력 필드 묶음이 필요하지 않습니다.
+- **조정과 적용 범위** — 타임아웃, TLS 설정, 프록시, 페치 크기 같은 드라이버 수준 옵션을 모든 소스에서 사용할 수 있으며, 호환되는 ODBC 드라이버가 있는 기술이라면 digna가 전용 안내서를 제공하지 않는 것까지 포함해 연결할 수 있습니다.
+
+실제로 이는 **Use ODBC** 스위치와 호스트, 포트, 데이터베이스, 사용자, 암호의 개별 필드가 더 이상 존재하지 않는다는 뜻입니다. **아직 ODBC를 사용하지 않는 모든 연결은 ODBC로 전환해야 합니다** — 자동 변환은 없으므로 업그레이드 전에 계획하십시오:
+
+1. 설치에 정의된 각 데이터베이스 연결을 검토하고 아직 ODBC를 사용하지 않는 것을 적어 두십시오. 각각 다시 구성해야 합니다.
+2. 해당 ODBC 드라이버를 digna 호스트에 설치하십시오. 연결은 브라우저가 아니라 digna 백엔드를 실행하는 서버에서 열립니다. 참조: [digna 호스트에 ODBC 드라이버 설치](../../../databases/overview.md#install-the-driver).
+3. 영향을 받는 각 연결의 ODBC 속성을 준비해 두십시오. [기술별 안내서](../../../databases/overview.md#technology-guides)에는 소스마다 검증된 속성 모음이 실려 있습니다.
+
+업그레이드 후 영향을 받은 각 연결을 ODBC로 전환하고 대시보드에서 테스트하십시오. 참조: [데이터베이스 연결 만들기](../../../databases/overview.md#create-a-database-connection) 및 [연결 테스트](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy 연결"
+
+    Databricks Legacy 커넥터는 이번 릴리스에서 제거되었습니다. 해당 연결은 [Databricks](../../../databases/databricks_connector_guide.md) 커넥터로 이전하십시오.
+
 **digna 저장소 백업 생성은 필수입니다**
 
 업그레이드 전에 저장소(PostgreSQL)를 백업하여 데이터 손실에 대비하십시오.
@@ -1073,17 +1141,24 @@ sudo ./stop_service.sh
 
 digna가 포그라운드에서 실행 중이면 해당 터미널 창에서 `Ctrl + C`를 누르십시오.
 
-#### 2단계: 현재 백엔드 설치 백업
+#### 2단계: 현재 설치 백업
 
-digna 설치 디렉터리에서:
+digna 설치 디렉터리에서 새 릴리스를 나란히 배포할 수 있도록 현재 설치의 폴더 이름을 변경하십시오:
 
 ```bash
 cd /opt/digna
-sudo mv digna digna_old
+sudo mv dignabackend dignabackend_old
+```
+```bash
+sudo mv dignacli dignacli_old
 ```
 ```bash
 sudo mv dashboard dashboard_old
 ```
+
+!!! info "dignabackend와 dignacli는 더 이상 사용되지 않습니다"
+
+    릴리스 2026.06부터 `dignabackend`와 `dignacli`는 백엔드와 CLI를 통합한 단일 실행 파일 `digna`로 대체됩니다. `dignabackend_old`와 `dignacli_old`는 업그레이드를 확인할 때까지만 보관하고, 그 후에는 두 폴더 모두 삭제해도 됩니다. `dashboard_old`는 거기에서 구성 파일을 복원할 때까지 보관하십시오(4단계 참조).
 
 #### 3단계: 새 버전 압축 해제 및 배포
 
@@ -1100,13 +1175,40 @@ sudo chown -R digna:digna /opt/digna
 
     `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
 
-### 4단계: 구성 파일 복원
+#### 4단계: 구성 파일 복원
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### 5단계: 저장소 스키마 업그레이드
+!!! warning "릴리스 2026.06은 config.toml을 변경합니다"
+
+    세 가지 설정이 새로 추가되어 필수가 되었고, 하나는 더 이상 사용되지 않습니다. 이전 릴리스에서 가져온 `config.toml`에는 새 설정이 없으며, 이들이 없는 한 digna는 시작되지 않습니다. 기존 `config.toml`에 다음을 추가하십시오:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 `[base]`에서 **`digna_FERNET_KEY`를 제거**하십시오. 더 이상 사용되지 않습니다.
+
+    각 설정의 역할은 다음을 참조하십시오: [백엔드 구성](#backend-configuration).
+
+#### 5단계: 구성 검증
+
+리포지터리를 건드리기 전에 업데이트된 `config.toml`이 완전한지 확인하십시오:
+
+```bash
+./digna config check
+```
+
+모든 섹션이 OK로 보고되어야 합니다. FAILED로 보고된 모든 항목을 수정하고, 계속하기 전에 명령을 다시 실행하십시오.
+
+#### 6단계: 저장소 스키마 업그레이드
 
 digna 설치 디렉터리로 이동하여 다음을 실행하십시오:
 
@@ -1117,7 +1219,7 @@ cd /opt/digna
 
 이 명령은 기존 데이터를 보존하면서 PostgreSQL 스키마를 최신 버전으로 업데이트합니다.
 
-### 6단계: 서비스 재시작
+#### 7단계: 서비스 재시작
 
 systemd 서비스로 실행 중이라면:
 
@@ -1148,11 +1250,12 @@ RHEL 계열에서는 `dashboard` 디렉터리를 교체한 경우 SELinux 라벨
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### 7단계: 업그레이드 확인
+#### 8단계: 업그레이드 확인
 
 1. digna 대시보드에 접속합니다.
 2. 인터페이스가 올바르게 로드되는지 확인합니다.
 3. 서버 로그에 오류가 없는지 확인합니다:
+4. 아직 ODBC를 사용하지 않던 모든 연결을 ODBC로 전환한 다음 모든 연결을 테스트하십시오. 참조: [연결 테스트](../../../databases/overview.md#testing-a-connection)
 
 ```bash
 sudo journalctl -u digna -n 100

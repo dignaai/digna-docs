@@ -37,7 +37,7 @@ digna هي منصة شاملة تعتمد على الذكاء الاصطناعي
 
 يتكون digna من مكونين رئيسيين:
 
-- **dignabackend**: المحرك الأساسي للتطبيق، المسؤول عن معالجة البيانات وتنفيذ فحوصات الجودة.
+- **digna**: نواة التطبيق، وهي المسؤولة عن معالجة البيانات وتنفيذ فحوص الجودة. تجمع الواجهة الخلفية وواجهة سطر الأوامر في ملف تنفيذي واحد، وتحل محل البرنامجين المنفصلين `dignabackend` و`dignacli` في الإصدارات السابقة.
 - **dignadashboard**: واجهة ويب مستضافة على خادم ويب، توفر طريقة سهلة للتفاعل مع منصة digna وتصوير مؤشرات جودة البيانات.
 
 ### ما الجديد في الإصدار 2026.06
@@ -374,7 +374,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -382,17 +381,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_FERNET_KEY` | مفتاح التشفير | يستخدم لتشفير الرموز وملفات تعريف الارتباط (يوجد افتراضي) |
 | `digna_COOKIE_DOMAIN` | `localhost` | طابق مع نطاق الواجهة الأمامية |
 | `digna_COOKIE_SECURE` | `false` (محلي) / `true` (إنتاج) | استخدم `true` للاتصالات عبر HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | مُمكّن دائمًا لأغراض الأمان |
 | `digna_COOKIE_SAME_SITE` | `lax` | يساعد في منع هجمات CSRF |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 ساعة) | مهلة الجلسة بالثواني |
 | `digna_MAX_WORKERS` | عدد أنوية المعالج - 1 | عدد مهام الفحص المتوازية |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | أقصى تأخير بالثواني يمكن للمجدول إضافته قبل بدء مهمة حان موعدها |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | وقت اليوم (تنسيق 24 ساعة `HH:MM`) الذي يبدأ عنده التنظيف اليومي |
+
+#### قسم [encryption]
+
+يحتوي هذا القسم على المفتاح المستخدم لتشفير القيم الحساسة المخزنة في المستودع. وهو **إلزامي** — يُبلغ `config check` عن القسم `[encryption]` بحالة FAILED إذا كان المفتاح مفقودًا.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| المعامل | القيمة | ملاحظات |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | مفتاح مُرمّز بصيغة Base64 | يشفّر القيم الحساسة المخزنة في مستودع digna |
+
+!!! warning "احمِ الملف config.toml"
+
+    هذا المفتاح قيمة ثابتة ومتطابقة في جميع تثبيتات digna، وهو ما يفك تشفير القيم الحساسة في مستودعك. اقصر الوصول إلى `config.toml` على الحساب الذي يشغّل digna، وأبقِ الملف خارج نظام إدارة الإصدارات والأقراص المشتركة، واستبعده من أي نسخة احتياطية تُحفظ بأمان أقل من المستودع نفسه.
 
 #### قسم [logging]
 
@@ -410,6 +429,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | عدد النسخ الاحتياطية اليومية للسجلات التي سيتم الاحتفاظ بها |
 
 ---
+
+### الخطوة 2: تحقق من التهيئة
+
+قبل تهيئة المستودع، تحقق من أن `config.toml` مكتمل ومبني بشكل صحيح. نفّذ في دليل تثبيت digna:
+
+```bash
+digna config check
+```
+
+يُتحقق من كل قسم على حدة، بحيث لا يخفي خطأ واحد حالة الأقسام الأخرى:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+صحّح كل ما يُبلَّغ عنه بحالة FAILED، وأعد تنفيذ الأمر قبل المتابعة. القائمة الكاملة للخيارات موجودة في [مرجع CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### الخطوة 3: تهيئة المستودع
 
@@ -433,28 +476,7 @@ digna repo install
 
 هذا الأمر يثبت الجداول والمخطط الضروريين في قاعدة بيانات PostgreSQL الخاصة بك.
 
-### الخطوة 5: بدء خادم digna
-
-في دليل تثبيت digna، ابدأ الخادم بـ:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**المعلمات:**
-- `--address` — اسم المضيف/عنوان IP للخادم
-- `--port` — منفذ الخادم
-
-يجب أن ترى رسائل بدء تؤكد أن الخادم يعمل:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### الخطوة 6: إنشاء مستخدم مسؤول
+### الخطوة 5: إنشاء مستخدم مسؤول
 
 1. افتح نافذة موجه أوامر **جديدة**
 2. انتقل إلى دليل تثبيت digna الخاص بك
@@ -477,6 +499,31 @@ digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
     استخدم كلمة مرور قوية تشتمل على أحرف كبيرة وصغيرة وأرقام ورموز خاصة.
 
 ---
+
+### الخطوة 6: بدء خادم digna
+
+في دليل تثبيت digna، ابدأ الخادم بـ:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**المعلمات:**
+- `--address` — اسم المضيف/عنوان IP للخادم
+- `--port` — منفذ الخادم
+
+يجب أن ترى رسائل بدء تؤكد أن الخادم يعمل:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "الخادم يشغل الطرفية"
+
+    يعمل `serve` في المقدمة ويستمر حتى توقفه بالضغط على ++ctrl+c++. اتركه يعمل بينما تكمل الإعداد؛ ولتشغيله تلقائيًا عند الإقلاع بدلًا من ذلك انظر [تشغيل digna كخدمة Windows](#running-digna-as-a-windows-service).
 
 ## تكوين اللوحة {: #dashboard-configuration }
 
@@ -640,6 +687,27 @@ digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 
 ### قبل الترقية
 
+**تحقق أولًا من جميع اتصالات قواعد البيانات**
+
+ابتداءً من الإصدار 2026.06، يصل digna إلى كل تقنية مصدر عبر **ODBC**. كانت الإصدارات السابقة تتيح الاختيار بين برنامج تشغيل خاص بكل تقنية وبين ODBC، عبر المفتاح **Use ODBC**. قرر فريق digna الاعتماد على ODBC وحده، لأن واجهة قياسية واحدة تقدّم أكثر مما تقدّمه مجموعة من برامج التشغيل المصممة خصيصًا:
+
+- **المصادقة** — المصادقة جزء من ODBC، لذا يمكن للاتصال استخدام كل ما يدعمه برنامج التشغيل الخاص به: كلمات المرور، والرموز المميزة و PAT، وKerberos وActive Directory، والمصادقة متعددة العوامل وتسجيل الدخول الموحّد عبر المتصفح، وهويات السحابة، وشهادات العميل وTLS. تصل الطرق الجديدة مع تحديث برنامج التشغيل، بدلًا من انتظار إصدار من digna.
+- **برامج تشغيل تتولى صيانتها شركات قواعد البيانات** — يتابع برنامج التشغيل الخاص بالشركة المصنّعة إصدارات الخادم الجديدة والإصلاحات الأمنية، ويمكنك تحديثه وفق جدولك الخاص وبمعزل عن digna.
+- **طريقة واحدة لتهيئة كل شيء** — كل تقنية هي قائمة من خصائص المفتاح/القيمة، بالواجهة نفسها، وتشفير القيم الحساسة نفسه، وأسلوب استكشاف الأخطاء نفسه، بدلًا من مجموعة حقول مختلفة لكل مصدر.
+- **الضبط والاتساع** — خيارات برنامج التشغيل مثل المهل الزمنية وإعدادات TLS والوسطاء وأحجام الجلب متاحة لكل مصدر، ويمكن توصيل أي تقنية لديها برنامج تشغيل ODBC متوافق، بما في ذلك تلك التي لا ينشر digna دليلًا خاصًا بها.
+
+عمليًا يعني ذلك أن المفتاح **Use ODBC** والحقول المنفصلة للمضيف والمنفذ وقاعدة البيانات والمستخدم وكلمة المرور لم تعد موجودة. **كل اتصال لا يستخدم ODBC بالفعل يجب تحويله إلى ODBC** — لا يوجد تحويل تلقائي، لذا خطّط لذلك قبل الترقية:
+
+1. راجع كل اتصال بقاعدة بيانات مُعرَّف في تثبيتك ودوّن الاتصالات التي لا تستخدم ODBC بعد — كل منها يحتاج إلى إعادة تهيئة.
+2. ثبّت برنامج تشغيل ODBC المناسب على مضيف digna — تُفتح الاتصالات من الخادم الذي يشغّل الواجهة الخلفية لـ digna، لا من المتصفح. انظر [تثبيت برنامج تشغيل ODBC على مضيف digna](../../../databases/overview.md#install-the-driver).
+3. جهّز خصائص ODBC لكل اتصال متأثر. [أدلة التقنيات](../../../databases/overview.md#technology-guides) تسرد لكل مصدر مجموعة خصائص مجرَّبة.
+
+بعد الترقية، حوّل كل اتصال متأثر إلى ODBC واختبره من لوحة المعلومات — انظر [إنشاء اتصال بقاعدة بيانات](../../../databases/overview.md#create-a-database-connection) و [اختبار اتصال](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "اتصالات Databricks Legacy"
+
+    أُزيل موصل Databricks Legacy في هذا الإصدار. انقل تلك الاتصالات إلى موصل [Databricks](../../../databases/databricks_connector_guide.md).
+
 إنشاء نسخة احتياطية من مستودع digna إلزامي
 
 قبل ترقية digna، احفظ نسخة احتياطية من المستودع (PostgreSQL) للحماية من فقدان البيانات.
@@ -656,18 +724,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### الخطوة 2: نسخ احتياطي للتثبيت الحالي للواجهة الخلفية
+#### الخطوة 2: انسخ التثبيت الحالي احتياطيًا
 
-في دليل تثبيت digna:
+في دليل تثبيت digna، أعد تسمية مجلدات التثبيت الحالي حتى يمكن نشر الإصدار الجديد بجوارها:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "لم يعد dignabackend وdignacli مستخدمَين"
+
+    ابتداءً من الإصدار 2026.06، يحل الملف التنفيذي الواحد `digna` محل `dignabackend` و`dignacli`، وهو يجمع الواجهة الخلفية وواجهة سطر الأوامر. احتفظ بـ `dignabackend_old` و`dignacli_old` فقط حتى تتحقق من الترقية — بعدها يمكنك حذف المجلدين. احتفظ بـ `dashboard_old` حتى تستعيد منه ملفات التهيئة الخاصة بك (انظر الخطوة 4).
 
 #### الخطوة 3: فك واستخراج الإصدار الجديد
 
@@ -679,12 +755,39 @@ ren dashboard dashboard_old
 
     ملف `config.toml` **غير** مشمول أبدًا في ملف ZIP للتثبيت. يظل تكوينك الحالي آمنًا.
 
-### الخطوة 4: استعادة ملفات التكوين الخاصة بك
+#### الخطوة 4: استعادة ملفات التكوين الخاصة بك
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### الخطوة 5: ترقية مخطط المستودع
+!!! warning "الإصدار 2026.06 يغيّر الملف config.toml"
+
+    ثلاثة إعدادات جديدة وإلزامية، وواحد لم يعد مستخدمًا. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم **احذف `digna_FERNET_KEY`** من `[base]` — فهو لم يعد مستخدمًا.
+
+    ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
+
+#### الخطوة 5: تحقق من التهيئة
+
+تأكد من أن ملف `config.toml` المحدَّث مكتمل قبل أن تمسّ المستودع:
+
+```bash
+digna config check
+```
+
+يجب أن يُبلِّغ كل قسم بحالة OK. صحّح كل ما يُبلَّغ عنه بحالة FAILED، وأعد تنفيذ الأمر قبل المتابعة.
+
+#### الخطوة 6: ترقية مخطط المستودع
 
 انتقل إلى دليل تثبيت digna ونفّذ:
 
@@ -694,7 +797,7 @@ digna repo upgrade
 
 هذا يقوم بتحديث مخطط PostgreSQL إلى أحدث إصدار مع الحفاظ على جميع البيانات الموجودة.
 
-### الخطوة 6: إعادة تشغيل الخدمات
+#### الخطوة 7: إعادة تشغيل الخدمات
 
 إذا كانت تعمل كخدمة Windows:
 
@@ -712,8 +815,9 @@ digna serve --address <address> --port <port>
 
 إذا كنت تستخدم IIS أو Tomcat، أعد تشغيل خادم الويب المعني.
 
-#### الخطوة 7: التحقق من الترقية
+#### الخطوة 8: التحقق من الترقية
 
 1. ادخل إلى لوحة digna
 2. تحقق من تحميل الواجهة بشكل صحيح
 3. تفقد سجلات الخادم للتأكد من عدم وجود أخطاء
+4. حوّل إلى ODBC كل اتصال لم يكن يستخدمه بعد، ثم اختبر جميع الاتصالات — انظر [اختبار اتصال](../../../databases/overview.md#testing-a-connection)

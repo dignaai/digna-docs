@@ -37,7 +37,7 @@ digna ir visaptveroša ar mākslīgo intelektu balstīta platforma, kas paredzē
 
 digna sastāv no divām galvenajām komponentēm:
 
-- **dignabackend**: lietojumprogrammas kodols, kas atbild par datu apstrādi un kvalitātes pārbaudēm.
+- **digna**: lietojumprogrammas kodols, kas atbild par datu apstrādi un kvalitātes pārbaužu veikšanu. Tas apvieno aizmuguri un komandrindas saskarni vienā izpildāmajā failā un aizstāj iepriekšējo laidienu atsevišķās programmas `dignabackend` un `dignacli`.
 - **dignadashboard**: tīmekļa saskarne, kas izvietota uz tīmekļa servera un nodrošina lietotājam draudzīgu veidu, kā mijiedarboties ar digna platformu un vizualizēt datu kvalitātes metrikas.
 
 ### Kas jauns izlaidumā 2026.06
@@ -374,7 +374,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -382,17 +381,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_FERNET_KEY` | Šifrēšanas atslēga | Izmanto, lai šifrētu tokenus un sīkfailus (noklusējums iekļauts) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontenda domēnam |
 | `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcijā) | Lietojiet `true` HTTPS savienojumiem |
 | `digna_COOKIE_HTTPONLY` | `true` | Vienmēr iespējots drošībai |
 | `digna_COOKIE_SAME_SITE` | `lax` | Novērš CSRF uzbrukumus |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma laiks sekundēs |
 | `digna_MAX_WORKERS` | Skaitlis: CPU kodolu skaits - 1 | Paralēlo inspekciju uzdevumu skaits |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maksimālā aizture sekundēs, ko plotājs drīkst pievienot pirms termiņā esoša darba sākšanas |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Diennakts laiks (24 stundu formāts `HH:MM`), kad sākas ikdienas tīrīšana |
+
+#### [encryption] sadaļa
+
+Šajā sadaļā ir atslēga, ar kuru tiek šifrētas repozitorijā glabātās sensitīvās vērtības. Tā ir **obligāta** — `config check` ziņo par sadaļu `[encryption]` kā FAILED, ja atslēgas trūkst.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parametrs | Vērtība | Piezīmes |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 kodēta atslēga | Šifrē sensitīvās vērtības, kas glabājas digna repozitorijā |
+
+!!! warning "Aizsargājiet config.toml"
+
+    Šī atslēga ir fiksēta vērtība, kas ir vienāda visās digna instalācijās, un tieši tā atkodē jūsu repozitorija sensitīvās vērtības. Ierobežojiet piekļuvi `config.toml` līdz kontam, ar kuru darbojas digna, glabājiet failu ārpus versiju kontroles un koplietojamiem diskiem un izslēdziet to no jebkuras dublējuma kopijas, kas tiek glabāta mazāk droši nekā pats repozitorijs.
 
 #### [logging] sadaļa
 
@@ -410,6 +429,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | Cik dienu žurnālu dublējumu saglabāt |
 
 ---
+
+### 2. solis: Parbaudiet konfigurāciju
+
+Pirms repozitorija inicializēšanas pārbaudiet, vai `config.toml` ir pilnīgs un pareizi veidots. Savā digna instalācijas direktorijā palaidiet:
+
+```bash
+digna config check
+```
+
+Katra sadaļa tiek pārbaudīta atsevišķi, tāpēc viena kļūda neaizsedz pārējo stāvokli:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Izlabojiet visu, kas ziņots kā FAILED, un pirms turpināšanas palaidiet komandu vēlreiz. Pilns opciju saraksts ir [CLI atsaucē](../../../cli/Command_Line_Interface_202606.md).
 
 ### 3. solis: Inicializēt repozitoriju
 
@@ -433,28 +476,7 @@ digna repo install
 
 Šī komanda instalē nepieciešamās tabulas un shēmu jūsu PostgreSQL datubāzē.
 
-### 5. solis: Palaist digna serveri
-
-Digna instalācijas direktorijā palaidiet serveri ar:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Parametri:**
-- `--address` — servera hostname/IP
-- `--port` — servera ports 
-
-Jums jāredz startēšanas ziņas, kas apstiprina, ka serveris darbojas:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### 6. solis: Izveidot administratora lietotāju
+### 5. solis: Izveidot administratora lietotāju
 
 1. Atveriet **jaunu** Command Prompt logu
 2. Pārejiet uz jūsu digna instalācijas direktoriju
@@ -477,6 +499,31 @@ digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
     Izmantojiet stipru paroli ar lielajiem un maziem burtiem, cipariem un speciālajām zīmēm.
 
 ---
+
+### 6. solis: Palaist digna serveri
+
+Digna instalācijas direktorijā palaidiet serveri ar:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Parametri:**
+- `--address` — servera hostname/IP
+- `--port` — servera ports 
+
+Jums jāredz startēšanas ziņas, kas apstiprina, ka serveris darbojas:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "Serveris aizņem termināli"
+
+    `serve` darbojas priekšplānā un turpina, līdz to apturat ar ++ctrl+c++. Atstājiet to darbojamies, kamēr pabeidzat iestatīšanu; lai to automātiski palaistu sistēmas startēšanas laikā, skatiet [digna palaišana kā Windows pakalpojuma](#running-digna-as-a-windows-service).
 
 ## Paneļa konfigurācija {: #dashboard-configuration }
 
@@ -640,6 +687,27 @@ digna serveris tagad vairs nav reģistrēts kā Windows serviss.
 
 ### Pirms jaunināšanas
 
+**Vispirms pārbaudiet visus datubāžu savienojumus**
+
+Sākot ar laidienu 2026.06, digna katru avota tehnoloģiju sasniedz caur **ODBC**. Iepriekšējie laidieni piedāvāja izvēli starp katrai tehnoloģijai pašu draiveri un ODBC, ko izvēlējās ar slēdzi **Use ODBC**. digna komanda nolēma balstīties tikai uz ODBC, jo viena standarta saskarne sniedz vairāk nekā pēc pasūtījuma veidotu draiveru kopums:
+
+- **Autentifikācija** — autentifikācija ir daļa no ODBC, tāpēc savienojums var izmantot visu, ko atbalsta tā draiveris: paroles, pilnvaras un PAT, Kerberos un Active Directory, MFA un pārlūkprogrammas vienoto pieteikšanos, mākoņa identitātes, klienta sertifikātus un TLS. Jaunas metodes nāk līdzi draivera atjauninājumam, nevis gaidot digna laidienu.
+- **Draiveri, ko uztur datubāžu ražotāji** — ražotāja draiveris seko jaunām servera versijām un drošības labojumiem, un jūs varat to atjaunināt pēc sava grafika, neatkarīgi no digna.
+- **Viens veids, kā konfigurēt visu** — katra tehnoloģija ir atslēgu un vērtību īpašību saraksts ar to pašu saskarni, to pašu sensitīvo vērtību šifrēšanu un to pašu problēmu novēršanu, nevis atšķirīgu lauku kopu katram avotam.
+- **Pielāgošana un aptvērums** — draivera opcijas, piemēram, noildzes, TLS iestatījumi, starpniekserveri un ielādes izmēri, ir pieejamas katram avotam, un pievienot var jebkuru tehnoloģiju ar atbilstošu ODBC draiveri, arī tādu, kurai digna nepublicē atsevišķu rokasgrāmatu.
+
+Praksē tas nozīmē, ka slēdzis **Use ODBC** un atsevišķie resursdatora, porta, datubāzes, lietotāja un paroles lauki vairs nepastāv. **Katrs savienojums, kas vēl neizmanto ODBC, ir jāpārceļ uz ODBC** — automātiskas konvertēšanas nav, tāpēc ieplānojiet to pirms jaunināšanas:
+
+1. Pārskatiet katru jūsu instalācijā definēto datubāzes savienojumu un atzīmējiet tos, kas vēl neizmanto ODBC — katrs no tiem būs jākonfigurē no jauna.
+2. Instalējiet atbilstošo ODBC draiveri digna resursdatorā — savienojumi tiek atvērti no servera, kurā darbojas digna aizmugure, nevis no pārlūkprogrammas. Skatiet [ODBC draivera instalēšana digna resursdatorā](../../../databases/overview.md#install-the-driver).
+3. Sagatavojiet ODBC īpašības katram skartajam savienojumam. [Tehnoloģiju rokasgrāmatas](../../../databases/overview.md#technology-guides) katram avotam norāda pārbaudītu īpašību kopu.
+
+Pēc jaunināšanas katru skarto savienojumu pārceliet uz ODBC un pārbaudiet to no informatīvajā paneļa — skatiet [Datubāzes savienojuma izveide](../../../databases/overview.md#create-a-database-connection) un [Savienojuma pārbaude](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy savienojumi"
+
+    Databricks Legacy savienotājs šajā laidienā ir noņemts. Pārceliet šos savienojumus uz [Databricks](../../../databases/databricks_connector_guide.md) savienotāju.
+
 **Repozitārija (PostgreSQL) rezerves kopijas izveide ir obligāta**
 
 Pirms digna jaunināšanas veiciet rezerves kopiju sava repozitorija (PostgreSQL), lai izvairītos no datu zuduma. Rezerves kopija nodrošina atjaunošanas iespēju, ja jaunināšanas laikā rodas neparedzētas problēmas.
@@ -655,18 +723,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### 2. solis: Rezerves kopija esošajai backend instalācijai
+#### 2. solis: Izveidojiet pašreizējās instalācijas dublējumu
 
-Jūsu digna instalācijas direktorijā:
+Savā digna instalācijas direktorijā pārdēvējiet pašreizējās instalācijas mapes, lai jauno laidienu varētu izvietot tiem līdzās:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "dignabackend un dignacli vairs netiek izmantoti"
+
+    Sākot ar laidienu 2026.06, `dignabackend` un `dignacli` aizstāj viens izpildāmais fails `digna`, kas apvieno aizmuguri un CLI. Saglabājiet `dignabackend_old` un `dignacli_old` tikai līdz brīdim, kad esat pārbaudījis jauninājumu — pēc tam varat izdzēst abas mapes. Saglabājiet `dashboard_old`, līdz esat no tās atjaunojis savus konfigurācijas failus (skatiet 4. soli).
 
 #### 3. solis: Izpakot un izvietot jauno versiju
 
@@ -678,12 +754,39 @@ ren dashboard dashboard_old
 
     `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek droša.
 
-### 4. solis: Atjaunot jūsu konfigurācijas failus
+#### 4. solis: Atjaunot jūsu konfigurācijas failus
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### 5. solis: Jaunināt repozitorija shēmu
+!!! warning "Laidiens 2026.06 maina config.toml"
+
+    Trīs iestatījumi ir jauni un obligāti, bet viens vairs netiek izmantots. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam no `[base]` **noņemiet `digna_FERNET_KEY`** — tas vairs netiek izmantots.
+
+    Ko dara katrs iestatījums, apraksīts sadaļā [Aizmugures konfigurācija](#backend-configuration).
+
+#### 5. solis: Parbaudiet konfigurāciju
+
+Pirms pieskarties repozitorijam pārliecinieties, ka atjauninātais `config.toml` ir pilnīgs:
+
+```bash
+digna config check
+```
+
+Katrai sadaļai jāziņo OK. Izlabojiet visu, kas ziņots kā FAILED, un pirms turpināšanas palaidiet komandu vēlreiz.
+
+#### 6. solis: Jaunināt repozitorija shēmu
 
 Pārejiet uz jūsu digna instalācijas direktoriju un palaidiet:
 
@@ -693,7 +796,7 @@ digna repo upgrade
 
 Tas atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visu esošo datu integritāti.
 
-### 6. solis: Restartēt servisus
+#### 7. solis: Restartēt servisus
 
 Ja darbināt kā Windows servisu:
 
@@ -711,8 +814,9 @@ digna serve --address <address> --port <port>
 
 Ja izmantojat IIS vai Tomcat, restartējiet attiecīgo tīmekļa serveri.
 
-#### 7. solis: Pārbaudīt jaunināšanu
+#### 8. solis: Pārbaudīt jaunināšanu
 
 1. Piekļūstiet digna panelim
 2. Pārbaudiet, vai saskarne ielādējas pareizi
 3. Pārskatiet servera žurnālus, vai nav kļūdu
+4. Pārceliet uz ODBC katru savienojumu, kas to vēl neizmantoja, un pēc tam pārbaudiet visus savienojumus — skatiet [Savienojuma pārbaude](../../../databases/overview.md#testing-a-connection)

@@ -36,7 +36,7 @@ digna yra visapusiška, dirbtiniu intelektu paremta platforma, skirta optimizuot
 
 digna susideda iš dviejų pagrindinių komponentų:
 
-- **dignabackend**: programos branduolinis variklis, atsakingas už duomenų apdorojimą ir kokybės patikras.
+- **digna**: programos branduolys, atsakingas už duomenų apdorojimą ir kokybės patikras. Jis sujungia užkulisinę dalį ir komandinęs eilutės sąsają į vieną vykdomąjį failą ir pakeičia atskiras ankstesnių leidimų programas `dignabackend` ir `dignacli`.
 - **dignadashboard**: web sąsaja, talpinama tinklapio serveryje, suteikianti patogią prieigą prie digna platformos ir duomenų kokybės metrikų vizualizacijos.
 
 ### Kas naujo leidime 2026.06
@@ -652,7 +652,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -660,21 +659,41 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parametras | Reikšmė | Pastabos |
 |---|---|---|
-| `digna_FERNET_KEY` | Šifravimo raktas | Naudojamas tokenams ir slapukams šifruoti (numatytasis pateiktas) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Sutapti su frontend domenu |
 | `digna_COOKIE_SECURE` | `false` (lokaliai) / `true` (gamyboje) | Naudokite `true` HTTPS ryšiams |
 | `digna_COOKIE_HTTPONLY` | `true` | Visada įjungta dėl saugumo |
 | `digna_COOKIE_SAME_SITE` | `lax` | Apsaugo nuo CSRF atakų |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 val.) | Sesijos galiojimo laikas sekundėmis |
 | `digna_MAX_WORKERS` | CPU branduolių skaičius - 1 | Lygiagretinimo užduočių skaičius |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Didžiausias vėlavimas sekundėmis, kurį planuoklis gali pridėti prieš paleisdamas terminuotą užduotį |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Paros laikas (24 valandų formatas `HH:MM`), kada prasideda kasdienis valymas |
 
 !!! tip "Patarimas"
 
     Norėdami sužinoti, kiek CPU branduolių yra serveryje, vykdykite `nproc`.
+
+#### [encryption] skyrius
+
+Šiame skyriuje yra raktas, kuriuo šifruojamos saugykloje laikomos jautrios reikšmės. Jis yra **būtinas** — `config check` praneša skyrių `[encryption]` kaip FAILED, jei rakto trūksta.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parametras | Reikšmė | Pastabos |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 koduotas raktas | Šifruoja jautrias reikšmes, saugomas digna saugykloje |
+
+!!! warning "Apsaugokite config.toml"
+
+    Šis raktas yra fiksuota reikšmė, vienoda visose digna diegimuose, ir būtent jis iššifruoja jautrias jūsų saugyklos reikšmes. Apribokite `config.toml` prieigą iki paskyros, kuria veikia digna, laikykite failą už versijų kontrolės ir bendrų diskų ribų ir neįtraukite jo į jokias atsargines kopijas, laikomas mažiau saugiai nei pati saugykla.
 
 #### [logging] skyrius
 
@@ -693,7 +712,31 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ---
 
-### 2 žingsnis: inicializuokite saugyklą
+### 2 žingsnis: Patikrinkite konfigūraciją
+
+Prieš inicijuodami saugyklą patikrinkite, ar `config.toml` yra išsamus ir tinkamai sudarytas. Savo digna diegimo kataloge paleiskite:
+
+```bash
+digna config check
+```
+
+Kiekvienas skyrius tikrinamas atskirai, todėl viena klaida neuždengia kitų būsenos:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą. Visas parinkčių sąrašas pateiktas [CLI žinyne](../../../cli/Command_Line_Interface_202606.md).
+
+### 3 žingsnis: inicializuokite saugyklą
 
 1. Atidarykite terminalą
 2. Eikite į digna diegimo katalogą (ten, kur yra `config.toml` ir vykdomasis failas `digna`)
@@ -714,7 +757,7 @@ Turėtumėte matyti patvirtinimą, kad ryšys užmegztas (saugykla dar neiniciju
     sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
-### 3 žingsnis: įdiekite saugyklos schemą
+### 4 žingsnis: įdiekite saugyklos schemą
 
 Toje pačioje direktorijoje paleiskite:
 
@@ -724,7 +767,35 @@ Toje pačioje direktorijoje paleiskite:
 
 Ši komanda įdiegia reikalingas lenteles ir schemą jūsų PostgreSQL duomenų bazėje.
 
-### 4 žingsnis: paleiskite digna serverį
+### 5 žingsnis: sukurkite administratoriaus paskyrą
+
+1. Atidarykite **naują** terminalo langą
+2. Eikite į digna diegimo katalogą
+3. Vykdykite šią komandą, kad sukurtumėte administratoriaus paskyrą:
+
+```bash
+./digna user add <email> <password> "<display_name>" --admin
+```
+
+**Pavyzdys:**
+
+```bash
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
+```
+
+Taip sukuriamas naudotojas su el. pašto adresu `admin@example.com` ir visomis administratoriaus teisėmis.
+
+!!! tip "Patarimas"
+
+    Apvyniokite slaptažodį viengubomis kabutėmis. `bash` ir `zsh` traktuoja simbolius, tokius kaip `!`, `$` ir `*`, specialiai — nepakankamai apibrėžtas slaptažodis su tokiais simboliais nebus perduotas kaip įvestas.
+
+!!! tip "Geriausia praktika"
+
+    Naudokite stiprų slaptažodį, kuriame būtų didžiosios, mažosios raidės, skaičiai ir specialūs simboliai.
+
+---
+
+### 6 žingsnis: paleiskite digna serverį
 
 digna diegimo kataloge paleiskite serverį:
 
@@ -756,33 +827,9 @@ INFO:     Uvicorn running on http://localhost:8082
     sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
     ```
 
-### 5 žingsnis: sukurkite administratoriaus paskyrą
+!!! note "Serveris užima terminalą"
 
-1. Atidarykite **naują** terminalo langą
-2. Eikite į digna diegimo katalogą
-3. Vykdykite šią komandą, kad sukurtumėte administratoriaus paskyrą:
-
-```bash
-./digna user add <email> <password> "<display_name>" --admin
-```
-
-**Pavyzdys:**
-
-```bash
-./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
-```
-
-Taip sukuriamas naudotojas su el. pašto adresu `admin@example.com` ir visomis administratoriaus teisėmis.
-
-!!! tip "Patarimas"
-
-    Apvyniokite slaptažodį viengubomis kabutėmis. `bash` ir `zsh` traktuoja simbolius, tokius kaip `!`, `$` ir `*`, specialiai — nepakankamai apibrėžtas slaptažodis su tokiais simboliais nebus perduotas kaip įvestas.
-
-!!! tip "Geriausia praktika"
-
-    Naudokite stiprų slaptažodį, kuriame būtų didžiosios, mažosios raidės, skaičiai ir specialūs simboliai.
-
----
+    `serve` veikia priekiniame plane ir tęsiasi, kol jį sustabdysite ++ctrl+c++. Palikite jį veikti, kol užbaigsite sąranką; kad jis būtų paleidžiamas automatiškai paleidus sistemą, žiūrėkite [digna paleidimas kaip systemd tarnybos](#running-digna-as-a-systemd-service).
 
 ## Dashboard konfigūracija {: #dashboard-configuration }
 
@@ -1048,6 +1095,27 @@ digna serveris dabar neberegistruotas systemd.
 
 ### Prieš atnaujinant
 
+**Pirmiausia patikrinkite visus duomenų bazės ryšius**
+
+Nuo leidimo 2026.06 digna kiekvieną šaltinio technologiją pasiekia per **ODBC**. Ankstesni leidimai siūlė pasirinkimą tarp konkrečiai technologijai skirtos tvarkyklės ir ODBC, pažymimą jungikliu **Use ODBC**. digna komanda nusprendė remtis vien ODBC, nes viena standartinė sąsaja duoda daugiau nei pagal užsakymą sukurtų tvarkyklių rinkinys:
+
+- **Tapatybės nustatymas** — tapatybės nustatymas yra ODBC dalis, todėl ryšys gali naudoti viską, ką palaiko jo tvarkyklė: slaptažodžius, prieigos raktus ir PAT, Kerberos ir Active Directory, MFA ir naršyklės vienkartinį prisijungimą, debesijos tapatybes, kliento sertifikatus ir TLS. Nauji metodai atkeliauja su tvarkyklės atnaujinimu, o ne laukiant digna leidimo.
+- **Tvarkyklės, kurias prižiūri duomenų bazių gamintojai** — gamintojo tvarkyklė seka naujas serverio versijas ir saugumo pataisas, o jūs galite ją atnaujinti savo tempu, nepriklausomai nuo digna.
+- **Vienas būdas viską sukonfigūruoti** — kiekviena technologija yra raktų ir reikšmių savybių sąrašas su ta pačia sąsaja, tuo pačiu jautrių reikšmių šifravimu ir ta pačia trikčių diagnostika, o ne skirtingais laukų rinkiniais kiekvienam šaltiniui.
+- **Derinimas ir aprėptis** — tvarkyklės parinktys, tokios kaip skirtieji laikai, TLS nuostatos, tarpiniai serveriai ir nuskaitymo dydžiai, prieinamos kiekvienam šaltiniui, o prijungti galima bet kurią technologiją su atitinkama ODBC tvarkykle, taip pat ir tas, kurioms digna neskelbia atskiro vadovo.
+
+Praktikoje tai reiškia, kad jungiklio **Use ODBC** bei atskirų pagrindinio kompiuterio, prievado, duomenų bazės, naudotojo ir slaptažodžio laukų nebeliko. **Kiekvieną ryšį, kuris dar nenaudoja ODBC, reikia perkelti į ODBC** — automatinio konvertavimo nėra, todėl suplanuokite tai prieš naujinimą:
+
+1. Peržiūrėkite kiekvieną jūsų diegime apibrėžtą duomenų bazės ryšį ir pasižymėkite tuos, kurie dar nenaudoja ODBC — kiekvieną jų reikės sukonfigūruoti iš naujo.
+2. Įdiekite atitinkamą ODBC tvarkyklę digna pagrindiniame kompiuteryje — ryšiai atveriami iš serverio, kuriame veikia digna užkulisinė dalis, o ne iš naršyklės. Žiūrėkite [ODBC tvarkyklės diegimas digna pagrindiniame kompiuteryje](../../../databases/overview.md#install-the-driver).
+3. Turėkite paruoštas ODBC savybes kiekvienam susijusiam ryšiui. [Technologijų vadovai](../../../databases/overview.md#technology-guides) kiekvienam šaltiniui pateikia išbandytą savybių rinkinį.
+
+Po naujinimo kiekvieną susijusį ryšį perkelkite į ODBC ir išbandykite jį iš skydelio — žiūrėkite [Duomenų bazės ryšio kūrimas](../../../databases/overview.md#create-a-database-connection) ir [Ryšio tikrinimas](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy ryšiai"
+
+    Databricks Legacy jungtis šiame leidime pašalinta. Perkelkite tuos ryšius į [Databricks](../../../databases/databricks_connector_guide.md) jungtį.
+
 **Digna saugyklos atsarginė kopija yra privaloma**
 
 Prieš atnaujinant digna, sukurkite atsarginę savo saugyklos (PostgreSQL) kopiją, kad apsisaugotumėte nuo duomenų praradimo.
@@ -1072,17 +1140,24 @@ sudo ./stop_service.sh
 
 Jei digna veikia pirmame plane, paspauskite `Ctrl + C` to terminalo lange.
 
-#### 2 žingsnis: atsarginė dabartinio backend kopija
+#### 2 žingsnis: Sukurkite dabartinio diegimo atsarginę kopiją
 
-digna diegimo kataloge:
+Savo digna diegimo kataloge pervadinkite dabartinio diegimo aplankus, kad naują leidimą būtų galima įdiegti šalia jų:
 
 ```bash
 cd /opt/digna
-sudo mv digna digna_old
+sudo mv dignabackend dignabackend_old
+```
+```bash
+sudo mv dignacli dignacli_old
 ```
 ```bash
 sudo mv dashboard dashboard_old
 ```
+
+!!! info "dignabackend ir dignacli nebenaudojami"
+
+    Nuo leidimo 2026.06 `dignabackend` ir `dignacli` pakeičia vienas vykdomasis failas `digna`, sujungiantis užkulisinę dalį ir CLI. Aplankus `dignabackend_old` ir `dignacli_old` laikykite tik tol, kol patikrinsite naujinimą — po to abu galite ištrinti. Aplanką `dashboard_old` laikykite, kol iš jo atkursite savo konfigūracijos failus (žiūrėkite 4 žingsnį).
 
 #### 3 žingsnis: išarchyvuokite ir įdiekite naują versiją
 
@@ -1099,13 +1174,40 @@ sudo chown -R digna:digna /opt/digna
 
     `config.toml` failas **niekada** nėra įtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka nepažeista.
 
-### 4 žingsnis: atstatykite konfigūracijos failus
+#### 4 žingsnis: atstatykite konfigūracijos failus
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### 5 žingsnis: atnaujinkite saugyklos schemą
+!!! warning "Leidimas 2026.06 keičia config.toml"
+
+    Trys nuostatos yra naujos ir būtinos, o viena nebenaudojama. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada iš `[base]` **pašalinkite `digna_FERNET_KEY`** — jis nebenaudojamas.
+
+    Ką daro kiekviena nuostata, aprašyta skyriuje [Užkulisinės dalies konfigūracija](#backend-configuration).
+
+#### 5 žingsnis: Patikrinkite konfigūraciją
+
+Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:
+
+```bash
+./digna config check
+```
+
+Kiekvienas skyrius turi pranešti OK. Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą.
+
+#### 6 žingsnis: atnaujinkite saugyklos schemą
 
 Eikite į digna diegimo katalogą ir vykdykite:
 
@@ -1116,7 +1218,7 @@ cd /opt/digna
 
 Tai atnaujins PostgreSQL schemą į naujausią versiją, išsaugant visus esamus duomenis.
 
-### 6 žingsnis: paleiskite paslaugas iš naujo
+#### 7 žingsnis: paleiskite paslaugas iš naujo
 
 Jei naudojate systemd paslaugą:
 
@@ -1147,11 +1249,12 @@ RHEL šeimoje, jei pakeitėte `dashboard` katalogą, iš naujo pritaikykite SELi
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### 7 žingsnis: patikrinkite atnaujinimą
+#### 8 žingsnis: patikrinkite atnaujinimą
 
 1. Prisijunkite prie digna dashboard
 2. Patikrinkite, ar sąsaja užsikrauna teisingai
 3. Patikrinkite serverio žurnalus dėl klaidų:
+4. Kiekvieną ryšį, kuris dar nenaudojo ODBC, perkelkite į ODBC, tada išbandykite visus ryšius — žiūrėkite [Ryšio tikrinimas](../../../databases/overview.md#testing-a-connection)
 
 ```bash
 sudo journalctl -u digna -n 100

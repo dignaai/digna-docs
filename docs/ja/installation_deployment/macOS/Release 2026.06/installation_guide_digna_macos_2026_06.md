@@ -37,7 +37,7 @@ digna は、データウェアハウス、データレイク、レイクハウ�
 
 digna は主に二つのコンポーネントで構成されています:
 
-- **dignabackend**: データ処理と品質チェックを担当するアプリケーションのコアエンジン
+- **digna**: アプリケーションの中核であり、データの処理と品質チェックの実行を担います。バックエンドとコマンドラインインターフェイスを単一の実行ファイルに統合し、以前のリリースで別々だった `dignabackend` と `dignacli` を置き換えます。
 - **dignadashboard**: Web サーバー上でホストされるウェブベースのインターフェースで、digna プラットフォームと対話し、データ品質指標を可視化するためのユーザーフレンドリーな画面を提供します
 
 ### Release 2026.06 の新機能
@@ -567,7 +567,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -575,21 +574,41 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | パラメータ | 値 | 備考 |
 |---|---|---|
-| `digna_FERNET_KEY` | 暗号化キー | トークンやクッキーの暗号化に使用（デフォルトが提供されます） |
 | `digna_COOKIE_DOMAIN` | `localhost` | フロントエンドのドメインに合わせてください |
 | `digna_COOKIE_SECURE` | `false`（ローカル） / `true`（本番） | HTTPS では `true` を使用 |
 | `digna_COOKIE_HTTPONLY` | `true` | セキュリティのため常に有効にしてください |
 | `digna_COOKIE_SAME_SITE` | `lax` | CSRF 攻撃を防ぐ設定 |
 | `digna_TOKEN_EXPIRES_IN` | `86400`（24 時間） | セッションの有効期限（秒） |
 | `digna_MAX_WORKERS` | CPU コア数 - 1 | 並列検査タスクの数 |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | スケジューラーが実行予定のジョブを開始する前に追加できる最大の遅延（秒） |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | 日次クリーンアップが開始される時刻（24 時間表記 `HH:MM`） |
 
 !!! tip "ヒント"
 
     Mac 上の CPU コア数を調べるには `sysctl -n hw.ncpu` を実行してください。
+
+#### [encryption] セクション
+
+このセクションには、リポジトリに保存された機密値を暗号化するための鍵が含まれます。**必須**です。鍵が欠けている場合、`config check` は `[encryption]` セクションを FAILED として報告します。
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 エンコードされた鍵 | digna リポジトリに保存された機密値を暗号化します |
+
+!!! warning "config.toml を保護する"
+
+    この鍵は固定値で、すべての digna インストールで同一であり、リポジトリ内の機密値を復号するのはこの鍵です。`config.toml` へのアクセスを digna を実行するアカウントに限定し、バージョン管理や共有ドライブには置かず、リポジトリ本体より安全性の低い場所に保管されるバックアップからは除外してください。
 
 #### [logging] セクション
 
@@ -608,7 +627,31 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ---
 
-### ステップ 2: リポジトリの初期化
+### ステップ 2: 構成を検証する
+
+リポジトリを初期化する前に、`config.toml` が完全で正しく構成されていることを確認します。digna のインストールディレクトリで次を実行します:
+
+```bash
+digna config check
+```
+
+各セクションは個別に検証されるため、1 つの誤りが他のセクションの状態を隠すことはありません:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+FAILED と報告された箇所をすべて修正し、続行する前にコマンドを再実行してください。オプションの完全な一覧は [CLI リファレンス](../../../cli/Command_Line_Interface_202606.md)にあります。
+
+### ステップ 3: リポジトリの初期化
 
 1. **Terminal** を開く
 2. digna インストールディレクトリ（`config.toml` と `digna` 実行ファイルがある場所）に移動する
@@ -630,7 +673,7 @@ cd /opt/digna
     source ~/.zshrc
     ```
 
-### ステップ 3: リポジトリスキーマのインストール
+### ステップ 4: リポジトリスキーマのインストール
 
 同じディレクトリで次を実行します:
 
@@ -639,31 +682,6 @@ cd /opt/digna
 ```
 
 このコマンドは PostgreSQL データベースに必要なテーブルとスキーマをインストールします。
-
-### ステップ 4: digna サーバーの起動
-
-digna インストールディレクトリでサーバーを起動します:
-
-```bash
-./digna serve --address <host> --port <port>
-```
-
-**パラメータ:**
-- `--address` — サーバーのホスト名/IP
-- `--port` — サーバーのポート
-
-起動に成功すると次のようなメッセージが表示されます:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-!!! tip "ヒント"
-
-    サーバーを最初に起動すると、macOS が外部からのネットワーク接続を受け入れるかどうかを尋ねることがあります。ダッシュボードがバックエンドに接続できるように **Allow** をクリックしてください。
 
 ### ステップ 5: 管理者ユーザーの作成
 
@@ -692,6 +710,35 @@ INFO:     Uvicorn running on http://localhost:8082
     大文字小文字、数字、特殊文字を組み合わせた強力なパスワードを使用してください。
 
 ---
+
+### ステップ 6: digna サーバーの起動
+
+digna インストールディレクトリでサーバーを起動します:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**パラメータ:**
+- `--address` — サーバーのホスト名/IP
+- `--port` — サーバーのポート
+
+起動に成功すると次のようなメッセージが表示されます:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "ヒント"
+
+    サーバーを最初に起動すると、macOS が外部からのネットワーク接続を受け入れるかどうかを尋ねることがあります。ダッシュボードがバックエンドに接続できるように **Allow** をクリックしてください。
+
+!!! note "サーバーはターミナルを占有します"
+
+    `serve` はフォアグラウンドで実行され、++ctrl+c++ で停止するまで動作し続けます。セットアップを終えるまで実行したままにしてください。起動時に自動的に開始する方法は次を参照してください: [digna をバックグラウンドサービスとして実行する](#running-digna-as-a-background-service).
 
 ## ダッシュボード構成 {: #dashboard-configuration }
 
@@ -901,6 +948,27 @@ launchd は実行ファイルの絶対パスを保存するため、インスト
 
 ### アップグレード前に
 
+**最初にすべてのデータベース接続を確認する**
+
+リリース 2026.06 から、digna はすべてのソース技術に **ODBC** 経由で接続します。以前のリリースでは、技術ごとの専用ドライバーと ODBC を **Use ODBC** スイッチで選択できました。digna チームは ODBC のみを基盤とすることを決めました。単一の標準インターフェイスは、個別に作り込まれたドライバー群よりも多くをもたらすからです:
+
+- **認証** — 認証は ODBC の一部であるため、接続はドライバーが対応するあらゆる方式を利用できます。パスワード、トークンと PAT、Kerberos と Active Directory、MFA とブラウザーベースのシングルサインオン、クラウド ID、クライアント証明書、TLS などです。新しい方式は digna のリリースを待つのではなく、ドライバーの更新とともに利用できるようになります。
+- **データベースベンダーが保守するドライバー** — ベンダー自身のドライバーが新しいサーバーバージョンとセキュリティ修正に追随し、digna とは独立に、ご自身の都合に合わせて更新できます。
+- **すべてを同じ方法で構成できる** — どの技術もキーと値のプロパティの一覧であり、同じインターフェイス、同じ機密値の暗号化、同じトラブルシューティングを使います。ソースごとに異なる入力欄が並ぶことはありません。
+- **調整と適用範囲** — タイムアウト、TLS 設定、プロキシ、フェッチサイズといったドライバーレベルのオプションがすべてのソースで利用でき、準拠した ODBC ドライバーがある技術であれば、digna が個別のガイドを公開していないものも含めて接続できます。
+
+実際には、**Use ODBC** スイッチと、ホスト・ポート・データベース・ユーザー・パスワードの個別の入力欄はなくなりました。**すでに ODBC を使っていない接続はすべて ODBC へ移行する必要があります**。自動変換はありませんので、アップグレード前に計画してください:
+
+1. インストールに定義されている各データベース接続を確認し、まだ ODBC を使っていないものを書き出してください。いずれも再構成が必要です。
+2. 対応する ODBC ドライバーを digna ホストにインストールします。接続はブラウザーからではなく、digna バックエンドを実行しているサーバーから開かれます。参照: [digna ホストへの ODBC ドライバーのインストール](../../../databases/overview.md#install-the-driver)。
+3. 影響を受ける各接続の ODBC プロパティを用意してください。 [技術別ガイド](../../../databases/overview.md#technology-guides)には、ソースごとに実績のあるプロパティ一式が記載されています。
+
+アップグレード後、影響を受けた各接続を ODBC に切り替え、ダッシュボードからテストしてください。参照: [データベース接続の作成](../../../databases/overview.md#create-a-database-connection) および [接続のテスト](../../../databases/overview.md#testing-a-connection)。
+
+!!! warning "Databricks Legacy 接続"
+
+    Databricks Legacy コネクタは本リリースで削除されました。該当する接続は [Databricks](../../../databases/databricks_connector_guide.md) コネクタへ移行してください。
+
 **digna リポジトリのバックアップ作成は必須です**
 
 アップグレード前にリポジトリ（PostgreSQL）のバックアップを取り、データ損失に備えてください。バックアップがあれば、アップグレード中に想定外の問題が発生しても復旧できます。
@@ -924,17 +992,24 @@ sudo ./stop_service.sh
 
 digna をフォアグラウンドで実行している場合は、そのターミナルウィンドウで `Ctrl + C` を押します。
 
-#### ステップ 2: 現在のバックエンドをバックアップする
+#### ステップ 2: 現在のインストールをバックアップする
 
-digna インストールディレクトリで:
+digna のインストールディレクトリで、新しいリリースを並べて配置できるよう、現在のインストールのフォルダー名を変更します:
 
 ```bash
 cd /opt/digna
-mv digna digna_old
+mv dignabackend dignabackend_old
+```
+```bash
+mv dignacli dignacli_old
 ```
 ```bash
 mv dashboard dashboard_old
 ```
+
+!!! info "dignabackend と dignacli は使用されなくなりました"
+
+    リリース 2026.06 から、`dignabackend` と `dignacli` は、バックエンドと CLI を統合した単一の実行ファイル `digna` に置き換えられます。`dignabackend_old` と `dignacli_old` はアップグレードを確認するまで残し、その後は両方とも削除してかまいません。`dashboard_old` は、そこから構成ファイルを復元するまで残してください（手順 4 を参照）。
 
 #### ステップ 3: 新バージョンを展開してデプロイする
 
@@ -951,13 +1026,40 @@ xattr -dr com.apple.quarantine /opt/digna
 
     `config.toml` ファイルはインストール ZIP に含まれていません。既存の設定は安全に保持されます。
 
-### ステップ 4: 設定ファイルを復元する
+#### ステップ 4: 設定ファイルを復元する
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### ステップ 5: リポジトリスキーマをアップグレードする
+!!! warning "リリース 2026.06 で config.toml が変わります"
+
+    3 つの設定が新たに必須となり、1 つは使用されなくなりました。以前のリリースから引き継いだ `config.toml` には新しい設定が含まれておらず、それらが欠けている限り digna は起動しません。既存の `config.toml` に次を追加してください:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで `[base]` から **`digna_FERNET_KEY` を削除**してください。もう使用されません。
+
+    各設定の役割については次を参照してください: [バックエンド構成](#backend-configuration).
+
+#### ステップ 5: 構成を検証する
+
+リポジトリに手を加える前に、更新した `config.toml` が完全であることを確認します:
+
+```bash
+./digna config check
+```
+
+すべてのセクションが OK と報告される必要があります。FAILED と報告された箇所を修正し、続行する前にコマンドを再実行してください。
+
+#### ステップ 6: リポジトリスキーマをアップグレードする
 
 digna インストールディレクトリに移動して次を実行:
 
@@ -968,7 +1070,7 @@ cd /opt/digna
 
 これにより PostgreSQL スキーマが最新バージョンに更新され、既存のデータは保持されます。
 
-### ステップ 6: サービスを再起動する
+#### ステップ 7: サービスを再起動する
 
 バックグラウンドサービスとして実行している場合:
 
@@ -993,8 +1095,9 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### ステップ 7: アップグレードの確認
+#### ステップ 8: アップグレードの確認
 
 1. digna ダッシュボードにアクセスする
 2. インターフェースが正しく読み込まれることを確認する
 3. サーバーログにエラーがないか確認する
+4. まだ ODBC を使っていなかった接続をすべて ODBC に切り替え、そのうえですべての接続をテストします。参照: [接続のテスト](../../../databases/overview.md#testing-a-connection)
