@@ -30,7 +30,7 @@ digna je celovita platforma, vodena z umetno inteligenco, namenjena optimizaciji
 
 digna sestavljata dve glavni komponenti:
 
-- **dignabackend**: jedro aplikacije, odgovorno za obdelavo podatkov in izvajanje preverjanj kakovosti.
+- **digna**: jedro aplikacije, odgovorno za obdelavo podatkov in izvajanje preverjanj kakovosti. Združuje zaledni del in vmesnik ukazne vrstice v eno samo izvršljivo datoteko ter nadomešča ločena programa `dignabackend` in `dignacli` iz prejšnjih izdaj.
 - **dignadashboard**: spletni vmesnik gostovan na spletnem strežniku, ki omogoča enostavno interakcijo s platformo digna in vizualizacijo meritev kakovosti podatkov.
 
 ### Novosti v izdaji 2026.06
@@ -560,7 +560,6 @@ Ta sekcija vsebuje varnostne nastavitve in nastavitve piškotkov:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -568,21 +567,41 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_FERNET_KEY` | Ključ za šifriranje | Uporablja se za šifriranje žetonov in piškotkov (privzeto priložen) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Ujemanje z domeno vašega frontenda |
 | `digna_COOKIE_SECURE` | `false` (lokalno) / `true` (produkcija) | Uporabite `true` za HTTPS povezave |
 | `digna_COOKIE_HTTPONLY` | `true` | Vedno omogočeno zaradi varnosti |
 | `digna_COOKIE_SAME_SITE` | `lax` | Zmanjša tveganje CSRF napadov |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 ure) | Čas poteka seje v sekundah |
 | `digna_MAX_WORKERS` | Število CPU jeder - 1 | Število vzporednih nalog inšpekcij |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Največja zakasnitev v sekundah, ki jo sme razporejevalnik dodati pred zagonom zapadlega opravila |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Ura dneva (24-urni zapis `HH:MM`), ob kateri se začne dnevno čiščenje |
 
 !!! tip "Namig"
 
     Za ugotovitev števila CPU jeder na vašem Macu zaženite `sysctl -n hw.ncpu`.
+
+#### Sekcija [encryption]
+
+Ta sekcija vsebuje ključ, s katerim so šifrirane občutljive vrednosti v repozitoriju. Je **obvezna** — `config check` sekcijo `[encryption]` javi kot FAILED, če ključ manjka.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameter | Vrednost | Opombe |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Ključ, kodiran v Base64 | Šifrira občutljive vrednosti, shranjene v repozitoriju digna |
+
+!!! warning "Zaščitite config.toml"
+
+    Ta ključ je fiksna vrednost, enaka v vseh namestitvah digna, in prav on dešifrira občutljive vrednosti v vašem repozitoriju. Dostop do `config.toml` omejite na račun, pod katerim teče digna, datoteko hranite zunaj sistema za nadzor različic in deljenih diskov ter jo izključite iz vsake varnostne kopije, ki je shranjena manj varno kot repozitorij sam.
 
 #### Sekcija [logging]
 
@@ -601,7 +620,31 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ---
 
-### Korak 2: Inicializirajte repozitorij
+### Korak 2: Preverjanje Konfiguracije
+
+Pred inicializacijo repozitorija preverite, ali je `config.toml` popoln in pravilno sestavljen. V namestitvenem imeniku digna zaženite:
+
+```bash
+digna config check
+```
+
+Vsaka sekcija se preveri posebej, tako da posamezna napaka ne prikrije stanja ostalih:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Odpravite vse, kar je javljeno kot FAILED, in pred nadaljevanjem ukaz poženite znova. Celoten seznam možnosti najdete v [referenci CLI](../../../cli/Command_Line_Interface_202606.md).
+
+### Korak 3: Inicializirajte repozitorij
 
 1. Odprite **Terminal**
 2. Pojdite v imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
@@ -623,7 +666,7 @@ Videli boste potrditev, da je povezava vzpostavljena (sam repozitorij še ni ini
     source ~/.zshrc
     ```
 
-### Korak 3: Namestite shemo repozitorija
+### Korak 4: Namestite shemo repozitorija
 
 V istem imeniku zaženite:
 
@@ -632,31 +675,6 @@ V istem imeniku zaženite:
 ```
 
 Ta ukaz namesti potrebne tabele in shemo v vašo PostgreSQL bazo podatkov.
-
-### Korak 4: Zaženite digna strežnik
-
-V imeniku namestitve digna zaženite strežnik z:
-
-```bash
-./digna serve --address <host> --port <port>
-```
-
-**Parametri:**
-- `--address` — ime gostitelja/IP strežnika
-- `--port` — pristanišče strežnika
-
-Videli boste začetna sporočila, ki potrjujejo zagon strežnika:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-!!! tip "Namig"
-
-    Ob prvem zagonu strežnika vas lahko macOS vpraša, ali želite, da aplikacija sprejema dohodne omrežne povezave. Kliknite **Allow**, sicer nadzorna plošča ne bo mogla doseči backend‑a.
 
 ### Korak 5: Ustvarite skrbniškega uporabnika
 
@@ -685,6 +703,35 @@ S tem se ustvari uporabnik z e-poštnim naslovom `admin@example.com` in polnimi 
     Uporabite močno geslo z mešanico velikih in malih črk, številk in posebnih znakov.
 
 ---
+
+### Korak 6: Zaženite digna strežnik
+
+V imeniku namestitve digna zaženite strežnik z:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**Parametri:**
+- `--address` — ime gostitelja/IP strežnika
+- `--port` — pristanišče strežnika
+
+Videli boste začetna sporočila, ki potrjujejo zagon strežnika:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "Namig"
+
+    Ob prvem zagonu strežnika vas lahko macOS vpraša, ali želite, da aplikacija sprejema dohodne omrežne povezave. Kliknite **Allow**, sicer nadzorna plošča ne bo mogla doseči backend‑a.
+
+!!! note "Strežnik zaseda terminal"
+
+    `serve` teče v ospredju in deluje, dokler ga ne ustavite s ++ctrl+c++. Pustite ga teči, dokler ne dokončate namestitve; če naj se namesto tega samodejno zaganja ob zagonu sistema, glejte [Zagon digna kot Storitve v Ozadju](#running-digna-as-a-background-service).
 
 ## Konfiguracija nadzorne plošče {: #dashboard-configuration }
 
@@ -894,6 +941,27 @@ digna strežnik je sedaj odregistriran pri launchd.
 
 ### Pred nadgradnjo
 
+**Najprej Preverite Vse Podatkovne Povezave**
+
+Od izdaje 2026.06 digna do vsake izvorne tehnologije dostopa prek **ODBC**. Prejšnje izdaje so ponujale izbiro med gonilnikom za posamezno tehnologijo in ODBC, izbrano s stikalom **Use ODBC**. Ekipa digna se je odločila graditi izključno na ODBC, ker en sam standardni vmesnik ponuja več kot nabor gonilnikov po meri:
+
+- **Preverjanje pristnosti** — preverjanje pristnosti je del ODBC, zato lahko povezava uporabi vse, kar podpira njen gonilnik: gesla, žetone in PAT-e, Kerberos in Active Directory, MFA in enotno prijavo prek brskalnika, identitete v oblaku, odjemalčka potrdila in TLS. Nove metode pridejo s posodobitvijo gonilnika, namesto da bi čakali na izdajo digna.
+- **Gonilniki, ki jih vzdržujejo proizvajalci podatkovnih baz** — proizvajalčev lastni gonilnik sledi novim različicam strežnika in varnostnim popravkom, vi pa ga lahko posodabljate po svojem urniku, neodvisno od digna.
+- **En sam način nastavljanja vsega** — vsaka tehnologija je seznam lastnosti ključ/vrednost, z istim vmesnikom, istim šifriranjem občutljivih vrednosti in istim odpravljanjem težav, namesto drugačnega nabora polj za vsak vir.
+- **Nastavljanje in doseg** — možnosti gonilnika, kot so časovne omejitve, nastavitve TLS, posredniški strežniki in velikosti prenosa, so na voljo za vsak vir, priključiti pa je mogoče vsako tehnologijo s skladnim gonilnikom ODBC, tudi takšno, za katero digna ne objavlja lastnega vodnika.
+
+V praksi to pomeni, da stikala **Use ODBC** ter ločenih polj za gostitelja, vrata, bazo, uporabnika in geslo ni več. **Vsako povezavo, ki še ne uporablja ODBC, je treba preklopiti na ODBC** — samodejne pretvorbe ni, zato to načrtujte pred nadgradnjo:
+
+1. Preglejte vsako podatkovno povezavo, opredeljeno v vaši namestitvi, in si zapišite tiste, ki še ne uporabljajo ODBC — vsako od njih bo treba znova nastaviti.
+2. Na gostitelja digna namestite ustrezen gonilnik ODBC — povezave se odpirajo s strežnika, na katerem teče zaledje digna, in ne iz brskalnika. Glejte [Namestitev Gonilnika ODBC na Gostitelja digna](../../../databases/overview.md#install-the-driver).
+3. Za vsako prizadeto povezavo pripravite lastnosti ODBC. [Vodniki po tehnologijah](../../../databases/overview.md#technology-guides) za vsak vir navajajo preizkušen nabor lastnosti.
+
+Po nadgradnji vsako prizadeto povezavo preklopite na ODBC in jo preizkusite z nadzorne plošče — glejte [Ustvarjanje Podatkovne Povezave](../../../databases/overview.md#create-a-database-connection) in [Preizkušanje Povezave](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Povezave Databricks Legacy"
+
+    Konektor Databricks Legacy je bil v tej izdaji odstranjen. Te povezave preselite na konektor [Databricks](../../../databases/databricks_connector_guide.md).
+
 **Obvezno ustvarite varnostno kopijo digna repozitorija**
 
 Pred nadgradnjo digna varnostno kopirajte vaš repozitorij (PostgreSQL), da se zaščitite pred izgubo podatkov.
@@ -918,17 +986,24 @@ sudo ./stop_service.sh
 
 Če digna teče v ospredju, pritisnite `Ctrl + C` v Terminal oknu, kjer teče.
 
-#### Korak 2: Varnostno kopirajte trenutno backend namestitev
+#### Korak 2: Varnostna Kopija Trenutne Namestitve
 
-V imeniku namestitve digna:
+V namestitvenem imeniku digna preimenujte mape trenutne namestitve, da bo novo izdajo mogoče namestiti ob njih:
 
 ```bash
 cd /opt/digna
-mv digna digna_old
+mv dignabackend dignabackend_old
+```
+```bash
+mv dignacli dignacli_old
 ```
 ```bash
 mv dashboard dashboard_old
 ```
+
+!!! info "dignabackend in dignacli nista več v uporabi"
+
+    Od izdaje 2026.06 `dignabackend` in `dignacli` nadomešča ena sama izvršljiva datoteka `digna`, ki združuje zaledje in CLI. Mapi `dignabackend_old` in `dignacli_old` obdržite le, dokler ne preverite nadgradnje — nato ju lahko obe izbrišete. Mapo `dashboard_old` obdržite, dokler iz nje ne obnovite svojih konfiguracijskih datotek (glejte korak 4).
 
 #### Korak 3: Razširite in razmestite novo različico
 
@@ -945,13 +1020,40 @@ xattr -dr com.apple.quarantine /opt/digna
 
     Datoteka `config.toml` **nikoli** ni vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
 
-### Korak 4: Obnovite konfiguracijske datoteke
+#### Korak 4: Obnovite konfiguracijske datoteke
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Korak 5: Nadgradite shemo repozitorija
+!!! warning "Izdaja 2026.06 spreminja config.toml"
+
+    Tri nastavitve so nove in obvezne, ena pa ni več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato iz `[base]` **odstranite `digna_FERNET_KEY`** — ni več v uporabi.
+
+    Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija Zaledja](#backend-configuration).
+
+#### Korak 5: Preverjanje Konfiguracije
+
+Preden se dotaknete repozitorija, potrdite, da je posodobljeni `config.toml` popoln:
+
+```bash
+./digna config check
+```
+
+Vsaka sekcija mora javiti OK. Odpravite vse, kar je javljeno kot FAILED, in pred nadaljevanjem ukaz poženite znova.
+
+#### Korak 6: Nadgradite shemo repozitorija
 
 Pojdite v imenik namestitve digna in zaženite:
 
@@ -962,7 +1064,7 @@ cd /opt/digna
 
 To posodobi PostgreSQL shemo na najnovejšo različico ob ohranitvi vseh obstoječih podatkov.
 
-### Korak 6: Ponovni zagon storitev
+#### Korak 7: Ponovni zagon storitev
 
 Če tečete kot ozadna storitev:
 
@@ -987,8 +1089,9 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Korak 7: Preverite nadgradnjo
+#### Korak 8: Preverite nadgradnjo
 
 1. Dostopajte do digna nadzorne plošče
 2. Preverite, ali se vmesnik naloži pravilno
 3. Preverite dnevniške datoteke strežnika za morebitne napake
+4. Vsako povezavo, ki ODBC še ni uporabljala, preklopite na ODBC, nato preizkusite vse povezave — glejte [Preizkušanje Povezave](../../../databases/overview.md#testing-a-connection)

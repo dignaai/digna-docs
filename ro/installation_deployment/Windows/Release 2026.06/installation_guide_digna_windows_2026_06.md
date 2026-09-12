@@ -30,12 +30,16 @@ digna este o platformă completă, bazată pe AI, concepută pentru a optimiza g
 
 digna este alcătuită din două componente principale:
 
-- **dignabackend**: motorul principal al aplicației, responsabil cu procesarea datelor și executarea verificărilor de calitate.
+- **digna**: nucleul aplicației, responsabil de prelucrarea datelor și de efectuarea verificărilor de calitate. Reunește backend-ul și interfața în linie de comandă într-un singur executabil, înlocuind programele separate `dignabackend` și `dignacli` din versiunile anterioare.
 - **dignadashboard**: interfață web găzduită pe un web server, care oferă o modalitate prietenoasă de a interacționa cu platforma digna și de a vizualiza metricile de calitate a datelor.
 
 ### Noutăți în Release 2026.06
 
 Această versiune aduce capabilități de observabilitate a datelor direct în cod, permițând dezvoltatorilor să monitorizeze calitatea datelor la sursă. Vezi [release notes](http://docs.digna.ai/changelog/Release_202606/) pentru detalii complete.
+
+### Căutați macOS sau Linux?
+
+Acest ghid acoperă Windows. Pentru alte platforme, consultați [Ghidul de instalare macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) sau [Ghidul de instalare Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
@@ -363,7 +367,6 @@ Această secțiune conține setări de securitate și cookie-uri:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -371,17 +374,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_FERNET_KEY` | Cheie de criptare | Folosită pentru a cripta token-urile și cookie-urile (implicit este furnizat) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Potrivește cu domeniul frontend-ului |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (producție) | Folosește `true` pentru conexiuni HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | Activat întotdeauna pentru securitate |
 | `digna_COOKIE_SAME_SITE` | `lax` | Previne atacurile CSRF |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 ore) | Timeout pentru sesiune în secunde |
 | `digna_MAX_WORKERS` | Numărul de nuclee CPU - 1 | Numărul de task-uri paralele de inspecție |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Întârzierea maximă, în secunde, pe care planificatorul o poate adăuga înainte de a porni o sarcină scadentă |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Ora din zi (format de 24 de ore `HH:MM`) la care începe curățarea zilnică |
+
+#### Secțiunea [encryption]
+
+Această secțiune conține cheia folosită pentru a cripta valorile sensibile stocate în repository. Este **obligatorie** — `config check` raportează secțiunea `[encryption]` ca FAILED dacă lipsește cheia.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Cheie codificată Base64 | Criptează valorile sensibile stocate în repository-ul digna |
+
+!!! warning "Protejați config.toml"
+
+    Această cheie este o valoare fixă, identică în toate instalările digna, și tocmai ea decriptează valorile sensibile din repository-ul dumneavoastră. Restricționați `config.toml` la contul care rulează digna, țineți fișierul în afara controlului versiunilor și a unităților partajate și excludeți-l din orice copie de siguranță păstrată mai puțin sigur decât repository-ul însuși.
 
 #### Secțiunea [logging]
 
@@ -399,6 +422,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | Numărul de backup-uri zilnice de log păstrate |
 
 ---
+
+### Pasul 2: Validați configurația
+
+Înainte de a inițializa repository-ul, verificați dacă `config.toml` este complet și corect alcătuit. În directorul de instalare digna rulați:
+
+```bash
+digna config check
+```
+
+Fiecare secțiune este validată separat, astfel încât o singură eroare nu ascunde starea celorlalte:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Corectați tot ce este raportat ca FAILED și rulați comanda din nou înainte de a continua. Lista completă a opțiunilor se află în [referința CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Pasul 3: Inițializează Repository-ul
 
@@ -422,28 +469,7 @@ digna repo install
 
 Această comandă instalează tabelele și schema necesare în baza ta PostgreSQL.
 
-### Pasul 5: Pornește serverul digna
-
-În directorul de instalare digna, pornește serverul cu:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Parametri:**
-- `--address` — hostname/IP server
-- `--port` — port server
-
-Ar trebui să vezi mesaje de startup care confirmă că serverul rulează:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### Pasul 6: Creează un utilizator admin
+### Pasul 5: Creează un utilizator admin
 
 1. Deschide o fereastră **nouă** Command Prompt
 2. Navighează la directorul de instalare digna
@@ -466,6 +492,31 @@ Aceasta creează un utilizator cu privilegii administrative complete.
     Folosește o parolă puternică cu un mix de majuscule, minuscule, cifre și caractere speciale.
 
 ---
+
+### Pasul 6: Pornește serverul digna
+
+În directorul de instalare digna, pornește serverul cu:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Parametri:**
+- `--address` — hostname/IP server
+- `--port` — port server
+
+Ar trebui să vezi mesaje de startup care confirmă că serverul rulează:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "Serverul ocupă terminalul"
+
+    `serve` rulează în prim-plan și continuă până când îl opriți cu ++ctrl+c++. Lăsați-l să ruleze cât timp finalizați configurarea; pentru a-l porni automat la pornirea sistemului, vedeți [Rularea digna ca serviciu Windows](#running-digna-as-a-windows-service).
 
 ## Dashboard Configuration {: #dashboard-configuration }
 
@@ -629,6 +680,27 @@ Serverul digna este acum dezînregistrat ca serviciu Windows.
 
 ### Înainte de upgrade
 
+**Verificați mai întâi toate conexiunile la baze de date**
+
+Începând cu versiunea 2026.06, digna ajunge la fiecare tehnologie sursă prin **ODBC**. Versiunile anterioare ofereau alegerea între un driver specific fiecărei tehnologii și ODBC, selectată prin comutatorul **Use ODBC**. Echipa digna a decis să se bazeze exclusiv pe ODBC, pentru că o singură interfață standard oferă mai mult decât un set de drivere făcute la comandă:
+
+- **Autentificare** — autentificarea face parte din ODBC, așa că o conexiune poate folosi tot ce acceptă driverul său: parole, token-uri și PAT-uri, Kerberos și Active Directory, MFA și autentificare unică din browser, identități în cloud, certificate de client și TLS. Metodele noi vin odată cu o actualizare a driverului, nu așteptând o versiune digna.
+- **Drivere întreținute de producătorii bazelor de date** — driverul propriu al producătorului urmărește noile versiuni de server și corecțiile de securitate, iar dumneavoastră îl puteți actualiza după propriul calendar, independent de digna.
+- **Un singur mod de a configura totul** — fiecare tehnologie este o listă de proprietăți cheie/valoare, cu aceeași interfață, aceeași criptare a valorilor sensibile și aceeași depanare, în locul unui set diferit de câmpuri pentru fiecare sursă.
+- **Reglare și acoperire** — opțiunile driverului, precum timpii de expirare, setările TLS, proxy-urile și dimensiunile de citire, sunt disponibile pentru fiecare sursă, iar orice tehnologie cu un driver ODBC conform poate fi conectată, inclusiv cele pentru care digna nu publică un ghid dedicat.
+
+În practică, aceasta înseamnă că întrerupătorul **Use ODBC** și câmpurile separate pentru gazdă, port, bază de date, utilizator și parolă nu mai există. **Fiecare conexiune care nu folosește deja ODBC trebuie trecută pe ODBC** — nu există conversie automată, așa că planificați acest lucru înainte de actualizare:
+
+1. Parcurgeți fiecare conexiune la baze de date definită în instalarea dumneavoastră și notați-le pe cele care nu folosesc încă ODBC — fiecare dintre ele va trebui reconfigurată.
+2. Instalați driverul ODBC corespunzător pe gazda digna — conexiunile sunt deschise de pe serverul care rulează backend-ul digna, nu din browser. Vedeți [Instalarea driverului ODBC pe gazda digna](../../../databases/overview.md#install-the-driver).
+3. Pregătiți proprietățile ODBC pentru fiecare conexiune vizată. [Ghidurile pe tehnologii](../../../databases/overview.md#technology-guides) prezintă, pentru fiecare sursă, un set de proprietăți verificat.
+
+După actualizare, treceți fiecare conexiune vizată pe ODBC și testați-o din dashboard — vedeți [Crearea unei conexiuni la baza de date](../../../databases/overview.md#create-a-database-connection) și [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Conexiuni Databricks Legacy"
+
+    Conectorul Databricks Legacy a fost eliminat în această versiune. Migrați aceste conexiuni către conectorul [Databricks](../../../databases/databricks_connector_guide.md).
+
 **Crearea unui backup al digna Repository este obligatorie**
 
 Înainte de a face upgrade la digna, fă backup la repository-ul tău (PostgreSQL) pentru a te proteja împotriva pierderii de date.
@@ -645,18 +717,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Pasul 2: Fă backup instalației curente a backend-ului
+#### Pasul 2: Faceți o copie a instalării curente
 
-În directorul tău de instalare digna:
+În directorul de instalare digna, redenumiți folderele instalării curente, astfel încât noua versiune să poată fi implementată alături de ele:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "dignabackend și dignacli nu mai sunt folosite"
+
+    Începând cu versiunea 2026.06, `dignabackend` și `dignacli` sunt înlocuite de executabilul unic `digna`, care reunește backend-ul și CLI-ul. Păstrați `dignabackend_old` și `dignacli_old` doar până când ați verificat actualizarea — apoi puteți șterge ambele foldere. Păstrați `dashboard_old` până când v-ați restaurat din el fișierele de configurare (vedeți pasul 4).
 
 #### Pasul 3: Extrage și deploy noua versiune
 
@@ -667,12 +747,39 @@ ren dashboard dashboard_old
 
     Fișierul `config.toml` **nu** este niciodată inclus în ZIP-ul de instalare. Configurația ta existentă rămâne în siguranță.
 
-### Pasul 4: Restaurează fișierele de configurație
+#### Pasul 4: Restaurează fișierele de configurație
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Pasul 5: Upgrade schema repository-ului
+!!! warning "Versiunea 2026.06 modifică config.toml"
+
+    Trei setări sunt noi și obligatorii, iar una nu mai este folosită. Un `config.toml` preluat dintr-o versiune anterioară nu conține setările noi, iar digna nu va porni cât timp lipsesc. Adăugați următoarele în `config.toml` existent:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Adăugați cele două chei `[base]` în secțiunea `[base]` existentă și adăugați `[encryption]` ca secțiune nouă. Apoi **eliminați `digna_FERNET_KEY`** din `[base]` — nu mai este folosită.
+
+    Ce face fiecare setare este descris în [Configurarea backend-ului](#backend-configuration).
+
+#### Pasul 5: Validați configurația
+
+Confirmați că `config.toml` actualizat este complet înainte de a atinge repository-ul:
+
+```bash
+digna config check
+```
+
+Fiecare secțiune trebuie să raporteze OK. Corectați tot ce este raportat ca FAILED și rulați comanda din nou înainte de a continua.
+
+#### Pasul 6: Upgrade schema repository-ului
 
 Navighează la directorul de instalare digna și rulează:
 
@@ -682,7 +789,7 @@ digna repo upgrade
 
 Aceasta actualizează schema PostgreSQL la versiunea cea mai recentă, păstrând toate datele existente.
 
-### Pasul 6: Repornirea serviciilor
+#### Pasul 7: Repornirea serviciilor
 
 Dacă rulezi ca serviciu Windows:
 
@@ -700,8 +807,9 @@ digna serve --address <address> --port <port>
 
 Dacă folosești IIS sau Tomcat, repornește web server-ul corespunzător.
 
-#### Pasul 7: Verifică upgrade-ul
+#### Pasul 8: Verifică upgrade-ul
 
 1. Accesează dashboard-ul digna
 2. Verifică că interfața se încarcă corect
 3. Verifică log-urile serverului pentru eventuale erori
+4. Treceți pe ODBC fiecare conexiune care nu îl folosea încă, apoi testați toate conexiunile — vedeți [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection)

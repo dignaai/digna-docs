@@ -30,12 +30,16 @@ digna, veri ambarları, veri gölleri ve lakehouse'lar gibi çeşitli veri ortam
 
 digna iki ana bileşenden oluşur:
 
-- **dignabackend**: Verileri işlemek ve kalite kontrollerini gerçekleştirmekle sorumlu uygulamanın çekirdek motoru.
+- **digna**: uygulamanın çekirdeği; verileri işlemekten ve kalite denetimlerini yürütmekten sorumludur. Arka ucu ve komut satırı arayüzünü tek bir çalıştırılabilir dosyada birleştirir ve önceki sürümlerdeki ayrı `dignabackend` ile `dignacli` programlarının yerini alır.
 - **dignadashboard**: Bir web sunucusunda barındırılan, digna platformuyla etkileşim kurmayı ve veri kalite metriklerini görselleştirmeyi sağlayan web tabanlı arayüz.
 
 ### 2026.06 Sürümünde Yenilikler
 
 Bu sürüm, veri gözlemlenebilirliğini doğrudan kodunuza getirerek geliştiricilerin kaynakta veri kalitesini izlemesini sağlar. Tam ayrıntılar için [sürüm notlarına](http://docs.digna.ai/changelog/Release_202606/) bakın.
+
+### macOS veya Linux mu arıyorsunuz?
+
+Bu kılavuz Windows içindir. Diğer platformlar için [macOS Kurulum Kılavuzu](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) veya [Linux Kurulum Kılavuzu](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md) belgelerine bakın.
 
 ---
 
@@ -363,7 +367,6 @@ Bu bölüm güvenlik ve çerez (cookie) ayarlarını içerir:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -371,17 +374,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Tokenları ve çerezleri şifrelemek için kullanılır (varsayılan sağlanır) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Frontend domain'i ile eşleşsin |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | HTTPS bağlantıları için `true` kullanın |
 | `digna_COOKIE_HTTPONLY` | `true` | Güvenlik için her zaman etkin |
 | `digna_COOKIE_SAME_SITE` | `lax` | CSRF saldırılarını önlemeye yardımcı olur |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Oturum zaman aşımı (saniye cinsinden) |
 | `digna_MAX_WORKERS` | Number of CPU cores - 1 | Paralel denetim görevlerinin sayısı |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Zamanlayıcının, vadesi gelmiş bir işi başlatmadan önce ekleyebileceği saniye cinsinden azami gecikme |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Günlük temizliğin başladığı saat (24 saat biçiminde `HH:MM`) |
+
+#### [encryption] Bölümü
+
+Bu bölüm, depoda saklanan hassas değerleri şifrelemek için kullanılan anahtarı içerir. **Zorunludur** — anahtar eksikse `config check`, `[encryption]` bölümünü FAILED olarak bildirir.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 kodlu anahtar | digna deposunda saklanan hassas değerleri şifreler |
+
+!!! warning "config.toml dosyasını koruyun"
+
+    Bu anahtar sabit bir değerdir, tüm digna kurulumlarında aynıdır ve deponuzdaki hassas değerlerin şifresini çözen şey odur. `config.toml` erişimini digna'nın çalıştığı hesapla sınırlayın, dosyayı sürüm denetiminin ve paylaşılan sürücülerin dışında tutun ve deponun kendisinden daha az güvenli saklanan her yedeğin dışında bırakın.
 
 #### [logging] Bölümü
 
@@ -399,6 +422,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | Saklanacak günlük yedek sayısı (günlük bazda) |
 
 ---
+
+### Adım 2: Yapılandırmayı Doğrulayın
+
+Depoyu başlatmadan önce `config.toml` dosyasının eksiksiz ve doğru kurulmuş olduğunu denetleyin. digna kurulum dizininizde şunu çalıştırın:
+
+```bash
+digna config check
+```
+
+Her bölüm ayrı ayrı doğrulanır, böylece tek bir hata diğerlerinin durumunu gizlemez:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+FAILED olarak bildirilen her şeyi düzeltin ve devam etmeden önce komutu yeniden çalıştırın. Seçeneklerin tam listesi [CLI başvurusunda](../../../cli/Command_Line_Interface_202606.md) yer alır.
 
 ### Adım 3: Repository Bağlantısını Test Edin
 
@@ -422,28 +469,7 @@ digna repo install
 
 Bu komut PostgreSQL veritabanınıza gerekli tabloları ve şemayı yükler.
 
-### Adım 5: digna Sunucusunu Başlatın
-
-digna kurulum dizininde sunucuyu başlatın:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Parametreler:**
-- `--address` — Sunucu hostname/IP
-- `--port` — Sunucu portu 
-
-Sunucunun çalıştığını doğrulayan başlangıç mesajları görmelisiniz:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### Adım 6: Yönetici (Admin) Kullanıcısı Oluşturun
+### Adım 5: Yönetici (Admin) Kullanıcısı Oluşturun
 
 1. Yeni bir Komut İstemi penceresi açın
 2. digna kurulum dizinine gidin
@@ -466,6 +492,31 @@ Bu komut tam idari ayrıcalıklara sahip bir kullanıcı oluşturur.
     Büyük küçük harf, sayı ve özel karakter içeren güçlü bir parola kullanın.
 
 ---
+
+### Adım 6: digna Sunucusunu Başlatın
+
+digna kurulum dizininde sunucuyu başlatın:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Parametreler:**
+- `--address` — Sunucu hostname/IP
+- `--port` — Sunucu portu 
+
+Sunucunun çalıştığını doğrulayan başlangıç mesajları görmelisiniz:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "Sunucu terminali meşgul eder"
+
+    `serve` ön planda çalışır ve siz ++ctrl+c++ ile durdurana kadar çalışmayı sürdürür. Kurulumu tamamlarken çalışır durumda bırakın; bunun yerine sistem açılışında otomatik başlatmak için bkz. [digna'yı Windows Hizmeti Olarak Çalıştırma](#running-digna-as-a-windows-service).
 
 ## Dashboard Yapılandırması {: #dashboard-configuration }
 
@@ -629,6 +680,27 @@ digna sunucusu artık Windows hizmeti olarak kayıtlı olmayacaktır.
 
 ### Yükseltme Öncesi
 
+**Önce Tüm Veritabanı Bağlantılarını Doğrulayın**
+
+2026.06 sürümünden itibaren digna, her kaynak teknolojisine **ODBC** üzerinden erişir. Önceki sürümler, **Use ODBC** anahtarıyla seçilen, teknolojiye özgü sürücü ile ODBC arasında bir seçim sunuyordu. digna ekibi yalnızca ODBC üzerine inşa etmeye karar verdi; çünkü tek ve standart bir arayüz, ısmarlama sürücülerden oluşan bir kümeden daha fazlasını sağlar:
+
+- **Kimlik doğrulama** — kimlik doğrulama ODBC'nin bir parçasıdır; dolayısıyla bir bağlantı, sürücüsünün desteklediği her şeyi kullanabilir: parolalar, belirteçler ve PAT'ler, Kerberos ve Active Directory, MFA ve tarayıcı tabanlı çoklu oturum açma, bulut kimlikleri, istemci sertifikaları ve TLS. Yeni yöntemler, bir digna sürümünü beklemek yerine sürücü güncellemesiyle gelir.
+- **Veritabanı üreticilerince bakımı yapılan sürücüler** — üreticinin kendi sürücüsü yeni sunucu sürümlerini ve güvenlik düzeltmelerini izler; siz de onu digna'dan bağımsız olarak kendi takviminize göre güncelleyebilirsiniz.
+- **Her şeyi yapılandırmanın tek yolu** — her teknoloji, aynı arayüz, hassas değerlerin aynı şifrelenmesi ve aynı sorun giderme ile anahtar/değer özelliklerinden oluşan bir listedir; kaynak başına farklı alan kümeleri yoktur.
+- **İnce ayar ve kapsam** — zaman aşımları, TLS ayarları, vekil sunucular ve getirme boyutları gibi sürücü düzeyindeki seçenekler her kaynak için kullanılabilir ve uyumlu bir ODBC sürücüsü bulunan her teknoloji, digna'nın ayrı bir kılavuz yayımlamadıkları da dahil olmak üzere bağlanabilir.
+
+Uygulamada bu, **Use ODBC** anahtarının ve ayrı ana bilgisayar, bağlantı noktası, veritabanı, kullanıcı ve parola alanlarının artık bulunmadığı anlamına gelir. **Halihazırda ODBC kullanmayan her bağlantı ODBC'ye taşınmalıdır** — otomatik dönüştürme yoktur, bu nedenle bunu yükseltmeden önce planlayın:
+
+1. Kurulumunuzda tanımlı her veritabanı bağlantısını gözden geçirin ve henüz ODBC kullanmayanları not edin — her biri yeniden yapılandırılmalıdır.
+2. İlgili ODBC sürücüsünü digna ana bilgisayarına kurun — bağlantılar, tarayıcıdan değil, digna arka ucunu çalıştıran sunucudan açılır. Bkz. [ODBC Sürücüsünü digna Ana Bilgisayarına Kurma](../../../databases/overview.md#install-the-driver).
+3. Etkilenen her bağlantı için ODBC özelliklerini hazır bulundurun. [Teknoloji kılavuzları](../../../databases/overview.md#technology-guides) her kaynak için denenmiş bir özellik kümesi listeler.
+
+Yükseltmeden sonra etkilenen her bağlantıyı ODBC'ye taşıyın ve panodan sınayın — bkz. [Veritabanı Bağlantısı Oluşturma](../../../databases/overview.md#create-a-database-connection) ve [Bağlantıyı Sınama](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy bağlantıları"
+
+    Databricks Legacy bağlayıcısı bu sürümde kaldırıldı. Bu bağlantıları [Databricks](../../../databases/databricks_connector_guide.md) bağlayıcısına taşıyın.
+
 **digna Repository Yedeği Almak Zorunludur**
 
 digna'yı yükseltmeden önce veri kaybını önlemek için repository'nizin (PostgreSQL) yedeğini alın.
@@ -645,18 +717,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Adım 2: Mevcut Backend Kurulumunu Yedekleyin
+#### Adım 2: Mevcut Kurulumu Yedekleyin
 
-digna kurulum dizininizde:
+digna kurulum dizininizde, yeni sürümün yanlarına dağıtılabilmesi için mevcut kurulumunuzun klasörlerini yeniden adlandırın:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "dignabackend ve dignacli artık kullanılmıyor"
+
+    2026.06 sürümünden itibaren `dignabackend` ve `dignacli`, arka uç ile CLI'yi birleştiren tek `digna` çalıştırılabilir dosyasıyla değiştirilmiştir. `dignabackend_old` ve `dignacli_old` klasörlerini yalnızca yükseltmeyi doğrulayana kadar saklayın — sonrasında her ikisini de silebilirsiniz. `dashboard_old` klasörünü, yapılandırma dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. adım 4).
 
 #### Adım 3: Yeni Sürümü Çıkarın ve Dağıtın
 
@@ -668,12 +748,39 @@ ren dashboard dashboard_old
 
     `config.toml` dosyası asla kurulum ZIP'ine dahil edilmez. Mevcut yapılandırmanız korunur.
 
-### Adım 4: Yapılandırma Dosyalarınızı Geri Yükleyin
+#### Adım 4: Yapılandırma Dosyalarınızı Geri Yükleyin
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Adım 5: Repository Şemasını Yükseltin
+!!! warning "2026.06 sürümü config.toml dosyasını değiştiriyor"
+
+    Üç ayar yeni ve zorunludur, biri ise artık kullanılmamaktadır. Önceki bir sürümden devralınan `config.toml` yeni ayarları içermez ve bunlar eksik olduğu sürece digna başlatılmaz. Mevcut `config.toml` dosyanıza şunları ekleyin:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    İki `[base]` anahtarını mevcut `[base]` bölümünüze ekleyin ve `[encryption]` bölümünü yeni bir bölüm olarak ekleyin. Ardından `[base]` bölümünden **`digna_FERNET_KEY` anahtarını kaldırın** — artık kullanılmıyor.
+
+    Her ayarın ne yaptığı şurada açıklanmıştır: [Arka Uç Yapılandırması](#backend-configuration).
+
+#### Adım 5: Yapılandırmayı Doğrulayın
+
+Depoya dokunmadan önce güncellenmiş `config.toml` dosyasının eksiksiz olduğunu doğrulayın:
+
+```bash
+digna config check
+```
+
+Her bölüm OK bildirmelidir. FAILED olarak bildirilen her şeyi düzeltin ve devam etmeden önce komutu yeniden çalıştırın.
+
+#### Adım 6: Repository Şemasını Yükseltin
 
 digna kurulum dizinine gidin ve şu komutu çalıştırın:
 
@@ -683,7 +790,7 @@ digna repo upgrade
 
 Bu komut PostgreSQL şemasını en son sürüme günceller ve mevcut tüm verileri korur.
 
-### Adım 6: Servisleri Yeniden Başlatın
+#### Adım 7: Servisleri Yeniden Başlatın
 
 Windows hizmeti olarak çalışıyorsa:
 
@@ -701,8 +808,9 @@ digna serve --address <address> --port <port>
 
 IIS veya Tomcat kullanıyorsanız ilgili web sunucusunu yeniden başlatın.
 
-#### Adım 7: Yükseltmeyi Doğrulayın
+#### Adım 8: Yükseltmeyi Doğrulayın
 
 1. digna dashboard'a erişin
 2. Arayüzün düzgün yüklendiğini doğrulayın
 3. Sunucu günlüklerini herhangi bir hata için kontrol edin
+4. Henüz ODBC kullanmayan her bağlantıyı ODBC'ye taşıyın, ardından tüm bağlantıları sınayın — bkz. [Bağlantıyı Sınama](../../../databases/overview.md#testing-a-connection)

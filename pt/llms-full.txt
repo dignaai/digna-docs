@@ -4790,42 +4790,6 @@ Server running on http://0.0.0.0:8000
 
 ---
 
-# Introdução
-Source: https://docs.digna.ai/pt/cli/Introduction/
-
-## Propósito da Interface de Linha de Comando (CLI)
-
-A ***digna*** Interface de Linha de Comando (CLI) é uma ferramenta poderosa projetada para simplificar as interações com a plataforma ***digna***. Ela fornece uma interface baseada em texto que permite aos usuários executar uma ampla gama de tarefas de forma eficiente, sem a necessidade de uma interface gráfica.
-
-### Principais Recursos:
-
-- **Eficiência e Flexibilidade:** A CLI permite a execução rápida de comandos, aumentando a produtividade.
-- **Automação:** Suporta scripts para automatizar tarefas repetitivas.
-- **Acesso Remoto:** Gerencie recursos do ***digna*** de qualquer lugar.
-- **Consistência e Confiabilidade:** Garante operações confiáveis com comandos documentados e versionados.
-- **Escalabilidade:** Lida com operações em grande escala para tarefas corporativas.
-- **Aprendizado e Domínio:** Proporciona compreensão mais profunda da funcionalidade do ***digna***.
-- **Integração com Outras Ferramentas:** Integra-se perfeitamente com ferramentas de automação como Control-M, UC4, AutomateNOW!
-
----
-
-## Instruções de Instalação para Windows
-
-Para começar, siga os passos descritos abaixo para extrair os arquivos necessários, implantar a pasta *dignacli* e configurar sua conexão com o repositório do ***digna***. Certifique-se de ter suas credenciais do repositório e quaisquer detalhes de configuração necessários prontos antes de iniciar.
-
-1. **Extraindo a CLI do ***digna***:**
-   - Obtenha o arquivo `.zip` contendo a CLI do ***digna***.
-   - Descompacte o arquivo no diretório desejado.
-
-2. **Implantando a pasta `dignacli`:**
-   - Copie a pasta `dignacli` para o local de instalação preferido (por exemplo, `C:\Program Files\***digna***`).
-
-3. **Configurando `config.toml`:**
-   - Verifique se há um `config.toml` dentro de `dignacli`.
-   - Renomeie `config_template.toml` para `config.toml`, se necessário, e configure-o usando a documentação fornecida.
-
----
-
 # Azure Synapse
 Source: https://docs.digna.ai/pt/databases/azure_synapse_connector_guide/
 
@@ -5471,11 +5435,32 @@ everything the driver needs, so no ODBC data source (DSN) has to be registered o
 This is the recommended way to configure *digna*, because the connection definition lives
 entirely in *digna* and moves with it.
 
-!!! note "Release 2026.06"
+### Why ODBC {: #why-odbc }
 
-    Earlier releases offered a choice between a native driver per technology and ODBC, selected
-    with a **Use ODBC** switch. Native drivers are gone — ODBC is the only path, and the switch,
-    along with the separate host, port, database, user and password fields, no longer exists.
+Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
+**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
+interface gives you more than a set of bespoke drivers can:
+
+- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
+  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
+  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
+  with a driver update, rather than waiting for a *digna* release.
+- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
+  versions and security fixes, and you can update it on your own schedule, independently of
+  *digna*.
+- **One way to configure everything** — every technology is a list of key/value properties, with
+  the same interface, the same encryption of sensitive values and the same troubleshooting,
+  instead of a different set of fields per source.
+- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
+  sizes are available for every source, and any technology with a compliant ODBC driver can be
+  connected, including ones *digna* does not publish a dedicated guide for.
+
+!!! note "What changed in the interface"
+
+    The **Use ODBC** switch and the separate host, port, database, user and password fields no
+    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
+    before it will work again — see
+    [Create a Database Connection](#create-a-database-connection).
 
 ---
 
@@ -6559,7 +6544,7 @@ digna is a comprehensive AI-driven platform designed to optimize data quality ma
 
 digna consists of two main components:
 
-- **dignabackend**: The core engine of the application, responsible for processing data and performing quality checks.
+- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
 - **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
 
 ### What's New in Release 2026.06
@@ -7175,7 +7160,6 @@ This section contains security and cookie settings:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -7183,21 +7167,44 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Used to encrypt tokens and cookies (default provided) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
 | `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
 | `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
 | `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
 
 !!! tip "Tip"
 
     To find the number of CPU cores available on your server, run `nproc`.
+
+#### [encryption] Section
+
+This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+
+!!! warning "Protect config.toml"
+
+    This key is a fixed value, identical across all digna installations, and it is what decrypts
+    the sensitive values in your repository. Restrict `config.toml` to the account that runs
+    digna, keep it out of source control and off shared drives, and exclude it from any backup
+    that is stored less securely than the repository itself.
 
 #### [logging] Section
 
@@ -7216,7 +7223,31 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ---
 
-### Step 2: Initialize the Repository
+### Step 2: Validate the Configuration
+
+Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+
+```bash
+./digna config check
+```
+
+Every section is validated on its own, so a single mistake does not hide the state of the rest:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+
+### Step 3: Initialize the Repository
 
 1. Open a terminal
 2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
@@ -7237,7 +7268,7 @@ You should see a confirmation that the connection is established (the repository
     sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
-### Step 3: Install the Repository Schema
+### Step 4: Install the Repository Schema
 
 In the same directory, run:
 
@@ -7247,7 +7278,7 @@ In the same directory, run:
 
 This command installs the necessary tables and schema in your PostgreSQL database.
 
-### Step 4: Create an Admin User
+### Step 5: Create an Admin User
 
 The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
 
@@ -7271,7 +7302,7 @@ This creates a user with email `admin@example.com` and full administrative privi
 
     Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
 
-### Step 5: Start the digna Server
+### Step 6: Start the digna Server
 
 In the digna installation directory, start the server with:
 
@@ -7573,6 +7604,48 @@ The digna server is now unregistered from systemd.
 
 ### Before You Upgrade
 
+**Verify All Database Connections First**
+
+From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
+offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
+The digna team decided to build on ODBC alone, because a single, standard interface gives you
+more than a set of bespoke drivers can:
+
+- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
+  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
+  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
+  update, rather than waiting for a digna release.
+- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
+  versions and security fixes, and you can update it on your own schedule, independently of digna.
+- **One way to configure everything** — every technology is a list of key/value properties, with
+  the same interface, the same encryption of sensitive values and the same troubleshooting,
+  instead of a different set of fields per source.
+- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
+  sizes are available for every source, and any technology with a compliant ODBC driver can be
+  connected, including ones digna does not publish a dedicated guide for.
+
+In practice this means the **Use ODBC** switch and the separate host, port, database, user and
+password fields no longer exist. **Every connection that does not already use ODBC must be
+changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+
+1. Review every database connection defined in your installation and list the ones that are not
+   yet using ODBC — each of these has to be reconfigured.
+2. Install the matching ODBC driver on the digna host — connections are opened from the server
+   that runs the digna backend, not from the browser. See
+   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
+3. Have the ODBC properties ready for each affected connection. The
+   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
+   property set per source.
+
+After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
+see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
+and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy connections"
+
+    The Databricks Legacy connector has been removed in this release. Migrate those connections
+    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+
 **Creating a digna Repository Backup is Mandatory**
 
 Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
@@ -7597,17 +7670,24 @@ sudo ./stop_service.sh
 
 If digna is running in the foreground, press `Ctrl + C` in its terminal window.
 
-#### Step 2: Backup Current Backend Installation
+#### Step 2: Backup Current Installation
 
-In your digna installation directory:
+In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
 
 ```bash
 cd /opt/digna
-sudo mv digna digna_old
+sudo mv dignabackend dignabackend_old
+```
+```bash
+sudo mv dignacli dignacli_old
 ```
 ```bash
 sudo mv dashboard dashboard_old
 ```
+
+!!! info "dignabackend and dignacli are no longer used"
+
+    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
 
 #### Step 3: Extract and Deploy New Version
 
@@ -7624,13 +7704,40 @@ sudo chown -R digna:digna /opt/digna
 
     The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
 
-### Step 4: Restore Your Configuration Files
+#### Step 4: Restore Your Configuration Files
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Step 5: Upgrade the Repository Schema
+!!! warning "Release 2026.06 changes config.toml"
+
+    Three settings are new and required, and one is no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then **remove `digna_FERNET_KEY`** from `[base]` — it is no longer used.
+
+    See [Backend Configuration](#backend-configuration) for what each setting does.
+
+#### Step 5: Validate the Configuration
+
+Confirm that the updated `config.toml` is complete before touching the repository:
+
+```bash
+./digna config check
+```
+
+Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+
+#### Step 6: Upgrade the Repository Schema
 
 Navigate to your digna installation directory and run:
 
@@ -7641,7 +7748,7 @@ cd /opt/digna
 
 This updates the PostgreSQL schema to the latest version while preserving all existing data.
 
-### Step 6: Restart Services
+#### Step 7: Restart Services
 
 If running as a systemd service:
 
@@ -7672,11 +7779,13 @@ On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory 
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Step 7: Verify the Upgrade
+#### Step 8: Verify the Upgrade
 
 1. Access the digna dashboard
 2. Verify that the interface loads correctly
-3. Check the server logs for any errors:
+3. Check the server logs for any errors
+4. Change every connection that did not already use ODBC over to ODBC, then test all connections
+   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection):
 
 ```bash
 sudo journalctl -u digna -n 100
@@ -7719,12 +7828,16 @@ digna é uma plataforma abrangente orientada por IA projetada para otimizar a ge
 
 digna consiste em dois componentes principais:
 
-- **dignabackend**: O motor central da aplicação, responsável pelo processamento de dados e execução das verificações de qualidade.
+- **digna**: o núcleo da aplicação, responsável por processar os dados e executar as verificações de qualidade. Reúne o backend e a interface de linha de comando em um único executável, substituindo os programas separados `dignabackend` e `dignacli` das versões anteriores.
 - **dignadashboard**: Uma interface web hospedada em um servidor web, oferecendo uma maneira amigável de interagir com a plataforma digna e visualizar métricas de qualidade de dados.
 
 ### Novidades na Release 2026.06
 
 Esta release traz capacidades de observabilidade de dados diretamente para o seu código, permitindo que desenvolvedores monitorem a qualidade dos dados na origem. Consulte as [notas de release](http://docs.digna.ai/changelog/Release_202606/) para detalhes completos.
+
+### Procurando macOS ou Linux?
+
+Este guia cobre o Windows. Para outras plataformas, veja o [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) ou o [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
@@ -8052,7 +8165,6 @@ Esta seção contém configurações de segurança e cookies:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -8060,17 +8172,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_FERNET_KEY` | Encryption key | Usada para criptografar tokens e cookies (valor padrão fornecido) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Deve corresponder ao domínio do frontend |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (produção) | Use `true` para conexões HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | Sempre habilitado por segurança |
 | `digna_COOKIE_SAME_SITE` | `lax` | Previne ataques CSRF |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 horas) | Tempo de expiração da sessão em segundos |
 | `digna_MAX_WORKERS` | Number of CPU cores - 1 | Número de tarefas de inspeção paralelas |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Atraso máximo, em segundos, que o agendador pode acrescentar antes de iniciar uma tarefa pendente |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Horário (formato 24 h `HH:MM`) em que a limpeza diária começa |
+
+#### Seção [encryption]
+
+Esta seção contém a chave usada para criptografar os valores sensíveis armazenados no repositório. Ela é **obrigatória** — `config check` informa a seção `[encryption]` como FAILED se a chave estiver ausente.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Chave codificada em Base64 | Criptografa os valores sensíveis armazenados no repositório digna |
+
+!!! warning "Proteja o config.toml"
+
+    Esta chave é um valor fixo, idêntico em todas as instalações do digna, e é ela que descriptografa os valores sensíveis do seu repositório. Restrinja o `config.toml` à conta que executa o digna, mantenha o arquivo fora do controle de versão e de unidades compartilhadas e exclua-o de qualquer backup guardado com menos segurança que o próprio repositório.
 
 #### Seção [logging]
 
@@ -8088,6 +8220,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | Número de backups diários de logs a reter |
 
 ---
+
+### Passo 2: Validar a Configuração
+
+Antes de inicializar o repositório, verifique se o `config.toml` está completo e bem formado. No diretório de instalação do digna, execute:
+
+```bash
+digna config check
+```
+
+Cada seção é validada separadamente, de modo que um único erro não esconde o estado das demais:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Corrija tudo o que for informado como FAILED e execute o comando novamente antes de continuar. A lista completa de opções está na [referência da CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Passo 3: Inicializar o Repositório
 
@@ -8111,28 +8267,7 @@ digna repo install
 
 Esse comando instala as tabelas e o schema necessários no seu banco de dados PostgreSQL.
 
-### Passo 5: Iniciar o Servidor digna
-
-No diretório de instalação do digna, inicie o servidor com:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Parâmetros:**
-- `--address` — Nome do host/IP do servidor
-- `--port` — Porta do servidor
-
-Você deverá ver mensagens de inicialização confirmando que o servidor está em execução:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### Passo 6: Criar um Usuário Admin
+### Passo 5: Criar um Usuário Admin
 
 1. Abra uma nova janela do Prompt de Comando
 2. Navegue até o diretório de instalação do digna
@@ -8155,6 +8290,31 @@ Isto cria um usuário com privilégios administrativos completos.
     Use uma senha forte com mistura de letras maiúsculas, minúsculas, números e caracteres especiais.
 
 ---
+
+### Passo 6: Iniciar o Servidor digna
+
+No diretório de instalação do digna, inicie o servidor com:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Parâmetros:**
+- `--address` — Nome do host/IP do servidor
+- `--port` — Porta do servidor
+
+Você deverá ver mensagens de inicialização confirmando que o servidor está em execução:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "O servidor ocupa o terminal"
+
+    `serve` roda em primeiro plano e continua até você pará-lo com ++ctrl+c++. Deixe-o rodando enquanto termina a configuração; para iniciá-lo automaticamente na inicialização, consulte [Executar o digna como Serviço do Windows](#running-digna-as-a-windows-service).
 
 ## Configuração do Dashboard {: #dashboard-configuration }
 
@@ -8318,6 +8478,27 @@ O servidor digna agora está removido do registro como serviço do Windows.
 
 ### Antes de Atualizar
 
+**Verifique Primeiro Todas as Conexões de Banco de Dados**
+
+A partir da Release 2026.06, o digna acessa cada tecnologia de origem por **ODBC**. As versões anteriores ofereciam a escolha entre um driver próprio por tecnologia e ODBC, selecionada pelo botão **Use ODBC**. A equipe do digna decidiu se apoiar apenas em ODBC, porque uma interface única e padronizada oferece mais do que um conjunto de drivers sob medida:
+
+- **Autenticação** — a autenticação faz parte do ODBC, então uma conexão pode usar tudo o que o seu driver suportar: senhas, tokens e PATs, Kerberos e Active Directory, MFA e logon único pelo navegador, identidades na nuvem, certificados de cliente e TLS. Novos métodos chegam com uma atualização do driver, em vez de esperar por uma versão do digna.
+- **Drivers mantidos pelos fabricantes dos bancos de dados** — o driver do próprio fabricante acompanha as novas versões do servidor e as correções de segurança, e você pode atualizá-lo no seu próprio ritmo, independentemente do digna.
+- **Uma única forma de configurar tudo** — cada tecnologia é uma lista de propriedades chave/valor, com a mesma interface, a mesma criptografia de valores sensíveis e a mesma solução de problemas, em vez de um conjunto de campos diferente por origem.
+- **Ajuste e alcance** — opções do driver como tempos limite, configurações de TLS, proxies e tamanhos de leitura estão disponíveis para todas as origens, e qualquer tecnologia com um driver ODBC compatível pode ser conectada, inclusive aquelas para as quais o digna não publica um guia dedicado.
+
+Na prática, isso significa que o botão **Use ODBC** e os campos separados de host, porta, banco de dados, usuário e senha não existem mais. **Toda conexão que ainda não usa ODBC precisa ser convertida para ODBC** — não há conversão automática, portanto planeje isso antes de atualizar:
+
+1. Revise cada conexão de banco de dados definida na sua instalação e anote as que ainda não usam ODBC — cada uma precisará ser reconfigurada.
+2. Instale o driver ODBC correspondente no host do digna — as conexões são abertas pelo servidor que executa o backend do digna, não pelo navegador. Consulte [Instalar o Driver ODBC no Host do digna](../../../databases/overview.md#install-the-driver).
+3. Tenha as propriedades ODBC prontas para cada conexão afetada. Os [guias por tecnologia](../../../databases/overview.md#technology-guides) trazem, para cada origem, um conjunto de propriedades comprovado.
+
+Após a atualização, converta cada conexão afetada para ODBC e teste-a pelo dashboard — consulte [Criar uma Conexão de Banco de Dados](../../../databases/overview.md#create-a-database-connection) e [Testar uma Conexão](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Conexões Databricks Legacy"
+
+    O conector Databricks Legacy foi removido nesta release. Migre essas conexões para o conector [Databricks](../../../databases/databricks_connector_guide.md).
+
 **É Obrigatório Criar um Backup do Repositório do digna**
 
 Antes de atualizar o digna, faça backup do seu repositório (PostgreSQL) para proteger contra perda de dados.
@@ -8334,18 +8515,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Passo 2: Fazer Backup da Instalação Atual do Backend
+#### Passo 2: Fazer Backup da Instalação Atual
 
-No diretório de instalação do digna:
+No diretório de instalação do digna, renomeie as pastas da instalação atual para que a nova release possa ser implantada ao lado delas:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "dignabackend e dignacli não são mais usados"
+
+    A partir da Release 2026.06, `dignabackend` e `dignacli` são substituídos pelo executável único `digna`, que reúne o backend e a CLI. Mantenha `dignabackend_old` e `dignacli_old` apenas até verificar a atualização — depois você pode excluir as duas pastas. Mantenha `dashboard_old` até restaurar dele os seus arquivos de configuração (veja o passo 4).
 
 #### Passo 3: Extrair e Implantar a Nova Versão
 
@@ -8357,12 +8546,39 @@ ren dashboard dashboard_old
 
     O arquivo `config.toml` **nunca** está incluído no ZIP de instalação. Sua configuração existente permanece segura.
 
-### Passo 4: Restaurar Seus Arquivos de Configuração
+#### Passo 4: Restaurar Seus Arquivos de Configuração
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Passo 5: Atualizar o Schema do Repositório
+!!! warning "A Release 2026.06 altera o config.toml"
+
+    Três configurações são novas e obrigatórias, e uma não é mais usada. Um `config.toml` herdado de uma versão anterior não contém as novas configurações, e o digna não iniciará enquanto elas estiverem ausentes. Acrescente o seguinte ao seu `config.toml` existente:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Acrescente as duas chaves `[base]` à sua seção `[base]` existente e adicione `[encryption]` como uma nova seção. Em seguida, **remova `digna_FERNET_KEY`** de `[base]` — ela não é mais usada.
+
+    O que cada configuração faz está descrito em [Configuração do Backend](#backend-configuration).
+
+#### Passo 5: Validar a Configuração
+
+Confirme que o `config.toml` atualizado está completo antes de mexer no repositório:
+
+```bash
+digna config check
+```
+
+Todas as seções devem informar OK. Corrija tudo o que for informado como FAILED e execute o comando novamente antes de continuar.
+
+#### Passo 6: Atualizar o Schema do Repositório
 
 Navegue até o diretório de instalação do digna e execute:
 
@@ -8372,7 +8588,7 @@ digna repo upgrade
 
 Isso atualiza o schema do PostgreSQL para a versão mais recente preservando todos os dados existentes.
 
-### Passo 6: Reiniciar os Serviços
+#### Passo 7: Reiniciar os Serviços
 
 Se estiver rodando como serviço do Windows:
 
@@ -8390,11 +8606,12 @@ digna serve --address <address> --port <port>
 
 Se estiver usando IIS ou Tomcat, reinicie o respectivo servidor web.
 
-#### Passo 7: Verificar a Atualização
+#### Passo 8: Verificar a Atualização
 
 1. Acesse o digna dashboard
 2. Verifique se a interface carrega corretamente
 3. Confira os logs do servidor em busca de erros
+4. Converta para ODBC todas as conexões que ainda não o usavam e depois teste todas as conexões — consulte [Testar uma Conexão](../../../databases/overview.md#testing-a-connection)
 
 ---
 
@@ -8433,7 +8650,7 @@ digna é uma plataforma abrangente guiada por IA, projetada para otimizar o gere
 
 O digna consiste em dois componentes principais:
 
-- **dignabackend**: O núcleo da aplicação, responsável por processar dados e realizar verificações de qualidade.
+- **digna**: o núcleo da aplicação, responsável por processar os dados e executar as verificações de qualidade. Reúne o backend e a interface de linha de comando em um único executável, substituindo os programas separados `dignabackend` e `dignacli` das versões anteriores.
 - **dignadashboard**: Uma interface web hospedada em um servidor web, que fornece uma forma amigável de interagir com a plataforma digna e visualizar métricas de qualidade de dados.
 
 ### Novidades no Release 2026.06
@@ -8963,7 +9180,6 @@ Esta seção contém configurações de segurança e cookies:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -8971,21 +9187,41 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parâmetro | Valor | Observações |
 |---|---|---|
-| `digna_FERNET_KEY` | Chave de criptografia | Usada para criptografar tokens e cookies (padrão fornecido) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Deve corresponder ao domínio do frontend |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (produção) | Use `true` para conexões HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | Sempre habilitado por segurança |
 | `digna_COOKIE_SAME_SITE` | `lax` | Ajuda a prevenir ataques CSRF |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 horas) | Tempo de expiração da sessão em segundos |
 | `digna_MAX_WORKERS` | Número de cores da CPU - 1 | Número de tarefas de inspeção paralelas |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Atraso máximo, em segundos, que o agendador pode acrescentar antes de iniciar uma tarefa pendente |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Horário (formato 24 h `HH:MM`) em que a limpeza diária começa |
 
 !!! tip "Dica"
 
     Para descobrir o número de núcleos de CPU disponíveis no seu Mac, execute `sysctl -n hw.ncpu`.
+
+#### Seção [encryption]
+
+Esta seção contém a chave usada para criptografar os valores sensíveis armazenados no repositório. Ela é **obrigatória** — `config check` informa a seção `[encryption]` como FAILED se a chave estiver ausente.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Chave codificada em Base64 | Criptografa os valores sensíveis armazenados no repositório digna |
+
+!!! warning "Proteja o config.toml"
+
+    Esta chave é um valor fixo, idêntico em todas as instalações do digna, e é ela que descriptografa os valores sensíveis do seu repositório. Restrinja o `config.toml` à conta que executa o digna, mantenha o arquivo fora do controle de versão e de unidades compartilhadas e exclua-o de qualquer backup guardado com menos segurança que o próprio repositório.
 
 #### Seção [logging]
 
@@ -9004,7 +9240,31 @@ digna_LOGGING_BACKUP_COUNT = 10
 
 ---
 
-### Passo 2: Inicializar o Repositório
+### Passo 2: Validar a Configuração
+
+Antes de inicializar o repositório, verifique se o `config.toml` está completo e bem formado. No diretório de instalação do digna, execute:
+
+```bash
+digna config check
+```
+
+Cada seção é validada separadamente, de modo que um único erro não esconde o estado das demais:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Corrija tudo o que for informado como FAILED e execute o comando novamente antes de continuar. A lista completa de opções está na [referência da CLI](../../../cli/Command_Line_Interface_202606.md).
+
+### Passo 3: Inicializar o Repositório
 
 1. Abra o **Terminal**
 2. Navegue até o diretório de instalação do digna (onde `config.toml` e o executável `digna` estão localizados)
@@ -9026,7 +9286,7 @@ Você deverá ver uma confirmação de que a conexão foi estabelecida (o reposi
     source ~/.zshrc
     ```
 
-### Passo 3: Instalar o Schema do Repositório
+### Passo 4: Instalar o Schema do Repositório
 
 No mesmo diretório, execute:
 
@@ -9035,31 +9295,6 @@ No mesmo diretório, execute:
 ```
 
 Este comando instala as tabelas e o schema necessários no seu banco de dados PostgreSQL.
-
-### Passo 4: Iniciar o Servidor digna
-
-No diretório de instalação do digna, inicie o servidor com:
-
-```bash
-./digna serve --address <host> --port <port>
-```
-
-**Parâmetros:**
-- `--address` — Hostname/IP do servidor
-- `--port` — Porta do servidor
-
-Você deverá ver mensagens de inicialização confirmando que o servidor está em execução:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-!!! tip "Dica"
-
-    A primeira vez que você iniciar o servidor, o macOS pode perguntar se deseja permitir que a aplicação aceite conexões de rede. Clique em **Allow**, caso contrário o dashboard não conseguirá atingir o backend.
 
 ### Passo 5: Criar um Usuário Admin
 
@@ -9088,6 +9323,35 @@ Isto cria um utilizador com o endereço de e-mail `admin@example.com` e privilé
     Use uma senha forte com mistura de maiúsculas, minúsculas, números e caracteres especiais.
 
 ---
+
+### Passo 6: Iniciar o Servidor digna
+
+No diretório de instalação do digna, inicie o servidor com:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**Parâmetros:**
+- `--address` — Hostname/IP do servidor
+- `--port` — Porta do servidor
+
+Você deverá ver mensagens de inicialização confirmando que o servidor está em execução:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! tip "Dica"
+
+    A primeira vez que você iniciar o servidor, o macOS pode perguntar se deseja permitir que a aplicação aceite conexões de rede. Clique em **Allow**, caso contrário o dashboard não conseguirá atingir o backend.
+
+!!! note "O servidor ocupa o terminal"
+
+    `serve` roda em primeiro plano e continua até você pará-lo com ++ctrl+c++. Deixe-o rodando enquanto termina a configuração; para iniciá-lo automaticamente na inicialização, consulte [Executar o digna como Serviço em Segundo Plano](#running-digna-as-a-background-service).
 
 ## Configuração do Dashboard {: #dashboard-configuration }
 
@@ -9297,6 +9561,27 @@ O servidor digna agora está desregistrado do launchd.
 
 ### Antes de Atualizar
 
+**Verifique Primeiro Todas as Conexões de Banco de Dados**
+
+A partir da Release 2026.06, o digna acessa cada tecnologia de origem por **ODBC**. As versões anteriores ofereciam a escolha entre um driver próprio por tecnologia e ODBC, selecionada pelo botão **Use ODBC**. A equipe do digna decidiu se apoiar apenas em ODBC, porque uma interface única e padronizada oferece mais do que um conjunto de drivers sob medida:
+
+- **Autenticação** — a autenticação faz parte do ODBC, então uma conexão pode usar tudo o que o seu driver suportar: senhas, tokens e PATs, Kerberos e Active Directory, MFA e logon único pelo navegador, identidades na nuvem, certificados de cliente e TLS. Novos métodos chegam com uma atualização do driver, em vez de esperar por uma versão do digna.
+- **Drivers mantidos pelos fabricantes dos bancos de dados** — o driver do próprio fabricante acompanha as novas versões do servidor e as correções de segurança, e você pode atualizá-lo no seu próprio ritmo, independentemente do digna.
+- **Uma única forma de configurar tudo** — cada tecnologia é uma lista de propriedades chave/valor, com a mesma interface, a mesma criptografia de valores sensíveis e a mesma solução de problemas, em vez de um conjunto de campos diferente por origem.
+- **Ajuste e alcance** — opções do driver como tempos limite, configurações de TLS, proxies e tamanhos de leitura estão disponíveis para todas as origens, e qualquer tecnologia com um driver ODBC compatível pode ser conectada, inclusive aquelas para as quais o digna não publica um guia dedicado.
+
+Na prática, isso significa que o botão **Use ODBC** e os campos separados de host, porta, banco de dados, usuário e senha não existem mais. **Toda conexão que ainda não usa ODBC precisa ser convertida para ODBC** — não há conversão automática, portanto planeje isso antes de atualizar:
+
+1. Revise cada conexão de banco de dados definida na sua instalação e anote as que ainda não usam ODBC — cada uma precisará ser reconfigurada.
+2. Instale o driver ODBC correspondente no host do digna — as conexões são abertas pelo servidor que executa o backend do digna, não pelo navegador. Consulte [Instalar o Driver ODBC no Host do digna](../../../databases/overview.md#install-the-driver).
+3. Tenha as propriedades ODBC prontas para cada conexão afetada. Os [guias por tecnologia](../../../databases/overview.md#technology-guides) trazem, para cada origem, um conjunto de propriedades comprovado.
+
+Após a atualização, converta cada conexão afetada para ODBC e teste-a pelo dashboard — consulte [Criar uma Conexão de Banco de Dados](../../../databases/overview.md#create-a-database-connection) e [Testar uma Conexão](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Conexões Databricks Legacy"
+
+    O conector Databricks Legacy foi removido nesta release. Migre essas conexões para o conector [Databricks](../../../databases/databricks_connector_guide.md).
+
 **É obrigatório criar um backup do repositório digna**
 
 Antes de atualizar o digna, faça backup do seu repositório (PostgreSQL) para proteger contra perda de dados.
@@ -9321,17 +9606,24 @@ sudo ./stop_service.sh
 
 Se o digna estiver em execução em primeiro plano, pressione `Ctrl + C` na janela do Terminal onde ele está rodando.
 
-#### Passo 2: Fazer Backup da Instalação Atual do Backend
+#### Passo 2: Fazer Backup da Instalação Atual
 
-No seu diretório de instalação do digna:
+No diretório de instalação do digna, renomeie as pastas da instalação atual para que a nova release possa ser implantada ao lado delas:
 
 ```bash
 cd /opt/digna
-mv digna digna_old
+mv dignabackend dignabackend_old
+```
+```bash
+mv dignacli dignacli_old
 ```
 ```bash
 mv dashboard dashboard_old
 ```
+
+!!! info "dignabackend e dignacli não são mais usados"
+
+    A partir da Release 2026.06, `dignabackend` e `dignacli` são substituídos pelo executável único `digna`, que reúne o backend e a CLI. Mantenha `dignabackend_old` e `dignacli_old` apenas até verificar a atualização — depois você pode excluir as duas pastas. Mantenha `dashboard_old` até restaurar dele os seus arquivos de configuração (veja o passo 4).
 
 #### Passo 3: Extrair e Implantar a Nova Versão
 
@@ -9348,13 +9640,40 @@ xattr -dr com.apple.quarantine /opt/digna
 
     O arquivo `config.toml` **nunca** é incluído no ZIP de instalação. Sua configuração existente permanece segura.
 
-### Passo 4: Restaurar Seus Arquivos de Configuração
+#### Passo 4: Restaurar Seus Arquivos de Configuração
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-### Passo 5: Atualizar o Schema do Repositório
+!!! warning "A Release 2026.06 altera o config.toml"
+
+    Três configurações são novas e obrigatórias, e uma não é mais usada. Um `config.toml` herdado de uma versão anterior não contém as novas configurações, e o digna não iniciará enquanto elas estiverem ausentes. Acrescente o seguinte ao seu `config.toml` existente:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Acrescente as duas chaves `[base]` à sua seção `[base]` existente e adicione `[encryption]` como uma nova seção. Em seguida, **remova `digna_FERNET_KEY`** de `[base]` — ela não é mais usada.
+
+    O que cada configuração faz está descrito em [Configuração do Backend](#backend-configuration).
+
+#### Passo 5: Validar a Configuração
+
+Confirme que o `config.toml` atualizado está completo antes de mexer no repositório:
+
+```bash
+./digna config check
+```
+
+Todas as seções devem informar OK. Corrija tudo o que for informado como FAILED e execute o comando novamente antes de continuar.
+
+#### Passo 6: Atualizar o Schema do Repositório
 
 Navegue até o diretório de instalação do digna e execute:
 
@@ -9365,7 +9684,7 @@ cd /opt/digna
 
 Isto atualiza o schema do PostgreSQL para a versão mais recente preservando todos os dados existentes.
 
-### Passo 6: Reiniciar Serviços
+#### Passo 7: Reiniciar Serviços
 
 Se estiver rodando como serviço em segundo plano:
 
@@ -9390,11 +9709,12 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Passo 7: Verificar a Atualização
+#### Passo 8: Verificar a Atualização
 
 1. Acesse o digna dashboard
 2. Verifique se a interface carrega corretamente
 3. Cheque os logs do servidor em busca de erros
+4. Converta para ODBC todas as conexões que ainda não o usavam e depois teste todas as conexões — consulte [Testar uma Conexão](../../../databases/overview.md#testing-a-connection)
 
 ---
 
@@ -10034,6 +10354,18 @@ Candidates are admitted only when the data genuinely supports them, so a series 
 Robustness is what keeps a single bad day from poisoning the following ones: a spike is downweighted rather than fitted, so it does not drag the prediction that follows it.
 
 The model can also absorb a **structural break** — a genuine step change such as a migration, a new source system, or a business change — and predict from the new level instead of averaging across the step indefinitely.
+
+Release 2026.06 opens the model up to configuration. Seven parameters steer how the prediction is fitted:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+The defaults suit the great majority of series, and each parameter can be restored to its default at any time. For guidance on when to reach for one and how to set it, contact digna.
 
 ---
 

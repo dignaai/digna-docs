@@ -30,7 +30,7 @@ digna on kõikehõlmav AI-käitusel põhinev platvorm, mis on loodud andmekvalit
 
 digna koosneb kahest põhilisest komponendist:
 
-- **dignabackend**: rakenduse tuum, mis vastutab andmete töötlemise ja kvaliteedikontrollide eest.
+- **digna**: rakenduse tuum, mis vastutab andmete töötlemise ja kvaliteedikontrollide läbiviimise eest. See ühendab taustasüsteemi ja käsurealiidese üheks käivitatavaks failiks ning asendab varasemate väljalasete eraldi programmid `dignabackend` ja `dignacli`.
 - **dignadashboard**: veebipõhine liides, mis majutatakse veebiserveris ja pakub kasutajasõbralikku viisi digna platvormiga suhtlemiseks ning andmekvaliteedi mõõdikute visualiseerimiseks.
 
 ### Mis on uut väljalaskes 2026.06
@@ -367,7 +367,6 @@ See sektsioon sisaldab turva- ja küpsise seadeid:
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -375,17 +374,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_FERNET_KEY` | Krüpteerimisvõti | Kasutatakse tokenite ja küpsiste krüpteerimiseks (vaikeväärtus olemas) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Vastab teie frontendi domeenile |
 | `digna_COOKIE_SECURE` | `false` (lokaalne) / `true` (tootmises) | Kasutage `true` HTTPS-ühenduse korral |
 | `digna_COOKIE_HTTPONLY` | `true` | Alati lubatud turvalisuse huvides |
 | `digna_COOKIE_SAME_SITE` | `lax` | Aitab vältida CSRF-rünnakuid |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 tundi) | Sessiooni aegumisaeg sekundites |
 | `digna_MAX_WORKERS` | CPU tuumade arv - 1 | Paralleelsete kontrollitööde arv |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maksimaalne viivitus sekundites, mille ajastaja võib lisada enne tähtajalise töö käivitamist |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Kellaaeg (24 tunni vorming `HH:MM`), mil algab igapäevane puhastus |
+
+#### [encryption] sektsioon
+
+See sektsioon sisaldab võtit, millega krüpteeritakse hoidlas talletatud tundlikud väärtused. See on **kohustuslik** — `config check` teatab sektsioonist `[encryption]` FAILED, kui võti puudub.
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| Parameeter | Väärtus | Märkused |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64-kodeeritud võti | Krüpteerib digna hoidlas talletatud tundlikud väärtused |
+
+!!! warning "Kaitske faili config.toml"
+
+    See võti on fikseeritud väärtus, mis on kõigis digna paigaldustes ühesugune, ja just see dekrüpteerib teie hoidla tundlikud väärtused. Piirake `config.toml` juurdepääs kontoga, mille all digna töötab, hoidke fail versioonihaldusest ja jagatud ketastest eemal ning jätke see välja igast varukoopiast, mida hoitakse vähem turvaliselt kui hoidlat ennast.
 
 #### [logging] sektsioon
 
@@ -403,6 +422,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | Päevaste logivarukoopiate arv, mida säilitatakse |
 
 ---
+
+### Samm 2: Kontrollige konfiguratsiooni
+
+Enne hoidla lähtestamist kontrollige, kas `config.toml` on täielik ja korrektselt üles ehitatud. Käivitage oma digna paigalduskataloogis:
+
+```bash
+digna config check
+```
+
+Iga sektsiooni kontrollitakse eraldi, nii et üks viga ei varja teiste olekut:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+Parandage kõik, millest teatatakse FAILED, ja käivitage käsk enne jätkamist uuesti. Täielik valikute loend on [CLI viites](../../../cli/Command_Line_Interface_202606.md).
 
 ### Samm 3: Initsialiseeri andmehoidla ühendus
 
@@ -426,28 +469,7 @@ digna repo install
 
 See käsk installib vajalikud tabelid ja skeemi teie PostgreSQL andmebaasi.
 
-### Samm 5: Käivitage digna server
-
-Digna paigalduskaustas käivitage server:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**Parameetrid:**
-- `--address` — serveri hostinimi/IP
-- `--port` — serveri port 
-
-Peaksite nägema käivituse sõnumeid, mis kinnitavad serveri tööle hakkamist:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### Samm 6: Looge administraatorkasutaja
+### Samm 5: Looge administraatorkasutaja
 
 1. Avage **uus** käsuviip
 2. Minge oma digna paigalduskausta
@@ -470,6 +492,31 @@ See loob kasutaja täisadministratiivsete õigustega.
     Kasutage tugevat parooli, mis sisaldab suur- ja väiketähti, numbreid ja erimärke.
 
 ---
+
+### Samm 6: Käivitage digna server
+
+Digna paigalduskaustas käivitage server:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**Parameetrid:**
+- `--address` — serveri hostinimi/IP
+- `--port` — serveri port 
+
+Peaksite nägema käivituse sõnumeid, mis kinnitavad serveri tööle hakkamist:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "Server hoiab terminali hõivatuna"
+
+    `serve` töötab esiplaanil ja jätkab, kuni peatate selle klahvidega ++ctrl+c++. Jätke see tööle, kuni seadistuse lõpetate; automaatseks käivitamiseks alglaadimisel vaadake [digna käitamine Windowsi teenusena](#running-digna-as-a-windows-service).
 
 ## Juhtpaneeli konfiguratsioon {: #dashboard-configuration }
 
@@ -633,6 +680,27 @@ Digna server on nüüd registrist eemaldatud.
 
 ### Enne uuendamist
 
+**Kontrollige esmalt kõiki andmebreaühendusi**
+
+Alates väljalaskest 2026.06 jõuab digna iga lähtetehnoloogiani **ODBC** kaudu. Varasemad väljalasked pakkusid valikut tehnoloogiapõhise draiveri ja ODBC vahel, mille valis lüliti **Use ODBC**. digna meeskond otsustas toetuda ainult ODBC-le, sest üks standardne liides annab rohkem kui hulk eritellimusel draivereid:
+
+- **Autentimine** — autentimine on osa ODBC-st, seega saab ühendus kasutada kõike, mida tema draiver toetab: paroole, lubasid ja PAT-e, Kerberost ja Active Directoryt, MFA-d ja brauseripõhist ühekordset sisselogimist, pilveidentiteete, kliendisertifikaate ja TLS-i. Uued meetodid saabuvad koos draiveri uuendusega, mitte digna väljalaset oodates.
+- **Andmebaasitootjate hooldatavad draiverid** — tootja enda draiver järgib uusi serveriversioone ja turvaparandusi ning te saate seda uuendada oma ajakava järgi, dignast sõltumatult.
+- **Üks viis kõike seadistada** — iga tehnoloogia on võti-väärtus omaduste loend, sama liidese, sama tundlike väärtuste krüpteerimise ja sama tõrkeotsinguga, mitte erineva väljade komplektiga iga allika kohta.
+- **Häälestus ja ulatus** — draiveri valikud nagu ajalõpud, TLS-i seaded, puhverserverid ja lugemismahud on saadaval iga allika jaoks ning ühendada saab iga tehnoloogia, millel on nõuetekohane ODBC draiver, sealhulgas need, mille kohta digna eraldi juhendit ei avalda.
+
+Praktikas tähendab see, et lülitit **Use ODBC** ning eraldi hosti, pordi, andmebaasi, kasutaja ja parooli välju enam ei ole. **Iga ühendus, mis veel ODBC-d ei kasuta, tuleb viia üle ODBC-le** — automaatset teisendust ei ole, seega planeerige see enne uuendamist:
+
+1. Vaadake läbi iga teie paigalduses määratud andmebaasiühendus ja märkige üles need, mis veel ODBC-d ei kasuta — igaüks neist tuleb uuesti seadistada.
+2. Paigaldage vastav ODBC draiver digna hostile — ühendused avatakse serverist, kus töötab digna taustasüsteem, mitte brauserist. Vaadake [ODBC draiveri paigaldamine digna hostile](../../../databases/overview.md#install-the-driver).
+3. Hoidke ODBC omadused iga puudutatud ühenduse jaoks valmis. [Tehnoloogiajuhendid](../../../databases/overview.md#technology-guides) loetlevad iga allika kohta läbi proovitud omaduste komplekti.
+
+Pärast uuendamist viige iga puudutatud ühendus üle ODBC-le ja testige seda ttöölaualt — vaadake [Andmebaasiühenduse loomine](../../../databases/overview.md#create-a-database-connection) ja [Ühenduse testimine](../../../databases/overview.md#testing-a-connection).
+
+!!! warning "Databricks Legacy ühendused"
+
+    Databricks Legacy konnektor on selles väljalaskes eemaldatud. Viige need ühendused üle [Databricks](../../../databases/databricks_connector_guide.md) konnektorile.
+
 **digna andmehoidla varundamine on kohustuslik**
 
 Enne digna uuendamist varundage oma andmehoidla (PostgreSQL), et kaitsta andmete kaotsimineku eest.
@@ -649,18 +717,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Samm 2: Varundage praegune backendi paigaldus
+#### Samm 2: Varundage praegune paigaldus
 
-Teie digna paigalduskaustas:
+Nimetage oma digna paigalduskataloogis praeguse paigalduse kaustad ümber, et uut väljalaset saaks nende kõrvale paigaldada:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "dignabackend ja dignacli ei ole enam kasutusel"
+
+    Alates väljalaskest 2026.06 asendab `dignabackend` ja `dignacli` üksainus käivitatav fail `digna`, mis ühendab taustasüsteemi ja CLI. Hoidke `dignabackend_old` ja `dignacli_old` alles vaid seni, kuni olete uuenduse kontrollinud — seejärel võite mõlemad kaustad kustutada. Hoidke `dashboard_old` alles, kuni olete sellest oma konfiguratsioonifailid taastanud (vt samm 4).
 
 #### Samm 3: Pakkige ja paigutage uus versioon
 
@@ -671,12 +747,39 @@ ren dashboard dashboard_old
 
     `config.toml` fail EI OLE kunagi kaasatud paigaldus-ZIP-is. Teie olemasolev konfiguratsioon jääb puutumatuks.
 
-### Samm 4: Taastage oma konfiguratsioonifailid
+#### Samm 4: Taastage oma konfiguratsioonifailid
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-### Samm 5: Uuendage andmehoidla skeemi
+!!! warning "Väljalase 2026.06 muudab faili config.toml"
+
+    Kolm sätet on uued ja kohustuslikud, üks ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel **eemaldage `digna_FERNET_KEY`** sektsioonist `[base]` — seda enam ei kasutata.
+
+    Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
+
+#### Samm 5: Kontrollige konfiguratsiooni
+
+Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:
+
+```bash
+digna config check
+```
+
+Iga sektsioon peab teatama OK. Parandage kõik, millest teatatakse FAILED, ja käivitage käsk enne jätkamist uuesti.
+
+#### Samm 6: Uuendage andmehoidla skeemi
 
 Minge oma digna paigalduskausta ja käivitage:
 
@@ -686,7 +789,7 @@ digna repo upgrade
 
 See uuendab PostgreSQL skeemi uusimale versioonile, säilitades kõik olemasolevad andmed.
 
-### Samm 6: Taaskäivitage teenused
+#### Samm 7: Taaskäivitage teenused
 
 Kui käivitate teenust Windowsi teenusena:
 
@@ -704,8 +807,9 @@ digna serve --address <address> --port <port>
 
 Kui kasutate IIS-i või Tomcati, taaskäivitage vastav veebiserver.
 
-#### Samm 7: Kinnitage uuendus
+#### Samm 8: Kinnitage uuendus
 
 1. Avage digna juhtpaneel
 2. Veenduge, et liides laeb korralikult
 3. Kontrollige serverilogisid võimalike vigade osas
+4. Viige üle ODBC-le iga ühendus, mis seda veel ei kasutanud, ja testige seejärel kõiki ühendusi — vaadake [Ühenduse testimine](../../../databases/overview.md#testing-a-connection)

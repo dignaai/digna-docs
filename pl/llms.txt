@@ -101,7 +101,6 @@
 
 ## Dokumentacja CLI
 
-- [Wprowadzenie](https://docs.digna.ai/pl/cli/Introduction/): Wprowadzenie do interfejsu wiersza poleceń (CLI) digna — narzędzia tekstowego do automatyzacji i zarządzania zasobami digna, wraz z podstawami instalacji na Windows.
 - [Release 2026.06](https://docs.digna.ai/pl/cli/Command_Line_Interface_202606/): Pełna dokumentacja referencyjna wydania digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/pl/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
 - [Release 2026.01](https://docs.digna.ai/pl/cli/Command_Line_Interface_202601/): Complete reference for digna CLI release 2026.01 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.

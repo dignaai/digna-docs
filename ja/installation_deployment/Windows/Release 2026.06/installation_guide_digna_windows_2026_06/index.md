@@ -30,7 +30,7 @@ digna は、ウェアハウス、データレイク、レイクハウスなど�
 
 digna は主に次の2つのコンポーネントで構成されています。
 
-- **dignabackend**: データ処理と品質チェックを行うアプリケーションのコアエンジン。
+- **digna**: アプリケーションの中核であり、データの処理と品質チェックの実行を担います。バックエンドとコマンドラインインターフェイスを単一の実行ファイルに統合し、以前のリリースで別々だった `dignabackend` と `dignacli` を置き換えます。
 - **dignadashboard**: Web サーバー上でホストされる Web ベースのインターフェースで、digna プラットフォームと対話しデータ品質メトリクスを可視化するためのユーザーフレンドリーな手段を提供します。
 
 ### リリース 2026.06 の新機能
@@ -367,7 +367,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
-digna_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -375,17 +374,37 @@ digna_COOKIE_HTTPONLY = true
 digna_COOKIE_SAME_SITE = "lax"
 digna_TOKEN_EXPIRES_IN = 86400
 digna_MAX_WORKERS = 4
+DIGNA_SCHEDULER_MAX_DELAY = 100
+DIGNA_CLEANUP_TIME = "12:00"
 ```
 
 | パラメータ | 値 | 備考 |
 |---|---|---|
-| `digna_FERNET_KEY` | 暗号化キー | トークンやクッキーの暗号化に使用（デフォルトが提供されることがあります） |
 | `digna_COOKIE_DOMAIN` | `localhost` | フロントエンドのドメインに合わせて設定 |
 | `digna_COOKIE_SECURE` | `false`（ローカル） / `true`（本番） | HTTPS 接続では `true` を使用 |
 | `digna_COOKIE_HTTPONLY` | `true` | セキュリティのため常に有効推奨 |
 | `digna_COOKIE_SAME_SITE` | `lax` | CSRF 攻撃を防止 |
 | `digna_TOKEN_EXPIRES_IN` | `86400`（24 時間） | セッションの有効期限（秒） |
 | `digna_MAX_WORKERS` | CPU コア数 - 1 | 並列検査タスクの数 |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | スケジューラーが実行予定のジョブを開始する前に追加できる最大の遅延（秒） |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | 日次クリーンアップが開始される時刻（24 時間表記 `HH:MM`） |
+
+#### [encryption] セクション
+
+このセクションには、リポジトリに保存された機密値を暗号化するための鍵が含まれます。**必須**です。鍵が欠けている場合、`config check` は `[encryption]` セクションを FAILED として報告します。
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 エンコードされた鍵 | digna リポジトリに保存された機密値を暗号化します |
+
+!!! warning "config.toml を保護する"
+
+    この鍵は固定値で、すべての digna インストールで同一であり、リポジトリ内の機密値を復号するのはこの鍵です。`config.toml` へのアクセスを digna を実行するアカウントに限定し、バージョン管理や共有ドライブには置かず、リポジトリ本体より安全性の低い場所に保管されるバックアップからは除外してください。
 
 #### [logging] セクション
 
@@ -403,6 +422,30 @@ digna_LOGGING_BACKUP_COUNT = 10
 | `digna_LOGGING_BACKUP_COUNT` | `10` | 保持する日次ログバックアップの数 |
 
 ---
+
+### ステップ 2: 構成を検証する
+
+リポジトリを初期化する前に、`config.toml` が完全で正しく構成されていることを確認します。digna のインストールディレクトリで次を実行します:
+
+```bash
+digna config check
+```
+
+各セクションは個別に検証されるため、1 つの誤りが他のセクションの状態を隠すことはありません:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+
+Overall: OK
+```
+
+FAILED と報告された箇所をすべて修正し、続行する前にコマンドを再実行してください。オプションの完全な一覧は [CLI リファレンス](../../../cli/Command_Line_Interface_202606.md)にあります。
 
 ### ステップ 3: リポジトリの初期接続確認
 
@@ -426,28 +469,7 @@ digna repo install
 
 このコマンドは、PostgreSQL データベースに必要なテーブルとスキーマをインストールします。
 
-### ステップ 5: digna サーバーを起動
-
-digna インストールディレクトリで、サーバーを次のように起動します:
-
-```bash
-digna serve --address <host> --port <port>
-```
-
-**パラメータ:**
-- `--address` — サーバーのホスト名/IP
-- `--port` — サーバーのポート
-
-サーバーが起動していることを示すメッセージが表示されます:
-
-```
-INFO:     Started server process [1234]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete
-INFO:     Uvicorn running on http://localhost:8082
-```
-
-### ステップ 6: 管理者ユーザーを作成
+### ステップ 5: 管理者ユーザーを作成
 
 1. 新しいコマンドプロンプトウィンドウを開く
 2. digna インストールディレクトリに移動
@@ -470,6 +492,31 @@ digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
     大文字・小文字・数字・特殊文字を組み合わせた強力なパスワードを使用してください。
 
 ---
+
+### ステップ 6: digna サーバーを起動
+
+digna インストールディレクトリで、サーバーを次のように起動します:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**パラメータ:**
+- `--address` — サーバーのホスト名/IP
+- `--port` — サーバーのポート
+
+サーバーが起動していることを示すメッセージが表示されます:
+
+```
+INFO:     Started server process [1234]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete
+INFO:     Uvicorn running on http://localhost:8082
+```
+
+!!! note "サーバーはターミナルを占有します"
+
+    `serve` はフォアグラウンドで実行され、++ctrl+c++ で停止するまで動作し続けます。セットアップを終えるまで実行したままにしてください。起動時に自動的に開始する方法は次を参照してください: [digna を Windows サービスとして実行する](#running-digna-as-a-windows-service).
 
 ## ダッシュボードの設定 {: #dashboard-configuration }
 
@@ -633,6 +680,27 @@ digna のインストールを移動する必要がある場合:
 
 ### アップグレード前に
 
+**最初にすべてのデータベース接続を確認する**
+
+リリース 2026.06 から、digna はすべてのソース技術に **ODBC** 経由で接続します。以前のリリースでは、技術ごとの専用ドライバーと ODBC を **Use ODBC** スイッチで選択できました。digna チームは ODBC のみを基盤とすることを決めました。単一の標準インターフェイスは、個別に作り込まれたドライバー群よりも多くをもたらすからです:
+
+- **認証** — 認証は ODBC の一部であるため、接続はドライバーが対応するあらゆる方式を利用できます。パスワード、トークンと PAT、Kerberos と Active Directory、MFA とブラウザーベースのシングルサインオン、クラウド ID、クライアント証明書、TLS などです。新しい方式は digna のリリースを待つのではなく、ドライバーの更新とともに利用できるようになります。
+- **データベースベンダーが保守するドライバー** — ベンダー自身のドライバーが新しいサーバーバージョンとセキュリティ修正に追随し、digna とは独立に、ご自身の都合に合わせて更新できます。
+- **すべてを同じ方法で構成できる** — どの技術もキーと値のプロパティの一覧であり、同じインターフェイス、同じ機密値の暗号化、同じトラブルシューティングを使います。ソースごとに異なる入力欄が並ぶことはありません。
+- **調整と適用範囲** — タイムアウト、TLS 設定、プロキシ、フェッチサイズといったドライバーレベルのオプションがすべてのソースで利用でき、準拠した ODBC ドライバーがある技術であれば、digna が個別のガイドを公開していないものも含めて接続できます。
+
+実際には、**Use ODBC** スイッチと、ホスト・ポート・データベース・ユーザー・パスワードの個別の入力欄はなくなりました。**すでに ODBC を使っていない接続はすべて ODBC へ移行する必要があります**。自動変換はありませんので、アップグレード前に計画してください:
+
+1. インストールに定義されている各データベース接続を確認し、まだ ODBC を使っていないものを書き出してください。いずれも再構成が必要です。
+2. 対応する ODBC ドライバーを digna ホストにインストールします。接続はブラウザーからではなく、digna バックエンドを実行しているサーバーから開かれます。参照: [digna ホストへの ODBC ドライバーのインストール](../../../databases/overview.md#install-the-driver)。
+3. 影響を受ける各接続の ODBC プロパティを用意してください。 [技術別ガイド](../../../databases/overview.md#technology-guides)には、ソースごとに実績のあるプロパティ一式が記載されています。
+
+アップグレード後、影響を受けた各接続を ODBC に切り替え、ダッシュボードからテストしてください。参照: [データベース接続の作成](../../../databases/overview.md#create-a-database-connection) および [接続のテスト](../../../databases/overview.md#testing-a-connection)。
+
+!!! warning "Databricks Legacy 接続"
+
+    Databricks Legacy コネクタは本リリースで削除されました。該当する接続は [Databricks](../../../databases/databricks_connector_guide.md) コネクタへ移行してください。
+
 **digna リポジトリのバックアップ作成は必須です**
 
 アップグレードの前に、リポジトリ（PostgreSQL）を必ずバックアップしてください。バックアップは、アップグレード中に予期しない問題が発生した場合の復旧に必要です。
@@ -648,18 +716,26 @@ cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### ステップ 2: 現在のバックエンドをバックアップ（名前変更）
+#### ステップ 2: 現在のインストールをバックアップする
 
-digna インストールディレクトリで:
+digna のインストールディレクトリで、新しいリリースを並べて配置できるよう、現在のインストールのフォルダー名を変更します:
 
 ```bash
-# Rename folder containing dignabackend
+# Rename the folder containing dignabackend
 ren dignabackend dignabackend_old
+```
+```bash
+# Rename the folder containing dignacli
+ren dignacli dignacli_old
 ```
 ```bash
 # Rename dashboard
 ren dashboard dashboard_old
 ```
+
+!!! info "dignabackend と dignacli は使用されなくなりました"
+
+    リリース 2026.06 から、`dignabackend` と `dignacli` は、バックエンドと CLI を統合した単一の実行ファイル `digna` に置き換えられます。`dignabackend_old` と `dignacli_old` はアップグレードを確認するまで残し、その後は両方とも削除してかまいません。`dashboard_old` は、そこから構成ファイルを復元するまで残してください（手順 4 を参照）。
 
 #### ステップ 3: 新バージョンを展開してデプロイ
 
@@ -670,13 +746,40 @@ ren dashboard dashboard_old
 
     `config.toml` ファイルはインストール ZIP に**決して**含まれていません。既存の設定は保持されます。
 
-### ステップ 4: 設定ファイルの復元
+#### ステップ 4: 設定ファイルの復元
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 
-### ステップ 5: リポジトリスキーマのアップグレード
+!!! warning "リリース 2026.06 で config.toml が変わります"
+
+    3 つの設定が新たに必須となり、1 つは使用されなくなりました。以前のリリースから引き継いだ `config.toml` には新しい設定が含まれておらず、それらが欠けている限り digna は起動しません。既存の `config.toml` に次を追加してください:
+
+    ```toml
+    [base]
+    DIGNA_SCHEDULER_MAX_DELAY = 100
+    DIGNA_CLEANUP_TIME = "12:00"
+
+    [encryption]
+    DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+    ```
+
+    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで `[base]` から **`digna_FERNET_KEY` を削除**してください。もう使用されません。
+
+    各設定の役割については次を参照してください: [バックエンド構成](#backend-configuration).
+
+#### ステップ 5: 構成を検証する
+
+リポジトリに手を加える前に、更新した `config.toml` が完全であることを確認します:
+
+```bash
+digna config check
+```
+
+すべてのセクションが OK と報告される必要があります。FAILED と報告された箇所を修正し、続行する前にコマンドを再実行してください。
+
+#### ステップ 6: リポジトリスキーマのアップグレード
 
 digna インストールディレクトリに移動して次を実行:
 
@@ -686,7 +789,7 @@ digna repo upgrade
 
 これにより、既存データを保持しつつ PostgreSQL スキーマが最新バージョンに更新されます。
 
-### ステップ 6: サービスの再起動
+#### ステップ 7: サービスの再起動
 
 Windows サービスとして実行している場合:
 
@@ -704,8 +807,9 @@ digna serve --address <address> --port <port>
 
 IIS や Tomcat を使用している場合は、それぞれの Web サーバーを再起動してください。
 
-#### ステップ 7: アップグレードの確認
+#### ステップ 8: アップグレードの確認
 
 1. digna ダッシュボードにアクセス
 2. インターフェースが正しく読み込まれることを確認
 3. サーバーログにエラーがないか確認してください
+4. まだ ODBC を使っていなかった接続をすべて ODBC に切り替え、そのうえですべての接続をテストします。参照: [接続のテスト](../../../databases/overview.md#testing-a-connection)

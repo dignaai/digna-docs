@@ -56,6 +56,24 @@ Configure query execution strategy: **Single** or **Combined** mode
 
 ---
 
+### Configurable Prediction Model
+
+The model behind anomaly detection is now configurable. Seven parameters steer how the prediction is fitted:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+The defaults suit the great majority of series, and each parameter can be restored to its default at any time.
+
+**Impact:** Gives users control over the prediction model itself, alongside the existing Sensitivity and Memory settings on the tolerance band. For guidance on when to reach for one and how to set it, contact digna.
+
+---
+
 ### Redesigned Dashboard Experience  
 - Modernized and improved UI/UX design  
 - Clearer navigation and structure  
