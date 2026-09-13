@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+  # Lets the deploy be started by hand from the Actions tab, against whatever
+  # master currently points at. Without it the only trigger is a push, so a run
+  # that never fired can only be replaced by pushing again — and re-running an
+  # old run just redeploys that old commit.
+  workflow_dispatch:
 
 permissions:
   contents: write
