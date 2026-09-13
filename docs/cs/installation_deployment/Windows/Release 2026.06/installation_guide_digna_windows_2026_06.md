@@ -777,6 +777,33 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Význam jednotlivých nastavení je popsán v části [Konfigurace backendu](#backend-configuration).
 
+!!! warning "Jednotné přihlášení: formát [oidc_clients] se změnil"
+
+    Verze 2026.06 nahrazuje pole tabulek jednou tabulkou pro každého poskytovatele, pojmenovanou podle klíče poskytovatele. `DIGNA_OIDC_KEY` mizí — klíč je nyní součástí záhlaví sekce.
+
+    Před:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Po:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Sekci zopakujte pro každého poskytovatele a každý klíč udržujte shodný s `key` v souboru `dashboard_config.toml`. `digna config check` hlásí `oidc_clients` jako FAILED, dokud stará podoba zůstává. Týká se to pouze instalací, které používají jednotné přihlášení.
+
 #### Krok 5: Ověřte konfiguraci
 
 Než sáhnete na repozitář, ověřte, že je aktualizovaný `config.toml` úplný:

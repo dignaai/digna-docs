@@ -777,6 +777,33 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Her ayarın ne yaptığı şurada açıklanmıştır: [Arka Uç Yapılandırması](#backend-configuration).
 
+!!! warning "Çoklu oturum açma: [oidc_clients] biçimi değişti"
+
+    2026.06 sürümü, tablo dizisini her sağlayıcı için birer tabloyla değiştirir; tablolar sağlayıcı anahtarıyla adlandırılır. `DIGNA_OIDC_KEY` kaldırıldı — anahtar artık bölüm başlığının bir parçasıdır.
+
+    Önce:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Sonra:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Bölümü her sağlayıcı için yineleyin ve her anahtarı `dashboard_config.toml` içindeki `key` ile aynı tutun. Eski biçim yerinde kaldığı sürece `digna config check`, `oidc_clients` bölümünü FAILED olarak bildirir. Yalnızca çoklu oturum açma kullanan kurulumlar etkilenir.
+
 #### Adım 5: Yapılandırmayı Doğrulayın
 
 Depoya dokunmadan önce güncellenmiş `config.toml` dosyasının eksiksiz olduğunu doğrulayın:

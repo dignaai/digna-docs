@@ -1050,6 +1050,33 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     O que cada configuração faz está descrito em [Configuração do Backend](#backend-configuration).
 
+!!! warning "Logon único: o formato de [oidc_clients] mudou"
+
+    A release 2026.06 substitui a matriz de tabelas por uma tabela por provedor, nomeada a partir da chave do provedor. `DIGNA_OIDC_KEY` deixa de existir — a chave agora faz parte do cabeçalho da seção.
+
+    Antes:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Depois:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Repita a seção para cada provedor e mantenha cada chave igual ao `key` definido em `dashboard_config.toml`. O `digna config check` informa `oidc_clients` como FAILED enquanto a forma antiga permanecer. Apenas as instalações que usam logon único são afetadas.
+
 #### Passo 5: Validar a Configuração
 
 Confirme que o `config.toml` atualizado está completo antes de mexer no repositório:

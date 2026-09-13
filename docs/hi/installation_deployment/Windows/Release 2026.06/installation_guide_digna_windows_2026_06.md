@@ -777,6 +777,33 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     प्रत्येक सेटिंग क्या करती है, यह यहाँ बताया गया है: [बैकएंड कॉन्फ़िगरेशन](#backend-configuration).
 
+!!! warning "सिंगल साइन-ऑन: [oidc_clients] का प्रारूप बदल गया है"
+
+    रिलीज़ 2026.06 तालिकाओं की सरणी के स्थान पर प्रत्येक प्रदाता के लिए एक तालिका रखती है, जिसका नाम प्रदाता की कुंजी पर आधारित होता है। `DIGNA_OIDC_KEY` समाप्त हो गया है — कुंजी अब सेक्शन शीर्षक का हिस्सा है।
+
+    पहले:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    बाद में:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    हर प्रदाता के लिए यह सेक्शन दोहराएँ और हर कुंजी को `dashboard_config.toml` की `key` के समान रखें। जब तक पुराना प्रारूप बना रहता है, `digna config check` `oidc_clients` को FAILED बताता है। यह केवल उन संस्थापनों को प्रभावित करता है जो सिंगल साइन-ऑन का उपयोग करते हैं।
+
 #### चरण 5: कॉन्फ़िगरेशन जाँचें
 
 रिपॉज़िटरी को छूने से पहले पुष्टि करें कि अद्यतन `config.toml` पूर्ण है:

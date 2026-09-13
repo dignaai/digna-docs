@@ -1220,6 +1220,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     See [Backend Configuration](#backend-configuration) for what each setting does.
 
+!!! warning "Single sign-on: the [oidc_clients] format has changed"
+
+    Release 2026.06 replaces the array of tables with one table per provider, named after the
+    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+
+    Before:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    After:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Repeat the section for every provider, and keep each key matching the `key` in
+    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
+    old form is still in place. Only installations that use single sign-on are affected.
+
 #### Step 5: Validate the Configuration
 
 Confirm that the updated `config.toml` is complete before touching the repository:

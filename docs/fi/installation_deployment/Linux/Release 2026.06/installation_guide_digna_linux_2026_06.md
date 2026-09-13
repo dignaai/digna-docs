@@ -1198,6 +1198,33 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Kunkin asetuksen merkitys on kuvattu kohdassa [Taustajärjestelmän konfigurointi](#backend-configuration).
 
+!!! warning "Kertakirjautuminen: [oidc_clients]-muoto on muuttunut"
+
+    Julkaisu 2026.06 korvaa taulukkotaulukon yhdellä taululla palveluntarjoajaa kohden, nimettynä palveluntarjoajan avaimen mukaan. `DIGNA_OIDC_KEY` poistuu — avain on nyt osa osion otsikkoa.
+
+    Ennen:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Jälkeen:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Toista osio jokaiselle palveluntarjoajalle ja pidä jokainen avain samana kuin `key` tiedostossa `dashboard_config.toml`. `digna config check` raportoi `oidc_clients`-osion tilassa FAILED niin kauan kuin vanha muoto on yhä paikallaan. Tämä koskee vain asennuksia, jotka käyttävät kertakirjautumista.
+
 #### Vaihe 5: Tarkista konfiguraatio
 
 Varmista, että päivitetty `config.toml` on täydellinen ennen kuin kosket arkistoon:

@@ -1050,6 +1050,33 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija Zaledja](#backend-configuration).
 
+!!! warning "Enotna Prijava: Oblika [oidc_clients] se je Spremenila"
+
+    Izdaja 2026.06 nadomesti polje tabel z eno tabelo na ponudnika, poimenovano po ključu ponudnika. `DIGNA_OIDC_KEY` odpade — ključ je zdaj del glave razdelka.
+
+    Prej:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Potem:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Razdelek ponovite za vsakega ponudnika in vsak ključ ohranite enak vrednosti `key` v datoteki `dashboard_config.toml`. `digna config check` javi `oidc_clients` kot FAILED, dokler stara oblika ostaja. Prizadete so le namestitve, ki uporabljajo enotno prijavo.
+
 #### Korak 5: Preverjanje Konfiguracije
 
 Preden se dotaknete repozitorija, potrdite, da je posodobljeni `config.toml` popoln:

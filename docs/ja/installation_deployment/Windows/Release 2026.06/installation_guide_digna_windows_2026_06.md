@@ -776,6 +776,33 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     各設定の役割については次を参照してください: [バックエンド構成](#backend-configuration).
 
+!!! warning "シングルサインオン: [oidc_clients] の形式が変わりました"
+
+    リリース 2026.06 では、テーブルの配列が、プロバイダーごとに 1 つのテーブルへ置き換わりました。テーブル名はプロバイダーのキーになります。`DIGNA_OIDC_KEY` は廃止され、キーはセクション見出しの一部になりました。
+
+    変更前:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    変更後:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    プロバイダーごとにこのセクションを繰り返し、各キーを `dashboard_config.toml` の `key` と一致させてください。古い形式が残っている間、`digna config check` は `oidc_clients` を FAILED と報告します。影響を受けるのはシングルサインオンを使用しているインストールのみです。
+
 #### ステップ 5: 構成を検証する
 
 リポジトリに手を加える前に、更新した `config.toml` が完全であることを確認します:

@@ -1200,6 +1200,33 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Hva hver innstilling gjør, er beskrevet i [Backend-konfigurasjon](#backend-configuration).
 
+!!! warning "Enkel pålogging: formatet for [oidc_clients] er endret"
+
+    Utgivelse 2026.06 erstatter tabellarrayen med én tabell per leverandør, oppkalt etter leverandørnøkkelen. `DIGNA_OIDC_KEY` er borte — nøkkelen er nå en del av seksjonsoverskriften.
+
+    Før:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Etter:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Gjenta seksjonen for hver leverandør, og hold hver nøkkel lik `key` i `dashboard_config.toml`. `digna config check` rapporterer `oidc_clients` som FAILED så lenge den gamle formen fortsatt finnes. Bare installasjoner som bruker enkel pålogging er berørt.
+
 #### Steg 5: Valider konfigurasjonen
 
 Bekreft at den oppdaterte `config.toml` er fullstendig før du rører repositoryet:

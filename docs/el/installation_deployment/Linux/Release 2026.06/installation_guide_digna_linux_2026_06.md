@@ -1198,6 +1198,33 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Τι κάνει κάθε ρύθμιση περιγράφεται στην ενότητα [Διαμόρφωση backend](#backend-configuration).
 
+!!! warning "Ενιαία σύνδεση: η μορφή του [oidc_clients] άλλαξε"
+
+    Η έκδοση 2026.06 αντικαθιστά τον πίνακα πινάκων με έναν πίνακα ανά πάροχο, ονομασμένο από το κλειδί του παρόχου. Το `DIGNA_OIDC_KEY` καταργείται — το κλειδί αποτελεί πλέον μέρος της κεφαλίδας της ενότητας.
+
+    Πριν:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Μετά:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
+
 #### Βήμα 5: Επικυρώστε τη διαμόρφωση
 
 Βεβαιωθείτε ότι το ενημερωμένο `config.toml` είναι πλήρες πριν αγγίξετε το repository:

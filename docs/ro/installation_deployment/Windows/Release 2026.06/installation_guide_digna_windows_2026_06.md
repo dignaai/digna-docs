@@ -776,6 +776,33 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Ce face fiecare setare este descris în [Configurarea backend-ului](#backend-configuration).
 
+!!! warning "Autentificare unică: formatul [oidc_clients] s-a schimbat"
+
+    Versiunea 2026.06 înlocuiește matricea de tabele cu un tabel pentru fiecare furnizor, denumit după cheia furnizorului. `DIGNA_OIDC_KEY` dispare — cheia face acum parte din antetul secțiunii.
+
+    Înainte:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    După:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Repetați secțiunea pentru fiecare furnizor și păstrați fiecare cheie identică cu `key` din `dashboard_config.toml`. `digna config check` raportează `oidc_clients` ca FAILED cât timp forma veche este încă prezentă. Sunt afectate doar instalările care folosesc autentificarea unică.
+
 #### Pasul 5: Validați configurația
 
 Confirmați că `config.toml` actualizat este complet înainte de a atinge repository-ul:

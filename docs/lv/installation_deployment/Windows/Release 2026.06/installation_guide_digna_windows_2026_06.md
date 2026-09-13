@@ -776,6 +776,33 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Ko dara katrs iestatījums, apraksīts sadaļā [Aizmugures konfigurācija](#backend-configuration).
 
+!!! warning "Vienotā pieteikšanās: [oidc_clients] formāts ir mainījies"
+
+    Laidiens 2026.06 aizstāj tabulu masīvu ar vienu tabulu katram nodrošinātājam, nosauktu pēc nodrošinātāja atslēgas. `DIGNA_OIDC_KEY` vairs nav — atslēga tagad ir sadaļas virsraksta daļa.
+
+    Pirms:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pēc:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Atkārtojiet sadaļu katram nodrošinātājam un saglabājiet katru atslēgu tādu pašu kā `key` failā `dashboard_config.toml`. `digna config check` ziņo par `oidc_clients` kā FAILED, kamēr saglabājas vecā forma. Tas skar tikai instalācijas, kas izmanto vienoto pieteikšanos.
+
 #### 5. solis: Parbaudiet konfigurāciju
 
 Pirms pieskarties repozitorijam pārliecinieties, ka atjauninātais `config.toml` ir pilnīgs:

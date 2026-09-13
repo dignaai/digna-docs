@@ -1198,6 +1198,33 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Wat elke instelling doet, staat in [Backend-configuratie](#backend-configuration).
 
+!!! warning "Eenmalige aanmelding: de indeling van [oidc_clients] is gewijzigd"
+
+    Release 2026.06 vervangt de array van tabellen door één tabel per provider, genoemd naar de providersleutel. `DIGNA_OIDC_KEY` verdwijnt — de sleutel maakt nu deel uit van de sectiekop.
+
+    Voor:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Na:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Herhaal de sectie voor elke provider en houd elke sleutel gelijk aan de `key` in `dashboard_config.toml`. `digna config check` meldt `oidc_clients` als FAILED zolang de oude vorm nog aanwezig is. Alleen installaties die eenmalige aanmelding gebruiken zijn betroffen.
+
 #### Stap 5: Configuratie valideren
 
 Controleer of de bijgewerkte `config.toml` volledig is voordat u de repository aanraakt:

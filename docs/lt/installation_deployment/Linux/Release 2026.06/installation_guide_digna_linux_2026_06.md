@@ -1197,6 +1197,33 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Ką daro kiekviena nuostata, aprašyta skyriuje [Užkulisinės dalies konfigūracija](#backend-configuration).
 
+!!! warning "Vienkartinis prisijungimas: pasikeitė [oidc_clients] formatas"
+
+    Leidime 2026.06 lentelių masyvą pakeičia po vieną lentelę kiekvienam tiekėjui, pavadintą pagal tiekėjo raktą. `DIGNA_OIDC_KEY` nebelieka — raktas dabar yra skyriaus antraštės dalis.
+
+    Prieš:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Po:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
+
 #### 5 žingsnis: Patikrinkite konfigūraciją
 
 Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:

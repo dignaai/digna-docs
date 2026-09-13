@@ -1050,6 +1050,33 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
 
+!!! warning "Ühekordne sisselogimine: [oidc_clients] vorming on muutunud"
+
+    Väljalase 2026.06 asendab tabelimassiivi ühe tabeliga iga pakkuja kohta, mis on nimetatud pakkuja võtme järgi. `DIGNA_OIDC_KEY` kaob — võti on nüüd sektsiooni päise osa.
+
+    Enne:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pärast:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
+
 #### Samm 5: Kontrollige konfiguratsiooni
 
 Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:

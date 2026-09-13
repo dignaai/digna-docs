@@ -1049,6 +1049,33 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
 
+!!! warning "Egyszeri bejelentkezés: az [oidc_clients] formátuma megváltozott"
+
+    A 2026.06 kiadás a táblatömböt szolgáltatónként egy-egy táblára cseréli, amelyet a szolgáltató kulcsáról neveznek el. A `DIGNA_OIDC_KEY` megszűnik — a kulcs mostantól a szakaszfejléc része.
+
+    Előtte:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Utána:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Ismételje meg a szakaszt minden szolgáltatóhoz, és tartsa minden kulcsot azonosnak a `dashboard_config.toml` fájlban lévő `key` értékkel. A `digna config check` FAILED állapotúnak jelenti az `oidc_clients` szakaszt mindaddig, amíg a régi forma megmarad. Ez csak az egyszeri bejelentkezést használó telepítéseket érinti.
+
 #### 5. lépés: Ellenőrizze a konfigurációt
 
 Mielőtt hozzányúlna a tárolóhoz, győződjön meg róla, hogy a frissített `config.toml` teljes:

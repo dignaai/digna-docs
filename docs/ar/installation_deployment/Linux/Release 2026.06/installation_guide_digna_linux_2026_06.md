@@ -1198,6 +1198,33 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
 
+!!! warning "الدخول الموحّد: تغيّرت صيغة [oidc_clients]"
+
+    يستبدل الإصدار 2026.06 مصفوفة الجداول بجدول واحد لكل مزوّد، يحمل اسم مفتاح المزوّد. أُلغي `DIGNA_OIDC_KEY` — فالمفتاح صار جزءًا من عنوان القسم.
+
+    قبل:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    بعد:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    كرّر القسم لكل مزوّد، وأبقِ كل مفتاح مطابقًا لـ `key` في `dashboard_config.toml`. يُبلغ `digna config check` عن `oidc_clients` بحالة FAILED ما دامت الصيغة القديمة قائمة. لا يتأثر بذلك سوى التثبيتات التي تستخدم الدخول الموحّد.
+
 #### الخطوة 5: تحقق من التهيئة
 
 تأكد من أن ملف `config.toml` المحدَّث مكتمل قبل أن تمسّ المستودع:

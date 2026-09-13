@@ -1050,6 +1050,33 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Il significato di ogni impostazione è descritto in [Configurazione del backend](#backend-configuration).
 
+!!! warning "Single sign-on: il formato di [oidc_clients] è cambiato"
+
+    La release 2026.06 sostituisce l'array di tabelle con una tabella per ogni provider, denominata in base alla chiave del provider. `DIGNA_OIDC_KEY` non c'è più: la chiave fa ora parte dell'intestazione della sezione.
+
+    Prima:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Dopo:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Ripeti la sezione per ogni provider e mantieni ogni chiave uguale al `key` definito in `dashboard_config.toml`. `digna config check` segnala `oidc_clients` come FAILED finché resta la vecchia forma. Sono interessate solo le installazioni che usano il single sign-on.
+
 #### Passo 5: Verificare la configurazione
 
 Verificate che il `config.toml` aggiornato sia completo prima di toccare il repository:
