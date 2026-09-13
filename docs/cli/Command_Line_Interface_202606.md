@@ -60,6 +60,7 @@ The following table records what each command category loads before it does anyt
 | `license check` | no | it *is* the check |
 | `crypt` | yes | no |
 | `serve` | yes | no |
+| `windows` | no (the service reads it when it starts) | no |
 | `project` | yes | no |
 | `user` | yes | yes |
 | `inspection` | yes | yes |
@@ -878,3 +879,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows Service Management
+
+Available on Windows only. The commands register the ***digna*** backend with the Windows
+service manager and control it; the service itself runs `serve` in the background. Every command
+must be run from an elevated Command Prompt, and each accepts `--name` so that a service
+registered under a non-default name can be addressed.
+
+---
+
+### windows install
+
+The `windows install` command registers ***digna*** as a Windows service.
+
+The address and port given here are recorded in the service registration and are what the
+service binds to — they are not read from `config.toml`. To change them afterwards, uninstall
+the service and install it again.
+
+#### Command Usage
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Options
+- `--name`: Name to register the service under (default: `digna`).
+- `--display-name`: Name shown in services.msc (default: `digna`).
+- `--description`: Description shown in services.msc (default: `digna data quality backend`).
+- `--address`: Address the service binds its API to (default: `127.0.0.1`).
+- `--port`: Port the service binds its API to (default: `8000`).
+- `--working-dir`: Directory holding `config.toml` and `license.toml`, which the service makes
+  its working directory (default: the directory of the `digna` executable).
+- `--start-type`: When the service starts — `auto` with Windows, `manual` only when asked,
+  `disabled` registered but refuses to start (default: `auto`).
+- `--account`: Account to run as, e.g. `DOMAIN\user` or `.\user` (default: `LocalSystem`).
+- `--password`: Password of `--account`.
+
+#### Example
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Register under a second name, running as a domain account:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+The `windows start` command starts a registered service.
+
+#### Command Usage
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Options
+- `--name`: Name the service is registered under (default: `digna`).
+
+---
+
+### windows stop
+
+The `windows stop` command stops a running service. Stop the service before replacing any
+application file.
+
+#### Command Usage
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Options
+- `--name`: Name the service is registered under (default: `digna`).
+
+---
+
+### windows uninstall
+
+The `windows uninstall` command unregisters the service. Stop it first.
+
+#### Command Usage
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Options
+- `--name`: Name the service is registered under (default: `digna`).

@@ -278,9 +278,9 @@ Ponovno zaženite digna zaledje in spletni strežnik, da uveljavite spremembe.
 
 **Če tečete kot storitev na Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Če tečete kot storitev na Linux ali macOS:**

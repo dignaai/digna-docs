@@ -279,9 +279,9 @@ Taaskäivita digna backend ja veebiserver, et muudatused jõustuksid.
 
 **Kui töötab teenusena Windowsis:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Kui töötab teenusena Linuxis või macOS-is:**

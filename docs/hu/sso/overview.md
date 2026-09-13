@@ -279,9 +279,9 @@ Indítsd újra a digna backend-et és a web szervert, hogy a változtatások ér
 
 **Ha Windows szolgáltatásként fut:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Ha Linux vagy macOS szolgáltatásként fut:**

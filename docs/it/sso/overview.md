@@ -279,9 +279,9 @@ Riavvia il backend di digna e il web server per applicare le modifiche.
 
 **Se in esecuzione come servizio su Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Se in esecuzione come servizio su Linux o macOS:**

@@ -279,9 +279,9 @@ Restartējiet digna backend un tīmekļa serveri, lai piemērotu izmaiņas.
 
 **Ja darbojas kā serviss Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Ja darbojas kā serviss Linux vai macOS:**

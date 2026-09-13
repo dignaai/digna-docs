@@ -583,19 +583,24 @@ Running the digna backend as a Windows service ensures it:
 - Restarts automatically if it crashes
 - Can be managed through Windows Services
 
-### Service Management Files
+### The `windows` Commands
 
-All necessary files are located in the digna installation directory under: `bin/`
+The service is managed by the `digna` executable itself, through the `digna windows`
+subcommands. There are no batch files to run.
 
-The following batch files are available:
-- `install_service.bat` — Registers digna as a Windows service
-- `uninstall_service.bat` — Unregisters the service
-- `start_service.bat` — Starts the running service
-- `stop_service.bat` — Stops the running service
+| Command | Purpose |
+|---|---|
+| `digna windows install` | Registers digna as a Windows service |
+| `digna windows start` | Starts the registered service |
+| `digna windows stop` | Stops the running service |
+| `digna windows uninstall` | Unregisters the service |
 
 !!! warning "Administrator Required"
 
-    All batch files must be executed with Administrator privileges.
+    All four commands must be run from a Command Prompt opened as Administrator.
+
+Every command takes `--name` to address a service registered under a non-default name. The full
+option list is in the [CLI reference](../../../cli/Command_Line_Interface_202606.md).
 
 ### Installing the Service
 
@@ -603,37 +608,66 @@ The following batch files are available:
    - Right-click Command Prompt
    - Select "Run as Administrator"
 
-2. **Navigate to the bin Folder**
+2. **Navigate to your digna installation directory**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Run the Installation Script**
+3. **Register the service**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-The digna server is now registered as a Windows service with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+!!! important "Specify the address and port unless the defaults suit you"
+
+    `install` records the address and port in the service registration, and the service binds to
+    exactly what was recorded. The defaults are `127.0.0.1` and `8000`, which accept connections
+    only from the machine itself. A dashboard on another host cannot reach that, so give the
+    address the backend should listen on:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    These are not read from `config.toml`. To change them later, uninstall the service and
+    install it again with the new values.
+
+The service is registered with **automatic startup**, so it will start with Windows. It does not
+start immediately — see the next section.
+
+#### Install Options
+
+| Option | Default | Purpose |
+|---|---|---|
+| `--name` | `digna` | Name to register the service under |
+| `--display-name` | `digna` | Name shown in services.msc |
+| `--description` | `digna data quality backend` | Description shown in services.msc |
+| `--address` | `127.0.0.1` | Address the service binds its API to |
+| `--port` | `8000` | Port the service binds its API to |
+| `--working-dir` | the directory of the `digna` executable | Directory holding `config.toml` and `license.toml`, which the service makes its working directory |
+| `--start-type` | `auto` | `auto` starts with Windows, `manual` starts only when asked, `disabled` registers the service but refuses to start it |
+| `--account` | `LocalSystem` | Account to run as, e.g. `DOMAIN\user` or `.\user` |
+| `--password` | | Password of `--account` |
+
+!!! tip "Running under a domain account"
+
+    `LocalSystem` has no network identity, so Windows Authentication against SQL Server and any
+    access to a network share will fail. Install with `--account` and `--password` where the
+    service needs to reach resources as a specific user.
 
 ### Starting and Stopping the Service
 
 #### To Start the Service
 
-1. Open Command Prompt as Administrator
-2. Navigate to `digna\bin`
-3. Run:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### To Stop the Service
 
-1. Open Command Prompt as Administrator
-2. Navigate to `digna\bin`
-3. Run:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Tip"
 
@@ -643,37 +677,41 @@ The digna server is now registered as a Windows service with **automatic startup
 
 If you need to relocate the digna installation:
 
-1. **Uninstall the Current Service**
+1. **Stop and unregister the current service**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Move the Application Files**
    - Move the entire digna installation folder to the new location
 
-3. **Reinstall the Service**
+3. **Register the service again from the new location**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Repeat any `--address`, `--port` or `--account` values you used the first time — the previous
+   registration is gone.
 
 4. **Start the Service**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Uninstalling the Service
 
 1. **Stop the Running Service**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Uninstall the Service**
+2. **Unregister the Service**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 The digna server is now unregistered as a Windows service.
@@ -738,8 +776,8 @@ A backup ensures you can recover if the upgrade encounters unexpected issues.
 If digna is running as a Windows service, stop it first:
 
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
+cd C:\path\to\digna
+digna windows stop
 ```
 
 #### Step 2: Backup Current Installation
@@ -850,8 +888,8 @@ This updates the PostgreSQL schema to the latest version while preserving all ex
 If running as a Windows service:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows start
 ```
 
 If running manually, restart the server:
