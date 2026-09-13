@@ -17,7 +17,7 @@ specific to Teradata.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
 following the vendor's official installation guide.
@@ -28,7 +28,7 @@ described in [Install the ODBC Driver on the digna Host](overview.md#install-the
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -62,7 +62,7 @@ Useful additional properties:
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -75,7 +75,7 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata
+## 4. Notes on Teradata {: #4-notes-on-teradata }
 
 - **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
   see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
@@ -91,7 +91,7 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver and your credentials work before you

@@ -17,7 +17,7 @@ specific to Snowflake.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
 [Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
@@ -27,7 +27,7 @@ host as described in [Install the ODBC Driver on the digna Host](overview.md#ins
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
 *digna* is verified against, and the one Snowflake requires for accounts on which
@@ -83,7 +83,7 @@ and `token` and add:
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -96,7 +96,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake
+## 4. Notes on Snowflake {: #4-notes-on-snowflake }
 
 - **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
   the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
@@ -112,7 +112,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver, the account URL and your
