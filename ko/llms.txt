@@ -110,6 +110,17 @@
 - [Release 2024.11](https://docs.digna.ai/ko/cli/Command_Line_Interface_202411/): Complete reference for digna CLI release 2024.11. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 - [Release 2024.09](https://docs.digna.ai/ko/cli/Command_Line_Interface_202409/): digna CLI 릴리스 2024.09에 대한 완전한 참조입니다. add-user, check-repo-connection, upgrade-repo, inspect, tls-status 등 사용자를 관리하고 저장소 및 데이터를 조작하는 방법을 알아보세요.
 
+## SDK 참고 문서
+
+### Release 2026.06
+
+- [Overview](https://docs.digna.ai/ko/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
+- [Quickstart](https://docs.digna.ai/ko/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
+- [Resources](https://docs.digna.ai/ko/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
+- [Models](https://docs.digna.ai/ko/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
+- [Errors](https://docs.digna.ai/ko/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
+- [API Reference](https://docs.digna.ai/ko/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+
 ## Changelog
 
 - [Release 2026.06](https://docs.digna.ai/ko/changelog/Release_202606/): digna 릴리스 2026.06의 변경사항을 확인하세요. 이번 버전은 새로운 digna Python SDK, Docker 배포 지원, 새로워진 대시보드 경험, 그리고 검증 규칙 관리의 향상된 이식성을 도입합니다.

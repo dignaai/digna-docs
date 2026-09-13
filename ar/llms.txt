@@ -110,6 +110,17 @@
 - [Release 2024.11](https://docs.digna.ai/ar/cli/Command_Line_Interface_202411/): مرجع كامل لأوامر واجهة الأوامر digna إصدار 2024.11. تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-repo-connection و upgrade-repo و inspect و tls-status والمزيد.
 - [Release 2024.09](https://docs.digna.ai/ar/cli/Command_Line_Interface_202409/): مرجع كامل لإصدار digna CLI 2024.09. تعرّف على كيفية إدارة المستخدمين والمستودعات والبيانات باستخدام أوامر مثل add-user و check-repo-connection و upgrade-repo و inspect و tls-status والمزيد.
 
+## مرجع SDK
+
+### Release 2026.06
+
+- [Overview](https://docs.digna.ai/ar/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
+- [Quickstart](https://docs.digna.ai/ar/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
+- [Resources](https://docs.digna.ai/ar/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
+- [Models](https://docs.digna.ai/ar/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
+- [Errors](https://docs.digna.ai/ar/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
+- [API Reference](https://docs.digna.ai/ar/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+
 ## Changelog
 
 - [Release 2026.06](https://docs.digna.ai/ar/changelog/Release_202606/): تعرّف على الجديد في digna الإصدار 2026.06. يتضمن هذا الإصدار SDK جديد لبايثون، دعم رسمي للنشر عبر Docker، تجربة لوحة تحكم مُجددة، وقدرات محسّنة لنقل قواعد التحقق.

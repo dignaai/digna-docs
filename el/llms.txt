@@ -110,6 +110,17 @@
 - [Release 2024.11](https://docs.digna.ai/el/cli/Command_Line_Interface_202411/): Complete reference for digna CLI release 2024.11. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 - [Release 2024.09](https://docs.digna.ai/el/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
+## Αναφορά SDK
+
+### Release 2026.06
+
+- [Overview](https://docs.digna.ai/el/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
+- [Quickstart](https://docs.digna.ai/el/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
+- [Resources](https://docs.digna.ai/el/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
+- [Models](https://docs.digna.ai/el/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
+- [Errors](https://docs.digna.ai/el/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
+- [API Reference](https://docs.digna.ai/el/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+
 ## Changelog
 
 - [Release 2026.06](https://docs.digna.ai/el/changelog/Release_202606/): Μάθετε τι νέο υπάρχει στην digna Έκδοση 2026.06. Αυτή η έκδοση εισάγει το νέο **digna Python SDK**, επίσημη υποστήριξη **Docker deployment**, μια ανανεωμένη εμπειρία dashboard και βελτιωμένη φορητότητα για τη διαχείριση κανόνων επικύρωσης.

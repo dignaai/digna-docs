@@ -110,6 +110,17 @@
 - [Release 2024.11](https://docs.digna.ai/de/cli/Command_Line_Interface_202411/): Vollständige Referenz für die digna CLI-Version 2024.11. Erfahren Sie, wie Sie Benutzer, Repositories und Daten mit Befehlen wie add-user, check-repo-connection, upgrade-repo, inspect, tls-status und weiteren verwalten.
 - [Release 2024.09](https://docs.digna.ai/de/cli/Command_Line_Interface_202409/): Vollständige Referenz für das digna CLI-Release 2024.09. Erfahren Sie, wie Sie Benutzer, Repositories und Daten mit Befehlen wie add-user, check-repo-connection, upgrade-repo, inspect, tls-status und weiteren verwalten.
 
+## SDK Doku
+
+### Release 2026.06
+
+- [Overview](https://docs.digna.ai/de/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
+- [Quickstart](https://docs.digna.ai/de/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
+- [Resources](https://docs.digna.ai/de/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
+- [Models](https://docs.digna.ai/de/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
+- [Errors](https://docs.digna.ai/de/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
+- [API Reference](https://docs.digna.ai/de/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+
 ## Changelog
 
 - [Release 2026.06](https://docs.digna.ai/de/changelog/Release_202606/): Erfahren Sie, was neu ist in digna Release 2026.06. Diese Version führt das neue digna Python SDK, Docker-Bereitstellungsunterstützung, ein überarbeitetes Dashboard-Erlebnis und erweiterte Import-/Export-Funktionen für Validierungsregeln ein.
