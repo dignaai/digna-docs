@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. After extraction, you should see the following items:
    - `dashboard/` — Web dashboard interface
    - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+
+!!! info "The configuration and licence files are not in the package"
+
+    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
+    create both yourself, in [Backend Configuration](#backend-configuration) and
+    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
+    digna supplies it separately, as Step 3 describes.
 
 ### Step 3: Install the License File
 
@@ -526,9 +531,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Step 1: Deploy Dashboard to Web Server
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
 
 Choose your web server and follow the corresponding deployment steps.
 
