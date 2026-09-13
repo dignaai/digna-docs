@@ -15,7 +15,7 @@ specific to SQL Server.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
 following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
@@ -29,7 +29,7 @@ Read the exact registered driver name off your host as described in
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -78,7 +78,7 @@ To connect as the account that runs the *digna* service instead of with a SQL lo
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -91,7 +91,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server
+## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
 
 - **One connection sees one database.** *digna* offers the schemas of the database named in
   `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
@@ -104,7 +104,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own wizard is a convenient way to confirm that the driver works and that the server accepts

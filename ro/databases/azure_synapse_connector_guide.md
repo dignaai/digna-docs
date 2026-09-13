@@ -1,143 +1,160 @@
 # Source Connector for Azure Synapse Analytics
 
-Acest ghid descrie cum să configurați *digna* pentru a se conecta la Azure Synapse Analytics folosind fie conectorul nativ Python, fie driverul ODBC.
-Este compatibil atât cu pool-urile SQL serverless, cât și cu cele dedicate.
+This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
+**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
+supported.
 
-Se face referire la ecranul **"Create a Database Connection"**.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Azure Synapse.
 
-![Creează o conexiune la baza de date](images/data_source_config_input_mask.png)
+!!! note "Technology"
 
----
-
-## Native Python Driver
-
-**Library:** `pymssql`  
-**Supported Authentication:** Autentificare pe bază de parolă (doar)
-
-> Pentru alte metode de autentificare, vă rugăm să folosiți driverul ODBC.
-
-### Configurarea *digna* (Driver nativ)
-
-Furnizați următoarele informații în ecranul **"Create a Database Connection"**:
-
-```
-Technology:      MS SQL Server
-Host Address:    <synapse-workspace>[-ondemand].sql.azuresynapse.net
-Host Port:       Port number, e.g. 1433
-Database Name:   Numele bazei de date
-Schema Name:     Schema care conține datele sursă
-User Name:       Numele utilizatorului bazei de date
-User Password:   Parola utilizatorului
-Use ODBC:        Disabled (default)
-```
+    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
+    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
 
 ---
 
-## ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-Driverul ODBC poate oferi un set mai larg de opțiuni de autentificare și conectivitate. Această secțiune se concentrează pe autentificarea pe bază de parolă folosind driverul **ODBC Driver 18 for SQL Server**.
-
-### 1. Instalați driverul ODBC
-
-Instalați driverul **ODBC Driver 18 for SQL Server** (sau unul similar) urmând ghidul oficial de instalare al furnizorului.
-
-### 2. Configurați sursa de date ODBC
-
-Urmați acești pași pentru a configura o nouă sursă de date ODBC folosind autentificare pe bază de parolă:
-
-#### Pasul 1
-![Pasul 1](images/azure_synapse/create_odbc_data_source_step1.png)
-
-Completează câmpul "Server".
-Folosiți numele workspace-ului Synapse și adăugați sufixul ".sql.azuresynapse.net".   
-**Atenție**, dacă doriți să vă conectați folosind un serverless SQL pool, asigurați-vă că includeți "-ondemand" așa cum se arată în captura de ecran de mai jos.
-
-Faceți clic pe butonul **Next >**.
-
-#### Pasul 2
-![Pasul 2](images/azure_synapse/create_odbc_data_source_step2.png)
-
-Alegeți metoda de autentificare (de ex. nume de utilizator și parolă)
-și furnizați datele necesare.
-
-Faceți clic pe butonul **Next >**.
-
-#### Pasul 3
-![Pasul 3](images/azure_synapse/create_odbc_data_source_step3.png)
-
-Alegeți setările conforme ANSI, apoi faceți clic pe butonul **Next >**.
-
-#### Pasul 4
-![Pasul 4](images/azure_synapse/create_odbc_data_source_step4.png)
-
-Puteți lăsa setările implicite sau alege opțiuni după necesitate
-și faceți clic pe butonul **Finish**. 
-
-#### Pasul 5
-![Pasul 5](images/azure_synapse/create_odbc_data_source_step5.png)
-
-Acum faceți clic pe butonul **Testează sursa de date**.
-
-#### Pasul 6
-![Pasul 6](images/azure_synapse/create_odbc_data_source_step6.png)
-
-Când primiți ecranul de succes, ODBC este configurat corect.
+Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
+following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+and read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Acum puteți configura *digna* să utilizeze conexiunea ODBC, fie cu un **DSN (Data Source Name)**, fie o configurare **fără DSN (DSN-less)**.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what the workspace requires depends on how it is configured —
+    pool type, authentication method, firewall. Use this as a starting point and check the
+    documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
+| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `sqladminuser` | SQL login |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
+```
+
+### The `SERVER` value
+
+Take the name of the Synapse workspace and append the endpoint suffix:
+
+| Pool | `SERVER` |
+|---|---|
+| **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
+| **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
+
+!!! warning "The `-ondemand` part is easy to miss"
+
+    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
+    silently reaches a different pool than intended. Both endpoints are shown on the workspace
+    overview page in the Azure portal.
+
+### Firewall
+
+The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
+under **Networking** in the workspace before testing the connection — a blocked address shows
+up as a connection timeout rather than an authentication error.
+
+### Microsoft Entra ID authentication
+
+Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
+the authentication method your workspace expects, for example:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
+| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
 
 ---
 
-### A. Configurare bazată pe DSN
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### Configurarea *digna*
-
-În ecranul **"Create a Database Connection"**, furnizați următoarele:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      MS SQL Server
-Database Name:   Baza de date care conține schema sursă
-Schema Name:     Schema care conține datele sursă
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         SQL Server
+Profiling Mode:     Serverless SQL pool: Standard
+                    Dedicated SQL pool:  Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
-
-#### Proprietăți ODBC
-
-```
-name: "DSN",        value: "azure-synopse-serverless-1"
-name: "UID",        value: "utilizatorul bazei de date"
-name: "PWD",        value: "parola utilizatorului bazei de date"
-name: "DATABASE",   value: "numele bazei de date care conține schema de date sursă"
-
-```
-
-> `DSN` trebuie să corespundă numelui definit în configurația driverului ODBC.
 
 ---
 
-### B. Configurare fără DSN (DSN-less)
+## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
 
-#### Configurarea *digna*
+- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
+  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
+  calculates the metrics directly on the source, which is also the cheaper option, since
+  serverless is billed per data processed.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
+- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
+  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
+- **A serverless endpoint may resume from idle** on the first connect. If the connection test
+  times out on a pool that has been unused for a while, retry it.
 
-În ecranul **"Create a Database Connection"**, furnizați următoarele:
+---
 
-```
-Technology:      MS SQL Server
-Database Name:   Schema care conține datele sursă (același ca Schema Name)
-Schema Name:     Schema care conține datele sursă
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### Proprietăți ODBC
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own wizard is a convenient way to confirm that the driver works and that the workspace accepts
+your credentials before you enter them in *digna*.
 
-```
-name: "DRIVER",     value: "ODBC Driver 18 for SQL Server"
-name: "SERVER",     value: "<synapse-workspace>[-ondemand].sql.azuresynapse.net"
-name: "UID",        value: "utilizatorul bazei de date"
-name: "PWD",        value: "parola utilizatorului bazei de date"
-name: "DATABASE",   value: "numele bazei de date care conține schema de date sursă"
-```
+#### Step 1
+![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-**Notă** referitoare la proprietatea SERVER:  
-Folosiți numele workspace-ului Synapse și adăugați sufixul ".sql.azuresynapse.net". Dacă doriți să vă conectați folosind un serverless SQL pool, asigurați-vă că includeți "-ondemand" așa cum se arată în captura de ecran de mai jos.
+Fill out the "Server" field.
+Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
+**Attention**, if you want to connect using a serverless SQL pool, make sure to include
+"-ondemand" as shown in the screenshot above.
+
+Click the **Next >** button.
+
+#### Step 2
+![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
+
+Choose the authentication method (e.g. username and password)
+and provide the required data.
+
+Click the **Next >** button.
+
+#### Step 3
+![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
+
+Choose the ANSI compliant settings then click the **Next >** button.
+
+#### Step 4
+![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
+
+You can leave the default settings or choose options as needed 
+and click the **Finish** button. 
+
+#### Step 5
+![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
+
+Now click the **Test datasource** button.
+
+#### Step 6
+![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
+
+A success screen confirms that the driver, the endpoint and the credentials work. The values
+you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.

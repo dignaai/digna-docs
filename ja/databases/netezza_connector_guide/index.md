@@ -1,88 +1,102 @@
-# Netezza 用ソースコネクタ
+# Source Connector for Netezza
 
-このガイドでは、ODBC ドライバーを使用して *digna* を Netezza に接続する方法を説明します。
+This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
+**DSN-less** connection string.
 
-画面 **"Create a Database Connection"** を参照します。
-
-![データベース接続を作成](images/data_source_config_input_mask.png)
-
----
-
-## ODBC ドライバー
-
-ODBC ドライバーは、さまざまな認証および接続オプションをサポートする場合があります。本セクションでは、ドライバー **NetezzaSQL** を使用したパスワード認証に焦点を当てます。
-
-### 1. ODBC ドライバーのインストール
-
-ベンダーの公式インストールガイドに従って、ドライバー **NetezzaSQL**（または同等のドライバー）をインストールしてください。
-
-### 2. ODBC データソースの構成
-
-パスワード認証を使用して新しい ODBC データソースを構成する手順は次のとおりです。
-
-#### ステップ 1
-![ステップ 1](images/netezza/create_odbc_data_source_step1.png)
-
-ご使用の Netezza ドライバーやセットアップ、セキュリティ要件によっては、**Advanced DSN Options**、**SSL DSN Options**、または **Driver Options** タブにも情報を入力する必要がある場合があります。最も簡単なセットアップでは、**DSN Options** に情報を入力するだけで十分です。
-
-**Test Connection** ボタンをクリックします。
-
-#### ステップ 2
-![ステップ 2](images/netezza/create_odbc_data_source_step2.png)
-
-成功画面が表示されたら、ODBC の設定は正しく行われています。
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Netezza.
 
 ---
 
-これで、**DSN（Data Source Name）** を使用するか、**DSN-less** 構成のいずれかで *digna* に ODBC 接続を設定できます。
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+
+Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
+that runs the *digna* backend, following the vendor's official installation guide.
+
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-### A. DSN ベースの構成
+## 2. ODBC Properties {: #2-odbc-properties }
 
-#### *digna* の設定
+!!! important "An example, not a specification"
 
-**"Create a Database Connection"** 画面で、次の項目を入力してください：
+    The set below is one combination that is known to work. The properties belong to the
+    NetezzaSQL driver, so their names, defaults and accepted values differ between client
+    versions and platforms, and a TLS-secured appliance needs more than the properties shown
+    here. Use this as a starting point and check the documentation of the client version you
+    installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
+| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `PORT` | `5480` | |
+| `DATABASE` | `TEST` | Database the session starts in |
+| `UID` | `ADMIN` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
 
 ```
-Technology:      Netezza
-Database Name:   ソーススキーマを含むデータベース
-Schema Name:     ソースデータを含むスキーマ
-Use ODBC:        有効
+DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-#### ODBC プロパティ
-
-```
-name: "DSN",        value: "NZSQL"
-name: "UID",        value: "データベースのユーザー"
-name: "PWD",        value: "データベースのパスワード"
-```
-
-> `DSN` は ODBC ドライバー構成で定義した名前と一致する必要があります。
+Depending on your driver version, setup and security requirements, further properties may be
+needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
+the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
 
 ---
 
-### B. DSN-less 構成
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* の設定
-
-**"Create a Database Connection"** 画面で、次の項目を入力してください：
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      Netezza
-Database Name:   ソースデータを含むスキーマ（Schema Name と同じ）
-Schema Name:     ソースデータを含むスキーマ
-Use ODBC:        有効
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Netezza
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "Digna_Work"
 ```
 
-#### ODBC プロパティ
+---
 
-```
-name: "DRIVER",     value: "NetezzaSQL"
-name: "SERVER",     value: "サーバー名または IP アドレス"
-name: "PORT",       value: "ポート番号（例: 5480）"
-name: "DATABASE",   value: "ソースデータスキーマを含むデータベース名"
-name: "UID",        value: "データベースのユーザー"
-name: "PWD",        value: "データベースのパスワード"
-```
+## 4. Notes on Netezza {: #4-notes-on-netezza }
+
+- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
+  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
+  can serve sources in more than one database. `DATABASE` only decides where the session
+  starts.
+- **Identifiers are upper case** unless they were created quoted, which is why the examples
+  above use `TEST` and `ADMIN`.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
+  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver and your credentials work before you
+enter them in *digna*.
+
+#### Step 1
+![Step 1](images/netezza/create_odbc_data_source_step1.png)
+
+The fields in **DSN Options** correspond one-to-one to the properties in
+[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
+requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
+**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+
+Click the **Test Connection** button.
+
+#### Step 2
+![Step 2](images/netezza/create_odbc_data_source_step2.png)
+
+When you receive the success screen, the driver is working and the values are correct.

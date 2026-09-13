@@ -1,114 +1,125 @@
-# Oracle용 소스 커넥터
+# Source Connector for Oracle
 
-이 가이드는 *digna*가 네이티브 Python 커넥터 또는 ODBC 드라이버를 사용하여 Oracle DB에 연결하도록 구성하는 방법을 설명합니다.
+This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
+using a **DSN-less** connection string.
 
-본 문서는 화면 **"데이터베이스 연결 생성"**을 참조합니다.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## 네이티브 Python 드라이버
-
-**라이브러리:** `python-oracledb`  
-**지원되는 인증:** 비밀번호 기반 인증만 지원
-
-> 다른 인증 방식이 필요한 경우 ODBC 드라이버를 사용하세요.
-
-### *digna* 구성 (네이티브 드라이버)
-
-**"데이터베이스 연결 생성"** 화면에 다음 정보를 제공합니다:
-
-```
-Technology:      Oracle
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 1521
-Database Name:   Instance name, service name
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Oracle.
 
 ---
 
-## ODBC 드라이버
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC 드라이버는 더 넓은 범위의 인증 및 연결 옵션을 지원할 수 있습니다. 이 섹션은 드라이버 **Oracle in OraDB21Home1**을 사용한 비밀번호 기반 인증에 중점을 둡니다.
+The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
+enough). Install it on the machine that runs the *digna* backend, following the vendor's
+official installation guide.
 
-### 1. ODBC 드라이버 설치
+The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
+`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
+installation, so read the exact name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-공급업체의 공식 설치 가이드를 따라 **Oracle in OraDB21Home1**(또는 유사한 드라이버)을 설치합니다.
+---
 
-### 2. ODBC 데이터 소스 구성
+## 2. ODBC Properties {: #2-odbc-properties }
 
-비밀번호 기반 인증을 사용하여 새 ODBC 데이터 소스를 구성하려면 다음 단계를 따르세요:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the Oracle
+    ODBC driver, so their names, defaults and accepted values differ between client versions,
+    and the driver name in particular depends on the Oracle home on your host. Use this as a
+    starting point and check the documentation of the client version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
+| `UID` | `DIGNA_SOURCE_USER` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
+```
+
+### The `DBQ` value
+
+`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
+configured on the *digna* host:
+
+| Form | Example | Requires |
+|---|---|---|
+| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
+| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+
+!!! tip "Prefer the full descriptor"
+
+    A TNS alias moves half of the connection definition into a file on the *digna* host, where
+    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
+    the connection self-contained — which is the point of a DSN-less setup.
+
+Note the parentheses in a descriptor are fine inside a connection string, but if your password
+contains `;`, brace it: `PWD={p@ss;word}`.
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Oracle
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "DIGNA_WORK"
+```
+
+---
+
+## 4. Notes on Oracle {: #4-notes-on-oracle }
+
+- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
+  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
+  `SELECT` on those tables, either directly or through a role.
+- **One connection sees one database.** The catalog *digna* offers is the database the
+  connection is attached to, so `DBQ` decides which service, and therefore which database, is
+  profiled.
+- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
+  data dictionary, which is what Oracle stores — upper case for unquoted objects.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
+  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
+  needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the Oracle Client, the service name and your
+credentials work before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/oracle/create_odbc_data_source_step1.png)
 
-참고:
-TNS Service Name은 Oracle 클라이언트 설치의 tnsnames.ora 파일에 구성되어야 합니다. 여기에서 연결 디스크립터(host, port, service name)를 제공합니다.
+The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
+installation — that is where the alias, and with it the host, port and service name, is
+defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
 
-#### Step 2 – 연결 테스트
+#### Step 2 – Test the connection
 
-**Test Connection** 버튼을 클릭합니다.
+Click the **Test Connection** button.
 
 ![Step 2](images/oracle/create_odbc_data_source_step2.png)
 
-비밀번호를 입력하고 **OK** 버튼을 클릭합니다.
+Provide the password and click the **OK** button.
 
-![Step 2](images/oracle/create_odbc_data_source_step3.png)
+![Step 3](images/oracle/create_odbc_data_source_step3.png)
 
----
-
-이제 *digna*를 ODBC 연결을 사용하도록 구성할 수 있습니다. **DSN(Data Source Name)** 기반 또는 **DSN-less** 설정 중 선택하세요.
-
----
-
-### A. DSN 기반 구성
-
-#### *digna* 구성
-
-**"데이터베이스 연결 생성"** 화면에 다음을 입력합니다:
-
-```
-Technology:      Oracle
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC 속성
-
-```
-name: "DSN",            value: "*digna*data_oracle"
-name: "UID",            value: "your oracle user"
-name: "PWD",            value: "{your password in curly braces}"
-```
-
-> `DSN`은 ODBC 드라이버 구성에서 정의된 이름과 일치해야 합니다.
-
----
-
-### B. DSN-less 구성
-
-#### *digna* 구성
-
-**"데이터베이스 연결 생성"** 화면에 다음을 입력합니다:
-
-```
-Technology:      Oracle
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC 속성
-
-```
-name: "Driver",     value: "Oracle in OraDB21Home1"
-name: "DBQ",        value: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)))"
-name: "UID",        value: "your oracle user'
-name: "PWD",        value: "your oracle password"
-```
+A success message confirms that the driver and the credentials work.

@@ -5,6 +5,14 @@ See versioon toob kaasa uue **digna Python SDK**, ametliku **Docker‑deploy toe
 
 ---
 
+## Vaadake väljalaset
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — ülevaade sellest väljalaskest digna YouTube'i kanalil.*
+
+---
+
 ## Uued funktsioonid  
 
 ### digna Python SDK – automatiseeri kõik Pythoniga  
@@ -52,6 +60,24 @@ Seadista päringute täitmise strateegia: **Single** või **Combined** mode
   - Tõhusam sagedaste, paralleelsete täitmiste puhul
 
 **Mõju:** Annab kasutajatele täpse kontrolli päringute täitmise üle, et tasakaalustada jõudlust, ressursikasutust ja mäluturvalisust vastavalt andmeallika omadustele.
+
+---
+
+### Seadistatav ennustusmudel
+
+Anomaaliatuvastuse aluseks olev mudel on nüüd seadistatav. Seitse parameetrit juhivad, kuidas ennustus sobitatakse:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Vaikeväärtused sobivad valdavale enamikule aegridadest ja iga parameetri saab igal ajal vaikeväärtusele taastada.
+
+**Mõju:** Annab kasutajatele kontrolli ennustusmudeli enda üle, kõrvuti olemasolevate tolerantsiriba seadetega Sensitivity ja Memory. Juhiste saamiseks, millal mõne parameetri juurde pöörduda ja kuidas seda seadistada, võtke ühendust dignaga.
 
 ---
 

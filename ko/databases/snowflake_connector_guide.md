@@ -1,118 +1,128 @@
-# Snowflake용 소스 커넥터
+# Source Connector for Snowflake
 
-이 가이드는 네이티브 Python 커넥터 또는 ODBC 드라이버 중 하나를 사용해 *digna*를 Snowflake에 연결하도록 구성하는 방법을 설명합니다.
+This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
+**DSN-less** connection string.
 
-화면 **"Create a Database Connection"** 을 참조합니다.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## 네이티브 Python 드라이버
-
-**라이브러리:** `snowflake-connector-python`  
-**지원되는 인증:** 암호 기반 인증만
-
-> 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
-
-### *digna* 구성(네이티브 드라이버)
-
-**"Create a Database Connection"** 화면에 다음 정보를 제공하세요:
-
-```
-Technology:      Snowflake
-Host Address:    Snowflake account name
-Host Port:       Not needed
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-User Name:       User name and warehouse in the format "user<@>warehouse"
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Snowflake.
 
 ---
 
-## ODBC 드라이버
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC 드라이버는 더 다양한 인증 및 연결 옵션을 지원할 수 있습니다. 이 섹션은 **SnowflakeDSIIDriver**를 사용한 암호 기반 인증에 중점을 둡니다.
+Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
+[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-### 1. ODBC 드라이버 설치
+The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
+host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-공급업체의 공식 설치 가이드를 따라 **SnowflakeDSIIDriver**를 설치하세요.
+---
 
-### 2. ODBC 데이터 소스 구성
+## 2. ODBC Properties {: #2-odbc-properties }
 
-암호 기반 인증을 사용하여 새 ODBC 데이터 소스를 구성하려면 다음 단계를 따르세요:
+Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
+*digna* is verified against, and the one Snowflake requires for accounts on which
+password-only sign-in is blocked.
 
-#### 단계 1
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and which authentication options your account permits is decided by
+    the account's security policy. Use this as a starting point and check the documentation of
+    the driver version you installed.
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
+| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake user the token belongs to |
+| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
+| `Schema` | `PUBLIC` | Default schema of the session |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
+| `token` | `<programmatic access token>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
+```
+
+### Warehouse and role
+
+Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
+session picks them up and nothing has to be configured. Otherwise add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
+| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+
+!!! tip "Give digna its own warehouse"
+
+    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
+    *digna* from competing with interactive users for compute.
+
+### Password authentication
+
+Where the account still allows it, a password works in place of the token — drop `authenticator`
+and `token` and add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Snowflake
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "PUBLIC"
+```
+
+---
+
+## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+
+- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
+  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
+  `token` property — encrypted values can be replaced but not read back.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
+  another database need their own connection.
+- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
+  Snowflake reports them.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
+  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the account URL and your
+credentials work before you enter them in *digna*.
+
+#### Step 1
 ![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
-참고:
-- Database, Schema 및 Warehouse 값을 제공하지 않으면 *digna* 데이터 소스 구성 중에 ODBC 속성으로 제공해야 합니다.
-- "Server"의 값은 여러분의 snowflake 계정 이름 뒤에 ".snowflakecomputing.com"을 붙인 형태입니다.
+Notes:
 
-#### 단계 2 – 연결 테스트
+- The value for **Server** consists of your Snowflake account identifier followed by
+  `.snowflakecomputing.com`.
+- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
+  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
 
-**TEST** 버튼을 클릭하세요. 연결이 성공하면 다음과 같이 표시됩니다:
+#### Step 2 – Test the connection
+
+Click the **TEST** button. A successful connection should look like this:
 
 ![Step 2](images/snowflake/create_odbc_data_source_step2.png)
-
----
-
-이제 **DSN (Data Source Name)** 또는 **DSN-less** 설정 중 하나로 ODBC 연결을 사용하도록 *digna*를 구성할 수 있습니다.
-
----
-
-### A. DSN 기반 구성
-
-#### *digna* 구성
-
-**"Create a Database Connection"** 화면에 다음을 제공하세요:
-
-```
-Technology:      Snowflake
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC 속성
-
-```
-name: "DSN",            value: "snowflake_demo_2"
-name: "PWD",            value: "{your password in curly braces}"
-
-optionally:
-name: "Database",       value: "Database that contains the source schema"
-name: "Schema",         value: "Schema that contains the source data"
-name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
-```
-
-> `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
-
----
-
-### B. DSN-less 구성
-
-#### *digna* 구성
-
-**"Create a Database Connection"** 화면에 다음을 제공하세요:
-
-```
-Technology:      Snowflake
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC 속성
-
-```
-name: "Driver",     value: "{SnowflakeDSIIDriver}"
-name: "Server",     value: "your-account-name.snowflakecomputing.com'
-name: "UID",        value: "your snowflake user'
-name: "PWD",        value: "your snowflake password"
-name: "Database",   value: "Database that contains the source schema"
-name: "Schema",     value: "Schema that contains the source data"
-name: "Warehouse",  value: "Warehouse to use for the execution of the SQLs"
-```

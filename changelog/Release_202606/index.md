@@ -5,6 +5,14 @@ This release introduces the new **digna Python SDK**, official **Docker deployme
 
 ---
 
+## Watch the Release
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — a walkthrough of this release on the digna YouTube channel.*
+
+---
+
 ## New Features  
 
 ### digna Python SDK – Automate Everything with Python  

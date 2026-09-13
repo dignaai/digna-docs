@@ -5,6 +5,14 @@
 
 ---
 
+## 릴리스 영상 보기
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — digna YouTube 채널에서 이번 릴리스를 살펴봅니다.*
+
+---
+
 ## 새로운 기능  
 
 ### digna Python SDK – Python으로 모든 것을 자동화  
@@ -52,6 +60,24 @@
   - 빈번하고 병렬 실행되는 작업에 더 효율적
 
 **영향:** 사용자가 데이터 소스 특성에 따라 성능, 리소스 사용량 및 메모리 안정성의 균형을 맞출 수 있도록 세밀한 쿼리 실행 제어를 제공합니다.
+
+---
+
+### 구성 가능한 예측 모델
+
+이상 탐지의 기반이 되는 모델을 이제 구성할 수 있습니다. 일곱 개의 매개변수가 예측이 적합되는 방식을 조정합니다:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+기본값은 대다수 계열에 적합하며, 각 매개변수는 언제든지 기본값으로 되돌릴 수 있습니다.
+
+**영향:** 허용 구간에 대한 기존 Sensitivity 및 Memory 설정과 함께, 예측 모델 자체에 대한 제어 권한을 사용자에게 제공합니다. 어떤 매개변수를 언제 사용하고 어떻게 설정할지에 대한 안내는 digna에 문의하십시오.
 
 ---
 

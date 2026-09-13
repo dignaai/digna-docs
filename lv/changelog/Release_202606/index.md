@@ -5,6 +5,14 @@ Ar izlaidumu 2026.06 digna sper lielu soli uz priekšu automatizācijas, paplaš
 
 ---
 
+## Noskatieties laidiena prezentāciju
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — ieskats šajā laidienā digna YouTube kanālā.*
+
+---
+
 ## Jaunumi  
 
 ### digna Python SDK – Automatizējiet visu ar Python  
@@ -52,6 +60,24 @@ Konfigurējiet vaicājumu izpildes stratēģiju: **Single** vai **Combined** re�
   - Efektīvāks biežām, paralēlām izpildēm
 
 **Ietekme:** Lietotājiem tiek dota smalkāka kontrole pār vaicājumu izpildi, ļaujot balansēt veiktspēju, resursu patēriņu un atmiņas drošību atkarībā no datu avotu īpašībām.
+
+---
+
+### Konfigurējams prognozēšanas modelis
+
+Modelis, uz kura balstās anomāliju noteikšana, tagad ir konfigurējams. Septiņi parametri nosaka, kā prognoze tiek pielāgota:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Noklusējuma vērtības ir piemērotas lielākajai daļai rindu, un katru parametru jebkurā brīdī var atjaunot uz tā noklusējuma vērtību.
+
+**Ietekme:** Dod lietotājiem kontroli pār pašu prognozēšanas modeli līdzās esošajiem pielaides joslas iestatījumiem Sensitivity un Memory. Lai saņemtu norādes, kad pievērsties kādam parametram un kā to iestatīt, sazinieties ar digna.
 
 ---
 

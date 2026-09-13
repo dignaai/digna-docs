@@ -1,112 +1,120 @@
-# Connecteur source pour Hive
+# Source Connector for Hive
 
-Ce guide décrit comment configurer *digna* pour se connecter à Hive en utilisant soit le connecteur Python natif, soit le pilote ODBC.
+This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
+**DSN-less** connection string.
 
-Il fait référence à l'écran **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Pilote Python natif
-
-**Library:** `PyHive`  
-**Supported Authentication:** authentification par mot de passe uniquement
-
-> Pour les autres méthodes d'authentification, veuillez utiliser le pilote ODBC.
-
-### Configuration *digna* (pilote natif)
-
-Fournissez les informations suivantes dans l'écran **"Create a Database Connection"** :
-
-```
-Technology:      Apache Hive
-Host Address:    Nom du serveur ou adresse IP
-Host Port:       Numéro de port, p.ex. 10000
-Database Name:   Schéma contenant les données sources
-Schema Name:     Schéma contenant les données sources
-User Name:       Nom d'utilisateur de la base de données
-User Password:   Mot de passe de l'utilisateur
-Use ODBC:        Désactivé (par défaut)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Hive.
 
 ---
 
-## Pilote ODBC
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-Le pilote ODBC peut prendre en charge une gamme plus large d'options d'authentification et de connectivité. Cette section se concentre sur l'authentification par mot de passe en utilisant le pilote **Cloudera ODBC Driver for Apache Hive**.
+Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
+backend, following the vendor's official installation guide.
 
-### 1. Installer le pilote ODBC
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-Installez le **Cloudera ODBC Driver for Apache Hive** (ou un équivalent) en suivant le guide d'installation officiel du fournisseur.
+---
 
-### 2. Configurer la source de données ODBC
+## 2. ODBC Properties {: #2-odbc-properties }
 
-Suivez ces étapes pour configurer une nouvelle source de données ODBC en utilisant l'authentification par mot de passe :
+!!! important "An example, not a specification"
 
-#### Étape 1
+    The set below is one combination that is known to work. The properties belong to the
+    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
+    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
+    point and check the documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
+| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
+| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
+```
+
+### Authentication
+
+An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
+is enabled, add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
+| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
+| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+
+For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
+the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+
+### Transport and TLS
+
+| Key | Example value | Notes |
+|---|---|---|
+| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
+| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
+| `SSL` | `1` | Where HiveServer2 is TLS-secured |
+| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Hive
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Hive database for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Notes on Hive {: #4-notes-on-hive }
+
+- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
+  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
+  schemas below it.
+- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
+  create and drop tables in it, and the underlying storage location must be writable.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
+  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
+  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
+  on a cluster where *digna* has no write access at all.
+- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
+  the queue *digna*'s user submits to should have enough capacity for the inspection window.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the transport mode and your
+credentials work before you enter them in *digna*.
+
+#### Step 1
 ![Step 1](images/hive/create_odbc_data_source_step1.png)
 
+The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
+the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
+[section 2](#2-odbc-properties).
 
-#### Étape 2 – Tester la connexion
+#### Step 2 – Test the connection
 
-Saisissez le mot de passe et cliquez sur le bouton **Test**.
+Provide the password and click the **Test** button.
 
 ![Step 2](images/hive/create_odbc_data_source_step2.png)
 
-Après un test réussi, cliquez sur le bouton **OK**.
-
----
-
-Vous pouvez maintenant configurer *digna* pour utiliser la connexion ODBC, soit avec un **DSN (Data Source Name)**, soit en configuration **sans DSN**.
-
----
-
-### A. Configuration basée sur DSN
-
-#### Configuration *digna*
-
-Dans l'écran **"Create a Database Connection"**, fournissez les éléments suivants :
-
-```
-Technology:      Apache Hive
-Database Name:   Schéma contenant les données sources (identique à Schema Name)
-Schema Name:     Schéma contenant les données sources
-Use ODBC:        Activé
-```
-
-#### Propriétés ODBC
-
-```
-name: "DSN",            value: "*digna*data_hdp"
-name: "PWD",            value: "{votre mot de passe entre accolades}"
-```
-
-> Le `DSN` doit correspondre au nom défini dans la configuration de votre pilote ODBC.
-
----
-
-### B. Configuration sans DSN
-
-#### Configuration *digna*
-
-Dans l'écran **"Create a Database Connection"**, fournissez les éléments suivants :
-
-```
-Technology:      Apache Hive
-Database Name:   Schéma contenant les données sources (identique à Schema Name)
-Schema Name:     Schéma contenant les données sources
-Use ODBC:        Activé
-```
-
-#### Propriétés ODBC
-
-```
-name: "DRIVER",     value: "Cloudera ODBC Driver for Apache Hive"
-name: "HOST",       value: "votre nom de serveur ou adresse IP"
-name: "PORT",       value: "Numéro de port, p.ex. 10000"
-name: "Schema",     value: "Schéma contenant les données sources"
-name: "UID",        value: "votre utilisateur Hive"
-name: "PWD",        value: "votre mot de passe Hive"
-name: "AuthMech",   value: "3"
-```
+After a successful test, click the **OK** button.

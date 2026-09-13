@@ -5,6 +5,14 @@ Su leidimu 2026.06 digna žengia reikšmingą žingsnį į priekį automatizavim
 
 ---
 
+## Peržiūrėkite leidimo apžvalgą
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — šio leidimo apžvalga digna YouTube kanale.*
+
+---
+
 ## Naujos funkcijos  
 
 ### digna Python SDK – Automatizuokite viską naudodami Python  
@@ -52,6 +60,24 @@ Sukonfigūruokite užklausų vykdymo strategiją: **Single** arba **Combined** r
   - Efektyviau dažnai ir lygiagrečiai vykdomoms užklausoms
 
 **Poveikis:** Leidžia vartotojams smulkiai valdyti užklausų vykdymą, subalansuojant našumą, resursų naudojimą ir atminties saugumą pagal duomenų šaltinio charakteristikas.
+
+---
+
+### Konfigūruojamas prognozavimo modelis
+
+Anomalijų aptikimo pagrindu esantis modelis dabar yra konfigūruojamas. Septyni parametrai valdo, kaip pritaikoma prognozė:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Numatytosios reikšmės tinka didžiajai daugumai eilučių, o kiekvieną parametrą bet kada galima grąžinti į numatytąją reikšmę.
+
+**Poveikis:** Suteikia naudotojams galimybę valdyti patį prognozavimo modelį šalia esamų tolerancijos juostos nuostatų Sensitivity ir Memory. Dėl patarimų, kada kurio parametro imtis ir kaip jį nustatyti, kreipkitės į digna.
 
 ---
 

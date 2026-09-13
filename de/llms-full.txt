@@ -496,6 +496,14 @@ Dieses Release führt das neue **digna Python SDK**, offizielle **Docker-Bereits
 
 ---
 
+## Das Release ansehen
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — ein Rundgang durch dieses Release auf dem digna-YouTube-Kanal.*
+
+---
+
 ## Neue Funktionen  
 
 ### digna Python SDK – Automatisieren Sie alles mit Python  
@@ -543,6 +551,24 @@ Konfigurieren Sie die Abfrageausführungsstrategie: **Single** oder **Combined**
   - Effizienter bei häufigen, parallelen Ausführungen
 
 **Auswirkung:** Gibt Nutzern feingranulare Kontrolle über die Abfrageausführung, um Performance, Ressourcennutzung und Speicher-Sicherheit basierend auf den Eigenschaften ihrer Datenquelle auszubalancieren.
+
+---
+
+### Konfigurierbares Vorhersagemodell
+
+Das Modell hinter der Anomalieerkennung ist jetzt konfigurierbar. Sieben Parameter steuern, wie die Vorhersage angepasst wird:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Die Standardwerte passen für die allermeisten Zeitreihen, und jeder Parameter kann jederzeit auf seinen Standardwert zurückgesetzt werden.
+
+**Auswirkung:** Gibt Nutzern Kontrolle über das Vorhersagemodell selbst, zusätzlich zu den bestehenden Einstellungen Sensitivity und Memory für das Toleranzband. Für Hinweise, wann welcher Parameter sinnvoll ist und wie er zu setzen ist, wenden Sie sich an digna.
 
 ---
 
@@ -4794,63 +4820,139 @@ Source: https://docs.digna.ai/de/databases/azure_synapse_connector_guide/
 
 # Quell-Connector für Azure Synapse Analytics
 
-Dieser Leitfaden beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Azure Synapse Analytics entweder über den nativen Python-Connector oder über den ODBC-Treiber hergestellt wird.
-Er unterstützt sowohl serverlose als auch dedizierte SQL-Pools.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Azure Synapse Analytics über
+**ODBC** konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge. Sowohl
+serverlose als auch dedizierte SQL-Pools werden unterstützt.
 
-Diese Konfiguration bezieht sich auf den Bildschirm **"INTEGRATIONS" &rarr;  "DB CONNECTIONS" &rarr; "+ ADD DB CONNECTION"**.
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Azure Synapse spezifisch ist.
 
-![Create a database connection](images/data_source_config_input_mask.png)
+!!! note "Technologie"
 
----
-
-## Nativer Python-Treiber
-
-**Library:** `pymssql`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
-
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
-
-### *digna*-Konfiguration (Nativer Treiber)
-
-Geben Sie die folgenden Informationen im Bildschirm **"Create Database Connection"** ein:
-
-```
-Name:               Name der Verbindung. Wird zum Referenzieren der Verbindung in anderen Bildschirmen verwendet.
-Technology:         MS SQL Server
-Host Address:       <synapse-workspace>[-ondemand].sql.azuresynapse.net
-Host Port:          Portnummer, z. B. 1433
-Database Name:      Name der Datenbank
-User Name:          Benutzername für die Datenbank
-User Password:      Passwort für den Benutzer
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
-                    Für serverlosen SQL-Pool wird nur "Standard" unterstützt.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Deaktiviert (Standard)
-```
+    Synapse spricht den SQL-Server-Dialekt, die Verbindung wird daher mit **Technology:
+    SQL Server** angelegt. Für einen lokalen Server siehe
+    [MS SQL Server](sqlserver_connector_guide.md).
 
 ---
 
-## ODBC-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-Der ODBC-Treiber kann eine größere Bandbreite an Authentifizierungs- und Verbindungsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **ODBC Driver 18 for SQL Server**.
+Installieren Sie **ODBC Driver 18 for SQL Server** auf dem Rechner, auf dem das *digna*-Backend
+läuft, und folgen Sie dabei
+[Microsofts Installationsanleitung](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server);
+lesen Sie den genauen registrierten Treibernamen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-### 1. Installieren Sie den ODBC-Treiber
+---
 
-Installieren Sie den Treiber **ODBC Driver 18 for SQL Server** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
 
-### 2. Konfigurieren Sie die ODBC-Datenquelle
+!!! important "Ein Beispiel, keine Spezifikation"
 
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Microsoft-ODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen und Plattformen, und was der
+    Workspace verlangt, hängt davon ab, wie er konfiguriert ist — Pool-Typ,
+    Authentifizierungsmethode, Firewall. Nehmen Sie dies als Ausgangspunkt und prüfen Sie die
+    Dokumentation der von Ihnen installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace-Name plus Endpunkt-Suffix — siehe unten |
+| `DATABASE` | `dignadata` | Datenbank, die die Quellschemata enthält. Es ist die einzige Datenbank, die diese Verbindung profilieren kann |
+| `UID` | `sqladminuser` | SQL-Login |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
+```
+
+### Der Wert von `SERVER`
+
+Nehmen Sie den Namen des Synapse-Workspace und hängen Sie das Endpunkt-Suffix an:
+
+| Pool | `SERVER` |
+|---|---|
+| **Serverloser SQL-Pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
+| **Dedizierter SQL-Pool** | `<workspace>.sql.azuresynapse.net` |
+
+!!! warning "Der Teil `-ondemand` wird leicht übersehen"
+
+    Ohne ihn löst der Name auf den dedizierten Endpunkt auf, und die Verbindung scheitert
+    entweder oder erreicht stillschweigend einen anderen Pool als beabsichtigt. Beide Endpunkte
+    werden im Azure-Portal auf der Übersichtsseite des Workspace angezeigt.
+
+### Firewall
+
+Die Firewall des Synapse-Workspace muss die ausgehende Adresse des *digna*-Hosts zulassen.
+Tragen Sie sie im Workspace unter **Networking** ein, bevor Sie die Verbindung testen — eine
+blockierte Adresse zeigt sich als Verbindungs-Timeout, nicht als Authentifizierungsfehler.
+
+### Authentifizierung mit Microsoft Entra ID
+
+Statt eines SQL-Logins kann sich der Treiber gegen Entra ID authentifizieren. Ersetzen Sie
+`UID`/`PWD` durch die Authentifizierungsmethode, die Ihr Workspace erwartet, zum Beispiel:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` nimmt dann die Anwendungs-(Client-)ID auf und `PWD` das Client-Secret |
+| `Authentication` | `ActiveDirectoryMSI` | Verwaltete Identität des *digna*-Hosts, keine Anmeldedaten nötig |
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         SQL Server
+Profiling Mode:     Serverless SQL pool: Standard
+                    Dedicated SQL pool:  Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Hinweise zu Azure Synapse {: #4-notes-on-azure-synapse }
+
+- **Serverlose Pools unterstützen nur *Standard*-Profiling.** Ein serverloser SQL-Pool kann in
+  einer Datenbank keine Tabellen anlegen, daher kann weder *Permanent*- noch
+  *Session*-Profiling laufen. *Standard* berechnet die Metriken direkt auf der Quelle, was
+  zugleich die günstigere Option ist, da serverlos nach verarbeiteter Datenmenge abgerechnet
+  wird.
+- **Eine Verbindung sieht eine Datenbank.** *digna* bietet die Schemata der in `DATABASE`
+  genannten Datenbank an, weil Synapse wie SQL Server nur die aktuelle Datenbank als Katalog
+  meldet.
+- **Verschlüsselung ist standardmäßig aktiv** in Driver 18, und Synapse-Endpunkte legen gültige
+  öffentliche Zertifikate vor, daher ist weder eine `Encrypt`- noch eine
+  `TrustServerCertificate`-Eigenschaft nötig.
+- **Ein serverloser Endpunkt fährt beim ersten Verbinden unter Umständen aus dem Ruhezustand
+  hoch.** Läuft der Verbindungstest bei einem länger ungenutzten Pool in ein Timeout,
+  wiederholen Sie ihn.
+
+---
+
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
+
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Assistent des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen,
+dass der Treiber funktioniert und dass der Workspace Ihre Anmeldedaten akzeptiert.
 
 #### Schritt 1
 ![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Füllen Sie das Feld "Server" aus.
-Verwenden Sie den Namen des Synapse-Workspaces und erweitern Sie ihn mit ".sql.azuresynapse.net".   
-Achtung: Wenn Sie eine Verbindung zu einem serverlosen SQL-Pool herstellen möchten, stellen Sie sicher, dass Sie "-ondemand" wie im folgenden Screenshot einschließen.
+Füllen Sie das Feld „Server“ aus.
+Verwenden Sie den Namen des Synapse-Workspace und ergänzen Sie ihn um „.sql.azuresynapse.net“.  
+**Achtung**: Wenn Sie sich über einen serverlosen SQL-Pool verbinden möchten, achten Sie darauf,
+„-ondemand“ einzufügen, wie im Screenshot oben gezeigt.
 
 Klicken Sie auf die Schaltfläche **Next >**.
 
@@ -4858,7 +4960,7 @@ Klicken Sie auf die Schaltfläche **Next >**.
 ![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
 Wählen Sie die Authentifizierungsmethode (z. B. Benutzername und Passwort)
-und geben Sie die erforderlichen Daten ein.
+und geben Sie die erforderlichen Daten an.
 
 Klicken Sie auf die Schaltfläche **Next >**.
 
@@ -4870,8 +4972,8 @@ Wählen Sie die ANSI-konformen Einstellungen und klicken Sie dann auf die Schalt
 #### Schritt 4
 ![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-Sie können die Standardeinstellungen belassen oder nach Bedarf Optionen wählen 
-und dann auf die Schaltfläche **Finish** klicken. 
+Sie können die Standardeinstellungen belassen oder nach Bedarf Optionen wählen
+und auf die Schaltfläche **Finish** klicken.
 
 #### Schritt 5
 ![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
@@ -4879,225 +4981,177 @@ und dann auf die Schaltfläche **Finish** klicken.
 Klicken Sie nun auf die Schaltfläche **Test datasource**.
 
 #### Schritt 6
-![Step 1](images/azure_synapse/create_odbc_data_source_step6.png)
+![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-Wenn Sie den Erfolgsscreen erhalten, ist ODBC korrekt konfiguriert.
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird — entweder mit einem **DSN (Data Source Name)** oder einer **DSN-losen** Konfiguration.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **"Create Database Connection"** Folgendes an:
-
-```
-Name:               Name der Verbindung. Wird zum Referenzieren der Verbindung in anderen Bildschirmen verwendet.
-Technology:         MS SQL Server
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
-                    Für serverlosen SQL-Pool wird nur "Standard" unterstützt.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",        value: "azure-synopse-serverless-1"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-loste Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **"Create a Database Connection"** Folgendes an:
-
-```
-Name:               Name der Verbindung. Wird zum Referenzieren der Verbindung in anderen Bildschirmen verwendet.
-Technology:         MS SQL Server
-Database Name:      Name der Datenbank, die das Quell-Datenbankschema enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
-                    Für serverlosen SQL-Pool wird nur "Standard" unterstützt.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DRIVER",     value: "ODBC Driver 18 for SQL Server"
-name: "SERVER",     value: "<synapse-workspace>[-ondemand].sql.azuresynapse.net"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schemata"
-```
-
-**Hinweis** zur SERVER-Eigenschaft:  
-Verwenden Sie den Namen des Synapse-Workspaces und erweitern Sie ihn mit ".sql.azuresynapse.net". Wenn Sie eine Verbindung zu einem serverlosen SQL-Pool herstellen möchten, stellen Sie sicher, dass Sie "-ondemand" wie im folgenden Screenshot einschließen.
+Ein Erfolgsbildschirm bestätigt, dass der Treiber, der Endpunkt und die Anmeldedaten
+funktionieren. Die Werte, die Sie eingegeben haben, sind genau die Werte, die die Eigenschaften
+in [Abschnitt 2](#2-odbc-properties) annehmen.
 
 ---
 
 # Databricks
 Source: https://docs.digna.ai/de/databases/databricks_connector_guide/
 
-# Quell-Connector für Databricks – mit Unity Catalog
+# Quell-Connector für Databricks
 
-Dieser Leitfaden beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Databricks entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Databricks über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Er bezieht sich auf den Bildschirm **"Create a Database Connection"**.
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Databricks spezifisch ist.
 
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+!!! note "Unity Catalog ist erforderlich"
+
+    *digna* liest die verfügbaren Kataloge aus `system.information_schema.catalogs`, der
+    Workspace muss daher für Unity Catalog aktiviert sein. Frühere *digna*-Releases boten eine
+    separate Technologie „Databricks Legacy“ für Workspaces ohne Unity Catalog an; sie steht
+    nicht mehr zur Verfügung.
 
 ---
 
-## Nativer Python-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-**Bibliothek:** `databricks-sql-connector`  
-**Unterstützte Authentifizierung:** Personal Access Token (PAT) (nur)
+Installieren Sie den **Databricks ODBC Driver** auf dem Rechner, auf dem das *digna*-Backend
+läuft, und folgen Sie dabei
+[der Installationsanleitung von Databricks](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+Je nach Version registriert sich der Treiber als **Simba Spark ODBC Driver** oder als
+**Databricks ODBC Driver**. Lesen Sie den genauen registrierten Namen auf Ihrem Host ab, wie
+unter [ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver)
+beschrieben.
 
-### Personal Access Token (PAT)
+---
 
-Um sich mit einem Personal Access Token zu authentifizieren, lesen Sie die offizielle Databricks-Dokumentation:  
-[Wie Sie ein PAT erhalten](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+## 2. Verbindungsdaten zusammentragen {: #2-gather-the-connection-details }
 
-### *digna* Konfiguration (nativer Treiber)
+Alle Werte stammen aus dem SQL-Warehouse (oder Cluster), das *digna* verwenden soll. Öffnen Sie
+es im Databricks-Workspace und gehen Sie zu **Connection details**:
 
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
+| Databricks-Feld | Verwendet als |
+|---|---|
+| **Server hostname** | `Host` |
+| **Port** | `Port`, normalerweise `443` |
+| **HTTP path** | `HTTPPath` |
+
+Erstellen Sie für die Authentifizierung ein **persönliches Zugriffstoken** — siehe
+[Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
+Token gehören zu einem Benutzer oder Service Principal, und dieser Principal benötigt
+`USE CATALOG`, `USE SCHEMA` und `SELECT` auf die Quelldaten.
+
+---
+
+## 3. ODBC-Eigenschaften {: #3-odbc-properties }
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Databricks-/Simba-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen — der Treiber wurde mehr als
+    einmal umbenannt und seine Authentifizierungsoptionen erweitert — und zwischen Plattformen.
+    Nehmen Sie dies als Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen
+    installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Driver` | `Simba Spark ODBC Driver` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `Host` | `<workspace>.cloud.databricks.com` | Server-Hostname des Warehouse, z. B. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Port` | `443` | |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP-Pfad des Warehouse oder Clusters |
+| `SSL` | `1` | Databricks-Endpunkte sind ausschließlich TLS |
+| `ThriftTransport` | `2` | HTTP-Transport, den die SQL-Endpunkte sprechen |
+| `AuthMech` | `3` | Token-Authentifizierung |
+| `UID` | `token` | Das wörtliche Wort `token`, kein Benutzername |
+| `PWD` | `dapi…` | Das persönliche Zugriffstoken. **Encrypted** ankreuzen |
+| `UseNativeQuery` | `1` | Reicht das SQL von *digna* unverändert durch — siehe unten |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
 
 ```
-Name:               Name der Verbindung. Dies wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
+Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
+```
+
+!!! important "Behalten Sie `UseNativeQuery=1` bei"
+
+    Mit `UseNativeQuery=0` — der Voreinstellung des Treibers — schreibt der Treiber eingehendes
+    SQL in das um, was er für portable ODBC-Syntax hält. *digna* erzeugt bereits
+    Databricks-SQL, daher kann das Umschreiben Backtick-Quoting und Datumsliterale verändern,
+    und das Profiling scheitert dann an Anweisungen, die so, wie sie geschrieben sind, gültig
+    wären.
+
+### OAuth statt Token
+
+Für einen Service Principal mit OAuth-Machine-to-Machine-Authentifizierung ersetzen Sie
+`AuthMech`, `UID` und `PWD` durch:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `AuthMech` | `11` | OAuth |
+| `Auth_Flow` | `1` | Client Credentials |
+| `Auth_Client_ID` | `<application id>` | Service Principal |
+| `Auth_Client_Secret` | `<client secret>` | **Encrypted** ankreuzen |
+
+---
+
+## 4. *digna*-Konfiguration {: #4-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Databricks
-Host Address:       Databricks-Hostname, z. B. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:          z. B. 443
-Database Name:      Name des zu verwendenden Katalogs.
-User Name:          HTTP-Pfad, der von Databricks bereitgestellt wird, z. B. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:      Personal Access Token, z. B. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Profiling Mode:     Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und die Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Deaktiviert (Standard)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
 
 ---
 
-## ODBC-Treiber
+## 5. Hinweise zu Databricks {: #5-notes-on-databricks }
 
-Der ODBC-Treiber unterstützt eine größere Auswahl an Authentifizierungs- und Konnektivitätsoptionen. Dieser Abschnitt konzentriert sich auf tokenbasierte Authentifizierung mit dem **Simba Spark ODBC Driver**.
+- **Das Warehouse muss laufen** oder startbereit sein, wenn *digna* sich verbindet. Ein
+  Warehouse, das aus dem gestoppten Zustand hochfährt, kann länger brauchen als das
+  Verbindungs-Timeout — schlägt der Test nach einer Ruhephase beim ersten Versuch fehl,
+  wiederholen Sie ihn.
+- **Kataloge kommen aus dem Workspace.** Anders als bei den meisten Technologien erreicht eine
+  Databricks-Verbindung jeden Katalog, den der Principal sehen darf, sodass eine einzige
+  Verbindung Quellen über mehrere Kataloge hinweg bedienen kann.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** innerhalb des
+  Katalogs der Quelle an, der Principal braucht dort also `CREATE TABLE`. *Session* verwendet
+  `CREATE TEMPORARY TABLE` und rührt das **Work Schema** nicht an. *Standard* benötigt nur
+  Lesezugriff.
+- **Serverlose Warehouses funktionieren** genauso; nur `HTTPPath` unterscheidet sich.
 
-### 1. Installieren Sie den ODBC-Treiber
+---
 
-Installieren Sie den **Simba Spark ODBC Driver** gemäß der offiziellen Installationsanleitung des Anbieters.
+## 6. Treiber überprüfen (optional) {: #6-verifying-the-driver-optional }
 
-### 2. Konfigurieren Sie die ODBC-Datenquelle
-
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit einem Personal Access Token zu konfigurieren:
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber, das Warehouse und das Token funktionieren.
 
 #### Schritt 1
-![Schritt 1](images/databricks/create_odbc_data_source_step1.png)
+![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
 #### Schritt 2
-![Schritt 2](images/databricks/create_odbc_data_source_step2.png)
+![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
 #### Schritt 3
-![Schritt 3](images/databricks/create_odbc_data_source_step3.png)
+![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
 #### Schritt 4
-![Schritt 4](images/databricks/create_odbc_data_source_step4.png)
+![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
 #### Schritt 5 – Verbindung testen
 
-Klicken Sie auf die **TEST**-Schaltfläche. Eine erfolgreiche Verbindung sollte so aussehen:
+Klicken Sie auf die Schaltfläche **TEST**. Eine erfolgreiche Verbindung sollte so aussehen:
 
-![Schritt 5](images/databricks/create_odbc_data_source_step5.png)
+![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder einer **DSN-less** Konfiguration.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Angaben ein:
-
-```
-Name:               Name der Verbindung. Dies wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         Databricks
-Database Name:      Name des zu verwendenden Katalogs.
-Profiling Mode:     Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und die Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",    value: "*digna*data_databricks"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-less Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Angaben ein:
-
-```
-Name:               Name der Verbindung. Dies wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         Databricks
-Database Name:      Name des zu verwendenden Katalogs.
-Profiling Mode:     Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und die Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name = "Driver",          value = "{Simba Spark ODBC Driver}"
-name = "Host",            value = "xxxxxxxxxxxxxxxxxxx.databricks.com"
-name = "Port",            value = "443"
-name = "HTTPPath",        value = "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-name = "SSL",             value = "1"
-name = "ThriftTransport", value = "2"
-name = "AuthMech",        value = "3"
-name = "UID",             value = "token"
-name = "PWD",             value = "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
+Host, HTTP-Pfad und Token, die Sie hier eingegeben haben, sind genau die Werte, die die
+Eigenschaften in [Abschnitt 3](#3-odbc-properties) annehmen.
 
 ---
 
@@ -5106,131 +5160,129 @@ Source: https://docs.digna.ai/de/databases/hive_connector_guide/
 
 # Quell-Connector für Hive
 
-Diese Anleitung beschreibt, wie *digna* so konfiguriert wird, dass es sich mit Hive verbindet, entweder über den nativen Python-Connector oder den ODBC-Treiber.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Apache Hive über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Sie bezieht sich auf den Bildschirm **"Datenbankverbindung erstellen"**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
-
----
-
-## Nativer Python-Treiber
-
-**Library:** `PyHive`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
-
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
-
-### *digna*-Konfiguration (nativer Treiber)
-
-Geben Sie die folgenden Informationen im Bildschirm **"Datenbankverbindung erstellen"** an:
-
-```
-Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
-Technology:         Apache Hive
-Host Address:       Servername oder IP-Adresse
-Host Port:          Portnummer, z. B. 10000
-Database Name:      Schema, das die Quelldaten enthält
-User Name:          Datenbank-Benutzername
-User Password:      Passwort für den Benutzer
-Profiling Mode:     Der Profiling-Modus legt fest, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Deaktiviert (Standard)
-```
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Hive spezifisch ist.
 
 ---
 
-## ODBC-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung unter Verwendung des Treibers **Cloudera ODBC Driver for Apache Hive**.
+Installieren Sie den **Cloudera ODBC Driver for Apache Hive** auf dem Rechner, auf dem das
+*digna*-Backend läuft, und folgen Sie dabei der offiziellen Installationsanleitung des
+Herstellers.
 
-### 1. ODBC-Treiber installieren
+Lesen Sie den genauen registrierten Treibernamen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-Installieren Sie den **Cloudera ODBC Driver for Apache Hive** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
+---
 
-### 2. ODBC-Datenquelle konfigurieren
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
 
-Gehen Sie wie folgt vor, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Cloudera-Hive-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen und Plattformen, und was
+    HiveServer2 akzeptiert, hängt vollständig davon ab, wie der Cluster abgesichert ist —
+    Authentifizierungsmechanismus, Transportmodus, TLS, Gateway. Nehmen Sie dies als
+    Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `HOST` | `hive.example.com` | Hostname oder IP-Adresse von HiveServer2 |
+| `PORT` | `10000` | HiveServer2-Port; `10001` für HTTP-Transport |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
+
+```
+DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
+```
+
+### Authentifizierung
+
+Ein ungesicherter HiveServer2 akzeptiert die drei obigen Eigenschaften unverändert. Wo
+Authentifizierung aktiviert ist, ergänzen Sie:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `AuthMech` | `3` | `0` keine Authentifizierung, `2` nur Benutzername, `3` Benutzername und Passwort, `1` Kerberos |
+| `UID` | `digna_source_user` | Erforderlich für `AuthMech` `2` und `3` |
+| `PWD` | `<password>` | Erforderlich für `AuthMech` `3`. **Encrypted** ankreuzen |
+
+Für Kerberos (`AuthMech=1`) benötigt der *digna*-Host zusätzlich ein gültiges Ticket oder eine
+Keytab sowie die Eigenschaften `KrbHostFQDN`, `KrbServiceName` und `KrbRealm`, die der Treiber
+dokumentiert.
+
+### Transport und TLS
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `ThriftTransport` | `2` | `0` binär (Voreinstellung, Port 10000), `1` SASL, `2` HTTP (Port 10001, und das, was ein Knox-Gateway erwartet) |
+| `HTTPPath` | `cliservice` | Mit `ThriftTransport=2` |
+| `SSL` | `1` | Wo HiveServer2 TLS-gesichert ist |
+| `Schema` | `dignadata` | Hive-Datenbank, in der die Sitzung startet. Optional — *digna* qualifiziert seine Abfragen |
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Hive
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Hive database for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Hinweise zu Hive {: #4-notes-on-hive }
+
+- **Kataloge kommen vom Treiber.** Hive hat keinen eigenen Katalog, daher übernimmt *digna*, was
+  der Treiber meldet — normalerweise einen einzelnen Eintrag namens `HIVE` — und listet die
+  Hive-Datenbanken als Schemata darunter auf.
+- **Work Schema ist eine Hive-Datenbank.** Für *Permanent*-Profiling benötigt der Benutzer darin
+  das Recht, Tabellen anzulegen und zu löschen, und der zugrunde liegende Speicherort muss
+  beschreibbar sein.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an. *Session*
+  verwendet `CREATE TEMPORARY TABLE`, wofür ein HiveServer2 nötig ist, der temporäre Tabellen
+  unterstützt, und rührt das **Work Schema** nicht an. *Standard* benötigt nur Lesezugriff und
+  ist der Modus der Wahl auf einem Cluster, auf dem *digna* überhaupt keinen Schreibzugriff hat.
+- **Profiling ist eine Reihe von Abfragen, kein Scan.** Jede Statistik wird von HiveServer2
+  berechnet, daher sollte die Queue, in die der Benutzer von *digna* einreicht, genügend
+  Kapazität für das Inspektionsfenster haben.
+
+---
+
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
+
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber, der Transportmodus und Ihre Anmeldedaten funktionieren.
 
 #### Schritt 1
-![Schritt 1](images/hive/create_odbc_data_source_step1.png)
+![Step 1](images/hive/create_odbc_data_source_step1.png)
 
+Die Felder **Host**, **Port**, **Database**, **Mechanism** und **Thrift Transport** entsprechen
+hier den Eigenschaften `HOST`, `PORT`, `Schema`, `AuthMech` und `ThriftTransport` in
+[Abschnitt 2](#2-odbc-properties).
 
 #### Schritt 2 – Verbindung testen
 
-Geben Sie das Passwort ein und klicken Sie auf die Schaltfläche **Test**.
+Geben Sie das Passwort an und klicken Sie auf die Schaltfläche **Test**.
 
-![Schritt 2](images/hive/create_odbc_data_source_step2.png)
+![Step 2](images/hive/create_odbc_data_source_step2.png)
 
-Nach einem erfolgreichen Test klicken Sie auf **OK**.
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder einer **DSN-less**-Konfiguration.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **"Datenbankverbindung erstellen"** Folgendes an:
-
-```
-Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
-Technology:         Apache Hive
-Database Name:      Schema, das die Quelldaten enthält
-Profiling Mode:     Der Profiling-Modus legt fest, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",            value: "*digna*data_hdp"
-name: "PWD",            value: "{Ihr Passwort in geschweiften Klammern}"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-less-Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **"Datenbankverbindung erstellen"** Folgendes an:
-
-```
-Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
-Technology:         Apache Hive
-Database Name:      Schema, das die Quelldaten enthält
-Profiling Mode:     Der Profiling-Modus legt fest, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert, und Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert, und Metriken werden auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DRIVER",     value: "Cloudera ODBC Driver for Apache Hive"
-name: "HOST",       value: "Ihr Servername oder Ihre IP-Adresse"
-name: "PORT",       value: "Portnummer, z. B. 10000"
-name: "Schema",     value: "Schema, das die Quelldaten enthält"
-name: "UID",        value: "Ihr Hive-Benutzer"
-name: "PWD",        value: "Ihr Hive-Passwort"
-name: "AuthMech",   value: "3"
-```
+Klicken Sie nach einem erfolgreichen Test auf die Schaltfläche **OK**.
 
 ---
 
@@ -5239,102 +5291,110 @@ Source: https://docs.digna.ai/de/databases/netezza_connector_guide/
 
 # Quell-Connector für Netezza
 
-Dieser Leitfaden beschreibt, wie *digna* so konfiguriert wird, dass eine Verbindung zu Netezza über den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Netezza über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Er bezieht sich auf den Bildschirm **"Datenbankverbindung erstellen"**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Netezza spezifisch ist.
 
 ---
 
-## ODBC-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-Der ODBC-Treiber kann eine Reihe von Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **NetezzaSQL**.
+Installieren Sie den **NetezzaSQL**-ODBC-Treiber (Teil der IBM-Netezza-Client-Tools) auf dem
+Rechner, auf dem das *digna*-Backend läuft, und folgen Sie dabei der offiziellen
+Installationsanleitung des Herstellers.
 
-### 1. Installieren des ODBC-Treibers
+Lesen Sie den genauen registrierten Treibernamen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-Installieren Sie den Treiber **NetezzaSQL** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Herstellers.
+---
 
-### 2. Konfigurieren der ODBC-Datenquelle
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
 
-Gehen Sie folgendermaßen vor, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum NetezzaSQL-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Client-Versionen und Plattformen, und eine
+    TLS-gesicherte Appliance benötigt mehr als die hier gezeigten Eigenschaften. Nehmen Sie dies
+    als Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen installierten
+    Client-Version.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `{NetezzaSQL}` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen. Die geschweiften Klammern sind die übliche Schreibweise für diesen Namen |
+| `SERVER` | `netezza.example.com` | Servername oder IP-Adresse |
+| `PORT` | `5480` | |
+| `DATABASE` | `TEST` | Datenbank, in der die Sitzung startet |
+| `UID` | `ADMIN` | Datenbankbenutzer |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
+
+```
+DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
+```
+
+Je nach Treiberversion, Einrichtung und Sicherheitsanforderungen können weitere Eigenschaften
+nötig sein — zum Beispiel `SecurityLevel` und `CaCertFile` für eine TLS-gesicherte Appliance.
+Jede Option, die die Dialoge *Advanced*, *SSL* und *Driver* des Treibers anbieten, lässt sich
+als Eigenschaft ergänzen.
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Netezza
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "Digna_Work"
+```
+
+---
+
+## 4. Hinweise zu Netezza {: #4-notes-on-netezza }
+
+- **Kataloge und Schemata gelten beide.** *digna* listet die Datenbanken, die der Benutzer sehen
+  darf (aus `_V_DATABASE`), als Kataloge und darunter deren Schemata (aus `_V_SCHEMA`) auf,
+  sodass eine Verbindung Quellen in mehr als einer Datenbank bedienen kann. `DATABASE` legt nur
+  fest, wo die Sitzung startet.
+- **Bezeichner sind in Großbuchstaben**, sofern sie nicht in Anführungszeichen angelegt wurden —
+  deshalb verwenden die obigen Beispiele `TEST` und `ADMIN`.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an, der Benutzer
+  braucht dort also `CREATE TABLE`. *Session* verwendet `CREATE TEMPORARY TABLE` und rührt das
+  **Work Schema** nicht an. *Standard* benötigt nur Lesezugriff.
+
+---
+
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
+
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber und Ihre Anmeldedaten funktionieren.
 
 #### Schritt 1
-![Schritt 1](images/netezza/create_odbc_data_source_step1.png)
+![Step 1](images/netezza/create_odbc_data_source_step1.png)
 
-Abhängig von Ihrem Netezza-Treiber, den Installations- und Sicherheitsanforderungen müssen Sie eventuell auch Angaben in den Reitern **Advanced DSN Options**, **SSL DSN Options** oder **Driver Options** machen. Für die einfachste Einrichtung genügt es, Angaben in **DSN Options** zu machen.
+Die Felder unter **DSN Options** entsprechen eins zu eins den Eigenschaften in
+[Abschnitt 2](#2-odbc-properties). Je nach Netezza-Treiber, Einrichtung und
+Sicherheitsanforderungen benötigen Sie möglicherweise auch Angaben in den Reitern
+**Advanced DSN Options**, **SSL DSN Options** oder **Driver Options**; für die einfachste
+Einrichtung genügt **DSN Options**.
 
 Klicken Sie auf die Schaltfläche **Test Connection**.
 
 #### Schritt 2
-![Schritt 2](images/netezza/create_odbc_data_source_step2.png)
+![Step 2](images/netezza/create_odbc_data_source_step2.png)
 
-Wenn der Erfolgsbildschirm erscheint, ist ODBC korrekt konfiguriert.
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder mit einer **DSN-losen** Einrichtung.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Im Bildschirm **"Datenbankverbindung erstellen"** geben Sie Folgendes an:
-
-```
-Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
-Technology:         Netezza
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken werden auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",        value: "NZSQL"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-lose Konfiguration
-
-#### *digna*-Konfiguration
-
-Im Bildschirm **"Datenbankverbindung erstellen"** geben Sie Folgendes an:
-
-```
-Name:               Name der Verbindung. Dieser Name wird in anderen Bildschirmen zur Referenzierung der Verbindung verwendet.
-Technology:         Netezza
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken werden auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken werden auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DRIVER",     value: "NetezzaSQL"
-name: "SERVER",     value: "your server name or IP address"
-name: "PORT",       value: "Port number, e.g. 5480"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-```
+Wenn der Erfolgsbildschirm erscheint, funktioniert der Treiber und die Werte sind korrekt.
 
 ---
 
@@ -5343,399 +5403,412 @@ Source: https://docs.digna.ai/de/databases/oracle_connector_guide/
 
 # Quell-Connector für Oracle
 
-Dieser Leitfaden beschreibt, wie *digna* so konfiguriert wird, dass eine Verbindung zu Oracle DB entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zur Oracle Database über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Er bezieht sich auf den Bildschirm **„Datenbankverbindung erstellen“**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Nativer Python-Treiber
-
-**Bibliothek:** `python-oracledb`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
-
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
-
-### *digna*-Konfiguration (Nativer Treiber)
-
-Geben Sie die folgenden Informationen im Bildschirm **„Datenbankverbindung erstellen“** an:
-
-```
-Name:               Name der Verbindung. Dieser wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
-Technologie:        Oracle
-Host-Adresse:       Servername oder IP-Adresse
-Host-Port:          Portnummer, z. B. 1521
-Datenbankname:      Instanzname, Service-Name
-Schema-Name:        Schema, das die Quell-Daten enthält
-Benutzername:       Datenbank-Benutzername
-Benutzer-Passwort:  Passwort des Benutzers
-Profiling-Modus:    Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Arbeits-Schema-Name: Bei Verwendung des Profiling-Modus „Permanent“ werden Arbeitstabellen in diesem Schema abgelegt.
-ODBC verwenden:     Deaktiviert (Standard)
-```
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Oracle spezifisch ist.
 
 ---
 
-## ODBC-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **Oracle in OraDB21Home1**.
+Der Oracle-ODBC-Treiber ist Teil des **Oracle Client** (das Instant-Client-Paket „ODBC“ genügt).
+Installieren Sie ihn auf dem Rechner, auf dem das *digna*-Backend läuft, und folgen Sie dabei
+der offiziellen Installationsanleitung des Herstellers.
 
-### 1. Installation des ODBC-Treibers
+Der Treiber registriert sich als **Oracle in `<OracleHomeName>`** — zum Beispiel
+`Oracle in OraDB21Home1` oder `Oracle in instantclient_21_13`. Der Home-Name unterscheidet sich
+je nach Installation, lesen Sie den genauen Namen daher auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-Installieren Sie **Oracle in OraDB21Home1** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
+---
 
-### 2. Konfigurieren der ODBC-Datenquelle
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
 
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Oracle-ODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Client-Versionen, und insbesondere der
+    Treibername hängt vom Oracle-Home auf Ihrem Host ab. Nehmen Sie dies als Ausgangspunkt und
+    prüfen Sie die Dokumentation der von Ihnen installierten Client-Version.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Driver` | `Oracle in OraDB21Home1` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Die Datenbank, zu der verbunden wird — siehe unten |
+| `UID` | `DIGNA_SOURCE_USER` | Datenbankbenutzer |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
+
+```
+Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
+```
+
+### Der Wert von `DBQ`
+
+`DBQ` akzeptiert drei Formen. Für *digna* sind sie gleichwertig; sie unterscheiden sich darin,
+was auf dem *digna*-Host konfiguriert sein muss:
+
+| Form | Beispiel | Erfordert |
+|---|---|---|
+| **Vollständiger Connect-Deskriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nichts — alles steht in der Eigenschaft. Empfohlen |
+| **TNS-Alias** | `DIGNA_SOURCE` | Der Alias muss in der `tnsnames.ora` des Oracle Client auf dem *digna*-Host vorhanden sein |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Einen Oracle Client, der Easy Connect unterstützt (12c und später) |
+
+!!! tip "Bevorzugen Sie den vollständigen Deskriptor"
+
+    Ein TNS-Alias verlagert die halbe Verbindungsdefinition in eine Datei auf dem *digna*-Host,
+    wo sie leicht vergessen wird, wenn der Host neu aufgesetzt oder *digna* verschoben wird. Der
+    vollständige Deskriptor hält die Verbindung in sich geschlossen — und genau darum geht es bei
+    einer DSN-losen Einrichtung.
+
+Beachten Sie: Die Klammern eines Deskriptors sind innerhalb einer Verbindungszeichenfolge
+unproblematisch; enthält Ihr Passwort jedoch `;`, setzen Sie es in geschweifte Klammern:
+`PWD={p@ss;word}`.
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Oracle
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "DIGNA_WORK"
+```
+
+---
+
+## 4. Hinweise zu Oracle {: #4-notes-on-oracle }
+
+- **Schemata sind Benutzer.** *digna* listet Oracle-Benutzer als Schemata auf, das Quellschema
+  ist also der Eigentümer der Tabellen — im obigen Beispiel `DIGNA_SOURCE_USER`. Der
+  Verbindungsbenutzer benötigt `SELECT` auf diese Tabellen, entweder direkt oder über eine Rolle.
+- **Eine Verbindung sieht eine Datenbank.** Der Katalog, den *digna* anbietet, ist die Datenbank,
+  an der die Verbindung hängt; `DBQ` entscheidet also, welcher Service und damit welche Datenbank
+  profiliert wird.
+- **Bezeichner sind nach dem Quoten case-sensitiv.** *digna* quotet die Namen, die es aus dem
+  Data Dictionary liest — und das ist, was Oracle speichert: Großbuchstaben für nicht gequotete
+  Objekte.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an, der Benutzer
+  braucht dort also `CREATE TABLE` und eine Quota auf dem Tablespace. *Session* verwendet eine
+  private temporäre Tabelle (`ORA$PTT_…`, Oracle 18c und später) und rührt das **Work Schema**
+  nicht an. *Standard* benötigt nur Lesezugriff.
+
+---
+
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
+
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Oracle Client, der Servicename und Ihre Anmeldedaten funktionieren.
 
 #### Schritt 1
 ![Step 1](images/oracle/create_odbc_data_source_step1.png)
 
-Hinweis:
-Der TNS Service Name muss in der tnsnames.ora-Datei Ihrer Oracle-Client-Installation konfiguriert sein. Hier geben Sie den Verbindungs-Deskriptor an (Host, Port, Service-Name).
+Der hier angebotene **TNS Service Name** stammt aus der `tnsnames.ora` Ihrer
+Oracle-Client-Installation — dort ist der Alias und mit ihm Host, Port und Servicename
+definiert. In *digna* können Sie den Alias als `DBQ` verwenden oder stattdessen den
+vollständigen Deskriptor.
 
 #### Schritt 2 – Verbindung testen
 
-Klicken Sie auf die Schaltfläche **Verbindung testen**.
+Klicken Sie auf die Schaltfläche **Test Connection**.
 
 ![Step 2](images/oracle/create_odbc_data_source_step2.png)
 
-Geben Sie das Passwort ein und klicken Sie auf die **OK**-Schaltfläche.
+Geben Sie das Passwort an und klicken Sie auf die Schaltfläche **OK**.
 
-![Step 2](images/oracle/create_odbc_data_source_step3.png)
+![Step 3](images/oracle/create_odbc_data_source_step3.png)
 
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung entweder mit einem **DSN (Data Source Name)** oder einer **DSN-less**-Konfiguration verwendet wird.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Dieser wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
-Technologie:        Oracle
-Datenbankname:      Datenbank, die das Quellschema enthält
-Profiling-Modus:    Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Arbeits-Schema-Name: Bei Verwendung des Profiling-Modus „Permanent“ werden Arbeitstabellen in diesem Schema abgelegt.
-ODBC verwenden:     Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",            value: "*digna*data_oracle"
-name: "UID",            value: "Ihr Oracle-Benutzer"
-name: "PWD",            value: "{Ihr Passwort in geschweiften Klammern}"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiber-Konfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-less-Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Dieser wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
-Technologie:        Oracle
-Datenbankname:      Schema, das die Quell-Daten enthält (gleich dem Schema-Name)
-Profiling-Modus:    Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Arbeits-Schema-Name: Bei Verwendung des Profiling-Modus „Permanent“ werden Arbeitstabellen in diesem Schema abgelegt.
-ODBC verwenden:     Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "Driver",     value: "Oracle in OraDB21Home1"
-name: "DBQ",        value: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)))"
-name: "UID",        value: "Ihr Oracle-Benutzer"
-name: "PWD",        value: "Ihr Oracle-Passwort"
-```
+Eine Erfolgsmeldung bestätigt, dass der Treiber und die Anmeldedaten funktionieren.
 
 ---
 
 # Overview
 Source: https://docs.digna.ai/de/databases/overview/
 
-# Database Connections Overview
+# Übersicht über Datenbankverbindungen
 
 ---
 
-## Table of Contents
+## Inhaltsverzeichnis
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Wie Verbindungen funktionieren](#how-connections-work)
+2. [Anleitungen je Technologie](#technology-guides)
+3. [Voraussetzung: ODBC-Treiber auf dem digna-Host installieren](#install-the-driver)
+4. [Eine Datenbankverbindung anlegen](#create-a-database-connection)
+5. [ODBC-Eigenschaften](#odbc-properties)
+6. [Eigenschaftswerte verschlüsseln](#encrypting-property-values)
+7. [Eine Verbindung testen](#testing-a-connection)
+8. [Welche Datenbank die Verbindung sieht](#which-database-the-connection-sees)
+9. [Profiling-Modus und Work Schema](#profiling-mode-and-work-schema)
+10. [Stattdessen einen DSN verwenden](#using-a-dsn-instead)
+11. [Fehlersuche](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Wie Verbindungen funktionieren {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+*digna* erreicht jede Quelltechnologie über **ODBC**. Eine Verbindung ist eine Liste von
+ODBC-Eigenschaften, die Sie als Schlüssel-Wert-Paare eingeben. Wenn *digna* die Verbindung
+öffnet, fügt es diese Paare zu einer Verbindungszeichenfolge zusammen — `Key=Value`, getrennt
+durch `;`, in der von Ihnen angegebenen Reihenfolge — und übergibt sie dem ODBC-Treibermanager
+auf dem *digna*-Host.
 
-!!! important "The property sets in the guides are examples"
+Dass Sie die Eigenschaften selbst eingeben, macht die Einrichtung **DSN-los**: Die Verbindung
+trägt alles, was der Treiber braucht, sodass auf dem Host keine ODBC-Datenquelle (DSN)
+registriert werden muss. Das ist der empfohlene Weg, *digna* zu konfigurieren, weil die
+Verbindungsdefinition vollständig in *digna* liegt und mit ihm umzieht.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Warum ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+Frühere Releases boten die Wahl zwischen einem technologiespezifischen Treiber und ODBC,
+ausgewählt über den Schalter **Use ODBC**. Ab Release 2026.06 setzt *digna* allein auf ODBC.
+Eine einzige, standardisierte Schnittstelle bietet mehr als ein Satz maßgeschneiderter Treiber:
+
+- **Authentifizierung** — die Authentifizierung ist Teil von ODBC, sodass eine Verbindung alles
+  nutzen kann, was ihr Treiber unterstützt: Passwörter, Tokens und PATs, Kerberos und Active
+  Directory, MFA und browserbasiertes Single Sign-on, Cloud-Identitäten, Client-Zertifikate und
+  TLS. Neue Verfahren kommen mit einem Treiber-Update, statt auf ein *digna*-Release zu warten.
+- **Von den Datenbankherstellern gepflegte Treiber** — der herstellereigene Treiber folgt neuen
+  Serverversionen und Sicherheitsupdates, und Sie können ihn unabhängig von *digna* nach Ihrem
+  eigenen Zeitplan aktualisieren.
+- **Eine einheitliche Konfiguration** — jede Technologie ist eine Liste von
+  Schlüssel-Wert-Eigenschaften, mit derselben Oberfläche, derselben Verschlüsselung sensibler
+  Werte und derselben Fehlersuche, statt unterschiedlicher Felder je Quelle.
+- **Feinabstimmung und Reichweite** — Treiberoptionen wie Timeouts, TLS-Einstellungen, Proxys
+  und Fetch-Größen stehen für jede Quelle zur Verfügung, und jede Technologie mit einem
+  konformen ODBC-Treiber lässt sich anbinden, auch solche, für die *digna* keine eigene
+  Anleitung veröffentlicht.
+
+!!! note "Was sich in der Oberfläche geändert hat"
+
+    Den Schalter **Use ODBC** und die separaten Felder für Host, Port, Datenbank, Benutzer und
+    Passwort gibt es nicht mehr. Eine Verbindung, die nicht bereits ODBC verwendet, braucht ihre
+    ODBC-Eigenschaften, bevor sie wieder funktioniert — siehe
+    [Eine Datenbankverbindung anlegen](#create-a-database-connection).
+
+---
+
+## Anleitungen je Technologie {: #technology-guides }
+
+Die Eigenschaftsnamen unterscheiden sich je Treiber, und jede Technologie hat ein bis zwei
+Besonderheiten, die die anderen nicht haben. Die folgenden Anleitungen decken diesen Teil ab;
+diese Seite behandelt die *digna*-Seite, die für alle gleich ist.
+
+!!! important "Die Eigenschaftssätze in den Anleitungen sind Beispiele"
+
+    Jede Anleitung zeigt eine Kombination, von der bekannt ist, dass sie funktioniert — die, auf
+    die *digna* getestet ist. Sie ist ein Ausgangspunkt, keine Spezifikation: Die Eigenschaften
+    gehören zum ODBC-Treiber, und welche es gibt, wie sie heißen und welche Werte sie annehmen,
+    unterscheidet sich zwischen Treiberversionen und Herstellern, zwischen Windows, Linux und
+    macOS und danach, wie der Quellserver konfiguriert ist — Authentifizierungsmethode, TLS,
+    Gateway, Port. Rechnen Sie damit, den einen oder anderen Wert anzupassen, und betrachten Sie
+    die Dokumentation der von Ihnen installierten Treiberversion als maßgeblich.
+
+| Technologie | Anleitung | Wissenswert |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverlose Pools brauchen `-ondemand` im Hostnamen und unterstützen nur *Standard*-Profiling |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Token-Authentifizierung: `UID=token`, PAT in `PWD` |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Kataloge kommen vom Treiber, nicht aus einer Abfrage |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Der Treibername steht in geschweiften Klammern: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` nimmt entweder einen vollständigen Connect-Deskriptor oder einen `tnsnames.ora`-Alias |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` muss zu dem passen, was der Server verlangt |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` entscheidet, welche Schemata *digna* sehen kann |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Das programmatische Zugriffstoken ist der getestete Authentifizierungsweg |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Der Host gehört in `DBCNAME`; Datenbanken wirken wie Schemata |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Voraussetzung: ODBC-Treiber auf dem digna-Host installieren {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* öffnet Quellverbindungen von dem **Server aus, auf dem das digna-Backend läuft**, nicht
+vom Browser. Der ODBC-Treiber muss daher auf diesem Rechner installiert und sein Name beim
+lokalen Treibermanager registriert sein.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Installieren Sie den 64-Bit-Treiber des Herstellers, öffnen Sie dann den
+    **ODBC-Datenquellen-Administrator (64 Bit)** und wechseln Sie auf den Reiter **Drivers**.
+    Die dort aufgeführten Namen sind genau die Werte, die Sie für die Eigenschaft `Driver`
+    verwenden dürfen.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Installieren Sie **unixODBC** und den Treiber des Herstellers und lassen Sie sich dann die
+    registrierten Treibernamen ausgeben:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Die in Klammern ausgegebenen Namen sind die Werte, die Sie für die Eigenschaft `Driver`
+    verwenden dürfen. Sie stammen aus `/etc/odbcinst.ini` (oder aus der Datei, die
+    `odbcinst -j` meldet).
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Installieren Sie **unixODBC** (zum Beispiel mit `brew install unixodbc`) und den Treiber des
+    Herstellers und lassen Sie sich dann die registrierten Treibernamen ausgeben:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Der Treibername muss Zeichen für Zeichen übereinstimmen"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` wird unverändert an den Treibermanager übergeben. `Simba Spark ODBC Driver` und
+    `Simba Spark ODBC Driver 64` sind für den Treibermanager unterschiedliche Treiber, und ein
+    nicht registrierter Name erzeugt einen *data source name not found*-Fehler, obwohl gar kein
+    DSN im Spiel ist.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Statt eines registrierten Namens akzeptieren alle gängigen Treibermanager auch den vollständigen
+Pfad zur Treiberbibliothek, zum Beispiel
+`Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Das ist nützlich, wenn der Treiber
+installiert, aber nicht registriert ist.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Eine Datenbankverbindung anlegen {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Öffnen Sie das **Admin Panel**, gehen Sie auf den Reiter **Database Connections** und klicken
+Sie auf **Add DB Connection**. Der Bildschirm fragt fünf Dinge ab:
 
-| Field | Description |
+| Feld | Beschreibung |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Name der Verbindung. Über ihn wird die Verbindung in anderen Bildschirmen referenziert. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake oder Hive. Wählt den SQL-Dialekt, den *digna* erzeugt, muss also zur Quelle passen — nicht zum Treiber. Azure Synapse Analytics ist eine **SQL Server**-Verbindung. |
+| **ODBC Properties** | Die Schlüssel-Wert-Paare, die unter [ODBC-Eigenschaften](#odbc-properties) beschrieben sind. |
+| **Profiling Mode** | *Standard*, *Permanent* oder *Session* — siehe [Profiling-Modus und Work Schema](#profiling-mode-and-work-schema). |
+| **Work Schema** | Schema, das die Arbeitstabellen für *Permanent*-Profiling enthält. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Eine Verbindung wird zentral verwaltet und dann einem oder mehreren Projekten zugewiesen, sodass
+dieselbe Verbindung mehrere Projekte bedienen kann.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## ODBC-Eigenschaften {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Klicken Sie für jede Eigenschaft auf **Add Property** und füllen Sie **Key**, **Value** und, bei
+Geheimnissen, das Kontrollkästchen **Encrypted** aus. Jede Technologie-Anleitung führt einen
+Beispielsatz für die betreffende Technologie auf, den Sie an Ihre Treiberversion und Ihren
+Server anpassen — siehe [den Hinweis oben](#technology-guides).
 
-!!! tip "Tip"
+Unabhängig vom Treiber deckt ein Eigenschaftssatz dieselben vier Dinge ab:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — den registrierten Treibernamen, wie [oben](#install-the-driver) beschrieben.
+- **Die Adresse des Servers** — der Schlüssel unterscheidet sich je Treiber: `SERVER`, `HOST`,
+  `DBCNAME`, `Server` oder, bei Oracle, der Connect-Deskriptor `DBQ`.
+- **Anmeldedaten** — meist `UID` und `PWD`; Snowflake verwendet `UID` plus ein `token`, und
+  Databricks den wörtlichen Benutzer `token` plus das persönliche Zugriffstoken in `PWD`.
+- **Die Datenbank oder den Katalog, in dem gearbeitet wird**, sofern die Technologie so etwas
+  hat — siehe [Welche Datenbank die Verbindung sieht](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Alles Weitere, was der Treiber dokumentiert, lässt sich genauso ergänzen —
+Verbindungs-Pooling, Socket-Timeouts, Kerberos-Einstellungen, Proxy-Einstellungen. *digna*
+interpretiert die Eigenschaften nicht; es reicht sie nur weiter.
+
+!!! warning "Werte werden nicht escaped — setzen Sie alles mit Semikolon in geschweifte Klammern"
+
+    Da die Eigenschaften mit `;` verbunden werden, würde ein Wert, der selbst `;` enthält, die
+    Verbindungszeichenfolge an der falschen Stelle teilen. Setzen Sie solche Werte in geschweifte
+    Klammern: `PWD={p@ss;word}`. Dasselbe gilt für Werte mit `=` oder führenden Leerzeichen.
+    Deshalb werden manche Treiber üblicherweise geklammert geschrieben, wie `{NetezzaSQL}` oder
+    `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Eigenschaftswerte verschlüsseln {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Kreuzen Sie **Encrypted** für jede Eigenschaft an, die ein Geheimnis enthält — `PWD`, `token`,
+ein Client-Secret. Der Wert wird dann verschlüsselt, bevor er im *digna*-Repository gespeichert
+wird, im Bildschirm maskiert und nur beim Zusammensetzen der Verbindungszeichenfolge
+entschlüsselt.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Tipp"
+
+    Ein verschlüsselter Wert kann nicht zurückgelesen werden, weder in der Oberfläche noch über
+    die API — er kann nur ersetzt werden. Bewahren Sie Geheimnisse zusätzlich in Ihrem eigenen
+    Passwortmanager auf.
+
+Eigenschaften, die kein Geheimnis sind — Treibername, Host, Port, Datenbank —, lassen Sie am
+besten unverschlüsselt, damit sie für den lesbar bleiben, der die Verbindung später betreut.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Eine Verbindung testen {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Klicken Sie im Dialog *Add DB Connection* auf **Test**, **bevor** Sie speichern. Der Test
+verwendet die aktuell im Formular stehenden Werte und baut eine echte Verbindung auf, meldet
+also genau das, worauf eine Inspektion stoßen würde — einen falschen Treibernamen, ein
+abgelehntes Passwort, einen nicht erreichbaren Host. Es wird nichts gespeichert: Die
+Testverbindung wird zurückgerollt, ob sie gelingt oder scheitert.
 
-| Technology | Catalogs offered |
+Bei einer bereits bestehenden Verbindung fahren Sie im Reiter **Database Connections** über ihre
+Zeile und klicken auf das **Stecker**-Symbol, um sie erneut zu testen. Das ist der schnellste
+Weg zu prüfen, ob eine Quelle nach einem Passwortwechsel oder einer Firewall-Änderung erreichbar
+ist.
+
+---
+
+## Welche Datenbank die Verbindung sieht {: #which-database-the-connection-sees }
+
+Wenn Sie eine Datenquelle hinzufügen, bietet *digna* die Kataloge, Schemata und Tabellen an, die
+die Verbindung erreichen kann. Wie weit das reicht, hängt von der Technologie ab:
+
+| Technologie | Angebotene Kataloge |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Nur die **aktuelle** Datenbank der Verbindung |
+| **Teradata**, **Netezza**, **Databricks** | Alle Datenbanken oder Kataloge, die der Benutzer sehen darf |
+| **Hive**, **Impala** | Vom Treiber gemeldet |
 
-!!! important "One connection, one database"
+!!! important "Eine Verbindung, eine Datenbank"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    Bei PostgreSQL, SQL Server, Oracle und Snowflake müssen die Eigenschaften auf die Datenbank
+    zeigen, die die Quellschemata enthält — `DATABASE=…`, `Database=…` oder den Servicenamen
+    innerhalb von Oracles `DBQ`. Tabellen in einer anderen Datenbank sind über diese Verbindung
+    nicht erreichbar; legen Sie dafür eine zweite Verbindung an.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Profiling-Modus und Work Schema {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu
+  kopieren.
+- **Permanent:** Die Daten des inspizierten Tages werden in eine permanente Tabelle kopiert, und
+  die Metriken werden auf den kopierten Daten berechnet.
+- **Session:** Die Daten werden in eine Sitzungs- oder temporäre Tabelle kopiert, und die
+  Metriken werden auf diesen temporären Daten berechnet.
 
-The mode decides what the connection user must be allowed to do:
+Der Modus entscheidet, was dem Verbindungsbenutzer erlaubt sein muss:
 
-| Mode | Writes | Rights the connection user needs |
+| Modus | Schreibt | Rechte, die der Verbindungsbenutzer braucht |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | nichts | Lesen auf den Quelltabellen |
+| **Permanent** | eine Tabelle je Datenquelle im **Work Schema** | Tabellen im **Work Schema** anlegen und löschen |
+| **Session** | eine temporäre Tabelle, die die Datenbank mit der Sitzung verwirft | Temporäre Tabellen anlegen — **Work Schema** wird nicht verwendet |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* liest nur, was es zum Modus der Wahl macht, wenn *digna* nur Lesezugriff erhält. Das
+**Work Schema** wird nur bei *Permanent* gelesen, es lohnt sich aber, es trotzdem auszufüllen,
+damit die Verbindung weiter funktioniert, falls der Modus später geändert wird.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## Stattdessen einen DSN verwenden {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+Ein DSN funktioniert weiterhin — `DSN` ist einfach eine weitere Eigenschaft:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -5743,128 +5816,139 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+Der DSN muss auf dem *digna*-Host registriert sein, und zwar für dasselbe Benutzerkonto, unter
+dem das *digna*-Backend läuft, und als **System-DSN**, wenn *digna* als Dienst läuft. Alles, was
+im DSN konfiguriert ist, lässt sich überschreiben, indem Sie es zusätzlich als Eigenschaft
+angeben.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Data source name not found / no default driver specified
-
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
-
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
+DSN-los ist die dokumentierte Voreinstellung, weil es diesen Zustand auf dem Host vermeidet: Die
+Verbindung ist vollständig in *digna* beschrieben, und ein neuer *digna*-Host braucht den
+installierten Treiber, aber nichts konfiguriert.
 
 ---
 
-### The connection test times out
+## Fehlersuche {: #troubleshooting }
 
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
+### Datenquellenname nicht gefunden / kein Standardtreiber angegeben
 
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Symptome:**
+- Die Schaltfläche **Test** meldet einen Fehler, der *data source name not found* erwähnt,
+  obwohl die Einrichtung DSN-los ist
 
----
-
-### Authentication fails although the credentials are correct
-
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
-
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
+**Ursachen & Lösungen:**
+1. Der Wert von `Driver` entspricht keinem registrierten Treibernamen — vergleichen Sie ihn mit
+   dem Reiter **Drivers** des *ODBC-Datenquellen-Administrators (64 Bit)* oder mit
+   `odbcinst -q -d`
+2. Der Treiber ist auf Ihrer Arbeitsstation installiert, aber nicht auf dem *digna*-Host
+3. Der Treiber ist 32-Bit, während *digna* 64-Bit ist — installieren Sie den 64-Bit-Treiber
+4. Die Eigenschaft `Driver` fehlt ganz, und es wurde auch kein `DSN` angegeben
+5. Unter Linux und macOS ist der Treiber installiert, aber nicht registriert — geben Sie
+   stattdessen den vollständigen Pfad zur Treiberbibliothek an oder registrieren Sie ihn in
+   `odbcinst.ini`
 
 ---
 
-### The data source screen does not offer the expected database or schema
+### Der Verbindungstest läuft in ein Timeout
 
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
+**Symptome:**
+- **Test** hängt und scheitert dann nach etwa einer halben Minute
 
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
-
----
-
-### Profiling fails while the connection test succeeds
-
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
-
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
+**Ursachen & Lösungen:**
+1. Host oder Port sind vom *digna*-Host aus nicht erreichbar — prüfen Sie die Firewall und, bei
+   Cloud-Quellen, die IP-Freigabeliste
+2. Der Hostname stimmt, aber der Port gehört zu einem anderen Dienst
+3. Die Quelle braucht länger als die standardmäßigen 30 Sekunden, um eine Verbindung
+   anzunehmen — erhöhen Sie `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` im Abschnitt `[base]` der
+   `config.toml` (`0` wartet unbegrenzt) und starten Sie das Backend neu
+4. Ein serverloser Endpunkt fährt aus dem Ruhezustand hoch — wiederholen Sie den Versuch, und
+   wenn das regelmäßig vorkommt, erhöhen Sie wie oben das Login-Timeout
 
 ---
 
-## Best Practices
+### Die Authentifizierung scheitert, obwohl die Anmeldedaten stimmen
 
-**DO:**
+**Symptome:**
+- Der Treiber meldet ungültige Anmeldedaten, aber derselbe Benutzer funktioniert in einem
+  anderen SQL-Client
 
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
+**Ursachen & Lösungen:**
+1. Das Passwort enthält `;` — setzen Sie den Wert in geschweifte Klammern: `{p@ss;word}`
+2. Ein abschließendes Leerzeichen wurde in den Wert kopiert
+3. Der Treiber erwartet einen bestimmten Authentifizierungsmechanismus — zum Beispiel
+   `AuthMech` bei den Hive- und Databricks-Treibern oder `authenticator` bei Snowflake
+4. Der Wert wurde verschlüsselt gespeichert und danach bearbeitet — verschlüsselte Werte lassen
+   sich nicht zurücklesen, geben Sie das Geheimnis also vollständig neu ein
+5. Ein Token ist abgelaufen — persönliche Zugriffstoken und programmatische Zugriffstoken werden
+   mit einem Ablaufdatum ausgestellt
 
-**DON'T:**
+---
 
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+### Der Datenquellen-Bildschirm bietet die erwartete Datenbank oder das erwartete Schema nicht an
+
+**Symptome:**
+- Beim Hinzufügen einer Datenquelle fehlen Kataloge, Schemata oder Tabellen
+
+**Ursachen & Lösungen:**
+1. Die Verbindung zeigt auf eine andere Datenbank — siehe
+   [Welche Datenbank die Verbindung sieht](#which-database-the-connection-sees)
+2. Dem Verbindungsbenutzer fehlen Leserechte auf das Schema oder auf das Data Dictionary
+3. **Technology** passt nicht zur Quelle, daher fragt *digna* das falsche Data Dictionary ab
+4. Bei Snowflake ist dem Benutzer kein Standard-Warehouse zugewiesen und es wurde keine
+   `Warehouse`-Eigenschaft angegeben, sodass Metadatenabfragen nicht laufen können
+
+---
+
+### Das Profiling scheitert, während der Verbindungstest gelingt
+
+**Symptome:**
+- **Test** ist erfolgreich, aber eine Inspektion scheitert, wenn Arbeitstabellen angelegt werden
+
+**Ursachen & Lösungen:**
+1. *Permanent*-Profiling ist ausgewählt und der Verbindungsbenutzer kann im **Work Schema**
+   keine Tabellen anlegen — erteilen Sie die Rechte oder wechseln Sie zu *Session* oder
+   *Standard*
+2. **Work Schema** ist leer oder nennt ein Schema, das nicht existiert, während
+   *Permanent*-Profiling ausgewählt ist
+3. *Session*-Profiling ist ausgewählt und der Verbindungsbenutzer darf keine temporären Tabellen
+   anlegen
+4. Eine lange laufende Profiling-Abfrage erreicht das Abfrage-Timeout — erhöhen Sie
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` im Abschnitt `[base]` der `config.toml` (Standard 3600
+   Sekunden, `0` deaktiviert das Timeout)
+
+---
+
+## Bewährte Vorgehensweisen
+
+**TUN SIE DIES:**
+
+- Installieren und registrieren Sie den Treiber auf dem *digna*-Host, bevor Sie die Verbindung
+  konfigurieren
+- Kreuzen Sie **Encrypted** für jedes Passwort und jedes Token an
+- Klicken Sie vor dem Speichern auf **Test** und testen Sie nach einem Passwortwechsel erneut
+- Benennen Sie Verbindungen nach Quelle und Umgebung, zum Beispiel `sales_dwh_prod`
+- Geben Sie *digna* einen eigenen Datenbankbenutzer, schreibgeschützt, wo
+  *Standard*-Profiling genügt
+- Behalten Sie eine Verbindung je Quelldatenbank und legen Sie lieber eine zweite an, als die
+  erste umzustellen
+
+**TUN SIE DIES NICHT:**
+
+- Geheimnisse unverschlüsselt speichern oder einen Datenbankbenutzer zwischen *digna* und
+  anderen Werkzeugen teilen
+- Einen 32-Bit-Treiber mit einer 64-Bit-*digna*-Installation verwenden
+- Sich auf einen Benutzer-DSN verlassen, wenn *digna* als Dienst läuft — er ist dann nicht
+  sichtbar
+- Einen Wert, der `;` enthält, ohne geschweifte Klammern in eine Eigenschaft eintragen
+- **Work Schema** auf ein Schema zeigen lassen, das Quelldaten enthält
 
 ---
 
 ## Support
 
-Need help with a database connection?
+Brauchen Sie Hilfe bei einer Datenbankverbindung?
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
+- **E-Mail:** support@digna.ai
+- **Dokumentation:** https://docs.digna.ai
 - **Website:** https://www.digna.ai
 
 ---
@@ -5879,129 +5963,109 @@ Source: https://docs.digna.ai/de/databases/postgres_connector_guide/
 
 # Quell-Connector für PostgreSQL
 
-Dieser Leitfaden beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Postgres entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu PostgreSQL über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Er bezieht sich auf den Bildschirm **„Datenbankverbindung erstellen“**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für PostgreSQL spezifisch ist.
 
 ---
 
-## Nativer Python-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-**Bibliothek:** `psycopg`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
+Installieren Sie den PostgreSQL-ODBC-Treiber (**psqlODBC**) auf dem Rechner, auf dem das
+*digna*-Backend läuft, und folgen Sie dabei der offiziellen Installationsanleitung des
+Herstellers.
 
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+Der Treiber registriert sich unter einem Namen, der je nach Plattform und Paket abweicht — meist
+**PostgreSQL Unicode(x64)** unter Windows und **PostgreSQL ODBC Driver(UNICODE)** unter Linux.
+Lesen Sie den genauen Namen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben, und
+verwenden Sie diesen Namen für die Eigenschaft `DRIVER` weiter unten.
 
-### *digna*-Konfiguration (nativer Treiber)
+---
 
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** die folgenden Informationen an:
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum psqlODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen und Plattformen, und auch das,
+    was Ihr Server verlangt — insbesondere SSL — kann abweichen. Nehmen Sie dies als
+    Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `SERVER` | `db.example.com` | Servername oder IP-Adresse |
+| `PORT` | `5432` | |
+| `DATABASE` | `digna_source_db` | Datenbank, die die Quellschemata enthält. Es ist die einzige Datenbank, die diese Verbindung profilieren kann |
+| `UID` | `digna_source_user` | Datenbankbenutzer |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` oder `verify-full` — muss vom Server akzeptiert werden |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
 
 ```
-Name:               Name der Verbindung. Wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
+DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
+```
+
+Jede weitere psqlODBC-Option lässt sich als zusätzliche Eigenschaft ergänzen — zum Beispiel
+`ReadOnly=1` für eine schreibgeschützte Sitzung oder `ConnSettings`, um beim Verbindungsaufbau
+`SET`-Anweisungen auszuführen.
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Postgres
-Host Address:       Servername oder IP-Adresse
-Host Port:          Portnummer, z. B. 5432
-Database Name:      Name der Datenbank
-User Name:          Datenbank-Benutzername
-User Password:      Passwort des Benutzers
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert und Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Deaktiviert (Standard)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
 
 ---
 
-## ODBC-Treiber
+## 4. Hinweise zu PostgreSQL {: #4-notes-on-postgresql }
 
-Der ODBC-Treiber kann eine größere Bandbreite an Authentifizierungs- und Verbindungsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **PostgreSQL Unicode(x64)**.
+- **`SSLMode` muss zum Server passen.** Ein mit `hostssl` konfigurierter Server weist
+  `SSLMode=disable` zurück, und `verify-ca` oder `verify-full` benötigen zusätzlich das
+  Stammzertifikat, das dem Treiber auf dem *digna*-Host zur Verfügung stehen muss. Wenn Sie beim
+  Testen des Treibers einen bestimmten Modus wählen mussten, verwenden Sie hier denselben.
+- **Eine Verbindung sieht eine Datenbank.** *digna* bietet die Schemata der in `DATABASE`
+  genannten Datenbank an, weil PostgreSQL nur die aktuelle Datenbank als Katalog meldet.
+  Quelltabellen in einer anderen Datenbank brauchen eine eigene Verbindung.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an, der Benutzer
+  braucht dort also `CREATE`. *Session* verwendet `CREATE TEMPORARY TABLE` und rührt das
+  **Work Schema** nicht an. *Standard* benötigt nur Lesezugriff.
 
-### 1. ODBC-Treiber installieren
+---
 
-Installieren Sie **PostgreSQL Unicode(x64)** (oder einen ähnlichen Treiber) gemäß der offiziellen Installationsanleitung des Anbieters.
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
 
-### 2. ODBC-Datenquelle konfigurieren
-
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber funktioniert und dass der Server Ihre Anmeldedaten und Ihren SSL-Modus akzeptiert.
 
 #### Schritt 1
-![Schritt 1](images/postgres/create_odbc_data_source_step1.png)
-
-Hinweis: Falls Ihre Datenbankkonfiguration die Auswahl eines bestimmten "SSLMode" erfordert, stellen Sie bitte sicher, dass Sie diesen beim Definieren einer DSN-losen Konfiguration ebenfalls verwenden.
+![Step 1](images/postgres/create_odbc_data_source_step1.png)
 
 #### Schritt 2 – Verbindung testen
 
 Klicken Sie auf die Schaltfläche **Test Connection**.
 
-![Schritt 2](images/postgres/create_odbc_data_source_step2.png)
+![Step 2](images/postgres/create_odbc_data_source_step2.png)
 
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung entweder mit einem **DSN (Data Source Name)** oder in einer **DSN-losen** Konfiguration verwendet wird.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         PostgreSQL
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert und Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",    value: "PostgreSQL35W"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-losen Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         PostgreSQL
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert und Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DRIVER",     value: "PostgreSQL Unicode(x64)"
-name: "SERVER",     value: "your server name or IP address"
-name: "PORT",       value: "5432"
-name: "DATABASE",   value: "postgres or other name of your database"
-name: "UID",        value: "your postgres user'
-name: "PWD",        value: "your postgres password"
-name: "SSLMode",    value: "require"
-```
+Die Werte, die Sie hier eingegeben haben, sind genau die Werte, die die Eigenschaften in
+[Abschnitt 2](#2-odbc-properties) annehmen.
 
 ---
 
@@ -6010,134 +6074,139 @@ Source: https://docs.digna.ai/de/databases/snowflake_connector_guide/
 
 # Quell-Connector für Snowflake
 
-Dieses Handbuch beschreibt, wie *digna* so konfiguriert wird, dass eine Verbindung zu Snowflake entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Snowflake über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Es bezieht sich auf den Bildschirm **„Datenbankverbindung erstellen“**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Snowflake spezifisch ist.
 
 ---
 
-## Nativer Python-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-**Bibliothek:** `snowflake-connector-python`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
+Installieren Sie den **Snowflake ODBC Driver** auf dem Rechner, auf dem das *digna*-Backend
+läuft, und folgen Sie dabei
+[Snowflakes Installationsanleitung](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+Der Treiber registriert sich als **SnowflakeDSIIDriver**. Lesen Sie den genauen registrierten
+Namen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-### *digna* Konfiguration (nativer Treiber)
+---
 
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** die folgenden Informationen an:
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
+
+Snowflake wird mit einem **programmatischen Zugriffstoken (PAT)** erreicht — dem
+Authentifizierungsweg, gegen den *digna* geprüft ist, und dem, den Snowflake für Konten
+verlangt, bei denen die reine Passwortanmeldung gesperrt ist.
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Snowflake-ODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen und Plattformen, und welche
+    Authentifizierungsoptionen Ihr Konto zulässt, entscheidet die Sicherheitsrichtlinie des
+    Kontos. Nehmen Sie dies als Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen
+    installierten Treiberversion.
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Driver` | `{SnowflakeDSIIDriver}` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `Server` | `<account>.snowflakecomputing.com` | Kontobezeichner plus Suffix, z. B. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake-Benutzer, zu dem das Token gehört |
+| `Database` | `TEST` | Datenbank, die die Quellschemata enthält. Es ist die einzige Datenbank, die diese Verbindung profilieren kann |
+| `Schema` | `PUBLIC` | Standardschema der Sitzung |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Wählt die Token-Authentifizierung |
+| `token` | `<programmatic access token>` | **Encrypted** ankreuzen |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
+
+```
+Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
+```
+
+### Warehouse und Rolle
+
+Abfragen brauchen ein Warehouse. Hat der *digna*-Benutzer ein Standard-Warehouse und eine
+Standardrolle, übernimmt die Sitzung beides und es muss nichts konfiguriert werden. Andernfalls
+ergänzen Sie:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Warehouse` | `DIGNA_WH` | Warehouse, das die Profiling-Abfragen ausführt |
+| `Role` | `DIGNA_READER` | Rolle, deren Berechtigungen die Sitzung verwendet |
+
+!!! tip "Geben Sie digna ein eigenes Warehouse"
+
+    Ein separates, kleines Warehouse mit automatischer Unterbrechung hält die Profiling-Kosten
+    sichtbar und verhindert, dass *digna* mit interaktiven Benutzern um Rechenleistung
+    konkurriert.
+
+### Passwort-Authentifizierung
+
+Wo das Konto es noch zulässt, funktioniert anstelle des Tokens auch ein Passwort — lassen Sie
+`authenticator` und `token` weg und ergänzen Sie:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Snowflake
-Host Address:       Snowflake account name
-Host Port:          Not needed
-Database Name:      Database that contains the source schema
-User Name:          User name and warehouse in the format "user<@>warehouse"
-User Password:      Password for the user
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Disabled (default)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "PUBLIC"
 ```
 
 ---
 
-## ODBC-Treiber
+## 4. Hinweise zu Snowflake {: #4-notes-on-snowflake }
 
-Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem **SnowflakeDSIIDriver**.
+- **Token laufen ab.** Ein programmatisches Zugriffstoken wird mit einer Lebensdauer ausgestellt,
+  und das Profiling endet an dem Tag, an dem sie abläuft. Notieren Sie das Ablaufdatum beim
+  Erstellen und tragen Sie das neue Token in die Eigenschaft `token` ein — verschlüsselte Werte
+  lassen sich ersetzen, aber nicht zurücklesen.
+- **Eine Verbindung sieht eine Datenbank.** *digna* bietet die Schemata der in `Database`
+  genannten Datenbank an, weil Snowflake nur die aktuelle Datenbank als Katalog meldet.
+  Quelltabellen in einer anderen Datenbank brauchen eine eigene Verbindung.
+- **Bezeichner sind in Großbuchstaben**, sofern sie nicht in Anführungszeichen angelegt wurden.
+  *digna* verwendet die Namen so, wie Snowflake sie meldet.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an, die Rolle
+  braucht dort also `CREATE TABLE`. *Session* verwendet `CREATE TEMPORARY TABLE` und rührt das
+  **Work Schema** nicht an. *Standard* benötigt nur Lesezugriff — und überhaupt keine
+  Schreibrechte.
 
-### 1. Installieren des ODBC-Treibers
+---
 
-Installieren Sie den **SnowflakeDSIIDriver** gemäß der offiziellen Installationsanleitung des Herstellers.
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
 
-### 2. Konfigurieren der ODBC-Datenquelle
-
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber, die Konto-URL und Ihre Anmeldedaten funktionieren.
 
 #### Schritt 1
-![Schritt 1](images/snowflake/create_odbc_data_source_step1.png)
+![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
 Hinweise:
-- Wenn Sie keine Werte für Database, Schema und Warehouse angeben, müssen Sie diese als ODBC-Eigenschaften während der *digna*-Datenquellenkonfiguration angeben.
-- Der Wert für "Server" besteht aus Ihrem Snowflake-Kontonamen gefolgt von ".snowflakecomputing.com"
+
+- Der Wert für **Server** besteht aus Ihrem Snowflake-Kontobezeichner, gefolgt von
+  `.snowflakecomputing.com`.
+- **Database**, **Schema** und **Warehouse**, die Sie hier eingeben, entsprechen den
+  Eigenschaften `Database`, `Schema` und `Warehouse` in [Abschnitt 2](#2-odbc-properties).
 
 #### Schritt 2 – Verbindung testen
 
-Klicken Sie auf die **TEST**-Schaltfläche. Eine erfolgreiche Verbindung sollte so aussehen:
+Klicken Sie auf die Schaltfläche **TEST**. Eine erfolgreiche Verbindung sollte so aussehen:
 
-![Schritt 2](images/snowflake/create_odbc_data_source_step2.png)
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder in einer **DSN-losen** Konfiguration.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** die folgenden Angaben ein:
-
-```
-Name:               Name of the connection. This is used for referencing the connection in other screens.
-Technology:         Snowflake
-Database Name:      Database that contains the source schemas
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Enabled
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",            value: "snowflake_demo_2"
-name: "PWD",            value: "{your password in curly braces}"
-
-optionally:
-name: "Database",       value: "Database that contains the source schemas"
-name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiber-Konfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-loser Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** die folgenden Angaben ein:
-
-```
-Technology:         Snowflake
-Database Name:      Database that contains the source schemas
-Profiling Mode:     The profiling mode determines how digna processes data and calculates metrics:
-                    - Standard: Metrics are calculated directly on the source tables without copying the data.
-                    - Permanent: Data for the inspected day is copied into a permanent table, and metrics are calculated on the copied data.
-                    - Session: Data is copied into a session or temporary table, and metrics are calculated on this temporary data.
-Work Schema Name:   When using "Permanent" or "Session" profiling mode, work tables will be placed in this schema.
-Use ODBC:           Enabled
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "Driver",     value: "{SnowflakeDSIIDriver}"
-name: "Server",     value: "your-account-name.snowflakecomputing.com'
-name: "UID",        value: "your snowflake user'
-name: "PWD",        value: "your snowflake password"
-name: "Database",   value: "Database that contains the source schema"
-name: "Warehouse",  value: "Warehouse to use for the execution of the SQLs"
-```
+![Step 2](images/snowflake/create_odbc_data_source_step2.png)
 
 ---
 
@@ -6146,151 +6215,155 @@ Source: https://docs.digna.ai/de/databases/sqlserver_connector_guide/
 
 # Quell-Connector für MS SQL Server
 
-Diese Anleitung beschreibt, wie Sie *digna* konfigurieren, um sich mit SQL Server entweder über den nativen Python-Connector oder den ODBC-Treiber zu verbinden.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Microsoft SQL Server über
+**ODBC** konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Sie bezieht sich auf den Bildschirm **"Create a Database Connection"**.
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für SQL Server spezifisch ist.
 
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+!!! note "Azure Synapse Analytics"
 
----
-
-## Nativer Python-Treiber
-
-**Library:** `pymssql`  
-**Unterstützte Authentifizierung:** Nur kennwortbasierte Authentifizierung
-
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
-
-### *digna* Konfiguration (nativ)
-
-Geben Sie im Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
-
-```
-Name:               Name der Verbindung. Wird in anderen Bildschirmen zur Referenz verwendet.
-Technology:         MS SQL Server
-Host Address:       Servername oder IP-Adresse
-Host Port:          Portnummer, z. B. 1433
-Database Name:      Name der Datenbank
-User Name:          Datenbankbenutzername
-User Password:      Passwort für den Benutzer
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema angelegt.
-Use ODBC:           Deaktiviert (Standard)
-```
+    Synapse wird ebenfalls als SQL-Server-Verbindung konfiguriert, mit einem anderen Hostnamen
+    und einigen zusätzlichen Überlegungen — siehe
+    [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## ODBC-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf kennwortbasierte Authentifizierung mit dem Treiber **SQL Server**.
+Installieren Sie **ODBC Driver 18 for SQL Server** auf dem Rechner, auf dem das *digna*-Backend
+läuft, und folgen Sie dabei
+[Microsofts Installationsanleitung](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-### 1. Installieren des ODBC-Treibers
+Der Treiber, der unter dem schlichten Namen **SQL Server** mit Windows ausgeliefert wird,
+funktioniert ebenfalls, ist aber längst überholt und unterstützt weder moderne TLS-Einstellungen
+noch die Azure-Authentifizierung. Verwenden Sie ihn nur dort, wo die Installation des aktuellen
+Treibers nicht möglich ist.
 
-Installieren Sie den Treiber **SQL Server** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
+Lesen Sie den genauen registrierten Treibernamen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-### 2. Konfigurieren der ODBC-Datenquelle
+---
 
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit kennwortbasierter Authentifizierung zu konfigurieren:
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Microsoft-ODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen — Driver 18 verschlüsselt
+    standardmäßig, Driver 17 tat das nicht — und zwischen Plattformen. Nehmen Sie dies als
+    Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `SERVER` | `sql.example.com` | Servername oder IP-Adresse. Benannte Instanzen: `host\instance`; abweichender Port: `host,1433` |
+| `PORT` | `1433` | Entfällt, wenn der Port bereits Teil von `SERVER` ist |
+| `DATABASE` | `digna_source_db` | Datenbank, die die Quellschemata enthält. Es ist die einzige Datenbank, die diese Verbindung profilieren kann |
+| `UID` | `digna_source_user` | Datenbankbenutzer |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
+```
+
+### Verschlüsselung mit ODBC Driver 18
+
+Driver 18 verschlüsselt Verbindungen standardmäßig und prüft das Serverzertifikat. Gegenüber
+einem Server mit einem Zertifikat, dem Ihr *digna*-Host nicht vertraut — typischerweise einem
+selbstsignierten Zertifikat — schlägt der Verbindungsaufbau mit einem Zertifikatskettenfehler
+fehl. Ergänzen Sie:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Encrypt` | `yes` | Voreinstellung in Driver 18; setzen Sie `no` nur, wenn der Server kein TLS beherrscht |
+| `TrustServerCertificate` | `yes` | Überspringt die Zertifikatsprüfung. In Testumgebungen praktisch; in der Produktion sollten Sie das Zertifikat lieber installieren |
+
+### Windows-Authentifizierung
+
+Um sich als das Konto zu verbinden, unter dem der *digna*-Dienst läuft, statt mit einem
+SQL-Login, lassen Sie `UID` und `PWD` weg und ergänzen Sie:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Trusted_Connection` | `yes` | Das *digna*-Dienstkonto benötigt die Datenbankrechte |
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         SQL Server
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Hinweise zu MS SQL Server {: #4-notes-on-ms-sql-server }
+
+- **Eine Verbindung sieht eine Datenbank.** *digna* bietet die Schemata der in `DATABASE`
+  genannten Datenbank an, weil SQL Server nur die aktuelle Datenbank als Katalog meldet.
+  Quelltabellen in einer anderen Datenbank brauchen eine eigene Verbindung.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an, der Benutzer
+  braucht dort also `CREATE TABLE`. *Session* verwendet lokale temporäre Tabellen (`#wt_…`) in
+  `tempdb` und rührt das **Work Schema** nicht an. *Standard* benötigt nur Lesezugriff.
+- **`SERVER` trägt Instanz und Port.** Bei einer benannten Instanz muss für `host\instance` der
+  SQL Server Browser erreichbar sein; `host,port` umgeht das.
+
+---
+
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
+
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Assistent des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen,
+dass der Treiber funktioniert und dass der Server Ihre Anmeldedaten akzeptiert.
 
 #### Schritt 1
-![Schritt 1](images/sqlserver/create_odbc_data_source_step1.png)
+![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
 
 Klicken Sie auf die Schaltfläche **Next >**.
 
 #### Schritt 2
-![Schritt 2](images/sqlserver/create_odbc_data_source_step2.png)
+![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Wählen Sie die Authentifizierungsmethode (z. B. Benutzername und Passwort) und geben Sie die erforderlichen Daten ein.
+Wählen Sie die Authentifizierungsmethode (z. B. Benutzername und Passwort)
+und geben Sie die erforderlichen Daten an.
 
 Klicken Sie auf die Schaltfläche **Next >**.
 
 #### Schritt 3
-![Schritt 3](images/sqlserver/create_odbc_data_source_step3.png)
+![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
 
 Wählen Sie die ANSI-konformen Einstellungen und klicken Sie dann auf die Schaltfläche **Next >**.
 
 #### Schritt 4
-![Schritt 4](images/sqlserver/create_odbc_data_source_step4.png)
+![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-Sie können die Standardeinstellungen belassen oder bei Bedarf Protokollierungsoptionen wählen und dann auf die Schaltfläche **Finish** klicken.
+Sie können die Standardeinstellungen belassen oder nach Bedarf Protokollierungsoptionen wählen
+und auf die Schaltfläche **Finish** klicken.
 
 #### Schritt 5
-![Schritt 5](images/sqlserver/create_odbc_data_source_step5.png)
+![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Klicken Sie jetzt auf die Schaltfläche **Test datasource**.
+Klicken Sie nun auf die Schaltfläche **Test datasource**.
 
 #### Schritt 6
-![Schritt 6](images/sqlserver/create_odbc_data_source_step6.png)
+![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-Wenn Sie die Erfolgsmeldung erhalten, ist ODBC korrekt konfiguriert.
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird — entweder mit einem **DSN (Data Source Name)** oder in einer **DSN-losen** Konfiguration.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie im Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
-
-```
-Name:               Name der Verbindung. Wird in anderen Bildschirmen zur Referenz verwendet.
-Technology:         MS SQL Server
-Database Name:      Datenbank, die die Quell-Schemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema angelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",        value: "sqlserver-1"
-name: "UID",        value: "Ihr Datenbankbenutzer"
-name: "PWD",        value: "Ihr Datenbankpasswort"
-name: "DATABASE",   value: "Name der Datenbank, die das Quell-Datenschema enthält"
-```
-
-> Der Wert von `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-lose Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie im Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
-
-```
-Name:               Name der Verbindung. Wird in anderen Bildschirmen zur Referenz verwendet.
-Technology:         MS SQL Server
-Database Name:      Name der Datenbank, die die Quell-Daten-Schemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den inspizierten Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema angelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DRIVER",     value: "SQL Server"
-name: "SERVER",     value: "Ihr Servername oder IP-Adresse"
-name: "UID",        value: "Ihr Datenbankbenutzer"
-name: "PWD",        value: "Ihr Datenbankpasswort"
-name: "DATABASE",   value: "Name der Datenbank, die die Quell-Daten-Schemata enthält"
-```
+Ein Erfolgsbildschirm bestätigt, dass der Treiber und die Anmeldedaten funktionieren. Die Werte,
+die Sie eingegeben haben, sind genau die Werte, die die Eigenschaften in
+[Abschnitt 2](#2-odbc-properties) annehmen.
 
 ---
 
@@ -6299,275 +6372,114 @@ Source: https://docs.digna.ai/de/databases/teradata_connector_guide/
 
 # Quell-Connector für Teradata
 
-Diese Anleitung beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Teradata entweder über den nativen Python-Connector oder über den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Teradata über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Sie bezieht sich auf den Bildschirm **"Create a Database Connection"**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Teradata spezifisch ist.
 
 ---
 
-## Nativer Python-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-**Bibliothek:** `teradatasql`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
+Installieren Sie den **ODBC Driver for Teradata** auf dem Rechner, auf dem das *digna*-Backend
+läuft, und folgen Sie dabei der offiziellen Installationsanleitung des Herstellers.
 
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+Der Treiber registriert sich mit seiner Version im Namen, zum Beispiel
+**Teradata Database ODBC Driver 20.00**. Lesen Sie den genauen registrierten Namen auf Ihrem
+Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben.
 
-### *digna* Konfiguration (nativer Treiber)
+---
 
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Teradata-ODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen — die Version ist Teil des
+    Treibernamens selbst — und zwischen Plattformen. Nehmen Sie dies als Ausgangspunkt und
+    prüfen Sie die Dokumentation der von Ihnen installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `DBCNAME` | `teradata.example.com` | Servername oder IP-Adresse. Teradatas eigener Name für die Host-Eigenschaft |
+| `UID` | `digna_source_user` | Datenbankbenutzer |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
 
 ```
-Name:               Name der Verbindung. Wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
+DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
+```
+
+Nützliche zusätzliche Eigenschaften:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `MechanismName` | `TD2` | Anmeldemechanismus. `TD2` ist die Teradata-Voreinstellung; verwenden Sie `LDAP` für die Verzeichnisauthentifizierung |
+| `DefaultDatabase` | `dad` | Datenbank, in der die Sitzung startet |
+| `CharacterSet` | `UTF8` | Setzen Sie dies, wenn der voreingestellte Sitzungszeichensatz Nicht-ASCII-Daten verstümmeln würde |
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Teradata
-Host Address:       Servername oder IP-Adresse
-Host Port:          Portnummer, z. B. 1025
-Database Name:      Kann leer gelassen werden. digna behandelt Datenbanken als Schemas für Teradata.
-User Name:          Datenbank-Benutzername
-User Password:      Passwort des Benutzers
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den geprüften Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in dieses Schema gelegt.
-Use ODBC:           Deaktiviert (Standard)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Database for the work tables of "Permanent" profiling, e.g. "Digna_Work"
 ```
 
 ---
 
-## ODBC-Treiber
+## 4. Hinweise zu Teradata {: #4-notes-on-teradata }
 
-Der ODBC-Treiber kann eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf die passwortbasierte Authentifizierung mit dem Treiber **Teradata Database ODBC Driver 20.00**.
+- **Eine Teradata-Datenbank ist ein Katalog, kein Schema.** *digna* listet die Datenbanken, die
+  der Benutzer sehen darf (aus `DBC.DatabasesV`), als Kataloge auf; die Schema-Ebene entfällt.
+  Wählen Sie beim Hinzufügen einer Datenquelle die Datenbank als Katalog; das Schema wird als
+  *nicht zutreffend* gemeldet.
+- **Eine Verbindung erreicht jede zugelassene Datenbank**, sodass eine einzige Verbindung
+  Quellen über mehrere Datenbanken hinweg bedienen kann — anders als bei den Technologien, bei
+  denen die Verbindung an eine Datenbank gebunden ist.
+- **Work Schema ist eine Datenbank.** Nennen Sie für *Permanent*-Profiling die
+  Teradata-Datenbank, die die Arbeitstabellen enthält, und geben Sie dem Benutzer dort
+  `CREATE TABLE`-Rechte sowie eine `PERM`-Speicherzuteilung — eine Datenbank ohne Perm-Speicher
+  kann keine Tabelle aufnehmen.
+- **Profiling-Modi.** *Permanent* legt Tabellen im **Work Schema** an. *Session* verwendet eine
+  `VOLATILE`-Tabelle, die `SPOOL`-Speicher benötigt, aber keinen Perm-Speicher und keine Rechte
+  im **Work Schema**. *Standard* benötigt nur Lesezugriff.
 
-### 1. ODBC-Treiber installieren
+---
 
-Installieren Sie den Treiber **Teradata Database ODBC Driver 20.00** (oder einen ähnlichen) gemäß der offiziellen Installationsanleitung des Anbieters.
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
 
-### 2. ODBC-Datenquelle konfigurieren
-
-Gehen Sie wie folgt vor, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber und Ihre Anmeldedaten funktionieren.
 
 #### Schritt 1
-![Schritt 1](images/teradata/create_odbc_data_source_step1.png)
+![Step 1](images/teradata/create_odbc_data_source_step1.png)
+
+Das Feld **Name or IP address** entspricht hier der Eigenschaft `DBCNAME` in
+[Abschnitt 2](#2-odbc-properties).
 
 Klicken Sie auf die Schaltfläche **Test**.
 
 #### Schritt 2
-![Schritt 2](images/teradata/create_odbc_data_source_step2.png)
+![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
-Geben Sie Benutzername und Passwort ein.
-
-Klicken Sie auf die Schaltfläche **OK**.  
-Wenn Sie den Erfolgsbildschirm sehen, ist ODBC korrekt konfiguriert.
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder in einem **DSN-losen** Setup.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
-
-```
-Name:               Name der Verbindung. Wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
-Technology:         Teradata
-Database Name:      Kann leer gelassen werden. digna behandelt Datenbanken als Schemas für Teradata.
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den geprüften Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in dieses Schema gelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",        value: "*digna*data_teradata"
-name: "UID",        value: "Ihr Datenbank-Benutzer"
-name: "PWD",        value: "Ihr Datenbank-Passwort"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-loses Setup
-
-#### *digna* Konfiguration
-
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
-
-```
-Name:               Name der Verbindung. Wird zur Referenzierung der Verbindung in anderen Bildschirmen verwendet.
-Technology:         Teradata
-Database Name:      Kann leer gelassen werden. digna behandelt Datenbanken als Schemas für Teradata.
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den geprüften Tag werden in eine permanente Tabelle kopiert und die Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in dieses Schema gelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC Properties
-
-```
-name: "DRIVER",     value: "Teradata Database ODBC Driver 20.00"
-name: "DBCNAME",    value: "Ihr Servername oder Ihre IP-Adresse"
-name: "UID",        value: "Ihr Datenbank-Benutzer"
-name: "PWD",        value: "Ihr Datenbank-Passwort"
-```
-
----
-
-# Databricks Connector (Legacy, ohne Unity Catalog) | digna Dokumentation
-Source: https://docs.digna.ai/de/databases/databricks_legacy_connector_guide/
-
-# Quell-Connector für Databricks – ohne Unity Catalog
-
-Diese Anleitung beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Databricks entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
-
-Es bezieht sich auf den Bildschirm **„Datenbankverbindung erstellen“**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
-
----
-
-## Nativer Python-Treiber
-
-**Bibliothek:** `databricks-sql-connector`  
-**Unterstützte Authentifizierung:** nur Personal Access Token (PAT)
-
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
-
-### Personal Access Token (PAT)
-
-Zur Authentifizierung mit einem Personal Access Token lesen Sie bitte die offizielle Databricks-Dokumentation:  
-[Wie Sie ein PAT erhalten](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
-
-### *digna*-Konfiguration (nativer Treiber)
-
-Geben Sie die folgenden Informationen im Bildschirm **„Datenbankverbindung erstellen“** an:
-
-```
-Name:               Name der Verbindung. Diese wird in anderen Bildschirmen zur Referenz verwendet.
-Technologie:        Databricks (Legacy)
-Host-Adresse:       Databricks-Hostname, z. B. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host-Port:          443
-Datenbankname:      Dieser Parameter wird bei Databricks ohne Unity Catalog nicht verwendet
-Benutzername:       HTTP-Pfad, der von Databricks bereitgestellt wird, z. B. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-Benutzerpasswort:   Personal Access Token, z. B. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Profiling-Modus:    Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-ODBC verwenden:     Deaktiviert (Standard)
-```
-
----
-
-## ODBC-Treiber
-
-Der ODBC-Treiber unterstützt eine breitere Palette an Authentifizierungs- und Konnektivitätsoptionen. Dieser Abschnitt konzentriert sich auf tokenbasierte Authentifizierung mit dem **Simba Spark ODBC Driver**.
-
-### 1. Installieren des ODBC-Treibers
-
-Installieren Sie den **Simba Spark ODBC Driver** gemäß der offiziellen Installationsanleitung des Anbieters.
-
-### 2. Konfigurieren der ODBC-Datenquelle
-
-Befolgen Sie diese Schritte, um eine neue ODBC-Datenquelle mit einem Personal Access Token zu konfigurieren:
-
-#### Schritt 1
-![Schritt 1](images/databricks/create_odbc_data_source_step1.png)
-
-#### Schritt 2
-![Schritt 2](images/databricks/create_odbc_data_source_step2.png)
-
-#### Schritt 3
-![Schritt 3](images/databricks/create_odbc_data_source_step3.png)
-
-#### Schritt 4
-![Schritt 4](images/databricks/create_odbc_data_source_step4.png)
-
-#### Schritt 5 – Verbindung testen
-
-Klicken Sie auf die **TEST**-Schaltfläche. Eine erfolgreiche Verbindung sieht etwa so aus:
-
-![Schritt 5](images/databricks/create_odbc_data_source_step5.png)
-
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung entweder mit einem **DSN (Data Source Name)** oder einer **DSN-losen** Konfiguration verwendet wird.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Diese wird in anderen Bildschirmen zur Referenz verwendet.
-Technologie:        Databricks (Legacy)
-Datenbankname:      Dieser Parameter wird bei Databricks ohne Unity Catalog nicht verwendet
-Profiling-Modus:    Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-ODBC verwenden:     Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",    value: "*digna*data_databricks"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-losen Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Diese wird in anderen Bildschirmen zur Referenz verwendet.
-Technologie:        Databricks (Legacy)
-Datenbankname:      Dieser Parameter wird bei Databricks ohne Unity Catalog nicht verwendet
-Profiling-Modus:    Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-ODBC verwenden:     Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name = "Driver",          value = "{Simba Spark ODBC Driver}"
-name = "Host",            value = "xxxxxxxxxxxxxxxxxxx.databricks.com"
-name = "Port",            value = "443"
-name = "HTTPPath",        value = "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-name = "SSL",             value = "1"
-name = "ThriftTransport", value = "2"
-name = "AuthMech",        value = "3"
-name = "UID",             value = "token"
-name = "PWD",             value = "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
+Geben Sie Benutzername und Passwort an und klicken Sie dann auf die Schaltfläche **OK**. Ein
+Erfolgsbildschirm bestätigt, dass der Treiber und die Anmeldedaten funktionieren.
 
 ---
 

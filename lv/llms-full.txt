@@ -493,6 +493,14 @@ Ar izlaidumu 2026.06 digna sper lielu soli uz priekšu automatizācijas, paplaš
 
 ---
 
+## Noskatieties laidiena prezentāciju
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — ieskats šajā laidienā digna YouTube kanālā.*
+
+---
+
 ## Jaunumi  
 
 ### digna Python SDK – Automatizējiet visu ar Python  
@@ -540,6 +548,24 @@ Konfigurējiet vaicājumu izpildes stratēģiju: **Single** vai **Combined** re�
   - Efektīvāks biežām, paralēlām izpildēm
 
 **Ietekme:** Lietotājiem tiek dota smalkāka kontrole pār vaicājumu izpildi, ļaujot balansēt veiktspēju, resursu patēriņu un atmiņas drošību atkarībā no datu avotu īpašībām.
+
+---
+
+### Konfigurējams prognozēšanas modelis
+
+Modelis, uz kura balstās anomāliju noteikšana, tagad ir konfigurējams. Septiņi parametri nosaka, kā prognoze tiek pielāgota:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Noklusējuma vērtības ir piemērotas lielākajai daļai rindu, un katru parametru jebkurā brīdī var atjaunot uz tā noklusējuma vērtību.
+
+**Ietekme:** Dod lietotājiem kontroli pār pašu prognozēšanas modeli līdzās esošajiem pielaides joslas iestatījumiem Sensitivity un Memory. Lai saņemtu norādes, kad pievērsties kādam parametram un kā to iestatīt, sazinieties ar digna.
 
 ---
 
@@ -4789,279 +4815,327 @@ Server running on http://0.0.0.0:8000
 # Azure Synapse
 Source: https://docs.digna.ai/lv/databases/azure_synapse_connector_guide/
 
-# Avota savienotājs Azure Synapse Analytics
+# Source Connector for Azure Synapse Analytics
 
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai savienotos ar Azure Synapse Analytics, izmantojot vai nu vietējo Python savienotāju, vai ODBC draiveri.
-Tā atbalsta gan serverless, gan dedicated SQL poolus.
+This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
+**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
+supported.
 
-Tā atsaucas uz ekrānu **"Create a Database Connection"**.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Azure Synapse.
 
-![Create a database connection](images/data_source_config_input_mask.png)
+!!! note "Technology"
 
----
-
-## Vietējais Python draiveris
-
-**Bibliotēka:** `pymssql`  
-**Atbalstītā autentifikācija:** Tikai autentifikācija ar paroli
-
-> Citu autentifikācijas metožu gadījumā, lūdzu, izmantojiet ODBC draiveri.
-
-### *digna* konfigurācija (vietējais draiveris)
-
-Norādiet sekojošo informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      MS SQL Server
-Host Address:    <synapse-workspace>[-ondemand].sql.azuresynapse.net
-Host Port:       Port number, e.g. 1433
-Database Name:   Database name
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
+    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
 
 ---
 
-## ODBC draiveris
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības iespēju klāstu. Šī sadaļa koncentrējas uz autentifikāciju ar paroli, izmantojot draiveri **ODBC Driver 18 for SQL Server**.
+Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
+following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+and read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-### 1. Instalējiet ODBC draiveri
+---
 
-Instalējiet draiveri **ODBC Driver 18 for SQL Server** (vai līdzīgu), sekojot piegādātāja oficiālajai instalācijas vadlīnijai.
+## 2. ODBC Properties {: #2-odbc-properties }
 
-### 2. Konfigurējiet ODBC datu avotu
+!!! important "An example, not a specification"
 
-Izpildiet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot autentifikāciju ar paroli:
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what the workspace requires depends on how it is configured —
+    pool type, authentication method, firewall. Use this as a starting point and check the
+    documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
+| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `sqladminuser` | SQL login |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
+```
+
+### The `SERVER` value
+
+Take the name of the Synapse workspace and append the endpoint suffix:
+
+| Pool | `SERVER` |
+|---|---|
+| **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
+| **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
+
+!!! warning "The `-ondemand` part is easy to miss"
+
+    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
+    silently reaches a different pool than intended. Both endpoints are shown on the workspace
+    overview page in the Azure portal.
+
+### Firewall
+
+The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
+under **Networking** in the workspace before testing the connection — a blocked address shows
+up as a connection timeout rather than an authentication error.
+
+### Microsoft Entra ID authentication
+
+Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
+the authentication method your workspace expects, for example:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
+| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         SQL Server
+Profiling Mode:     Serverless SQL pool: Standard
+                    Dedicated SQL pool:  Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+
+- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
+  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
+  calculates the metrics directly on the source, which is also the cheaper option, since
+  serverless is billed per data processed.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
+- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
+  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
+- **A serverless endpoint may resume from idle** on the first connect. If the connection test
+  times out on a pool that has been unused for a while, retry it.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own wizard is a convenient way to confirm that the driver works and that the workspace accepts
+your credentials before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Aizpildiet lauku "Server".
-Izmantojiet Synapse workspace nosaukumu un papildiniet to ar ".sql.azuresynapse.net".  
-**Uzmanību**, ja vēlaties savienoties, izmantojot serverless SQL pool, pārliecinieties, ka iekļaujat "-ondemand", kā parādīts zemāk redzamajā ekrānuzņēmumā.
+Fill out the "Server" field.
+Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
+**Attention**, if you want to connect using a serverless SQL pool, make sure to include
+"-ondemand" as shown in the screenshot above.
 
-Nospiediet pogu **Next >**.
+Click the **Next >** button.
 
 #### Step 2
 ![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Izvēlieties autentifikācijas metodi (piem., lietotājvārds un parole)
-un ievadiet nepieciešamos datus.
+Choose the authentication method (e.g. username and password)
+and provide the required data.
 
-Nospiediet pogu **Next >**.
+Click the **Next >** button.
 
 #### Step 3
 ![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Izvēlieties ANSI atbilstošos iestatījumus, pēc tam nospiediet pogu **Next >**.
+Choose the ANSI compliant settings then click the **Next >** button.
 
 #### Step 4
 ![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-Jūs varat atstāt noklusējuma iestatījumus vai izvēlēties opcijas pēc vajadzības 
-un nospiest pogu **Finish**. 
+You can leave the default settings or choose options as needed 
+and click the **Finish** button. 
 
 #### Step 5
 ![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Tagad noklikšķiniet uz pogas **Test datasource**.
+Now click the **Test datasource** button.
 
 #### Step 6
-![Step 1](images/azure_synapse/create_odbc_data_source_step6.png)
+![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-Kad saņemat veiksmīga rezultāta ekrānu, ODBC ir pareizi konfigurēts.
-
----
-
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai ar konfigurāciju bez DSN.
-
----
-
-### A. DSN bāzēta konfigurācija
-
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Technology:      MS SQL Server
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",        value: "azure-synopse-serverless-1"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-
-```
-
-> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
-
----
-
-### B. Konfigurācija bez DSN
-
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Technology:      MS SQL Server
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DRIVER",     value: "ODBC Driver 18 for SQL Server"
-name: "SERVER",     value: "<synapse-workspace>[-ondemand].sql.azuresynapse.net"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-```
-
-**Piezīme** par SERVER īpašību:  
-Izmantojiet Synapse workspace nosaukumu un papildiniet to ar ".sql.azuresynapse.net". Ja vēlaties savienoties, izmantojot serverless SQL pool, pārliecinieties, ka iekļaujat "-ondemand", kā parādīts zemāk redzamajā ekrānuzņēmumā.
+A success screen confirms that the driver, the endpoint and the credentials work. The values
+you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
 
 ---
 
 # Databricks
 Source: https://docs.digna.ai/lv/databases/databricks_connector_guide/
 
-# Avota savienotājs Databricks — ar Unity Catalog
+# Source Connector for Databricks
 
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai izveidotu savienojumu ar Databricks, izmantojot vai nu iebūvēto Python connector, vai ODBC draiveri.
+This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
+**DSN-less** connection string.
 
-Tā atsaucas uz ekrānu **"Create a Database Connection"**.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Databricks.
 
-![Izveidot datubāzes savienojumu](images/data_source_config_input_mask.png)
+!!! note "Unity Catalog is required"
 
----
-
-## Native Python Driver
-
-**Bibliotēka:** `databricks-sql-connector`  
-**Atbalstītā autentifikācija:** tikai Personal Access Token (PAT)
-
-> Citu autentifikācijas metožu gadījumā izmantojiet ODBC draiveri.
-
-### Personal Access Token (PAT)
-
-Lai autentificētos, izmantojot personal access token, skatiet oficiālo Databricks dokumentāciju:  
-[Kā iegūt PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
-
-### *digna* konfigurācija (Native Driver)
-
-Norādiet sekojošo informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      Databricks
-Host Address:    Databricks hostname, e.g. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:       443
-Database Name:   Name of the catalog to use. 
-Schema Name:     Schema that contains the source data
-User Name:       HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:   Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Use ODBC:        Disabled (default)
-```
+    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
+    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
+    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
+    available.
 
 ---
 
-## ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris atbalsta plašāku autentifikācijas un savienojamības iespēju spektru. Šajā sadaļā galvenā uzmanība pievērsta token-pamata autentifikācijai, izmantojot **Simba Spark ODBC Driver**.
+Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
+[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-### 1. Instalējiet ODBC draiveri
-
-Instalējiet **Simba Spark ODBC Driver**, sekojot piegādātāja oficiālajai instalācijas rokasgrāmatai.
-
-### 2. Konfigurējiet ODBC datu avotu
-
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot Personal Access Token:
-
-#### 1. solis
-![1. solis](images/databricks/create_odbc_data_source_step1.png)
-
-#### 2. solis
-![2. solis](images/databricks/create_odbc_data_source_step2.png)
-
-#### 3. solis
-![3. solis](images/databricks/create_odbc_data_source_step3.png)
-
-#### 4. solis
-![4. solis](images/databricks/create_odbc_data_source_step4.png)
-
-#### 5. solis – Savienojuma pārbaude
-
-Noklikšķiniet uz pogas **TEST**. Veiksmīgs savienojums izskatīsies šādi:
-
-![5. solis](images/databricks/create_odbc_data_source_step5.png)
+Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
+**Databricks ODBC Driver**. Read the exact registered name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai **bez DSN** risinājumu.
+## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+
+All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
+Databricks workspace and go to **Connection details**:
+
+| Databricks field | Used as |
+|---|---|
+| **Server hostname** | `Host` |
+| **Port** | `Port`, normally `443` |
+| **HTTP path** | `HTTPPath` |
+
+For authentication, create a **personal access token** — see
+[Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
+Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
+`USE SCHEMA` and `SELECT` on the source data.
 
 ---
 
-### A. DSN bāzēta konfigurācija
+## 3. ODBC Properties {: #3-odbc-properties }
 
-#### *digna* konfigurācija
+!!! important "An example, not a specification"
 
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+    The set below is one combination that is known to work. The properties belong to the
+    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
+    versions — the driver has been renamed and its authentication options extended more than
+    once — and between platforms. Use this as a starting point and check the documentation of
+    the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
+| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Port` | `443` | |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
+| `SSL` | `1` | Databricks endpoints are TLS-only |
+| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
+| `AuthMech` | `3` | Token authentication |
+| `UID` | `token` | The literal word `token`, not a user name |
+| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
+| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+
+The resulting connection string looks like this:
 
 ```
-Technology:      Databricks
-Database Name:   Name of the catalog to use.
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-#### ODBC īpašības
+!!! important "Keep `UseNativeQuery=1`"
 
-```
-name: "DSN",    value: "*digna*data_databricks"
-```
+    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
+    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
+    rewrite can change backtick quoting and date literals, and profiling then fails on
+    statements that are valid as written.
 
-> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
+### OAuth instead of a token
+
+For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
+`UID` and `PWD` with:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `AuthMech` | `11` | OAuth |
+| `Auth_Flow` | `1` | Client credentials |
+| `Auth_Client_ID` | `<application id>` | Service principal |
+| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
 
 ---
 
-### B. Bez DSN (DSN-less) konfigurācija
+## 4. *digna* Configuration {: #4-digna-configuration }
 
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      Databricks
-Database Name:   Name of the catalog to use.
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Databricks
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
 
-#### ODBC īpašības
+---
 
-```
-name = "Driver",          value = "{Simba Spark ODBC Driver}"
-name = "Host",            value = "xxxxxxxxxxxxxxxxxxx.databricks.com"
-name = "Port",            value = "443"
-name = "HTTPPath",        value = "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-name = "SSL",             value = "1"
-name = "ThriftTransport", value = "2"
-name = "AuthMech",        value = "3"
-name = "UID",             value = "token"
-name = "PWD",             value = "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
+## 5. Notes on Databricks {: #5-notes-on-databricks }
+
+- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
+  resumes from a stopped state can take longer than the connection timeout — if the test fails
+  on the first attempt after an idle period, retry it.
+- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
+  reaches every catalog the principal is allowed to see, so a single connection can serve
+  sources across catalogs.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
+  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
+  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
+  only.
+- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+
+---
+
+## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the warehouse and the token work
+before you enter them in *digna*.
+
+#### Step 1
+![Step 1](images/databricks/create_odbc_data_source_step1.png)
+
+#### Step 2
+![Step 2](images/databricks/create_odbc_data_source_step2.png)
+
+#### Step 3
+![Step 3](images/databricks/create_odbc_data_source_step3.png)
+
+#### Step 4
+![Step 4](images/databricks/create_odbc_data_source_step4.png)
+
+#### Step 5 – Test the connection
+
+Click the **TEST** button. A successful connection should look like this:
+
+![Step 5](images/databricks/create_odbc_data_source_step5.png)
+
+The host, HTTP path and token entered here are exactly the values the properties in
+[section 3](#3-odbc-properties) take.
 
 ---
 
@@ -5070,330 +5144,363 @@ Source: https://docs.digna.ai/lv/databases/hive_connector_guide/
 
 # Source Connector for Hive
 
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai savienotos ar Hive, izmantojot vai nu iebūvēto Python savienotāju, vai ODBC draiveri.
+This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
+**DSN-less** connection string.
 
-Tā attiecas uz ekrānu **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Native Python Driver
-
-**Library:** `PyHive`  
-**Supported Authentication:** Password-based authentication only
-
-> Citiem autentifikācijas veidiem, lūdzu, izmantojiet ODBC draiveri.
-
-### *digna* Configuration (Native Driver)
-
-Norādiet šādu informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      Apache Hive
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 10000
-Database Name:   Schema that contains the source data
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Hive.
 
 ---
 
-## ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības opciju klāstu. Šī sadaļa koncentrējas uz autentifikāciju ar paroli, izmantojot draiveri **Cloudera ODBC Driver for Apache Hive**.
+Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
+backend, following the vendor's official installation guide.
 
-### 1. Install the ODBC Driver
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-Instalējiet **Cloudera ODBC Driver for Apache Hive** (vai līdzīgu), sekojot piegādātāja oficiālajai instalācijas instrukcijai.
+---
 
-### 2. Configure the ODBC Data Source
+## 2. ODBC Properties {: #2-odbc-properties }
 
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot autentifikāciju ar paroli:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
+    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
+    point and check the documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
+| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
+| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
+```
+
+### Authentication
+
+An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
+is enabled, add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
+| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
+| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+
+For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
+the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+
+### Transport and TLS
+
+| Key | Example value | Notes |
+|---|---|---|
+| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
+| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
+| `SSL` | `1` | Where HiveServer2 is TLS-secured |
+| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Hive
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Hive database for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Notes on Hive {: #4-notes-on-hive }
+
+- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
+  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
+  schemas below it.
+- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
+  create and drop tables in it, and the underlying storage location must be writable.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
+  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
+  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
+  on a cluster where *digna* has no write access at all.
+- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
+  the queue *digna*'s user submits to should have enough capacity for the inspection window.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the transport mode and your
+credentials work before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/hive/create_odbc_data_source_step1.png)
 
+The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
+the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
+[section 2](#2-odbc-properties).
 
 #### Step 2 – Test the connection
 
-Ievadiet paroli un noklikšķiniet uz pogas **Test**.
+Provide the password and click the **Test** button.
 
 ![Step 2](images/hive/create_odbc_data_source_step2.png)
 
-Pēc veiksmīgas pārbaudes noklikšķiniet uz pogas **OK**.
-
----
-
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai ar **DSN-less** iestatījumu.
-
----
-
-### A. DSN-Based Configuration
-
-#### *digna* Configuration
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Technology:      Apache Hive
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",            value: "*digna*data_hdp"
-name: "PWD",            value: "{your password in curly braces}"
-```
-
-> The `DSN` must match the name defined in your ODBC driver configuration.
-
----
-
-### B. DSN-less Configuration
-
-#### *digna* Configuration
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Technology:      Apache Hive
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DRIVER",     value: "Cloudera ODBC Driver for Apache Hive"
-name: "HOST",       value: "your server name or IP address"
-name: "PORT",       value: "Port number, e.g. 10000"
-name: "Schema",     value: "Schema that contains the source data"
-name: "UID",        value: "your hive user'
-name: "PWD",        value: "your hive password"
-name: "AuthMech",   value: "3"
-```
+After a successful test, click the **OK** button.
 
 ---
 
 # Netezza
 Source: https://docs.digna.ai/lv/databases/netezza_connector_guide/
 
-# Avota savienotājs Netezza
+# Source Connector for Netezza
 
-Šis ceļvedis apraksta, kā konfigurēt *digna*, lai savienotos ar Netezza, izmantojot ODBC draiveri.
+This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
+**DSN-less** connection string.
 
-Tas attiecas uz ekrānu **"Izveidot datubāzes savienojumu"**.
-
-![Izveidot datubāzes savienojumu](images/data_source_config_input_mask.png)
-
----
-
-## ODBC draiveris
-
-ODBC draiveris var atbalstīt dažādas autentifikācijas un savienošanās opcijas. Šī sadaļa fokusējas uz autentifikāciju, kas balstīta uz paroli, izmantojot draiveri **NetezzaSQL**.
-
-### 1. Instalējiet ODBC draiveri
-
-Instalējiet draiveri **NetezzaSQL** (vai līdzīgu), sekojot ražotāja oficiālajam instalācijas ceļvedim.
-
-### 2. Konfigurējiet ODBC datu avotu
-
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot autentifikāciju ar paroli:
-
-#### 1. solis
-![1. solis](images/netezza/create_odbc_data_source_step1.png)
-
-Atkarībā no jūsu Netezza draivera, iestatīšanas un drošības prasībām, iespējams, būs jānorāda dati arī cilnēs **Advanced DSN Options**, **SSL DSN Options** vai **Driver Options**. Vienkāršākai konfigurācijai pietiek norādīt datus cilnē **DSN Options**.
-
-Nospiediet pogu **Test Connection**.
-
-#### 2. solis
-![2. solis](images/netezza/create_odbc_data_source_step2.png)
-
-Kad tiek parādīts veiksmes ekrāns, ODBC ir pareizi konfigurēts.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Netezza.
 
 ---
 
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, izmantojot vai nu **DSN (Data Source Name)**, vai **DSN-less** iestatījumu.
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+
+Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
+that runs the *digna* backend, following the vendor's official installation guide.
+
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-### A. DSN bāzes konfigurācija
+## 2. ODBC Properties {: #2-odbc-properties }
 
-#### Konfigurācija *digna*
+!!! important "An example, not a specification"
 
-Ekrānā **"Izveidot datubāzes savienojumu"**, norādiet sekojošo:
+    The set below is one combination that is known to work. The properties belong to the
+    NetezzaSQL driver, so their names, defaults and accepted values differ between client
+    versions and platforms, and a TLS-secured appliance needs more than the properties shown
+    here. Use this as a starting point and check the documentation of the client version you
+    installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
+| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `PORT` | `5480` | |
+| `DATABASE` | `TEST` | Database the session starts in |
+| `UID` | `ADMIN` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
 
 ```
-Tehnoloģija:           Netezza
-Datubāzes nosaukums:   Datubāze, kas satur avota shēmu
-Shēmas nosaukums:      Shēma, kas satur avota datus
-Izmantot ODBC:         Ieslēgts
+DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-#### ODBC īpašības
-
-```
-name: "DSN",        value: "NZSQL"
-name: "UID",        value: "jūsu datubāzes lietotājs"
-name: "PWD",        value: "jūsu datubāzes parole"
-```
-
-> `DSN` ir jāsakrīt ar nosaukumu, kas definēts jūsu ODBC draivera konfigurācijā.
+Depending on your driver version, setup and security requirements, further properties may be
+needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
+the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
 
 ---
 
-### B. DSN-less konfigurācija
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### Konfigurācija *digna*
-
-Ekrānā **"Izveidot datubāzes savienojumu"**, norādiet sekojošo:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Tehnoloģija:           Netezza
-Datubāzes nosaukums:   Shēma, kas satur avota datus (tas pats, kas Shēmas nosaukums)
-Shēmas nosaukums:      Shēma, kas satur avota datus
-Izmantot ODBC:         Ieslēgts
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Netezza
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "Digna_Work"
 ```
 
-#### ODBC īpašības
+---
 
-```
-name: "DRIVER",     value: "NetezzaSQL"
-name: "SERVER",     value: "jūsu servera nosaukums vai IP adrese"
-name: "PORT",       value: "Porta numurs, piem., 5480"
-name: "DATABASE",   value: "datubāzes nosaukums, kas satur avota datu shēmu"
-name: "UID",        value: "jūsu datubāzes lietotājs"
-name: "PWD",        value: "jūsu datubāzes parole"
-```
+## 4. Notes on Netezza {: #4-notes-on-netezza }
+
+- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
+  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
+  can serve sources in more than one database. `DATABASE` only decides where the session
+  starts.
+- **Identifiers are upper case** unless they were created quoted, which is why the examples
+  above use `TEST` and `ADMIN`.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
+  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver and your credentials work before you
+enter them in *digna*.
+
+#### Step 1
+![Step 1](images/netezza/create_odbc_data_source_step1.png)
+
+The fields in **DSN Options** correspond one-to-one to the properties in
+[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
+requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
+**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+
+Click the **Test Connection** button.
+
+#### Step 2
+![Step 2](images/netezza/create_odbc_data_source_step2.png)
+
+When you receive the success screen, the driver is working and the values are correct.
 
 ---
 
 # Oracle
 Source: https://docs.digna.ai/lv/databases/oracle_connector_guide/
 
-# Avota savienotājs Oracle
+# Source Connector for Oracle
 
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai izveidotu savienojumu ar Oracle DB, izmantojot vai nu nativu Python savienotāju, vai ODBC draiveri.
+This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
+using a **DSN-less** connection string.
 
-Atsauce uz ekrānu **"Create a Database Connection"**.
-
-![Izveidot datubāzes savienojumu](images/data_source_config_input_mask.png)
-
----
-
-## Nativais Python draiveris
-
-**Bibliotēka:** `python-oracledb`  
-**Atbalstītā autentifikācija:** Tikai parolei balstīta autentifikācija
-
-> Citu autentifikācijas metožu gadījumā izmantojiet ODBC draiveri.
-
-### *digna* konfigurācija (nativais draiveris)
-
-Norādiet sekojošo informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      Oracle
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 1521
-Database Name:   Instance name, service name
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Oracle.
 
 ---
 
-## ODBC draiveris
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības iespēju klāstu. Šī sadaļa koncentrējas uz parolei balstītu autentifikāciju, izmantojot draiveri **Oracle in OraDB21Home1**.
+The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
+enough). Install it on the machine that runs the *digna* backend, following the vendor's
+official installation guide.
 
-### 1. Instalējiet ODBC draiveri
-
-Instalējiet **Oracle in OraDB21Home1** (vai līdzvērtīgu) saskaņā ar piegādātāja oficiālo instalācijas ceļvedi.
-
-### 2. Konfigurējiet ODBC datu avotu
-
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot parolei balstītu autentifikāciju:
-
-#### 1. solis
-![1. solis](images/oracle/create_odbc_data_source_step1.png)
-
-Piezīme:
-TNS Service Name ir jākonfigurē jūsu oracle klienta tnsnames.ora failā. Tur jānorāda savienojuma apraksts (host, port, service name).
-
-#### 2. solis – Pārbaudīt savienojumu
-
-Noklikšķiniet uz pogas Test Connection.
-
-![2. solis](images/oracle/create_odbc_data_source_step2.png)
-
-Ievadiet paroli un noklikšķiniet uz OK.
-
-![2. solis](images/oracle/create_odbc_data_source_step3.png)
+The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
+`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
+installation, so read the exact name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai ar **DSN-less** iestatījumu.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the Oracle
+    ODBC driver, so their names, defaults and accepted values differ between client versions,
+    and the driver name in particular depends on the Oracle home on your host. Use this as a
+    starting point and check the documentation of the client version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
+| `UID` | `DIGNA_SOURCE_USER` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
+```
+
+### The `DBQ` value
+
+`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
+configured on the *digna* host:
+
+| Form | Example | Requires |
+|---|---|---|
+| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
+| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+
+!!! tip "Prefer the full descriptor"
+
+    A TNS alias moves half of the connection definition into a file on the *digna* host, where
+    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
+    the connection self-contained — which is the point of a DSN-less setup.
+
+Note the parentheses in a descriptor are fine inside a connection string, but if your password
+contains `;`, brace it: `PWD={p@ss;word}`.
 
 ---
 
-### A. Konfigurācija ar DSN
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      Oracle
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Oracle
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "DIGNA_WORK"
 ```
-
-#### ODBC īpašības
-
-```
-name: "DSN",            value: "*digna*data_oracle"
-name: "UID",            value: "jūsu Oracle lietotājs"
-name: "PWD",            value: "{jūsu parole figzīmotās iekavās}"
-```
-
-> The `DSN` must match the name defined in your ODBC driver configuration.
 
 ---
 
-### B. Konfigurācija bez DSN
+## 4. Notes on Oracle {: #4-notes-on-oracle }
 
-#### *digna* konfigurācija
+- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
+  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
+  `SELECT` on those tables, either directly or through a role.
+- **One connection sees one database.** The catalog *digna* offers is the database the
+  connection is attached to, so `DBQ` decides which service, and therefore which database, is
+  profiled.
+- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
+  data dictionary, which is what Oracle stores — upper case for unquoted objects.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
+  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
+  needs read access only.
 
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+---
 
-```
-Technology:      Oracle
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC īpašības
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the Oracle Client, the service name and your
+credentials work before you enter them in *digna*.
 
-```
-name: "Driver",     value: "Oracle in OraDB21Home1"
-name: "DBQ",        value: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)))"
-name: "UID",        value: "jūsu Oracle lietotājs"
-name: "PWD",        value: "jūsu Oracle parole"
-```
+#### Step 1
+![Step 1](images/oracle/create_odbc_data_source_step1.png)
+
+The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
+installation — that is where the alias, and with it the host, port and service name, is
+defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+
+#### Step 2 – Test the connection
+
+Click the **Test Connection** button.
+
+![Step 2](images/oracle/create_odbc_data_source_step2.png)
+
+Provide the password and click the **OK** button.
+
+![Step 3](images/oracle/create_odbc_data_source_step3.png)
+
+A success message confirms that the driver and the credentials work.
 
 ---
 
@@ -5800,379 +5907,396 @@ Need help with a database connection?
 # PostgreSQL
 Source: https://docs.digna.ai/lv/databases/postgres_connector_guide/
 
-# Avota savienotājs PostgreSQL
+# Source Connector for PostgreSQL
 
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai izveidotu savienojumu ar Postgres, izmantojot vai nu vietējo Python savienotāju, vai ODBC draiveri.
+This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
+**DSN-less** connection string.
 
-Tiek atsauce uz ekrānu **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Dabiskais Python draiveris
-
-**Bibliotēka:** `psycopg`  
-**Atbalstītā autentifikācija:** tikai autentifikācija ar paroli
-
-> Citu autentifikācijas metožu gadījumā, lūdzu, izmantojiet ODBC draiveri.
-
-### *digna* konfigurācija (dabiskais draiveris)
-
-Norādiet šādu informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Tehnoloģija:     Postgres
-Saimniekdatora adrese: Servera nosaukums vai IP adrese
-Saimniekdatora ports:  Porta numurs, piemēram, 5432
-Datubāzes nosaukums:  Datubāzes nosaukums
-Shēmas nosaukums:     Shēma, kurā atrodas avota dati
-Lietotājvārds:        Datubāzes lietotāja vārds
-Lietotāja parole:     Lietotāja parole
-Izmantot ODBC:        Atspējots (noklusējums)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to PostgreSQL.
 
 ---
 
-## ODBC draiveris
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības izvēļu klāstu. Šī sadaļa koncentrējas uz autentifikāciju ar paroli, izmantojot draiveri **PostgreSQL Unicode(x64)**.
+Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
+following the vendor's official installation guide.
 
-### 1. Instalējiet ODBC draiveri
+The driver registers itself under a name that differs per platform and package — commonly
+**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
+the exact name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
+for the `DRIVER` property below.
 
-Instalējiet **PostgreSQL Unicode(x64)** (vai līdzīgu), sekojot piegādātāja oficiālajai instalācijas instrukcijai.
+---
 
-### 2. Konfigurējiet ODBC datu avotu
+## 2. ODBC Properties {: #2-odbc-properties }
 
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot autentifikāciju ar paroli:
+!!! important "An example, not a specification"
 
-#### 1. solis
+    The set below is one combination that is known to work. The properties belong to the
+    psqlODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what your server demands — SSL in particular — may differ too.
+    Use this as a starting point and check the documentation of the driver version you
+    installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `db.example.com` | Server name or IP address |
+| `PORT` | `5432` | |
+| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
+```
+
+Any further psqlODBC option can be added as an additional property — for example
+`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
+time.
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Postgres
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+
+- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
+  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
+  be available to the driver on the *digna* host. If you had to choose a specific mode when
+  testing the driver, use the same one here.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
+  in another database need their own connection.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver works and that the server accepts
+your credentials and SSL mode before you enter them in *digna*.
+
+#### Step 1
 ![Step 1](images/postgres/create_odbc_data_source_step1.png)
 
-Piezīme: Ja jūsu datubāzes konfigurācija prasa izvēlēties konkrētu "SSLMode", pārliecinieties, ka to izmantojat arī definējot konfigurāciju bez DSN.
+#### Step 2 – Test the connection
 
-#### 2. solis – Savienojuma pārbaude
-
-Nospiediet pogu **Test Connection**.
+Click the **Test Connection** button.
 
 ![Step 2](images/postgres/create_odbc_data_source_step2.png)
 
----
-
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai ar konfigurāciju **bez DSN**.
-
----
-
-### A. DSN bāzēta konfigurācija
-
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Tehnoloģija:      PostgreSQL
-Datubāzes nosaukums:  Datubāze, kurā atrodas avota shēma
-Shēmas nosaukums:     Shēma, kurā atrodas avota dati
-Izmantot ODBC:        Ieslēgts
-```
-
-#### ODBC rekvizīti
-
-```
-name: "DSN",    value: "PostgreSQL35W"
-```
-
-> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
-
----
-
-### B. Konfigurācija bez DSN
-
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Tehnoloģija:      PostgreSQL
-Datubāzes nosaukums:  Shēma, kurā atrodas avota dati (tas pats, kas Shēmas nosaukums)
-Shēmas nosaukums:     Shēma, kurā atrodas avota dati
-Izmantot ODBC:        Ieslēgts
-```
-
-#### ODBC rekvizīti
-
-```
-name: "DRIVER",     value: "PostgreSQL Unicode(x64)"
-name: "SERVER",     value: "jūsu servera nosaukums vai IP adrese"
-name: "PORT",       value: "5432"
-name: "DATABASE",   value: "postgres vai cita jūsu datubāzes nosaukums"
-name: "UID",        value: "jūsu Postgres lietotājs"
-name: "PWD",        value: "jūsu Postgres parole"
-name: "SSLMode",    value: "require"
-```
+The values you entered here are exactly the values the properties in
+[section 2](#2-odbc-properties) take.
 
 ---
 
 # Snowflake
 Source: https://docs.digna.ai/lv/databases/snowflake_connector_guide/
 
-# Avota savienotājs priekš Snowflake
+# Source Connector for Snowflake
 
-Šajā ceļvedī aprakstīts, kā konfigurēt *digna*, lai izveidotu savienojumu ar Snowflake, izmantojot vai nu nativu Python connector, vai ODBC driver.
+This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
+**DSN-less** connection string.
 
-Tas attiecas uz ekrānu **"Create a Database Connection"**.
-
-![Izveidot datubāzes savienojumu](images/data_source_config_input_mask.png)
-
----
-
-## Nativais Python draiveris
-
-**Bibliotēka:** `snowflake-connector-python`  
-**Atbalstītā autentifikācija:** Tikai paroles autentifikācija
-
-> Lai izmantotu citas autentifikācijas metodes, lūdzu izmantojiet ODBC driver.
-
-### *digna* konfigurācija (nativais draiveris)
-
-Norādiet sekojošo informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      Snowflake
-Host Address:    Snowflake account name
-Host Port:       Not needed
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-User Name:       User name and warehouse in the format "user<@>warehouse"
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Snowflake.
 
 ---
 
-## ODBC draiveris
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības iespēju spektru. Šī sadaļa fokusējas uz paroles autentifikāciju, izmantojot **SnowflakeDSIIDriver**.
+Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
+[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-### 1. Instalējiet ODBC draiveri
-
-Instalējiet **SnowflakeDSIIDriver**, sekojot ražotāja oficiālajai instalācijas instrukcijai.
-
-### 2. Konfigurējiet ODBC datu avotu
-
-Izpildiet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot paroles autentifikāciju:
-
-#### 1. solis
-![1. solis](images/snowflake/create_odbc_data_source_step1.png)
-
-Piezīmes:
-- Ja nenorādīsiet vērtības laukiem Database, Schema un Warehouse, tad tās būs jānorāda kā ODBC rekvizīti *digna* datu avota konfigurācijas laikā.
-- Vērtība lauka "Server" sastāv no jūsu Snowflake konta nosaukuma, kam seko ".snowflakecomputing.com"
-
-#### 2. solis – Savienojuma pārbaude
-
-Nospiediet pogu **TEST**. Veiksmīgs savienojums izskatīsies šādi:
-
-![2. solis](images/snowflake/create_odbc_data_source_step2.png)
+The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
+host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai ar **bez-DSN** risinājumu.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
+*digna* is verified against, and the one Snowflake requires for accounts on which
+password-only sign-in is blocked.
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and which authentication options your account permits is decided by
+    the account's security policy. Use this as a starting point and check the documentation of
+    the driver version you installed.
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
+| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake user the token belongs to |
+| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
+| `Schema` | `PUBLIC` | Default schema of the session |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
+| `token` | `<programmatic access token>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
+```
+
+### Warehouse and role
+
+Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
+session picks them up and nothing has to be configured. Otherwise add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
+| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+
+!!! tip "Give digna its own warehouse"
+
+    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
+    *digna* from competing with interactive users for compute.
+
+### Password authentication
+
+Where the account still allows it, a password works in place of the token — drop `authenticator`
+and `token` and add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `PWD` | `<password>` | Tick **Encrypted** |
 
 ---
 
-### A. DSN pamatā balstīta konfigurācija
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      Snowflake
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Snowflake
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "PUBLIC"
 ```
-
-#### ODBC rekvizīti
-
-```
-name: "DSN",            value: "snowflake_demo_2"
-name: "PWD",            value: "{your password in curly braces}"
-
-optionally:
-name: "Database",       value: "Database that contains the source schema"
-name: "Schema",         value: "Schema that contains the source data"
-name: "Warehouse",      value: "Warehouse to use for the execution of the SQLs"
-```
-
-> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC driver konfigurācijā.
 
 ---
 
-### B. Bez-DSN konfigurācija
+## 4. Notes on Snowflake {: #4-notes-on-snowflake }
 
-#### *digna* konfigurācija
+- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
+  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
+  `token` property — encrypted values can be replaced but not read back.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
+  another database need their own connection.
+- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
+  Snowflake reports them.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
+  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only — and no write grants at all.
 
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+---
 
-```
-Technology:      Snowflake
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC rekvizīti
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the account URL and your
+credentials work before you enter them in *digna*.
 
-```
-name: "Driver",     value: "{SnowflakeDSIIDriver}"
-name: "Server",     value: "your-account-name.snowflakecomputing.com'
-name: "UID",        value: "your snowflake user'
-name: "PWD",        value: "your snowflake password"
-name: "Database",   value: "Database that contains the source schema"
-name: "Schema",     value: "Schema that contains the source data"
-name: "Warehouse",  value: "Warehouse to use for the execution of the SQLs"
-```
+#### Step 1
+![Step 1](images/snowflake/create_odbc_data_source_step1.png)
+
+Notes:
+
+- The value for **Server** consists of your Snowflake account identifier followed by
+  `.snowflakecomputing.com`.
+- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
+  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+
+#### Step 2 – Test the connection
+
+Click the **TEST** button. A successful connection should look like this:
+
+![Step 2](images/snowflake/create_odbc_data_source_step2.png)
 
 ---
 
 # MS SQL Server
 Source: https://docs.digna.ai/lv/databases/sqlserver_connector_guide/
 
-# Avota savienotājs MS SQL Server
+# Source Connector for MS SQL Server
 
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai izveidotu savienojumu ar SQL Server, izmantojot vai nu vietējo Python konektoru, vai ODBC draiveri.
+This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
+using a **DSN-less** connection string.
 
-Tas attiecas uz ekrānu **"Create a Database Connection"**.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to SQL Server.
 
-![Izveidot datubāzes savienojumu](images/data_source_config_input_mask.png)
+!!! note "Azure Synapse Analytics"
 
----
-
-## Vietējais Python draiveris
-
-**Bibliotēka:** `pymssql`  
-**Atbalstītā autentifikācija:** Tikai paroles autentifikācija
-
-> Ja nepieciešamas citas autentifikācijas metodes, lūdzu, izmantojiet ODBC draiveri.
-
-### *digna* konfigurācija (vietējais draiveris)
-
-Norādiet sekojošo informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      MS SQL Server
-Host Address:    Server nosaukums vai IP adrese
-Host Port:       Porta numurs, piem. 1433
-Database Name:   Datubāzes nosaukums
-Schema Name:     Šema, kurā atrodas avota dati
-User Name:       Datubāzes lietotāja vārds
-User Password:   Lietotāja parole
-Use ODBC:        Disabled (default)
-```
+    Synapse is configured as a SQL Server connection as well, with a different host name and a
+    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## ODBC draiveris
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības iespēju klāstu. Šī sadaļa koncentrējas uz paroli balstītu autentifikāciju, izmantojot draiveri **SQL Server**.
+Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
+following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-### 1. Instalējiet ODBC draiveri
+The driver that ships with Windows under the plain name **SQL Server** also works, but it is
+long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
+where installing the current driver is not an option.
 
-Instalējiet draiveri **SQL Server** (vai līdzīgu), sekojot piegādātāja oficiālajai instalācijas instrukcijai.
-
-### 2. Konfigurējiet ODBC datu avotu
-
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu ar paroli balstītu autentifikāciju:
-
-#### 1. solis
-![1. solis](images/sqlserver/create_odbc_data_source_step1.png)
-
-Nospiediet pogu **Next >**.
-
-#### 2. solis
-![2. solis](images/sqlserver/create_odbc_data_source_step2.png)
-
-Izvēlieties autentifikācijas metodi (piem., lietotājvārds un parole) un ievadiet nepieciešamos datus.
-
-Nospiediet pogu **Next >**.
-
-#### 3. solis
-![3. solis](images/sqlserver/create_odbc_data_source_step3.png)
-
-Izvēlieties ANSI savietojamos iestatījumus, pēc tam nospiediet pogu **Next >**.
-
-#### 4. solis
-![4. solis](images/sqlserver/create_odbc_data_source_step4.png)
-
-Jūs varat atstāt noklusējuma iestatījumus vai izvēlēties žurnāla opcijas pēc vajadzības un nospiest pogu **Finish**.
-
-#### 5. solis
-![5. solis](images/sqlserver/create_odbc_data_source_step5.png)
-
-Tagad nospiediet pogu **Test datasource**.
-
-#### 6. solis
-![6. solis](images/sqlserver/create_odbc_data_source_step6.png)
-
-Kad saņemat veiksmīgu paziņojumu, ODBC ir pareizi konfigurēts.
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, izmantojot gan **DSN (Data Source Name)**, gan **DSN-less** iestatījumu.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
+    platforms. Use this as a starting point and check the documentation of the driver version
+    you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
+| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
+| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
+```
+
+### Encryption with ODBC Driver 18
+
+Driver 18 encrypts connections by default and validates the server certificate. Against a
+server with a certificate that your *digna* host does not trust — a self-signed certificate,
+typically — the connect fails with a certificate-chain error. Add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
+| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+
+### Windows Authentication
+
+To connect as the account that runs the *digna* service instead of with a SQL login, drop
+`UID` and `PWD` and add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
 
 ---
 
-### A. DSN bāzēta konfigurācija
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      MS SQL Server
-Database Name:   Datubāze, kurā atrodas avota šema
-Schema Name:     Šema, kurā atrodas avota dati
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         SQL Server
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
-
-#### ODBC īpašības
-
-```
-name: "DSN",        value: "SQLServerDext"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-
-```
-
-> `DSN` jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
 
 ---
 
-### B. DSN-less konfigurācija
+## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
 
-#### *digna* konfigurācija
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
+  in another database need their own connection.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
+  does not touch **Work Schema**. *Standard* needs read access only.
+- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
+  SQL Server Browser service to be reachable; `host,port` avoids that.
 
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
+---
 
-```
-Technology:      MS SQL Server
-Database Name:   Šema, kurā atrodas avota dati (tas pats, kas Schema Name)
-Schema Name:     Šema, kurā atrodas avota dati
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC īpašības
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own wizard is a convenient way to confirm that the driver works and that the server accepts
+your credentials before you enter them in *digna*.
 
-```
-name: "DRIVER",     value: "SQL Server"
-name: "SERVER",     value: "your server name or IP address"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-```
+#### Step 1
+![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+
+Click the **Next >** button.
+
+#### Step 2
+![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+
+Choose the authentication method (e.g. username and password)
+and provide the required data.
+
+Click the **Next >** button.
+
+#### Step 3
+![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+
+Choose the ANSI compliant settings then click the **Next >** button.
+
+#### Step 4
+![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+
+You can leave the default settings or choose logging options as needed 
+and click the **Finish** button. 
+
+#### Step 5
+![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+
+Now click the **Test datasource** button.
+
+#### Step 6
+![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+
+A success screen confirms that the driver and the credentials work. The values you entered are
+exactly the values the properties in [section 2](#2-odbc-properties) take.
 
 ---
 
@@ -6181,114 +6305,109 @@ Source: https://docs.digna.ai/lv/databases/teradata_connector_guide/
 
 # Source Connector for Teradata
 
-Šajā rokasgrāmatā aprakstīts, kā konfigurēt *digna*, lai izveidotu savienojumu ar Teradata, izmantojot vai nu nativā Python savienotāja draiveri, vai ODBC draiveri.
+This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
+**DSN-less** connection string.
 
-Tas attiecas uz ekrānu **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Native Python Driver
-
-**Library:** `teradatasql`  
-**Supported Authentication:** Password-based authentication only
-
-> For other authentication methods, please use the ODBC driver.
-
-### *digna* Configuration (Native Driver)
-
-Sniedziet šādu informāciju **"Create a Database Connection"** ekrānā:
-
-```
-Technology:      Teradata
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 1025
-Database Name:   Database name
-Schema Name:     Database name
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Teradata.
 
 ---
 
-## ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris var atbalstīt plašāku autentifikācijas un savienojamības iespēju klāstu. Šī sadaļa koncentrējas uz paroles autentifikāciju, izmantojot draiveri **Teradata Database ODBC Driver 20.00**.
+Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
+following the vendor's official installation guide.
 
-### 1. Install the ODBC Driver
+The driver registers itself with its version in the name, for example
+**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
+described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-Instalējiet draiveri **Teradata Database ODBC Driver 20.00** (vai līdzīgu), sekojot piegādātāja oficiālajai instalācijas instrukcijai.
+---
 
-### 2. Configure the ODBC Data Source
+## 2. ODBC Properties {: #2-odbc-properties }
 
-Veiciet šīs darbības, lai konfigurētu jaunu ODBC datu avotu, izmantojot paroles autentifikāciju:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
+    versions — the version is part of the driver name itself — and between platforms. Use this
+    as a starting point and check the documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
+| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
+```
+
+Useful additional properties:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
+| `DefaultDatabase` | `dad` | Database the session starts in |
+| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Teradata
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Database for the work tables of "Permanent" profiling, e.g. "Digna_Work"
+```
+
+---
+
+## 4. Notes on Teradata {: #4-notes-on-teradata }
+
+- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
+  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
+  data source, pick the database as the catalog; the schema is reported as *not applicable*.
+- **One connection reaches every permitted database**, so a single connection can serve sources
+  across databases — unlike the technologies where the connection is pinned to one database.
+- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
+  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
+  in it — a database with zero perm space cannot hold a table.
+- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
+  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
+  Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver and your credentials work before you
+enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/teradata/create_odbc_data_source_step1.png)
 
-Noklikšķiniet uz pogas **Test**.
+The **Name or IP address** field here is the `DBCNAME` property in
+[section 2](#2-odbc-properties).
+
+Click the **Test** button.
 
 #### Step 2
 ![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
-Ievadiet lietotājvārdu un paroli.
-
-Noklikšķiniet uz pogas **OK**. Kad redzat veiksmīgas konfigurācijas ekrānu, ODBC ir konfigurēts pareizi.
-
----
-
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu, vai nu ar **DSN (Data Source Name)**, vai **bez DSN**.
-
----
-
-### A. DSN-Based Configuration
-
-#### *digna* Configuration
-
-"Create a Database Connection" ekrānā norādiet sekojošo:
-
-```
-Technology:      Teradata
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",        value: "*digna*data_teradata"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-```
-
-> The `DSN` must match the name defined in your ODBC driver configuration.
-
----
-
-### B. DSN-less Configuration
-
-#### *digna* Configuration
-
-"Create a Database Connection" ekrānā norādiet sekojošo:
-
-```
-Technology:      Teradata
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DRIVER",     value: "Teradata Database ODBC Driver 20.00"
-name: "DBCNAME",    value: "your server name or IP address"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-```
+Provide username and password, then click the **OK** button. A success screen confirms that
+the driver and the credentials work.
 
 ---
 
@@ -9731,136 +9850,6 @@ sudo apachectl restart
 3. Check the server logs for any errors
 4. Change every connection that did not already use ODBC over to ODBC, then test all connections
    — see [Testing a Connection](../../../databases/overview.md#testing-a-connection)
-
----
-
-# Databricks Connector (Legacy, without Unity Catalog) | digna Documentation
-Source: https://docs.digna.ai/lv/databases/databricks_legacy_connector_guide/
-
-# Avota savienotājs Databricks — bez Unity Catalog
-
-Šī rokasgrāmata apraksta, kā konfigurēt *digna*, lai izveidotu savienojumu ar Databricks, izmantojot vai nu nativā Python konektoru, vai ODBC draiveri.
-
-Tā atsaucas uz ekrānu **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Nativais Python draiveris
-
-**Bibliotēka:** `databricks-sql-connector`  
-**Atbalstītā autentifikācija:** tikai Personīgais piekļuves tokens (PAT)
-
-> Citu autentifikācijas metožu gadījumā, lūdzu, izmantojiet ODBC draiveri.
-
-### Personīgais piekļuves tokens (PAT)
-
-Lai autentificētos, izmantojot personīgo piekļuves tokenu, skatiet oficiālo Databricks dokumentāciju:  
-[How to obtain a PAT](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
-
-### *digna* konfigurācija (nativais draiveris)
-
-Norādiet sekojošo informāciju ekrānā **"Create a Database Connection"**:
-
-```
-Technology:      Databricks (Legacy)
-Host Address:    Databricks hostname, e.g. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:       443
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-User Name:       HTTP Path provided by Databricks, e.g. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:   Personal Access Token, e.g. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Use ODBC:        Disabled (default)
-```
-
----
-
-## ODBC draiveris
-
-ODBC draiveris atbalsta plašāku autentifikācijas un savienošanās iespēju klāstu. Šī sadaļa koncentrējas uz autentifikāciju, izmantojot tokenu, ar **Simba Spark ODBC Driver**.
-
-### 1. Instalējiet ODBC draiveri
-
-Instalējiet **Simba Spark ODBC Driver**, sekojot piegādātāja oficiālajai instalācijas rokasgrāmatai.
-
-### 2. Konfigurējiet ODBC datu avotu
-
-Izpildiet šos soļus, lai konfigurētu jaunu ODBC datu avotu, izmantojot Personīgo piekļuves tokenu:
-
-#### Step 1
-![Step 1](images/databricks/create_odbc_data_source_step1.png)
-
-#### Step 2
-![Step 2](images/databricks/create_odbc_data_source_step2.png)
-
-#### Step 3
-![Step 3](images/databricks/create_odbc_data_source_step3.png)
-
-#### Step 4
-![Step 4](images/databricks/create_odbc_data_source_step4.png)
-
-#### Step 5 – savienojuma pārbaude
-
-Nospiediet pogu **TEST**. Veiksmīgs savienojums izskatīsies šādi:
-
-![Step 5](images/databricks/create_odbc_data_source_step5.png)
-
----
-
-Tagad varat konfigurēt *digna*, lai izmantotu ODBC savienojumu — vai nu ar **DSN (Data Source Name)**, vai ar **bez-DSN** konfigurāciju.
-
----
-
-### A. DSN bāzēta konfigurācija
-
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Technology:      Databricks (Legacy)
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC rekvizīti
-
-```
-name: "DSN",    value: "*digna*data_databricks"
-```
-
-> `DSN` ir jāatbilst nosaukumam, kas definēts jūsu ODBC draivera konfigurācijā.
-
----
-
-### B. Bez-DSN konfigurācija
-
-#### *digna* konfigurācija
-
-Ekrānā **"Create a Database Connection"** norādiet sekojošo:
-
-```
-Technology:      Databricks (Legacy)
-Database Name:   This parameter is not in use for databricks without unity catalog
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC rekvizīti
-
-```
-name = "Driver",          value = "{Simba Spark ODBC Driver}"
-name = "Host",            value = "xxxxxxxxxxxxxxxxxxx.databricks.com"
-name = "Port",            value = "443"
-name = "HTTPPath",        value = "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-name = "SSL",             value = "1"
-name = "ThriftTransport", value = "2"
-name = "AuthMech",        value = "3"
-name = "UID",             value = "token"
-name = "PWD",             value = "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
 
 ---
 

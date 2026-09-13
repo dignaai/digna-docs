@@ -5,6 +5,14 @@ C релизом 2026.06 digna делает крупный шаг вперёд �
 
 ---
 
+## Посмотрите обзор выпуска
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — обзор этого выпуска на YouTube-канале digna.*
+
+---
+
 ## Новые возможности  
 
 ### digna Python SDK — автоматизируйте всё с помощью Python  
@@ -52,6 +60,24 @@ C релизом 2026.06 digna делает крупный шаг вперёд �
   - Более эффективно при частых параллельных запусках
 
 **Влияние:** Даёт пользователям тонкий контроль над выполнением запросов для балансировки производительности, использования ресурсов и безопасности по памяти в зависимости от характеристик источника данных.
+
+---
+
+### Настраиваемая модель прогнозирования
+
+Модель, лежащая в основе обнаружения аномалий, теперь настраивается. Семь параметров определяют, как подбирается прогноз:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Значения по умолчанию подходят для подавляющего большинства рядов, и любой параметр можно в любой момент вернуть к значению по умолчанию.
+
+**Влияние:** Даёт пользователям контроль над самой моделью прогнозирования наряду с существующими настройками Sensitivity и Memory для полосы допуска. За рекомендациями о том, когда обращаться к тому или иному параметру и как его задать, обращайтесь в digna.
 
 ---
 

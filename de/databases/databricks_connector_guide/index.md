@@ -1,139 +1,160 @@
-# Quell-Connector für Databricks – mit Unity Catalog
+# Quell-Connector für Databricks
 
-Dieser Leitfaden beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Databricks entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu Databricks über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Er bezieht sich auf den Bildschirm **"Create a Database Connection"**.
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für Databricks spezifisch ist.
 
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+!!! note "Unity Catalog ist erforderlich"
+
+    *digna* liest die verfügbaren Kataloge aus `system.information_schema.catalogs`, der
+    Workspace muss daher für Unity Catalog aktiviert sein. Frühere *digna*-Releases boten eine
+    separate Technologie „Databricks Legacy“ für Workspaces ohne Unity Catalog an; sie steht
+    nicht mehr zur Verfügung.
 
 ---
 
-## Nativer Python-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-**Bibliothek:** `databricks-sql-connector`  
-**Unterstützte Authentifizierung:** Personal Access Token (PAT) (nur)
+Installieren Sie den **Databricks ODBC Driver** auf dem Rechner, auf dem das *digna*-Backend
+läuft, und folgen Sie dabei
+[der Installationsanleitung von Databricks](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+Je nach Version registriert sich der Treiber als **Simba Spark ODBC Driver** oder als
+**Databricks ODBC Driver**. Lesen Sie den genauen registrierten Namen auf Ihrem Host ab, wie
+unter [ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver)
+beschrieben.
 
-### Personal Access Token (PAT)
+---
 
-Um sich mit einem Personal Access Token zu authentifizieren, lesen Sie die offizielle Databricks-Dokumentation:  
-[Wie Sie ein PAT erhalten](https://docs.databricks.com/aws/en/dev-tools/auth/pat)
+## 2. Verbindungsdaten zusammentragen {: #2-gather-the-connection-details }
 
-### *digna* Konfiguration (nativer Treiber)
+Alle Werte stammen aus dem SQL-Warehouse (oder Cluster), das *digna* verwenden soll. Öffnen Sie
+es im Databricks-Workspace und gehen Sie zu **Connection details**:
 
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Informationen an:
+| Databricks-Feld | Verwendet als |
+|---|---|
+| **Server hostname** | `Host` |
+| **Port** | `Port`, normalerweise `443` |
+| **HTTP path** | `HTTPPath` |
+
+Erstellen Sie für die Authentifizierung ein **persönliches Zugriffstoken** — siehe
+[Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
+Token gehören zu einem Benutzer oder Service Principal, und dieser Principal benötigt
+`USE CATALOG`, `USE SCHEMA` und `SELECT` auf die Quelldaten.
+
+---
+
+## 3. ODBC-Eigenschaften {: #3-odbc-properties }
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum Databricks-/Simba-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen — der Treiber wurde mehr als
+    einmal umbenannt und seine Authentifizierungsoptionen erweitert — und zwischen Plattformen.
+    Nehmen Sie dies als Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen
+    installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `Driver` | `Simba Spark ODBC Driver` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `Host` | `<workspace>.cloud.databricks.com` | Server-Hostname des Warehouse, z. B. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Port` | `443` | |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP-Pfad des Warehouse oder Clusters |
+| `SSL` | `1` | Databricks-Endpunkte sind ausschließlich TLS |
+| `ThriftTransport` | `2` | HTTP-Transport, den die SQL-Endpunkte sprechen |
+| `AuthMech` | `3` | Token-Authentifizierung |
+| `UID` | `token` | Das wörtliche Wort `token`, kein Benutzername |
+| `PWD` | `dapi…` | Das persönliche Zugriffstoken. **Encrypted** ankreuzen |
+| `UseNativeQuery` | `1` | Reicht das SQL von *digna* unverändert durch — siehe unten |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
 
 ```
-Name:               Name der Verbindung. Dies wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
+Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
+```
+
+!!! important "Behalten Sie `UseNativeQuery=1` bei"
+
+    Mit `UseNativeQuery=0` — der Voreinstellung des Treibers — schreibt der Treiber eingehendes
+    SQL in das um, was er für portable ODBC-Syntax hält. *digna* erzeugt bereits
+    Databricks-SQL, daher kann das Umschreiben Backtick-Quoting und Datumsliterale verändern,
+    und das Profiling scheitert dann an Anweisungen, die so, wie sie geschrieben sind, gültig
+    wären.
+
+### OAuth statt Token
+
+Für einen Service Principal mit OAuth-Machine-to-Machine-Authentifizierung ersetzen Sie
+`AuthMech`, `UID` und `PWD` durch:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `AuthMech` | `11` | OAuth |
+| `Auth_Flow` | `1` | Client Credentials |
+| `Auth_Client_ID` | `<application id>` | Service Principal |
+| `Auth_Client_Secret` | `<client secret>` | **Encrypted** ankreuzen |
+
+---
+
+## 4. *digna*-Konfiguration {: #4-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Databricks
-Host Address:       Databricks-Hostname, z. B. "xxxxxxxxxxxxxxxxxxx.databricks.com"
-Host Port:          z. B. 443
-Database Name:      Name des zu verwendenden Katalogs.
-User Name:          HTTP-Pfad, der von Databricks bereitgestellt wird, z. B. "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-User Password:      Personal Access Token, z. B. "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-Profiling Mode:     Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und die Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Deaktiviert (Standard)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
 
 ---
 
-## ODBC-Treiber
+## 5. Hinweise zu Databricks {: #5-notes-on-databricks }
 
-Der ODBC-Treiber unterstützt eine größere Auswahl an Authentifizierungs- und Konnektivitätsoptionen. Dieser Abschnitt konzentriert sich auf tokenbasierte Authentifizierung mit dem **Simba Spark ODBC Driver**.
+- **Das Warehouse muss laufen** oder startbereit sein, wenn *digna* sich verbindet. Ein
+  Warehouse, das aus dem gestoppten Zustand hochfährt, kann länger brauchen als das
+  Verbindungs-Timeout — schlägt der Test nach einer Ruhephase beim ersten Versuch fehl,
+  wiederholen Sie ihn.
+- **Kataloge kommen aus dem Workspace.** Anders als bei den meisten Technologien erreicht eine
+  Databricks-Verbindung jeden Katalog, den der Principal sehen darf, sodass eine einzige
+  Verbindung Quellen über mehrere Kataloge hinweg bedienen kann.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** innerhalb des
+  Katalogs der Quelle an, der Principal braucht dort also `CREATE TABLE`. *Session* verwendet
+  `CREATE TEMPORARY TABLE` und rührt das **Work Schema** nicht an. *Standard* benötigt nur
+  Lesezugriff.
+- **Serverlose Warehouses funktionieren** genauso; nur `HTTPPath` unterscheidet sich.
 
-### 1. Installieren Sie den ODBC-Treiber
+---
 
-Installieren Sie den **Simba Spark ODBC Driver** gemäß der offiziellen Installationsanleitung des Anbieters.
+## 6. Treiber überprüfen (optional) {: #6-verifying-the-driver-optional }
 
-### 2. Konfigurieren Sie die ODBC-Datenquelle
-
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit einem Personal Access Token zu konfigurieren:
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber, das Warehouse und das Token funktionieren.
 
 #### Schritt 1
-![Schritt 1](images/databricks/create_odbc_data_source_step1.png)
+![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
 #### Schritt 2
-![Schritt 2](images/databricks/create_odbc_data_source_step2.png)
+![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
 #### Schritt 3
-![Schritt 3](images/databricks/create_odbc_data_source_step3.png)
+![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
 #### Schritt 4
-![Schritt 4](images/databricks/create_odbc_data_source_step4.png)
+![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
 #### Schritt 5 – Verbindung testen
 
-Klicken Sie auf die **TEST**-Schaltfläche. Eine erfolgreiche Verbindung sollte so aussehen:
+Klicken Sie auf die Schaltfläche **TEST**. Eine erfolgreiche Verbindung sollte so aussehen:
 
-![Schritt 5](images/databricks/create_odbc_data_source_step5.png)
+![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung verwendet wird, entweder mit einem **DSN (Data Source Name)** oder einer **DSN-less** Konfiguration.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Angaben ein:
-
-```
-Name:               Name der Verbindung. Dies wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         Databricks
-Database Name:      Name des zu verwendenden Katalogs.
-Profiling Mode:     Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und die Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",    value: "*digna*data_databricks"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-less Konfiguration
-
-#### *digna* Konfiguration
-
-Geben Sie auf dem Bildschirm **"Create a Database Connection"** die folgenden Angaben ein:
-
-```
-Name:               Name der Verbindung. Dies wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         Databricks
-Database Name:      Name des zu verwendenden Katalogs.
-Profiling Mode:     Der Profiling-Modus bestimmt, wie *digna* Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten für den untersuchten Tag werden in eine permanente Tabelle kopiert und die Metriken auf diesen kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und die Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Bei Verwendung des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name = "Driver",          value = "{Simba Spark ODBC Driver}"
-name = "Host",            value = "xxxxxxxxxxxxxxxxxxx.databricks.com"
-name = "Port",            value = "443"
-name = "HTTPPath",        value = "/sql/1.0/warehouses/xxxxxxxxxxxxxxx"
-name = "SSL",             value = "1"
-name = "ThriftTransport", value = "2"
-name = "AuthMech",        value = "3"
-name = "UID",             value = "token"
-name = "PWD",             value = "dapixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
+Host, HTTP-Pfad und Token, die Sie hier eingegeben haben, sind genau die Werte, die die
+Eigenschaften in [Abschnitt 3](#3-odbc-properties) annehmen.

@@ -5,6 +5,14 @@ Bu sürüm yeni **digna Python SDK**'sını, resmi **Docker dağıtım desteğin
 
 ---
 
+## Sürümü İzleyin
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — bu sürümün digna YouTube kanalındaki tanıtımı.*
+
+---
+
 ## Yeni Özellikler  
 
 ### digna Python SDK – Her şeyi Python ile Otomatikleştirin  
@@ -52,6 +60,24 @@ Sorgu yürütme stratejisini yapılandırın: **Single** veya **Combined** mode
   - Sık ve paralel yürütmeler için daha verimlidir
 
 Etkisi: Kullanıcılara veri kaynağı özelliklerine göre performans, kaynak kullanımı ve bellek güvenliği arasında denge kurmak için ince ayar yapma imkanı verir.
+
+---
+
+### Yapılandırılabilir Tahmin Modeli
+
+Anomali tespitinin arkasındaki model artık yapılandırılabilir. Tahminin nasıl uyarlandığını yedi parametre yönlendirir:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Varsayılan değerler serilerin büyük çoğunluğu için uygundur ve her parametre istendiği zaman varsayılanına döndürülebilir.
+
+Etkisi: Tolerans bandındaki mevcut Sensitivity ve Memory ayarlarının yanı sıra, kullanıcılara tahmin modelinin kendisi üzerinde denetim verir. Hangi parametreye ne zaman başvurulacağı ve nasıl ayarlanacağı konusunda yönlendirme için digna ile iletişime geçin.
 
 ---
 

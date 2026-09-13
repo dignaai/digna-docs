@@ -1,125 +1,105 @@
 # Quell-Connector für PostgreSQL
 
-Dieser Leitfaden beschreibt, wie Sie *digna* so konfigurieren, dass eine Verbindung zu Postgres entweder über den nativen Python-Connector oder den ODBC-Treiber hergestellt wird.
+Diese Anleitung beschreibt, wie Sie *digna* für die Verbindung zu PostgreSQL über **ODBC**
+konfigurieren, und zwar mit einer **DSN-losen** Verbindungszeichenfolge.
 
-Er bezieht sich auf den Bildschirm **„Datenbankverbindung erstellen“**.
-
-![Datenbankverbindung erstellen](images/data_source_config_input_mask.png)
+Die digna-Seite der Einrichtung ist für jede Technologie gleich — wo Verbindungen angelegt
+werden, wie Eigenschaftswerte verschlüsselt werden, wie eine Verbindung getestet wird und was
+die Profiling-Modi bedeuten. Das ist in der [Übersicht über Datenbankverbindungen](overview.md)
+beschrieben. Diese Seite behandelt, was für PostgreSQL spezifisch ist.
 
 ---
 
-## Nativer Python-Treiber
+## 1. ODBC-Treiber installieren {: #1-install-the-odbc-driver }
 
-**Bibliothek:** `psycopg`  
-**Unterstützte Authentifizierung:** Nur passwortbasierte Authentifizierung
+Installieren Sie den PostgreSQL-ODBC-Treiber (**psqlODBC**) auf dem Rechner, auf dem das
+*digna*-Backend läuft, und folgen Sie dabei der offiziellen Installationsanleitung des
+Herstellers.
 
-> Für andere Authentifizierungsmethoden verwenden Sie bitte den ODBC-Treiber.
+Der Treiber registriert sich unter einem Namen, der je nach Plattform und Paket abweicht — meist
+**PostgreSQL Unicode(x64)** unter Windows und **PostgreSQL ODBC Driver(UNICODE)** unter Linux.
+Lesen Sie den genauen Namen auf Ihrem Host ab, wie unter
+[ODBC-Treiber auf dem digna-Host installieren](overview.md#install-the-driver) beschrieben, und
+verwenden Sie diesen Namen für die Eigenschaft `DRIVER` weiter unten.
 
-### *digna*-Konfiguration (nativer Treiber)
+---
 
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** die folgenden Informationen an:
+## 2. ODBC-Eigenschaften {: #2-odbc-properties }
+
+!!! important "Ein Beispiel, keine Spezifikation"
+
+    Der folgende Satz ist eine Kombination, von der bekannt ist, dass sie funktioniert. Die
+    Eigenschaften gehören zum psqlODBC-Treiber, daher unterscheiden sich ihre Namen,
+    Standardwerte und zulässigen Werte zwischen Treiberversionen und Plattformen, und auch das,
+    was Ihr Server verlangt — insbesondere SSL — kann abweichen. Nehmen Sie dies als
+    Ausgangspunkt und prüfen Sie die Dokumentation der von Ihnen installierten Treiberversion.
+
+Fügen Sie im Bildschirm **Add DB Connection** die folgenden Eigenschaften hinzu:
+
+| Schlüssel | Beispielwert | Hinweise |
+|---|---|---|
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Muss dem auf dem *digna*-Host registrierten Treibernamen entsprechen |
+| `SERVER` | `db.example.com` | Servername oder IP-Adresse |
+| `PORT` | `5432` | |
+| `DATABASE` | `digna_source_db` | Datenbank, die die Quellschemata enthält. Es ist die einzige Datenbank, die diese Verbindung profilieren kann |
+| `UID` | `digna_source_user` | Datenbankbenutzer |
+| `PWD` | `<password>` | **Encrypted** ankreuzen |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` oder `verify-full` — muss vom Server akzeptiert werden |
+
+Die resultierende Verbindungszeichenfolge sieht so aus:
 
 ```
-Name:               Name der Verbindung. Wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
+DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
+```
+
+Jede weitere psqlODBC-Option lässt sich als zusätzliche Eigenschaft ergänzen — zum Beispiel
+`ReadOnly=1` für eine schreibgeschützte Sitzung oder `ConnSettings`, um beim Verbindungsaufbau
+`SET`-Anweisungen auszuführen.
+
+---
+
+## 3. *digna*-Konfiguration {: #3-digna-configuration }
+
+Geben Sie im Bildschirm **Add DB Connection** Folgendes an:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
 Technology:         Postgres
-Host Address:       Servername oder IP-Adresse
-Host Port:          Portnummer, z. B. 5432
-Database Name:      Name der Datenbank
-User Name:          Datenbank-Benutzername
-User Password:      Passwort des Benutzers
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert und Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Deaktiviert (Standard)
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
 
 ---
 
-## ODBC-Treiber
+## 4. Hinweise zu PostgreSQL {: #4-notes-on-postgresql }
 
-Der ODBC-Treiber kann eine größere Bandbreite an Authentifizierungs- und Verbindungsoptionen unterstützen. Dieser Abschnitt konzentriert sich auf passwortbasierte Authentifizierung mit dem Treiber **PostgreSQL Unicode(x64)**.
+- **`SSLMode` muss zum Server passen.** Ein mit `hostssl` konfigurierter Server weist
+  `SSLMode=disable` zurück, und `verify-ca` oder `verify-full` benötigen zusätzlich das
+  Stammzertifikat, das dem Treiber auf dem *digna*-Host zur Verfügung stehen muss. Wenn Sie beim
+  Testen des Treibers einen bestimmten Modus wählen mussten, verwenden Sie hier denselben.
+- **Eine Verbindung sieht eine Datenbank.** *digna* bietet die Schemata der in `DATABASE`
+  genannten Datenbank an, weil PostgreSQL nur die aktuelle Datenbank als Katalog meldet.
+  Quelltabellen in einer anderen Datenbank brauchen eine eigene Verbindung.
+- **Profiling-Modi.** *Permanent* legt die Arbeitstabellen im **Work Schema** an, der Benutzer
+  braucht dort also `CREATE`. *Session* verwendet `CREATE TEMPORARY TABLE` und rührt das
+  **Work Schema** nicht an. *Standard* benötigt nur Lesezugriff.
 
-### 1. ODBC-Treiber installieren
+---
 
-Installieren Sie **PostgreSQL Unicode(x64)** (oder einen ähnlichen Treiber) gemäß der offiziellen Installationsanleitung des Anbieters.
+## 5. Treiber überprüfen (optional) {: #5-verifying-the-driver-optional }
 
-### 2. ODBC-Datenquelle konfigurieren
-
-Führen Sie die folgenden Schritte aus, um eine neue ODBC-Datenquelle mit passwortbasierter Authentifizierung zu konfigurieren:
+Für eine DSN-lose Verbindung ist es nicht erforderlich, eine ODBC-Datenquelle einzurichten, aber
+der Dialog des Treibers ist ein bequemer Weg, um vor der Eingabe in *digna* zu bestätigen, dass
+der Treiber funktioniert und dass der Server Ihre Anmeldedaten und Ihren SSL-Modus akzeptiert.
 
 #### Schritt 1
-![Schritt 1](images/postgres/create_odbc_data_source_step1.png)
-
-Hinweis: Falls Ihre Datenbankkonfiguration die Auswahl eines bestimmten "SSLMode" erfordert, stellen Sie bitte sicher, dass Sie diesen beim Definieren einer DSN-losen Konfiguration ebenfalls verwenden.
+![Step 1](images/postgres/create_odbc_data_source_step1.png)
 
 #### Schritt 2 – Verbindung testen
 
 Klicken Sie auf die Schaltfläche **Test Connection**.
 
-![Schritt 2](images/postgres/create_odbc_data_source_step2.png)
+![Step 2](images/postgres/create_odbc_data_source_step2.png)
 
----
-
-Nun können Sie *digna* so konfigurieren, dass die ODBC-Verbindung entweder mit einem **DSN (Data Source Name)** oder in einer **DSN-losen** Konfiguration verwendet wird.
-
----
-
-### A. DSN-basierte Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         PostgreSQL
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert und Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DSN",    value: "PostgreSQL35W"
-```
-
-> Der `DSN` muss mit dem in Ihrer ODBC-Treiberkonfiguration definierten Namen übereinstimmen.
-
----
-
-### B. DSN-losen Konfiguration
-
-#### *digna*-Konfiguration
-
-Geben Sie im Bildschirm **„Datenbankverbindung erstellen“** Folgendes an:
-
-```
-Name:               Name der Verbindung. Wird verwendet, um die Verbindung in anderen Bildschirmen zu referenzieren.
-Technology:         PostgreSQL
-Database Name:      Datenbank, die die Quellschemata enthält
-Profiling Mode:     Der Profiling-Modus bestimmt, wie digna Daten verarbeitet und Metriken berechnet:
-                    - Standard: Metriken werden direkt auf den Quelltabellen berechnet, ohne die Daten zu kopieren.
-                    - Permanent: Daten des inspizierten Tages werden in eine permanente Tabelle kopiert und Metriken auf den kopierten Daten berechnet.
-                    - Session: Daten werden in eine Session- oder temporäre Tabelle kopiert und Metriken auf diesen temporären Daten berechnet.
-Work Schema Name:   Beim Einsatz des Profiling-Modus "Permanent" werden Arbeitstabellen in diesem Schema abgelegt.
-Use ODBC:           Aktiviert
-```
-
-#### ODBC-Eigenschaften
-
-```
-name: "DRIVER",     value: "PostgreSQL Unicode(x64)"
-name: "SERVER",     value: "your server name or IP address"
-name: "PORT",       value: "5432"
-name: "DATABASE",   value: "postgres or other name of your database"
-name: "UID",        value: "your postgres user'
-name: "PWD",        value: "your postgres password"
-name: "SSLMode",    value: "require"
-```
+Die Werte, die Sie hier eingegeben haben, sind genau die Werte, die die Eigenschaften in
+[Abschnitt 2](#2-odbc-properties) annehmen.

@@ -1,112 +1,120 @@
-# Hive forráskapcsoló
+# Source Connector for Hive
 
-Ez az útmutató leírja, hogyan konfigurálja a *digna*-t, hogy Hive-hoz csatlakozzon vagy a natív Python-illesztővel, vagy az ODBC driverrel.
+This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
+**DSN-less** connection string.
 
-Ez a következő képernyőre hivatkozik: **"Adatbázis-kapcsolat létrehozása"**.
-
-![Adatbázis-kapcsolat létrehozása](images/data_source_config_input_mask.png)
-
----
-
-## Natív Python driver
-
-**Library:** `PyHive`  
-**Támogatott hitelesítés:** Csak jelszó alapú hitelesítés
-
-> Más hitelesítési módszerekhez kérjük, használja az ODBC drivert.
-
-### *digna* konfiguráció (natív illesztő)
-
-Adja meg a következő információkat az **"Adatbázis-kapcsolat létrehozása"** képernyőn:
-
-```
-Technology:      Apache Hive
-Host Address:    Szerver neve vagy IP-címe
-Host Port:       Port száma, pl. 10000
-Database Name:   A forrásadatokat tartalmazó séma
-Schema Name:     A forrásadatokat tartalmazó séma
-User Name:       Adatbázis felhasználónév
-User Password:   A felhasználó jelszava
-Use ODBC:        Disabled (alapértelmezett)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Hive.
 
 ---
 
-## ODBC driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-Az ODBC driver szélesebb körű hitelesítési és csatlakozási opciókat támogathat. Ez a rész a jelszó alapú hitelesítésre fókuszál a **Cloudera ODBC Driver for Apache Hive** driver használatával.
+Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
+backend, following the vendor's official installation guide.
 
-### 1. Az ODBC driver telepítése
-
-Telepítse a **Cloudera ODBC Driver for Apache Hive**-t (vagy hasonlót) a gyártó hivatalos telepítési útmutatójának megfelelően.
-
-### 2. Az ODBC adatforrás beállítása
-
-Kövesse az alábbi lépéseket, hogy új ODBC adatforrást konfiguráljon jelszó alapú hitelesítéssel:
-
-#### 1. lépés
-![1. lépés](images/hive/create_odbc_data_source_step1.png)
-
-
-#### 2. lépés – A kapcsolat tesztelése
-
-Adja meg a jelszót, majd kattintson a **Test** gombra.
-
-![2. lépés](images/hive/create_odbc_data_source_step2.png)
-
-Sikeres teszt után kattintson az **OK** gombra.
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Most konfigurálhatja a *digna*-t, hogy ODBC kapcsolatot használjon, akár **DSN (Data Source Name)**-nel, akár **DSN-nélküli** beállítással.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
+    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
+    point and check the documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
+| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
+| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
+```
+
+### Authentication
+
+An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
+is enabled, add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
+| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
+| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+
+For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
+the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+
+### Transport and TLS
+
+| Key | Example value | Notes |
+|---|---|---|
+| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
+| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
+| `SSL` | `1` | Where HiveServer2 is TLS-secured |
+| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
 
 ---
 
-### A. DSN-alapú konfiguráció
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* konfiguráció
-
-Az **"Adatbázis-kapcsolat létrehozása"** képernyőn adja meg a következőket:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      Apache Hive
-Database Name:   A forrásadatokat tartalmazó séma (ugyanaz, mint a Schema Name)
-Schema Name:     A forrásadatokat tartalmazó séma
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Hive
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Hive database for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
-
-#### ODBC tulajdonságok
-
-```
-name: "DSN",            value: "*digna*data_hdp"
-name: "PWD",            value: "{a jelszavát kapcsos zárójelek között}"
-```
-
-> A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
 
 ---
 
-### B. DSN-nélküli konfiguráció
+## 4. Notes on Hive {: #4-notes-on-hive }
 
-#### *digna* konfiguráció
+- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
+  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
+  schemas below it.
+- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
+  create and drop tables in it, and the underlying storage location must be writable.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
+  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
+  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
+  on a cluster where *digna* has no write access at all.
+- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
+  the queue *digna*'s user submits to should have enough capacity for the inspection window.
 
-Az **"Adatbázis-kapcsolat létrehozása"** képernyőn adja meg a következőket:
+---
 
-```
-Technology:      Apache Hive
-Database Name:   A forrásadatokat tartalmazó séma (ugyanaz, mint a Schema Name)
-Schema Name:     A forrásadatokat tartalmazó séma
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC tulajdonságok
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the transport mode and your
+credentials work before you enter them in *digna*.
 
-```
-name: "DRIVER",     value: "Cloudera ODBC Driver for Apache Hive"
-name: "HOST",       value: "a szerver neve vagy IP-címe"
-name: "PORT",       value: "Port száma, pl. 10000"
-name: "Schema",     value: "A forrásadatokat tartalmazó séma"
-name: "UID",        value: "a hive felhasználója'
-name: "PWD",        value: "a hive jelszava"
-name: "AuthMech",   value: "3"
-```
+#### Step 1
+![Step 1](images/hive/create_odbc_data_source_step1.png)
+
+The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
+the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
+[section 2](#2-odbc-properties).
+
+#### Step 2 – Test the connection
+
+Provide the password and click the **Test** button.
+
+![Step 2](images/hive/create_odbc_data_source_step2.png)
+
+After a successful test, click the **OK** button.

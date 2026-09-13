@@ -1,110 +1,104 @@
-# PostgreSQL용 소스 커넥터
+# Source Connector for PostgreSQL
 
-이 가이드는 네이티브 Python 커넥터 또는 ODBC 드라이버 중 하나를 사용하여 *digna*를 Postgres에 연결하도록 구성하는 방법을 설명합니다.
+This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
+**DSN-less** connection string.
 
-화면 **"Create a Database Connection"** 을 참조합니다.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## 네이티브 Python 드라이버
-
-**라이브러리:** `psycopg`  
-**지원 인증:** 암호 기반 인증만 지원
-
-> 다른 인증 방법을 사용해야 하는 경우 ODBC 드라이버를 사용하세요.
-
-### *digna* 구성 (네이티브 드라이버)
-
-**"Create a Database Connection"** 화면에 다음 정보를 제공하세요:
-
-```
-기술:            Postgres
-호스트 주소:     서버 이름 또는 IP 주소
-호스트 포트:     포트 번호, 예: 5432
-데이터베이스 이름: 데이터베이스 이름
-스키마 이름:     소스 데이터를 포함하는 스키마
-사용자 이름:     데이터베이스 사용자 이름
-사용자 비밀번호: 사용자 비밀번호
-ODBC 사용:       사용 안 함(기본값)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to PostgreSQL.
 
 ---
 
-## ODBC 드라이버
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC 드라이버는 더 폭넓은 인증 및 연결 옵션을 지원할 수 있습니다. 이 섹션은 **PostgreSQL Unicode(x64)** 드라이버를 사용한 암호 기반 인증에 중점을 둡니다.
+Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
+following the vendor's official installation guide.
 
-### 1. ODBC 드라이버 설치
+The driver registers itself under a name that differs per platform and package — commonly
+**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
+the exact name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
+for the `DRIVER` property below.
 
-공급업체의 공식 설치 가이드를 따라 **PostgreSQL Unicode(x64)**(또는 유사한 드라이버)를 설치하세요.
+---
 
-### 2. ODBC 데이터 소스 구성
+## 2. ODBC Properties {: #2-odbc-properties }
 
-암호 기반 인증을 사용하여 새 ODBC 데이터 소스를 구성하려면 다음 단계를 따르세요:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    psqlODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what your server demands — SSL in particular — may differ too.
+    Use this as a starting point and check the documentation of the driver version you
+    installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `db.example.com` | Server name or IP address |
+| `PORT` | `5432` | |
+| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
+```
+
+Any further psqlODBC option can be added as an additional property — for example
+`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
+time.
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Postgres
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
+```
+
+---
+
+## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+
+- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
+  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
+  be available to the driver on the *digna* host. If you had to choose a specific mode when
+  testing the driver, use the same one here.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
+  in another database need their own connection.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver works and that the server accepts
+your credentials and SSL mode before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/postgres/create_odbc_data_source_step1.png)
 
-참고: 데이터베이스 설정에서 특정 "SSLMode"를 선택해야 하는 경우, DSN-less 구성을 정의할 때에도 동일한 설정을 사용해야 합니다.
+#### Step 2 – Test the connection
 
-#### Step 2 – 연결 테스트
-
-**Test Connection** 버튼을 클릭하세요.
+Click the **Test Connection** button.
 
 ![Step 2](images/postgres/create_odbc_data_source_step2.png)
 
----
-
-이제 **DSN(Data Source Name)** 기반 또는 **DSN-less** 설정으로 *digna*가 ODBC 연결을 사용하도록 구성할 수 있습니다.
-
----
-
-### A. DSN 기반 구성
-
-#### *digna* 구성
-
-**"Create a Database Connection"** 화면에 다음을 입력하세요:
-
-```
-기술:            PostgreSQL
-데이터베이스 이름: 소스 스키마를 포함하는 데이터베이스
-스키마 이름:     소스 데이터를 포함하는 스키마
-ODBC 사용:       사용
-```
-
-#### ODBC 속성
-
-```
-name: "DSN",    value: "PostgreSQL35W"
-```
-
-> `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
-
----
-
-### B. DSN-less 구성
-
-#### *digna* 구성
-
-**"Create a Database Connection"** 화면에 다음을 입력하세요:
-
-```
-기술:            PostgreSQL
-데이터베이스 이름: 소스 데이터를 포함하는 스키마(스키마 이름과 동일)
-스키마 이름:     소스 데이터를 포함하는 스키마
-ODBC 사용:       사용
-```
-
-#### ODBC 속성
-
-```
-name: "DRIVER",     value: "PostgreSQL Unicode(x64)"
-name: "SERVER",     value: "your server name or IP address"
-name: "PORT",       value: "5432"
-name: "DATABASE",   value: "postgres or other name of your database"
-name: "UID",        value: "your postgres user"
-name: "PWD",        value: "your postgres password"
-name: "SSLMode",    value: "require"
-```
+The values you entered here are exactly the values the properties in
+[section 2](#2-odbc-properties) take.

@@ -1,133 +1,146 @@
-# Forráskapcsoló MS SQL Serverhez
+# Source Connector for MS SQL Server
 
-Ez az útmutató leírja, hogyan konfigurálja a *digna*-t, hogy SQL Serverhez csatlakozzon vagy a natív Python-connector (`pymssql`), vagy az ODBC driver használatával.
+This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
+using a **DSN-less** connection string.
 
-A leírás a **"Create a Database Connection"** képernyőre vonatkozik.
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to SQL Server.
 
-![Adatbázis-kapcsolat létrehozása](images/data_source_config_input_mask.png)
+!!! note "Azure Synapse Analytics"
 
----
-
-## Natív Python driver
-
-**Library:** `pymssql`  
-**Támogatott hitelesítés:** Csak jelszó alapú hitelesítés
-
-> Más hitelesítési módszerekhez kérjük, használja az ODBC drivert.
-
-### *digna* konfiguráció (natív driver)
-
-Adja meg a következő információkat a **"Create a Database Connection"** képernyőn:
-
-```
-Technology:      MS SQL Server
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 1433
-Database Name:   Database name
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+    Synapse is configured as a SQL Server connection as well, with a different host name and a
+    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## ODBC driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-Az ODBC driver szélesebb hitelesítési és csatlakozási lehetőségeket támogathat. Ez a szakasz a jelszó alapú hitelesítésre fókuszál az **SQL Server** driver használatával.
+Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
+following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-### 1. Telepítse az ODBC drivert
+The driver that ships with Windows under the plain name **SQL Server** also works, but it is
+long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
+where installing the current driver is not an option.
 
-Telepítse az **SQL Server** (vagy hasonló) drivert a gyártó hivatalos telepítési útmutatója szerint.
-
-### 2. Konfigurálja az ODBC adatforrást
-
-Kövesse az alábbi lépéseket egy új ODBC adatforrás konfigurálásához jelszó alapú hitelesítéssel:
-
-#### 1. lépés
-![1. lépés](images/sqlserver/create_odbc_data_source_step1.png)
-
-Kattintson a **Next >** gombra.
-
-#### 2. lépés
-![2. lépés](images/sqlserver/create_odbc_data_source_step2.png)
-
-Válassza ki a hitelesítési módszert (pl. felhasználónév és jelszó) és adja meg a szükséges adatokat.
-
-Kattintson a **Next >** gombra.
-
-#### 3. lépés
-![3. lépés](images/sqlserver/create_odbc_data_source_step3.png)
-
-Válassza az ANSI kompatibilis beállításokat, majd kattintson a **Next >** gombra.
-
-#### 4. lépés
-![4. lépés](images/sqlserver/create_odbc_data_source_step4.png)
-
-Hagyhatja az alapértelmezett beállításokat, vagy választhat naplózási opciókat szükség szerint, majd kattintson a **Finish** gombra.
-
-#### 5. lépés
-![5. lépés](images/sqlserver/create_odbc_data_source_step5.png)
-
-Most kattintson a **Test datasource** gombra.
-
-#### 6. lépés
-![6. lépés](images/sqlserver/create_odbc_data_source_step6.png)
-
-Ha megjelenik a siker képernyő, az ODBC megfelelően konfigurálva van.
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-Most már konfigurálhatja a *digna*-t az ODBC kapcsolat használatára, akár **DSN (Data Source Name)** alapú, akár **DSN-nélküli** beállítással.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
+    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
+    platforms. Use this as a starting point and check the documentation of the driver version
+    you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
+| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
+| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
+```
+
+### Encryption with ODBC Driver 18
+
+Driver 18 encrypts connections by default and validates the server certificate. Against a
+server with a certificate that your *digna* host does not trust — a self-signed certificate,
+typically — the connect fails with a certificate-chain error. Add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
+| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+
+### Windows Authentication
+
+To connect as the account that runs the *digna* service instead of with a SQL login, drop
+`UID` and `PWD` and add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
 
 ---
 
-### A. DSN-alapú konfiguráció
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* konfiguráció
-
-A **"Create a Database Connection"** képernyőn adja meg a következőket:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      MS SQL Server
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         SQL Server
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
-
-#### ODBC tulajdonságok
-
-```
-name: "DSN",        value: "SQLServerDext"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-
-```
-
-> A `DSN`-nek meg kell egyeznie az ODBC driver konfigurációjában megadott névvel.
 
 ---
 
-### B. DSN-nélküli konfiguráció
+## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
 
-#### *digna* konfiguráció
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
+  in another database need their own connection.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
+  does not touch **Work Schema**. *Standard* needs read access only.
+- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
+  SQL Server Browser service to be reachable; `host,port` avoids that.
 
-A **"Create a Database Connection"** képernyőn adja meg a következőket:
+---
 
-```
-Technology:      MS SQL Server
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC tulajdonságok
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own wizard is a convenient way to confirm that the driver works and that the server accepts
+your credentials before you enter them in *digna*.
 
-```
-name: "DRIVER",     value: "SQL Server"
-name: "SERVER",     value: "your server name or IP address"
-name: "UID",        value: "your database user"
-name: "PWD",        value: "your database password"
-name: "DATABASE",   value: "name of the database that contains the source data schema"
-```
+#### Step 1
+![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+
+Click the **Next >** button.
+
+#### Step 2
+![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+
+Choose the authentication method (e.g. username and password)
+and provide the required data.
+
+Click the **Next >** button.
+
+#### Step 3
+![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+
+Choose the ANSI compliant settings then click the **Next >** button.
+
+#### Step 4
+![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+
+You can leave the default settings or choose logging options as needed 
+and click the **Finish** button. 
+
+#### Step 5
+![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+
+Now click the **Test datasource** button.
+
+#### Step 6
+![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+
+A success screen confirms that the driver and the credentials work. The values you entered are
+exactly the values the properties in [section 2](#2-odbc-properties) take.

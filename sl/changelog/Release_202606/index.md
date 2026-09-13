@@ -5,6 +5,14 @@ Ta različica uvaja nov **digna Python SDK**, uradno **Docker podporo za namesti
 
 ---
 
+## Oglejte si Izdajo
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — predstavitev te izdaje na YouTube kanalu digna.*
+
+---
+
 ## Nove funkcije  
 
 ### digna Python SDK – avtomatizirajte vse s Pythonom  
@@ -53,6 +61,24 @@ Konfigurirajte strategijo izvajanja poizvedb: **Single** ali **Combined** način
 
 **Vpliv:** Uporabnikom daje fino nastavitev nad izvajanjem poizvedb za uravnoteženje zmogljivosti, porabe virov in varnosti pomnilnika glede na značilnosti njihovega podatkovnega vira.
 
+
+---
+
+### Nastavljiv Napovedni Model
+
+Model, na katerem temelji zaznavanje anomalij, je zdaj nastavljiv. Sedem parametrov usmerja, kako se napoved prilagodi:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Privzete vrednosti ustrezajo veliki večini serij, vsak parameter pa je mogoče kadar koli vrniti na privzeto vrednost.
+
+**Vpliv:** Uporabnikom daje nadzor nad samim napovednim modelom, poleg obstoječih nastavitev Sensitivity in Memory za pas tolerance. Za nasvet, kdaj poseči po posameznem parametru in kako ga nastaviti, se obrnite na digna.
 
 ---
 

@@ -1,112 +1,120 @@
-# Hive용 소스 커넥터
+# Source Connector for Hive
 
-이 가이드는 네이티브 Python 커넥터 또는 ODBC 드라이버 중 하나를 사용하여 *digna*를 Hive에 연결하도록 구성하는 방법을 설명합니다.
+This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
+**DSN-less** connection string.
 
-화면 **"데이터베이스 연결 생성"** 을 참조합니다.
-
-![데이터베이스 연결 생성](images/data_source_config_input_mask.png)
-
----
-
-## 네이티브 Python 드라이버
-
-**라이브러리:** `PyHive`  
-**지원되는 인증:** 비밀번호 기반 인증만 지원
-
-> 다른 인증 방법을 사용하려면 ODBC 드라이버를 사용하세요.
-
-### *digna* 구성 (네이티브 드라이버)
-
-화면 **"데이터베이스 연결 생성"** 에 다음 정보를 입력하세요:
-
-```
-Technology:      Apache Hive
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 10000
-Database Name:   Schema that contains the source data
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Hive.
 
 ---
 
-## ODBC 드라이버
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC 드라이버는 더 다양한 인증 및 연결 옵션을 지원할 수 있습니다. 이 섹션은 **Cloudera ODBC Driver for Apache Hive** 드라이버를 사용한 비밀번호 기반 인증에 중점을 둡니다.
+Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
+backend, following the vendor's official installation guide.
 
-### 1. ODBC 드라이버 설치
-
-공식 벤더 설치 가이드를 따라 **Cloudera ODBC Driver for Apache Hive**(또는 유사 드라이버)를 설치하세요.
-
-### 2. ODBC 데이터 소스 구성
-
-비밀번호 기반 인증을 사용하여 새 ODBC 데이터 소스를 구성하려면 다음 단계를 따르세요:
-
-#### 1단계
-![1단계](images/hive/create_odbc_data_source_step1.png)
-
-
-#### 2단계 – 연결 테스트
-
-비밀번호를 입력하고 **Test** 버튼을 클릭하세요.
-
-![2단계](images/hive/create_odbc_data_source_step2.png)
-
-테스트가 성공하면 **OK** 버튼을 클릭하세요.
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
 ---
 
-이제 **DSN(Data Source Name)** 기반 또는 **DSN-less** 설정으로 *digna*가 ODBC 연결을 사용하도록 구성할 수 있습니다.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
+    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
+    point and check the documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
+| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
+| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
+```
+
+### Authentication
+
+An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
+is enabled, add:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
+| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
+| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+
+For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
+the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+
+### Transport and TLS
+
+| Key | Example value | Notes |
+|---|---|---|
+| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
+| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
+| `SSL` | `1` | Where HiveServer2 is TLS-secured |
+| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
 
 ---
 
-### A. DSN 기반 구성
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* 구성
-
-화면 **"데이터베이스 연결 생성"** 에 다음을 입력하세요:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Technology:      Apache Hive
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Hive
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Hive database for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
-
-#### ODBC 속성
-
-```
-name: "DSN",            value: "*digna*data_hdp"
-name: "PWD",            value: "{your password in curly braces}"
-```
-
-> `DSN`은 ODBC 드라이버 구성에 정의된 이름과 일치해야 합니다.
 
 ---
 
-### B. DSN-less 구성
+## 4. Notes on Hive {: #4-notes-on-hive }
 
-#### *digna* 구성
+- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
+  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
+  schemas below it.
+- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
+  create and drop tables in it, and the underlying storage location must be writable.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
+  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
+  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
+  on a cluster where *digna* has no write access at all.
+- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
+  the queue *digna*'s user submits to should have enough capacity for the inspection window.
 
-화면 **"데이터베이스 연결 생성"** 에 다음을 입력하세요:
+---
 
-```
-Technology:      Apache Hive
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC 속성
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver, the transport mode and your
+credentials work before you enter them in *digna*.
 
-```
-name: "DRIVER",     value: "Cloudera ODBC Driver for Apache Hive"
-name: "HOST",       value: "your server name or IP address"
-name: "PORT",       value: "Port number, e.g. 10000"
-name: "Schema",     value: "Schema that contains the source data"
-name: "UID",        value: "your hive user'
-name: "PWD",        value: "your hive password"
-name: "AuthMech",   value: "3"
-```
+#### Step 1
+![Step 1](images/hive/create_odbc_data_source_step1.png)
+
+The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
+the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
+[section 2](#2-odbc-properties).
+
+#### Step 2 – Test the connection
+
+Provide the password and click the **Test** button.
+
+![Step 2](images/hive/create_odbc_data_source_step2.png)
+
+After a successful test, click the **OK** button.

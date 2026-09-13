@@ -496,6 +496,14 @@ This release introduces the new **digna Python SDK**, official **Docker deployme
 
 ---
 
+## Watch the Release
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — a walkthrough of this release on the digna YouTube channel.*
+
+---
+
 ## New Features  
 
 ### digna Python SDK – Automate Everything with Python  
@@ -5011,7 +5019,7 @@ specific to Azure Synapse.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
 following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
@@ -5020,7 +5028,7 @@ and read the exact registered driver name off your host as described in
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -5079,7 +5087,7 @@ the authentication method your workspace expects, for example:
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -5093,7 +5101,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse
+## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
 
 - **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
   tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
@@ -5108,7 +5116,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own wizard is a convenient way to confirm that the driver works and that the workspace accepts
@@ -5178,7 +5186,7 @@ specific to Databricks.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
 [Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
@@ -5189,7 +5197,7 @@ Depending on the version, the driver registers itself as **Simba Spark ODBC Driv
 
 ---
 
-## 2. Gather the Connection Details
+## 2. Gather the Connection Details {: #2-gather-the-connection-details }
 
 All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
 Databricks workspace and go to **Connection details**:
@@ -5207,7 +5215,7 @@ Tokens belong to a user or service principal, and that principal needs `USE CATA
 
 ---
 
-## 3. ODBC Properties
+## 3. ODBC Properties {: #3-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -5259,7 +5267,7 @@ For a service principal with OAuth machine-to-machine authentication, replace `A
 
 ---
 
-## 4. *digna* Configuration
+## 4. *digna* Configuration {: #4-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -5272,7 +5280,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks
+## 5. Notes on Databricks {: #5-notes-on-databricks }
 
 - **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
   resumes from a stopped state can take longer than the connection timeout — if the test fails
@@ -5288,7 +5296,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 6. Verifying the Driver (optional)
+## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver, the warehouse and the token work
@@ -5332,7 +5340,7 @@ specific to Hive.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
 backend, following the vendor's official installation guide.
@@ -5342,7 +5350,7 @@ Read the exact registered driver name off your host as described in
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -5391,7 +5399,7 @@ the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documen
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -5404,7 +5412,7 @@ Work Schema:        Hive database for the work tables of "Permanent" profiling, 
 
 ---
 
-## 4. Notes on Hive
+## 4. Notes on Hive {: #4-notes-on-hive }
 
 - **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
   driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
@@ -5420,7 +5428,7 @@ Work Schema:        Hive database for the work tables of "Permanent" profiling, 
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver, the transport mode and your
@@ -5458,7 +5466,7 @@ specific to Netezza.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
 that runs the *digna* backend, following the vendor's official installation guide.
@@ -5468,7 +5476,7 @@ Read the exact registered driver name off your host as described in
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -5501,7 +5509,7 @@ the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a prop
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -5514,7 +5522,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza
+## 4. Notes on Netezza {: #4-notes-on-netezza }
 
 - **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
   `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
@@ -5528,7 +5536,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver and your credentials work before you
@@ -5566,7 +5574,7 @@ specific to Oracle.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
 enough). Install it on the machine that runs the *digna* backend, following the vendor's
@@ -5579,7 +5587,7 @@ installation, so read the exact name off your host as described in
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -5625,7 +5633,7 @@ contains `;`, brace it: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -5638,7 +5646,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle
+## 4. Notes on Oracle {: #4-notes-on-oracle }
 
 - **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
   owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
@@ -5655,7 +5663,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the Oracle Client, the service name and your
@@ -6097,7 +6105,7 @@ specific to PostgreSQL.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
 following the vendor's official installation guide.
@@ -6110,7 +6118,7 @@ for the `DRIVER` property below.
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -6144,7 +6152,7 @@ time.
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -6157,7 +6165,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL
+## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
 
 - **`SSLMode` must match the server.** A server configured with `hostssl` rejects
   `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
@@ -6172,7 +6180,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver works and that the server accepts
@@ -6207,7 +6215,7 @@ specific to Snowflake.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
 [Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
@@ -6217,7 +6225,7 @@ host as described in [Install the ODBC Driver on the digna Host](overview.md#ins
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
 *digna* is verified against, and the one Snowflake requires for accounts on which
@@ -6273,7 +6281,7 @@ and `token` and add:
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -6286,7 +6294,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake
+## 4. Notes on Snowflake {: #4-notes-on-snowflake }
 
 - **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
   the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
@@ -6302,7 +6310,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver, the account URL and your
@@ -6346,7 +6354,7 @@ specific to SQL Server.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
 following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
@@ -6360,7 +6368,7 @@ Read the exact registered driver name off your host as described in
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -6409,7 +6417,7 @@ To connect as the account that runs the *digna* service instead of with a SQL lo
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -6422,7 +6430,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server
+## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
 
 - **One connection sees one database.** *digna* offers the schemas of the database named in
   `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
@@ -6435,7 +6443,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own wizard is a convenient way to confirm that the driver works and that the server accepts
@@ -6493,7 +6501,7 @@ specific to Teradata.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
 following the vendor's official installation guide.
@@ -6504,7 +6512,7 @@ described in [Install the ODBC Driver on the digna Host](overview.md#install-the
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -6538,7 +6546,7 @@ Useful additional properties:
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -6551,7 +6559,7 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata
+## 4. Notes on Teradata {: #4-notes-on-teradata }
 
 - **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
   see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
@@ -6567,7 +6575,7 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver and your credentials work before you

@@ -1,110 +1,104 @@
-# Lähdeyhteys PostgreSQL:ään
+# Source Connector for PostgreSQL
 
-Tässä ohjeessa kuvataan, miten *digna* konfiguroidaan muodostamaan yhteys Postgresiin joko natiivin Python-ajurin tai ODBC-ajurin kautta.
+This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
+**DSN-less** connection string.
 
-Tämä viittaa kohtaan **"Luo tietokantayhteys"**.
-
-![Luo tietokantayhteys](images/data_source_config_input_mask.png)
-
----
-
-## Natiivinen Python-ajuri
-
-**Kirjasto:** `psycopg`  
-**Tuettu todennus:** Vain salasanapohjainen todennus
-
-> Muihin todennusmenetelmiin käytä ODBC-ajuria.
-
-### *digna* -määritys (natiivinen ajuri)
-
-Anna seuraavat tiedot **"Luo tietokantayhteys"** -näytössä:
-
-```
-Teknologia:         Postgres
-Isäntäosoite:       Palvelimen nimi tai IP-osoite
-Isäntäportti:       Porttinumero, esim. 5432
-Tietokannan nimi:   Tietokannan nimi
-Skeeman nimi:       Skeema, joka sisältää lähdetiedot
-Käyttäjänimi:       Tietokannan käyttäjänimi
-Käyttäjän salasana: Salasana käyttäjälle
-Käytä ODBC:         Pois käytöstä (oletus)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to PostgreSQL.
 
 ---
 
-## ODBC-ajuri
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC-ajuri voi tukea laajempaa valikoimaa todennus- ja yhteysoptioita. Tässä keskitytään salasanapohjaiseen todennukseen ajurin **PostgreSQL Unicode(x64)** avulla.
+Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
+following the vendor's official installation guide.
 
-### 1. Asenna ODBC-ajuri
-
-Asenna **PostgreSQL Unicode(x64)** (tai vastaava) noudattamalla toimittajan virallista asennusohjetta.
-
-### 2. Määritä ODBC-tietolähde
-
-Noudata näitä vaiheita määrittääksesi uuden ODBC-tietolähteen salasanapohjaisella todennuksella:
-
-#### Vaihe 1
-![Vaihe 1](images/postgres/create_odbc_data_source_step1.png)
-
-Huom: Jos tietokanta-asetuksissasi täytyy valita tietty "SSLMode", käytä samaa asetusta myös DSN-less-konfiguraatiossa.
-
-#### Vaihe 2 – Testaa yhteys
-
-Paina **Test Connection** -painiketta.
-
-![Vaihe 2](images/postgres/create_odbc_data_source_step2.png)
+The driver registers itself under a name that differs per platform and package — commonly
+**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
+the exact name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
+for the `DRIVER` property below.
 
 ---
 
-Nyt voit määrittää *digna*:n käyttämään ODBC-yhteyttä joko **DSN (Data Source Name)** -pohjaisesti tai **DSN-less** -asetuksella.
+## 2. ODBC Properties {: #2-odbc-properties }
+
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    psqlODBC driver, so their names, defaults and accepted values differ between driver
+    versions and platforms, and what your server demands — SSL in particular — may differ too.
+    Use this as a starting point and check the documentation of the driver version you
+    installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
+| `SERVER` | `db.example.com` | Server name or IP address |
+| `PORT` | `5432` | |
+| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
+```
+
+Any further psqlODBC option can be added as an additional property — for example
+`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
+time.
 
 ---
 
-### A. DSN-pohjainen määritys
+## 3. *digna* Configuration {: #3-digna-configuration }
 
-#### *digna* -määritys
-
-Anna **"Luo tietokantayhteys"** -näytössä seuraavat tiedot:
+In the **Add DB Connection** screen, provide the following:
 
 ```
-Teknologia:         PostgreSQL
-Tietokannan nimi:   Tietokanta, joka sisältää lähdeskeeman
-Skeeman nimi:       Skeema, joka sisältää lähdetiedot
-Käytä ODBC:         Käytössä
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Postgres
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "digna_work"
 ```
-
-#### ODBC-ominaisuudet
-
-```
-name: "DSN",    value: "PostgreSQL35W"
-```
-
-> `DSN` pitää vastata ODBC-ajurin konfiguraatiossa määriteltyä nimeä.
 
 ---
 
-### B. DSN-less-määritys
+## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
 
-#### *digna* -määritys
+- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
+  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
+  be available to the driver on the *digna* host. If you had to choose a specific mode when
+  testing the driver, use the same one here.
+- **One connection sees one database.** *digna* offers the schemas of the database named in
+  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
+  in another database need their own connection.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only.
 
-Anna **"Luo tietokantayhteys"** -näytössä seuraavat tiedot:
+---
 
-```
-Teknologia:         PostgreSQL
-Tietokannan nimi:   Skeema, joka sisältää lähdetiedot (sama kuin Skeeman nimi)
-Skeeman nimi:       Skeema, joka sisältää lähdetiedot
-Käytä ODBC:         Käytössä
-```
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
-#### ODBC-ominaisuudet
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver works and that the server accepts
+your credentials and SSL mode before you enter them in *digna*.
 
-```
-name: "DRIVER",     value: "PostgreSQL Unicode(x64)"
-name: "SERVER",     value: "palvelimesi nimi tai IP-osoite"
-name: "PORT",       value: "5432"
-name: "DATABASE",   value: "postgres tai muu tietokantasi nimi"
-name: "UID",        value: "postgres-käyttäjätunnuksesi"
-name: "PWD",        value: "postgres-käyttäjän salasana"
-name: "SSLMode",    value: "require"
-```
+#### Step 1
+![Step 1](images/postgres/create_odbc_data_source_step1.png)
+
+#### Step 2 – Test the connection
+
+Click the **Test Connection** button.
+
+![Step 2](images/postgres/create_odbc_data_source_step2.png)
+
+The values you entered here are exactly the values the properties in
+[section 2](#2-odbc-properties) take.

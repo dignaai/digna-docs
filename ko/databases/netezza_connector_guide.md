@@ -1,88 +1,102 @@
-# Netezza용 소스 커넥터
+# Source Connector for Netezza
 
-이 가이드는 ODBC 드라이버를 사용해 *digna*를 Netezza에 연결하도록 구성하는 방법을 설명합니다.
+This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
+**DSN-less** connection string.
 
-이 문서는 **"Create a Database Connection"** 화면을 참조합니다.
-
-![데이터베이스 연결 생성](images/data_source_config_input_mask.png)
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Netezza.
 
 ---
 
-## ODBC 드라이버
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC 드라이버는 다양한 인증 및 연결 옵션을 지원할 수 있습니다. 이 섹션에서는 드라이버 **NetezzaSQL**을 사용한 비밀번호 기반 인증에 중점을 둡니다.
+Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
+that runs the *digna* backend, following the vendor's official installation guide.
 
-### 1. ODBC 드라이버 설치
+Read the exact registered driver name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-공급업체의 공식 설치 가이드를 따라 **NetezzaSQL**(또는 이와 유사한) 드라이버를 설치합니다.
+---
 
-### 2. ODBC 데이터 소스 구성
+## 2. ODBC Properties {: #2-odbc-properties }
 
-비밀번호 기반 인증을 사용하여 새 ODBC 데이터 소스를 구성하려면 다음 단계를 따르세요:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    NetezzaSQL driver, so their names, defaults and accepted values differ between client
+    versions and platforms, and a TLS-secured appliance needs more than the properties shown
+    here. Use this as a starting point and check the documentation of the client version you
+    installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
+| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `PORT` | `5480` | |
+| `DATABASE` | `TEST` | Database the session starts in |
+| `UID` | `ADMIN` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
+```
+
+Depending on your driver version, setup and security requirements, further properties may be
+needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
+the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Netezza
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "Digna_Work"
+```
+
+---
+
+## 4. Notes on Netezza {: #4-notes-on-netezza }
+
+- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
+  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
+  can serve sources in more than one database. `DATABASE` only decides where the session
+  starts.
+- **Identifiers are upper case** unless they were created quoted, which is why the examples
+  above use `TEST` and `ADMIN`.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
+  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
+  **Work Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver and your credentials work before you
+enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/netezza/create_odbc_data_source_step1.png)
 
-사용 중인 Netezza 드라이버와 설정 및 보안 요구사항에 따라 **Advanced DSN Options**, **SSL DSN Options** 또는 **Driver Options** 탭에도 정보를 입력해야 할 수 있습니다. 가장 간단한 설정의 경우 **DSN Options**에만 정보를 입력하는 것으로 충분합니다.
+The fields in **DSN Options** correspond one-to-one to the properties in
+[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
+requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
+**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
 
-**Test Connection** 버튼을 클릭하세요.
+Click the **Test Connection** button.
 
 #### Step 2
 ![Step 2](images/netezza/create_odbc_data_source_step2.png)
 
-성공 화면이 표시되면 ODBC가 제대로 구성된 것입니다.
-
----
-
-이제 **DSN (Data Source Name)** 기반 또는 **DSN-less** 설정 중 하나를 사용하여 *digna*에서 ODBC 연결을 구성할 수 있습니다.
-
----
-
-### A. DSN 기반 구성
-
-#### *digna* 구성
-
-**"Create a Database Connection"** 화면에서 다음 항목을 입력하세요:
-
-```
-Technology:      Netezza
-Database Name:   소스 스키마를 포함한 데이터베이스
-Schema Name:     소스 데이터를 포함한 스키마
-Use ODBC:        Enabled
-```
-
-#### ODBC 속성
-
-```
-name: "DSN",        value: "NZSQL"
-name: "UID",        value: "데이터베이스 사용자"
-name: "PWD",        value: "데이터베이스 비밀번호"
-```
-
-> `DSN`은 ODBC 드라이버 구성에서 정의한 이름과 일치해야 합니다.
-
----
-
-### B. DSN-less 구성
-
-#### *digna* 구성
-
-**"Create a Database Connection"** 화면에서 다음 항목을 입력하세요:
-
-```
-Technology:      Netezza
-Database Name:   소스 데이터를 포함한 스키마 (Schema Name과 동일)
-Schema Name:     소스 데이터를 포함한 스키마
-Use ODBC:        Enabled
-```
-
-#### ODBC 속성
-
-```
-name: "DRIVER",     value: "NetezzaSQL"
-name: "SERVER",     value: "서버 이름 또는 IP 주소"
-name: "PORT",       value: "포트 번호 (예: 5480)"
-name: "DATABASE",   value: "소스 데이터 스키마를 포함한 데이터베이스 이름"
-name: "UID",        value: "데이터베이스 사용자"
-name: "PWD",        value: "데이터베이스 비밀번호"
-```
+When you receive the success screen, the driver is working and the values are correct.

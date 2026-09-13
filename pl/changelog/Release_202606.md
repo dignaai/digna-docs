@@ -5,6 +5,14 @@ W tej wersji wprowadzono nowy **digna Python SDK**, oficjalne wsparcie dla wdro�
 
 ---
 
+## Obejrzyj prezentację wydania
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — przegląd tego wydania na kanale YouTube digna.*
+
+---
+
 ## Nowe funkcje  
 
 ### digna Python SDK – Automatyzuj wszystko za pomocą Pythona  
@@ -53,6 +61,24 @@ Skonfiguruj strategię wykonywania zapytań: tryb **Single** lub **Combined**
 
 **Wpływ:** Daje użytkownikom precyzyjną kontrolę nad wykonywaniem zapytań, pozwalając wyważyć wydajność, wykorzystanie zasobów i bezpieczeństwo pamięci w zależności od charakterystyki źródła danych.
 
+
+---
+
+### Konfigurowalny model predykcji
+
+Model stojący za wykrywaniem anomalii jest teraz konfigurowalny. Siedem parametrów steruje sposobem dopasowania predykcji:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Wartości domyślne odpowiadają zdecydowanej większości szeregów, a każdy parametr można w dowolnej chwili przywrócić do wartości domyślnej.
+
+**Wpływ:** Daje użytkownikom kontrolę nad samym modelem predykcji, obok istniejących ustawień Sensitivity i Memory dla pasma tolerancji. Po wskazówki, kiedy sięgnąć po dany parametr i jak go ustawić, skontaktuj się z digna.
 
 ---
 

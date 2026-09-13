@@ -5,6 +5,14 @@ Această versiune introduce noul **digna Python SDK**, suport oficial pentru **D
 
 ---
 
+## Urmăriți prezentarea versiunii
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — o prezentare a acestei versiuni pe canalul de YouTube digna.*
+
+---
+
 ## Funcționalități noi  
 
 ### digna Python SDK – Automatizează totul cu Python  
@@ -53,6 +61,24 @@ Configurează strategia de execuție a interogărilor: **Single** sau **Combined
 
 **Impact:** Oferă utilizatorilor control granular asupra execuției interogărilor pentru a echilibra performanța, utilizarea resurselor și siguranța memoriei în funcție de caracteristicile surselor de date.
 
+
+---
+
+### Model de predicție configurabil
+
+Modelul din spatele detectării anomaliilor este acum configurabil. Șapte parametri controlează modul în care este ajustată predicția:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Valorile implicite sunt potrivite pentru marea majoritate a seriilor, iar fiecare parametru poate fi readus oricând la valoarea sa implicită.
+
+**Impact:** Oferă utilizatorilor control asupra modelului de predicție însuși, alături de setările existente Sensitivity și Memory pentru banda de toleranță. Pentru îndrumare privind momentul potrivit și modul de setare, contactați digna.
 
 ---
 

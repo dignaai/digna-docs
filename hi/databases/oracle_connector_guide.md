@@ -1,114 +1,125 @@
-# Oracle के लिए स्रोत कनेक्टर
+# Source Connector for Oracle
 
-यह गाइड बताता है कि *digna* को Oracle DB से कनेक्ट करने के लिए मूल Python कनेक्टर या ODBC ड्राइवर में से किसी एक का उपयोग करके कैसे कॉन्फ़िगर किया जाए।
+This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
+using a **DSN-less** connection string.
 
-यह स्क्रीन **"Create a Database Connection"** का संदर्भ देता है।
-
-![डेटाबेस कनेक्शन बनाएं](images/data_source_config_input_mask.png)
-
----
-
-## Native Python Driver
-
-**Library:** `python-oracledb`  
-**Supported Authentication:** केवल पासवर्ड-आधारित प्रमाणीकरण
-
-> अन्य प्रमाणीकरण विधियों के लिए, कृपया ODBC ड्राइवर का उपयोग करें।
-
-### *digna* कॉन्फ़िगरेशन (Native Driver)
-
-**"Create a Database Connection"** स्क्रीन में निम्नलिखित जानकारी प्रदान करें:
-
-```
-Technology:      Oracle
-Host Address:    Server name or IP address
-Host Port:       Port number, e.g. 1521
-Database Name:   Instance name, service name
-Schema Name:     Schema that contains the source data
-User Name:       Database user name
-User Password:   Password for the user
-Use ODBC:        Disabled (default)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Oracle.
 
 ---
 
-## ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC ड्राइवर प्रमाणीकरण और कनेक्टिविटी विकल्पों की व्यापक श्रृंखला का समर्थन कर सकता है। यह अनुभाग ड्राइवर **Oracle in OraDB21Home1** का उपयोग करके पासवर्ड-आधारित प्रमाणीकरण पर केंद्रित है।
+The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
+enough). Install it on the machine that runs the *digna* backend, following the vendor's
+official installation guide.
 
-### 1. ODBC ड्राइवर इंस्टॉल करें
+The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
+`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
+installation, so read the exact name off your host as described in
+[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-वेंडर के आधिकारिक इंस्टॉलेशन गाइड का पालन करके **Oracle in OraDB21Home1** (या समान) इंस्टॉल करें।
+---
 
-### 2. ODBC डेटा स्रोत कॉन्फ़िगर करें
+## 2. ODBC Properties {: #2-odbc-properties }
 
-पासवर्ड-आधारित प्रमाणीकरण का उपयोग करके नया ODBC डेटा स्रोत कॉन्फ़िगर करने के लिए निम्न चरणों का पालन करें:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the Oracle
+    ODBC driver, so their names, defaults and accepted values differ between client versions,
+    and the driver name in particular depends on the Oracle home on your host. Use this as a
+    starting point and check the documentation of the client version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
+| `UID` | `DIGNA_SOURCE_USER` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
+```
+
+### The `DBQ` value
+
+`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
+configured on the *digna* host:
+
+| Form | Example | Requires |
+|---|---|---|
+| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
+| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+
+!!! tip "Prefer the full descriptor"
+
+    A TNS alias moves half of the connection definition into a file on the *digna* host, where
+    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
+    the connection self-contained — which is the point of a DSN-less setup.
+
+Note the parentheses in a descriptor are fine inside a connection string, but if your password
+contains `;`, brace it: `PWD={p@ss;word}`.
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Oracle
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "DIGNA_WORK"
+```
+
+---
+
+## 4. Notes on Oracle {: #4-notes-on-oracle }
+
+- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
+  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
+  `SELECT` on those tables, either directly or through a role.
+- **One connection sees one database.** The catalog *digna* offers is the database the
+  connection is attached to, so `DBQ` decides which service, and therefore which database, is
+  profiled.
+- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
+  data dictionary, which is what Oracle stores — upper case for unquoted objects.
+- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
+  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
+  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
+  needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the Oracle Client, the service name and your
+credentials work before you enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/oracle/create_odbc_data_source_step1.png)
 
-नोट:
-TNS Service Name को आपके oracle क्लाइंट इंस्टॉलेशन की tnsnames.ora फ़ाइल में कॉन्फ़िगर किया जाना चाहिए। यही वह जगह है जहाँ आप कनेक्शन डिस्क्रिप्टर (host, port, service name) प्रदान करते हैं।
+The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
+installation — that is where the alias, and with it the host, port and service name, is
+defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
 
 #### Step 2 – Test the connection
 
-**Test Connection** बटन पर क्लिक करें।
+Click the **Test Connection** button.
 
 ![Step 2](images/oracle/create_odbc_data_source_step2.png)
 
-पासवर्ड प्रदान करें और **OK** बटन पर क्लिक करें।
+Provide the password and click the **OK** button.
 
-![Step 2](images/oracle/create_odbc_data_source_step3.png)
+![Step 3](images/oracle/create_odbc_data_source_step3.png)
 
----
-
-अब आप *digna* को ODBC कनेक्शन का उपयोग करने के लिए कॉन्फ़िगर कर सकते हैं, या तो **DSN (Data Source Name)** के साथ या **DSN-less** सेटअप के साथ।
-
----
-
-### A. DSN-Based Configuration
-
-#### *digna* कॉन्फ़िगरेशन
-
-**"Create a Database Connection"** स्क्रीन में निम्नलिखित प्रदान करें:
-
-```
-Technology:      Oracle
-Database Name:   Database that contains the source schema
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "DSN",            value: "*digna*data_oracle"
-name: "UID",            value: "your oracle user"
-name: "PWD",            value: "{your password in curly braces}"
-```
-
-> `DSN` आपके ODBC ड्राइवर कॉन्फ़िगरेशन में परिभाषित नाम से मेल खाना चाहिए।
-
----
-
-### B. DSN-less Configuration
-
-#### *digna* कॉन्फ़िगरेशन
-
-**"Create a Database Connection"** स्क्रीन में निम्नलिखित प्रदान करें:
-
-```
-Technology:      Oracle
-Database Name:   Schema that contains the source data (same as Schema Name)
-Schema Name:     Schema that contains the source data
-Use ODBC:        Enabled
-```
-
-#### ODBC Properties
-
-```
-name: "Driver",     value: "Oracle in OraDB21Home1"
-name: "DBQ",        value: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)))"
-name: "UID",        value: "your oracle user'
-name: "PWD",        value: "your oracle password"
-```
+A success message confirms that the driver and the credentials work.

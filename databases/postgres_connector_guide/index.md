@@ -10,7 +10,7 @@ specific to PostgreSQL.
 
 ---
 
-## 1. Install the ODBC Driver
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
 Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
 following the vendor's official installation guide.
@@ -23,7 +23,7 @@ for the `DRIVER` property below.
 
 ---
 
-## 2. ODBC Properties
+## 2. ODBC Properties {: #2-odbc-properties }
 
 !!! important "An example, not a specification"
 
@@ -57,7 +57,7 @@ time.
 
 ---
 
-## 3. *digna* Configuration
+## 3. *digna* Configuration {: #3-digna-configuration }
 
 In the **Add DB Connection** screen, provide the following:
 
@@ -70,7 +70,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL
+## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
 
 - **`SSLMode` must match the server.** A server configured with `hostssl` rejects
   `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
@@ -85,7 +85,7 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Verifying the Driver (optional)
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
 
 Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
 own dialog is a convenient way to confirm that the driver works and that the server accepts

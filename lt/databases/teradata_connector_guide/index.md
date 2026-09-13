@@ -1,110 +1,105 @@
-# Teradata šaltinio jungtis
+# Source Connector for Teradata
 
-Šiame vadove aprašoma, kaip sukonfigūruoti *digna* prisijungimui prie Teradata, naudojant arba vietinį Python jungtuką (connector), arba ODBC draiverį.
+This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
+**DSN-less** connection string.
 
-Jis nurodo ekraną **"Create a Database Connection"**.
-
-![Create a database connection](images/data_source_config_input_mask.png)
-
----
-
-## Vietinis Python draiveris
-
-**Library:** `teradatasql`  
-**Palaikoma autentifikacija:** Tik autentifikacija slaptažodžiu
-
-> Kitoms autentifikacijos metodikoms naudokite ODBC draiverį.
-
-### *digna* konfigūracija (vietinis draiveris)
-
-Pateikite šią informaciją ekrane **"Create a Database Connection"**:
-
-```
-Technology:      Teradata
-Host Address:    Serverio pavadinimas arba IP adresas
-Host Port:       Porto numeris, pvz., 1025
-Database Name:   Duomenų bazės pavadinimas
-Schema Name:     Schemos pavadinimas
-User Name:       Duomenų bazės vartotojo vardas
-User Password:   Vartotojo slaptažodis
-Use ODBC:        Išjungta (numatyta)
-```
+The *digna* side of the setup is the same for every technology — where connections are created,
+how property values are encrypted, how a connection is tested and what the profiling modes
+mean. It is described in [Database Connections Overview](overview.md). This page covers what is
+specific to Teradata.
 
 ---
 
-## ODBC draiveris
+## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
 
-ODBC draiveris gali palaikyti platesnį autentifikacijos ir ryšio parinkčių spektrą. Ši skiltis orientuota į autentifikaciją slaptažodžiu, naudojant draiverį **Teradata Database ODBC Driver 20.00**.
+Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
+following the vendor's official installation guide.
 
-### 1. Įdiekite ODBC draiverį
+The driver registers itself with its version in the name, for example
+**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
+described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
 
-Įdiekite draiverį **Teradata Database ODBC Driver 20.00** (ar panašų), vadovaudamiesi tiekėjo oficialiu diegimo gidu.
+---
 
-### 2. Konfigūruokite ODBC duomenų šaltinį
+## 2. ODBC Properties {: #2-odbc-properties }
 
-Atlikite šiuos veiksmus, kad sukonfigūruotumėte naują ODBC duomenų šaltinį, naudojant autentifikaciją slaptažodžiu:
+!!! important "An example, not a specification"
+
+    The set below is one combination that is known to work. The properties belong to the
+    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
+    versions — the version is part of the driver name itself — and between platforms. Use this
+    as a starting point and check the documentation of the driver version you installed.
+
+Add the following properties in the **Add DB Connection** screen:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
+| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
+| `UID` | `digna_source_user` | Database user |
+| `PWD` | `<password>` | Tick **Encrypted** |
+
+The resulting connection string looks like this:
+
+```
+DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
+```
+
+Useful additional properties:
+
+| Key | Example value | Notes |
+|---|---|---|
+| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
+| `DefaultDatabase` | `dad` | Database the session starts in |
+| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+
+---
+
+## 3. *digna* Configuration {: #3-digna-configuration }
+
+In the **Add DB Connection** screen, provide the following:
+
+```
+Name:               Name of the connection. This is used for referencing the connection in other screens.
+Technology:         Teradata
+Profiling Mode:     Standard, Permanent or Session
+Work Schema:        Database for the work tables of "Permanent" profiling, e.g. "Digna_Work"
+```
+
+---
+
+## 4. Notes on Teradata {: #4-notes-on-teradata }
+
+- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
+  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
+  data source, pick the database as the catalog; the schema is reported as *not applicable*.
+- **One connection reaches every permitted database**, so a single connection can serve sources
+  across databases — unlike the technologies where the connection is pinned to one database.
+- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
+  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
+  in it — a database with zero perm space cannot hold a table.
+- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
+  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
+  Schema**. *Standard* needs read access only.
+
+---
+
+## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+
+Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
+own dialog is a convenient way to confirm that the driver and your credentials work before you
+enter them in *digna*.
 
 #### Step 1
 ![Step 1](images/teradata/create_odbc_data_source_step1.png)
 
-Spustelėkite mygtuką **Test**.
+The **Name or IP address** field here is the `DBCNAME` property in
+[section 2](#2-odbc-properties).
+
+Click the **Test** button.
 
 #### Step 2
 ![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
-Įveskite vartotojo vardą ir slaptažodį.
-
-Spustelėkite mygtuką **OK**. Kai pasirodys sėkmės pranešimas, ODBC yra tinkamai sukonfigūruotas.
-
----
-
-Dabar galite sukonfigūruoti *digna* naudoti ODBC ryšį, arba per **DSN (Data Source Name)**, arba be **DSN**.
-
----
-
-### A. DSN pagrindu
-
-#### *digna* konfigūracija
-
-Ekrane **"Create a Database Connection"** pateikite šią informaciją:
-
-```
-Technology:      Teradata
-Database Name:   Duomenų bazė, kurioje yra šaltinio schema
-Schema Name:     Schema, kurioje yra šaltinio duomenys
-Use ODBC:        Įjungta
-```
-
-#### ODBC nuostatos
-
-```
-name: "DSN",        value: "*digna*data_teradata"
-name: "UID",        value: "jūsų duomenų bazės vartotojas"
-name: "PWD",        value: "jūsų duomenų bazės slaptažodis"
-```
-
-> `DSN` turi sutapti su vardu, nurodytu jūsų ODBC draiverio konfigūracijoje.
-
----
-
-### B. Konfigūracija be DSN
-
-#### *digna* konfigūracija
-
-Ekrane **"Create a Database Connection"** pateikite šią informaciją:
-
-```
-Technology:      Teradata
-Database Name:   Schema, kurioje yra šaltinio duomenys (ta pati kaip Schema Name)
-Schema Name:     Schema, kurioje yra šaltinio duomenys
-Use ODBC:        Įjungta
-```
-
-#### ODBC nuostatos
-
-```
-name: "DRIVER",     value: "Teradata Database ODBC Driver 20.00"
-name: "DBCNAME",    value: "jūsų serverio pavadinimas arba IP adresas"
-name: "UID",        value: "jūsų duomenų bazės vartotojas"
-name: "PWD",        value: "jūsų duomenų bazės slaptažodis"
-```
+Provide username and password, then click the **OK** button. A success screen confirms that
+the driver and the credentials work.
