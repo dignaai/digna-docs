@@ -18,6 +18,11 @@ typer = "^0.20.0"
 css-html-js-minify = "^2.5.5"
 mkdocs-minify-plugin = "^0.8.0"
 mkdocs-git-revision-date-localized-plugin = "^1.2.9"
+# Renders the SDK API reference (docs/sdk/**) from the digna-sdk source
+# docstrings at build time. See the mkdocstrings plugin block in mkdocs.yml;
+# the SDK source is expected next to this repo at ../digna-sdk/src.
+mkdocstrings = {version = "^0.26.1", extras = ["python"]}
+griffe-pydantic = "^1.0.0"
 
 
 [build-system]

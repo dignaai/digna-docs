@@ -142,6 +142,22 @@ nav:
           - Release 2024.11: cli/Command_Line_Interface_202411.md
           - Release 2024.09: cli/Command_Line_Interface_202409.md
 
+  # SDK Reference mirrors the CLI Reference layout: a top-level topic whose
+  # children are releases. The SDK first shipped with Release 2026.06, so older
+  # releases have no entry here. The API pages (Resources, Models, Errors, API
+  # Reference) are generated at build time by mkdocstrings from the installed
+  # digna-sdk package (see the mkdocstrings plugin and the digna-sdk dependency
+  # in pyproject.toml). These pages are authored once in English and fall back
+  # for every other locale via the i18n plugin, exactly like auto-generated code.
+  - SDK Reference:
+      - Release 2026.06:
+          - Overview: "sdk/Release 2026.06/index.md"
+          - Quickstart: "sdk/Release 2026.06/quickstart.md"
+          - Resources: "sdk/Release 2026.06/resources.md"
+          - Models: "sdk/Release 2026.06/models.md"
+          - Errors: "sdk/Release 2026.06/errors.md"
+          - API Reference: "sdk/Release 2026.06/reference.md"
+
   - Changelog:
           - Release 2026.06: changelog/Release_202606.md
           - Release 2026.04: changelog/Release_202604.md
@@ -175,7 +191,7 @@ extra:
       link: mailto:office@digna.ai
 
 copyright: >
-    © 2025 digna GmbH — <a href="https://www.digna.ai" target="_blank" rel="noopener">www.digna.ai</a>
+    © 2026 digna GmbH — <a href="https://www.digna.ai" target="_blank" rel="noopener">www.digna.ai</a>
 
 markdown_extensions:
   - abbr                  # *[SSO]: Single Sign-on  ->  tooltip on every mention
@@ -219,6 +235,33 @@ hooks:
 # --- SEO & Performance ---
 plugins:
   - search
+
+  # Renders the SDK API pages (Resources, Models, Errors, API Reference) from
+  # the digna-sdk source docstrings at build time. The SDK stays the single
+  # source of truth: only its narrative pages are copied into docs/sdk/, while
+  # the reference is generated from the code.
+  #
+  # `paths` points at the digna-sdk source checked out next to this repo. In CI
+  # add a step that checks the SDK out into ../digna-sdk (see publish_docs.yml);
+  # for local previews clone/keep digna-sdk beside digna-docs. griffe reads the
+  # source statically, so the package does not need to be pip-installed.
+  - mkdocstrings:
+      handlers:
+        python:
+          # Both layouts are supported: a sibling checkout (../digna-sdk/src,
+          # used locally and in the combined repo) and a nested CI checkout
+          # (digna-sdk/src, produced by the "Checkout digna-sdk" step). griffe
+          # ignores paths that do not exist.
+          paths: ["../digna-sdk/src", "digna-sdk/src"]
+          options:
+            show_source: false
+            show_root_heading: true
+            merge_init_into_class: true
+            docstring_style: google
+            show_if_no_docstring: true
+            extensions:
+              - griffe_pydantic:
+                  schema: true
 
   # Generates a branded Open Graph card per page, so a shared link previews
   # with the page's own title rather than one static logo across 1,000+ pages.
@@ -273,6 +316,7 @@ plugins:
             Scheduling: Scheduling
             Integration: Integration
             CLI Reference: CLI Doku
+            SDK Reference: SDK Doku
 
         - locale: "fr"
           name: Français
@@ -299,6 +343,7 @@ plugins:
             Scheduling: Planification
             Integration: Intégration
             CLI Reference: Référence CLI
+            SDK Reference: Référence SDK
 
         - locale: "es"
           name: Español
@@ -325,6 +370,7 @@ plugins:
              Scheduling: Programación
              Integration: Integración
              CLI Reference: Referencia CLI
+             SDK Reference: Referencia SDK
 
         - locale: "it"
           name: Italiano
@@ -351,6 +397,7 @@ plugins:
               Scheduling: Pianificazione
               Integration: Integrazione
               CLI Reference: Riferimento CLI
+              SDK Reference: Riferimento SDK
 
         - locale: "pl"
           build: true
@@ -377,6 +424,7 @@ plugins:
             Scheduling: Harmonogram
             Integration: Integracja
             CLI Reference: Dokumentacja CLI
+            SDK Reference: Dokumentacja SDK
 
         - locale: "pt"
           name: Português
@@ -402,6 +450,7 @@ plugins:
             First Steps: Primeiros passos
             Scheduling: Agendamento
             Integration: Integração
+            SDK Reference: Referência SDK
 
         - locale: "sv"
           name: Svenska
@@ -428,6 +477,7 @@ plugins:
               Scheduling: Schemaläggning
               Integration: Integration
               CLI Reference: CLI-referens
+              SDK Reference: SDK-referens
 
         - locale: "nb"
           name: Norsk
@@ -454,6 +504,7 @@ plugins:
             Scheduling: Planlegging
             Integration: Integrasjon
             CLI Reference: CLI-referanse
+            SDK Reference: SDK-referanse
 
         - locale: "da"
           name: Dansk
@@ -480,6 +531,7 @@ plugins:
             Scheduling: Planlægning
             Integration: Integration
             CLI Reference: CLI-reference
+            SDK Reference: SDK-reference
 
         - locale: "fi"
           name: Suomi
@@ -506,6 +558,7 @@ plugins:
             Scheduling: Ajoitus
             Integration: Integraatio
             CLI Reference: CLI-viite
+            SDK Reference: SDK-viite
 
         - locale: "et"
           name: Eesti
@@ -532,6 +585,7 @@ plugins:
             Scheduling: Ajastamine
             Integration: Integratsioon
             CLI Reference: CLI viide
+            SDK Reference: SDK viide
 
         - locale: "lt"
           name: Lietuvių
@@ -558,6 +612,7 @@ plugins:
             Scheduling: Planavimas
             Integration: Integracija
             CLI Reference: CLI nuoroda
+            SDK Reference: SDK nuoroda
 
         - locale: "lv"
           name: Latviešu
@@ -584,6 +639,7 @@ plugins:
             Scheduling: Plānošana
             Integration: Integrācija
             CLI Reference: CLI atsauce
+            SDK Reference: SDK atsauce
 
         - locale: "nl"
           name: Nederlands
@@ -610,6 +666,7 @@ plugins:
             Scheduling: Planning
             Integration: Integratie
             CLI Reference: CLI-referentie
+            SDK Reference: SDK-referentie
 
         - locale: "cs"
           name: Čeština
@@ -636,6 +693,7 @@ plugins:
             Scheduling: Plánování
             Integration: Integrace
             CLI Reference: Referenční příručka CLI
+            SDK Reference: Referenční příručka SDK
 
         - locale: "hu"
           name: Magyar
@@ -662,6 +720,7 @@ plugins:
               Scheduling: Ütemezés
               Integration: Integráció
               CLI Reference: CLI-referencia
+              SDK Reference: SDK-referencia
 
         - locale: "tr"
           name: Türkçe
@@ -688,6 +747,7 @@ plugins:
             Scheduling: Zamanlama
             Integration: Entegrasyon
             CLI Reference: CLI referansı
+            SDK Reference: SDK referansı
 
         - locale: "ro"
           name: Română
@@ -714,6 +774,7 @@ plugins:
             Scheduling: Programare
             Integration: Integrare
             CLI Reference: Referință CLI
+            SDK Reference: Referință SDK
 
         - locale: "sl"
           name: Slovenščina
@@ -740,6 +801,7 @@ plugins:
             Scheduling: Razporejanje
             Integration: Integracija
             CLI Reference: Referenca CLI
+            SDK Reference: Referenca SDK
 
         - locale: "el"
           name: Ελληνικά
@@ -766,6 +828,7 @@ plugins:
             Scheduling: Προγραμματισμός
             Integration: Ενσωμάτωση
             CLI Reference: Αναφορά CLI
+            SDK Reference: Αναφορά SDK
 
         - locale: "uk"
           name: Українська
@@ -792,6 +855,7 @@ plugins:
             Scheduling: Планування
             Integration: Інтеграція
             CLI Reference: Довідник CLI
+            SDK Reference: Довідник SDK
 
         - locale: "ru"
           name: Русский
@@ -818,6 +882,7 @@ plugins:
             Scheduling: Планирование
             Integration: Интеграция
             CLI Reference: Справочник CLI
+            SDK Reference: Справочник SDK
 
         - locale: "ja"
           name: 日本語
@@ -844,6 +909,7 @@ plugins:
             Scheduling: スケジューリング
             Integration: 統合
             CLI Reference: CLI リファレンス
+            SDK Reference: SDK リファレンス
 
         - locale: "ko"
           name: 한국어
@@ -870,6 +936,7 @@ plugins:
             Scheduling: 스케줄링
             Integration: 통합
             CLI Reference: CLI 참고 문서
+            SDK Reference: SDK 참고 문서
 
         - locale: "hi"
           name: हिन्दी
@@ -896,6 +963,7 @@ plugins:
             Scheduling: अनुसूची बनाना
             Integration: एकीकरण
             CLI Reference: CLI संदर्भ
+            SDK Reference: SDK संदर्भ
 
         - locale: "ar"
           name: العربية
@@ -922,6 +990,7 @@ plugins:
             Scheduling: الجدولة
             Integration: التكامل
             CLI Reference: مرجع CLI
+            SDK Reference: مرجع SDK
 
   - git-revision-date-localized:
       type: date

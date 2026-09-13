@@ -26,6 +26,18 @@ jobs:
           # every page silently fell back to the build date.
           fetch-depth: 0
 
+      # The SDK API pages under docs/sdk/** are generated at build time by
+      # mkdocstrings from the digna-sdk source. mkdocs.yml points the python
+      # handler at ../digna-sdk/src, so the SDK repo must sit next to this one.
+      # Adjust `repository`/`ref` to your SDK repo (and add a token via `with:
+      # token:` if it is private).
+      - name: Checkout digna-sdk
+        uses: actions/checkout@v4
+        with:
+          repository: dignaai/digna-sdk
+          ref: main
+          path: digna-sdk
+
       - uses: actions/setup-python@v5
         with:
           python-version: 3.12
