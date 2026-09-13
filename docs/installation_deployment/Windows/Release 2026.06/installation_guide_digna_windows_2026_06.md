@@ -832,7 +832,10 @@ ren dashboard dashboard_old
 
 !!! warning "Important"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
+    installation ZIP — the digna team never ships either file. Your existing configuration is
+    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
+    only ones you have.
 
 #### Step 4: Restore Your Configuration Files
 
@@ -886,7 +889,27 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
     old form is still in place. Only installations that use single sign-on are affected.
 
-#### Step 5: Validate the Configuration
+#### Step 5: Reload the Web Server
+
+The dashboard is served as static files, so the web server may still be holding the previous
+version. Reload it so the new dashboard is picked up:
+
+=== "IIS"
+
+    ```bash
+    iisreset
+    ```
+
+    Or recycle just the site's application pool in **IIS Manager**.
+
+=== "Tomcat"
+
+    Restart the Tomcat service, or redeploy the `dashboard` folder in `webapps`.
+
+Then reload the dashboard in your browser with a hard refresh (++ctrl+f5++), so the browser does
+not serve the old files from its cache.
+
+#### Step 6: Validate the Configuration
 
 Confirm that the updated `config.toml` is complete before touching the repository:
 
@@ -896,7 +919,26 @@ digna config check
 
 Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
 
-#### Step 6: Upgrade the Repository Schema
+#### Step 7: Replace the License File
+
+Each release is licensed separately. Copy the `license.toml` that the digna team provided for
+this release into the installation directory, replacing the old one:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Do not keep the previous license"
+
+    A `license.toml` issued for an earlier release does not cover this one, and every command
+    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
+    repository when the check fails. Verify it before going further:
+
+    ```bash
+    digna license check
+    ```
+
+#### Step 8: Upgrade the Repository Schema
 
 Navigate to your digna installation directory and run:
 
@@ -906,7 +948,7 @@ digna repo upgrade
 
 This updates the PostgreSQL schema to the latest version while preserving all existing data.
 
-#### Step 7: Register and Start the Service
+#### Step 9: Register and Start the Service
 
 The old registration was removed in Step 1, so the service is registered again — this time with
 the `digna` executable, which has no batch files:
@@ -933,7 +975,7 @@ digna serve --address <address> --port <port>
 
 If using IIS or Tomcat, restart the respective web server.
 
-#### Step 8: Verify the Upgrade
+#### Step 10: Verify the Upgrade
 
 1. Access the digna dashboard
 2. Verify that the interface loads correctly
