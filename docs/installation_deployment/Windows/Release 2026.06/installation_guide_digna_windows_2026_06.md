@@ -771,14 +771,32 @@ A backup ensures you can recover if the upgrade encounters unexpected issues.
 
 ### Upgrade Process
 
-#### Step 1: Stop digna Service
+#### Step 1: Stop and Unregister the Old Service
 
-If digna is running as a Windows service, stop it first:
+If digna is running as a Windows service, stop it with the **batch files of your current
+installation** — the `digna windows` commands belong to the new release and are not available
+yet:
 
 ```bash
-cd C:\path\to\digna
-digna windows stop
+cd C:\path\to\digna\bin
+stop_service.bat
 ```
+
+Then unregister the service, again with the old batch file. The registration points at the old
+executable and its scripts, both of which this upgrade replaces, so it cannot be reused:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Unregister before you rename anything"
+
+    `uninstall_service.bat` lives in the `bin` folder you are about to rename, and it is the only
+    thing that can remove the registration it created. Run it while the old installation is still
+    in place. If the folder has already been renamed, rename it back, unregister, then continue.
+
+    Note down the account the service ran under, and the address and port it served on — you will
+    need them in Step 7.
 
 #### Step 2: Backup Current Installation
 
@@ -799,7 +817,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend and dignacli are no longer used"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4). The `bin` folder goes too: its batch files drove the old service and 2026.06 does not ship them, so once the service has been unregistered in Step 1 they do nothing but mislead.
 
 #### Step 3: Extract and Deploy New Version
 
@@ -883,14 +901,23 @@ digna repo upgrade
 
 This updates the PostgreSQL schema to the latest version while preserving all existing data.
 
-#### Step 7: Restart Services
+#### Step 7: Register and Start the Service
 
-If running as a Windows service:
+The old registration was removed in Step 1, so the service is registered again — this time with
+the `digna` executable, which has no batch files:
 
 ```bash
 cd C:\path\to\digna
+digna windows install --address <address> --port <port>
 digna windows start
 ```
+
+Give `--address` and `--port` the values the old service served on, unless you want the new
+defaults of `127.0.0.1` and `8000`; they are recorded in the registration and are no longer read
+from `config.toml`. Add `--account` and `--password` if the old service ran under a domain
+account. See
+[Running digna as a Windows Service](#running-digna-as-a-windows-service) for the full option
+list.
 
 If running manually, restart the server:
 
