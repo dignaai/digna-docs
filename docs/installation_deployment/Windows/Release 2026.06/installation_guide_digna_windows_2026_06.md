@@ -891,23 +891,9 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
 #### Step 5: Reload the Web Server
 
-The dashboard is served as static files, so the web server may still be holding the previous
-version. Reload it so the new dashboard is picked up:
-
-=== "IIS"
-
-    ```bash
-    iisreset
-    ```
-
-    Or recycle just the site's application pool in **IIS Manager**.
-
-=== "Tomcat"
-
-    Restart the Tomcat service, or redeploy the `dashboard` folder in `webapps`.
-
-Then reload the dashboard in your browser with a hard refresh (++ctrl+f5++), so the browser does
-not serve the old files from its cache.
+The dashboard is a set of static files, so your web server — and the browser — may still be
+serving the previous version. Reload or restart whichever web server hosts the `dashboard`
+folder, then reload the page with a hard refresh (++ctrl+f5++).
 
 #### Step 6: Validate the Configuration
 
