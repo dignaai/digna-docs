@@ -12,6 +12,14 @@ Ez a verzió bemutatja az új **digna Python SDK**-t, a hivatalos **Docker telep
 
 ---
 
+## Nézze meg a kiadást
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — áttekintés erről a kiadásról a digna YouTube-csatornáján.*
+
+---
+
 ## Új funkciók  
 
 ### digna Python SDK – Automatizálj mindent Pythonnal  
@@ -59,6 +67,24 @@ Hatás: A digna egyszerűbben telepíthető és üzemeltethető modern, cloud-na
   - Hatékonyabb gyakori, párhuzamos futtatásoknál
 
 Hatás: Finomhangolási lehetőséget ad a lekérdezés-végrehajtás felett, hogy a felhasználók az adatforrás jellemzői alapján egyensúlyozhassanak teljesítmény, erőforrás-használat és memória-biztonság között.
+
+---
+
+### Konfigurálható előrejelzési modell
+
+Az anomáliadetektálás mögötti modell mostantól konfigurálható. Hét paraméter irányítja, hogyan illeszkedik az előrejelzés:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Az alapértelmezések a sorozatok túlnyomó többségéhez megfelelnek, és minden paraméter bármikor visszaállítható az alapértelmezett értékére.
+
+Hatás: Az eddigi, tűréssávra vonatkozó Sensitivity és Memory beállítások mellett magát az előrejelzési modellt is a felhasználó kezébe adja. Ha tanácsra van szüksége, mikor melyik paraméterhez nyúljon és hogyan állítsa be, forduljon a dignához.
 
 ---
 

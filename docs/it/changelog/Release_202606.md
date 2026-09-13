@@ -12,6 +12,14 @@ Questa release introduce il nuovo **digna Python SDK**, il supporto ufficiale pe
 
 ---
 
+## Guarda la presentazione della release
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — una panoramica di questa release sul canale YouTube di digna.*
+
+---
+
 ## Nuove funzionalità  
 
 ### digna Python SDK – Automatizza tutto con Python  
@@ -59,6 +67,24 @@ Configura la strategia di esecuzione delle query: modalità **Single** o **Combi
   - Più efficiente per esecuzioni frequenti e parallele
 
 **Impatto:** Offre agli utenti un controllo granulare sull'esecuzione delle query per bilanciare prestazioni, utilizzo delle risorse e sicurezza della memoria in base alle caratteristiche del datasource.
+
+---
+
+### Modello di previsione configurabile
+
+Il modello alla base del rilevamento delle anomalie è ora configurabile. Sette parametri governano il modo in cui la previsione viene adattata:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+I valori predefiniti vanno bene per la grande maggioranza delle serie e ogni parametro può essere ripristinato al suo valore predefinito in qualsiasi momento.
+
+**Impatto:** Dà agli utenti il controllo sul modello di previsione stesso, accanto alle impostazioni Sensitivity e Memory già presenti sulla banda di tolleranza. Per sapere quando intervenire su uno di essi e come impostarlo, contattate digna.
 
 ---
 

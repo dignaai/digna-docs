@@ -12,6 +12,14 @@ image: /assets/logo_square.png
 
 ---
 
+## Δείτε την παρουσίαση της έκδοσης
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — μια περιήγηση σε αυτή την έκδοση στο κανάλι YouTube της digna.*
+
+---
+
 ## Νέα Χαρακτηριστικά  
 
 ### digna Python SDK – Αυτοματοποιήστε τα πάντα με Python  
@@ -59,6 +67,24 @@ image: /assets/logo_square.png
   - Πιο αποδοτικό για συχνές, παράλληλες εκτελέσεις
 
 **Επίδραση:** Δίνει στους χρήστες λεπτομερή έλεγχο πάνω στην εκτέλεση ερωτημάτων για να ισορροπήσουν απόδοση, χρήση πόρων και ασφάλεια μνήμης ανάλογα με τα χαρακτηριστικά του datasource τους.
+
+---
+
+### Παραμετροποιήσιμο μοντέλο πρόβλεψης
+
+Το μοντέλο πίσω από τον εντοπισμό ανωμαλιών είναι πλέον παραμετροποιήσιμο. Επτά παράμετροι καθορίζουν τον τρόπο προσαρμογής της πρόβλεψης:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Οι προεπιλογές ταιριάζουν στη συντριπτική πλειονότητα των σειρών, και κάθε παράμετρος μπορεί να επαναφερθεί στην προεπιλογή της ανά πάσα στιγμή.
+
+**Επίδραση:** Δίνει στους χρήστες έλεγχο στο ίδιο το μοντέλο πρόβλεψης, παράλληλα με τις υπάρχουσες ρυθμίσεις Sensitivity και Memory στη ζώνη ανοχής. Για καθοδήγηση σχετικά με το πότε να χρησιμοποιήσετε κάποια παράμετρο και πώς να τη ρυθμίσετε, επικοινωνήστε με τη digna.
 
 ---
 

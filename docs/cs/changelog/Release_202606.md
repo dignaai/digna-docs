@@ -12,6 +12,14 @@ Tato verze představuje nový **digna Python SDK**, oficiální podporu nasazen�
 
 ---
 
+## Podívejte se na vydání
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — průvodce tímto vydáním na YouTube kanálu digna.*
+
+---
+
 ## Nové funkce  
 
 ### digna Python SDK – Automatizujte vše pomocí Pythonu  
@@ -59,6 +67,24 @@ Konfigurujte strategii vykonávání dotazů: **Single** nebo **Combined** reži
   - Efektivnější pro časté, paralelní spuštění
 
 **Dopad:** Dává uživatelům jemnozrnné řízení vykonávání dotazů pro vyvážení výkonu, využití zdrojů a bezpečnost paměti podle charakteristik datového zdroje.
+
+---
+
+### Konfigurovatelný predikční model
+
+Model, na němž stojí detekce anomálií, je nyní konfigurovatelný. Sedm parametrů řídí, jak se predikce přizpůsobuje:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Výchozí hodnoty vyhovují naprosté většině řad a každý parametr lze kdykoli vrátit na výchozí hodnotu.
+
+**Dopad:** Dává uživatelům kontrolu nad samotným predikčním modelem, vedle stávajících nastavení Sensitivity a Memory pro pásmo tolerance. Pro radu, kdy po kterém parametru sáhnout a jak jej nastavit, kontaktujte digna.
 
 ---
 

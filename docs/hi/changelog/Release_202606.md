@@ -12,6 +12,14 @@ digna Release 2026.06 के साथ, प्लेटफ़ॉर्म ऑट
 
 ---
 
+## रिलीज़ का वीडियो देखें
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — digna के YouTube चैनल पर इस रिलीज़ की झलक।*
+
+---
+
 ## नई खूबियाँ  
 
 ### digna Python SDK – Python से सब कुछ ऑटोमेट करें  
@@ -60,6 +68,24 @@ digna Release 2026.06 के साथ, प्लेटफ़ॉर्म ऑट
 
 **प्रभाव:** उपयोगकर्ताओं को उनके डेटा सोर्स की विशेषताओं के आधार पर प्रदर्शन, संसाधन उपयोग, और मेमोरी सुरक्षा के बीच संतुलन बनाने के लिए सूक्ष्म नियंत्रण मिलता है।
 
+
+---
+
+### कॉन्फ़िगर करने योग्य प्रेडिक्शन मॉडल
+
+विसंगति पहचान के पीछे का मॉडल अब कॉन्फ़िगर किया जा सकता है। सात पैरामीटर यह संचालित करते हैं कि प्रेडिक्शन कैसे फ़िट किया जाता है:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+डिफ़ॉल्ट मान अधिकांश शृंखलाओं के लिए उपयुक्त हैं, और हर पैरामीटर को किसी भी समय उसके डिफ़ॉल्ट पर लौटाया जा सकता है।
+
+**प्रभाव:** टॉलरेंस बैंड की मौजूदा Sensitivity और Memory सेटिंग्स के साथ-साथ उपयोगकर्ताओं को प्रेडिक्शन मॉडल पर भी नियंत्रण देता है। किस पैरामीटर का उपयोग कब और कैसे करें, इस बारे में मार्गदर्शन के लिए digna से संपर्क करें।
 
 ---
 

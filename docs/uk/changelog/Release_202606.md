@@ -12,6 +12,14 @@ image: /assets/logo_square.png
 
 ---
 
+## Перегляньте огляд випуску
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — огляд цього випуску на YouTube-каналі digna.*
+
+---
+
 ## Нові можливості  
 
 ### digna Python SDK – Автоматизуйте все за допомогою Python  
@@ -59,6 +67,24 @@ image: /assets/logo_square.png
   - Більш ефективно при частих паралельних виконаннях
 
 **Вплив:** Дає змогу тонко налаштувати виконання запитів для балансування продуктивності, використання ресурсів та безпеки пам'яті залежно від характеристик джерел даних.
+
+---
+
+### Налаштовувана модель прогнозування
+
+Модель, що лежить в основі виявлення аномалій, тепер налаштовується. Сім параметрів визначають, як добирається прогноз:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Значення за замовчуванням підходять для переважної більшості рядів, і будь-який параметр можна будь-коли повернути до значення за замовчуванням.
+
+**Вплив:** Дає користувачам контроль над самою моделлю прогнозування поряд із наявними налаштуваннями Sensitivity і Memory для смуги допуску. По консультацію щодо того, коли звертатися до того чи іншого параметра і як його задати, зверніться до digna.
 
 ---
 

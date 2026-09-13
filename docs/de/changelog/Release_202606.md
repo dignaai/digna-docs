@@ -12,6 +12,14 @@ Dieses Release führt das neue **digna Python SDK**, offizielle **Docker-Bereits
 
 ---
 
+## Das Release ansehen
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — ein Rundgang durch dieses Release auf dem digna-YouTube-Kanal.*
+
+---
+
 ## Neue Funktionen  
 
 ### digna Python SDK – Automatisieren Sie alles mit Python  
@@ -59,6 +67,24 @@ Konfigurieren Sie die Abfrageausführungsstrategie: **Single** oder **Combined**
   - Effizienter bei häufigen, parallelen Ausführungen
 
 **Auswirkung:** Gibt Nutzern feingranulare Kontrolle über die Abfrageausführung, um Performance, Ressourcennutzung und Speicher-Sicherheit basierend auf den Eigenschaften ihrer Datenquelle auszubalancieren.
+
+---
+
+### Konfigurierbares Vorhersagemodell
+
+Das Modell hinter der Anomalieerkennung ist jetzt konfigurierbar. Sieben Parameter steuern, wie die Vorhersage angepasst wird:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Die Standardwerte passen für die allermeisten Zeitreihen, und jeder Parameter kann jederzeit auf seinen Standardwert zurückgesetzt werden.
+
+**Auswirkung:** Gibt Nutzern Kontrolle über das Vorhersagemodell selbst, zusätzlich zu den bestehenden Einstellungen Sensitivity und Memory für das Toleranzband. Für Hinweise, wann welcher Parameter sinnvoll ist und wie er zu setzen ist, wenden Sie sich an digna.
 
 ---
 

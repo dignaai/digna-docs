@@ -12,6 +12,14 @@ Deze release introduceert de nieuwe **digna Python SDK**, officiële **Docker-im
 
 ---
 
+## Bekijk de release
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — een rondleiding door deze release op het YouTube-kanaal van digna.*
+
+---
+
 ## Nieuwe functies  
 
 ### digna Python SDK – Automatiseer alles met Python  
@@ -59,6 +67,24 @@ Stel de query-uitvoeringsstrategie in: **Single** of **Combined** modus
   - Efficiënter voor frequente, parallelle uitvoeringen
 
 **Impact:** Geeft gebruikers fijnmazige controle over query-executie om prestaties, resourcegebruik en geheugenzekerheid af te stemmen op de kenmerken van hun datasource.
+
+---
+
+### Configureerbaar voorspellingsmodel
+
+Het model achter anomaliedetectie is nu configureerbaar. Zeven parameters sturen hoe de voorspelling wordt gefit:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+De standaardwaarden voldoen voor de overgrote meerderheid van de reeksen, en elke parameter kan op elk moment worden teruggezet naar zijn standaardwaarde.
+
+**Impact:** Geeft gebruikers controle over het voorspellingsmodel zelf, naast de bestaande instellingen Sensitivity en Memory op de tolerantieband. Neem contact op met digna voor advies over wanneer u een parameter inzet en hoe u die instelt.
 
 ---
 

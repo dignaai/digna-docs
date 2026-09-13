@@ -12,6 +12,14 @@ Release 2026.06 により、digna は自動化、拡張性、プラットフォ�
 
 ---
 
+## リリース紹介動画
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — digna の YouTube チャンネルでの本リリースの紹介です。*
+
+---
+
 ## 新機能
 
 ### digna Python SDK – Python であらゆる操作を自動化  
@@ -59,6 +67,24 @@ Release 2026.06 により、digna は自動化、拡張性、プラットフォ�
   - 頻繁で並列な実行に対して効率的
 
 **影響:** データソースの特性に応じて、パフォーマンス、リソース使用量、メモリ安全性のバランスを細かく制御できます。
+
+---
+
+### 設定可能な予測モデル
+
+異常検知の基盤となるモデルを設定できるようになりました。予測の当てはめ方は 7 つのパラメーターで制御されます:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+既定値はほとんどの系列に適しており、各パラメーターはいつでも既定値に戻せます。
+
+**影響:** 許容範囲に対する既存の Sensitivity と Memory の設定に加えて、予測モデルそのものを利用者が制御できるようになります。どのパラメーターをいつ使い、どう設定するかについては digna にお問い合わせください。
 
 ---
 

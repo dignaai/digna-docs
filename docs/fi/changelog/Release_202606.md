@@ -12,6 +12,14 @@ Tässä julkaisussa esittelemme uuden **digna Python SDK:n**, virallisen **Docke
 
 ---
 
+## Katso julkaisun esittely
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — katsaus tähän julkaisuun dignan YouTube-kanavalla.*
+
+---
+
 ## Uudet ominaisuudet  
 
 ### digna Python SDK – Automatisoi kaikki Pythonilla  
@@ -59,6 +67,24 @@ Määritä kyselyjen suoritusstrategia: **Single** tai **Combined** -tila
   - Tehokkaampi usein toistuvissa ja rinnakkaisissa ajoissa
 
 **Vaikutus:** Antaa käyttäjille tarkemman hallinnan kyselyjen suorittamisesta, jotta suorituskyky, resurssien käyttö ja muistisuoja voidaan tasapainottaa tietolähteen ominaisuuksien mukaan.
+
+---
+
+### Muokattava ennustemalli
+
+Poikkeamien tunnistuksen taustalla oleva malli on nyt muokattavissa. Seitsemän parametria ohjaa sitä, miten ennuste sovitetaan:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Oletusarvot sopivat valtaosalle sarjoista, ja jokainen parametri voidaan palauttaa oletusarvoonsa milloin tahansa.
+
+**Vaikutus:** Antaa käyttäjille hallinnan itse ennustemalliin toleranssikaistan nykyisten Sensitivity- ja Memory-asetusten rinnalla. Kysy dignalta ohjeita siitä, milloin parametriin kannattaa tarttua ja miten se asetetaan.
 
 ---
 

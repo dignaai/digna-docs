@@ -12,6 +12,14 @@ image: /assets/logo_square.png
 
 ---
 
+## شاهد الإصدار
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — جولة في هذا الإصدار على قناة digna على YouTube.*
+
+---
+
 ## الميزات الجديدة  
 
 ### digna Python SDK – أتمتة كل شيء باستخدام Python  
@@ -59,6 +67,24 @@ image: /assets/logo_square.png
   - أكثر كفاءة للتشغيل المتكرر والمتوازي
 
 **الأثر:** يمنح المستخدمين تحكماً دقيقاً في تنفيذ الاستعلامات لموازنة الأداء، واستهلاك الموارد، وسلامة الذاكرة بناءً على خصائص مصدر البيانات.
+
+---
+
+### نموذج تنبؤ قابل للتهيئة
+
+أصبح النموذج الذي يقوم عليه اكتشاف الشذوذ قابلًا للتهيئة. سبعة معاملات توجّه كيفية ملاءمة التنبؤ:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+القيم الافتراضية مناسبة للغالبية العظمى من السلاسل، ويمكن إعادة أي معامل إلى قيمته الافتراضية في أي وقت.
+
+**الأثر:** يمنح المستخدمين تحكمًا في نموذج التنبؤ نفسه، إلى جانب إعدادَي Sensitivity وMemory الحاليين على نطاق التسامح. للحصول على إرشادات حول متى تلجأ إلى معامل وكيف تضبطه، تواصل مع digna.
 
 ---
 

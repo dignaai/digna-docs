@@ -12,6 +12,14 @@ Denne udgivelse introducerer den nye **digna Python SDK**, officiel **Docker**-i
 
 ---
 
+## Se releasen
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — en gennemgang af denne release på dignas YouTube-kanal.*
+
+---
+
 ## Nye funktioner  
 
 ### digna Python SDK – Automatiser alt med Python  
@@ -59,6 +67,24 @@ Konfigurer forespørgselsudførelsesstrategi: **Single** eller **Combined** mode
   - Mere effektivt ved hyppige, parallelle kørsler
 
 **Indvirkning:** Giver brugerne finmasket kontrol over forespørgselsudførelse for at balancere ydeevne, ressourceforbrug og hukommelsessikkerhed baseret på deres datakilders karakteristika.
+
+---
+
+### Konfigurerbar forudsigelsesmodel
+
+Modellen bag anomalidetektionen kan nu konfigureres. Syv parametre styrer, hvordan forudsigelsen tilpasses:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Standardværdierne passer til langt de fleste serier, og hver parameter kan til enhver tid nulstilles til sin standardværdi.
+
+**Indvirkning:** Giver brugerne kontrol over selve forudsigelsesmodellen ved siden af de eksisterende indstillinger Sensitivity og Memory på tolerancebåndet. Kontakt digna for vejledning om, hvornår en parameter bør ændres, og hvordan den sættes.
 
 ---
 

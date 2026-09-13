@@ -12,6 +12,14 @@ Esta versão apresenta o novo **digna Python SDK**, suporte oficial de **implant
 
 ---
 
+## Assista à apresentação da release
+
+<!--YOUTUBE EMBED START--><div style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%;"><iframe src="https://www.youtube-nocookie.com/embed/g6ZQl9pc4vg" title="What&#39;s New in digna | The Major Release of 2026" frameborder="0" loading="lazy" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div><!--YOUTUBE EMBED END-->
+
+*[What's New in digna | The Major Release of 2026](https://www.youtube.com/watch?v=g6ZQl9pc4vg) — um passeio por esta release no canal do digna no YouTube.*
+
+---
+
 ## Novos Recursos  
 
 ### digna Python SDK – Automatize Tudo com Python  
@@ -60,6 +68,24 @@ Configure a estratégia de execução de consultas: **Single** ou **Combined** m
 
 **Impacto:** Oferece controle granular sobre a execução de consultas para equilibrar desempenho, uso de recursos e segurança de memória conforme as características da fonte de dados.
 
+
+---
+
+### Modelo de Previsão Configurável
+
+O modelo por trás da detecção de anomalias agora é configurável. Sete parâmetros orientam como a previsão é ajustada:
+
+- Break Sensitivity
+- Outlier Sensitivity
+- Memory
+- Ridge Strength
+- Gap Tolerance
+- Outlier Correction
+- Plausible Range Tightness
+
+Os valores padrão servem para a grande maioria das séries, e cada parâmetro pode ser restaurado ao seu padrão a qualquer momento.
+
+**Impacto:** Dá aos usuários controle sobre o próprio modelo de previsão, ao lado das configurações Sensitivity e Memory já existentes na banda de tolerância. Para orientação sobre quando recorrer a um deles e como configurá-lo, entre em contato com a digna.
 
 ---
 
