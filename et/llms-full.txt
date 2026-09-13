@@ -7212,8 +7212,6 @@ See sektsioon seadistab digna backendi rakenduse seadeid:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -7222,8 +7220,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` või IP-aadress | Hostinimi või IP, kus dignabackend jookseb |
-| `digna_APP_PORT` | `8082` (vaikimisi) | REST API endpointide port |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontendi URL | Kui dashboard asub teisel serveril, lisage selle URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nõutav CORS-i puhul koos tunnustega |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Lubab kõiki HTTP meetodeid |
@@ -7801,7 +7797,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Väljalase 2026.06 muudab faili config.toml"
 
-    Kolm sätet on uued ja kohustuslikud, üks ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
+    Kolm sätet on uued ja kohustuslikud, kolm ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
 
     ```toml
     [base]
@@ -7812,9 +7808,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel **eemaldage `digna_FERNET_KEY`** sektsioonist `[base]` — seda enam ei kasutata.
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sätted, mida enam ei kasutata: **`digna_FERNET_KEY`** sektsioonist `[base]` ning **`digna_APP_HOST`** ja **`digna_APP_PORT`** sektsioonist `[app]` — aadressi ja pordi saab server nüüd käsult `digna serve`.
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
+
+!!! warning "Ühekordne sisselogimine: [oidc_clients] vorming on muutunud"
+
+    Väljalase 2026.06 asendab tabelimassiivi ühe tabeliga iga pakkuja kohta, mis on nimetatud pakkuja võtme järgi. `DIGNA_OIDC_KEY` kaob — võti on nüüd sektsiooni päise osa.
+
+    Enne:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pärast:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
 
 #### Samm 5: Kontrollige konfiguratsiooni
 
@@ -8207,8 +8230,6 @@ See sektsioon konfigureerib digna backendi rakenduse seadeid:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -8217,8 +8238,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` või IP-aadress | Hostinimi või IP, kus dignabackend jookseb |
-| `digna_APP_PORT` | `8082` (vaikimisi) | Port REST API lõpp-punktide jaoks |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontendi URL | Kui juhtpaneel on teisel serveril, lisage selle URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nõutud CORS-i jaoks koos tunnustega |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Lubab kõik HTTP meetodid |
@@ -8640,7 +8659,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Väljalase 2026.06 muudab faili config.toml"
 
-    Kolm sätet on uued ja kohustuslikud, üks ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
+    Kolm sätet on uued ja kohustuslikud, kolm ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
 
     ```toml
     [base]
@@ -8651,9 +8670,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel **eemaldage `digna_FERNET_KEY`** sektsioonist `[base]` — seda enam ei kasutata.
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sätted, mida enam ei kasutata: **`digna_FERNET_KEY`** sektsioonist `[base]` ning **`digna_APP_HOST`** ja **`digna_APP_PORT`** sektsioonist `[app]` — aadressi ja pordi saab server nüüd käsult `digna serve`.
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
+
+!!! warning "Ühekordne sisselogimine: [oidc_clients] vorming on muutunud"
+
+    Väljalase 2026.06 asendab tabelimassiivi ühe tabeliga iga pakkuja kohta, mis on nimetatud pakkuja võtme järgi. `DIGNA_OIDC_KEY` kaob — võti on nüüd sektsiooni päise osa.
+
+    Enne:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pärast:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
 
 #### Samm 5: Kontrollige konfiguratsiooni
 
@@ -9217,8 +9263,6 @@ See jaotis seadistab digna backend'i rakenduse sätted:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -9227,8 +9271,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` või IP-aadress | Host või IP, kus dignabackend jookseb |
-| `digna_APP_PORT` | `8082` (vaikimisi) | REST API lõpp-punktide port |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontendi URL | Kui armatuurlaud on teisel serveril, lisage selle URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nõutav CORS-i puhul koos sisselogimisandmetega |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Lubab kõik HTTP meetodid |
@@ -9735,7 +9777,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Väljalase 2026.06 muudab faili config.toml"
 
-    Kolm sätet on uued ja kohustuslikud, üks ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
+    Kolm sätet on uued ja kohustuslikud, kolm ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
 
     ```toml
     [base]
@@ -9746,9 +9788,36 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel **eemaldage `digna_FERNET_KEY`** sektsioonist `[base]` — seda enam ei kasutata.
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sätted, mida enam ei kasutata: **`digna_FERNET_KEY`** sektsioonist `[base]` ning **`digna_APP_HOST`** ja **`digna_APP_PORT`** sektsioonist `[app]` — aadressi ja pordi saab server nüüd käsult `digna serve`.
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
+
+!!! warning "Ühekordne sisselogimine: [oidc_clients] vorming on muutunud"
+
+    Väljalase 2026.06 asendab tabelimassiivi ühe tabeliga iga pakkuja kohta, mis on nimetatud pakkuja võtme järgi. `DIGNA_OIDC_KEY` kaob — võti on nüüd sektsiooni päise osa.
+
+    Enne:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pärast:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
 
 #### Samm 5: Kontrollige konfiguratsiooni
 
@@ -10542,7 +10611,7 @@ label = "Logi sisse Active Directory'ga"
 ### `config.toml`
 
 ```toml
-[oidc.adfs]
+[oidc_clients.adfs]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10700,7 +10769,7 @@ label = "Login with Auth0"
 ### `config.toml`
 
 ```toml
-[oidc.auth0]
+[oidc_clients.auth0]
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10841,7 +10910,7 @@ label = "Login with Google"
 ### `config.toml`
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11008,7 +11077,7 @@ label = "Login with Keycloak"
 ### `config.toml`
 
 ```toml
-[oidc.keycloak]
+[oidc_clients.keycloak]
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11167,7 +11236,7 @@ label = "Login with Microsoft"
 ### `config.toml`
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11321,7 +11390,7 @@ label = "Login with Okta"
 ### `config.toml`
 
 ```toml
-[oidc.okta]
+[oidc_clients.okta]
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11490,7 +11559,7 @@ label = "Logi sisse OneLoginiga"
 ### `config.toml`
 
 ```toml
-[oidc.onelogin]
+[oidc_clients.onelogin]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11707,12 +11776,12 @@ label = "Logi sisse Okta abil"
 
 ### Samm 1: Lisa OIDC pakkujate sektsioonid
 
-Iga pakkuja jaoks peab olema pühendatud `[oidc.<key>]` sektsioon. Key peab vastama `dashboard_config.toml`-is määratud `key`-le.
+Iga pakkuja jaoks peab olema pühendatud `[oidc_clients.<key>]` sektsioon. Key peab vastama `dashboard_config.toml`-is määratud `key`-le.
 
 ### Microsofti seadistus
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11722,7 +11791,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google'i seadistus
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11757,13 +11826,13 @@ Kui digna on hostitud teisel domeenil, uuenda vastavalt:
 ### Täielik näide
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11795,9 +11864,9 @@ Taaskäivita digna backend ja veebiserver, et muudatused jõustuksid.
 
 **Kui töötab teenusena Windowsis:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Kui töötab teenusena Linuxis või macOS-is:**
@@ -12144,7 +12213,7 @@ label = "Logi sisse PingOne'iga"
 ### `config.toml`
 
 ```toml
-[oidc.pingone]
+[oidc_clients.pingone]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

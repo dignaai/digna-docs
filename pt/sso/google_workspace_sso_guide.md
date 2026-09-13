@@ -92,7 +92,7 @@ label = "Entrar com o Google"
 ### `config.toml`
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

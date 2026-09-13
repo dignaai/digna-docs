@@ -587,8 +587,6 @@ Denna sektion konfigurerar digna-backendens applikationsinställningar:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -597,8 +595,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Värde | Noter |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` eller IP-adress | Värdnamn eller IP där dignabackend hostas |
-| `digna_APP_PORT` | `8082` (standard) | Port för REST API-endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Om dashboarden ligger på annan server, lägg till dess URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Krävs för CORS med credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillåt alla HTTP-metoder |
@@ -1176,7 +1172,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Release 2026.06 ändrar config.toml"
 
-    Tre inställningar är nya och obligatoriska, och en används inte längre. En `config.toml` som har följt med från en tidigare release saknar de nya inställningarna, och digna startar inte så länge de saknas. Lägg till följande i din befintliga `config.toml`:
+    Tre inställningar är nya och obligatoriska, och tre används inte längre. En `config.toml` som har följt med från en tidigare release saknar de nya inställningarna, och digna startar inte så länge de saknas. Lägg till följande i din befintliga `config.toml`:
 
     ```toml
     [base]
@@ -1187,9 +1183,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lägg till de två `[base]`-nycklarna i din befintliga `[base]`-sektion och lägg till `[encryption]` som ny sektion. Ta sedan bort **`digna_FERNET_KEY`** från `[base]` — den används inte längre.
+    Lägg till de två `[base]`-nycklarna i din befintliga `[base]`-sektion och lägg till `[encryption]` som ny sektion. Ta sedan bort de inställningar som inte längre används: **`digna_FERNET_KEY`** från `[base]`, samt **`digna_APP_HOST`** och **`digna_APP_PORT`** från `[app]` — servern hämtar nu adress och port från `digna serve`.
 
     Vad varje inställning gör beskrivs i [Backend-konfiguration](#backend-configuration).
+
+!!! warning "Enkel inloggning: formatet för [oidc_clients] har ändrats"
+
+    Release 2026.06 ersätter arrayen av tabeller med en tabell per leverantör, namngiven efter leverantörsnyckeln. `DIGNA_OIDC_KEY` är borta — nyckeln ingår nu i sektionsrubriken.
+
+    Före:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Efter:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Upprepa sektionen för varje leverantör och håll varje nyckel identisk med `key` i `dashboard_config.toml`. `digna config check` rapporterar `oidc_clients` som FAILED så länge den gamla formen finns kvar. Endast installationer som använder enkel inloggning berörs.
 
 #### Steg 5: Validera konfigurationen
 

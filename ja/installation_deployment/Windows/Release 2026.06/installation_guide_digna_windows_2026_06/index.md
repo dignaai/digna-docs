@@ -321,8 +321,6 @@ digna_installation/
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -331,8 +329,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | パラメータ | 値 | 備考 |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` または IP アドレス | dignabackend がホストされるホスト名または IP |
-| `digna_APP_PORT` | `8082`（デフォルト） | REST API エンドポイント用のポート |
 | `digna_APP_CORS_ALLOW_ORIGINS` | フロントエンドの URL | ダッシュボードが別サーバーにある場合はその URL を含める |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | クレデンシャル付き CORS のために必要 |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | すべての HTTP メソッドを許可 |
@@ -754,7 +750,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
 !!! warning "リリース 2026.06 で config.toml が変わります"
 
-    3 つの設定が新たに必須となり、1 つは使用されなくなりました。以前のリリースから引き継いだ `config.toml` には新しい設定が含まれておらず、それらが欠けている限り digna は起動しません。既存の `config.toml` に次を追加してください:
+    3 つの設定が新たに必須となり、3 つは使用されなくなりました。以前のリリースから引き継いだ `config.toml` には新しい設定が含まれておらず、それらが欠けている限り digna は起動しません。既存の `config.toml` に次を追加してください:
 
     ```toml
     [base]
@@ -765,9 +761,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで `[base]` から **`digna_FERNET_KEY` を削除**してください。もう使用されません。
+    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで、使用されなくなった設定を削除してください。`[base]` から **`digna_FERNET_KEY`**、`[app]` から **`digna_APP_HOST`** と **`digna_APP_PORT`** です。サーバーのアドレスとポートは `digna serve` から渡すようになりました。
 
     各設定の役割については次を参照してください: [バックエンド構成](#backend-configuration).
+
+!!! warning "シングルサインオン: [oidc_clients] の形式が変わりました"
+
+    リリース 2026.06 では、テーブルの配列が、プロバイダーごとに 1 つのテーブルへ置き換わりました。テーブル名はプロバイダーのキーになります。`DIGNA_OIDC_KEY` は廃止され、キーはセクション見出しの一部になりました。
+
+    変更前:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    変更後:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    プロバイダーごとにこのセクションを繰り返し、各キーを `dashboard_config.toml` の `key` と一致させてください。古い形式が残っている間、`digna config check` は `oidc_clients` を FAILED と報告します。影響を受けるのはシングルサインオンを使用しているインストールのみです。
 
 #### ステップ 5: 構成を検証する
 

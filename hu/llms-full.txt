@@ -7211,8 +7211,6 @@ Ez a rész a digna backend alkalmazás beállításait tartalmazza:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -7221,8 +7219,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vagy IP cím | A hoszt név vagy IP, ahol a dignabackend fut |
-| `digna_APP_PORT` | `8082` (alapértelmezett) | A REST API végpontok portja |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ha a dashboard más szerveren van, adja hozzá annak URL-jét |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Szükséges CORS esetén hitelesítéssel |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Minden HTTP metódus engedélyezése |
@@ -7800,7 +7796,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "A 2026.06 kiadás módosítja a config.toml fájlt"
 
-    Három beállítás új és kötelező, egy pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
+    Három beállítás új és kötelező, három pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
 
     ```toml
     [base]
@@ -7811,9 +7807,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután **távolítsa el a `digna_FERNET_KEY` kulcsot** a `[base]` szekcióból — már nem használatos.
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el a már nem használt beállításokat: a **`digna_FERNET_KEY`** kulcsot a `[base]` szekcióból, valamint a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot az `[app]` szekcióból — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
+
+!!! warning "Egyszeri bejelentkezés: az [oidc_clients] formátuma megváltozott"
+
+    A 2026.06 kiadás a táblatömböt szolgáltatónként egy-egy táblára cseréli, amelyet a szolgáltató kulcsáról neveznek el. A `DIGNA_OIDC_KEY` megszűnik — a kulcs mostantól a szakaszfejléc része.
+
+    Előtte:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Utána:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Ismételje meg a szakaszt minden szolgáltatóhoz, és tartsa minden kulcsot azonosnak a `dashboard_config.toml` fájlban lévő `key` értékkel. A `digna config check` FAILED állapotúnak jelenti az `oidc_clients` szakaszt mindaddig, amíg a régi forma megmarad. Ez csak az egyszeri bejelentkezést használó telepítéseket érinti.
 
 #### 5. lépés: Ellenőrizze a konfigurációt
 
@@ -8206,8 +8229,6 @@ Ez a rész a digna backend alkalmazás beállításait tartalmazza:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -8216,8 +8237,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vagy IP cím | A hoszt vagy IP, ahol a dignabackend fut |
-| `digna_APP_PORT` | `8082` (alapértelmezett) | A REST API végpontok portja |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ha a dashboard másik szerveren fut, add meg annak URL-jét |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Szükséges CORS-hoz hitelesítő adatokkal |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Minden HTTP metódus engedélyezése |
@@ -8639,7 +8658,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "A 2026.06 kiadás módosítja a config.toml fájlt"
 
-    Három beállítás új és kötelező, egy pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
+    Három beállítás új és kötelező, három pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
 
     ```toml
     [base]
@@ -8650,9 +8669,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután **távolítsa el a `digna_FERNET_KEY` kulcsot** a `[base]` szekcióból — már nem használatos.
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el a már nem használt beállításokat: a **`digna_FERNET_KEY`** kulcsot a `[base]` szekcióból, valamint a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot az `[app]` szekcióból — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
+
+!!! warning "Egyszeri bejelentkezés: az [oidc_clients] formátuma megváltozott"
+
+    A 2026.06 kiadás a táblatömböt szolgáltatónként egy-egy táblára cseréli, amelyet a szolgáltató kulcsáról neveznek el. A `DIGNA_OIDC_KEY` megszűnik — a kulcs mostantól a szakaszfejléc része.
+
+    Előtte:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Utána:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Ismételje meg a szakaszt minden szolgáltatóhoz, és tartsa minden kulcsot azonosnak a `dashboard_config.toml` fájlban lévő `key` értékkel. A `digna config check` FAILED állapotúnak jelenti az `oidc_clients` szakaszt mindaddig, amíg a régi forma megmarad. Ez csak az egyszeri bejelentkezést használó telepítéseket érinti.
 
 #### 5. lépés: Ellenőrizze a konfigurációt
 
@@ -9216,8 +9262,6 @@ Ez a rész a digna backend alkalmazás beállításait tartalmazza:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -9226,8 +9270,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vagy IP cím | A hoszt vagy IP, ahol a dignabackend fut |
-| `digna_APP_PORT` | `8082` (alapértelmezett) | A REST API végpontok portja |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ha a dashboard másik szerveren van, adja hozzá annak URL-jét |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Szükséges, ha CORS hitelesítő adatokat is engedélyez |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Minden HTTP metódus engedélyezése |
@@ -9733,7 +9775,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "A 2026.06 kiadás módosítja a config.toml fájlt"
 
-    Három beállítás új és kötelező, egy pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
+    Három beállítás új és kötelező, három pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
 
     ```toml
     [base]
@@ -9744,9 +9786,36 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután **távolítsa el a `digna_FERNET_KEY` kulcsot** a `[base]` szekcióból — már nem használatos.
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el a már nem használt beállításokat: a **`digna_FERNET_KEY`** kulcsot a `[base]` szekcióból, valamint a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot az `[app]` szekcióból — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
+
+!!! warning "Egyszeri bejelentkezés: az [oidc_clients] formátuma megváltozott"
+
+    A 2026.06 kiadás a táblatömböt szolgáltatónként egy-egy táblára cseréli, amelyet a szolgáltató kulcsáról neveznek el. A `DIGNA_OIDC_KEY` megszűnik — a kulcs mostantól a szakaszfejléc része.
+
+    Előtte:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Utána:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Ismételje meg a szakaszt minden szolgáltatóhoz, és tartsa minden kulcsot azonosnak a `dashboard_config.toml` fájlban lévő `key` értékkel. A `digna config check` FAILED állapotúnak jelenti az `oidc_clients` szakaszt mindaddig, amíg a régi forma megmarad. Ez csak az egyszeri bejelentkezést használó telepítéseket érinti.
 
 #### 5. lépés: Ellenőrizze a konfigurációt
 
@@ -10542,7 +10611,7 @@ label = "Login with Active Directory"
 ### `config.toml`
 
 ```toml
-[oidc.adfs]
+[oidc_clients.adfs]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10702,7 +10771,7 @@ label = "Bejelentkezés Auth0-val"
 ### `config.toml`
 
 ```toml
-[oidc.auth0]
+[oidc_clients.auth0]
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10843,7 +10912,7 @@ label = "Login with Google"
 ### `config.toml`
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11010,7 +11079,7 @@ label = "Bejelentkezés Keycloak-kal"
 ### `config.toml`
 
 ```toml
-[oidc.keycloak]
+[oidc_clients.keycloak]
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11169,7 +11238,7 @@ label = "Bejelentkezés Microsoft-fiókkal"
 ### `config.toml`
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11323,7 +11392,7 @@ label = "Login with Okta"
 ### `config.toml`
 
 ```toml
-[oidc.okta]
+[oidc_clients.okta]
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11492,7 +11561,7 @@ label = "Login with OneLogin"
 ### `config.toml`
 
 ```toml
-[oidc.onelogin]
+[oidc_clients.onelogin]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11709,12 +11778,12 @@ label = "Login with Okta"
 
 ### 1. lépés: OIDC szolgáltató szakaszok hozzáadása
 
-Minden szolgáltatónak dedikált `[oidc.<key>]` szakasza kell legyen. A kulcsnak meg kell egyeznie a `dashboard_config.toml`-ban megadott `key` értékkel.
+Minden szolgáltatónak dedikált `[oidc_clients.<key>]` szakasza kell legyen. A kulcsnak meg kell egyeznie a `dashboard_config.toml`-ban megadott `key` értékkel.
 
 ### Microsoft konfiguráció
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11724,7 +11793,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google konfiguráció
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11759,13 +11828,13 @@ Ha a digna más domainen van hosztolva, frissítsd ennek megfelelően:
 ### Teljes példa
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11797,9 +11866,9 @@ Indítsd újra a digna backend-et és a web szervert, hogy a változtatások ér
 
 **Ha Windows szolgáltatásként fut:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Ha Linux vagy macOS szolgáltatásként fut:**
@@ -12146,7 +12215,7 @@ label = "Bejelentkezés PingOne segítségével"
 ### `config.toml`
 
 ```toml
-[oidc.pingone]
+[oidc_clients.pingone]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<a 6. lépésben másolt kliens titok>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

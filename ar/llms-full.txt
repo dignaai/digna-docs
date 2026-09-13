@@ -5613,8 +5613,6 @@ sudo mv config_template.toml config.toml
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -5623,8 +5621,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP حيث يتم استضافة dignabackend |
-| `digna_APP_PORT` | `8082` (افتراضي) | منفذ نقاط REST API |
 | `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت الواجهة على خادم مختلف، أضف عنوانها هنا |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب للـ CORS مع الاعتمادات |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بجميع طرق HTTP |
@@ -6202,7 +6198,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "الإصدار 2026.06 يغيّر الملف config.toml"
 
-    ثلاثة إعدادات جديدة وإلزامية، وواحد لم يعد مستخدمًا. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
+    ثلاثة إعدادات جديدة وإلزامية، وثلاثة لم تعد مستخدمة. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
 
     ```toml
     [base]
@@ -6213,9 +6209,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم **احذف `digna_FERNET_KEY`** من `[base]` — فهو لم يعد مستخدمًا.
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف الإعدادات التي لم تعد مستخدمة: **`digna_FERNET_KEY`** من `[base]`، و**`digna_APP_HOST`** و**`digna_APP_PORT`** من `[app]` — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`.
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
+
+!!! warning "الدخول الموحّد: تغيّرت صيغة [oidc_clients]"
+
+    يستبدل الإصدار 2026.06 مصفوفة الجداول بجدول واحد لكل مزوّد، يحمل اسم مفتاح المزوّد. أُلغي `DIGNA_OIDC_KEY` — فالمفتاح صار جزءًا من عنوان القسم.
+
+    قبل:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    بعد:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    كرّر القسم لكل مزوّد، وأبقِ كل مفتاح مطابقًا لـ `key` في `dashboard_config.toml`. يُبلغ `digna config check` عن `oidc_clients` بحالة FAILED ما دامت الصيغة القديمة قائمة. لا يتأثر بذلك سوى التثبيتات التي تستخدم الدخول الموحّد.
 
 #### الخطوة 5: تحقق من التهيئة
 
@@ -6608,8 +6631,6 @@ digna_installation/
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -6618,8 +6639,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP الذي يستضيف dignabackend |
-| `digna_APP_PORT` | `8082` (افتراضي) | المنفذ لنقاط نهاية واجهة برمجة التطبيقات REST |
 | `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت اللوحة على خادم مختلف، أدرج عنوان URL الخاص بها |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب لـ CORS مع بيانات الاعتماد |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بجميع طرق HTTP |
@@ -7042,7 +7061,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "الإصدار 2026.06 يغيّر الملف config.toml"
 
-    ثلاثة إعدادات جديدة وإلزامية، وواحد لم يعد مستخدمًا. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
+    ثلاثة إعدادات جديدة وإلزامية، وثلاثة لم تعد مستخدمة. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
 
     ```toml
     [base]
@@ -7053,9 +7072,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم **احذف `digna_FERNET_KEY`** من `[base]` — فهو لم يعد مستخدمًا.
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف الإعدادات التي لم تعد مستخدمة: **`digna_FERNET_KEY`** من `[base]`، و**`digna_APP_HOST`** و**`digna_APP_PORT`** من `[app]` — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`.
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
+
+!!! warning "الدخول الموحّد: تغيّرت صيغة [oidc_clients]"
+
+    يستبدل الإصدار 2026.06 مصفوفة الجداول بجدول واحد لكل مزوّد، يحمل اسم مفتاح المزوّد. أُلغي `DIGNA_OIDC_KEY` — فالمفتاح صار جزءًا من عنوان القسم.
+
+    قبل:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    بعد:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    كرّر القسم لكل مزوّد، وأبقِ كل مفتاح مطابقًا لـ `key` في `dashboard_config.toml`. يُبلغ `digna config check` عن `oidc_clients` بحالة FAILED ما دامت الصيغة القديمة قائمة. لا يتأثر بذلك سوى التثبيتات التي تستخدم الدخول الموحّد.
 
 #### الخطوة 5: تحقق من التهيئة
 
@@ -7619,8 +7665,6 @@ mv config_template.toml config.toml
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -7629,8 +7673,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP حيث يستضيف dignabackend |
-| `digna_APP_PORT` | `8082` (افتراضي) | منفذ نقاط نهاية REST API |
 | `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت اللوحة على خادم مختلف، أضف عنوان URL الخاص بها |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب لطلبات CORS التي تحتوي على بيانات اعتماد |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بكل طرق HTTP |
@@ -8137,7 +8179,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "الإصدار 2026.06 يغيّر الملف config.toml"
 
-    ثلاثة إعدادات جديدة وإلزامية، وواحد لم يعد مستخدمًا. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
+    ثلاثة إعدادات جديدة وإلزامية، وثلاثة لم تعد مستخدمة. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
 
     ```toml
     [base]
@@ -8148,9 +8190,36 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم **احذف `digna_FERNET_KEY`** من `[base]` — فهو لم يعد مستخدمًا.
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف الإعدادات التي لم تعد مستخدمة: **`digna_FERNET_KEY`** من `[base]`، و**`digna_APP_HOST`** و**`digna_APP_PORT`** من `[app]` — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`.
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
+
+!!! warning "الدخول الموحّد: تغيّرت صيغة [oidc_clients]"
+
+    يستبدل الإصدار 2026.06 مصفوفة الجداول بجدول واحد لكل مزوّد، يحمل اسم مفتاح المزوّد. أُلغي `DIGNA_OIDC_KEY` — فالمفتاح صار جزءًا من عنوان القسم.
+
+    قبل:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    بعد:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    كرّر القسم لكل مزوّد، وأبقِ كل مفتاح مطابقًا لـ `key` في `dashboard_config.toml`. يُبلغ `digna config check` عن `oidc_clients` بحالة FAILED ما دامت الصيغة القديمة قائمة. لا يتأثر بذلك سوى التثبيتات التي تستخدم الدخول الموحّد.
 
 #### الخطوة 5: تحقق من التهيئة
 
@@ -8944,7 +9013,7 @@ label = "Login with Active Directory"
 ### `config.toml`
 
 ```toml
-[oidc.adfs]
+[oidc_clients.adfs]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -9102,7 +9171,7 @@ label = "Login with Auth0"
 ### `config.toml`
 
 ```toml
-[oidc.auth0]
+[oidc_clients.auth0]
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -9243,7 +9312,7 @@ label = "تسجيل الدخول عبر Google"
 ### `config.toml`
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -9410,7 +9479,7 @@ label = "Login with Keycloak"
 ### `config.toml`
 
 ```toml
-[oidc.keycloak]
+[oidc_clients.keycloak]
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -9569,7 +9638,7 @@ label = "Login with Microsoft"
 ### `config.toml`
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -9723,7 +9792,7 @@ label = "Login with Okta"
 ### `config.toml`
 
 ```toml
-[oidc.okta]
+[oidc_clients.okta]
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -9892,7 +9961,7 @@ label = "Login with OneLogin"
 ### `config.toml`
 
 ```toml
-[oidc.onelogin]
+[oidc_clients.onelogin]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10109,12 +10178,12 @@ label = "Login with Okta"
 
 ### الخطوة 1: إضافة أقسام مزوّدي OIDC
 
-يجب أن يكون لكل مزود قسم مخصص `[oidc.<key>]`. يجب أن يتطابق المفتاح مع `key` المعرفة في `dashboard_config.toml`.
+يجب أن يكون لكل مزود قسم مخصص `[oidc_clients.<key>]`. يجب أن يتطابق المفتاح مع `key` المعرفة في `dashboard_config.toml`.
 
 ### تكوين Microsoft
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -10124,7 +10193,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### تكوين Google
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -10159,13 +10228,13 @@ http://localhost:5173/oidc/callback
 ### مثال كامل
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10197,9 +10266,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 **إذا كنت تشغله كخدمة على Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **إذا كنت تشغله كخدمة على Linux أو macOS:**
@@ -10546,7 +10615,7 @@ label = "Login with PingOne"
 ### `config.toml`
 
 ```toml
-[oidc.pingone]
+[oidc_clients.pingone]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

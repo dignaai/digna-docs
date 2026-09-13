@@ -321,8 +321,6 @@ Atveriet `config.toml` teksta redaktorā un konfigurējiet katru sadaļu zemāk.
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -331,8 +329,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vai IP adrese | Hostname vai IP, kur tiek mitināts dignabackend |
-| `digna_APP_PORT` | `8082` (noklusējums) | Ports REST API galapunktiem |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontenda URL | Ja panelis atrodas citā serverī, iekļaujiet tā URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijas datiem |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļaut visus HTTP metodus |
@@ -754,7 +750,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Laidiens 2026.06 maina config.toml"
 
-    Trīs iestatījumi ir jauni un obligāti, bet viens vairs netiek izmantots. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
+    Trīs iestatījumi ir jauni un obligāti, bet trīs vairs netiek izmantoti. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
 
     ```toml
     [base]
@@ -765,9 +761,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam no `[base]` **noņemiet `digna_FERNET_KEY`** — tas vairs netiek izmantots.
+    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet iestatījumus, kas vairs netiek izmantoti: **`digna_FERNET_KEY`** no `[base]`, kā arī **`digna_APP_HOST`** un **`digna_APP_PORT`** no `[app]` — adresi un portu serveris tagad iegūst no `digna serve`.
 
     Ko dara katrs iestatījums, apraksīts sadaļā [Aizmugures konfigurācija](#backend-configuration).
+
+!!! warning "Vienotā pieteikšanās: [oidc_clients] formāts ir mainījies"
+
+    Laidiens 2026.06 aizstāj tabulu masīvu ar vienu tabulu katram nodrošinātājam, nosauktu pēc nodrošinātāja atslēgas. `DIGNA_OIDC_KEY` vairs nav — atslēga tagad ir sadaļas virsraksta daļa.
+
+    Pirms:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pēc:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Atkārtojiet sadaļu katram nodrošinātājam un saglabājiet katru atslēgu tādu pašu kā `key` failā `dashboard_config.toml`. `digna config check` ziņo par `oidc_clients` kā FAILED, kamēr saglabājas vecā forma. Tas skar tikai instalācijas, kas izmanto vienoto pieteikšanos.
 
 #### 5. solis: Parbaudiet konfigurāciju
 

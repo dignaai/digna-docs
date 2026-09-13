@@ -321,8 +321,6 @@ Bu bölüm digna backend uygulama ayarlarını yapılandırır:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -331,8 +329,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | dignabackend'in barındırıldığı host adı veya IP |
-| `digna_APP_PORT` | `8082` (default) | REST API uç noktaları için port |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Dashboard farklı bir sunucuda ise onun URL'sini ekleyin |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Kimlik bilgileri ile CORS için gerekli |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tüm HTTP yöntemlerine izin ver |
@@ -755,7 +751,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "2026.06 sürümü config.toml dosyasını değiştiriyor"
 
-    Üç ayar yeni ve zorunludur, biri ise artık kullanılmamaktadır. Önceki bir sürümden devralınan `config.toml` yeni ayarları içermez ve bunlar eksik olduğu sürece digna başlatılmaz. Mevcut `config.toml` dosyanıza şunları ekleyin:
+    Üç ayar yeni ve zorunludur, üçü ise artık kullanılmamaktadır. Önceki bir sürümden devralınan `config.toml` yeni ayarları içermez ve bunlar eksik olduğu sürece digna başlatılmaz. Mevcut `config.toml` dosyanıza şunları ekleyin:
 
     ```toml
     [base]
@@ -766,9 +762,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    İki `[base]` anahtarını mevcut `[base]` bölümünüze ekleyin ve `[encryption]` bölümünü yeni bir bölüm olarak ekleyin. Ardından `[base]` bölümünden **`digna_FERNET_KEY` anahtarını kaldırın** — artık kullanılmıyor.
+    İki `[base]` anahtarını mevcut `[base]` bölümünüze ekleyin ve `[encryption]` bölümünü yeni bir bölüm olarak ekleyin. Ardından artık kullanılmayan ayarları kaldırın: `[base]` bölümünden **`digna_FERNET_KEY`**, `[app]` bölümünden ise **`digna_APP_HOST`** ve **`digna_APP_PORT`** — sunucu adresini ve bağlantı noktasını artık `digna serve` komutundan alır.
 
     Her ayarın ne yaptığı şurada açıklanmıştır: [Arka Uç Yapılandırması](#backend-configuration).
+
+!!! warning "Çoklu oturum açma: [oidc_clients] biçimi değişti"
+
+    2026.06 sürümü, tablo dizisini her sağlayıcı için birer tabloyla değiştirir; tablolar sağlayıcı anahtarıyla adlandırılır. `DIGNA_OIDC_KEY` kaldırıldı — anahtar artık bölüm başlığının bir parçasıdır.
+
+    Önce:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Sonra:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Bölümü her sağlayıcı için yineleyin ve her anahtarı `dashboard_config.toml` içindeki `key` ile aynı tutun. Eski biçim yerinde kaldığı sürece `digna config check`, `oidc_clients` bölümünü FAILED olarak bildirir. Yalnızca çoklu oturum açma kullanan kurulumlar etkilenir.
 
 #### Adım 5: Yapılandırmayı Doğrulayın
 

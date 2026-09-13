@@ -321,8 +321,6 @@ digna_installation/
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -331,8 +329,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | 매개변수 | 값 | 비고 |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` 또는 IP 주소 | dignabackend가 호스팅되는 호스트명 또는 IP |
-| `digna_APP_PORT` | `8082` (기본) | REST API 엔드포인트용 포트 |
 | `digna_APP_CORS_ALLOW_ORIGINS` | 프론트엔드 URL | 대시보드가 다른 서버에 있는 경우 해당 URL 포함 |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | 자격증명 포함 CORS에 필요 |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | 모든 HTTP 메서드 허용 |
@@ -751,7 +747,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "릴리스 2026.06은 config.toml을 변경합니다"
 
-    세 가지 설정이 새로 추가되어 필수가 되었고, 하나는 더 이상 사용되지 않습니다. 이전 릴리스에서 가져온 `config.toml`에는 새 설정이 없으며, 이들이 없는 한 digna는 시작되지 않습니다. 기존 `config.toml`에 다음을 추가하십시오:
+    세 가지 설정이 새로 추가되어 필수가 되었고, 세 개는 더 이상 사용되지 않습니다. 이전 릴리스에서 가져온 `config.toml`에는 새 설정이 없으며, 이들이 없는 한 digna는 시작되지 않습니다. 기존 `config.toml`에 다음을 추가하십시오:
 
     ```toml
     [base]
@@ -762,9 +758,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 `[base]`에서 **`digna_FERNET_KEY`를 제거**하십시오. 더 이상 사용되지 않습니다.
+    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 더 이상 사용되지 않는 설정을 제거하십시오. `[base]`에서 **`digna_FERNET_KEY`**, `[app]`에서 **`digna_APP_HOST`**와 **`digna_APP_PORT`**입니다. 서버는 이제 주소와 포트를 `digna serve`에서 받습니다.
 
     각 설정의 역할은 다음을 참조하십시오: [백엔드 구성](#backend-configuration).
+
+!!! warning "Single Sign-On: [oidc_clients] 형식이 변경되었습니다"
+
+    릴리스 2026.06은 테이블 배열을 공급자별 테이블 하나로 대체하며, 테이블 이름은 공급자 키를 따릅니다. `DIGNA_OIDC_KEY`는 없어졌습니다 — 키는 이제 섹션 헤더의 일부입니다.
+
+    이전:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    이후:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    공급자마다 이 섹션을 반복하고, 각 키를 `dashboard_config.toml`의 `key`와 동일하게 유지하십시오. 이전 형식이 남아 있는 동안 `digna config check`는 `oidc_clients`를 FAILED로 보고합니다. Single Sign-On을 사용하는 설치에만 해당됩니다.
 
 #### 5단계: 구성 검증
 

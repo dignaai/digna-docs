@@ -168,12 +168,12 @@ label = "Login with Okta"
 
 ### Schritt 1: OIDC-Provider-Abschnitte hinzufügen
 
-Jeder Provider muss einen eigenen `[oidc.<key>]`-Abschnitt haben. Der key muss mit dem in `dashboard_config.toml` definierten `key` übereinstimmen.
+Jeder Provider muss einen eigenen `[oidc_clients.<key>]`-Abschnitt haben. Der key muss mit dem in `dashboard_config.toml` definierten `key` übereinstimmen.
 
 ### Microsoft-Konfiguration
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -183,7 +183,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google-Konfiguration
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -218,13 +218,13 @@ Wenn digna unter einer anderen Domain gehostet wird, passen Sie diese entspreche
 ### Komplettes Beispiel
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -256,9 +256,9 @@ Starten Sie das digna-Backend und den Webserver neu, um Änderungen anzuwenden.
 
 **Wenn als Dienst unter Windows ausgeführt:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Wenn als Dienst unter Linux oder macOS ausgeführt:**

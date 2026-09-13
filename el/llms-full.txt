@@ -7216,8 +7216,6 @@ sudo mv config_template.toml config.toml
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -7226,8 +7224,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ή IP διεύθυνση | Hostname ή IP όπου φιλοξενείται το dignabackend |
-| `digna_APP_PORT` | `8082` (προεπιλογή) | Θύρα για τα REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Αν το dashboard βρίσκεται σε διαφορετικό server, συμπεριλάβετε το URL του |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Απαραίτητο για CORS με credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Επιτρέπει όλες τις μεθόδους HTTP |
@@ -7805,7 +7801,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Η έκδοση 2026.06 αλλάζει το config.toml"
 
-    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ μία δεν χρησιμοποιείται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
+    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ τρεις δεν χρησιμοποιούνται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
 
     ```toml
     [base]
@@ -7816,9 +7812,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια **αφαιρέστε το `digna_FERNET_KEY`** από την `[base]` — δεν χρησιμοποιείται πλέον.
+    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια αφαιρέστε τις ρυθμίσεις που δεν χρησιμοποιούνται πλέον: το **`digna_FERNET_KEY`** από την `[base]`, καθώς και τα **`digna_APP_HOST`** και **`digna_APP_PORT`** από την `[app]` — ο διακομιστής λαμβάνει πλέον τη διεύθυνση και τη θύρα του από το `digna serve`.
 
     Τι κάνει κάθε ρύθμιση περιγράφεται στην ενότητα [Διαμόρφωση backend](#backend-configuration).
+
+!!! warning "Ενιαία σύνδεση: η μορφή του [oidc_clients] άλλαξε"
+
+    Η έκδοση 2026.06 αντικαθιστά τον πίνακα πινάκων με έναν πίνακα ανά πάροχο, ονομασμένο από το κλειδί του παρόχου. Το `DIGNA_OIDC_KEY` καταργείται — το κλειδί αποτελεί πλέον μέρος της κεφαλίδας της ενότητας.
+
+    Πριν:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Μετά:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
 
 #### Βήμα 5: Επικυρώστε τη διαμόρφωση
 
@@ -8211,8 +8234,6 @@ digna_installation/
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -8221,8 +8242,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ή διεύθυνση IP | Hostname ή IP όπου φιλοξενείται το dignabackend |
-| `digna_APP_PORT` | `8082` (προεπιλογή) | Θύρα για τα REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Αν το dashboard είναι σε διαφορετικό server, προσθέστε το URL του |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Απαραίτητο για CORS με credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Επιτρέπει όλες τις HTTP μεθόδους |
@@ -8645,7 +8664,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Η έκδοση 2026.06 αλλάζει το config.toml"
 
-    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ μία δεν χρησιμοποιείται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
+    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ τρεις δεν χρησιμοποιούνται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
 
     ```toml
     [base]
@@ -8656,9 +8675,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια **αφαιρέστε το `digna_FERNET_KEY`** από την `[base]` — δεν χρησιμοποιείται πλέον.
+    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια αφαιρέστε τις ρυθμίσεις που δεν χρησιμοποιούνται πλέον: το **`digna_FERNET_KEY`** από την `[base]`, καθώς και τα **`digna_APP_HOST`** και **`digna_APP_PORT`** από την `[app]` — ο διακομιστής λαμβάνει πλέον τη διεύθυνση και τη θύρα του από το `digna serve`.
 
     Τι κάνει κάθε ρύθμιση περιγράφεται στην ενότητα [Διαμόρφωση backend](#backend-configuration).
+
+!!! warning "Ενιαία σύνδεση: η μορφή του [oidc_clients] άλλαξε"
+
+    Η έκδοση 2026.06 αντικαθιστά τον πίνακα πινάκων με έναν πίνακα ανά πάροχο, ονομασμένο από το κλειδί του παρόχου. Το `DIGNA_OIDC_KEY` καταργείται — το κλειδί αποτελεί πλέον μέρος της κεφαλίδας της ενότητας.
+
+    Πριν:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Μετά:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
 
 #### Βήμα 5: Επικυρώστε τη διαμόρφωση
 
@@ -9222,8 +9268,6 @@ mv config_template.toml config.toml
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -9232,8 +9276,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ή διεύθυνση IP | Όνομα host ή IP όπου φιλοξενείται το dignabackend |
-| `digna_APP_PORT` | `8082` (προεπιλεγμένο) | Θύρα για τα REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Εάν το dashboard είναι σε διαφορετικό server, συμπεριλάβετε το URL του |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Απαιτείται για CORS με credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Επιτρέπονται όλες οι HTTP μέθοδοι |
@@ -9740,7 +9782,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Η έκδοση 2026.06 αλλάζει το config.toml"
 
-    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ μία δεν χρησιμοποιείται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
+    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ τρεις δεν χρησιμοποιούνται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
 
     ```toml
     [base]
@@ -9751,9 +9793,36 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια **αφαιρέστε το `digna_FERNET_KEY`** από την `[base]` — δεν χρησιμοποιείται πλέον.
+    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια αφαιρέστε τις ρυθμίσεις που δεν χρησιμοποιούνται πλέον: το **`digna_FERNET_KEY`** από την `[base]`, καθώς και τα **`digna_APP_HOST`** και **`digna_APP_PORT`** από την `[app]` — ο διακομιστής λαμβάνει πλέον τη διεύθυνση και τη θύρα του από το `digna serve`.
 
     Τι κάνει κάθε ρύθμιση περιγράφεται στην ενότητα [Διαμόρφωση backend](#backend-configuration).
+
+!!! warning "Ενιαία σύνδεση: η μορφή του [oidc_clients] άλλαξε"
+
+    Η έκδοση 2026.06 αντικαθιστά τον πίνακα πινάκων με έναν πίνακα ανά πάροχο, ονομασμένο από το κλειδί του παρόχου. Το `DIGNA_OIDC_KEY` καταργείται — το κλειδί αποτελεί πλέον μέρος της κεφαλίδας της ενότητας.
+
+    Πριν:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Μετά:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
 
 #### Βήμα 5: Επικυρώστε τη διαμόρφωση
 
@@ -10547,7 +10616,7 @@ label = "Σύνδεση με Active Directory"
 ### `config.toml`
 
 ```toml
-[oidc.adfs]
+[oidc_clients.adfs]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10705,7 +10774,7 @@ label = "Login with Auth0"
 ### `config.toml`
 
 ```toml
-[oidc.auth0]
+[oidc_clients.auth0]
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10846,7 +10915,7 @@ label = "Login with Google"
 ### `config.toml`
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11013,7 +11082,7 @@ label = "Σύνδεση με Keycloak"
 ### `config.toml`
 
 ```toml
-[oidc.keycloak]
+[oidc_clients.keycloak]
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11172,7 +11241,7 @@ label = "Login with Microsoft"
 ### `config.toml`
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11326,7 +11395,7 @@ label = "Login with Okta"
 ### `config.toml`
 
 ```toml
-[oidc.okta]
+[oidc_clients.okta]
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11495,7 +11564,7 @@ label = "Login with OneLogin"
 ### `config.toml`
 
 ```toml
-[oidc.onelogin]
+[oidc_clients.onelogin]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11712,12 +11781,12 @@ label = "Login with Okta"
 
 ### Βήμα 1: Προσθήκη Ενοτήτων Παρόχων OIDC
 
-Κάθε πάροχος πρέπει να έχει αφιερωμένη ενότητα `[oidc.<key>]`. Το key πρέπει να ταιριάζει με το `key` που ορίζεται στο `dashboard_config.toml`.
+Κάθε πάροχος πρέπει να έχει αφιερωμένη ενότητα `[oidc_clients.<key>]`. Το key πρέπει να ταιριάζει με το `key` που ορίζεται στο `dashboard_config.toml`.
 
 ### Διαμόρφωση για Microsoft
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11727,7 +11796,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Διαμόρφωση για Google
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11762,13 +11831,13 @@ http://localhost:5173/oidc/callback
 ### Πλήρες Παράδειγμα
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11800,9 +11869,9 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 **Αν τρέχετε ως υπηρεσία στα Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Αν τρέχετε ως υπηρεσία σε Linux ή macOS:**
@@ -12149,7 +12218,7 @@ label = "Login with PingOne"
 ### `config.toml`
 
 ```toml
-[oidc.pingone]
+[oidc_clients.pingone]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

@@ -277,8 +277,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. After extraction, you should see the following items:
    - `dashboard/` — Web dashboard interface
    - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+
+!!! info "The configuration and licence files are not in the package"
+
+    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
+    create both yourself, in [Backend Configuration](#backend-configuration) and
+    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
+    digna supplies it separately, as Step 3 describes.
 
 ### Step 3: Install the License File
 
@@ -321,8 +326,6 @@ This section configures the digna backend application settings:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -331,8 +334,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
@@ -523,9 +524,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Step 1: Deploy Dashboard to Web Server
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
 
 Choose your web server and follow the corresponding deployment steps.
 
@@ -580,19 +581,24 @@ Running the digna backend as a Windows service ensures it:
 - Restarts automatically if it crashes
 - Can be managed through Windows Services
 
-### Service Management Files
+### The `windows` Commands
 
-All necessary files are located in the digna installation directory under: `bin/`
+The service is managed by the `digna` executable itself, through the `digna windows`
+subcommands. There are no batch files to run.
 
-The following batch files are available:
-- `install_service.bat` — Registers digna as a Windows service
-- `uninstall_service.bat` — Unregisters the service
-- `start_service.bat` — Starts the running service
-- `stop_service.bat` — Stops the running service
+| Command | Purpose |
+|---|---|
+| `digna windows install` | Registers digna as a Windows service |
+| `digna windows start` | Starts the registered service |
+| `digna windows stop` | Stops the running service |
+| `digna windows uninstall` | Unregisters the service |
 
 !!! warning "Administrator Required"
 
-    All batch files must be executed with Administrator privileges.
+    All four commands must be run from a Command Prompt opened as Administrator.
+
+Every command takes `--name` to address a service registered under a non-default name. The full
+option list is in the [CLI reference](../../../cli/Command_Line_Interface_202606.md).
 
 ### Installing the Service
 
@@ -600,37 +606,66 @@ The following batch files are available:
    - Right-click Command Prompt
    - Select "Run as Administrator"
 
-2. **Navigate to the bin Folder**
+2. **Navigate to your digna installation directory**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Run the Installation Script**
+3. **Register the service**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-The digna server is now registered as a Windows service with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+!!! important "Specify the address and port unless the defaults suit you"
+
+    `install` records the address and port in the service registration, and the service binds to
+    exactly what was recorded. The defaults are `127.0.0.1` and `8000`, which accept connections
+    only from the machine itself. A dashboard on another host cannot reach that, so give the
+    address the backend should listen on:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    These are not read from `config.toml`. To change them later, uninstall the service and
+    install it again with the new values.
+
+The service is registered with **automatic startup**, so it will start with Windows. It does not
+start immediately — see the next section.
+
+#### Install Options
+
+| Option | Default | Purpose |
+|---|---|---|
+| `--name` | `digna` | Name to register the service under |
+| `--display-name` | `digna` | Name shown in services.msc |
+| `--description` | `digna data quality backend` | Description shown in services.msc |
+| `--address` | `127.0.0.1` | Address the service binds its API to |
+| `--port` | `8000` | Port the service binds its API to |
+| `--working-dir` | the directory of the `digna` executable | Directory holding `config.toml` and `license.toml`, which the service makes its working directory |
+| `--start-type` | `auto` | `auto` starts with Windows, `manual` starts only when asked, `disabled` registers the service but refuses to start it |
+| `--account` | `LocalSystem` | Account to run as, e.g. `DOMAIN\user` or `.\user` |
+| `--password` | | Password of `--account` |
+
+!!! tip "Running under a domain account"
+
+    `LocalSystem` has no network identity, so Windows Authentication against SQL Server and any
+    access to a network share will fail. Install with `--account` and `--password` where the
+    service needs to reach resources as a specific user.
 
 ### Starting and Stopping the Service
 
 #### To Start the Service
 
-1. Open Command Prompt as Administrator
-2. Navigate to `digna\bin`
-3. Run:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### To Stop the Service
 
-1. Open Command Prompt as Administrator
-2. Navigate to `digna\bin`
-3. Run:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Tip"
 
@@ -640,37 +675,41 @@ The digna server is now registered as a Windows service with **automatic startup
 
 If you need to relocate the digna installation:
 
-1. **Uninstall the Current Service**
+1. **Stop and unregister the current service**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Move the Application Files**
    - Move the entire digna installation folder to the new location
 
-3. **Reinstall the Service**
+3. **Register the service again from the new location**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Repeat any `--address`, `--port` or `--account` values you used the first time — the previous
+   registration is gone.
 
 4. **Start the Service**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Uninstalling the Service
 
 1. **Stop the Running Service**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Uninstall the Service**
+2. **Unregister the Service**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 The digna server is now unregistered as a Windows service.
@@ -730,14 +769,32 @@ A backup ensures you can recover if the upgrade encounters unexpected issues.
 
 ### Upgrade Process
 
-#### Step 1: Stop digna Service
+#### Step 1: Stop and Unregister the Old Service
 
-If digna is running as a Windows service, stop it first:
+If digna is running as a Windows service, stop it with the **batch files of your current
+installation** — the `digna windows` commands belong to the new release and are not available
+yet:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Then unregister the service, again with the old batch file. The registration points at the old
+executable and its scripts, both of which this upgrade replaces, so it cannot be reused:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Unregister before you rename anything"
+
+    `uninstall_service.bat` lives in the `bin` folder you are about to rename, and it is the only
+    thing that can remove the registration it created. Run it while the old installation is still
+    in place. If the folder has already been renamed, rename it back, unregister, then continue.
+
+    Note down the account the service ran under, and the address and port it served on — you will
+    need them in Step 7.
 
 #### Step 2: Backup Current Installation
 
@@ -758,7 +815,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend and dignacli are no longer used"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4). The `bin` folder goes too: its batch files drove the old service and 2026.06 does not ship them, so once the service has been unregistered in Step 1 they do nothing but mislead.
 
 #### Step 3: Extract and Deploy New Version
 
@@ -768,7 +825,10 @@ ren dashboard dashboard_old
 
 !!! warning "Important"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
+    installation ZIP — the digna team never ships either file. Your existing configuration is
+    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
+    only ones you have.
 
 #### Step 4: Restore Your Configuration Files
 
@@ -777,7 +837,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Release 2026.06 changes config.toml"
 
-    Three settings are new and required, and one is no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
 
     ```toml
     [base]
@@ -788,11 +848,47 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then **remove `digna_FERNET_KEY`** from `[base]` — it is no longer used.
+    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
 
     See [Backend Configuration](#backend-configuration) for what each setting does.
 
-#### Step 5: Validate the Configuration
+!!! warning "Single sign-on: the [oidc_clients] format has changed"
+
+    Release 2026.06 replaces the array of tables with one table per provider, named after the
+    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+
+    Before:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    After:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Repeat the section for every provider, and keep each key matching the `key` in
+    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
+    old form is still in place. Only installations that use single sign-on are affected.
+
+#### Step 5: Reload the Web Server
+
+The dashboard is a set of static files, so your web server — and the browser — may still be
+serving the previous version. Reload or restart whichever web server hosts the `dashboard`
+folder, then reload the page with a hard refresh (++ctrl+f5++).
+
+#### Step 6: Validate the Configuration
 
 Confirm that the updated `config.toml` is complete before touching the repository:
 
@@ -802,7 +898,26 @@ digna config check
 
 Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
 
-#### Step 6: Upgrade the Repository Schema
+#### Step 7: Replace the License File
+
+Each release is licensed separately. Copy the `license.toml` that the digna team provided for
+this release into the installation directory, replacing the old one:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Do not keep the previous license"
+
+    A `license.toml` issued for an earlier release does not cover this one, and every command
+    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
+    repository when the check fails. Verify it before going further:
+
+    ```bash
+    digna license check
+    ```
+
+#### Step 8: Upgrade the Repository Schema
 
 Navigate to your digna installation directory and run:
 
@@ -812,14 +927,23 @@ digna repo upgrade
 
 This updates the PostgreSQL schema to the latest version while preserving all existing data.
 
-#### Step 7: Restart Services
+#### Step 9: Register and Start the Service
 
-If running as a Windows service:
+The old registration was removed in Step 1, so the service is registered again — this time with
+the `digna` executable, which has no batch files:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Give `--address` and `--port` the values the old service served on, unless you want the new
+defaults of `127.0.0.1` and `8000`; they are recorded in the registration and are no longer read
+from `config.toml`. Add `--account` and `--password` if the old service ran under a domain
+account. See
+[Running digna as a Windows Service](#running-digna-as-a-windows-service) for the full option
+list.
 
 If running manually, restart the server:
 
@@ -830,7 +954,7 @@ digna serve --address <address> --port <port>
 
 If using IIS or Tomcat, restart the respective web server.
 
-#### Step 8: Verify the Upgrade
+#### Step 10: Verify the Upgrade
 
 1. Access the digna dashboard
 2. Verify that the interface loads correctly

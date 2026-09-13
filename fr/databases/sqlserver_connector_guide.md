@@ -1,86 +1,90 @@
-# Source Connector for MS SQL Server
+# Connecteur source pour MS SQL Server
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Ce guide décrit comment configurer *digna* pour se connecter à Microsoft SQL Server via
+**ODBC**, à l'aide d'une chaîne de connexion **sans DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+La partie digna de la configuration est identique pour toutes les technologies — où les
+connexions sont créées, comment les valeurs des propriétés sont chiffrées, comment une connexion
+est testée et ce que signifient les modes de profilage. Elle est décrite dans
+[Vue d'ensemble des connexions aux bases de données](overview.md). Cette page traite de ce qui
+est spécifique à SQL Server.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Synapse se configure également comme une connexion SQL Server, avec un nom d'hôte différent
+    et quelques considérations supplémentaires — voir
+    [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Installer le pilote ODBC {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Installez **ODBC Driver 18 for SQL Server** sur la machine qui exécute le backend *digna*, en
+suivant [le guide d'installation de Microsoft](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Le pilote livré avec Windows sous le nom simple **SQL Server** fonctionne également, mais il est
+depuis longtemps dépassé et ne prend en charge ni les paramètres TLS modernes ni
+l'authentification Azure. Ne l'utilisez que là où l'installation du pilote actuel n'est pas
+envisageable.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Relevez le nom exact du pilote enregistré sur votre hôte comme décrit dans
+[Installer le pilote ODBC sur l'hôte digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. Propriétés ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Un exemple, pas une spécification"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    L'ensemble ci-dessous est une combinaison dont on sait qu'elle fonctionne. Les propriétés
+    appartiennent au pilote ODBC Microsoft, donc leurs noms, leurs valeurs par défaut et les
+    valeurs acceptées diffèrent selon les versions du pilote — Driver 18 chiffre par défaut, ce
+    que ne faisait pas Driver 17 — et selon les plateformes. Prenez ceci comme point de départ
+    et consultez la documentation de la version du pilote que vous avez installée.
 
-Add the following properties in the **Add DB Connection** screen:
+Ajoutez les propriétés suivantes dans l'écran **Add DB Connection** :
 
-| Key | Example value | Notes |
+| Clé | Valeur d'exemple | Notes |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Doit correspondre au nom du pilote enregistré sur l'hôte *digna* |
+| `SERVER` | `sql.example.com` | Nom du serveur ou adresse IP. Instances nommées : `host\instance` ; port non standard : `host,1433` |
+| `PORT` | `1433` | À omettre lorsque le port fait déjà partie de `SERVER` |
+| `DATABASE` | `digna_source_db` | Base de données contenant les schémas sources. C'est la seule base que cette connexion peut profiler |
+| `UID` | `digna_source_user` | Utilisateur de la base de données |
+| `PWD` | `<password>` | Cochez **Encrypted** |
 
-The resulting connection string looks like this:
+La chaîne de connexion obtenue ressemble à ceci :
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Chiffrement avec ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 chiffre les connexions par défaut et valide le certificat du serveur. Face à un
+serveur dont le certificat n'est pas approuvé par votre hôte *digna* — un certificat
+auto-signé, typiquement — la connexion échoue avec une erreur de chaîne de certification.
+Ajoutez :
 
-| Key | Example value | Notes |
+| Clé | Valeur d'exemple | Notes |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Valeur par défaut dans Driver 18 ; ne mettez `no` que si le serveur ne sait pas faire de TLS |
+| `TrustServerCertificate` | `yes` | Ignore la validation du certificat. Pratique en environnement de test ; préférez installer le certificat en production |
 
-### Windows Authentication
+### Authentification Windows
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Pour vous connecter avec le compte qui exécute le service *digna* plutôt qu'avec un identifiant
+SQL, supprimez `UID` et `PWD` et ajoutez :
 
-| Key | Example value | Notes |
+| Clé | Valeur d'exemple | Notes |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | Le compte de service *digna* doit disposer des droits sur la base |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Configuration de *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Dans l'écran **Add DB Connection**, renseignez les éléments suivants :
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +95,58 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Notes sur MS SQL Server {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Une connexion voit une base de données.** *digna* propose les schémas de la base nommée dans
+  `DATABASE`, car SQL Server ne signale que la base courante comme catalogue. Les tables sources
+  situées dans une autre base nécessitent leur propre connexion.
+- **Modes de profilage.** *Permanent* crée les tables de travail dans **Work Schema** ;
+  l'utilisateur a donc besoin de `CREATE TABLE` à cet endroit. *Session* utilise des tables
+  temporaires locales (`#wt_…`) dans `tempdb` et ne touche pas à **Work Schema**. *Standard* ne
+  nécessite qu'un accès en lecture.
+- **`SERVER` porte l'instance et le port.** Avec une instance nommée, `host\instance` exige que
+  le service SQL Server Browser soit joignable ; `host,port` évite cela.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Vérifier le pilote (facultatif) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+Configurer une source de données ODBC n'est pas nécessaire pour une connexion sans DSN, mais
+l'assistant du pilote est un moyen pratique de confirmer que le pilote fonctionne et que le
+serveur accepte vos identifiants avant de les saisir dans *digna*.
 
-#### Step 1
+#### Étape 1
 ![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Cliquez sur le bouton **Next >**.
 
-#### Step 2
+#### Étape 2
 ![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Choisissez la méthode d'authentification (par exemple nom d'utilisateur et mot de passe)
+et fournissez les données requises.
 
-Click the **Next >** button.
+Cliquez sur le bouton **Next >**.
 
-#### Step 3
+#### Étape 3
 ![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Choisissez les paramètres conformes à ANSI puis cliquez sur le bouton **Next >**.
 
-#### Step 4
+#### Étape 4
 ![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Vous pouvez conserver les paramètres par défaut ou choisir des options de journalisation selon
+vos besoins, puis cliquer sur le bouton **Finish**.
 
-#### Step 5
+#### Étape 5
 ![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Cliquez maintenant sur le bouton **Test datasource**.
 
-#### Step 6
+#### Étape 6
 ![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Un écran de réussite confirme que le pilote et les identifiants fonctionnent. Les valeurs que
+vous avez saisies sont exactement celles que prennent les propriétés de la
+[section 2](#2-odbc-properties).

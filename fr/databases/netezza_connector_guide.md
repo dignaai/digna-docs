@@ -1,61 +1,65 @@
-# Source Connector for Netezza
+# Connecteur source pour Netezza
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Ce guide décrit comment configurer *digna* pour se connecter à Netezza via **ODBC**, à l'aide
+d'une chaîne de connexion **sans DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+La partie digna de la configuration est identique pour toutes les technologies — où les
+connexions sont créées, comment les valeurs des propriétés sont chiffrées, comment une connexion
+est testée et ce que signifient les modes de profilage. Elle est décrite dans
+[Vue d'ensemble des connexions aux bases de données](overview.md). Cette page traite de ce qui
+est spécifique à Netezza.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Installer le pilote ODBC {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Installez le pilote ODBC **NetezzaSQL** (fourni avec les outils client IBM Netezza) sur la
+machine qui exécute le backend *digna*, en suivant le guide d'installation officiel de
+l'éditeur.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Relevez le nom exact du pilote enregistré sur votre hôte comme décrit dans
+[Installer le pilote ODBC sur l'hôte digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Propriétés ODBC {: #2-odbc-properties }
+
+!!! important "Un exemple, pas une spécification"
+
+    L'ensemble ci-dessous est une combinaison dont on sait qu'elle fonctionne. Les propriétés
+    appartiennent au pilote NetezzaSQL, donc leurs noms, leurs valeurs par défaut et les valeurs
+    acceptées diffèrent selon les versions du client et les plateformes, et une appliance
+    sécurisée par TLS nécessite davantage que les propriétés présentées ici. Prenez ceci comme
+    point de départ et consultez la documentation de la version du client que vous avez
+    installée.
+
+Ajoutez les propriétés suivantes dans l'écran **Add DB Connection** :
+
+| Clé | Valeur d'exemple | Notes |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Doit correspondre au nom du pilote enregistré sur l'hôte *digna*. Les accolades sont la manière habituelle d'écrire ce nom |
+| `SERVER` | `netezza.example.com` | Nom du serveur ou adresse IP |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Base de données dans laquelle la session démarre |
+| `UID` | `ADMIN` | Utilisateur de la base de données |
+| `PWD` | `<password>` | Cochez **Encrypted** |
 
-The resulting connection string looks like this:
+La chaîne de connexion obtenue ressemble à ceci :
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Selon votre version de pilote, votre installation et vos exigences de sécurité, d'autres
+propriétés peuvent être nécessaires — par exemple `SecurityLevel` et `CaCertFile` pour une
+appliance sécurisée par TLS. Toute option proposée par les boîtes de dialogue *Advanced*, *SSL*
+et *Driver* du pilote peut être ajoutée comme propriété.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Configuration de *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Dans l'écran **Add DB Connection**, renseignez les éléments suivants :
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -66,37 +70,39 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Notes sur Netezza {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Les catalogues et les schémas s'appliquent tous deux.** *digna* liste comme catalogues les
+  bases de données que l'utilisateur peut voir (depuis `_V_DATABASE`) et, en dessous, leurs
+  schémas (depuis `_V_SCHEMA`), de sorte qu'une connexion peut desservir des sources réparties
+  dans plusieurs bases. `DATABASE` détermine uniquement où la session démarre.
+- **Les identifiants sont en majuscules**, sauf s'ils ont été créés entre guillemets — c'est
+  pourquoi les exemples ci-dessus utilisent `TEST` et `ADMIN`.
+- **Modes de profilage.** *Permanent* crée les tables de travail dans **Work Schema**,
+  l'utilisateur a donc besoin de `CREATE TABLE` à cet endroit. *Session* utilise
+  `CREATE TEMPORARY TABLE` et ne touche pas à **Work Schema**. *Standard* ne nécessite qu'un
+  accès en lecture.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Vérifier le pilote (facultatif) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Configurer une source de données ODBC n'est pas nécessaire pour une connexion sans DSN, mais la
+boîte de dialogue du pilote est un moyen pratique de confirmer que le pilote et vos identifiants
+fonctionnent avant de les saisir dans *digna*.
 
-#### Step 1
+#### Étape 1
 ![Step 1](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+Les champs de **DSN Options** correspondent un à un aux propriétés de la
+[section 2](#2-odbc-properties). Selon votre pilote Netezza, votre installation et vos exigences
+de sécurité, vous pourriez également avoir besoin de renseigner les onglets
+**Advanced DSN Options**, **SSL DSN Options** ou **Driver Options** ; pour l'installation la
+plus simple, **DSN Options** suffit.
 
-Click the **Test Connection** button.
+Cliquez sur le bouton **Test Connection**.
 
-#### Step 2
+#### Étape 2
 ![Step 2](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Lorsque l'écran de réussite s'affiche, le pilote fonctionne et les valeurs sont correctes.

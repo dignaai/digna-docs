@@ -510,8 +510,6 @@ Esta sección configura los ajustes de la aplicación backend de digna:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -520,8 +518,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parámetro | Valor | Notas |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` o dirección IP | Nombre de host o IP donde se aloja dignabackend |
-| `digna_APP_PORT` | `8082` (por defecto) | Puerto para los endpoints REST API |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL del frontend | Si el dashboard está en otro servidor, incluye su URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Requerido para CORS con credenciales |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Permite todos los métodos HTTP |
@@ -1028,7 +1024,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "La versión 2026.06 cambia config.toml"
 
-    Tres ajustes son nuevos y obligatorios, y uno ya no se utiliza. Un `config.toml` heredado de una versión anterior no contiene los ajustes nuevos, y digna no arrancará mientras falten. Añada lo siguiente a su `config.toml` existente:
+    Tres ajustes son nuevos y obligatorios, y tres ya no se utilizan. Un `config.toml` heredado de una versión anterior no contiene los ajustes nuevos, y digna no arrancará mientras falten. Añada lo siguiente a su `config.toml` existente:
 
     ```toml
     [base]
@@ -1039,9 +1035,36 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Añada las dos claves `[base]` a su sección `[base]` existente y añada `[encryption]` como sección nueva. Después, **elimine `digna_FERNET_KEY`** de `[base]`: ya no se utiliza.
+    Añada las dos claves `[base]` a su sección `[base]` existente y añada `[encryption]` como sección nueva. Después, elimine los ajustes que ya no se utilizan: **`digna_FERNET_KEY`** de `[base]`, y **`digna_APP_HOST`** y **`digna_APP_PORT`** de `[app]`: el servidor ahora toma su dirección y su puerto de `digna serve`.
 
     Lo que hace cada ajuste se describe en [Configuración del backend](#backend-configuration).
+
+!!! warning "Inicio de sesión único: el formato de [oidc_clients] ha cambiado"
+
+    La versión 2026.06 sustituye la matriz de tablas por una tabla por proveedor, con el nombre de la clave del proveedor. `DIGNA_OIDC_KEY` desaparece: la clave ahora forma parte del encabezado de la sección.
+
+    Antes:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Después:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Repita la sección para cada proveedor y mantenga cada clave igual al `key` definido en `dashboard_config.toml`. `digna config check` informa de `oidc_clients` como FAILED mientras siga presente la forma antigua. Solo afecta a las instalaciones que usan inicio de sesión único.
 
 #### Paso 5: Validar la configuración
 

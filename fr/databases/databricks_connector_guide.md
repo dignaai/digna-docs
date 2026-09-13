@@ -1,106 +1,109 @@
-# Source Connector for Databricks
+# Connecteur source pour Databricks
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Ce guide décrit comment configurer *digna* pour se connecter à Databricks via **ODBC**, à l'aide
+d'une chaîne de connexion **sans DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+La partie digna de la configuration est identique pour toutes les technologies — où les
+connexions sont créées, comment les valeurs des propriétés sont chiffrées, comment une connexion
+est testée et ce que signifient les modes de profilage. Elle est décrite dans
+[Vue d'ensemble des connexions aux bases de données](overview.md). Cette page traite de ce qui
+est spécifique à Databricks.
 
-!!! note "Unity Catalog is required"
+!!! note "Unity Catalog est requis"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    *digna* lit les catalogues disponibles depuis `system.information_schema.catalogs` ;
+    l'espace de travail doit donc avoir Unity Catalog activé. Les versions antérieures de
+    *digna* proposaient une technologie distincte « Databricks Legacy » pour les espaces de
+    travail sans Unity Catalog ; elle n'est plus disponible.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Installer le pilote ODBC {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Installez le **Databricks ODBC Driver** sur la machine qui exécute le backend *digna*, en
+suivant [le guide d'installation de Databricks](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-| Databricks field | Used as |
+Selon la version, le pilote s'enregistre sous le nom **Simba Spark ODBC Driver** ou
+**Databricks ODBC Driver**. Relevez le nom exact enregistré sur votre hôte comme décrit dans
+[Installer le pilote ODBC sur l'hôte digna](overview.md#install-the-driver).
+
+---
+
+## 2. Rassembler les informations de connexion {: #2-gather-the-connection-details }
+
+Toutes les valeurs proviennent de l'entrepôt SQL (ou du cluster) que *digna* doit utiliser.
+Ouvrez-le dans l'espace de travail Databricks et allez dans **Connection details** :
+
+| Champ Databricks | Utilisé comme |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, normalement `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+Pour l'authentification, créez un **jeton d'accès personnel** — voir
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+Les jetons appartiennent à un utilisateur ou à un principal de service, et ce principal a besoin
+de `USE CATALOG`, `USE SCHEMA` et `SELECT` sur les données sources.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. Propriétés ODBC {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Un exemple, pas une spécification"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    L'ensemble ci-dessous est une combinaison dont on sait qu'elle fonctionne. Les propriétés
+    appartiennent au pilote Databricks/Simba, donc leurs noms, leurs valeurs par défaut et les
+    valeurs acceptées diffèrent selon les versions du pilote — le pilote a été renommé et ses
+    options d'authentification étendues plus d'une fois — et selon les plateformes. Prenez ceci
+    comme point de départ et consultez la documentation de la version du pilote que vous avez
+    installée.
 
-Add the following properties in the **Add DB Connection** screen:
+Ajoutez les propriétés suivantes dans l'écran **Add DB Connection** :
 
-| Key | Example value | Notes |
+| Clé | Valeur d'exemple | Notes |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Doit correspondre au nom du pilote enregistré sur l'hôte *digna* |
+| `Host` | `<workspace>.cloud.databricks.com` | Nom d'hôte du serveur de l'entrepôt, par exemple `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | Chemin HTTP de l'entrepôt ou du cluster |
+| `SSL` | `1` | Les points de terminaison Databricks sont exclusivement TLS |
+| `ThriftTransport` | `2` | Transport HTTP, celui que parlent les points de terminaison SQL |
+| `AuthMech` | `3` | Authentification par jeton |
+| `UID` | `token` | Le mot littéral `token`, pas un nom d'utilisateur |
+| `PWD` | `dapi…` | Le jeton d'accès personnel. Cochez **Encrypted** |
+| `UseNativeQuery` | `1` | Transmet le SQL de *digna* sans modification — voir ci-dessous |
 
-The resulting connection string looks like this:
+La chaîne de connexion obtenue ressemble à ceci :
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Conservez `UseNativeQuery=1`"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    Avec `UseNativeQuery=0` — la valeur par défaut du pilote — le pilote réécrit le SQL entrant
+    dans ce qu'il estime être une syntaxe ODBC portable. *digna* génère déjà du SQL Databricks ;
+    la réécriture peut donc modifier les guillemets obliques inverses et les littéraux de date,
+    et le profilage échoue alors sur des instructions pourtant valides telles qu'elles sont
+    écrites.
 
-### OAuth instead of a token
+### OAuth au lieu d'un jeton
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+Pour un principal de service avec authentification OAuth machine à machine, remplacez
+`AuthMech`, `UID` et `PWD` par :
 
-| Key | Example value | Notes |
+| Clé | Valeur d'exemple | Notes |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
-| `Auth_Flow` | `1` | Client credentials |
-| `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Flow` | `1` | Informations d'identification client |
+| `Auth_Client_ID` | `<application id>` | Principal de service |
+| `Auth_Client_Secret` | `<client secret>` | Cochez **Encrypted** |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. Configuration de *digna* {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Dans l'écran **Add DB Connection**, renseignez les éléments suivants :
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -111,45 +114,47 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Notes sur Databricks {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **L'entrepôt doit être en cours d'exécution**, ou capable de démarrer, lorsque *digna* se
+  connecte. Un entrepôt qui sort d'un état arrêté peut mettre plus de temps que le délai
+  d'expiration de la connexion — si le test échoue à la première tentative après une période
+  d'inactivité, réessayez.
+- **Les catalogues viennent de l'espace de travail.** Contrairement à la plupart des
+  technologies, une connexion Databricks atteint tous les catalogues que le principal est
+  autorisé à voir, de sorte qu'une seule connexion peut desservir des sources réparties dans
+  plusieurs catalogues.
+- **Modes de profilage.** *Permanent* crée les tables de travail dans **Work Schema**, à
+  l'intérieur du catalogue de la source ; le principal a donc besoin de `CREATE TABLE` à cet
+  endroit. *Session* utilise `CREATE TEMPORARY TABLE` et ne touche pas à **Work Schema**.
+  *Standard* ne nécessite qu'un accès en lecture.
+- **Les entrepôts serverless fonctionnent** de la même manière ; seul `HTTPPath` diffère.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. Vérifier le pilote (facultatif) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+Configurer une source de données ODBC n'est pas nécessaire pour une connexion sans DSN, mais la
+boîte de dialogue du pilote est un moyen pratique de confirmer que le pilote, l'entrepôt et le
+jeton fonctionnent avant de les saisir dans *digna*.
 
-#### Step 1
+#### Étape 1
 ![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
+#### Étape 2
 ![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
+#### Étape 3
 ![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
+#### Étape 4
 ![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### Étape 5 – Tester la connexion
 
-Click the **TEST** button. A successful connection should look like this:
+Cliquez sur le bouton **TEST**. Une connexion réussie doit ressembler à ceci :
 
 ![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+L'hôte, le chemin HTTP et le jeton saisis ici sont exactement les valeurs que prennent les
+propriétés de la [section 3](#3-odbc-properties).

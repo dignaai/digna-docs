@@ -7214,8 +7214,6 @@ Denne seksjonen konfigurerer digna-backend-applikasjonsinnstillingene:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -7224,8 +7222,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Verdi | Notater |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` eller IP-adresse | Hostnavn eller IP der dignabackend hostes |
-| `digna_APP_PORT` | `8082` (standard) | Port for REST API-endepunkter |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboardet ligger på en annen server, inkluder dens URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Påkrevd for CORS med legitimasjon |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillat alle HTTP-metoder |
@@ -7803,7 +7799,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Utgivelse 2026.06 endrer config.toml"
 
-    Tre innstillinger er nye og påkrevde, og én brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
+    Tre innstillinger er nye og påkrevde, og tre brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
 
     ```toml
     [base]
@@ -7814,9 +7810,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter **`digna_FERNET_KEY`** fra `[base]` — den brukes ikke lenger.
+    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter innstillingene som ikke lenger brukes: **`digna_FERNET_KEY`** fra `[base]`, samt **`digna_APP_HOST`** og **`digna_APP_PORT`** fra `[app]` — serveren henter nå adresse og port fra `digna serve`.
 
     Hva hver innstilling gjør, er beskrevet i [Backend-konfigurasjon](#backend-configuration).
+
+!!! warning "Enkel pålogging: formatet for [oidc_clients] er endret"
+
+    Utgivelse 2026.06 erstatter tabellarrayen med én tabell per leverandør, oppkalt etter leverandørnøkkelen. `DIGNA_OIDC_KEY` er borte — nøkkelen er nå en del av seksjonsoverskriften.
+
+    Før:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Etter:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Gjenta seksjonen for hver leverandør, og hold hver nøkkel lik `key` i `dashboard_config.toml`. `digna config check` rapporterer `oidc_clients` som FAILED så lenge den gamle formen fortsatt finnes. Bare installasjoner som bruker enkel pålogging er berørt.
 
 #### Steg 5: Valider konfigurasjonen
 
@@ -8209,8 +8232,6 @@ Denne seksjonen konfigurerer innstillingene for digna-backend-applikasjonen:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -8219,8 +8240,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Verdi | Merknader |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` eller IP-adresse | Hostnavn eller IP hvor dignabackend er hostet |
-| `digna_APP_PORT` | `8082` (standard) | Port for REST API-endepunkter |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboardet er på en annen server, inkluder dens URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Påkrevet for CORS med credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillat alle HTTP-metoder |
@@ -8643,7 +8662,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Utgivelse 2026.06 endrer config.toml"
 
-    Tre innstillinger er nye og påkrevde, og én brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
+    Tre innstillinger er nye og påkrevde, og tre brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
 
     ```toml
     [base]
@@ -8654,9 +8673,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter **`digna_FERNET_KEY`** fra `[base]` — den brukes ikke lenger.
+    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter innstillingene som ikke lenger brukes: **`digna_FERNET_KEY`** fra `[base]`, samt **`digna_APP_HOST`** og **`digna_APP_PORT`** fra `[app]` — serveren henter nå adresse og port fra `digna serve`.
 
     Hva hver innstilling gjør, er beskrevet i [Backend-konfigurasjon](#backend-configuration).
+
+!!! warning "Enkel pålogging: formatet for [oidc_clients] er endret"
+
+    Utgivelse 2026.06 erstatter tabellarrayen med én tabell per leverandør, oppkalt etter leverandørnøkkelen. `DIGNA_OIDC_KEY` er borte — nøkkelen er nå en del av seksjonsoverskriften.
+
+    Før:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Etter:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Gjenta seksjonen for hver leverandør, og hold hver nøkkel lik `key` i `dashboard_config.toml`. `digna config check` rapporterer `oidc_clients` som FAILED så lenge den gamle formen fortsatt finnes. Bare installasjoner som bruker enkel pålogging er berørt.
 
 #### Trinn 5: Valider konfigurasjonen
 
@@ -9220,8 +9266,6 @@ Denne seksjonen konfigurerer innstillingene for digna-backend-applikasjonen:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -9230,8 +9274,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Verdi | Notater |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` eller IP-adresse | Vertnavn eller IP hvor dignabackend hostes |
-| `digna_APP_PORT` | `8082` (standard) | Port for REST API-endepunkter |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboardet ligger på en annen server, inkluder dens URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Påkrevd for CORS med legimitasjon |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillat alle HTTP-metoder |
@@ -9738,7 +9780,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Utgivelse 2026.06 endrer config.toml"
 
-    Tre innstillinger er nye og påkrevde, og én brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
+    Tre innstillinger er nye og påkrevde, og tre brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
 
     ```toml
     [base]
@@ -9749,9 +9791,36 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter **`digna_FERNET_KEY`** fra `[base]` — den brukes ikke lenger.
+    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter innstillingene som ikke lenger brukes: **`digna_FERNET_KEY`** fra `[base]`, samt **`digna_APP_HOST`** og **`digna_APP_PORT`** fra `[app]` — serveren henter nå adresse og port fra `digna serve`.
 
     Hva hver innstilling gjør, er beskrevet i [Backend-konfigurasjon](#backend-configuration).
+
+!!! warning "Enkel pålogging: formatet for [oidc_clients] er endret"
+
+    Utgivelse 2026.06 erstatter tabellarrayen med én tabell per leverandør, oppkalt etter leverandørnøkkelen. `DIGNA_OIDC_KEY` er borte — nøkkelen er nå en del av seksjonsoverskriften.
+
+    Før:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Etter:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Gjenta seksjonen for hver leverandør, og hold hver nøkkel lik `key` i `dashboard_config.toml`. `digna config check` rapporterer `oidc_clients` som FAILED så lenge den gamle formen fortsatt finnes. Bare installasjoner som bruker enkel pålogging er berørt.
 
 #### Trinn 5: Valider konfigurasjonen
 
@@ -10314,7 +10383,7 @@ label = "Login with Active Directory"
 ### `config.toml`
 
 ```toml
-[oidc.adfs]
+[oidc_clients.adfs]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10485,7 +10554,7 @@ label = "Login with Keycloak"
 ### `config.toml`
 
 ```toml
-[oidc.keycloak]
+[oidc_clients.keycloak]
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10644,7 +10713,7 @@ label = "Login with Microsoft"
 ### `config.toml`
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -10798,7 +10867,7 @@ label = "Logg inn med Okta"
 ### `config.toml`
 
 ```toml
-[oidc.okta]
+[oidc_clients.okta]
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11015,12 +11084,12 @@ label = "Logg inn med Okta"
 
 ### Steg 1: Legg til OIDC-leverandørseksjoner
 
-Hver leverandør må ha en dedikert `[oidc.<key>]`-seksjon. Key må samsvare med `key` definert i `dashboard_config.toml`.
+Hver leverandør må ha en dedikert `[oidc_clients.<key>]`-seksjon. Key må samsvare med `key` definert i `dashboard_config.toml`.
 
 ### Microsoft-konfigurasjon
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11030,7 +11099,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google-konfigurasjon
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -11065,13 +11134,13 @@ Hvis digna er hostet på et annet domene, oppdater tilsvarende:
 ### Komplett eksempel
 
 ```toml
-[oidc.microsoft]
+[oidc_clients.microsoft]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -11103,9 +11172,9 @@ Start digna backend og webserver på nytt for å bruke endringene.
 
 **Hvis det kjører som en tjeneste på Windows:**
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
-start_service.bat
+cd C:\path\to\digna
+digna windows stop
+digna windows start
 ```
 
 **Hvis det kjører som en tjeneste på Linux eller macOS:**
@@ -11452,7 +11521,7 @@ label = "Login with PingOne"
 ### `config.toml`
 
 ```toml
-[oidc.pingone]
+[oidc_clients.pingone]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13287,7 +13356,7 @@ label = "Login with Auth0"
 ### `config.toml`
 
 ```toml
-[oidc.auth0]
+[oidc_clients.auth0]
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13428,7 +13497,7 @@ label = "Login with Google"
 ### `config.toml`
 
 ```toml
-[oidc.google]
+[oidc_clients.google]
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13597,7 +13666,7 @@ label = "Login with OneLogin"
 ### `config.toml`
 
 ```toml
-[oidc.onelogin]
+[oidc_clients.onelogin]
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

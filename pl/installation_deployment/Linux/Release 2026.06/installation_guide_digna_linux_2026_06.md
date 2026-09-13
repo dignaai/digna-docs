@@ -504,8 +504,13 @@ Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
 3. After extraction, you should see the following items:
    - `dashboard/` — Web dashboard interface
    - `digna` — Main executable (backend + CLI combined)
-   - `config.toml` — Configuration file
-   - `license.toml` — License file (copy yours here)
+
+!!! info "The configuration and licence files are not in the package"
+
+    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
+    create both yourself, in [Backend Configuration](#backend-configuration) and
+    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
+    digna supplies it separately, as Step 3 describes.
 
 To extract from the shell:
 
@@ -587,8 +592,6 @@ This section configures the digna backend application settings:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -597,8 +600,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
@@ -830,9 +831,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Step 1: Deploy Dashboard to Web Server
 
-The digna dashboard has its own separate `config.toml` file located in the `dashboard/` directory. This configuration is already provided and does not require changes during initial setup. You only need to configure it if you need to customize the backend connection.
+The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
 
-If you need to modify the dashboard configuration (e.g., for multi-instance deployments), refer to the dashboard's documentation.
+Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
 
 Choose your web server and follow the corresponding deployment steps.
 
@@ -1188,7 +1189,10 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Important"
 
-    The `config.toml` file is **never** included in the installation ZIP. Your existing configuration remains safe.
+    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
+    installation ZIP — the digna team never ships either file. Your existing configuration is
+    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
+    only ones you have.
 
 #### Step 4: Restore Your Configuration Files
 
@@ -1198,7 +1202,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Release 2026.06 changes config.toml"
 
-    Three settings are new and required, and one is no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
 
     ```toml
     [base]
@@ -1209,11 +1213,47 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then **remove `digna_FERNET_KEY`** from `[base]` — it is no longer used.
+    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
 
     See [Backend Configuration](#backend-configuration) for what each setting does.
 
-#### Step 5: Validate the Configuration
+!!! warning "Single sign-on: the [oidc_clients] format has changed"
+
+    Release 2026.06 replaces the array of tables with one table per provider, named after the
+    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+
+    Before:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    After:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Repeat the section for every provider, and keep each key matching the `key` in
+    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
+    old form is still in place. Only installations that use single sign-on are affected.
+
+#### Step 5: Reload the Web Server
+
+The dashboard is a set of static files, so your web server — and the browser — may still be
+serving the previous version. Reload or restart whichever web server hosts the `dashboard`
+folder, then reload the page with a hard refresh (++ctrl+f5++).
+
+#### Step 6: Validate the Configuration
 
 Confirm that the updated `config.toml` is complete before touching the repository:
 
@@ -1223,7 +1263,26 @@ Confirm that the updated `config.toml` is complete before touching the repositor
 
 Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
 
-#### Step 6: Upgrade the Repository Schema
+#### Step 7: Replace the License File
+
+Each release is licensed separately. Copy the `license.toml` that the digna team provided for
+this release into the installation directory, replacing the old one:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Do not keep the previous license"
+
+    A `license.toml` issued for an earlier release does not cover this one, and every command
+    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
+    repository when the check fails. Verify it before going further:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Step 8: Upgrade the Repository Schema
 
 Navigate to your digna installation directory and run:
 
@@ -1234,7 +1293,7 @@ cd /opt/digna
 
 This updates the PostgreSQL schema to the latest version while preserving all existing data.
 
-#### Step 7: Restart Services
+#### Step 9: Restart Services
 
 If running as a systemd service:
 
@@ -1265,7 +1324,7 @@ On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory 
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Step 8: Verify the Upgrade
+#### Step 10: Verify the Upgrade
 
 1. Access the digna dashboard
 2. Verify that the interface loads correctly

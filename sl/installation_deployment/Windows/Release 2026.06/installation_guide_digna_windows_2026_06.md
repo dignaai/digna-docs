@@ -321,8 +321,6 @@ Ta sekcija konfigurira nastavitve aplikacije digna backend:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -331,8 +329,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ali IP naslov | Gostitelj ali IP, kjer je gostovan dignabackend |
-| `digna_APP_PORT` | `8082` (privzeto) | Vrata za REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontenda | Če je nadzorna plošča na drugem strežniku, vključite njen URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Zahtevano za CORS s poverilnicami |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Dovoli vse HTTP metode |
@@ -755,7 +751,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Izdaja 2026.06 spreminja config.toml"
 
-    Tri nastavitve so nove in obvezne, ena pa ni več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
+    Tri nastavitve so nove in obvezne, tri pa niso več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
 
     ```toml
     [base]
@@ -766,9 +762,36 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato iz `[base]` **odstranite `digna_FERNET_KEY`** — ni več v uporabi.
+    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato odstranite nastavitve, ki niso več v uporabi: **`digna_FERNET_KEY`** iz `[base]` ter **`digna_APP_HOST`** in **`digna_APP_PORT`** iz `[app]` — naslov in vrata strežnik zdaj dobi iz `digna serve`.
 
     Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija Zaledja](#backend-configuration).
+
+!!! warning "Enotna Prijava: Oblika [oidc_clients] se je Spremenila"
+
+    Izdaja 2026.06 nadomesti polje tabel z eno tabelo na ponudnika, poimenovano po ključu ponudnika. `DIGNA_OIDC_KEY` odpade — ključ je zdaj del glave razdelka.
+
+    Prej:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Potem:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Razdelek ponovite za vsakega ponudnika in vsak ključ ohranite enak vrednosti `key` v datoteki `dashboard_config.toml`. `digna config check` javi `oidc_clients` kot FAILED, dokler stara oblika ostaja. Prizadete so le namestitve, ki uporabljajo enotno prijavo.
 
 #### Korak 5: Preverjanje Konfiguracije
 

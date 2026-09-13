@@ -586,8 +586,6 @@ Atidarykite `config.toml` teksto redaktoriuje ir sukonfigūruokite kiekvieną ž
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -596,8 +594,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametras | Reikšmė | Pastabos |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` arba IP adresas | Host vardas arba IP, kuriame talpinamas dignabackend |
-| `digna_APP_PORT` | `8082` (numatytasis) | REST API galinių taškų prievadas |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontendo URL | Jei dashboard talpinamas kitur, pridėkite jo URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Reikalinga CORS su kredencialais |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Leidžiami visi HTTP metodai |
@@ -1175,7 +1171,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Leidimas 2026.06 keičia config.toml"
 
-    Trys nuostatos yra naujos ir būtinos, o viena nebenaudojama. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
+    Trys nuostatos yra naujos ir būtinos, o trys nebenaudojamos. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
 
     ```toml
     [base]
@@ -1186,9 +1182,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada iš `[base]` **pašalinkite `digna_FERNET_KEY`** — jis nebenaudojamas.
+    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada pašalinkite nuostatas, kurios nebenaudojamos: **`digna_FERNET_KEY`** iš `[base]` bei **`digna_APP_HOST`** ir **`digna_APP_PORT`** iš `[app]` — adresą ir prievadą serveris dabar gauna iš `digna serve`.
 
     Ką daro kiekviena nuostata, aprašyta skyriuje [Užkulisinės dalies konfigūracija](#backend-configuration).
+
+!!! warning "Vienkartinis prisijungimas: pasikeitė [oidc_clients] formatas"
+
+    Leidime 2026.06 lentelių masyvą pakeičia po vieną lentelę kiekvienam tiekėjui, pavadintą pagal tiekėjo raktą. `DIGNA_OIDC_KEY` nebelieka — raktas dabar yra skyriaus antraštės dalis.
+
+    Prieš:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Po:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
 
 #### 5 žingsnis: Patikrinkite konfigūraciją
 

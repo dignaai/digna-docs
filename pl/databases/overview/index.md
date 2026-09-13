@@ -1,262 +1,270 @@
-# Database Connections Overview
+# Przegląd połączeń z bazami danych
 
 ---
 
-## Table of Contents
+## Spis treści
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Jak działają połączenia](#how-connections-work)
+2. [Przewodniki dla technologii](#technology-guides)
+3. [Wymaganie wstępne: instalacja sterownika ODBC na hoście digna](#install-the-driver)
+4. [Tworzenie połączenia z bazą danych](#create-a-database-connection)
+5. [Właściwości ODBC](#odbc-properties)
+6. [Szyfrowanie wartości właściwości](#encrypting-property-values)
+7. [Testowanie połączenia](#testing-a-connection)
+8. [Którą bazę danych widzi połączenie](#which-database-the-connection-sees)
+9. [Tryb profilowania i Work Schema](#profiling-mode-and-work-schema)
+10. [Użycie DSN zamiast tego](#using-a-dsn-instead)
+11. [Rozwiązywanie problemów](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Jak działają połączenia {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+*digna* sięga do każdej technologii źródłowej przez **ODBC**. Połączenie to lista właściwości
+ODBC, które wprowadzasz jako pary klucz/wartość. Gdy *digna* otwiera połączenie, łączy te pary w
+ciąg połączenia — `Key=Value`, rozdzielone `;`, w podanej przez Ciebie kolejności — i przekazuje
+go menedżerowi sterowników ODBC na hoście *digna*.
 
-!!! important "The property sets in the guides are examples"
+To właśnie samodzielne wprowadzanie właściwości sprawia, że konfiguracja jest **bez DSN**:
+połączenie niesie ze sobą wszystko, czego potrzebuje sterownik, więc na hoście nie trzeba
+rejestrować żadnego źródła danych ODBC (DSN). To zalecany sposób konfigurowania *digna*,
+ponieważ definicja połączenia znajduje się w całości w *digna* i przenosi się razem z nią.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Dlaczego ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+Wcześniejsze wydania oferowały wybór między sterownikiem dla danej technologii a ODBC,
+wskazywany przełącznikiem **Use ODBC**. Od wydania 2026.06 *digna* opiera się wyłącznie na ODBC.
+Jeden standardowy interfejs daje więcej niż zestaw sterowników pisanych na miarę:
+
+- **Uwierzytelnianie** — uwierzytelnianie jest częścią ODBC, więc połączenie może korzystać ze
+  wszystkiego, co obsługuje jego sterownik: haseł, tokenów i PAT-ów, Kerberosa i Active
+  Directory, MFA i logowania jednokrotnego przez przeglądarkę, tożsamości chmurowych,
+  certyfikatów klienta i TLS. Nowe metody pojawiają się wraz z aktualizacją sterownika, a nie po
+  oczekiwaniu na wydanie *digna*.
+- **Sterowniki utrzymywane przez dostawców baz danych** — sterownik producenta nadąża za nowymi
+  wersjami serwera i poprawkami bezpieczeństwa, a Ty możesz aktualizować go we własnym tempie,
+  niezależnie od *digna*.
+- **Jeden sposób konfigurowania wszystkiego** — każda technologia to lista właściwości
+  klucz/wartość, z tym samym interfejsem, tym samym szyfrowaniem wartości wrażliwych i tą samą
+  diagnostyką, zamiast innego zestawu pól dla każdego źródła.
+- **Strojenie i zasięg** — opcje sterownika, takie jak limity czasu, ustawienia TLS, serwery
+  proxy i rozmiary pobierania, są dostępne dla każdego źródła, a podłączyć można każdą
+  technologię ze zgodnym sterownikiem ODBC, również taką, dla której *digna* nie publikuje
+  osobnego przewodnika.
+
+!!! note "Co zmieniło się w interfejsie"
+
+    Przełącznik **Use ODBC** oraz osobne pola hosta, portu, bazy danych, użytkownika i hasła już
+    nie istnieją. Połączenie, które nie korzysta jeszcze z ODBC, wymaga wprowadzenia swoich
+    właściwości ODBC, zanim znów zadziała — zobacz
+    [Tworzenie połączenia z bazą danych](#create-a-database-connection).
+
+---
+
+## Przewodniki dla technologii {: #technology-guides }
+
+Nazwy właściwości różnią się w zależności od sterownika, a każda technologia ma jeden lub dwa
+szczegóły, których nie mają pozostałe. Poniższe przewodniki obejmują tę część; ta strona
+obejmuje stronę *digna*, która jest taka sama dla wszystkich.
+
+!!! important "Zestawy właściwości w przewodnikach są przykładami"
+
+    Każdy przewodnik pokazuje jedną kombinację, o której wiadomo, że działa — tę, względem
+    której *digna* jest testowana. To punkt wyjścia, a nie specyfikacja: właściwości należą do
+    sterownika ODBC, a to, które istnieją, jak się nazywają i jakie wartości przyjmują, różni się
+    między wersjami i producentami sterowników, między systemami Windows, Linux i macOS oraz w
+    zależności od konfiguracji serwera źródłowego — metody uwierzytelniania, TLS, bramy, portu.
+    Licz się z dostosowaniem jednej czy dwóch wartości i traktuj dokumentację zainstalowanej
+    wersji sterownika jako rozstrzygającą.
+
+| Technologia | Przewodnik | Warto wiedzieć |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Pule bezserwerowe wymagają `-ondemand` w nazwie hosta i obsługują wyłącznie profilowanie *Standard* |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Uwierzytelnianie tokenem: `UID=token`, PAT w `PWD` |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Katalogi pochodzą ze sterownika, a nie z zapytania |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Nazwa sterownika jest w nawiasach klamrowych: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` przyjmuje pełny deskryptor połączenia albo alias z `tnsnames.ora` |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` musi odpowiadać temu, czego wymaga serwer |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decyduje, które schematy *digna* może zobaczyć |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programowy token dostępu to przetestowana ścieżka uwierzytelniania |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Host trafia do `DBCNAME`; bazy danych pełnią rolę schematów |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Wymaganie wstępne: instalacja sterownika ODBC na hoście digna {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* otwiera połączenia źródłowe z **serwera, na którym działa backend digna**, a nie z
+przeglądarki. Sterownik ODBC musi więc być zainstalowany na tej maszynie, a jego nazwa
+zarejestrowana w lokalnym menedżerze sterowników.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Zainstaluj 64-bitowy sterownik producenta, następnie otwórz **Administratora źródeł danych
+    ODBC (64-bitowego)** i przejdź na zakładkę **Drivers**. Wymienione tam nazwy to dokładnie te
+    wartości, których możesz użyć dla właściwości `Driver`.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Zainstaluj **unixODBC** i sterownik producenta, a następnie wyświetl zarejestrowane nazwy
+    sterowników:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Nazwy wypisane w nawiasach kwadratowych to wartości, których możesz użyć dla właściwości
+    `Driver`. Pochodzą z pliku `/etc/odbcinst.ini` (lub z pliku, który wskazuje `odbcinst -j`).
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Zainstaluj **unixODBC** (na przykład poleceniem `brew install unixodbc`) i sterownik
+    producenta, a następnie wyświetl zarejestrowane nazwy sterowników:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Nazwa sterownika musi zgadzać się co do znaku"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` jest przekazywany menedżerowi sterowników bez zmian. `Simba Spark ODBC Driver` i
+    `Simba Spark ODBC Driver 64` to dla menedżera sterowników różne sterowniki, a nazwa, która
+    nie jest zarejestrowana, powoduje błąd *data source name not found*, mimo że żaden DSN nie
+    jest tu używany.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Zamiast zarejestrowanej nazwy wszystkie popularne menedżery sterowników akceptują też pełną
+ścieżkę do biblioteki sterownika, na przykład
+`Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Przydaje się to, gdy sterownik jest
+zainstalowany, ale niezarejestrowany.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Tworzenie połączenia z bazą danych {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Otwórz **Admin Panel**, przejdź na zakładkę **Database Connections** i kliknij
+**Add DB Connection**. Ekran pyta o pięć rzeczy:
 
-| Field | Description |
+| Pole | Opis |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Nazwa połączenia. Służy do odwoływania się do połączenia na innych ekranach. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake lub Hive. Wybiera dialekt SQL, który generuje *digna*, musi więc odpowiadać źródłu — a nie sterownikowi. Azure Synapse Analytics to połączenie **SQL Server**. |
+| **ODBC Properties** | Pary klucz/wartość opisane w [Właściwościach ODBC](#odbc-properties). |
+| **Profiling Mode** | *Standard*, *Permanent* lub *Session* — zobacz [Tryb profilowania i Work Schema](#profiling-mode-and-work-schema). |
+| **Work Schema** | Schemat zawierający tabele robocze dla profilowania *Permanent*. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Połączeniem zarządza się centralnie, a następnie przypisuje się je do jednego lub kilku
+projektów, więc to samo połączenie może obsługiwać wiele projektów.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## Właściwości ODBC {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Kliknij **Add Property** dla każdej właściwości i wypełnij **Key**, **Value**, a dla sekretów —
+pole wyboru **Encrypted**. Każdy przewodnik technologiczny wymienia przykładowy zestaw dla danej
+technologii, który dostosowujesz do swojej wersji sterownika i serwera — zobacz
+[uwagę powyżej](#technology-guides).
 
-!!! tip "Tip"
+Niezależnie od sterownika zestaw właściwości obejmuje te same cztery rzeczy:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — zarejestrowaną nazwę sterownika, jak opisano [powyżej](#install-the-driver).
+- **Adres serwera** — klucz różni się w zależności od sterownika: `SERVER`, `HOST`, `DBCNAME`,
+  `Server` albo, w przypadku Oracle, deskryptor połączenia `DBQ`.
+- **Poświadczenia** — zwykle `UID` i `PWD`; Snowflake używa `UID` oraz `token`, a Databricks
+  dosłownego użytkownika `token` wraz z osobistym tokenem dostępu w `PWD`.
+- **Bazę danych lub katalog, w którym się pracuje**, jeśli technologia je ma — zobacz
+  [Którą bazę danych widzi połączenie](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Wszystko inne, co dokumentuje sterownik, można dodać w ten sam sposób — pulę połączeń, limity
+czasu gniazd, ustawienia Kerberosa, ustawienia serwera proxy. *digna* nie interpretuje
+właściwości; jedynie je przekazuje.
+
+!!! warning "Wartości nie są escapowane — ujmij w klamry wszystko ze średnikiem"
+
+    Ponieważ właściwości są łączone znakiem `;`, wartość zawierająca sama w sobie `;`
+    podzieliłaby ciąg połączenia w niewłaściwym miejscu. Ujmij takie wartości w nawiasy
+    klamrowe: `PWD={p@ss;word}`. To samo dotyczy wartości ze znakiem `=` lub ze spacjami na
+    początku. To również powód, dla którego niektóre sterowniki zapisuje się zwyczajowo w
+    klamrach, jak `{NetezzaSQL}` czy `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Szyfrowanie wartości właściwości {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Zaznacz **Encrypted** dla każdej właściwości, która zawiera sekret — `PWD`, `token`, klucz tajny
+klienta. Wartość jest wtedy szyfrowana przed zapisaniem w repozytorium *digna*, maskowana na
+ekranie i odszyfrowywana dopiero przy składaniu ciągu połączenia.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Wskazówka"
+
+    Zaszyfrowanej wartości nie da się odczytać — ani w interfejsie, ani przez API — można ją
+    jedynie zastąpić. Przechowuj sekrety także we własnym menedżerze haseł.
+
+Właściwości, które nie są sekretami — nazwa sterownika, host, port, baza danych — najlepiej
+zostawić niezaszyfrowane, aby pozostały czytelne dla osoby, która będzie później utrzymywać
+połączenie.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Testowanie połączenia {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Kliknij **Test** w oknie *Add DB Connection* **przed** zapisaniem. Test korzysta z wartości
+aktualnie znajdujących się w formularzu i nawiązuje rzeczywiste połączenie, więc zgłasza
+dokładnie to, na co natrafiłaby inspekcja — błędną nazwę sterownika, odrzucone hasło,
+nieosiągalny host. Nic nie jest zapisywane: połączenie testowe jest wycofywane niezależnie od
+tego, czy się powiedzie, czy nie.
 
-| Technology | Catalogs offered |
+W przypadku istniejącego już połączenia najedź na jego wiersz w zakładce
+**Database Connections** i kliknij ikonę **wtyczki**, aby przetestować je ponownie. To najszybszy
+sposób sprawdzenia, czy źródło jest osiągalne po rotacji hasła lub zmianie w zaporze.
+
+---
+
+## Którą bazę danych widzi połączenie {: #which-database-the-connection-sees }
+
+Gdy dodajesz źródło danych, *digna* udostępnia katalogi, schematy i tabele, do których
+połączenie może sięgnąć. Jak daleko sięga, zależy od technologii:
+
+| Technologia | Udostępniane katalogi |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Wyłącznie **bieżąca** baza połączenia |
+| **Teradata**, **Netezza**, **Databricks** | Wszystkie bazy lub katalogi, które użytkownik może zobaczyć |
+| **Hive**, **Impala** | Zgłaszane przez sterownik |
 
-!!! important "One connection, one database"
+!!! important "Jedno połączenie, jedna baza danych"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    W przypadku PostgreSQL, SQL Server, Oracle i Snowflake właściwości muszą wskazywać bazę
+    zawierającą schematy źródłowe — `DATABASE=…`, `Database=…` albo nazwę usługi wewnątrz `DBQ`
+    w Oracle. Tabele w innej bazie nie są osiągalne przez to połączenie; dodaj dla nich drugie
+    połączenie.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Tryb profilowania i Work Schema {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Tryb profilowania określa, jak *digna* przetwarza dane i oblicza metryki:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** metryki są obliczane bezpośrednio na tabelach źródłowych, bez kopiowania danych.
+- **Permanent:** dane z inspekcjonowanego dnia są kopiowane do tabeli trwałej, a metryki
+  obliczane są na skopiowanych danych.
+- **Session:** dane są kopiowane do tabeli sesyjnej lub tymczasowej, a metryki obliczane są na
+  tych danych tymczasowych.
 
-The mode decides what the connection user must be allowed to do:
+Tryb decyduje o tym, co musi być dozwolone użytkownikowi połączenia:
 
-| Mode | Writes | Rights the connection user needs |
+| Tryb | Zapisuje | Uprawnienia potrzebne użytkownikowi połączenia |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | nic | Odczyt tabel źródłowych |
+| **Permanent** | jedną tabelę na źródło danych w **Work Schema** | Tworzenie i usuwanie tabel w **Work Schema** |
+| **Session** | tabelę tymczasową, którą baza usuwa wraz z sesją | Tworzenie tabel tymczasowych — **Work Schema** nie jest używany |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* wyłącznie odczytuje, co czyni go trybem do wyboru, gdy *digna* otrzymuje dostęp tylko
+do odczytu. **Work Schema** jest odczytywany jedynie przy *Permanent*, ale i tak warto go
+wypełnić, aby połączenie działało dalej, jeśli tryb zostanie później zmieniony.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## Użycie DSN zamiast tego {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+DSN nadal działa — `DSN` to po prostu kolejna właściwość:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -264,129 +272,135 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+DSN musi być zarejestrowany na hoście *digna*, dla tego samego konta użytkownika, na którym
+działa backend *digna*, oraz jako **System DSN**, gdy *digna* działa jako usługa. Wszystko, co
+jest skonfigurowane w DSN, można nadpisać, dodając to również jako właściwość.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Data source name not found / no default driver specified
-
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
-
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
+Tryb bez DSN jest udokumentowanym ustawieniem domyślnym, ponieważ pozwala uniknąć takiego stanu
+po stronie hosta: połączenie jest w pełni opisane w *digna*, a nowy host *digna* potrzebuje
+zainstalowanego sterownika, ale niczego skonfigurowanego.
 
 ---
 
-### The connection test times out
+## Rozwiązywanie problemów {: #troubleshooting }
 
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
+### Nie znaleziono nazwy źródła danych / nie określono domyślnego sterownika
 
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Objawy:**
+- Przycisk **Test** zgłasza błąd wspominający *data source name not found*, mimo że konfiguracja
+  jest bez DSN
 
----
-
-### Authentication fails although the credentials are correct
-
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
-
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
+**Przyczyny i rozwiązania:**
+1. Wartość `Driver` nie odpowiada żadnej zarejestrowanej nazwie sterownika — porównaj ją z
+   zakładką **Drivers** *Administratora źródeł danych ODBC (64-bitowego)* albo z
+   `odbcinst -q -d`
+2. Sterownik jest zainstalowany na Twojej stacji roboczej, ale nie na hoście *digna*
+3. Sterownik jest 32-bitowy, podczas gdy *digna* jest 64-bitowa — zainstaluj sterownik
+   64-bitowy
+4. Właściwości `Driver` w ogóle brakuje, a `DSN` również nie podano
+5. W systemach Linux i macOS sterownik jest zainstalowany, ale niezarejestrowany — podaj zamiast
+   tego pełną ścieżkę do biblioteki sterownika albo zarejestruj go w `odbcinst.ini`
 
 ---
 
-### The data source screen does not offer the expected database or schema
+### Test połączenia przekracza limit czasu
 
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
+**Objawy:**
+- **Test** zawiesza się, a następnie kończy się niepowodzeniem po mniej więcej pół minuty
 
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
-
----
-
-### Profiling fails while the connection test succeeds
-
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
-
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
+**Przyczyny i rozwiązania:**
+1. Host lub port nieosiągalne z hosta *digna* — sprawdź zaporę, a w przypadku źródeł chmurowych
+   listę dozwolonych adresów IP
+2. Nazwa hosta jest poprawna, ale port należy do innej usługi
+3. Źródło potrzebuje więcej niż domyślne 30 sekund, aby przyjąć połączenie — zwiększ
+   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` w sekcji `[base]` pliku `config.toml` (`0` oznacza
+   oczekiwanie bez ograniczeń) i uruchom ponownie backend
+4. Bezserwerowy punkt końcowy wybudza się ze stanu bezczynności — ponów próbę, a jeśli zdarza
+   się to regularnie, zwiększ limit czasu logowania jak wyżej
 
 ---
 
-## Best Practices
+### Uwierzytelnianie zawodzi, choć poświadczenia są poprawne
 
-**DO:**
+**Objawy:**
+- Sterownik zgłasza nieprawidłowe poświadczenia, ale ten sam użytkownik działa w innym kliencie
+  SQL
 
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Przyczyny i rozwiązania:**
+1. Hasło zawiera `;` — ujmij wartość w nawiasy klamrowe: `{p@ss;word}`
+2. Do wartości skopiowano końcową spację
+3. Sterownik oczekuje określonego mechanizmu uwierzytelniania — na przykład `AuthMech` w
+   sterownikach Hive i Databricks albo `authenticator` w Snowflake
+4. Wartość została zapisana jako zaszyfrowana, a następnie edytowana — zaszyfrowanych wartości
+   nie można odczytać, więc wprowadź sekret ponownie w całości
+5. Token wygasł — osobiste tokeny dostępu i programowe tokeny dostępu są wydawane z datą
+   wygaśnięcia
 
 ---
 
-## Support
+### Ekran źródła danych nie udostępnia oczekiwanej bazy lub schematu
 
-Need help with a database connection?
+**Objawy:**
+- Przy dodawaniu źródła danych brakuje katalogów, schematów lub tabel
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**Przyczyny i rozwiązania:**
+1. Połączenie wskazuje inną bazę danych — zobacz
+   [Którą bazę danych widzi połączenie](#which-database-the-connection-sees)
+2. Użytkownikowi połączenia brakuje uprawnień odczytu do schematu albo do słownika danych
+3. **Technology** nie odpowiada źródłu, więc *digna* odpytuje niewłaściwy słownik danych
+4. W przypadku Snowflake użytkownik nie ma przypisanego domyślnego magazynu i nie podano
+   właściwości `Warehouse`, więc zapytania o metadane nie mogą się wykonać
+
+---
+
+### Profilowanie zawodzi, choć test połączenia się powiódł
+
+**Objawy:**
+- **Test** przechodzi, ale inspekcja kończy się niepowodzeniem przy tworzeniu tabel roboczych
+
+**Przyczyny i rozwiązania:**
+1. Wybrano profilowanie *Permanent*, a użytkownik połączenia nie może tworzyć tabel w
+   **Work Schema** — nadaj uprawnienia albo przełącz się na *Session* lub *Standard*
+2. **Work Schema** jest puste albo wskazuje nieistniejący schemat, podczas gdy wybrano
+   profilowanie *Permanent*
+3. Wybrano profilowanie *Session*, a użytkownik połączenia nie może tworzyć tabel tymczasowych
+4. Długo działające zapytanie profilujące osiąga limit czasu zapytania — zwiększ
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` w sekcji `[base]` pliku `config.toml` (domyślnie 3600
+   sekund, `0` wyłącza limit)
+
+---
+
+## Dobre praktyki
+
+**RÓB TAK:**
+
+- Zainstaluj i zarejestruj sterownik na hoście *digna*, zanim skonfigurujesz połączenie
+- Zaznaczaj **Encrypted** dla każdego hasła i każdego tokenu
+- Klikaj **Test** przed zapisaniem i testuj ponownie po rotacji hasła
+- Nazywaj połączenia według źródła i środowiska, na przykład `sales_dwh_prod`
+- Daj *digna* dedykowanego użytkownika bazy danych, tylko do odczytu tam, gdzie wystarcza
+  profilowanie *Standard*
+- Utrzymuj jedno połączenie na każdą źródłową bazę danych i dodawaj drugie zamiast przestawiać
+  pierwsze
+
+**NIE RÓB TAK:**
+
+- Nie przechowuj sekretów bez szyfrowania i nie współdziel jednego użytkownika bazy danych
+  między *digna* a innymi narzędziami
+- Nie używaj sterownika 32-bitowego z 64-bitową instalacją *digna*
+- Nie polegaj na DSN użytkownika, gdy *digna* działa jako usługa — nie będzie widoczny
+- Nie umieszczaj we właściwości wartości zawierającej `;` bez nawiasów klamrowych
+- Nie kieruj **Work Schema** na schemat zawierający dane źródłowe
+
+---
+
+## Wsparcie
+
+Potrzebujesz pomocy przy połączeniu z bazą danych?
+
+- **E-mail:** support@digna.ai
+- **Dokumentacja:** https://docs.digna.ai
+- **Strona internetowa:** https://www.digna.ai
 
 ---
 

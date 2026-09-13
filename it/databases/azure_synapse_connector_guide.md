@@ -1,92 +1,93 @@
-# Source Connector for Azure Synapse Analytics
+# Connettore sorgente per Azure Synapse Analytics
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Questa guida descrive come configurare *digna* per connettersi ad Azure Synapse Analytics
+tramite **ODBC**, usando una stringa di connessione **senza DSN**. Sono supportati sia i pool
+SQL serverless sia quelli dedicati.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+La parte digna della configurazione è identica per ogni tecnologia: dove si creano le
+connessioni, come vengono cifrati i valori delle proprietà, come si testa una connessione e cosa
+significano le modalità di profilazione. È descritta in
+[Panoramica delle connessioni ai database](overview.md). Questa pagina copre ciò che è specifico
+di Azure Synapse.
 
-!!! note "Technology"
+!!! note "Tecnologia"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Synapse parla il dialetto di SQL Server, quindi la connessione si crea con **Technology:
+    SQL Server**. Per un server on-premise vedi [MS SQL Server](sqlserver_connector_guide.md).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Installare il driver ODBC {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Installa **ODBC Driver 18 for SQL Server** sulla macchina che esegue il backend di *digna*,
+seguendo [la guida di installazione di Microsoft](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+e leggi il nome esatto del driver registrato sul tuo host come descritto in
+[Installare il driver ODBC sull'host digna](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. Proprietà ODBC {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Un esempio, non una specifica"
+
+    L'insieme qui sotto è una combinazione che è noto funzionare. Le proprietà appartengono al
+    driver ODBC Microsoft, quindi i loro nomi, i valori predefiniti e i valori accettati variano
+    tra versioni del driver e piattaforme, e ciò che il workspace richiede dipende da come è
+    configurato: tipo di pool, metodo di autenticazione, firewall. Usalo come punto di partenza
+    e consulta la documentazione della versione del driver che hai installato.
+
+Aggiungi le seguenti proprietà nella schermata **Add DB Connection**:
+
+| Chiave | Valore di esempio | Note |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Deve corrispondere al nome del driver registrato sull'host *digna* |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Nome del workspace più il suffisso dell'endpoint — vedi sotto |
+| `DATABASE` | `dignadata` | Database che contiene gli schemi sorgente. È l'unico database che questa connessione può profilare |
+| `UID` | `sqladminuser` | Login SQL |
+| `PWD` | `<password>` | Spunta **Encrypted** |
 
-The resulting connection string looks like this:
+La stringa di connessione risultante è simile a questa:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### Il valore di `SERVER`
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Prendi il nome del workspace Synapse e aggiungi il suffisso dell'endpoint:
 
 | Pool | `SERVER` |
 |---|---|
-| **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
-| **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
+| **Pool SQL serverless** | `<workspace>-ondemand.sql.azuresynapse.net` |
+| **Pool SQL dedicato** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "La parte `-ondemand` sfugge facilmente"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Senza di essa il nome viene risolto verso l'endpoint dedicato, e la connessione fallisce
+    oppure raggiunge silenziosamente un pool diverso da quello previsto. Entrambi gli endpoint
+    sono mostrati nella pagina di panoramica del workspace nel portale di Azure.
 
 ### Firewall
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Il firewall del workspace Synapse deve consentire l'indirizzo in uscita dell'host *digna*.
+Aggiungilo in **Networking** nel workspace prima di testare la connessione: un indirizzo
+bloccato si manifesta come timeout di connessione anziché come errore di autenticazione.
 
-### Microsoft Entra ID authentication
+### Autenticazione con Microsoft Entra ID
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+Anziché un login SQL, il driver può autenticarsi verso Entra ID. Sostituisci `UID`/`PWD` con il
+metodo di autenticazione che il tuo workspace si aspetta, per esempio:
 
-| Key | Example value | Notes |
+| Chiave | Valore di esempio | Note |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` assume allora l'ID applicazione (client) e `PWD` il client secret |
+| `Authentication` | `ActiveDirectoryMSI` | Identità gestita dell'host *digna*, nessuna credenziale necessaria |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Configurazione di *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Nella schermata **Add DB Connection**, indica quanto segue:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -98,63 +99,66 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Note su Azure Synapse {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **I pool serverless supportano solo la profilazione *Standard*.** Un pool SQL serverless non
+  può creare tabelle in un database, quindi non possono essere eseguite né la profilazione
+  *Permanent* né quella *Session*. *Standard* calcola le metriche direttamente sulla sorgente,
+  ed è anche l'opzione più economica, dato che il serverless viene fatturato in base ai dati
+  elaborati.
+- **Una connessione vede un database.** *digna* offre gli schemi del database indicato in
+  `DATABASE`, perché Synapse, come SQL Server, segnala solo il database corrente come catalogo.
+- **La cifratura è attiva per impostazione predefinita** in Driver 18 e gli endpoint Synapse
+  presentano certificati pubblici validi, quindi non serve alcuna proprietà `Encrypt` o
+  `TrustServerCertificate`.
+- **Un endpoint serverless può riattivarsi dall'inattività** alla prima connessione. Se il test
+  di connessione va in timeout su un pool inutilizzato da un po', riprova.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Verificare il driver (facoltativo) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+Configurare un'origine dati ODBC non è necessario per una connessione senza DSN, ma la procedura
+guidata del driver è un modo comodo per confermare che il driver funziona e che il workspace
+accetta le tue credenziali prima di inserirle in *digna*.
 
-#### Step 1
+#### Passo 1
 ![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Compila il campo «Server».
+Usa il nome del workspace Synapse ed estendilo con «.sql.azuresynapse.net».  
+**Attenzione**: se vuoi connetterti usando un pool SQL serverless, assicurati di includere
+«-ondemand» come mostrato nello screenshot qui sopra.
 
-Click the **Next >** button.
+Fai clic sul pulsante **Next >**.
 
-#### Step 2
+#### Passo 2
 ![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Scegli il metodo di autenticazione (per es. nome utente e password)
+e fornisci i dati richiesti.
 
-Click the **Next >** button.
+Fai clic sul pulsante **Next >**.
 
-#### Step 3
+#### Passo 3
 ![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Scegli le impostazioni conformi ad ANSI, poi fai clic sul pulsante **Next >**.
 
-#### Step 4
+#### Passo 4
 ![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Puoi lasciare le impostazioni predefinite oppure scegliere le opzioni secondo le tue esigenze
+e fare clic sul pulsante **Finish**.
 
-#### Step 5
+#### Passo 5
 ![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Ora fai clic sul pulsante **Test datasource**.
 
-#### Step 6
+#### Passo 6
 ![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Una schermata di successo conferma che il driver, l'endpoint e le credenziali funzionano. I
+valori inseriti sono esattamente quelli che assumono le proprietà della
+[sezione 2](#2-odbc-properties).

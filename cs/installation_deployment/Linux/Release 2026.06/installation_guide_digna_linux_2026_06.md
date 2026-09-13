@@ -587,8 +587,6 @@ Tato sekce konfiguruje nastavení aplikace digna backend:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -597,8 +595,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametr | Hodnota | Poznámky |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` nebo IP adresa | Hostitel nebo IP, kde běží dignabackend |
-| `digna_APP_PORT` | `8082` (výchozí) | Port pro REST API koncové body |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontendu | Pokud běží dashboard na jiném serveru, přidejte jeho URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Požadováno pro CORS s pověřeními |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Povolit všechny HTTP metody |
@@ -1176,7 +1172,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Verze 2026.06 mění soubor config.toml"
 
-    Tři nastavení jsou nová a povinná, jedno se již nepoužívá. `config.toml` převzatý z dřívější verze nová nastavení neobsahuje a digna se nespustí, dokud budou chybět. Do stávajícího `config.toml` doplňte následující:
+    Tři nastavení jsou nová a povinná, tři se již nepoužívají. `config.toml` převzatý z dřívější verze nová nastavení neobsahuje a digna se nespustí, dokud budou chybět. Do stávajícího `config.toml` doplňte následující:
 
     ```toml
     [base]
@@ -1187,9 +1183,36 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Přidejte dva klíče `[base]` do své stávající sekce `[base]` a přidejte `[encryption]` jako novou sekci. Poté z `[base]` **odstraňte `digna_FERNET_KEY`** — již se nepoužívá.
+    Přidejte dva klíče `[base]` do své stávající sekce `[base]` a přidejte `[encryption]` jako novou sekci. Poté odstraňte nastavení, která se již nepoužívají: **`digna_FERNET_KEY`** z `[base]` a **`digna_APP_HOST`** a **`digna_APP_PORT`** z `[app]` — adresu a port si server nyní bere z `digna serve`.
 
     Význam jednotlivých nastavení je popsán v části [Konfigurace backendu](#backend-configuration).
+
+!!! warning "Jednotné přihlášení: formát [oidc_clients] se změnil"
+
+    Verze 2026.06 nahrazuje pole tabulek jednou tabulkou pro každého poskytovatele, pojmenovanou podle klíče poskytovatele. `DIGNA_OIDC_KEY` mizí — klíč je nyní součástí záhlaví sekce.
+
+    Před:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Po:
+
+    ```toml
+    [oidc_clients.microsoft]
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    Sekci zopakujte pro každého poskytovatele a každý klíč udržujte shodný s `key` v souboru `dashboard_config.toml`. `digna config check` hlásí `oidc_clients` jako FAILED, dokud stará podoba zůstává. Týká se to pouze instalací, které používají jednotné přihlášení.
 
 #### Krok 5: Ověřte konfiguraci
 
