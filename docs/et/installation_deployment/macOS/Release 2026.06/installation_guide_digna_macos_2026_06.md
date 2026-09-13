@@ -517,8 +517,6 @@ See jaotis seadistab digna backend'i rakenduse sätted:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -527,8 +525,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameeter | Väärtus | Märkused |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` või IP-aadress | Host või IP, kus dignabackend jookseb |
-| `digna_APP_PORT` | `8082` (vaikimisi) | REST API lõpp-punktide port |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontendi URL | Kui armatuurlaud on teisel serveril, lisage selle URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nõutav CORS-i puhul koos sisselogimisandmetega |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Lubab kõik HTTP meetodid |
@@ -1035,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Väljalase 2026.06 muudab faili config.toml"
 
-    Kolm sätet on uued ja kohustuslikud, üks ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
+    Kolm sätet on uued ja kohustuslikud, kolm ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
 
     ```toml
     [base]
@@ -1046,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel **eemaldage `digna_FERNET_KEY`** sektsioonist `[base]` — seda enam ei kasutata.
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sätted, mida enam ei kasutata: **`digna_FERNET_KEY`** sektsioonist `[base]` ning **`digna_APP_HOST`** ja **`digna_APP_PORT`** sektsioonist `[app]` — aadressi ja pordi saab server nüüd käsult `digna serve`.
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
 

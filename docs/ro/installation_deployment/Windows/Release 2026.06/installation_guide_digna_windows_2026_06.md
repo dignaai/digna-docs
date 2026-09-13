@@ -328,8 +328,6 @@ Această secțiune configurează setările aplicației backend digna:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -338,8 +336,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` sau adresă IP | Hostname sau IP unde este găzduit dignabackend |
-| `digna_APP_PORT` | `8082` (implicit) | Port pentru endpoint-urile REST API |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL-ul frontend-ului | Dacă dashboard-ul este pe un server diferit, include URL-ul acestuia |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Necesare pentru CORS cu credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Permite toate metodele HTTP |
@@ -761,7 +757,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Versiunea 2026.06 modifică config.toml"
 
-    Trei setări sunt noi și obligatorii, iar una nu mai este folosită. Un `config.toml` preluat dintr-o versiune anterioară nu conține setările noi, iar digna nu va porni cât timp lipsesc. Adăugați următoarele în `config.toml` existent:
+    Trei setări sunt noi și obligatorii, iar trei nu mai sunt folosite. Un `config.toml` preluat dintr-o versiune anterioară nu conține setările noi, iar digna nu va porni cât timp lipsesc. Adăugați următoarele în `config.toml` existent:
 
     ```toml
     [base]
@@ -772,7 +768,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adăugați cele două chei `[base]` în secțiunea `[base]` existentă și adăugați `[encryption]` ca secțiune nouă. Apoi **eliminați `digna_FERNET_KEY`** din `[base]` — nu mai este folosită.
+    Adăugați cele două chei `[base]` în secțiunea `[base]` existentă și adăugați `[encryption]` ca secțiune nouă. Apoi eliminați setările care nu mai sunt folosite: **`digna_FERNET_KEY`** din `[base]`, precum și **`digna_APP_HOST`** și **`digna_APP_PORT`** din `[app]` — serverul își preia acum adresa și portul din `digna serve`.
 
     Ce face fiecare setare este descris în [Configurarea backend-ului](#backend-configuration).
 

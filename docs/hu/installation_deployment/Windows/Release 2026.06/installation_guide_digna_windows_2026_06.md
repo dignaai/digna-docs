@@ -328,8 +328,6 @@ Ez a rész a digna backend alkalmazás beállításait tartalmazza:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -338,8 +336,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Paraméter | Érték | Megjegyzés |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vagy IP cím | A hoszt vagy IP, ahol a dignabackend fut |
-| `digna_APP_PORT` | `8082` (alapértelmezett) | A REST API végpontok portja |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Ha a dashboard másik szerveren fut, add meg annak URL-jét |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Szükséges CORS-hoz hitelesítő adatokkal |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Minden HTTP metódus engedélyezése |
@@ -761,7 +757,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "A 2026.06 kiadás módosítja a config.toml fájlt"
 
-    Három beállítás új és kötelező, egy pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
+    Három beállítás új és kötelező, három pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
 
     ```toml
     [base]
@@ -772,7 +768,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután **távolítsa el a `digna_FERNET_KEY` kulcsot** a `[base]` szekcióból — már nem használatos.
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el a már nem használt beállításokat: a **`digna_FERNET_KEY`** kulcsot a `[base]` szekcióból, valamint a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot az `[app]` szekcióból — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
 

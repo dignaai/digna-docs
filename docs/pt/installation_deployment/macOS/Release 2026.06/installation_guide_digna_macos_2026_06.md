@@ -517,8 +517,6 @@ Esta seção configura as definições da aplicação backend do digna:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -527,8 +525,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parâmetro | Valor | Observações |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ou endereço IP | Nome do host ou IP onde o dignabackend está hospedado |
-| `digna_APP_PORT` | `8082` (padrão) | Porta para os endpoints REST API |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL do frontend | Se o dashboard estiver em servidor diferente, inclua sua URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Necessário para CORS com credenciais |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Permite todos os métodos HTTP |
@@ -1035,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "A Release 2026.06 altera o config.toml"
 
-    Três configurações são novas e obrigatórias, e uma não é mais usada. Um `config.toml` herdado de uma versão anterior não contém as novas configurações, e o digna não iniciará enquanto elas estiverem ausentes. Acrescente o seguinte ao seu `config.toml` existente:
+    Três configurações são novas e obrigatórias, e três não são mais usadas. Um `config.toml` herdado de uma versão anterior não contém as novas configurações, e o digna não iniciará enquanto elas estiverem ausentes. Acrescente o seguinte ao seu `config.toml` existente:
 
     ```toml
     [base]
@@ -1046,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Acrescente as duas chaves `[base]` à sua seção `[base]` existente e adicione `[encryption]` como uma nova seção. Em seguida, **remova `digna_FERNET_KEY`** de `[base]` — ela não é mais usada.
+    Acrescente as duas chaves `[base]` à sua seção `[base]` existente e adicione `[encryption]` como uma nova seção. Em seguida, remova as configurações que não são mais usadas: **`digna_FERNET_KEY`** de `[base]`, e **`digna_APP_HOST`** e **`digna_APP_PORT`** de `[app]` — o servidor agora obtém o endereço e a porta de `digna serve`.
 
     O que cada configuração faz está descrito em [Configuração do Backend](#backend-configuration).
 

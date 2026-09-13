@@ -328,8 +328,6 @@ digna_installation/
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -338,8 +336,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | المعامل | القيمة | ملاحظات |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` أو عنوان IP | اسم المضيف أو IP الذي يستضيف dignabackend |
-| `digna_APP_PORT` | `8082` (افتراضي) | المنفذ لنقاط نهاية واجهة برمجة التطبيقات REST |
 | `digna_APP_CORS_ALLOW_ORIGINS` | عنوان الواجهة الأمامية | إذا كانت اللوحة على خادم مختلف، أدرج عنوان URL الخاص بها |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | مطلوب لـ CORS مع بيانات الاعتماد |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | السماح بجميع طرق HTTP |
@@ -762,7 +758,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "الإصدار 2026.06 يغيّر الملف config.toml"
 
-    ثلاثة إعدادات جديدة وإلزامية، وواحد لم يعد مستخدمًا. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
+    ثلاثة إعدادات جديدة وإلزامية، وثلاثة لم تعد مستخدمة. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
 
     ```toml
     [base]
@@ -773,7 +769,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم **احذف `digna_FERNET_KEY`** من `[base]` — فهو لم يعد مستخدمًا.
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف الإعدادات التي لم تعد مستخدمة: **`digna_FERNET_KEY`** من `[base]`، و**`digna_APP_HOST`** و**`digna_APP_PORT`** من `[app]` — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`.
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
 

@@ -517,8 +517,6 @@ mv config_template.toml config.toml
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -527,8 +525,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | पैरामीटर | मान | नोट्स |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` या IP पता | वह होस्टनाम या IP जहाँ dignabackend होस्ट है |
-| `digna_APP_PORT` | `8082` (डिफ़ॉल्ट) | REST API एंडपॉइंट के लिए पोर्ट |
 | `digna_APP_CORS_ALLOW_ORIGINS` | फ्रंटेंड URL | यदि डैशबोर्ड किसी अलग सर्वर पर है, तो उसका URL यहाँ शामिल करें |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | क्रेडेंशियल्स के साथ CORS के लिए आवश्यक |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | सभी HTTP मेथड्स की अनुमति दें |
@@ -1035,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "रिलीज़ 2026.06 config.toml बदलती है"
 
-    तीन सेटिंग्स नई और आवश्यक हैं, और एक अब उपयोग में नहीं है। पिछली रिलीज़ से लिया गया `config.toml` नई सेटिंग्स नहीं रखता, और जब तक वे अनुपस्थित हैं digna प्रारंभ नहीं होगा। अपनी मौजूदा `config.toml` में निम्नलिखित जोड़ें:
+    तीन सेटिंग्स नई और आवश्यक हैं, और तीन अब उपयोग में नहीं हैं। पिछली रिलीज़ से लिया गया `config.toml` नई सेटिंग्स नहीं रखता, और जब तक वे अनुपस्थित हैं digna प्रारंभ नहीं होगा। अपनी मौजूदा `config.toml` में निम्नलिखित जोड़ें:
 
     ```toml
     [base]
@@ -1046,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    दोनों `[base]` कुंजियाँ अपने मौजूदा `[base]` सेक्शन में जोड़ें और `[encryption]` को नए सेक्शन के रूप में जोड़ें। इसके बाद `[base]` से **`digna_FERNET_KEY` हटा दें** — यह अब उपयोग में नहीं है।
+    दोनों `[base]` कुंजियाँ अपने मौजूदा `[base]` सेक्शन में जोड़ें और `[encryption]` को नए सेक्शन के रूप में जोड़ें। इसके बाद उन सेटिंग्स को हटा दें जो अब उपयोग में नहीं हैं: `[base]` से **`digna_FERNET_KEY`**, तथा `[app]` से **`digna_APP_HOST`** और **`digna_APP_PORT`** — सर्वर अब अपना पता और पोर्ट `digna serve` से लेता है।
 
     प्रत्येक सेटिंग क्या करती है, यह यहाँ बताया गया है: [बैकएंड कॉन्फ़िगरेशन](#backend-configuration).
 

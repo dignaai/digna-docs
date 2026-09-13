@@ -517,8 +517,6 @@ Atidarykite `config.toml` tekstų redaktoriumi ir konfigūruokite kiekvieną sky
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -527,8 +525,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametras | Reikšmė | Pastabos |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` arba IP adresas | Vieta (hostname) arba IP, kur veikia dignabackend |
-| `digna_APP_PORT` | `8082` (numatytasis) | REST API galinių taškų prievadas |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontendo URL | Jei dashboard yra kitame serveryje, įtraukite jo URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Reikalinga CORS su kredencialais |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Leisti visus HTTP metodus |
@@ -1035,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Leidimas 2026.06 keičia config.toml"
 
-    Trys nuostatos yra naujos ir būtinos, o viena nebenaudojama. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
+    Trys nuostatos yra naujos ir būtinos, o trys nebenaudojamos. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
 
     ```toml
     [base]
@@ -1046,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada iš `[base]` **pašalinkite `digna_FERNET_KEY`** — jis nebenaudojamas.
+    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada pašalinkite nuostatas, kurios nebenaudojamos: **`digna_FERNET_KEY`** iš `[base]` bei **`digna_APP_HOST`** ir **`digna_APP_PORT`** iš `[app]` — adresą ir prievadą serveris dabar gauna iš `digna serve`.
 
     Ką daro kiekviena nuostata, aprašyta skyriuje [Užkulisinės dalies konfigūracija](#backend-configuration).
 

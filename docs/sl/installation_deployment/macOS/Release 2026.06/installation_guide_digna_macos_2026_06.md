@@ -517,8 +517,6 @@ Ta sekcija konfigurira nastavitve digna backend aplikacije:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -527,8 +525,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ali IP naslov | Ime gostitelja ali IP, kjer je gostovan dignabackend |
-| `digna_APP_PORT` | `8082` (privzeto) | Pristanišče za REST API končne točke |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontenda | Če je nadzorna plošča na drugem strežniku, vključite njen URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Zahtevano za CORS z poverilnicami |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Dovoli vse HTTP metode |
@@ -1035,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Izdaja 2026.06 spreminja config.toml"
 
-    Tri nastavitve so nove in obvezne, ena pa ni več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
+    Tri nastavitve so nove in obvezne, tri pa niso več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
 
     ```toml
     [base]
@@ -1046,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato iz `[base]` **odstranite `digna_FERNET_KEY`** — ni več v uporabi.
+    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato odstranite nastavitve, ki niso več v uporabi: **`digna_FERNET_KEY`** iz `[base]` ter **`digna_APP_HOST`** in **`digna_APP_PORT`** iz `[app]` — naslov in vrata strežnik zdaj dobi iz `digna serve`.
 
     Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija Zaledja](#backend-configuration).
 

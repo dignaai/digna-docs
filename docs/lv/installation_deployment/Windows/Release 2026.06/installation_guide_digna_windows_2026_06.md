@@ -328,8 +328,6 @@ Atveriet `config.toml` teksta redaktorā un konfigurējiet katru sadaļu zemāk.
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -338,8 +336,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` vai IP adrese | Hostname vai IP, kur tiek mitināts dignabackend |
-| `digna_APP_PORT` | `8082` (noklusējums) | Ports REST API galapunktiem |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontenda URL | Ja panelis atrodas citā serverī, iekļaujiet tā URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijas datiem |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļaut visus HTTP metodus |
@@ -761,7 +757,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Laidiens 2026.06 maina config.toml"
 
-    Trīs iestatījumi ir jauni un obligāti, bet viens vairs netiek izmantots. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
+    Trīs iestatījumi ir jauni un obligāti, bet trīs vairs netiek izmantoti. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
 
     ```toml
     [base]
@@ -772,7 +768,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam no `[base]` **noņemiet `digna_FERNET_KEY`** — tas vairs netiek izmantots.
+    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet iestatījumus, kas vairs netiek izmantoti: **`digna_FERNET_KEY`** no `[base]`, kā arī **`digna_APP_HOST`** un **`digna_APP_PORT`** no `[app]` — adresi un portu serveris tagad iegūst no `digna serve`.
 
     Ko dara katrs iestatījums, apraksīts sadaļā [Aizmugures konfigurācija](#backend-configuration).
 

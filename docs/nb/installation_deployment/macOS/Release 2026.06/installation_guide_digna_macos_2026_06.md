@@ -517,8 +517,6 @@ Denne seksjonen konfigurerer innstillingene for digna-backend-applikasjonen:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -527,8 +525,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Verdi | Notater |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` eller IP-adresse | Vertnavn eller IP hvor dignabackend hostes |
-| `digna_APP_PORT` | `8082` (standard) | Port for REST API-endepunkter |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Hvis dashboardet ligger på en annen server, inkluder dens URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Påkrevd for CORS med legimitasjon |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tillat alle HTTP-metoder |
@@ -1035,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Utgivelse 2026.06 endrer config.toml"
 
-    Tre innstillinger er nye og påkrevde, og én brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
+    Tre innstillinger er nye og påkrevde, og tre brukes ikke lenger. En `config.toml` som er videreført fra en tidligere utgivelse, inneholder ikke de nye innstillingene, og digna starter ikke så lenge de mangler. Legg til følgende i din eksisterende `config.toml`:
 
     ```toml
     [base]
@@ -1046,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter **`digna_FERNET_KEY`** fra `[base]` — den brukes ikke lenger.
+    Legg de to `[base]`-nøklene til i din eksisterende `[base]`-seksjon, og legg til `[encryption]` som ny seksjon. Fjern deretter innstillingene som ikke lenger brukes: **`digna_FERNET_KEY`** fra `[base]`, samt **`digna_APP_HOST`** og **`digna_APP_PORT`** fra `[app]` — serveren henter nå adresse og port fra `digna serve`.
 
     Hva hver innstilling gjør, er beskrevet i [Backend-konfigurasjon](#backend-configuration).
 

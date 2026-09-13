@@ -594,8 +594,6 @@ sudo mv config_template.toml config.toml
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -604,8 +602,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` ή IP διεύθυνση | Hostname ή IP όπου φιλοξενείται το dignabackend |
-| `digna_APP_PORT` | `8082` (προεπιλογή) | Θύρα για τα REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Αν το dashboard βρίσκεται σε διαφορετικό server, συμπεριλάβετε το URL του |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Απαραίτητο για CORS με credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Επιτρέπει όλες τις μεθόδους HTTP |
@@ -1183,7 +1179,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Η έκδοση 2026.06 αλλάζει το config.toml"
 
-    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ μία δεν χρησιμοποιείται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
+    Τρεις ρυθμίσεις είναι νέες και υποχρεωτικές, ενώ τρεις δεν χρησιμοποιούνται πλέον. Ένα `config.toml` που μεταφέρθηκε από προηγούμενη έκδοση δεν περιέχει τις νέες ρυθμίσεις, και το digna δεν θα ξεκινήσει όσο λείπουν. Προσθέστε τα ακόλουθα στο υπάρχον `config.toml`:
 
     ```toml
     [base]
@@ -1194,7 +1190,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια **αφαιρέστε το `digna_FERNET_KEY`** από την `[base]` — δεν χρησιμοποιείται πλέον.
+    Προσθέστε τα δύο κλειδιά `[base]` στην υπάρχουσα ενότητα `[base]` και προσθέστε την `[encryption]` ως νέα ενότητα. Στη συνέχεια αφαιρέστε τις ρυθμίσεις που δεν χρησιμοποιούνται πλέον: το **`digna_FERNET_KEY`** από την `[base]`, καθώς και τα **`digna_APP_HOST`** και **`digna_APP_PORT`** από την `[app]` — ο διακομιστής λαμβάνει πλέον τη διεύθυνση και τη θύρα του από το `digna serve`.
 
     Τι κάνει κάθε ρύθμιση περιγράφεται στην ενότητα [Διαμόρφωση backend](#backend-configuration).
 

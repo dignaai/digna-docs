@@ -594,8 +594,6 @@ This section configures the digna backend application settings:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -604,8 +602,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Hostname or IP where dignabackend is hosted |
-| `digna_APP_PORT` | `8082` (default) | Port for REST API endpoints |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
@@ -1205,7 +1201,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Release 2026.06 changes config.toml"
 
-    Three settings are new and required, and one is no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
 
     ```toml
     [base]
@@ -1216,7 +1212,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then **remove `digna_FERNET_KEY`** from `[base]` — it is no longer used.
+    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
 
     See [Backend Configuration](#backend-configuration) for what each setting does.
 

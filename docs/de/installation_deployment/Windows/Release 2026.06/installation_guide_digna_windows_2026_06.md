@@ -328,8 +328,6 @@ Dieser Abschnitt konfiguriert die Einstellungen der digna-Backend-Anwendung:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -338,8 +336,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Wert | Hinweise |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` oder IP-Adresse | Hostname oder IP, auf dem dignabackend gehostet wird |
-| `digna_APP_PORT` | `8082` (Standard) | Port für REST-API-Endpunkte |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Falls das Dashboard auf einem anderen Server liegt, fügen Sie dessen URL hinzu |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Erforderlich für CORS mit Credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Erlaubt alle HTTP-Methoden |
@@ -787,7 +783,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Release 2026.06 ändert die config.toml"
 
-    Drei Einstellungen sind neu und erforderlich, eine wird nicht mehr verwendet. Eine aus einem früheren Release übernommene `config.toml` enthält die neuen Einstellungen nicht, und digna startet nicht, solange sie fehlen. Ergänzen Sie Ihre bestehende `config.toml` um Folgendes:
+    Drei Einstellungen sind neu und erforderlich, drei werden nicht mehr verwendet. Eine aus einem früheren Release übernommene `config.toml` enthält die neuen Einstellungen nicht, und digna startet nicht, solange sie fehlen. Ergänzen Sie Ihre bestehende `config.toml` um Folgendes:
 
     ```toml
     [base]
@@ -798,7 +794,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Fügen Sie die beiden `[base]`-Schlüssel in Ihren vorhandenen Abschnitt `[base]` ein und ergänzen Sie `[encryption]` als neuen Abschnitt. Entfernen Sie anschließend **`digna_FERNET_KEY`** aus `[base]` — er wird nicht mehr verwendet.
+    Fügen Sie die beiden `[base]`-Schlüssel in Ihren vorhandenen Abschnitt `[base]` ein und ergänzen Sie `[encryption]` als neuen Abschnitt. Entfernen Sie anschließend die nicht mehr verwendeten Einstellungen: **`digna_FERNET_KEY`** aus `[base]` sowie **`digna_APP_HOST`** und **`digna_APP_PORT`** aus `[app]` — Adresse und Port bezieht der Server jetzt von `digna serve`.
 
     Was die einzelnen Einstellungen bewirken, steht unter [Backend-Konfiguration](#backend-configuration).
 

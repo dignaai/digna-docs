@@ -594,8 +594,6 @@ Deze sectie configureert de applicatie-instellingen van de digna-backend:
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -604,8 +602,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Waarde | Opmerkingen |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` of IP-adres | Hostnaam of IP waar dignabackend gehost wordt |
-| `digna_APP_PORT` | `8082` (standaard) | Poort voor REST API-eindpunten |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend-URL | Als het dashboard op een andere server staat, voeg die URL toe |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Vereist voor CORS met credentials |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Sta alle HTTP-methoden toe |
@@ -1183,7 +1179,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Release 2026.06 wijzigt config.toml"
 
-    Drie instellingen zijn nieuw en verplicht, één wordt niet meer gebruikt. Een `config.toml` die uit een eerdere release is overgenomen, bevat de nieuwe instellingen niet, en digna start niet zolang ze ontbreken. Voeg het volgende toe aan uw bestaande `config.toml`:
+    Drie instellingen zijn nieuw en verplicht, drie worden niet meer gebruikt. Een `config.toml` die uit een eerdere release is overgenomen, bevat de nieuwe instellingen niet, en digna start niet zolang ze ontbreken. Voeg het volgende toe aan uw bestaande `config.toml`:
 
     ```toml
     [base]
@@ -1194,7 +1190,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Voeg de twee `[base]`-sleutels toe aan uw bestaande `[base]`-sectie en voeg `[encryption]` toe als nieuwe sectie. Verwijder daarna **`digna_FERNET_KEY`** uit `[base]` — die wordt niet meer gebruikt.
+    Voeg de twee `[base]`-sleutels toe aan uw bestaande `[base]`-sectie en voeg `[encryption]` toe als nieuwe sectie. Verwijder daarna de instellingen die niet meer worden gebruikt: **`digna_FERNET_KEY`** uit `[base]`, en **`digna_APP_HOST`** en **`digna_APP_PORT`** uit `[app]` — de server haalt zijn adres en poort nu uit `digna serve`.
 
     Wat elke instelling doet, staat in [Backend-configuratie](#backend-configuration).
 

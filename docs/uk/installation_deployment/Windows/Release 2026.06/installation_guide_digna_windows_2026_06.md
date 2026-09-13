@@ -328,8 +328,6 @@ digna_installation/
 
 ```toml
 [app]
-digna_APP_HOST = "localhost"
-digna_APP_PORT = 8082
 digna_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
 digna_APP_CORS_ALLOW_CREDENTIALS = true
 digna_APP_CORS_ALLOW_METHODS = ["*"]
@@ -338,8 +336,6 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `digna_APP_HOST` | `localhost` or IP address | Хостнейм або IP, де розміщено dignabackend |
-| `digna_APP_PORT` | `8082` (default) | Порт для REST API |
 | `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Якщо dashboard знаходиться на іншому сервері, додайте його URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Потрібно для CORS з обліковими даними |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Дозволити всі HTTP‑методи |
@@ -762,7 +758,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Випуск 2026.06 змінює config.toml"
 
-    Три параметри нові й обов'язкові, а один більше не використовується. `config.toml`, перенесений із попереднього випуску, нових параметрів не містить, і digna не запуститься, доки їх бракує. Додайте до наявного `config.toml` таке:
+    Три параметри нові й обов'язкові, а три більше не використовуються. `config.toml`, перенесений із попереднього випуску, нових параметрів не містить, і digna не запуститься, доки їх бракує. Додайте до наявного `config.toml` таке:
 
     ```toml
     [base]
@@ -773,7 +769,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Додайте два ключі `[base]` до наявного розділу `[base]` і додайте `[encryption]` як новий розділ. Потім **вилучіть `digna_FERNET_KEY`** з `[base]` — він більше не використовується.
+    Додайте два ключі `[base]` до наявного розділу `[base]` і додайте `[encryption]` як новий розділ. Потім вилучіть параметри, які більше не використовуються: **`digna_FERNET_KEY`** з `[base]`, а також **`digna_APP_HOST`** і **`digna_APP_PORT`** з `[app]` — адресу та порт сервер тепер бере з `digna serve`.
 
     Призначення кожного параметра описано в розділі [Налаштування серверної частини](#backend-configuration).
 
