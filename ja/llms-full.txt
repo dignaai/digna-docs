@@ -14043,14 +14043,35 @@ Source: https://docs.digna.ai/ja/sdk/Release%202026.06/quickstart/
 
 This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
 
+## Create an API key
+
+Create an API key in the ***digna*** frontend before connecting with the SDK:
+
+1. Log in to ***digna*** in the frontend.
+2. Open your user profile in the bottom-left corner.
+3. In the user profile, click **API Keys**.
+4. Click **Add API Key**.
+5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
+6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+
+Use the API key as the SDK token. Good ways to provide it to your application include:
+
+- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
+- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
+- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+
+Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+
 ## Connect
 
 ```python
+import os
+
 from digna_sdk import DignaClient
 
 client = DignaClient(
     base_url="http://localhost:8000",  # your on-premises Digna backend
-    token="<your-api-token>",
+    token=os.environ["DIGNA_API_KEY"],
 )
 ```
 
