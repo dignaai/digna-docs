@@ -1,0 +1,54 @@
+---
+title: Довідник digna Python SDK 2026.06 | Документація digna
+description: Повний довідник із випуску digna Python SDK 2026.06
+image: /assets/logo_square.png
+---
+
+# Довідник digna Python SDK 2026.06
+
+Цей розділ описує Python SDK для ***digna***. Він побудований як довідник із кількох сторінок: скористайтеся цим оглядом, щоб зрозуміти клієнт, а далі переходьте до окремих сторінок про швидкий старт, ресурси, моделі, помилки та згенеровану документацію API.
+
+SDK публікується як пакет `digna-sdk` і надає стабільний версіонований клієнт для REST API ***digna***.
+
+---
+
+## Основи SDK
+
+---
+
+### Огляд
+
+SDK побудований за принципом клієнта, орієнтованого на ресурси. Кожна ділянка API доступна як окремий клієнт у верхньорівневому об'єкті `DignaClient` — з типізованими моделями запитів і відповідей та узгодженим обробленням помилок.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Ключові можливості
+
+- **Типізовані моделі** — кожен запит і кожна відповідь перевіряються за допомогою pydantic, тож редактор і засіб перевірки типів виявляють помилки ще до звернення до мережі.
+- **Орієнтація на ресурси** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` та `client.inspection_statuses` надають прості методи `list` / `get` / `create` / `update` / `delete`.
+- **Зрозумілі помилки** — помилки API спричиняють виняток `DignaAPIError` (або точніший підклас, як-от `DignaAuthenticationError`, `DignaAuthorizationError` чи `DignaNotFoundError`) замість того, щоб мовчки повертати `None`.
+
+### Встановлення
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Сторінки довідника
+
+Цей випуск поділено на такі сторінки:
+
+- [Швидкий старт](quickstart.md) — підключення та перші виклики.
+- [Ресурси](resources.md) — повний перелік доступних клієнтів ресурсів.
+- [Моделі](models.md) — моделі pydantic, що використовуються для введення та виведення.
+- [Помилки](errors.md) — ієрархія винятків.
+- [Довідник API](reference.md) — автоматично згенерована довідкова документація.
