@@ -1,5 +1,5 @@
-# digna Python SDK Client Reference 2026.06
+# digna Python SDK クライアントリファレンス 2026.06
 
-This page documents the generated client API for the ***digna*** Python SDK. The `DignaClient` is the primary entry point for the resource operations exposed by the SDK.
+このページでは、***digna*** Python SDK の自動生成されたクライアント API について説明します。`DignaClient` は、SDK が公開するリソース操作の主要なエントリーポイントです。
 
 ::: digna_sdk.client.DignaClient

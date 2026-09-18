@@ -114,12 +114,12 @@
 
 ### Release 2026.06
 
-- [Overview](https://docs.digna.ai/sl/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
-- [Quickstart](https://docs.digna.ai/sl/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
-- [Resources](https://docs.digna.ai/sl/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
-- [Models](https://docs.digna.ai/sl/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
-- [Errors](https://docs.digna.ai/sl/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
-- [API Reference](https://docs.digna.ai/sl/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+- [Overview](https://docs.digna.ai/sl/sdk/Release%202026.06/): Popolna referenca za izdajo SDK Python digna 2026.06
+- [Quickstart](https://docs.digna.ai/sl/sdk/Release%202026.06/quickstart/): Vodnik za hitri začetek z izdajo SDK Python digna 2026.06
+- [Resources](https://docs.digna.ai/sl/sdk/Release%202026.06/resources/): Odjemalci virov za izdajo SDK Python digna 2026.06
+- [Models](https://docs.digna.ai/sl/sdk/Release%202026.06/models/): Podatkovni modeli za izdajo SDK Python digna 2026.06
+- [Errors](https://docs.digna.ai/sl/sdk/Release%202026.06/errors/): Hierarhija napak za izdajo SDK Python digna 2026.06
+- [API Reference](https://docs.digna.ai/sl/sdk/Release%202026.06/reference/): Referenca odjemalčevega API za izdajo SDK Python digna 2026.06
 
 ## Changelog
 

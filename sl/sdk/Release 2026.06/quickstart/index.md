@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# Hitri začetek SDK Python digna 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Ta stran prikazuje najmanjšo potrebno nastavitev in osrednje delovne tokove odjemalca za SDK Python ***digna***. Uporabite jo kot izhodišče, preden nadaljujete na referenčne strani o virih, modelih in napakah.
 
-## Create an API key
+## Ustvarjanje ključa API
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Preden se povežete s SDK, v vmesniku ***digna*** ustvarite ključ API:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Prijavite se v ***digna*** v vmesniku.
+2. V spodnjem levem kotu odprite svoj uporabniški profil.
+3. V uporabniškem profilu kliknite **API Keys**.
+4. Kliknite **Add API Key**.
+5. Vnesite razumljivo ime in nastavite datum poteka. Ključ API lahko kadar koli prekličete ali izbrišete.
+6. Prikazani ključ API kopirajte v odložišče. Ključ je prikazan samo ob ustvarjanju.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Ključ API uporabite kot žeton SDK. Primerni načini, kako ga posredovati aplikaciji:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Spremenljivka okolja, na primer `DIGNA_API_KEY`, za lokalni razvoj in avtomatizacijo.
+- Shramba skrivnosti vašega CI/CD, na primer skrivnosti GitHub Actions, spremenljivke CI/CD v GitLabu ali skrite spremenljivke v Azure DevOps.
+- Upravitelj skrivnosti med izvajanjem, na primer skrivnosti Kubernetes, skrivnosti Docker, HashiCorp Vault ali shramba skrivnosti ponudnika oblaka.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Ključev API ne vpisujte neposredno v izvorno kodo, beležnice, zgodovino lupine ali konfiguracijske datoteke, ki so v sistemu za upravljanje različic.
 
-## Connect
+## Povezovanje
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Uporabite `DignaClient` kot upravitelja konteksta, da se osnovni
+nabor povezav samodejno zapre:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Izpis projektov
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Ustvarjanje vira podatkov
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Oddaja zahteve za pregled in čakanje na zaključek
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Celoten potek oddaja → poizvedovanje → prevzem je prikazan v datoteki `examples/inspection_flow.py` v repozitoriju.
 
-## Handle errors
+## Obravnavanje napak
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

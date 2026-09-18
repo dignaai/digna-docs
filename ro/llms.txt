@@ -114,12 +114,12 @@
 
 ### Release 2026.06
 
-- [Overview](https://docs.digna.ai/ro/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
-- [Quickstart](https://docs.digna.ai/ro/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
-- [Resources](https://docs.digna.ai/ro/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
-- [Models](https://docs.digna.ai/ro/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
-- [Errors](https://docs.digna.ai/ro/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
-- [API Reference](https://docs.digna.ai/ro/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+- [Overview](https://docs.digna.ai/ro/sdk/Release%202026.06/): Referință completă pentru versiunea 2026.06 a SDK-ului Python digna
+- [Quickstart](https://docs.digna.ai/ro/sdk/Release%202026.06/quickstart/): Ghid de pornire rapidă pentru versiunea 2026.06 a SDK-ului Python digna
+- [Resources](https://docs.digna.ai/ro/sdk/Release%202026.06/resources/): Clienți de resurse pentru versiunea 2026.06 a SDK-ului Python digna
+- [Models](https://docs.digna.ai/ro/sdk/Release%202026.06/models/): Modele de date pentru versiunea 2026.06 a SDK-ului Python digna
+- [Errors](https://docs.digna.ai/ro/sdk/Release%202026.06/errors/): Ierarhia erorilor pentru versiunea 2026.06 a SDK-ului Python digna
+- [API Reference](https://docs.digna.ai/ro/sdk/Release%202026.06/reference/): Referință API client pentru versiunea 2026.06 a SDK-ului Python digna
 
 ## Changelog
 

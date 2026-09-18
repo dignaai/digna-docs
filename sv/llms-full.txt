@@ -12166,21 +12166,21 @@ Structural monitoring works across the data platforms *digna* connects to — Te
 # Overview
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/
 
-# digna Python SDK Reference 2026.06
+# digna Python SDK-referens 2026.06
 
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
+Det här avsnittet dokumenterar Python-SDK:t för ***digna***. Det är upplagt som en referens över flera sidor: använd översikten för att förstå klienten och fortsätt sedan till de egna sidorna om snabbstart, resurser, modeller, fel och den genererade API-dokumentationen.
 
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
+SDK:t publiceras som paketet `digna-sdk` och tillhandahåller en stabil, versionshanterad klient för ***digna***s REST-API.
 
 ---
 
-### Overview
+## SDK-grunder
 
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
+---
+
+### Översikt
+
+SDK:t bygger på en resursorienterad klientdesign. Varje API-område exponeras som en egen klient på den överordnade `DignaClient`, med typade request- och response-modeller och enhetlig felhantering.
 
 ```python
 from digna_sdk import DignaClient
@@ -12191,11 +12191,11 @@ client = DignaClient(
 )
 ```
 
-### Core Features
+### Huvudfunktioner
 
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
+- **Typade modeller** — varje request och response valideras med pydantic, så att din editor och din typkontroll fångar misstag innan anropet når nätverket.
+- **Resursorienterat** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` och `client.inspection_statuses` exponerar var för sig enkla metoder för `list` / `get` / `create` / `update` / `delete`.
+- **Tydliga fel** — API-fel ger `DignaAPIError` (eller en mer specifik subklass som `DignaAuthenticationError`, `DignaAuthorizationError` eller `DignaNotFoundError`) i stället för att tyst returnera `None`.
 
 ### Installation
 
@@ -12205,26 +12205,26 @@ pip install digna-sdk
 
 ---
 
-## Reference Pages
+## Referenssidor
 
-This release is organized across the following pages:
+Den här releasen är uppdelad på följande sidor:
 
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
+- [Snabbstart](quickstart.md) — anslut och gör dina första anrop.
+- [Resurser](resources.md) — hela listan över tillgängliga resursklienter.
+- [Modeller](models.md) — de pydantic-modeller som används för in- och utdata.
+- [Fel](errors.md) — hierarkin av undantag.
+- [API-referens](reference.md) — automatiskt genererad referensdokumentation.
 
 ---
 
 # Errors
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/errors/
 
-# digna Python SDK Errors 2026.06
+# digna Python SDK-fel 2026.06
 
-This page documents the exception hierarchy exposed by the ***digna*** Python SDK. These errors cover API failures, authentication and authorization problems, and resource-not-found conditions.
+Den här sidan dokumenterar den undantagshierarki som ***digna*** Python SDK exponerar. Felen täcker API-fel, problem med autentisering och auktorisering samt fall där en resurs inte hittas.
 
-All errors raised by the SDK derive from `DignaError`.
+Alla fel som SDK:t kastar ärver från `DignaError`.
 
 ::: digna_sdk.exceptions
 
@@ -12233,9 +12233,9 @@ All errors raised by the SDK derive from `DignaError`.
 # Models
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/models/
 
-# digna Python SDK Models 2026.06
+# digna Python SDK-modeller 2026.06
 
-This page documents the primary request and response models used by the ***digna*** Python SDK. All payloads are represented as [pydantic](https://docs.pydantic.dev/) models imported from `digna_sdk.models`.
+Den här sidan dokumenterar de viktigaste request- och response-modellerna som ***digna*** Python SDK använder. Alla payloads representeras som [pydantic](https://docs.pydantic.dev/)-modeller importerade från `digna_sdk.models`.
 
 ::: digna_sdk.models
     options:
@@ -12264,30 +12264,30 @@ This page documents the primary request and response models used by the ***digna
 # Quickstart
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/quickstart/
 
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK-snabbstart 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Den här sidan visar den minimala konfigurationen och de centrala klientflödena för ***digna*** Python SDK. Använd den som utgångspunkt innan du går vidare till referenssidorna om resurser, modeller och fel.
 
-## Create an API key
+## Skapa en API-nyckel
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Skapa en API-nyckel i ***digna***-gränssnittet innan du ansluter med SDK:t:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Logga in i ***digna*** i gränssnittet.
+2. Öppna din användarprofil längst ned till vänster.
+3. Klicka på **API Keys** i användarprofilen.
+4. Klicka på **Add API Key**.
+5. Ange ett tydligt namn och sätt ett utgångsdatum. Du kan när som helst återkalla eller ta bort en API-nyckel.
+6. Kopiera den visade API-nyckeln till urklipp. Nyckeln visas bara när den skapas.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Använd API-nyckeln som SDK-token. Bra sätt att göra den tillgänglig för din applikation:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- En miljövariabel, till exempel `DIGNA_API_KEY`, för lokal utveckling och automatisering.
+- Ditt CI/CD-hemlighetsarkiv, som GitHub Actions-secrets, GitLab CI/CD-variabler eller hemliga variabler i Azure DevOps.
+- En hemlighetshanterare i körtid, som Kubernetes-secrets, Docker-secrets, HashiCorp Vault eller en molnleverantörs hemlighetsarkiv.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Undvik att hårdkoda API-nycklar i källkod, notebooks, shell-historik eller incheckade konfigurationsfiler.
 
-## Connect
+## Anslut
 
 ```python
 import os
@@ -12300,22 +12300,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Använd `DignaClient` som kontexthanterare så att den underliggande
+anslutningspoolen stängs automatiskt:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Lista projekt
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Skapa en datakälla
 
 ```python
 from digna_sdk.models import (
@@ -12342,7 +12342,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Skicka en inspektionsbegäran och vänta tills den är klar
 
 ```python
 import datetime
@@ -12370,9 +12370,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Se `examples/inspection_flow.py` i repot för hela flödet skicka → polla → hämta.
 
-## Handle errors
+## Hantera fel
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError
@@ -12390,9 +12390,9 @@ except DignaAPIError as exc:
 # API Reference
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/reference/
 
-# digna Python SDK Client Reference 2026.06
+# digna Python SDK-klientreferens 2026.06
 
-This page documents the generated client API for the ***digna*** Python SDK. The `DignaClient` is the primary entry point for the resource operations exposed by the SDK.
+Den här sidan dokumenterar det genererade klient-API:t för ***digna*** Python SDK. `DignaClient` är den primära ingångspunkten för de resursoperationer som SDK:t exponerar.
 
 ::: digna_sdk.client.DignaClient
 
@@ -12401,14 +12401,14 @@ This page documents the generated client API for the ***digna*** Python SDK. The
 # Resources
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/resources/
 
-# digna Python SDK Resources 2026.06
+# digna Python SDK-resurser 2026.06
 
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
+Den här sidan dokumenterar de resursklienter som ***digna*** Python SDK exponerar. Varje resurs kapslar in motsvarande endpoints i det stabila API:t bakom ett enhetligt, pythoniskt gränssnitt med förutsägbara metodnamn.
 
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
+`DignaClient` exponerar ett resursobjekt per API-område. Varje resurs kapslar in
+motsvarande endpoints i det stabila API:t med pythoniska metodnamn.
 
-| Resource | Attribute | Endpoints |
+| Resurs | Attribut | Endpoints |
 |---|---|---|
 | [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
 | [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |

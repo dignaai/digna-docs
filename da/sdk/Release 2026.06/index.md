@@ -1,18 +1,18 @@
-# digna Python SDK Reference 2026.06
+# digna Python SDK-reference 2026.06
 
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
+Dette afsnit dokumenterer Python-SDK'et til ***digna***. Det er bygget op som en reference over flere sider: brug denne oversigt til at forstå klienten, og fortsæt derefter på de særskilte sider om hurtig start, ressourcer, modeller, fejl og den genererede API-dokumentation.
 
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
+SDK'et udgives som pakken `digna-sdk` og stiller en stabil, versioneret klient til rådighed for ***digna***s REST-API.
 
 ---
 
-### Overview
+## SDK-grundbegreber
 
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
+---
+
+### Oversigt
+
+SDK'et bygger på et ressourceorienteret klientdesign. Hvert API-område eksponeres som en selvstændig klient på den øverste `DignaClient` med typede forespørgsels- og svarmodeller og ensartet fejlhåndtering.
 
 ```python
 from digna_sdk import DignaClient
@@ -23,11 +23,11 @@ client = DignaClient(
 )
 ```
 
-### Core Features
+### Kernefunktioner
 
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
+- **Typede modeller** — hver forespørgsel og hvert svar valideres med pydantic, så din editor og din typekontrol fanger fejl, før kaldet rammer netværket.
+- **Ressourceorienteret** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` og `client.inspection_statuses` stiller hver især enkle `list` / `get` / `create` / `update` / `delete`-metoder til rådighed.
+- **Tydelige fejl** — API-fejl kaster `DignaAPIError` (eller en mere specifik underklasse som `DignaAuthenticationError`, `DignaAuthorizationError` eller `DignaNotFoundError`) i stedet for stiltiende at returnere `None`.
 
 ### Installation
 
@@ -37,12 +37,12 @@ pip install digna-sdk
 
 ---
 
-## Reference Pages
+## Referencesider
 
-This release is organized across the following pages:
+Denne udgivelse er fordelt på følgende sider:
 
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
+- [Hurtig start](quickstart.md) — opret forbindelse, og foretag de første kald.
+- [Ressourcer](resources.md) — den fulde liste over tilgængelige ressourceklienter.
+- [Modeller](models.md) — de pydantic-modeller, der bruges til input og output.
+- [Fejl](errors.md) — hierarkiet af undtagelser.
+- [API-reference](reference.md) — automatisk genereret referencedokumentation.

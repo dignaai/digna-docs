@@ -1,11 +1,11 @@
-# digna Python SDK Resources 2026.06
+# Πόροι digna Python SDK 2026.06
 
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
+Αυτή η σελίδα τεκμηριώνει τους clients πόρων που προσφέρει το Python SDK του ***digna***. Κάθε πόρος περιβάλλει τα αντίστοιχα endpoints του σταθερού API με μια συνεπή, pythonic διεπαφή και προβλέψιμα ονόματα μεθόδων.
 
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
+Το `DignaClient` προσφέρει ένα αντικείμενο πόρου ανά περιοχή του API. Κάθε πόρος περιβάλλει
+τα αντίστοιχα endpoints του σταθερού API με pythonic ονόματα μεθόδων.
 
-| Resource | Attribute | Endpoints |
+| Πόρος | Χαρακτηριστικό | Endpoints |
 |---|---|---|
 | [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
 | [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |

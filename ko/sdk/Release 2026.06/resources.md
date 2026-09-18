@@ -1,11 +1,11 @@
-# digna Python SDK Resources 2026.06
+# digna Python SDK 리소스 2026.06
 
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
+이 페이지에서는 ***digna*** Python SDK가 제공하는 리소스 클라이언트를 설명합니다. 각 리소스는 안정 API의 해당 엔드포인트를 일관되고 파이썬다운 인터페이스와 예측 가능한 메서드 이름으로 감쌉니다.
 
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
+`DignaClient`는 API 영역마다 리소스 객체를 하나씩 제공합니다. 각 리소스는
+안정 API의 해당 엔드포인트를 파이썬다운 메서드 이름으로 감쌉니다.
 
-| Resource | Attribute | Endpoints |
+| 리소스 | 속성 | 엔드포인트 |
 |---|---|---|
 | [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
 | [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |

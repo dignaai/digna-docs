@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK Hızlı Başlangıç 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Bu sayfa, ***digna*** Python SDK'sı için en temel kurulumu ve başlıca istemci iş akışlarını gösterir. Kaynak, model ve hata başvuru sayfalarına geçmeden önce başlangıç noktası olarak kullanın.
 
-## Create an API key
+## API Anahtarı Oluşturma
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+SDK ile bağlanmadan önce ***digna*** arayüzünde bir API anahtarı oluşturun:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Arayüzde ***digna*** oturumunuzu açın.
+2. Sol alt köşedeki kullanıcı profilinizi açın.
+3. Kullanıcı profilinde **API Keys** bağlantısına tıklayın.
+4. **Add API Key** düğmesine tıklayın.
+5. Anlamlı bir ad verin ve bir son kullanma tarihi belirleyin. Bir API anahtarını istediğiniz zaman iptal edebilir veya silebilirsiniz.
+6. Görüntülenen API anahtarını panoya kopyalayın. Anahtar yalnızca oluşturulduğu anda gösterilir.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+API anahtarını SDK belirteci olarak kullanın. Uygulamanıza iletmenin iyi yolları şunlardır:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Yerel geliştirme ve otomasyon için bir ortam değişkeni, örneğin `DIGNA_API_KEY`.
+- CI/CD gizli bilgi deponuz; örneğin GitHub Actions gizli bilgileri, GitLab CI/CD değişkenleri veya Azure DevOps gizli değişkenleri.
+- Çalışma zamanı gizli bilgi yöneticisi; örneğin Kubernetes gizli bilgileri, Docker gizli bilgileri, HashiCorp Vault veya bir bulut sağlayıcısının gizli bilgi deposu.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+API anahtarlarını kaynak koda, not defterlerine, kabuk geçmişine veya sürüm denetimine eklenen yapılandırma dosyalarına sabit olarak yazmaktan kaçının.
 
-## Connect
+## Bağlanma
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Alttaki bağlantı havuzunun otomatik olarak kapatılması için `DignaClient` sınıfını
+bağlam yöneticisi olarak kullanın:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projeleri Listeleme
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Veri Kaynağı Oluşturma
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## İnceleme İsteği Gönderme ve Tamamlanmasını Bekleme
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Gönderme → yoklama → alma akışının tamamı için depodaki `examples/inspection_flow.py` dosyasına bakın.
 
-## Handle errors
+## Hataları Ele Alma
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

@@ -1,18 +1,18 @@
-# digna Python SDK Reference 2026.06
+# digna Python SDK rokasgrāmata 2026.06
 
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
+Šajā sadaļā ir dokumentēts ***digna*** Python SDK. Tā ir veidota kā vairāku lappušu rokasgrāmata: izmantojiet šo pārskatu, lai izprastu klientu, un pēc tam turpiniet ar atsevišķām lappusēm par ātro sākumu, resursiem, modeļiem, kļūdām un ģenerēto API dokumentāciju.
 
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
+SDK tiek publicēts kā pakotne `digna-sdk` un piedāvā stabilu, versionētu klientu ***digna*** REST API.
 
 ---
 
-### Overview
+## SDK pamati
 
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
+---
+
+### Pārskats
+
+SDK pamatā ir uz resursiem orientēts klienta dizains. Katra API joma tiek piedāvāta kā atsevišķs klients augstākā līmeņa objektā `DignaClient`, ar tipizētiem pieprasījumu un atbilžu modeļiem un vienotu kļūdu apstrādi.
 
 ```python
 from digna_sdk import DignaClient
@@ -23,13 +23,13 @@ client = DignaClient(
 )
 ```
 
-### Core Features
+### Galvenās iespējas
 
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
+- **Tipizēti modeļi** — katrs pieprasījums un katra atbilde tiek validēta ar pydantic, tāpēc redaktors un tipu pārbaudītājs pamana kļūdas vēl pirms tīkla izsaukuma.
+- **Orientācija uz resursiem** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` un `client.inspection_statuses` katrs piedāvā vienkāršas metodes `list` / `get` / `create` / `update` / `delete`.
+- **Skaidras kļūdas** — API kļūdas izraisa `DignaAPIError` (vai konkrētāku apakšklasi, piemēram, `DignaAuthenticationError`, `DignaAuthorizationError` vai `DignaNotFoundError`), nevis klusējot atgriež `None`.
 
-### Installation
+### Instalēšana
 
 ```bash
 pip install digna-sdk
@@ -37,12 +37,12 @@ pip install digna-sdk
 
 ---
 
-## Reference Pages
+## Rokasgrāmatas lappuses
 
-This release is organized across the following pages:
+Šis laidiens ir sadalīts šādās lappusēs:
 
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
+- [Ātrais sākums](quickstart.md) — izveidot savienojumu un veikt pirmos izsaukumus.
+- [Resursi](resources.md) — pilns pieejamo resursu klientu saraksts.
+- [Modeļi](models.md) — ievadei un izvadei izmantotie pydantic modeļi.
+- [Kļūdas](errors.md) — izņēmumu hierarhija.
+- [API rokasgrāmata](reference.md) — automātiski ģenerēta rokasgrāmatas dokumentācija.

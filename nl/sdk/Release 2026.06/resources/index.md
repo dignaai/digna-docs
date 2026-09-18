@@ -1,11 +1,11 @@
-# digna Python SDK Resources 2026.06
+# digna Python SDK-resources 2026.06
 
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
+Deze pagina documenteert de resourceclients die de ***digna*** Python SDK aanbiedt. Elke resource verpakt de bijbehorende endpoints van de stabiele API in een consistente, pythonische interface met voorspelbare methodenamen.
 
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
+`DignaClient` biedt één resourceobject per API-gebied. Elke resource verpakt
+de bijbehorende endpoints van de stabiele API met pythonische methodenamen.
 
-| Resource | Attribute | Endpoints |
+| Resource | Attribuut | Endpoints |
 |---|---|---|
 | [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
 | [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |

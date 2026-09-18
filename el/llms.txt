@@ -114,12 +114,12 @@
 
 ### Release 2026.06
 
-- [Overview](https://docs.digna.ai/el/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
-- [Quickstart](https://docs.digna.ai/el/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
-- [Resources](https://docs.digna.ai/el/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
-- [Models](https://docs.digna.ai/el/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
-- [Errors](https://docs.digna.ai/el/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
-- [API Reference](https://docs.digna.ai/el/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+- [Overview](https://docs.digna.ai/el/sdk/Release%202026.06/): Πλήρης οδηγός αναφοράς για την έκδοση digna Python SDK 2026.06
+- [Quickstart](https://docs.digna.ai/el/sdk/Release%202026.06/quickstart/): Οδηγός γρήγορης εκκίνησης για την έκδοση digna Python SDK 2026.06
+- [Resources](https://docs.digna.ai/el/sdk/Release%202026.06/resources/): Clients πόρων για την έκδοση digna Python SDK 2026.06
+- [Models](https://docs.digna.ai/el/sdk/Release%202026.06/models/): Μοντέλα δεδομένων για την έκδοση digna Python SDK 2026.06
+- [Errors](https://docs.digna.ai/el/sdk/Release%202026.06/errors/): Ιεραρχία σφαλμάτων για την έκδοση digna Python SDK 2026.06
+- [API Reference](https://docs.digna.ai/el/sdk/Release%202026.06/reference/): Αναφορά του API του client για την έκδοση digna Python SDK 2026.06
 
 ## Changelog
 

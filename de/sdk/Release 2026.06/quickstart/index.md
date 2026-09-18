@@ -1,27 +1,27 @@
 # digna Python SDK Quickstart 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Diese Seite zeigt die minimale Einrichtung und die zentralen Client-Abläufe für das ***digna*** Python SDK. Nutzen Sie sie als Ausgangspunkt, bevor Sie zu den Referenzseiten zu Ressourcen, Modellen und Fehlern weitergehen.
 
-## Create an API key
+## API-Schlüssel erstellen
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Erstellen Sie im ***digna***-Frontend einen API-Schlüssel, bevor Sie sich mit dem SDK verbinden:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Melden Sie sich im Frontend bei ***digna*** an.
+2. Öffnen Sie Ihr Benutzerprofil unten links.
+3. Klicken Sie im Benutzerprofil auf **API Keys**.
+4. Klicken Sie auf **Add API Key**.
+5. Vergeben Sie einen aussagekräftigen Namen und legen Sie ein Ablaufdatum fest. Sie können einen API-Schlüssel jederzeit widerrufen oder löschen.
+6. Kopieren Sie den angezeigten API-Schlüssel in die Zwischenablage. Der Schlüssel wird nur bei der Erstellung angezeigt.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Verwenden Sie den API-Schlüssel als SDK-Token. Bewährte Wege, ihn Ihrer Anwendung bereitzustellen:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Eine Umgebungsvariable, zum Beispiel `DIGNA_API_KEY`, für lokale Entwicklung und Automatisierung.
+- Ihr CI/CD-Secret-Store, etwa GitHub Actions Secrets, GitLab CI/CD-Variablen oder Azure DevOps Secret Variables.
+- Ein Secret-Manager zur Laufzeit, etwa Kubernetes Secrets, Docker Secrets, HashiCorp Vault oder der Secret-Store eines Cloud-Anbieters.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Vermeiden Sie es, API-Schlüssel fest in Quellcode, Notebooks, Shell-Historie oder eingecheckte Konfigurationsdateien zu schreiben.
 
-## Connect
+## Verbinden
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Verwenden Sie `DignaClient` als Context Manager, damit der zugrunde liegende
+Connection Pool automatisch geschlossen wird:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projekte auflisten
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Eine Datenquelle erstellen
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Eine Prüfanfrage absenden und auf ihren Abschluss warten
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Den vollständigen Ablauf submit → poll → retrieve finden Sie in `examples/inspection_flow.py` im Repository.
 
-## Handle errors
+## Fehler behandeln
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

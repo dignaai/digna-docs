@@ -10547,6 +10547,280 @@ Al garantizar transparencia en la evolución del esquema, digna ayuda a las orga
 
 ---
 
+# Overview
+Source: https://docs.digna.ai/es/sdk/Release%202026.06/
+
+# Referencia del SDK de Python de digna 2026.06
+
+Esta sección documenta el SDK de Python para ***digna***. Está organizada como una referencia de varias páginas: use esta introducción para entender el cliente y continúe después con las páginas dedicadas al inicio rápido, los recursos, los modelos, los errores y la documentación de API generada.
+
+El SDK se publica como el paquete `digna-sdk` y expone un cliente estable y versionado para la API REST de ***digna***.
+
+---
+
+## Conceptos básicos del SDK
+
+---
+
+### Descripción general
+
+El SDK sigue un diseño de cliente orientado a recursos. Cada área de la API se expone como un cliente de primer nivel en el `DignaClient` principal, con modelos de solicitud y respuesta tipados y un manejo de errores coherente.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Funciones principales
+
+- **Modelos tipados** — cada solicitud y cada respuesta se valida con pydantic, de modo que su editor y su verificador de tipos detectan los errores antes de llegar a la red.
+- **Orientado a recursos** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` y `client.inspection_statuses` exponen cada uno métodos sencillos `list` / `get` / `create` / `update` / `delete`.
+- **Errores claros** — los errores de la API lanzan `DignaAPIError` (o una subclase más específica como `DignaAuthenticationError`, `DignaAuthorizationError` o `DignaNotFoundError`) en lugar de devolver `None` de forma silenciosa.
+
+### Instalación
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Páginas de referencia
+
+Esta versión está organizada en las siguientes páginas:
+
+- [Inicio rápido](quickstart.md) — conectarse y realizar las primeras llamadas.
+- [Recursos](resources.md) — la lista completa de clientes de recursos disponibles.
+- [Modelos](models.md) — los modelos de pydantic usados para la entrada y la salida.
+- [Errores](errors.md) — la jerarquía de excepciones.
+- [Referencia de la API](reference.md) — documentación de referencia generada automáticamente.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/es/sdk/Release%202026.06/errors/
+
+# Errores del SDK de Python de digna 2026.06
+
+Esta página documenta la jerarquía de excepciones que expone el SDK de Python de ***digna***. Estos errores abarcan fallos de la API, problemas de autenticación y autorización, y situaciones en las que no se encuentra un recurso.
+
+Todos los errores que lanza el SDK derivan de `DignaError`.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/es/sdk/Release%202026.06/models/
+
+# Modelos del SDK de Python de digna 2026.06
+
+Esta página documenta los principales modelos de solicitud y respuesta que usa el SDK de Python de ***digna***. Todas las cargas útiles se representan como modelos de [pydantic](https://docs.pydantic.dev/) importados desde `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/es/sdk/Release%202026.06/quickstart/
+
+# Inicio rápido del SDK de Python de digna 2026.06
+
+Esta página muestra la configuración mínima y los flujos de trabajo principales del cliente del SDK de Python de ***digna***. Úsela como punto de partida antes de pasar a las páginas de referencia de recursos, modelos y errores.
+
+## Crear una clave de API
+
+Cree una clave de API en el frontend de ***digna*** antes de conectarse con el SDK:
+
+1. Inicie sesión en ***digna*** en el frontend.
+2. Abra su perfil de usuario en la esquina inferior izquierda.
+3. En el perfil de usuario, haga clic en **API Keys**.
+4. Haga clic en **Add API Key**.
+5. Indique un nombre descriptivo y establezca una fecha de caducidad. Puede revocar o eliminar una clave de API en cualquier momento.
+6. Copie la clave de API mostrada en el portapapeles. La clave solo se muestra en el momento de crearla.
+
+Use la clave de API como token del SDK. Buenas formas de proporcionarla a su aplicación:
+
+- Una variable de entorno, por ejemplo `DIGNA_API_KEY`, para el desarrollo local y la automatización.
+- El almacén de secretos de su CI/CD, como los secretos de GitHub Actions, las variables de CI/CD de GitLab o las variables secretas de Azure DevOps.
+- Un gestor de secretos en tiempo de ejecución, como los secretos de Kubernetes, los secretos de Docker, HashiCorp Vault o el almacén de secretos de un proveedor de nube.
+
+Evite incluir claves de API directamente en el código fuente, los notebooks, el historial del shell o los archivos de configuración versionados.
+
+## Conectarse
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Use `DignaClient` como gestor de contexto para que el grupo de conexiones
+subyacente se cierre automáticamente:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Listar proyectos
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Crear un origen de datos
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Enviar una solicitud de inspección y esperar a que finalice
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Consulte `examples/inspection_flow.py` en el repositorio para ver el flujo completo de envío → sondeo → recuperación.
+
+## Gestionar errores
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/es/sdk/Release%202026.06/reference/
+
+# Referencia del cliente del SDK de Python de digna 2026.06
+
+Esta página documenta la API de cliente generada del SDK de Python de ***digna***. `DignaClient` es el punto de entrada principal para las operaciones de recursos que expone el SDK.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/es/sdk/Release%202026.06/resources/
+
+# Recursos del SDK de Python de digna 2026.06
+
+Esta página documenta los clientes de recursos que expone el SDK de Python de ***digna***. Cada recurso envuelve los endpoints correspondientes de la API estable con una interfaz coherente y pythónica, con nombres de métodos predecibles.
+
+`DignaClient` expone un objeto de recurso por cada área de la API. Cada recurso envuelve
+los endpoints correspondientes de la API estable con nombres de métodos pythónicos.
+
+| Recurso | Atributo | Endpoints |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
 # AD FS
 Source: https://docs.digna.ai/es/sso/adfs_sso_guide/
 
@@ -13996,277 +14270,3 @@ Structural monitoring works across the data platforms *digna* connects to — Te
 - [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
 
 ---
-
----
-
-# Overview
-Source: https://docs.digna.ai/es/sdk/Release%202026.06/
-
-# digna Python SDK Reference 2026.06
-
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
-
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
-
----
-
-### Overview
-
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
-
-```python
-from digna_sdk import DignaClient
-
-client = DignaClient(
-    base_url="https://your-digna-instance",
-    token="...",
-)
-```
-
-### Core Features
-
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
-
-### Installation
-
-```bash
-pip install digna-sdk
-```
-
----
-
-## Reference Pages
-
-This release is organized across the following pages:
-
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
-
----
-
-# Errors
-Source: https://docs.digna.ai/es/sdk/Release%202026.06/errors/
-
-# digna Python SDK Errors 2026.06
-
-This page documents the exception hierarchy exposed by the ***digna*** Python SDK. These errors cover API failures, authentication and authorization problems, and resource-not-found conditions.
-
-All errors raised by the SDK derive from `DignaError`.
-
-::: digna_sdk.exceptions
-
----
-
-# Models
-Source: https://docs.digna.ai/es/sdk/Release%202026.06/models/
-
-# digna Python SDK Models 2026.06
-
-This page documents the primary request and response models used by the ***digna*** Python SDK. All payloads are represented as [pydantic](https://docs.pydantic.dev/) models imported from `digna_sdk.models`.
-
-::: digna_sdk.models
-    options:
-      members:
-        - NamedRef
-        - DatasetRef
-        - StatisticRef
-        - InspectionMetric
-        - Project
-        - DbConnection
-        - DataSourceModules
-        - DataSourceObject
-        - DataSource
-        - DataSet
-        - AttributeCheckDefinition
-        - Attribute
-        - CheckDefinition
-        - InspectionRequestStatus
-        - SubmittedInspectionRequest
-        - DatasetInspectionStatus
-        - DataSourceInspectionStatus
-        - ProjectInspectionStatus
-
----
-
-# Quickstart
-Source: https://docs.digna.ai/es/sdk/Release%202026.06/quickstart/
-
-# digna Python SDK Quickstart 2026.06
-
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
-
-## Create an API key
-
-Create an API key in the ***digna*** frontend before connecting with the SDK:
-
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
-
-Use the API key as the SDK token. Good ways to provide it to your application include:
-
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
-
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
-
-## Connect
-
-```python
-import os
-
-from digna_sdk import DignaClient
-
-client = DignaClient(
-    base_url="http://localhost:8000",  # your on-premises Digna backend
-    token=os.environ["DIGNA_API_KEY"],
-)
-```
-
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
-
-```python
-with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
-    projects = client.projects.list()
-```
-
-## List projects
-
-```python
-for project in client.projects.list():
-    print(project.id, project.name)
-```
-
-## Create a data source
-
-```python
-from digna_sdk.models import (
-    DataSourceModules,
-    DataSourceObject,
-    StableDataSourceKind,
-    StableDataSourceQueryMode,
-)
-
-data_source = client.data_sources.create(
-    project_id=1,
-    db_connection_id=10,
-    name="orders_table",
-    kind=StableDataSourceKind.TABLE,
-    query_mode=StableDataSourceQueryMode.SINGLE,
-    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
-    modules=DataSourceModules(
-        data_analytics=True,
-        data_anomaly=True,
-        data_validation=True,
-        schema_tracker=False,
-        timeliness=False,
-    ),
-)
-```
-
-## Submit an inspection request and wait for it to finish
-
-```python
-import datetime
-from digna_sdk import DignaInspectionRequestFailed
-from digna_sdk.models import StableInspectionRequestMode
-
-request = client.inspection_requests.submit(
-    project_id=1,
-    data_source_ids=[data_source.id],
-    start_date=datetime.date(2026, 1, 1),
-    end_date=datetime.date(2026, 1, 31),
-    mode=StableInspectionRequestMode.DAILY,
-)
-
-try:
-    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
-except DignaInspectionRequestFailed as exc:
-    print(f"Inspection failed: {exc.status.value}")
-
-# Once finished, retrieve the resulting statuses.
-statuses = client.inspection_statuses.for_data_sources(
-    data_source_id=data_source.id,
-    start_date=datetime.date(2026, 1, 1),
-    end_date=datetime.date(2026, 1, 31),
-)
-```
-
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
-
-## Handle errors
-
-```python
-from digna_sdk import DignaAPIError, DignaNotFoundError
-
-try:
-    client.projects.get(999)
-except DignaNotFoundError:
-    print("no such project")
-except DignaAPIError as exc:
-    print(f"API error {exc.status_code}: {exc.message}")
-```
-
----
-
-# API Reference
-Source: https://docs.digna.ai/es/sdk/Release%202026.06/reference/
-
-# digna Python SDK Client Reference 2026.06
-
-This page documents the generated client API for the ***digna*** Python SDK. The `DignaClient` is the primary entry point for the resource operations exposed by the SDK.
-
-::: digna_sdk.client.DignaClient
-
----
-
-# Resources
-Source: https://docs.digna.ai/es/sdk/Release%202026.06/resources/
-
-# digna Python SDK Resources 2026.06
-
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
-
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
-
-| Resource | Attribute | Endpoints |
-|---|---|---|
-| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
-| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
-| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
-| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
-| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
-| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
-| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
-| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
-
-::: digna_sdk.resources.projects.ProjectsResource
-
-::: digna_sdk.resources.data_sources.DataSourcesResource
-
-::: digna_sdk.resources.data_sets.DataSetsResource
-
-::: digna_sdk.resources.attributes.AttributesResource
-
-::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
-
-::: digna_sdk.resources.db_connections.DbConnectionsResource
-
-::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
-
-::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource

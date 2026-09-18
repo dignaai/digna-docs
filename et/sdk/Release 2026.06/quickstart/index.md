@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK kiirjuhend 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+See leht näitab ***digna*** Python SDK minimaalset seadistust ja kliendi peamisi töövooge. Kasuta seda lähtepunktina, enne kui liigud ressursside, mudelite ja vigade teatmikulehtedele.
 
-## Create an API key
+## API võtme loomine
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Loo ***digna*** kasutajaliideses API võti, enne kui SDK-ga ühenduse lood:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Logi kasutajaliideses ***digna*** sisse.
+2. Ava vasakus alanurgas oma kasutajaprofiil.
+3. Klõpsa kasutajaprofiilis valikul **API Keys**.
+4. Klõpsa nupul **Add API Key**.
+5. Anna sisukas nimi ja määra aegumiskuupäev. API võtme saab igal ajal tühistada või kustutada.
+6. Kopeeri kuvatud API võti lõikelauale. Võtit näidatakse ainult loomise hetkel.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Kasuta API võtit SDK loana. Head viisid selle rakendusele edastamiseks:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Keskkonnamuutuja, näiteks `DIGNA_API_KEY`, kohaliku arenduse ja automatiseerimise jaoks.
+- CI/CD saladuste hoidla, näiteks GitHub Actionsi saladused, GitLabi CI/CD muutujad või Azure DevOpsi salamuutujad.
+- Käitusaegne saladuste haldur, näiteks Kubernetese saladused, Dockeri saladused, HashiCorp Vault või pilveteenuse pakkuja saladuste hoidla.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Väldi API võtmete kirjutamist otse lähtekoodi, märkmikesse, käsuajalukku või versioonihaldusesse lisatud seadistusfailidesse.
 
-## Connect
+## Ühenduse loomine
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Kasuta objekti `DignaClient` kontekstihaldurina, et aluseks olev
+ühenduste kogum suletaks automaatselt:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projektide loendamine
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Andmeallika loomine
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Kontrollipäringu esitamine ja selle lõppemise ootamine
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Täielikku voogu esitamine → pärimine → tulemuste laadimine vaata failist `examples/inspection_flow.py` hoidlas.
 
-## Handle errors
+## Vigade käsitlemine
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

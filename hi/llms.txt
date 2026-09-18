@@ -114,12 +114,12 @@
 
 ### Release 2026.06
 
-- [Overview](https://docs.digna.ai/hi/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
-- [Quickstart](https://docs.digna.ai/hi/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
-- [Resources](https://docs.digna.ai/hi/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
-- [Models](https://docs.digna.ai/hi/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
-- [Errors](https://docs.digna.ai/hi/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
-- [API Reference](https://docs.digna.ai/hi/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+- [Overview](https://docs.digna.ai/hi/sdk/Release%202026.06/): digna Python SDK रिलीज़ 2026.06 के लिए संपूर्ण संदर्भ
+- [Quickstart](https://docs.digna.ai/hi/sdk/Release%202026.06/quickstart/): digna Python SDK रिलीज़ 2026.06 के लिए त्वरित शुरुआत मार्गदर्शिका
+- [Resources](https://docs.digna.ai/hi/sdk/Release%202026.06/resources/): digna Python SDK रिलीज़ 2026.06 के लिए संसाधन क्लाइंट
+- [Models](https://docs.digna.ai/hi/sdk/Release%202026.06/models/): digna Python SDK रिलीज़ 2026.06 के लिए डेटा मॉडल
+- [Errors](https://docs.digna.ai/hi/sdk/Release%202026.06/errors/): digna Python SDK रिलीज़ 2026.06 के लिए त्रुटि पदानुक्रम
+- [API Reference](https://docs.digna.ai/hi/sdk/Release%202026.06/reference/): digna Python SDK रिलीज़ 2026.06 के लिए क्लाइंट API संदर्भ
 
 ## Changelog
 

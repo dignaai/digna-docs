@@ -1,18 +1,18 @@
-# digna Python SDK Reference 2026.06
+# Οδηγός αναφοράς digna Python SDK 2026.06
 
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
+Αυτή η ενότητα τεκμηριώνει το Python SDK για το ***digna***. Είναι οργανωμένη ως αναφορά πολλών σελίδων: χρησιμοποιήστε αυτή την επισκόπηση για να κατανοήσετε τον client και συνεχίστε στη συνέχεια με τις ξεχωριστές σελίδες για τη γρήγορη εκκίνηση, τους πόρους, τα μοντέλα, τα σφάλματα και την αυτόματα παραγόμενη τεκμηρίωση API.
 
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
+Το SDK δημοσιεύεται ως πακέτο `digna-sdk` και προσφέρει έναν σταθερό client με έκδοση για το REST API του ***digna***.
 
 ---
 
-### Overview
+## Βασικά στοιχεία του SDK
 
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
+---
+
+### Επισκόπηση
+
+Το SDK ακολουθεί έναν σχεδιασμό client προσανατολισμένο στους πόρους. Κάθε περιοχή του API διατίθεται ως αυτοτελής client στο ανώτερο αντικείμενο `DignaClient`, με τυποποιημένα μοντέλα αιτήματος και απόκρισης και συνεπή διαχείριση σφαλμάτων.
 
 ```python
 from digna_sdk import DignaClient
@@ -23,13 +23,13 @@ client = DignaClient(
 )
 ```
 
-### Core Features
+### Βασικά χαρακτηριστικά
 
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
+- **Τυποποιημένα μοντέλα** — κάθε αίτημα και κάθε απόκριση επικυρώνεται με το pydantic, ώστε ο επεξεργαστής και ο έλεγχος τύπων να εντοπίζουν τα λάθη πριν από την κλήση στο δίκτυο.
+- **Προσανατολισμός στους πόρους** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` και `client.inspection_statuses` προσφέρουν ο καθένας απλές μεθόδους `list` / `get` / `create` / `update` / `delete`.
+- **Σαφή σφάλματα** — τα σφάλματα του API εγείρουν `DignaAPIError` (ή μια πιο ειδική υποκλάση, όπως `DignaAuthenticationError`, `DignaAuthorizationError` ή `DignaNotFoundError`) αντί να επιστρέφουν σιωπηλά `None`.
 
-### Installation
+### Εγκατάσταση
 
 ```bash
 pip install digna-sdk
@@ -37,12 +37,12 @@ pip install digna-sdk
 
 ---
 
-## Reference Pages
+## Σελίδες αναφοράς
 
-This release is organized across the following pages:
+Αυτή η έκδοση είναι οργανωμένη στις εξής σελίδες:
 
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
+- [Γρήγορη εκκίνηση](quickstart.md) — σύνδεση και πρώτες κλήσεις.
+- [Πόροι](resources.md) — ο πλήρης κατάλογος των διαθέσιμων clients πόρων.
+- [Μοντέλα](models.md) — τα μοντέλα pydantic που χρησιμοποιούνται για είσοδο και έξοδο.
+- [Σφάλματα](errors.md) — η ιεραρχία των εξαιρέσεων.
+- [Αναφορά API](reference.md) — αυτόματα παραγόμενη τεκμηρίωση αναφοράς.

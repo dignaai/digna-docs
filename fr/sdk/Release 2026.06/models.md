@@ -1,6 +1,6 @@
-# digna Python SDK Models 2026.06
+# Modèles du SDK Python digna 2026.06
 
-This page documents the primary request and response models used by the ***digna*** Python SDK. All payloads are represented as [pydantic](https://docs.pydantic.dev/) models imported from `digna_sdk.models`.
+Cette page documente les principaux modèles de requête et de réponse utilisés par le SDK Python ***digna***. Toutes les charges utiles sont représentées par des modèles [pydantic](https://docs.pydantic.dev/) importés depuis `digna_sdk.models`.
 
 ::: digna_sdk.models
     options:

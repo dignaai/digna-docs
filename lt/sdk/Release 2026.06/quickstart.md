@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK greitoji pradžia 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Šiame puslapyje pateikiama minimali ***digna*** Python SDK sąranka ir pagrindiniai kliento darbo eigos scenarijai. Pradėkite nuo jo, prieš pereidami prie išteklių, modelių ir klaidų žinyno puslapių.
 
-## Create an API key
+## API rakto kūrimas
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Prieš jungdamiesi su SDK, ***digna*** sąsajoje sukurkite API raktą:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Prisijunkite prie ***digna*** sąsajoje.
+2. Apatiniame kairiajame kampe atverkite savo naudotojo profilį.
+3. Naudotojo profilyje spustelėkite **API Keys**.
+4. Spustelėkite **Add API Key**.
+5. Nurodykite prasmingą pavadinimą ir nustatykite galiojimo pabaigos datą. API raktą bet kada galite atšaukti arba pašalinti.
+6. Nukopijuokite parodytą API raktą į iškarpinę. Raktas rodomas tik jį sukūrus.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Naudokite API raktą kaip SDK prieigos raktą. Tinkami būdai jį perduoti programai:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Aplinkos kintamasis, pavyzdžiui `DIGNA_API_KEY`, vietiniam kūrimui ir automatizavimui.
+- Jūsų CI/CD paslapčių saugykla, pavyzdžiui, „GitHub Actions“ paslaptys, „GitLab“ CI/CD kintamieji arba „Azure DevOps“ slapti kintamieji.
+- Vykdymo metu veikianti paslapčių tvarkyklė, pavyzdžiui, „Kubernetes“ paslaptys, „Docker“ paslaptys, „HashiCorp Vault“ arba debesijos tiekėjo paslapčių saugykla.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Venkite API raktus įrašyti tiesiai į pirminį kodą, užrašines, komandų eilutės istoriją ar į versijų valdymą įtrauktus konfigūracijos failus.
 
-## Connect
+## Prisijungimas
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Naudokite `DignaClient` kaip konteksto tvarkyklę, kad pagrindinis
+ryšių telkinys būtų užvertas automatiškai:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projektų sąrašas
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Duomenų šaltinio kūrimas
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Tikrinimo užklausos pateikimas ir laukimas, kol ji bus baigta
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Visą eigą pateikimas → apklausa → rezultatų gavimas rasite saugyklos faile `examples/inspection_flow.py`.
 
-## Handle errors
+## Klaidų apdorojimas
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

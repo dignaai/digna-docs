@@ -1,7 +1,7 @@
-# digna Python SDK Errors 2026.06
+# digna Python SDK त्रुटियाँ 2026.06
 
-This page documents the exception hierarchy exposed by the ***digna*** Python SDK. These errors cover API failures, authentication and authorization problems, and resource-not-found conditions.
+यह पृष्ठ ***digna*** Python SDK द्वारा उपलब्ध कराए गए अपवाद पदानुक्रम का दस्तावेज़ीकरण करता है। ये त्रुटियाँ API विफलताओं, प्रमाणीकरण और प्राधिकरण संबंधी समस्याओं तथा संसाधन न मिलने की स्थितियों को शामिल करती हैं।
 
-All errors raised by the SDK derive from `DignaError`.
+SDK द्वारा उठाई गई सभी त्रुटियाँ `DignaError` से व्युत्पन्न होती हैं।
 
 ::: digna_sdk.exceptions

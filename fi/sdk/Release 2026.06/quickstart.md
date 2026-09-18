@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK -pikaopas 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Tällä sivulla esitellään ***digna*** Python SDK:n vähimmäisasetukset ja keskeiset asiakasohjelman työnkulut. Käytä sitä lähtökohtana ennen siirtymistä resurssi-, malli- ja virhesivuille.
 
-## Create an API key
+## Luo API-avain
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Luo API-avain ***digna***-käyttöliittymässä ennen kuin yhdistät SDK:lla:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Kirjaudu ***digna***-käyttöliittymään.
+2. Avaa käyttäjäprofiilisi vasemmasta alakulmasta.
+3. Valitse käyttäjäprofiilissa **API Keys**.
+4. Valitse **Add API Key**.
+5. Anna kuvaava nimi ja aseta vanhenemispäivä. Voit mitätöidä tai poistaa API-avaimen milloin tahansa.
+6. Kopioi näytetty API-avain leikepöydälle. Avain näytetään vain luontihetkellä.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Käytä API-avainta SDK:n tokenina. Hyviä tapoja välittää se sovellukselle ovat:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Ympäristömuuttuja, esimerkiksi `DIGNA_API_KEY`, paikalliseen kehitykseen ja automaatioon.
+- CI/CD-ympäristön salaisuusvarasto, kuten GitHub Actions -salaisuudet, GitLabin CI/CD-muuttujat tai Azure DevOpsin salaiset muuttujat.
+- Ajonaikainen salaisuuksien hallinta, kuten Kubernetes-salaisuudet, Docker-salaisuudet, HashiCorp Vault tai pilvipalvelun salaisuusvarasto.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Vältä API-avainten kovakoodaamista lähdekoodiin, notebookeihin, komentotulkin historiaan tai versionhallintaan tallennettuihin asetustiedostoihin.
 
-## Connect
+## Yhdistäminen
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Käytä `DignaClient`-oliota kontekstinhallintana, jolloin taustalla oleva
+yhteysvaranto suljetaan automaattisesti:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projektien listaaminen
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Tietolähteen luominen
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Tarkastuspyynnön lähettäminen ja sen valmistumisen odottaminen
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Koko kulku lähetys → kysely → nouto on esitetty tiedostossa `examples/inspection_flow.py` repositoriossa.
 
-## Handle errors
+## Virheiden käsittely
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

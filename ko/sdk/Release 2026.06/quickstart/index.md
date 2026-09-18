@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK 빠른 시작 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+이 페이지에서는 ***digna*** Python SDK의 최소 설정과 주요 클라이언트 작업 흐름을 소개합니다. 리소스, 모델, 오류 참조 페이지로 넘어가기 전 출발점으로 활용하세요.
 
-## Create an API key
+## API 키 만들기
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+SDK로 연결하기 전에 ***digna*** 프런트엔드에서 API 키를 만듭니다.
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. 프런트엔드에서 ***digna***에 로그인합니다.
+2. 왼쪽 아래에서 사용자 프로필을 엽니다.
+3. 사용자 프로필에서 **API Keys**를 클릭합니다.
+4. **Add API Key**를 클릭합니다.
+5. 의미 있는 이름을 지정하고 만료 날짜를 설정합니다. API 키는 언제든지 취소하거나 삭제할 수 있습니다.
+6. 표시된 API 키를 클립보드에 복사합니다. 키는 생성할 때만 표시됩니다.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+API 키를 SDK 토큰으로 사용합니다. 애플리케이션에 전달하는 좋은 방법은 다음과 같습니다.
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- 로컬 개발과 자동화에는 환경 변수(예: `DIGNA_API_KEY`)를 사용합니다.
+- GitHub Actions 시크릿, GitLab CI/CD 변수, Azure DevOps 비밀 변수 등 CI/CD 비밀 저장소를 사용합니다.
+- Kubernetes 시크릿, Docker 시크릿, HashiCorp Vault, 클라우드 공급자의 비밀 저장소 등 런타임 비밀 관리자를 사용합니다.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+API 키를 소스 코드, 노트북, 셸 기록, 버전 관리에 커밋되는 구성 파일에 하드코딩하지 마세요.
 
-## Connect
+## 연결
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+`DignaClient`를 컨텍스트 관리자로 사용하면 내부 연결 풀이
+자동으로 닫힙니다.
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## 프로젝트 목록 조회
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## 데이터 소스 만들기
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## 검사 요청 제출 후 완료 대기
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+제출 → 폴링 → 조회로 이어지는 전체 흐름은 저장소의 `examples/inspection_flow.py`를 참고하세요.
 
-## Handle errors
+## 오류 처리
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

@@ -12059,21 +12059,21 @@ Structural monitoring works across the data platforms *digna* connects to — Te
 # Overview
 Source: https://docs.digna.ai/uk/sdk/Release%202026.06/
 
-# digna Python SDK Reference 2026.06
+# Довідник digna Python SDK 2026.06
 
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
+Цей розділ описує Python SDK для ***digna***. Він побудований як довідник із кількох сторінок: скористайтеся цим оглядом, щоб зрозуміти клієнт, а далі переходьте до окремих сторінок про швидкий старт, ресурси, моделі, помилки та згенеровану документацію API.
 
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
+SDK публікується як пакет `digna-sdk` і надає стабільний версіонований клієнт для REST API ***digna***.
 
 ---
 
-### Overview
+## Основи SDK
 
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
+---
+
+### Огляд
+
+SDK побудований за принципом клієнта, орієнтованого на ресурси. Кожна ділянка API доступна як окремий клієнт у верхньорівневому об'єкті `DignaClient` — з типізованими моделями запитів і відповідей та узгодженим обробленням помилок.
 
 ```python
 from digna_sdk import DignaClient
@@ -12084,13 +12084,13 @@ client = DignaClient(
 )
 ```
 
-### Core Features
+### Ключові можливості
 
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
+- **Типізовані моделі** — кожен запит і кожна відповідь перевіряються за допомогою pydantic, тож редактор і засіб перевірки типів виявляють помилки ще до звернення до мережі.
+- **Орієнтація на ресурси** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` та `client.inspection_statuses` надають прості методи `list` / `get` / `create` / `update` / `delete`.
+- **Зрозумілі помилки** — помилки API спричиняють виняток `DignaAPIError` (або точніший підклас, як-от `DignaAuthenticationError`, `DignaAuthorizationError` чи `DignaNotFoundError`) замість того, щоб мовчки повертати `None`.
 
-### Installation
+### Встановлення
 
 ```bash
 pip install digna-sdk
@@ -12098,26 +12098,26 @@ pip install digna-sdk
 
 ---
 
-## Reference Pages
+## Сторінки довідника
 
-This release is organized across the following pages:
+Цей випуск поділено на такі сторінки:
 
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
+- [Швидкий старт](quickstart.md) — підключення та перші виклики.
+- [Ресурси](resources.md) — повний перелік доступних клієнтів ресурсів.
+- [Моделі](models.md) — моделі pydantic, що використовуються для введення та виведення.
+- [Помилки](errors.md) — ієрархія винятків.
+- [Довідник API](reference.md) — автоматично згенерована довідкова документація.
 
 ---
 
 # Errors
 Source: https://docs.digna.ai/uk/sdk/Release%202026.06/errors/
 
-# digna Python SDK Errors 2026.06
+# Помилки digna Python SDK 2026.06
 
-This page documents the exception hierarchy exposed by the ***digna*** Python SDK. These errors cover API failures, authentication and authorization problems, and resource-not-found conditions.
+На цій сторінці описано ієрархію винятків, яку надає Python SDK ***digna***. Ці помилки охоплюють збої API, проблеми автентифікації та авторизації, а також ситуації, коли ресурс не знайдено.
 
-All errors raised by the SDK derive from `DignaError`.
+Усі помилки, які спричиняє SDK, походять від `DignaError`.
 
 ::: digna_sdk.exceptions
 
@@ -12126,9 +12126,9 @@ All errors raised by the SDK derive from `DignaError`.
 # Models
 Source: https://docs.digna.ai/uk/sdk/Release%202026.06/models/
 
-# digna Python SDK Models 2026.06
+# Моделі digna Python SDK 2026.06
 
-This page documents the primary request and response models used by the ***digna*** Python SDK. All payloads are represented as [pydantic](https://docs.pydantic.dev/) models imported from `digna_sdk.models`.
+На цій сторінці описано основні моделі запитів і відповідей, які використовує Python SDK ***digna***. Усі корисні навантаження подано як моделі [pydantic](https://docs.pydantic.dev/), що імпортуються з `digna_sdk.models`.
 
 ::: digna_sdk.models
     options:
@@ -12157,30 +12157,30 @@ This page documents the primary request and response models used by the ***digna
 # Quickstart
 Source: https://docs.digna.ai/uk/sdk/Release%202026.06/quickstart/
 
-# digna Python SDK Quickstart 2026.06
+# Швидкий старт digna Python SDK 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+На цій сторінці показано мінімальне налаштування та основні сценарії роботи з клієнтом Python SDK ***digna***. Почніть із неї, перш ніж переходити до довідкових сторінок про ресурси, моделі та помилки.
 
-## Create an API key
+## Створення ключа API
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Перш ніж підключатися через SDK, створіть ключ API в інтерфейсі ***digna***:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Увійдіть до ***digna*** в інтерфейсі.
+2. Відкрийте свій профіль користувача в лівому нижньому куті.
+3. У профілі користувача натисніть **API Keys**.
+4. Натисніть **Add API Key**.
+5. Вкажіть змістовну назву та встановіть дату завершення дії. Ключ API можна будь-коли відкликати або видалити.
+6. Скопіюйте показаний ключ API до буфера обміну. Ключ відображається лише під час створення.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Використовуйте ключ API як токен SDK. Доречні способи передати його застосунку:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Змінна середовища, наприклад `DIGNA_API_KEY`, для локальної розробки та автоматизації.
+- Сховище секретів вашого CI/CD, наприклад секрети GitHub Actions, змінні CI/CD у GitLab або секретні змінні Azure DevOps.
+- Менеджер секретів під час виконання, наприклад секрети Kubernetes, секрети Docker, HashiCorp Vault або сховище секретів хмарного провайдера.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Не вписуйте ключі API безпосередньо у вихідний код, записники, історію командної оболонки чи файли конфігурації, що потрапляють до системи контролю версій.
 
-## Connect
+## Підключення
 
 ```python
 import os
@@ -12193,22 +12193,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Використовуйте `DignaClient` як контекстний менеджер, щоб базовий
+пул з'єднань закривався автоматично:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Перегляд списку проєктів
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Створення джерела даних
 
 ```python
 from digna_sdk.models import (
@@ -12235,7 +12235,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Надсилання запиту на перевірку й очікування його завершення
 
 ```python
 import datetime
@@ -12263,9 +12263,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Повний перебіг надсилання → опитування → отримання наведено у файлі `examples/inspection_flow.py` у репозиторії.
 
-## Handle errors
+## Обробка помилок
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError
@@ -12283,9 +12283,9 @@ except DignaAPIError as exc:
 # API Reference
 Source: https://docs.digna.ai/uk/sdk/Release%202026.06/reference/
 
-# digna Python SDK Client Reference 2026.06
+# Довідник клієнта digna Python SDK 2026.06
 
-This page documents the generated client API for the ***digna*** Python SDK. The `DignaClient` is the primary entry point for the resource operations exposed by the SDK.
+На цій сторінці описано згенерований клієнтський API Python SDK ***digna***. `DignaClient` — основна точка входу до операцій із ресурсами, які надає SDK.
 
 ::: digna_sdk.client.DignaClient
 
@@ -12294,14 +12294,14 @@ This page documents the generated client API for the ***digna*** Python SDK. The
 # Resources
 Source: https://docs.digna.ai/uk/sdk/Release%202026.06/resources/
 
-# digna Python SDK Resources 2026.06
+# Ресурси digna Python SDK 2026.06
 
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
+На цій сторінці описано клієнти ресурсів, які надає Python SDK ***digna***. Кожен ресурс огортає відповідні кінцеві точки стабільного API узгодженим, питонічним інтерфейсом із передбачуваними назвами методів.
 
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
+`DignaClient` надає один об'єкт ресурсу для кожної ділянки API. Кожен ресурс огортає
+відповідні кінцеві точки стабільного API питонічними назвами методів.
 
-| Resource | Attribute | Endpoints |
+| Ресурс | Атрибут | Кінцеві точки |
 |---|---|---|
 | [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
 | [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |

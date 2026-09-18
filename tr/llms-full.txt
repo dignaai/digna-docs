@@ -12288,21 +12288,21 @@ Structural monitoring works across the data platforms *digna* connects to — Te
 # Overview
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/
 
-# digna Python SDK Reference 2026.06
+# digna Python SDK Başvurusu 2026.06
 
-This section documents the Python SDK for ***digna***. It is organized as a multi-page reference: use this overview to understand the client, then continue with the dedicated pages for quickstart, resources, models, errors, and generated API documentation.
+Bu bölüm ***digna*** için Python SDK'sını belgeler. Birden çok sayfadan oluşan bir başvuru kılavuzu olarak düzenlenmiştir: istemciyi anlamak için bu genel bakışı kullanın, ardından hızlı başlangıç, kaynaklar, modeller, hatalar ve otomatik oluşturulan API belgeleri için ayrı sayfalarla devam edin.
 
-The SDK is published as the `digna-sdk` package and exposes a stable, versioned client for the ***digna*** REST API.
-
----
-
-## SDK Basics
+SDK, `digna-sdk` paketi olarak yayımlanır ve ***digna*** REST API'si için kararlı, sürümlenmiş bir istemci sunar.
 
 ---
 
-### Overview
+## SDK Temelleri
 
-The SDK follows a resource-oriented client design. Each API area is exposed as a first-class client on the top-level `DignaClient`, with typed request and response models and consistent error handling.
+---
+
+### Genel Bakış
+
+SDK, kaynak odaklı bir istemci tasarımını izler. Her API alanı, üst düzey `DignaClient` üzerinde birinci sınıf bir istemci olarak sunulur; istek ve yanıt modelleri türlendirilmiştir ve hata yönetimi tutarlıdır.
 
 ```python
 from digna_sdk import DignaClient
@@ -12313,13 +12313,13 @@ client = DignaClient(
 )
 ```
 
-### Core Features
+### Temel Özellikler
 
-- **Typed models** — every request and response is validated with pydantic, so your editor and type checker catch mistakes before you hit the network.
-- **Resource-oriented** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests`, and `client.inspection_statuses` each expose simple `list` / `get` / `create` / `update` / `delete` methods.
-- **Clear errors** — API errors raise `DignaAPIError` (or a more specific subclass like `DignaAuthenticationError`, `DignaAuthorizationError`, or `DignaNotFoundError`) instead of silently returning `None`.
+- **Türlendirilmiş modeller** — her istek ve yanıt pydantic ile doğrulanır; böylece düzenleyiciniz ve tür denetleyiciniz hataları ağ çağrısından önce yakalar.
+- **Kaynak odaklı** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` ve `client.inspection_statuses` istemcilerinin her biri basit `list` / `get` / `create` / `update` / `delete` yöntemleri sunar.
+- **Açık hatalar** — API hataları sessizce `None` döndürmek yerine `DignaAPIError` (ya da `DignaAuthenticationError`, `DignaAuthorizationError` veya `DignaNotFoundError` gibi daha özel bir alt sınıf) fırlatır.
 
-### Installation
+### Kurulum
 
 ```bash
 pip install digna-sdk
@@ -12327,26 +12327,26 @@ pip install digna-sdk
 
 ---
 
-## Reference Pages
+## Başvuru Sayfaları
 
-This release is organized across the following pages:
+Bu sürüm aşağıdaki sayfalara ayrılmıştır:
 
-- [Quickstart](quickstart.md) — connect and make your first calls.
-- [Resources](resources.md) — the full list of available resource clients.
-- [Models](models.md) — the pydantic models used for input/output.
-- [Errors](errors.md) — the exception hierarchy.
-- [API Reference](reference.md) — auto-generated reference docs.
+- [Hızlı Başlangıç](quickstart.md) — bağlanın ve ilk çağrılarınızı yapın.
+- [Kaynaklar](resources.md) — kullanılabilir kaynak istemcilerinin tam listesi.
+- [Modeller](models.md) — giriş ve çıkış için kullanılan pydantic modelleri.
+- [Hatalar](errors.md) — istisna hiyerarşisi.
+- [API Başvurusu](reference.md) — otomatik oluşturulan başvuru belgeleri.
 
 ---
 
 # Errors
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/errors/
 
-# digna Python SDK Errors 2026.06
+# digna Python SDK Hataları 2026.06
 
-This page documents the exception hierarchy exposed by the ***digna*** Python SDK. These errors cover API failures, authentication and authorization problems, and resource-not-found conditions.
+Bu sayfa, ***digna*** Python SDK'sının sunduğu istisna hiyerarşisini belgeler. Bu hatalar API başarısızlıklarını, kimlik doğrulama ve yetkilendirme sorunlarını ve kaynağın bulunamadığı durumları kapsar.
 
-All errors raised by the SDK derive from `DignaError`.
+SDK tarafından fırlatılan tüm hatalar `DignaError` sınıfından türetilir.
 
 ::: digna_sdk.exceptions
 
@@ -12355,9 +12355,9 @@ All errors raised by the SDK derive from `DignaError`.
 # Models
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/models/
 
-# digna Python SDK Models 2026.06
+# digna Python SDK Modelleri 2026.06
 
-This page documents the primary request and response models used by the ***digna*** Python SDK. All payloads are represented as [pydantic](https://docs.pydantic.dev/) models imported from `digna_sdk.models`.
+Bu sayfa, ***digna*** Python SDK'sının kullandığı başlıca istek ve yanıt modellerini belgeler. Tüm veri yükleri, `digna_sdk.models` modülünden içe aktarılan [pydantic](https://docs.pydantic.dev/) modelleri olarak temsil edilir.
 
 ::: digna_sdk.models
     options:
@@ -12386,30 +12386,30 @@ This page documents the primary request and response models used by the ***digna
 # Quickstart
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/quickstart/
 
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK Hızlı Başlangıç 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Bu sayfa, ***digna*** Python SDK'sı için en temel kurulumu ve başlıca istemci iş akışlarını gösterir. Kaynak, model ve hata başvuru sayfalarına geçmeden önce başlangıç noktası olarak kullanın.
 
-## Create an API key
+## API Anahtarı Oluşturma
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+SDK ile bağlanmadan önce ***digna*** arayüzünde bir API anahtarı oluşturun:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Arayüzde ***digna*** oturumunuzu açın.
+2. Sol alt köşedeki kullanıcı profilinizi açın.
+3. Kullanıcı profilinde **API Keys** bağlantısına tıklayın.
+4. **Add API Key** düğmesine tıklayın.
+5. Anlamlı bir ad verin ve bir son kullanma tarihi belirleyin. Bir API anahtarını istediğiniz zaman iptal edebilir veya silebilirsiniz.
+6. Görüntülenen API anahtarını panoya kopyalayın. Anahtar yalnızca oluşturulduğu anda gösterilir.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+API anahtarını SDK belirteci olarak kullanın. Uygulamanıza iletmenin iyi yolları şunlardır:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Yerel geliştirme ve otomasyon için bir ortam değişkeni, örneğin `DIGNA_API_KEY`.
+- CI/CD gizli bilgi deponuz; örneğin GitHub Actions gizli bilgileri, GitLab CI/CD değişkenleri veya Azure DevOps gizli değişkenleri.
+- Çalışma zamanı gizli bilgi yöneticisi; örneğin Kubernetes gizli bilgileri, Docker gizli bilgileri, HashiCorp Vault veya bir bulut sağlayıcısının gizli bilgi deposu.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+API anahtarlarını kaynak koda, not defterlerine, kabuk geçmişine veya sürüm denetimine eklenen yapılandırma dosyalarına sabit olarak yazmaktan kaçının.
 
-## Connect
+## Bağlanma
 
 ```python
 import os
@@ -12422,22 +12422,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Alttaki bağlantı havuzunun otomatik olarak kapatılması için `DignaClient` sınıfını
+bağlam yöneticisi olarak kullanın:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projeleri Listeleme
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Veri Kaynağı Oluşturma
 
 ```python
 from digna_sdk.models import (
@@ -12464,7 +12464,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## İnceleme İsteği Gönderme ve Tamamlanmasını Bekleme
 
 ```python
 import datetime
@@ -12492,9 +12492,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Gönderme → yoklama → alma akışının tamamı için depodaki `examples/inspection_flow.py` dosyasına bakın.
 
-## Handle errors
+## Hataları Ele Alma
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError
@@ -12512,9 +12512,9 @@ except DignaAPIError as exc:
 # API Reference
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/reference/
 
-# digna Python SDK Client Reference 2026.06
+# digna Python SDK İstemci Başvurusu 2026.06
 
-This page documents the generated client API for the ***digna*** Python SDK. The `DignaClient` is the primary entry point for the resource operations exposed by the SDK.
+Bu sayfa, ***digna*** Python SDK'sının otomatik oluşturulan istemci API'sini belgeler. `DignaClient`, SDK'nın sunduğu kaynak işlemleri için birincil giriş noktasıdır.
 
 ::: digna_sdk.client.DignaClient
 
@@ -12523,14 +12523,14 @@ This page documents the generated client API for the ***digna*** Python SDK. The
 # Resources
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/resources/
 
-# digna Python SDK Resources 2026.06
+# digna Python SDK Kaynakları 2026.06
 
-This page documents the resource clients exposed by the ***digna*** Python SDK. Each resource wraps the corresponding stable API endpoints with a consistent, pythonic interface and predictable method names.
+Bu sayfa, ***digna*** Python SDK'sının sunduğu kaynak istemcilerini belgeler. Her kaynak, kararlı API'nin ilgili uç noktalarını tutarlı ve Python'a uygun bir arabirimle, öngörülebilir yöntem adları kullanarak sarmalar.
 
-`DignaClient` exposes one resource object per API area. Each resource wraps
-the corresponding endpoints of the stable API with pythonic method names.
+`DignaClient`, her API alanı için bir kaynak nesnesi sunar. Her kaynak,
+kararlı API'nin ilgili uç noktalarını Python'a uygun yöntem adlarıyla sarmalar.
 
-| Resource | Attribute | Endpoints |
+| Kaynak | Öznitelik | Uç noktalar |
 |---|---|---|
 | [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
 | [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |

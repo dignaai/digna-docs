@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# Γρήγορη εκκίνηση digna Python SDK 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Αυτή η σελίδα δείχνει την ελάχιστη ρύθμιση και τις βασικές ροές εργασίας του client για το Python SDK του ***digna***. Χρησιμοποιήστε την ως αφετηρία πριν προχωρήσετε στις σελίδες αναφοράς για πόρους, μοντέλα και σφάλματα.
 
-## Create an API key
+## Δημιουργία κλειδιού API
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Δημιουργήστε ένα κλειδί API στο περιβάλλον του ***digna*** πριν συνδεθείτε με το SDK:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Συνδεθείτε στο ***digna*** από το περιβάλλον χρήσης.
+2. Ανοίξτε το προφίλ χρήστη σας στην κάτω αριστερή γωνία.
+3. Στο προφίλ χρήστη, κάντε κλικ στο **API Keys**.
+4. Κάντε κλικ στο **Add API Key**.
+5. Δώστε ένα σαφές όνομα και ορίστε ημερομηνία λήξης. Μπορείτε να ανακαλέσετε ή να διαγράψετε ένα κλειδί API οποτεδήποτε.
+6. Αντιγράψτε το κλειδί API που εμφανίζεται στο πρόχειρο. Το κλειδί εμφανίζεται μόνο κατά τη δημιουργία του.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Χρησιμοποιήστε το κλειδί API ως token του SDK. Καλοί τρόποι για να το δώσετε στην εφαρμογή σας:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Μια μεταβλητή περιβάλλοντος, για παράδειγμα `DIGNA_API_KEY`, για τοπική ανάπτυξη και αυτοματοποίηση.
+- Ο χώρος αποθήκευσης μυστικών του CI/CD σας, όπως τα secrets του GitHub Actions, οι μεταβλητές CI/CD του GitLab ή οι μυστικές μεταβλητές του Azure DevOps.
+- Ένας διαχειριστής μυστικών κατά την εκτέλεση, όπως τα secrets του Kubernetes, τα secrets του Docker, το HashiCorp Vault ή ο χώρος αποθήκευσης μυστικών ενός παρόχου cloud.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Αποφύγετε να γράφετε κλειδιά API απευθείας στον πηγαίο κώδικα, σε notebooks, στο ιστορικό του κελύφους ή σε αρχεία ρυθμίσεων που καταχωρίζονται στο σύστημα ελέγχου εκδόσεων.
 
-## Connect
+## Σύνδεση
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Χρησιμοποιήστε το `DignaClient` ως context manager, ώστε το υποκείμενο
+connection pool να κλείνει αυτόματα:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Προβολή έργων
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Δημιουργία πηγής δεδομένων
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Υποβολή αιτήματος ελέγχου και αναμονή έως την ολοκλήρωσή του
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+Για την πλήρη ροή υποβολή → ερώτημα → ανάκτηση, δείτε το `examples/inspection_flow.py` στο αποθετήριο.
 
-## Handle errors
+## Διαχείριση σφαλμάτων
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

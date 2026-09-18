@@ -1,27 +1,27 @@
-# digna Python SDK Quickstart 2026.06
+# digna Python SDK gyors bevezető 2026.06
 
-This page shows the minimal setup and the core client workflows for the ***digna*** Python SDK. Use it as the starting point before moving on to the resource, model, and error reference pages.
+Ez az oldal a ***digna*** Python SDK minimális beállítását és a kliens legfontosabb munkafolyamatait mutatja be. Kiindulópontként használható, mielőtt az erőforrások, a modellek és a hibák referenciaoldalaira lépne.
 
-## Create an API key
+## API-kulcs létrehozása
 
-Create an API key in the ***digna*** frontend before connecting with the SDK:
+Hozzon létre egy API-kulcsot a ***digna*** felületén, mielőtt az SDK-val csatlakozna:
 
-1. Log in to ***digna*** in the frontend.
-2. Open your user profile in the bottom-left corner.
-3. In the user profile, click **API Keys**.
-4. Click **Add API Key**.
-5. Provide a meaningful name and set an expiration date. You can revoke or delete an API key at any time.
-6. Copy the displayed API key to your clipboard. The key is shown only when it is created.
+1. Jelentkezzen be a ***digna*** felületére.
+2. Nyissa meg a felhasználói profilját a bal alsó sarokban.
+3. A felhasználói profilban kattintson az **API Keys** elemre.
+4. Kattintson az **Add API Key** gombra.
+5. Adjon meg beszédes nevet, és állítson be lejárati dátumot. Az API-kulcs bármikor visszavonható vagy törölhető.
+6. Másolja a megjelenített API-kulcsot a vágólapra. A kulcs csak a létrehozáskor látható.
 
-Use the API key as the SDK token. Good ways to provide it to your application include:
+Használja az API-kulcsot az SDK tokenjeként. Jó megoldások az alkalmazásnak való átadására:
 
-- An environment variable, for example `DIGNA_API_KEY`, for local development and automation.
-- Your CI/CD secret store, such as GitHub Actions secrets, GitLab CI/CD variables, or Azure DevOps secret variables.
-- A runtime secret manager, such as Kubernetes secrets, Docker secrets, HashiCorp Vault, or a cloud provider secret store.
+- Környezeti változó, például `DIGNA_API_KEY`, helyi fejlesztéshez és automatizáláshoz.
+- A CI/CD titkos tárolója, például GitHub Actions-titkok, GitLab CI/CD-változók vagy Azure DevOps titkos változók.
+- Futásidejű titokkezelő, például Kubernetes-titkok, Docker-titkok, HashiCorp Vault vagy egy felhőszolgáltató titkos tárolója.
 
-Avoid hard-coding API keys in source code, notebooks, shell history, or committed configuration files.
+Kerülje az API-kulcsok beégetését a forráskódba, a notebookokba, a parancsértelmező előzményeibe vagy a verziókövetett konfigurációs fájlokba.
 
-## Connect
+## Csatlakozás
 
 ```python
 import os
@@ -34,22 +34,22 @@ client = DignaClient(
 )
 ```
 
-Use `DignaClient` as a context manager to have the underlying connection pool
-closed automatically:
+Használja a `DignaClient` osztályt környezetkezelőként, hogy a mögöttes
+kapcsolatkészlet automatikusan lezáruljon:
 
 ```python
 with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
     projects = client.projects.list()
 ```
 
-## List projects
+## Projektek listázása
 
 ```python
 for project in client.projects.list():
     print(project.id, project.name)
 ```
 
-## Create a data source
+## Adatforrás létrehozása
 
 ```python
 from digna_sdk.models import (
@@ -76,7 +76,7 @@ data_source = client.data_sources.create(
 )
 ```
 
-## Submit an inspection request and wait for it to finish
+## Ellenőrzési kérés beküldése és a befejezés megvárása
 
 ```python
 import datetime
@@ -104,9 +104,9 @@ statuses = client.inspection_statuses.for_data_sources(
 )
 ```
 
-See `examples/inspection_flow.py` in the repository for the full submit → poll → retrieve flow.
+A teljes beküldés → lekérdezés → letöltés folyamatot a tárolóban lévő `examples/inspection_flow.py` fájl mutatja be.
 
-## Handle errors
+## Hibakezelés
 
 ```python
 from digna_sdk import DignaAPIError, DignaNotFoundError

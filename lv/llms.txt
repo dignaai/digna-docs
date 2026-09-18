@@ -114,12 +114,12 @@
 
 ### Release 2026.06
 
-- [Overview](https://docs.digna.ai/lv/sdk/Release%202026.06/): Complete reference for digna Python SDK release 2026.06
-- [Quickstart](https://docs.digna.ai/lv/sdk/Release%202026.06/quickstart/): Quickstart guide for the digna Python SDK release 2026.06
-- [Resources](https://docs.digna.ai/lv/sdk/Release%202026.06/resources/): Resource clients for the digna Python SDK release 2026.06
-- [Models](https://docs.digna.ai/lv/sdk/Release%202026.06/models/): Data models for the digna Python SDK release 2026.06
-- [Errors](https://docs.digna.ai/lv/sdk/Release%202026.06/errors/): Error hierarchy for the digna Python SDK release 2026.06
-- [API Reference](https://docs.digna.ai/lv/sdk/Release%202026.06/reference/): Client API reference for the digna Python SDK release 2026.06
+- [Overview](https://docs.digna.ai/lv/sdk/Release%202026.06/): Pilnīga digna Python SDK 2026.06 laidiena rokasgrāmata
+- [Quickstart](https://docs.digna.ai/lv/sdk/Release%202026.06/quickstart/): Ātrā sākuma rokasgrāmata digna Python SDK 2026.06 laidienam
+- [Resources](https://docs.digna.ai/lv/sdk/Release%202026.06/resources/): Resursu klienti digna Python SDK 2026.06 laidienam
+- [Models](https://docs.digna.ai/lv/sdk/Release%202026.06/models/): Datu modeļi digna Python SDK 2026.06 laidienam
+- [Errors](https://docs.digna.ai/lv/sdk/Release%202026.06/errors/): Kļūdu hierarhija digna Python SDK 2026.06 laidienam
+- [API Reference](https://docs.digna.ai/lv/sdk/Release%202026.06/reference/): Klienta API rokasgrāmata digna Python SDK 2026.06 laidienam
 
 ## Changelog
 
