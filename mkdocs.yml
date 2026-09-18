@@ -147,8 +147,9 @@ nav:
   # releases have no entry here. The API pages (Resources, Models, Errors, API
   # Reference) are generated at build time by mkdocstrings from the installed
   # digna-sdk package (see the mkdocstrings plugin and the digna-sdk dependency
-  # in pyproject.toml). These pages are authored once in English and fall back
-  # for every other locale via the i18n plugin, exactly like auto-generated code.
+  # in pyproject.toml). The narrative prose of all six pages is translated into
+  # every locale under docs/<locale>/sdk/; what mkdocstrings emits from the
+  # `:::` directives stays English, because it is generated from the SDK source.
   - SDK Reference:
       - Release 2026.06:
           - Overview: "sdk/Release 2026.06/index.md"
