@@ -510,8 +510,13 @@ Tada įklijuokite sakinius prie `postgres=#` prompto ir įveskite `\q`, kad iše
 3. Po išarchyvavimo turėtumėte pamatyti šiuos elementus:
    - `dashboard/` — web dashboard sąsaja
    - `digna` — pagrindinis vykdomasis failas (backend + CLI kartu)
-   - `config.toml` — konfigūracijos failas
-   - `license.toml` — licencijos failas (įdėkite savo kopiją čia)
+
+!!! info "Konfigūracijos ir licencijos failų pakete nėra"
+
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` diegimo pakete nepateikiami — abu
+    failus sukuriate patys, skyriuose [Backend konfigūracija](#backend-configuration) ir
+    [Dashboard konfigūracija](#dashboard-configuration). `license.toml` taip pat nepateikiamas;
+    digna jį pateikia atskirai, kaip aprašyta 3 žingsnyje.
 
 Išarchyvavimui iš shell:
 
@@ -831,9 +836,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1 žingsnis: patalpinkite dashboard tinklapio serveryje
 
-digna dashboard turi atskirą `config.toml` failą, esantį `dashboard/` kataloge. Ši konfigūracija jau pateikta ir pradiniam nustatymui ją keisti nereikia. Ją reikės keisti tik tuo atveju, jei norite pritaikyti backend ryšį arba atlikti sudėtingesnes diegimo konfigūracijas.
+digna dashboard savo konfigūraciją skaito iš `dashboard/dashboard_config.toml`. Šis failas diegimo pakete nepateikiamas — jį sukuriate `dashboard/` kataloge šalia dashboard failų.
 
-Jei reikia modifikuoti dashboard konfigūraciją (pvz., daugiaserveriniams diegimams), žiūrėkite dashboard dokumentaciją.
+Jo turinys aprašytas skyriuje [Vienkartinis prisijungimas (SSO)](../../../sso/overview.md), kur šis failas ir reikalingas: jame nurodomos dashboard siūlomos prisijungimo parinktys, o daugiainstanciniams diegimams — ir ryšys su backend.
 
 Pasirinkite tinklapio serverį ir vykdykite atitinkamus diegimo veiksmus.
 
@@ -1168,7 +1173,10 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Svarbu"
 
-    `config.toml` failas **niekada** nėra įtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka nepažeista.
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` niekada nėra įtraukti į
+    diegimo ZIP — digna komanda niekada nepateikia nė vieno iš šių failų. Todėl atnaujinimas jūsų
+    esamos konfigūracijos nepaliečia, o kopijos pervadintuose `*_old` aplankuose yra
+    vienintelės, kurias turite.
 
 #### 4 žingsnis: atstatykite konfigūracijos failus
 
@@ -1220,7 +1228,13 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
 
-#### 5 žingsnis: Patikrinkite konfigūraciją
+#### 5 žingsnis: perkraukite tinklapio serverį
+
+Dashboard yra statinių failų rinkinys, todėl jūsų tinklapio serveris — ir naršyklė — gali vis dar
+pateikti ankstesnę versiją. Perkraukite arba iš naujo paleiskite tinklapio serverį, kuriame talpinamas `dashboard`
+aplankas, tada iš naujo įkelkite puslapį priverstiniu atnaujinimu (++ctrl+f5++).
+
+#### 6 žingsnis: Patikrinkite konfigūraciją
 
 Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:
 
@@ -1230,7 +1244,26 @@ Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsa
 
 Kiekvienas skyrius turi pranešti OK. Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą.
 
-#### 6 žingsnis: atnaujinkite saugyklos schemą
+#### 7 žingsnis: pakeiskite licencijos failą
+
+Kiekvienai laidai licencija išduodama atskirai. Nukopijuokite `license.toml`, kurį digna komanda pateikė
+šiai laidai, į diegimo katalogą, pakeisdami senąjį:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Nepalikite ankstesnės licencijos"
+
+    Ankstesnei laidai išduotas `license.toml` šios laidos neapima, o kiekviena komanda,
+    tikrinanti licenciją — `user`, `inspection`, `repo` — nepavykus patikrinimui nutraukiama dar prieš paliečiant
+    saugyklą. Prieš tęsdami ją patikrinkite:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### 8 žingsnis: atnaujinkite saugyklos schemą
 
 Eikite į digna diegimo katalogą ir vykdykite:
 
@@ -1241,7 +1274,7 @@ cd /opt/digna
 
 Tai atnaujins PostgreSQL schemą į naujausią versiją, išsaugant visus esamus duomenis.
 
-#### 7 žingsnis: paleiskite paslaugas iš naujo
+#### 9 žingsnis: paleiskite paslaugas iš naujo
 
 Jei naudojate systemd paslaugą:
 
@@ -1272,7 +1305,7 @@ RHEL šeimoje, jei pakeitėte `dashboard` katalogą, iš naujo pritaikykite SELi
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### 8 žingsnis: patikrinkite atnaujinimą
+#### 10 žingsnis: patikrinkite atnaujinimą
 
 1. Prisijunkite prie digna dashboard
 2. Patikrinkite, ar sąsaja užsikrauna teisingai
