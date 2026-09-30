@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Dopo l'estrazione, dovresti vedere i seguenti elementi:
    - `dashboard/` — Interfaccia web della dashboard
    - `digna` — Eseguibile principale (backend + CLI combinati)
-   - `config.toml` — File di configurazione
-   - `license.toml` — File di licenza (copia il tuo qui)
+
+!!! info "I file di configurazione e di licenza non sono inclusi nel pacchetto"
+
+    Né `config.toml` né `dashboard/dashboard_config.toml` sono inclusi nell'installazione: li
+    create entrambi voi, in [Configurazione del backend](#backend-configuration) e
+    [Configurazione della dashboard](#dashboard-configuration). Nemmeno `license.toml` è incluso;
+    digna lo fornisce separatamente, come descritto nel Passo 3.
 
 ### Passo 3: Installa il file di licenza
 
@@ -525,9 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Passo 1: Distribuisci la dashboard sul web server
 
-La dashboard di digna ha un proprio file `config.toml` separato situato nella directory `dashboard/`. Questa configurazione è già fornita e non richiede modifiche durante l'installazione iniziale. Devi modificarla solo se devi personalizzare la connessione al backend.
+La dashboard digna legge la propria configurazione da `dashboard/dashboard_config.toml`. Questo file non è incluso nell'installazione: lo create nella directory `dashboard/`, insieme ai file della dashboard.
 
-Se è necessario modificare la configurazione della dashboard (ad esempio per deployment multi-instance), fai riferimento alla documentazione della dashboard.
+Il suo contenuto è descritto in [Single Sign-On](../../../sso/overview.md), che è anche il punto in cui il file diventa necessario: contiene le opzioni di accesso offerte dalla dashboard e, per i deployment multi-istanza, la connessione al backend.
 
 Scegli il tuo web server e segui i relativi passaggi di deployment.
 
@@ -582,19 +587,24 @@ Eseguire il backend digna come servizio di Windows garantisce che:
 - Si riavvii automaticamente in caso di crash
 - Possa essere gestito tramite i Servizi di Windows
 
-### File di gestione del servizio
+### I comandi `windows`
 
-Tutti i file necessari si trovano nella directory di installazione di digna sotto: `bin/`
+Il servizio viene gestito dall'eseguibile `digna` stesso, tramite i sottocomandi `digna windows`.
+Non ci sono file batch da eseguire.
 
-I seguenti file batch sono disponibili:
-- `install_service.bat` — Registra digna come servizio di Windows
-- `uninstall_service.bat` — Deregistra il servizio
-- `start_service.bat` — Avvia il servizio registrato
-- `stop_service.bat` — Ferma il servizio registrato
+| Comando | Scopo |
+|---|---|
+| `digna windows install` | Registra digna come servizio di Windows |
+| `digna windows start` | Avvia il servizio registrato |
+| `digna windows stop` | Ferma il servizio in esecuzione |
+| `digna windows uninstall` | Deregistra il servizio |
 
 !!! warning "Amministratore richiesto"
 
-    Tutti i file batch devono essere eseguiti con privilegi di Amministratore.
+    Tutti e quattro i comandi devono essere eseguiti da un Prompt dei comandi aperto come Amministratore.
+
+Ogni comando accetta `--name` per indicare un servizio registrato con un nome diverso da quello
+predefinito. L'elenco completo delle opzioni si trova nel [riferimento della CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Installazione del servizio
 
@@ -602,37 +612,66 @@ I seguenti file batch sono disponibili:
    - Fai clic destro su Prompt dei comandi
    - Seleziona "Esegui come amministratore"
 
-2. **Vai nella cartella bin**
+2. **Vai nella directory di installazione di digna**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Esegui lo script di installazione**
+3. **Registra il servizio**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Il server digna è ora registrato come servizio di Windows con avvio **automatico** abilitato. Il servizio non si avvia immediatamente — vedi la sezione successiva per avviarlo.
+!!! important "Specificate indirizzo e porta, a meno che i valori predefiniti non vadano bene"
+
+    `install` registra l'indirizzo e la porta nella registrazione del servizio, e il servizio si
+    mette in ascolto esattamente su quanto registrato. I valori predefiniti sono `127.0.0.1` e
+    `8000`, che accettano connessioni solo dalla macchina stessa. Una dashboard su un altro host
+    non può raggiungerli, quindi indicate l'indirizzo su cui il backend deve restare in ascolto:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Questi valori non vengono letti da `config.toml`. Per modificarli in seguito, disinstallate il
+    servizio e installatelo di nuovo con i nuovi valori.
+
+Il servizio viene registrato con avvio **automatico**, quindi si avvierà insieme a Windows. Non si
+avvia immediatamente — vedi la sezione successiva.
+
+#### Opzioni di installazione
+
+| Opzione | Predefinito | Scopo |
+|---|---|---|
+| `--name` | `digna` | Nome con cui registrare il servizio |
+| `--display-name` | `digna` | Nome mostrato in services.msc |
+| `--description` | `digna data quality backend` | Descrizione mostrata in services.msc |
+| `--address` | `127.0.0.1` | Indirizzo su cui il servizio espone la sua API |
+| `--port` | `8000` | Porta su cui il servizio espone la sua API |
+| `--working-dir` | la directory dell'eseguibile `digna` | Directory che contiene `config.toml` e `license.toml`, che il servizio usa come directory di lavoro |
+| `--start-type` | `auto` | `auto` si avvia con Windows, `manual` si avvia solo su richiesta, `disabled` registra il servizio ma ne impedisce l'avvio |
+| `--account` | `LocalSystem` | Account con cui eseguire il servizio, ad es. `DOMAIN\user` o `.\user` |
+| `--password` | | Password di `--account` |
+
+!!! tip "Esecuzione con un account di dominio"
+
+    `LocalSystem` non ha un'identità di rete, quindi l'autenticazione di Windows verso SQL Server e
+    qualsiasi accesso a una condivisione di rete non riusciranno. Installate con `--account` e
+    `--password` quando il servizio deve accedere a risorse come utente specifico.
 
 ### Avviare e fermare il servizio
 
 #### Per avviare il servizio
 
-1. Apri il Prompt dei comandi come Amministratore
-2. Vai in `digna\bin`
-3. Esegui:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Per fermare il servizio
 
-1. Apri il Prompt dei comandi come Amministratore
-2. Vai in `digna\bin`
-3. Esegui:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Suggerimento"
 
@@ -642,37 +681,41 @@ Il server digna è ora registrato come servizio di Windows con avvio **automatic
 
 Se è necessario spostare l'installazione di digna:
 
-1. **Disinstalla il servizio corrente**
+1. **Ferma e deregistra il servizio corrente**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Sposta i file dell'applicazione**
    - Sposta l'intera cartella di installazione digna nella nuova posizione
 
-3. **Reinstalla il servizio**
+3. **Registra di nuovo il servizio dalla nuova posizione**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Ripeti gli eventuali valori di `--address`, `--port` o `--account` usati la prima volta: la
+   registrazione precedente non esiste più.
 
 4. **Avvia il servizio**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Disinstallare il servizio
 
 1. **Ferma il servizio in esecuzione**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Disinstalla il servizio**
+2. **Deregistra il servizio**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Il server digna è ora deregistrato come servizio di Windows.
@@ -711,14 +754,33 @@ Un backup garantisce il recupero in caso di problemi imprevisti durante l'aggior
 
 ### Procedura di aggiornamento
 
-#### Passo 1: Ferma il servizio digna
+#### Passo 1: Ferma e deregistra il vecchio servizio
 
-Se digna è in esecuzione come servizio di Windows, fermalo prima:
+Se digna è in esecuzione come servizio di Windows, fermalo con i **file batch dell'installazione
+attuale**: i comandi `digna windows` appartengono alla nuova release e non sono ancora disponibili:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Poi deregistra il servizio, sempre con il vecchio file batch. La registrazione punta al vecchio
+eseguibile e ai suoi script, entrambi sostituiti da questo aggiornamento, quindi non può essere
+riutilizzata:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Deregistrate il servizio prima di rinominare qualsiasi cosa"
+
+    `uninstall_service.bat` si trova nella cartella `bin` che state per rinominare, ed è l'unico
+    strumento in grado di rimuovere la registrazione che ha creato. Eseguitelo mentre la vecchia
+    installazione è ancora al suo posto. Se la cartella è già stata rinominata, ripristinatene il
+    nome, deregistrate il servizio e poi proseguite.
+
+    Annotate l'account con cui veniva eseguito il servizio, e l'indirizzo e la porta su cui
+    rispondeva: vi serviranno nel Passo 7.
 
 #### Passo 2: Eseguire il backup dell'installazione attuale
 
@@ -739,7 +801,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend e dignacli non sono più utilizzati"
 
-    A partire dalla Release 2026.06, `dignabackend` e `dignacli` sono sostituiti dall'unico eseguibile `digna`, che unisce backend e CLI. Conservate `dignabackend_old` e `dignacli_old` solo finché non avete verificato l'aggiornamento: dopo potete eliminare entrambe le cartelle. Conservate `dashboard_old` finché non avete ripristinato da esso i vostri file di configurazione (vedi passo 4).
+    A partire dalla Release 2026.06, `dignabackend` e `dignacli` sono sostituiti dall'unico eseguibile `digna`, che unisce backend e CLI. Conservate `dignabackend_old` e `dignacli_old` solo finché non avete verificato l'aggiornamento: dopo potete eliminare entrambe le cartelle. Conservate `dashboard_old` finché non avete ripristinato da esso i vostri file di configurazione (vedi passo 4). Anche la cartella `bin` va eliminata: i suoi file batch gestivano il vecchio servizio e la 2026.06 non li include più, quindi, una volta deregistrato il servizio nel Passo 1, possono solo trarre in inganno.
 
 #### Passo 3: Estrai e distribuisci la nuova versione
 
@@ -748,7 +810,10 @@ ren dashboard dashboard_old
 
 !!! warning "Importante"
 
-    Il file `config.toml` **non** è mai incluso nel file ZIP di installazione. La tua configurazione esistente rimane al sicuro.
+    Né `config.toml` né `dashboard/dashboard_config.toml` sono mai inclusi nello ZIP di
+    installazione: il team digna non fornisce mai nessuno dei due file. La vostra configurazione
+    esistente non viene quindi toccata dall'aggiornamento, e le copie nelle cartelle rinominate
+    `*_old` sono le uniche che avete.
 
 #### Passo 4: Ripristina i tuoi file di configurazione
 
@@ -799,7 +864,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Ripeti la sezione per ogni provider e mantieni ogni chiave uguale al `key` definito in `dashboard_config.toml`. `digna config check` segnala `oidc_clients` come FAILED finché resta la vecchia forma. Sono interessate solo le installazioni che usano il single sign-on.
 
-#### Passo 5: Verificare la configurazione
+#### Passo 5: Ricaricare il web server
+
+La dashboard è un insieme di file statici, quindi il web server (e il browser) potrebbe ancora
+servire la versione precedente. Ricaricate o riavviate il web server che ospita la cartella
+`dashboard`, quindi ricaricate la pagina con un aggiornamento forzato (++ctrl+f5++).
+
+#### Passo 6: Verificare la configurazione
 
 Verificate che il `config.toml` aggiornato sia completo prima di toccare il repository:
 
@@ -809,7 +880,26 @@ digna config check
 
 Ogni sezione deve riportare OK. Correggete tutto ciò che viene segnalato come FAILED e rieseguite il comando prima di proseguire.
 
-#### Passo 6: Aggiorna lo schema del repository
+#### Passo 7: Sostituire il file di licenza
+
+Ogni release ha una licenza separata. Copiate il `license.toml` che il team digna vi ha fornito
+per questa release nella directory di installazione, sostituendo quello vecchio:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Non mantenete la licenza precedente"
+
+    Un `license.toml` emesso per una release precedente non copre questa, e ogni comando che
+    verifica la licenza (`user`, `inspection`, `repo`) si interrompe prima di toccare il
+    repository quando la verifica non riesce. Verificatela prima di procedere:
+
+    ```bash
+    digna license check
+    ```
+
+#### Passo 8: Aggiorna lo schema del repository
 
 Vai nella directory di installazione di digna ed esegui:
 
@@ -819,14 +909,23 @@ digna repo upgrade
 
 Questo aggiorna lo schema PostgreSQL all'ultima versione preservando tutti i dati esistenti.
 
-#### Passo 7: Riavvia i servizi
+#### Passo 9: Registrare e avviare il servizio
 
-Se è in esecuzione come servizio di Windows:
+La vecchia registrazione è stata rimossa nel Passo 1, quindi il servizio va registrato di nuovo,
+questa volta con l'eseguibile `digna`, che non ha file batch:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Indicate per `--address` e `--port` i valori su cui rispondeva il vecchio servizio, a meno che non
+vogliate i nuovi valori predefiniti `127.0.0.1` e `8000`; vengono salvati nella registrazione e non
+sono più letti da `config.toml`. Aggiungete `--account` e `--password` se il vecchio servizio
+veniva eseguito con un account di dominio. Vedi
+[Eseguire digna come servizio Windows](#running-digna-as-a-windows-service) per l'elenco completo
+delle opzioni.
 
 Se in esecuzione manualmente, riavvia il server:
 
@@ -837,7 +936,7 @@ digna serve --address <address> --port <port>
 
 Se usi IIS o Tomcat, riavvia il relativo web server.
 
-#### Passo 8: Verifica l'aggiornamento
+#### Passo 10: Verifica l'aggiornamento
 
 1. Accedi alla dashboard di digna
 2. Verifica che l'interfaccia si carichi correttamente
