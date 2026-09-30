@@ -59,6 +59,7 @@ Järgmine tabel näitab, mida iga käsukategooria enne mis tahes tegevust laadib
 | `license check` | ei | see *ongi* kontroll |
 | `crypt` | jah | ei |
 | `serve` | jah | ei |
+| `windows` | ei (teenus loeb selle käivitumisel) | ei |
 | `project` | jah | ei |
 | `user` | jah | jah |
 | `inspection` | jah | jah |
@@ -223,6 +224,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Käsk `repo prune` eemaldab read, mis on üle elanud projekti või andmeallika, millele need kuulusid.
+Projekti või andmeallika kustutamine eemaldab objekti enda, kuid jätab alles selle profiilid, prognoosid,
+olekud ja ridade arvud — see on teadlik kompromiss, sest kustutamine, mis puhastaks ka need tabelid,
+paneks kasutaja ootama. `repo prune` on korrastuskäik, mis need eemaldab, ning seda on ohutu
+käivitada igal ajal: see eemaldab alati ainult read, mille projekti või andmeallikat enam ei ole.
+
+Ridu, mille Pythoni taustsüsteem on kirjutanud tabelitesse, mida praegune väljalase enam ei kasuta, ei puudutata.
+
+#### Käsu kasutamine
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Valikud
+- `--dry-run`: Teatab, mis eemaldataks, ilma midagi eemaldamata.
+
+Loetletakse ainult tabelid, milles on orvuks jäänud ridu. Kui neid pole, teatab käsk
+`No orphaned rows found.` ja lõpetab töö.
+
+#### Näide
+```bash
+digna repo prune
+```
+
+#### Näidisväljund
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Sama aruande nägemiseks ilma midagi eemaldamata:
+```bash
+digna repo prune --dry-run
+```
+
+Ridade arvud on identsed; erineb ainult viimane rida:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +590,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Käsk `project cleanup` eemaldab kontrollitulemused, mis projektil on kuupäevavahemiku jooksul kogunenud
+— profiilid, prognoosid, ridade arvud ning iga kontrolli, atribuudi, andmekogumi ja andmeallika
+oleku. See eemaldab täpselt selle, mille nende kuupäevade kontroll kirjutas, nii et vahemikku saab
+seejärel uuesti kontrollida ja tulemused taastada.
+
+Timeliness'i ja Schema Trackeri ajalugu **ei** eemaldata: need salvestavad, mida digna konkreetsel
+päeval täheldas, mitte sellest tuletatud tulemust, seega jätab varasema kuupäevavahemiku puhastamine
+need puutumata.
+
+Iga andmeallikas puhastatakse eraldi tehingus, nii et katkestatud käivitus jätab alles terved
+andmeallikad, mitte poolenisti puhastatud andmeallika.
+
+#### Käsu kasutamine
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumendid
+- **PROJECT_NAME**: Puhastatav projekt (kohustuslik). Üks projekt käivituse kohta.
+- **FROM_DATE**: Esimene kuupäev, mille tulemused eemaldatakse, vormingus `YYYY-MM-DD` (kohustuslik).
+- **TO_DATE**: Viimane kuupäev (kaasa arvatud), mille tulemused eemaldatakse, vormingus `YYYY-MM-DD` (kohustuslik).
+
+#### Valikud
+- `--table-name`, `-n`: Piirab puhastamise nende andmeallikatega. Mitu nime saab anda
+  tühikutega eraldatult.
+- `--table-filter`: Piirab puhastamise andmeallikatega, mille nimi sisaldab seda alamstringi.
+- `--dry-run`: Loetleb andmeallikad, mis puhastataks, ilma midagi eemaldamata.
+- `--timing`: Kuvab, kui kaua puhastamine aega võttis.
+
+`--table-name` ja `--table-filter` kombineeritakse loogilise VÕI-ga — andmeallikas puhastatakse, kui see
+on nimetatud või kui alamstring sobib. Kui ükski andmeallikas ei sobi, käsk ebaõnnestub, selle asemel et
+teatada õnnestumisest puhastamise kohta, mis ei teinud midagi.
+
+#### Näide
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Piiratuna ühe andmeallikaga:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Näidisväljund
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Et näha, millised andmeallikad puhastataks, ilma midagi eemaldamata:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Iga rida on märgistatud, nii et proovikäivitust ei saa pärisega segi ajada:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Kontrollide haldus
 
 ---
@@ -707,3 +835,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windowsi teenuse haldus
+
+Saadaval ainult Windowsis. Need käsud registreerivad ***digna*** taustsüsteemi Windowsi
+teenusehalduris ja juhivad seda; teenus ise käivitab taustal käsu `serve`. Iga käsk
+tuleb käivitada administraatoriõigustega käsuviibas ning igaüks aktsepteerib valikut `--name`, et saaks
+pöörduda ka teenuse poole, mis on registreeritud vaikimisi nimest erineva nime all.
+
+---
+
+### windows install
+
+Käsk `windows install` registreerib ***digna*** Windowsi teenusena.
+
+Siin antud aadress ja port salvestatakse teenuse registreeringusse ning teenus seotakse just
+nendega — neid ei loeta failist `config.toml`. Nende hilisemaks muutmiseks eemaldage teenus
+ja paigaldage see uuesti.
+
+#### Käsu kasutamine
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Valikud
+- `--name`: Nimi, mille all teenus registreeritakse (vaikimisi: `digna`).
+- `--display-name`: Nimi, mida kuvatakse services.msc-s (vaikimisi: `digna`).
+- `--description`: Kirjeldus, mida kuvatakse services.msc-s (vaikimisi: `digna data quality backend`).
+- `--address`: Aadress, millega teenus oma API seob (vaikimisi: `127.0.0.1`).
+- `--port`: Port, millega teenus oma API seob (vaikimisi: `8000`).
+- `--working-dir`: Kataloog, milles asuvad `config.toml` ja `license.toml` ning mille teenus
+  teeb oma töökataloogiks (vaikimisi: käivitatava faili `digna` kataloog).
+- `--start-type`: Millal teenus käivitub — `auto` koos Windowsiga, `manual` ainult nõudmisel,
+  `disabled` registreeritud, kuid keeldub käivitumast (vaikimisi: `auto`).
+- `--account`: Konto, mille all teenus töötab, nt `DOMAIN\user` või `.\user` (vaikimisi: `LocalSystem`).
+- `--password`: Konto `--account` parool.
+
+#### Näide
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registreerimine teise nime all, töötades domeenikonto all:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Käsk `windows start` käivitab registreeritud teenuse.
+
+#### Käsu kasutamine
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Valikud
+- `--name`: Nimi, mille all teenus on registreeritud (vaikimisi: `digna`).
+
+---
+
+### windows stop
+
+Käsk `windows stop` peatab töötava teenuse. Peatage teenus enne mis tahes rakendusefaili
+asendamist.
+
+#### Käsu kasutamine
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Valikud
+- `--name`: Nimi, mille all teenus on registreeritud (vaikimisi: `digna`).
+
+---
+
+### windows uninstall
+
+Käsk `windows uninstall` tühistab teenuse registreeringu. Peatage see kõigepealt.
+
+#### Käsu kasutamine
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Valikud
+- `--name`: Nimi, mille all teenus on registreeritud (vaikimisi: `digna`).

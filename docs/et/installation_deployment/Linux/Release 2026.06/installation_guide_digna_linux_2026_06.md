@@ -511,8 +511,13 @@ Seejärel kleepige laused `postgres=#` prompti ja väljumiseks tippige `\q`.
 3. Pärast lahtipakkimist peaksite nägema järgmisi elemente:
    - `dashboard/` — Veebidashboardi liides
    - `digna` — Põhikäivitatav fail (backend + CLI koos)
-   - `config.toml` — Konfiguratsioonifail
-   - `license.toml` — Litsentsifail (kopeerige siia oma fail)
+
+!!! info "Konfiguratsiooni- ja litsentsifailid ei ole paketis"
+
+    Paigaldusega ei kaasne ei `config.toml` ega `dashboard/dashboard_config.toml` — mõlemad
+    loote ise, jaotistes [Backendi konfiguratsioon](#backend-configuration) ja
+    [Dashboardii konfiguratsioon](#dashboard-configuration). Ka `license.toml` ei ole kaasas;
+    digna tarnib selle eraldi, nagu kirjeldab samm 3.
 
 Lahtipakkimiseks shellis:
 
@@ -832,9 +837,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Samm 1: Dashboardi juurutamine veebiserverisse
 
-digna dashboardil on eraldi `config.toml` fail asukohaga `dashboard/` kataloogis. See konfiguratsioon on juba kaasas ega vaja algseadistuse ajal muutmist. Muutke seda vaid juhul, kui peate kohandama backendiga ühenduse seadeid.
+digna dashboard loeb oma konfiguratsiooni failist `dashboard/dashboard_config.toml`. See fail ei ole paigaldusega kaasas — loote selle kataloogi `dashboard/` dashboardi failide kõrvale.
 
-Kui peate dashboardi konfiguratsiooni muutma (nt multi-instance juurutuse puhul), vaadake dashboardi dokumentatsiooni.
+Selle sisu on kirjeldatud jaotises [Ühekordne sisselogimine (SSO)](../../../sso/overview.md), kus faili ka vaja läheb: see sisaldab dashboardi pakutavaid sisselogimisvalikuid ning mitme instantsiga juurutuste puhul ühendust backendiga.
 
 Valige veebiserver ja järgige vastavaid juurutussamme.
 
@@ -1169,7 +1174,9 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Oluline"
 
-    Faili `config.toml` EI SISALDATA kunagi paigaldusZIP. Teie olemasolev konfiguratsioon jääb alles.
+    Paigaldus-ZIP ei sisalda kunagi ei faili `config.toml` ega `dashboard/dashboard_config.toml`
+    — digna meeskond ei tarni kumbagi faili. Seetõttu ei puuduta uuendus teie olemasolevat
+    konfiguratsiooni ning ümbernimetatud `*_old` kaustades olevad koopiad on ainsad, mis teil on.
 
 #### Samm 4: Taastage oma konfiguratsioonifailid
 
@@ -1221,7 +1228,13 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
 
-#### Samm 5: Kontrollige konfiguratsiooni
+#### Samm 5: Laadige veebiserver uuesti
+
+Dashboard koosneb staatilistest failidest, seega võivad teie veebiserver — ja brauser — ikka veel
+serveerida eelmist versiooni. Laadige uuesti või taaskäivitage veebiserver, mis majutab kausta
+`dashboard`, ning seejärel laadige leht sundvärskendusega uuesti (++ctrl+f5++).
+
+#### Samm 6: Kontrollige konfiguratsiooni
 
 Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:
 
@@ -1231,7 +1244,26 @@ Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:
 
 Iga sektsioon peab teatama OK. Parandage kõik, millest teatatakse FAILED, ja käivitage käsk enne jätkamist uuesti.
 
-#### Samm 6: Repository skeemi uuendamine
+#### Samm 7: Asendage litsentsifail
+
+Iga väljalase litsentsitakse eraldi. Kopeerige digna meeskonna poolt selle väljalaske jaoks
+antud `license.toml` paigalduskataloogi, asendades vana faili:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ärge jätke alles eelmist litsentsi"
+
+    Varasema väljalaske jaoks väljastatud `license.toml` ei kehti selle väljalaske kohta ning iga
+    käsk, mis litsentsi kontrollib — `user`, `inspection`, `repo` — katkeb enne hoidla
+    puudutamist, kui kontroll ebaõnnestub. Kontrollige litsentsi enne jätkamist:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Samm 8: Hoidla skeemi uuendamine
 
 Minge digna paigalduskataloogi ja käivitage:
 
@@ -1242,7 +1274,7 @@ cd /opt/digna
 
 See uuendab PostgreSQL skeemi uusimale versioonile, säilitades kogu olemasoleva andmebaasi sisu.
 
-#### Samm 7: Teenuste taaskäivitamine
+#### Samm 9: Teenuste taaskäivitamine
 
 Kui teenus on systemd kaudu:
 
@@ -1273,7 +1305,7 @@ RHEL perekonnas rakendage SELinux sildistamine uuesti, kui `dashboard` kataloog 
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Samm 8: Uuenduse kontrollimine
+#### Samm 10: Uuenduse kontrollimine
 
 1. Avage digna dashboard
 2. Kinnitage, et liides laadib korrektselt

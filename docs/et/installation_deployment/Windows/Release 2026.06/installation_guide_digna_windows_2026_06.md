@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Pärast lahtipakkimist peaksite nägema järgmisi üksusi:
    - `dashboard/` — Veebijuhtpaneeli liides
    - `digna` — Peamine täitmisfail (backend + CLI kombineeritud)
-   - `config.toml` — Konfiguratsioonifail
-   - `license.toml` — Litsentsifail (kopeerige oma fail siia)
+
+!!! info "Konfiguratsiooni- ja litsentsifailid ei ole paketis"
+
+    Paigaldusega ei kaasne ei `config.toml` ega `dashboard/dashboard_config.toml` — mõlemad
+    loote ise, jaotistes [Taustasüsteemi konfigureerimine](#backend-configuration) ja
+    [Juhtpaneeli konfiguratsioon](#dashboard-configuration). Ka `license.toml` ei ole kaasas;
+    digna tarnib selle eraldi, nagu kirjeldab samm 3.
 
 ### Samm 3: Paigaldage litsentsifail
 
@@ -525,9 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Samm 1: Paigutage juhtpaneel veebiserverisse
 
-digna juhtpaneelil on oma eraldi `config.toml` fail, mis asub `dashboard/` kataloogis. See konfiguratsioon on juba kaasas ega vaja esialgsel seadistusel muutmist. Vajadusel kohandage seda ainult siis, kui peate muutma backendi ühenduse sätteid.
+digna juhtpaneel loeb oma konfiguratsiooni failist `dashboard/dashboard_config.toml`. See fail ei ole paigaldusega kaasas — loote selle kataloogi `dashboard/` juhtpaneeli failide kõrvale.
 
-Kui peate juhtpaneeli konfiguratsiooni muutma (nt mitme instantsi juurutamisel), vaadake vastavat dokumentatsiooni.
+Selle sisu on kirjeldatud jaotises [Ühekordne sisselogimine (SSO)](../../../sso/overview.md), kus faili ka vaja läheb: see sisaldab juhtpaneeli pakutavaid sisselogimisvalikuid ning mitme instantsi juurutuste puhul ühendust backendiga.
 
 Valige veebiserver ja järgige vastavaid juurutusjuhiseid.
 
@@ -582,19 +587,24 @@ digna backendi käitamine Windowsi teenusena tagab:
 - Automaatse taaskäivituse jooksmisel
 - Halduse võimaluse Windows Services kaudu
 
-### Teenuse haldusfailid
+### Käsud `windows`
 
-Kõik vajalikud failid asuvad digna paigalduskaustas alamkaustas: `bin/`
+Teenust haldab käivitatav fail `digna` ise, alamkäskude `digna windows` kaudu. Käivitatavaid
+batch-faile ei ole.
 
-Järgnevad batch-failid on saadaval:
-- `install_service.bat` — registrib digna Windowsi teenusena
-- `uninstall_service.bat` — eemaldab teenuse registrist
-- `start_service.bat` — käivitab teenuse
-- `stop_service.bat` — peatab teenuse
+| Käsk | Otstarve |
+|---|---|
+| `digna windows install` | Registreerib digna Windowsi teenusena |
+| `digna windows start` | Käivitab registreeritud teenuse |
+| `digna windows stop` | Peatab töötava teenuse |
+| `digna windows uninstall` | Eemaldab teenuse registreeringu |
 
 !!! warning "Nõutud administraatoriõigused"
 
-    Kõik batch-failid tuleb käivitada administraatoriõigustega.
+    Kõik neli käsku tuleb käivitada administraatorina avatud käsuviibas.
+
+Iga käsk aktsepteerib valikut `--name`, et pöörduda teenuse poole, mis on registreeritud vaikimisi
+nimest erineva nime all. Valikute täielik loend on [CLI teatmikus](../../../cli/Command_Line_Interface_202606.md).
 
 ### Teenuse paigaldamine
 
@@ -602,37 +612,66 @@ Järgnevad batch-failid on saadaval:
    - Paremklõpsake Command Prompt
    - Valige "Run as Administrator"
 
-2. **Minge bin kausta**
+2. **Minge oma digna paigalduskausta**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Käivitage paigaldusskript**
+3. **Registreerige teenus**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Digna server on nüüd registreeritud Windowsi teenusena, mille põhikäivituse tüübiks on seatud automaatne. Teenus ei pruugi käivituda kohe — vaadake järgmist jaotist teenuse käivitamiseks.
+!!! important "Määrake aadress ja port, kui vaikeväärtused teile ei sobi"
+
+    `install` salvestab aadressi ja pordi teenuse registreeringusse ning teenus seotakse
+    täpselt salvestatud väärtustega. Vaikeväärtused on `127.0.0.1` ja `8000`, mis võtavad
+    ühendusi vastu ainult masinalt endalt. Teises hostis asuv juhtpaneel sinna ei ulatu, seega
+    andke aadress, mida backend peab kuulama:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Neid väärtusi ei loeta failist `config.toml`. Nende hilisemaks muutmiseks eemaldage teenus
+    ja paigaldage see uute väärtustega uuesti.
+
+Teenus registreeritakse **automaatse käivitusega**, seega käivitub see koos Windowsiga. Kohe see
+ei käivitu — vaadake järgmist jaotist.
+
+#### Paigaldusvalikud
+
+| Valik | Vaikeväärtus | Otstarve |
+|---|---|---|
+| `--name` | `digna` | Nimi, mille all teenus registreeritakse |
+| `--display-name` | `digna` | Nimi, mida kuvatakse services.msc-s |
+| `--description` | `digna data quality backend` | Kirjeldus, mida kuvatakse services.msc-s |
+| `--address` | `127.0.0.1` | Aadress, millega teenus oma API seob |
+| `--port` | `8000` | Port, millega teenus oma API seob |
+| `--working-dir` | käivitatava faili `digna` kataloog | Kataloog, milles asuvad `config.toml` ja `license.toml` ning mille teenus teeb oma töökataloogiks |
+| `--start-type` | `auto` | `auto` käivitub koos Windowsiga, `manual` käivitub ainult nõudmisel, `disabled` registreerib teenuse, kuid keeldub seda käivitamast |
+| `--account` | `LocalSystem` | Konto, mille all teenus töötab, nt `DOMAIN\user` või `.\user` |
+| `--password` | | Konto `--account` parool |
+
+!!! tip "Käitamine domeenikonto all"
+
+    Kontol `LocalSystem` puudub võrguidentiteet, seega ebaõnnestuvad Windowsi autentimine SQL
+    Serveris ja igasugune juurdepääs võrgukaustale. Kui teenus peab ressurssidele juurde pääsema
+    kindla kasutajana, paigaldage see valikutega `--account` ja `--password`.
 
 ### Teenuse käivitamine ja peatamine
 
 #### Teenuse käivitamiseks
 
-1. Avage käsuviip administraatorina
-2. Minge `digna\bin`
-3. Käivitage:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Teenuse peatamiseks
 
-1. Avage käsuviip administraatorina
-2. Minge `digna\bin`
-3. Käivitage:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Vihje"
 
@@ -642,37 +681,41 @@ Digna server on nüüd registreeritud Windowsi teenusena, mille põhikäivituse 
 
 Kui peate digna paigalduskausta teisaldama:
 
-1. **Desinstallige praegune teenus**
+1. **Peatage praegune teenus ja eemaldage selle registreering**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Liigutage rakenduse failid**
    - Liigutage kogu digna paigalduskaust uude asukohta
 
-3. **Installige teenus uuesti**
+3. **Registreerige teenus uuest asukohast uuesti**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Korrake kõiki `--address`, `--port` või `--account` väärtusi, mida esimesel korral kasutasite —
+   eelmine registreering on kadunud.
 
 4. **Käivitage teenus**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Teenuse eemaldamine
 
 1. **Peatage jooksvalt olev teenus**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Desinstallige teenus**
+2. **Eemaldage teenuse registreering**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Digna server on nüüd registrist eemaldatud.
@@ -711,14 +754,33 @@ Varukoopia tagab taastumise juhuks, kui uuendamisel tekib ootamatuid probleeme.
 
 ### Uuendusprotsess
 
-#### Samm 1: Peatage digna teenus
+#### Samm 1: Peatage vana teenus ja eemaldage selle registreering
 
-Kui digna töötab Windowsi teenusena, peatage see esmalt:
+Kui digna töötab Windowsi teenusena, peatage see **praeguse paigalduse batch-failidega**
+— käsud `digna windows` kuuluvad uude väljalaskesse ega ole veel saadaval:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Seejärel eemaldage teenuse registreering, samuti vana batch-failiga. Registreering osutab vanale
+käivitatavale failile ja selle skriptidele, mille see uuendus mõlemad asendab, seega ei saa seda
+uuesti kasutada:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Eemaldage registreering enne, kui midagi ümber nimetate"
+
+    `uninstall_service.bat` asub kaustas `bin`, mille kohe ümber nimetate, ja see on ainus, mis
+    suudab eemaldada enda loodud registreeringu. Käivitage see siis, kui vana paigaldus on veel
+    paigas. Kui kaust on juba ümber nimetatud, nimetage see tagasi, eemaldage registreering ja
+    jätkake seejärel.
+
+    Pange kirja konto, mille all teenus töötas, ning aadress ja port, millel see teenindas — neid
+    läheb vaja sammus 7.
 
 #### Samm 2: Varundage praegune paigaldus
 
@@ -739,7 +801,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend ja dignacli ei ole enam kasutusel"
 
-    Alates väljalaskest 2026.06 asendab `dignabackend` ja `dignacli` üksainus käivitatav fail `digna`, mis ühendab taustasüsteemi ja CLI. Hoidke `dignabackend_old` ja `dignacli_old` alles vaid seni, kuni olete uuenduse kontrollinud — seejärel võite mõlemad kaustad kustutada. Hoidke `dashboard_old` alles, kuni olete sellest oma konfiguratsioonifailid taastanud (vt samm 4).
+    Alates väljalaskest 2026.06 asendab `dignabackend` ja `dignacli` üksainus käivitatav fail `digna`, mis ühendab taustasüsteemi ja CLI. Hoidke `dignabackend_old` ja `dignacli_old` alles vaid seni, kuni olete uuenduse kontrollinud — seejärel võite mõlemad kaustad kustutada. Hoidke `dashboard_old` alles, kuni olete sellest oma konfiguratsioonifailid taastanud (vt samm 4). Ka kaust `bin` läheb: selle batch-failid juhtisid vana teenust ja 2026.06 neid enam ei tarni, seega pärast teenuse registreeringu eemaldamist sammus 1 on neist ainult segadust.
 
 #### Samm 3: Pakkige ja paigutage uus versioon
 
@@ -748,7 +810,9 @@ ren dashboard dashboard_old
 
 !!! warning "Tähtis"
 
-    `config.toml` fail EI OLE kunagi kaasatud paigaldus-ZIP-is. Teie olemasolev konfiguratsioon jääb puutumatuks.
+    Paigaldus-ZIP ei sisalda kunagi ei faili `config.toml` ega `dashboard/dashboard_config.toml`
+    — digna meeskond ei tarni kumbagi faili. Seetõttu ei puuduta uuendus teie olemasolevat
+    konfiguratsiooni ning ümbernimetatud `*_old` kaustades olevad koopiad on ainsad, mis teil on.
 
 #### Samm 4: Taastage oma konfiguratsioonifailid
 
@@ -799,7 +863,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
 
-#### Samm 5: Kontrollige konfiguratsiooni
+#### Samm 5: Laadige veebiserver uuesti
+
+Juhtpaneel koosneb staatilistest failidest, seega võivad teie veebiserver — ja brauser — ikka veel
+serveerida eelmist versiooni. Laadige uuesti või taaskäivitage veebiserver, mis majutab kausta
+`dashboard`, ning seejärel laadige leht sundvärskendusega uuesti (++ctrl+f5++).
+
+#### Samm 6: Kontrollige konfiguratsiooni
 
 Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:
 
@@ -809,7 +879,26 @@ digna config check
 
 Iga sektsioon peab teatama OK. Parandage kõik, millest teatatakse FAILED, ja käivitage käsk enne jätkamist uuesti.
 
-#### Samm 6: Uuendage andmehoidla skeemi
+#### Samm 7: Asendage litsentsifail
+
+Iga väljalase litsentsitakse eraldi. Kopeerige digna meeskonna poolt selle väljalaske jaoks
+antud `license.toml` paigalduskausta, asendades vana faili:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Ärge jätke alles eelmist litsentsi"
+
+    Varasema väljalaske jaoks väljastatud `license.toml` ei kehti selle väljalaske kohta ning iga
+    käsk, mis litsentsi kontrollib — `user`, `inspection`, `repo` — katkeb enne hoidla
+    puudutamist, kui kontroll ebaõnnestub. Kontrollige litsentsi enne jätkamist:
+
+    ```bash
+    digna license check
+    ```
+
+#### Samm 8: Uuendage andmehoidla skeemi
 
 Minge oma digna paigalduskausta ja käivitage:
 
@@ -819,14 +908,22 @@ digna repo upgrade
 
 See uuendab PostgreSQL skeemi uusimale versioonile, säilitades kõik olemasolevad andmed.
 
-#### Samm 7: Taaskäivitage teenused
+#### Samm 9: Registreerige ja käivitage teenus
 
-Kui käivitate teenust Windowsi teenusena:
+Vana registreering eemaldati sammus 1, seega registreeritakse teenus uuesti — seekord
+käivitatava failiga `digna`, millel batch-faile ei ole:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Andke valikutele `--address` ja `--port` väärtused, millel vana teenus teenindas, kui te ei soovi
+uusi vaikeväärtusi `127.0.0.1` ja `8000`; need salvestatakse registreeringusse ja neid ei loeta
+enam failist `config.toml`. Lisage `--account` ja `--password`, kui vana teenus töötas domeenikonto
+all. Valikute täieliku loendi leiate jaotisest
+[digna käitamine Windowsi teenusena](#running-digna-as-a-windows-service).
 
 Kui käivitate käsitsi, taaskäivitage server:
 
@@ -837,7 +934,7 @@ digna serve --address <address> --port <port>
 
 Kui kasutate IIS-i või Tomcati, taaskäivitage vastav veebiserver.
 
-#### Samm 8: Kinnitage uuendus
+#### Samm 10: Kinnitage uuendus
 
 1. Avage digna juhtpaneel
 2. Veenduge, et liides laeb korralikult
