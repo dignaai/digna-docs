@@ -511,8 +511,13 @@ Pak vložte příkazy na výzvu `postgres=#` a pro ukončení napište `\q`.
 3. Po rozbalení byste měli vidět následující položky:
    - `dashboard/` — webové rozhraní dashboardu
    - `digna` — hlavní spustitelný soubor (backend + CLI dohromady)
-   - `config.toml` — konfigurační soubor
-   - `license.toml` — licenční soubor (zkopírujte sem svůj)
+
+!!! info "Konfigurační a licenční soubory nejsou součástí balíku"
+
+    Soubory `config.toml` ani `dashboard/dashboard_config.toml` nejsou součástí instalace — oba
+    si vytvoříte sami, v částech [Konfigurace backendu](#backend-configuration) a
+    [Konfigurace dashboardu](#dashboard-configuration). Ani `license.toml` není součástí
+    balíku; digna jej dodává samostatně, jak popisuje krok 3.
 
 Pro rozbalení ze shellu:
 
@@ -832,9 +837,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Krok 1: Nasazení dashboardu na webový server
 
-Dashboard digna má svůj vlastní samostatný soubor `config.toml` umístěný v adresáři `dashboard/`. Tato konfigurace je již poskytnuta a během počátečního nastavení obvykle není nutné ji měnit. Upravte ji pouze, pokud potřebujete přizpůsobit připojení na backend.
+Dashboard digna načítá svou vlastní konfiguraci ze souboru `dashboard/dashboard_config.toml`. Tento soubor není součástí instalace — vytvoříte jej ve složce `dashboard/` vedle souborů dashboardu.
 
-Pokud potřebujete změnit konfiguraci dashboardu (např. pro nasazení více instancí), odkažte se na dokumentaci dashboardu.
+Jeho obsah je popsán v části [Jednotné přihlášení (SSO)](../../../sso/overview.md), kde je soubor také potřeba: obsahuje možnosti přihlášení, které dashboard nabízí, a u nasazení s více instancemi také připojení k backendu.
 
 Vyberte webový server a postupujte podle příslušných kroků nasazení.
 
@@ -1169,7 +1174,10 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Důležité"
 
-    Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše stávající konfigurace zůstane nedotčena.
+    Soubory `config.toml` ani `dashboard/dashboard_config.toml` nejsou nikdy součástí
+    instalačního ZIP — tým digna žádný z nich nedodává. Vaše stávající konfigurace proto
+    zůstane aktualizací nedotčena a kopie v přejmenovaných složkách `*_old` jsou jediné,
+    které máte.
 
 #### Krok 4: Obnovte konfigurační soubory
 
@@ -1221,7 +1229,13 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Sekci zopakujte pro každého poskytovatele a každý klíč udržujte shodný s `key` v souboru `dashboard_config.toml`. `digna config check` hlásí `oidc_clients` jako FAILED, dokud stará podoba zůstává. Týká se to pouze instalací, které používají jednotné přihlášení.
 
-#### Krok 5: Ověřte konfiguraci
+#### Krok 5: Znovu načtěte webový server
+
+Dashboard je sada statických souborů, takže váš webový server — i prohlížeč — může stále
+servírovat předchozí verzi. Znovu načtěte nebo restartujte webový server, který hostuje složku
+`dashboard`, a poté stránku znovu načtěte s vynuceným obnovením (++ctrl+f5++).
+
+#### Krok 6: Ověřte konfiguraci
 
 Než sáhnete na repozitář, ověřte, že je aktualizovaný `config.toml` úplný:
 
@@ -1231,7 +1245,26 @@ Než sáhnete na repozitář, ověřte, že je aktualizovaný `config.toml` úpl
 
 Každá sekce musí hlásit OK. Opravte vše, co je hlášeno jako FAILED, a před pokračováním příkaz spusťte znovu.
 
-#### Krok 6: Aktualizujte schéma repozitáře
+#### Krok 7: Nahraďte licenční soubor
+
+Každé vydání je licencováno samostatně. Zkopírujte soubor `license.toml`, který vám pro toto
+vydání poskytl tým digna, do instalační složky a nahraďte jím ten starý:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Nenechávejte si předchozí licenci"
+
+    Soubor `license.toml` vydaný pro dřívější vydání toto vydání nepokrývá a každý příkaz,
+    který licenci kontroluje — `user`, `inspection`, `repo` — se při neúspěšné kontrole
+    ukončí dříve, než se repozitáře dotkne. Než budete pokračovat, ověřte ji:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Krok 8: Aktualizujte schéma repozitáře
 
 Přejděte do instalační složky digna a spusťte:
 
@@ -1242,7 +1275,7 @@ cd /opt/digna
 
 Tím se aktualizuje PostgreSQL schéma na nejnovější verzi při zachování všech existujících dat.
 
-#### Krok 7: Restartujte služby
+#### Krok 9: Restartujte služby
 
 Pokud běží jako systemd služba:
 
@@ -1273,7 +1306,7 @@ U rodiny RHEL znovu aplikujte SELinux označení, pokud byla složka `dashboard`
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Krok 8: Ověřte aktualizaci
+#### Krok 10: Ověřte aktualizaci
 
 1. Přistupte k digna dashboardu
 2. Ověřte, že se rozhraní načítá správně
