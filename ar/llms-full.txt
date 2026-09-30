@@ -12798,7 +12798,7 @@ Release 2026.06 opens the model up to configuration. Two settings on the data so
 
 | Setting | Effect |
 |---|---|
-| **Break Sensitivity** | How quickly a fundamental change — a jump to a new level, or a trend that sets in or turns — is believed rather than treated as outliers. Higher believes a change after fewer observations: a clear change takes about seven observations at `0.0`, about three at `0.5`, and one or two at `1.0`. A smaller change, or a change of slope, takes longer to show. |
+| **Break Sensitivity** | How quickly a fundamental change — a jump to a new level, or a trend that sets in or turns — is believed rather than treated as outliers. Higher believes a change after fewer observations: a clear change takes about eight observations at `0.0` and about three at `1.0`. A smaller change, or a change of slope, takes longer to show. |
 | **Model Complexity** | How much structure the model looks for, from a glance to a careful study. Lower sticks to a level, a trend, the calendar, a single shift of level and the recent observations. Higher also considers rarer explanations — a cycle the calendar does not know, a change of slope, days of the month that stand out, totals that reset monthly, several shifts of level — and each needs less evidence to be believed. Higher settings take longer to compute. |
 
 Both settings act only on how much an explanation is believed, so the prediction changes gradually as either is turned. Every other quantity the model uses is fixed. The defaults suit the great majority of series, and **Restore Defaults** returns both settings to `0.5` at any time.
