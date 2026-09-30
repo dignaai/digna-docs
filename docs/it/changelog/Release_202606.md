@@ -72,19 +72,31 @@ Configura la strategia di esecuzione delle query: modalità **Single** o **Combi
 
 ### Modello di previsione configurabile
 
-Il modello alla base del rilevamento delle anomalie è ora configurabile. Sette parametri governano il modo in cui la previsione viene adattata:
+Il modello alla base del rilevamento delle anomalie ora mette a confronto spiegazioni alternative di ciascuna serie – un pattern combinato con una lettura delle osservazioni più recenti – e fonde le loro previsioni in base a quanto ciascuna è supportata. Un singolo valore estremo non può più propagarsi nelle previsioni successive.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Due impostazioni nella nuova scheda **Model** del datasource lo governano, ciascuna da `0.0` a `1.0` con `0.5` come valore predefinito:
 
-I valori predefiniti vanno bene per la grande maggioranza delle serie e ogni parametro può essere ripristinato al suo valore predefinito in qualsiasi momento.
+- **Break Sensitivity** – quanto rapidamente un salto a un nuovo livello o un'inversione di trend viene considerato reale anziché trattato come outlier
+- **Model Complexity** – quanta struttura cerca il modello, dagli effetti di calendario e da un singolo cambio di livello fino a cicli sconosciuti, effetti legati al giorno del mese e reset mensili
 
-**Impatto:** Dà agli utenti il controllo sul modello di previsione stesso, accanto alle impostazioni Sensitivity e Memory già presenti sulla banda di tolleranza. Per sapere quando intervenire su uno di essi e come impostarlo, contattate digna.
+Entrambe possono essere ripristinate ai valori predefiniti in qualsiasi momento. Consultate [Impostazioni del modello](../platform/data_anomalies/how_it_works.md#model-settings) per sapere come agisce ciascuna.
+
+**Impatto:** Dà agli utenti il controllo sul modello di previsione stesso, accanto alle impostazioni Sensitivity e Memory già presenti sulla banda di tolleranza, ora nella scheda **Thresholds**.
+
+---
+
+### Controllo delle notifiche sulle anomalie
+
+- Nuova scheda **Notifications** nelle impostazioni delle anomalie del datasource:
+  - **Minimum Alerts** – quanti controlli falliti (non quelli incerti) servono a un'ispezione prima che venga inviata una notifica (predefinito `1`)
+  - **Pause After Notification (Days)** – per quanto tempo una sottoscrizione resta silenziosa dopo aver inviato una notifica sul datasource (predefinito `0`, nessuna pausa)
+- Gli iscritti ora ricevono una notifica quando un'ispezione fallisce del tutto (**Notify Inspection Errors**)
+- Ogni notifica rimanda direttamente alla pagina a cui si riferisce – i controlli falliti dell'ispezione, oppure le viste Schema Tracker e Timeliness
+- Interruttori di sottoscrizione più chiari: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Come funzionano le notifiche:** le notifiche vengono inviate tramite **canali di notifica** – Email (tramite una connessione SMTP), Slack o Jira – che gli amministratori configurano e possono verificare con **Test Notification Channel**. Una **sottoscrizione** collega un canale a un progetto: copre tutti i datasource o solo quelli selezionati, e i suoi interruttori stabiliscono cosa segnala – ciascun modulo (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker e controlli del volume dei dati), le ispezioni che falliscono del tutto e, facoltativamente, anche le ispezioni superate.
+
+**Impatto:** Notifiche meno numerose e più utili – le deviazioni isolate e le anomalie persistenti non inondano più il canale.
 
 ---
 

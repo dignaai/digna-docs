@@ -72,19 +72,31 @@ Konfigurieren Sie die Abfrageausführungsstrategie: **Single** oder **Combined**
 
 ### Konfigurierbares Vorhersagemodell
 
-Das Modell hinter der Anomalieerkennung ist jetzt konfigurierbar. Sieben Parameter steuern, wie die Vorhersage angepasst wird:
+Das Modell hinter der Anomalieerkennung wägt jetzt konkurrierende Erklärungen jeder Zeitreihe gegeneinander ab – ein Muster, kombiniert mit einer Einschätzung der jüngsten Beobachtungen – und gewichtet ihre Prognosen danach, wie stark jede davon gestützt wird. Ein einzelner Extremwert kann nicht mehr auf die nachfolgenden Vorhersagen durchschlagen.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Zwei Einstellungen auf dem neuen Tab **Modell** der Datenquelle steuern es, jeweils von `0.0` bis `1.0` mit `0.5` als Standardwert:
 
-Die Standardwerte passen für die allermeisten Zeitreihen, und jeder Parameter kann jederzeit auf seinen Standardwert zurückgesetzt werden.
+- **Bruch-Sensitivität** – wie schnell ein Sprung auf ein neues Niveau oder eine Trendwende als echt angenommen statt als Ausreißer behandelt wird
+- **Modellkomplexität** – wie viel Struktur das Modell sucht, von Kalendereffekten und einer einzelnen Niveauverschiebung bis hin zu unbekannten Zyklen, Monatstagseffekten und monatlichen Rücksetzungen
 
-**Auswirkung:** Gibt Nutzern Kontrolle über das Vorhersagemodell selbst, zusätzlich zu den bestehenden Einstellungen Sensitivity und Memory für das Toleranzband. Für Hinweise, wann welcher Parameter sinnvoll ist und wie er zu setzen ist, wenden Sie sich an digna.
+Beide lassen sich jederzeit auf ihre Standardwerte zurücksetzen. Unter [Modelleinstellungen](../platform/data_anomalies/how_it_works.md#model-settings) erfahren Sie, wie jede davon wirkt.
+
+**Auswirkung:** Gibt Nutzern Kontrolle über das Vorhersagemodell selbst, zusätzlich zu den bestehenden Einstellungen Sensitivity und Memory für das Toleranzband, die sich jetzt auf dem Tab **Schwellenwerte** befinden.
+
+---
+
+### Steuerung der Anomalie-Benachrichtigungen
+
+- Neuer Tab **Benachrichtigungen** in den Anomalie-Einstellungen der Datenquelle:
+  - **Mindestanzahl Alarme** – wie viele fehlgeschlagene Prüfungen (nicht unsichere) eine Inspektion benötigt, bevor eine Benachrichtigung gesendet wird (Standard `1`)
+  - **Pause nach Benachrichtigung (Tage)** – wie lange eine Subscription stumm bleibt, nachdem sie über die Datenquelle benachrichtigt hat (Standard `0`, keine Pause)
+- Abonnenten werden jetzt benachrichtigt, wenn eine Inspektion vollständig fehlschlägt (**Über Inspektionsfehler benachrichtigen**)
+- Jede Benachrichtigung verlinkt direkt auf die Seite, um die es geht – die fehlgeschlagenen Prüfungen der Inspektion oder die Ansichten von Schema Tracker und Timeliness
+- Klarere Subscription-Schalter: **Über bestandene Inspektionen benachrichtigen**, **Über Inspektionsfehler benachrichtigen**, **Über Datenvolumen-Prüfungen benachrichtigen**
+
+**So funktionieren Benachrichtigungen:** Benachrichtigungen werden über **Benachrichtigungskanäle** versendet – Email (über eine SMTP-Verbindung), Slack oder Jira –, die Administratoren einrichten und mit **Benachrichtigungskanal testen** prüfen können. Eine **Subscription** verbindet einen Kanal mit einem Projekt: Sie umfasst alle oder ausgewählte Datenquellen, und ihre Schalter legen fest, worüber sie berichtet – jedes Modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker und Datenvolumen-Prüfungen), vollständig fehlgeschlagene Inspektionen und optional auch bestandene Inspektionen.
+
+**Auswirkung:** Weniger, dafür aussagekräftigere Benachrichtigungen – vereinzelte Abweichungen und anhaltende Anomalien überfluten den Kanal nicht mehr.
 
 ---
 

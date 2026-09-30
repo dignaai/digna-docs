@@ -73,19 +73,31 @@ Configurez la stratégie d'exécution des requêtes : mode **Single** ou **Combi
 
 ### Modèle de prédiction configurable
 
-Le modèle qui sous-tend la détection d'anomalies est désormais configurable. Sept paramètres pilotent l'ajustement de la prédiction :
+Le modèle qui sous-tend la détection d'anomalies met désormais en balance des explications concurrentes de chaque série – un motif combiné à une lecture des observations les plus récentes – et mélange leurs prévisions selon le degré de soutien de chacune. Une valeur extrême isolée ne peut plus contaminer les prédictions suivantes.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Deux réglages du nouvel onglet **Model** de la source de données le pilotent, chacun de `0.0` à `1.0`, avec `0.5` par défaut :
 
-Les valeurs par défaut conviennent à la grande majorité des séries, et chaque paramètre peut être rétabli à sa valeur par défaut à tout moment.
+- **Break Sensitivity** – la rapidité avec laquelle un saut vers un nouveau niveau ou un retournement de tendance est considéré comme réel plutôt que traité comme des valeurs aberrantes
+- **Model Complexity** – la quantité de structure que le modèle recherche, des effets calendaires et d'un simple changement de niveau jusqu'aux cycles inconnus, aux effets de jour du mois et aux réinitialisations mensuelles
 
-**Impact :** Donne aux utilisateurs la maîtrise du modèle de prédiction lui-même, en complément des réglages Sensitivity et Memory existants sur la bande de tolérance. Pour savoir quand recourir à l'un d'eux et comment le régler, contactez digna.
+Les deux peuvent être rétablis à leur valeur par défaut à tout moment. Consultez [Paramètres du modèle](../platform/data_anomalies/how_it_works.md#model-settings) pour savoir comment agit chacun d'eux.
+
+**Impact :** Donne aux utilisateurs la maîtrise du modèle de prédiction lui-même, en complément des réglages Sensitivity et Memory existants sur la bande de tolérance, désormais dans l'onglet **Thresholds**.
+
+---
+
+### Contrôle des notifications d'anomalies
+
+- Nouvel onglet **Notifications** dans les paramètres d'anomalies de la source de données :
+  - **Minimum Alerts** – le nombre de contrôles en échec (et non incertains) qu'une inspection doit compter avant l'envoi d'une notification (par défaut `1`)
+  - **Pause After Notification (Days)** – la durée pendant laquelle un abonnement reste silencieux après avoir notifié au sujet de la source de données (par défaut `0`, aucune pause)
+- Les abonnés sont désormais notifiés lorsqu'une inspection échoue complètement (**Notify Inspection Errors**)
+- Chaque notification renvoie directement à la page concernée – les contrôles en échec de l'inspection, ou les vues Schema Tracker et Timeliness
+- Des interrupteurs d'abonnement plus clairs : **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Fonctionnement des notifications :** les notifications sont envoyées via des **canaux de notification** – Email (via une connexion SMTP), Slack ou Jira – que les administrateurs configurent et peuvent vérifier avec **Test Notification Channel**. Un **abonnement** relie un canal à un projet : il couvre toutes les sources de données ou une sélection d'entre elles, et ses interrupteurs déterminent ce qu'il signale – chaque module (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker et contrôles de volume de données), les inspections qui échouent complètement et, en option, les inspections réussies.
+
+**Impact :** Des notifications moins nombreuses et plus exploitables – les écarts isolés et les anomalies persistantes n'inondent plus le canal.
 
 ---
 
