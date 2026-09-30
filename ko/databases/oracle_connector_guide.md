@@ -1,77 +1,75 @@
-# Source Connector for Oracle
+# Oracle용 소스 커넥터
 
-This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
-using a **DSN-less** connection string.
+이 가이드는 **DSN 없는(DSN-less)** 연결 문자열을 사용하여 **ODBC**로 Oracle Database에
+연결하도록 *digna*를 구성하는 방법을 설명합니다.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Oracle.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
-enough). Install it on the machine that runs the *digna* backend, following the vendor's
-official installation guide.
-
-The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
-`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
-installation, so read the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+설정 중 *digna* 측 부분은 모든 기술에서 동일합니다. 연결을 만드는 위치, 속성 값을 암호화하는 방법,
+연결을 테스트하는 방법, 프로파일링 모드의 의미가 여기에 해당하며
+[데이터베이스 연결 개요](overview.md)에 설명되어 있습니다. 이 페이지에서는 Oracle에만 해당하는
+내용을 다룹니다.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC 드라이버 설치 {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Oracle ODBC 드라이버는 **Oracle Client**에 포함되어 있습니다(Instant Client "ODBC" 패키지로
+충분합니다). 공급업체의 공식 설치 가이드에 따라 *digna* 백엔드가 실행되는 머신에 설치합니다.
 
-    The set below is one combination that is known to work. The properties belong to the Oracle
-    ODBC driver, so their names, defaults and accepted values differ between client versions,
-    and the driver name in particular depends on the Oracle home on your host. Use this as a
-    starting point and check the documentation of the client version you installed.
+드라이버는 **Oracle in `<OracleHomeName>`** 형식의 이름으로 등록됩니다. 예:
+`Oracle in OraDB21Home1` 또는 `Oracle in instantclient_21_13`. 홈 이름은 설치마다 다르므로
+[digna 호스트에 ODBC 드라이버 설치](overview.md#install-the-driver)에 설명된 대로 호스트에서
+정확한 이름을 확인합니다.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC 속성 {: #2-odbc-properties }
+
+!!! important "사양이 아닌 예시"
+
+    아래 속성 세트는 정상 동작이 확인된 조합 중 하나입니다. 이 속성들은 Oracle ODBC 드라이버에
+    속하므로 이름, 기본값, 허용되는 값이 클라이언트 버전마다 다르며, 특히 드라이버 이름은 호스트의
+    Oracle 홈에 따라 달라집니다. 이를 출발점으로 삼고, 설치한 클라이언트 버전의 문서를 확인하세요.
+
+**Add DB Connection** 화면에서 다음 속성을 추가합니다:
+
+| 키 | 예시 값 | 참고 |
 |---|---|---|
-| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
-| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
-| `UID` | `DIGNA_SOURCE_USER` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `Driver` | `Oracle in OraDB21Home1` | *digna* 호스트에 등록된 드라이버 이름과 일치해야 합니다 |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | 연결할 데이터베이스 — 아래 참조 |
+| `UID` | `DIGNA_SOURCE_USER` | 데이터베이스 사용자 |
+| `PWD` | `<password>` | **Encrypted**를 선택합니다 |
 
-The resulting connection string looks like this:
+결과 연결 문자열은 다음과 같습니다:
 
 ```
 Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
 ```
 
-### The `DBQ` value
+### `DBQ` 값
 
-`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
-configured on the *digna* host:
+`DBQ`는 세 가지 형식을 허용합니다. *digna* 입장에서는 모두 동일하며, *digna* 호스트에서 무엇을
+구성해야 하는지만 다릅니다:
 
-| Form | Example | Requires |
+| 형식 | 예시 | 필요 사항 |
 |---|---|---|
-| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
-| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
-| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+| **전체 연결 디스크립터** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | 없음 — 모든 정보가 속성 안에 있습니다. 권장 |
+| **TNS 별칭** | `DIGNA_SOURCE` | *digna* 호스트에 있는 Oracle Client의 `tnsnames.ora`에 별칭이 있어야 합니다 |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Easy Connect를 지원하는 Oracle Client(12c 이상) |
 
-!!! tip "Prefer the full descriptor"
+!!! tip "전체 디스크립터를 권장합니다"
 
-    A TNS alias moves half of the connection definition into a file on the *digna* host, where
-    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
-    the connection self-contained — which is the point of a DSN-less setup.
+    TNS 별칭을 사용하면 연결 정의의 절반이 *digna* 호스트의 파일로 옮겨지는데, 호스트를 다시 구축하거나
+    *digna*를 이전할 때 이를 잊기 쉽습니다. 전체 디스크립터를 사용하면 연결이 자체적으로 완결되며,
+    이것이 바로 DSN 없는 설정의 목적입니다.
 
-Note the parentheses in a descriptor are fine inside a connection string, but if your password
-contains `;`, brace it: `PWD={p@ss;word}`.
+디스크립터의 괄호는 연결 문자열 안에서 문제가 되지 않지만, 비밀번호에 `;`가 포함되어 있다면
+중괄호로 감싸세요: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* 구성 {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** 화면에서 다음을 입력합니다:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -82,44 +80,43 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle {: #4-notes-on-oracle }
+## 4. Oracle 관련 참고 사항 {: #4-notes-on-oracle }
 
-- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
-  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
-  `SELECT` on those tables, either directly or through a role.
-- **One connection sees one database.** The catalog *digna* offers is the database the
-  connection is attached to, so `DBQ` decides which service, and therefore which database, is
-  profiled.
-- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
-  data dictionary, which is what Oracle stores — upper case for unquoted objects.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
-  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
-  needs read access only.
+- **스키마는 사용자입니다.** *digna*는 Oracle 사용자를 스키마로 나열하므로, 소스 스키마는 테이블의
+  소유자(위의 예에서는 `DIGNA_SOURCE_USER`)입니다. 연결 사용자에게는 직접 또는 롤을 통해 해당
+  테이블에 대한 `SELECT` 권한이 필요합니다.
+- **하나의 연결은 하나의 데이터베이스만 봅니다.** *digna*가 제공하는 카탈로그는 연결이 붙어 있는
+  데이터베이스이므로, `DBQ`가 어떤 서비스, 즉 어떤 데이터베이스를 프로파일링할지 결정합니다.
+- **따옴표로 묶인 식별자는 대소문자를 구분합니다.** *digna*는 데이터 딕셔너리에서 읽은 이름, 즉
+  Oracle이 저장한 이름(따옴표 없이 만든 객체는 대문자)을 따옴표로 묶어 사용합니다.
+- **프로파일링 모드.** *Permanent*는 **Work Schema**에 작업 테이블을 만들므로 사용자에게 그곳에
+  대한 `CREATE TABLE` 권한과 테이블스페이스 할당량이 필요합니다. *Session*은 프라이빗 임시 테이블
+  (`ORA$PTT_…`, Oracle 18c 이상)을 사용하며 **Work Schema**를 건드리지 않습니다. *Standard*는
+  읽기 권한만 필요합니다.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. 드라이버 확인(선택 사항) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the Oracle Client, the service name and your
-credentials work before you enter them in *digna*.
+DSN 없는 연결에는 ODBC 데이터 소스를 구성할 필요가 없지만, 드라이버 자체의 대화 상자를 사용하면
+*digna*에 값을 입력하기 전에 Oracle Client, 서비스 이름, 자격 증명이 동작하는지 간편하게 확인할
+수 있습니다.
 
-#### Step 1
+#### 1단계
 ![Step 1](images/oracle/create_odbc_data_source_step1.png)
 
-The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
-installation — that is where the alias, and with it the host, port and service name, is
-defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+여기에 표시되는 **TNS Service Name**은 Oracle Client 설치의 `tnsnames.ora`에서 가져옵니다.
+별칭과 함께 호스트, 포트, 서비스 이름이 정의되는 곳이 바로 이 파일입니다. *digna*에서는 이 별칭을
+`DBQ`로 사용하거나, 대신 전체 디스크립터를 사용할 수 있습니다.
 
-#### Step 2 – Test the connection
+#### 2단계 – 연결 테스트
 
-Click the **Test Connection** button.
+**Test Connection** 버튼을 클릭합니다.
 
 ![Step 2](images/oracle/create_odbc_data_source_step2.png)
 
-Provide the password and click the **OK** button.
+비밀번호를 입력하고 **OK** 버튼을 클릭합니다.
 
 ![Step 3](images/oracle/create_odbc_data_source_step3.png)
 
-A success message confirms that the driver and the credentials work.
+성공 메시지가 표시되면 드라이버와 자격 증명이 정상 동작하는 것입니다.

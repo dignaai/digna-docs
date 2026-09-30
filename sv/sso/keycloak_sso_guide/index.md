@@ -1,108 +1,108 @@
-# Set up SSO with Keycloak
+# Ställ in SSO med Keycloak
 
-Keycloak is a self-hosted, fully OIDC-compliant identity provider. Because you run it yourself, the discovery URL is built from your own host name and realm rather than a vendor domain.
+Keycloak är en egenhostad identitetsleverantör som fullt ut följer OIDC-standarden. Eftersom du driver den själv byggs discovery-URL:en från ditt eget värdnamn och din realm i stället för en leverantörsdomän.
 
-This guide covers the **Keycloak side**: creating the client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Denna guide täcker **Keycloak-sidan**: skapa klienten och samla de värden digna behöver. digna-sidan — `dashboard_config.toml`, testning och felsökning — är densamma för alla leverantörer och beskrivs i [Översikt över Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Innan du börjar
 
-| Requirement | Notes |
+| Krav | Noteringar |
 |---|---|
-| **Keycloak version** | 17 or later for the URL paths used here — see the note in Step 4 |
-| **Keycloak role** | `realm-admin` on the target realm, or a server administrator |
-| **Realm** | The realm your digna users belong to, not necessarily `master` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Keycloak-version** | 17 eller senare för de URL-sökvägar som används här — se noteringen i Steg 5 |
+| **Keycloak-roll** | `realm-admin` i mål-realmen, eller serveradministratör |
+| **Realm** | Den realm som dina digna-användare tillhör, inte nödvändigtvis `master` |
+| **digna redirect URI** | URL:en dit användarna återvänder efter inloggning, t.ex. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Select the Realm
+## Steg 1: Välj realm
 
-1. Open the Keycloak admin console
-2. Use the realm selector in the top-left to switch to the realm your users are in
+1. Öppna Keycloaks administrationskonsol
+2. Använd realm-väljaren uppe till vänster för att byta till den realm där dina användare finns
 
-!!! warning "Do Not Use the master Realm"
+!!! warning "Använd inte master-realmen"
 
-    The `master` realm is intended for administering Keycloak itself. Application clients belong in a dedicated realm; putting digna in `master` gives its users a route into the Keycloak administration console.
+    Realmen `master` är avsedd för att administrera Keycloak självt. Applikationsklienter hör hemma i en dedikerad realm; om digna placeras i `master` får dess användare en väg in i Keycloaks administrationskonsol.
 
 ---
 
-## Step 2: Create the Client
+## Steg 2: Skapa klienten
 
-1. Go to **Clients** and click **Create client**
-2. Configure:
+1. Gå till **Clients** och klicka på **Create client**
+2. Konfigurera:
    - **Client type**: *OpenID Connect*
-   - **Client ID**: `digna` — this becomes `DIGNA_OIDC_CLIENT_ID`
-3. Click **Next**
-4. On the **Capability config** step, turn **Client authentication** **On**
-5. Leave **Standard flow** enabled; the other flows are not needed
-6. Click **Next**
+   - **Client ID**: `digna` — detta blir `DIGNA_OIDC_CLIENT_ID`
+3. Klicka på **Next**
+4. I steget **Capability config**, slå **On** för **Client authentication**
+5. Låt **Standard flow** vara aktiverat; de andra flödena behövs inte
+6. Klicka på **Next**
 
-!!! warning "Client Authentication Must Be On"
+!!! warning "Client authentication måste vara på"
 
-    With **Client authentication** off, Keycloak creates a *public* client, which has no credentials at all — the **Credentials** tab in Step 4 will not exist. digna needs a confidential client. This toggle can be changed after creation if you get it wrong.
+    Med **Client authentication** avstängd skapar Keycloak en *publik* klient, som inte har några inloggningsuppgifter alls — fliken **Credentials** i Steg 4 kommer inte att finnas. digna behöver en konfidentiell klient. Reglaget kan ändras efter att klienten skapats om du gör fel.
 
 ---
 
-## Step 3: Set the Redirect URI
+## Steg 3: Ange redirect URI
 
-On the **Login settings** step (or the **Settings** tab afterwards):
+I steget **Login settings** (eller på fliken **Settings** i efterhand):
 
-1. **Valid redirect URIs**: enter your digna callback URL:
+1. **Valid redirect URIs**: ange din digna callback-URL:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-2. **Web origins**: leave empty, or set to `+` to mirror the redirect URIs
-3. Click **Save**
+2. **Web origins**: lämna tomt, eller ange `+` för att spegla redirect-URI:erna
+3. Klicka på **Save**
 
-!!! tip "Avoid Wildcards"
+!!! tip "Undvik jokertecken"
 
-    Keycloak accepts patterns such as `https://digna.yourdomain.com/*`. A wildcard lets any path on that host receive an authorization code, so prefer the exact callback URL.
-
----
-
-## Step 4: Collect the Client Secret
-
-1. Open the **Credentials** tab
-2. Confirm **Client Authenticator** is *Client Id and Secret*
-3. Copy the **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
-
-The secret stays retrievable here and can be regenerated with **Regenerate**.
+    Keycloak accepterar mönster som `https://digna.yourdomain.com/*`. Ett jokertecken låter vilken sökväg som helst på den värden ta emot en auktoriseringskod, så använd hellre den exakta callback-URL:en.
 
 ---
 
-## Step 5: Build the Discovery URL
+## Steg 4: Hämta klienthemligheten
 
-Substitute your Keycloak host and realm name:
+1. Öppna fliken **Credentials**
+2. Bekräfta att **Client Authenticator** är *Client Id and Secret*
+3. Kopiera **Client secret** → blir `DIGNA_OIDC_CLIENT_SECRET`
+
+Hemligheten kan alltid hämtas här igen och kan genereras på nytt med **Regenerate**.
+
+---
+
+## Steg 5: Bygg discovery-URL:en
+
+Ersätt med din Keycloak-värd och ditt realm-namn:
 
 ```
 https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
 ```
 
-For example:
+Till exempel:
 
 ```
 https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
 ```
 
-!!! note "Keycloak 16 and Earlier Include /auth"
+!!! note "Keycloak 16 och tidigare inkluderar /auth"
 
-    Before Keycloak 17, every endpoint sat under an `/auth` prefix:
+    Före Keycloak 17 låg alla endpoints under prefixet `/auth`:
 
     ```
     https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
     ```
 
-    Distributions that set `KC_HTTP_RELATIVE_PATH=/auth` keep the old layout on current versions too. If the URL without `/auth` returns 404, try it with.
+    Distributioner som anger `KC_HTTP_RELATIVE_PATH=/auth` behåller den gamla strukturen även i aktuella versioner. Om URL:en utan `/auth` returnerar 404, prova med.
 
-Open the URL in a browser before continuing. A JSON document confirms the host and realm are right.
+Öppna URL:en i en webbläsare innan du fortsätter. Ett JSON-dokument bekräftar att värd och realm är korrekta.
 
 ---
 
-## Step 6: Configure digna
+## Steg 6: Konfigurera digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -125,41 +125,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `keycloak` here. Note that it does not have to equal the Keycloak **Client ID**, though keeping them the same is easier to follow.
+`key` i båda filerna måste matcha — här `keycloak`. Observera att den inte behöver vara lika med Keycloaks **Client ID**, även om det är lättare att följa om de är desamma.
 
 ---
 
-## Step 7: Test
+## Steg 7: Testa
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Starta om backend och webbserver och öppna sedan dashboarden. Se [Testa inloggningen](overview.md#testing-login) för den fullständiga checklistan.
 
 ---
 
-## Troubleshooting Keycloak
+## Felsökning av Keycloak
 
 ### Invalid parameter: redirect_uri
 
-The callback URL is not covered by **Valid redirect URIs**. Keycloak logs the URI it received in the server log, which is the quickest way to see the exact mismatch.
+Callback-URL:en täcks inte av **Valid redirect URIs**. Keycloak loggar den URI som togs emot i serverloggen, vilket är det snabbaste sättet att se exakt var avvikelsen ligger.
 
-### The Credentials Tab Is Missing
+### Fliken Credentials saknas
 
-The client is public. Turn **Client authentication** on under **Settings → Capability config**.
+Klienten är publik. Slå på **Client authentication** under **Settings → Capability config**.
 
-### 404 on the Discovery URL
+### 404 på discovery-URL:en
 
-Either the realm name is wrong, or the deployment uses the `/auth` prefix. Check the realm list in the admin console and try both URL forms.
+Antingen är realm-namnet fel, eller så använder installationen prefixet `/auth`. Kontrollera realm-listan i administrationskonsolen och prova båda URL-formerna.
 
-### unauthorized_client or invalid_client
+### unauthorized_client eller invalid_client
 
-**Standard flow** is disabled under **Capability config**, or the secret was regenerated in Keycloak without updating `config.toml`.
+**Standard flow** är inaktiverat under **Capability config**, eller så har hemligheten genererats på nytt i Keycloak utan att `config.toml` uppdaterats.
 
-### Certificate Errors from the Backend
+### Certifikatfel från backenden
 
-A self-hosted Keycloak behind a private or self-signed certificate will fail digna's outbound HTTPS call to the discovery URL. Install the issuing CA into the trust store of the machine running the digna backend.
+En egenhostad Keycloak bakom ett privat eller självsignerat certifikat gör att dignas utgående HTTPS-anrop till discovery-URL:en misslyckas. Installera den utfärdande certifikatutfärdaren (CA) i certifikatarkivet på maskinen som kör digna-backenden.
 
 ---
 
-## See Also
+## Se även
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Översikt över Single Sign-On](overview.md) — konfigurationsreferens, testning och allmän felsökning
 - [Keycloak: Securing applications](https://www.keycloak.org/docs/latest/securing_apps/)

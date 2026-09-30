@@ -1,24 +1,24 @@
-# Windows Installation Guide for digna Release 2026.06
+# digna Sürüm 2026.06 için Windows Kurulum Kılavuzu
 
-**Release:** 2026.06
+**Sürüm:** 2026.06
 
-**Last Updated:** August 30, 2026
+**Son Güncelleme:** 30 Ağustos 2026
 
 
 ---
 
-## Table of Contents
+## İçindekiler
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Windows Service](#running-digna-as-a-windows-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
+1. [Giriş](#introduction)
+2. [Sistem Gereksinimleri](#system-requirements)
+3. [Kurulum Öncesi Hazırlık](#pre-installation-setup)
+4. [PostgreSQL Sunucu Kurulumu](#postgresql-server-setup)
+5. [Web Sunucusu Yapılandırması](#web-server-configuration)
+6. [İlk Kurulum](#initial-installation)
+7. [Backend Yapılandırması](#backend-configuration)
+8. [Dashboard Yapılandırması](#dashboard-configuration)
+9. [digna'yı Windows Hizmeti Olarak Çalıştırma](#running-digna-as-a-windows-service)
+10. [Yeni Bir Sürüme Yükseltme](#upgrading-to-a-new-release)
 
 ---
 
@@ -47,13 +47,13 @@ Bu kılavuz Windows içindir. Diğer platformlar için [macOS Kurulum Kılavuzu]
 
 Kuruluma başlamadan önce sisteminizin aşağıdaki minimum gereksinimleri karşıladığından emin olun:
 
-| Requirement | Specification |
+| Gereksinim | Özellik |
 |---|---|
-| **Operating System** | Windows Server or Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | IIS, Apache Tomcat, or equivalent |
+| **İşletim Sistemi** | Windows Server veya Windows 10/11 |
+| **Bellek (Minimum Kurulum)** | 16 GB RAM |
+| **Disk Alanı** | 10 GB kullanılabilir depolama |
+| **Veritabanı** | PostgreSQL Server 12 veya üzeri |
+| **Web Sunucusu** | IIS, Apache Tomcat veya eşdeğeri |
 
 ### Veritabanı Kurulum Seçenekleri
 
@@ -277,8 +277,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Çıkarma sonrası aşağıdaki öğeleri görmelisiniz:
    - `dashboard/` — Web dashboard arayüzü
    - `digna` — Ana yürütülebilir dosya (backend + CLI birleşik)
-   - `config.toml` — Yapılandırma dosyası
-   - `license.toml` — Lisans dosyası (kendi lisansınızı buraya kopyalayın)
+
+!!! info "Yapılandırma ve lisans dosyaları pakette yer almaz"
+
+    Ne `config.toml` ne de `dashboard/dashboard_config.toml` kurulumla birlikte gelir — ikisini de
+    kendiniz, [Backend Yapılandırması](#backend-configuration) ve
+    [Dashboard Yapılandırması](#dashboard-configuration) bölümlerinde oluşturursunuz. `license.toml` da pakete dahil değildir;
+    Adım 3'te açıklandığı gibi digna tarafından ayrı olarak sağlanır.
 
 ### Adım 3: Lisans Dosyasını Yükleyin
 
@@ -518,9 +523,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Adım 1: Dashboard'u Web Sunucusuna Dağıtın
 
-digna dashboard'unun kendi ayrı `config.toml` dosyası `dashboard/` dizininde bulunur. Bu yapılandırma başlangıç kurulumu sırasında genellikle değişiklik gerektirmez. Sadece backend bağlantısını özelleştirmeniz gerekiyorsa düzenlemeniz gerekir.
+digna dashboard'u kendi yapılandırmasını `dashboard/dashboard_config.toml` dosyasından okur. Bu dosya kurulumla birlikte gelmez — onu `dashboard/` dizininde, dashboard dosyalarının yanında siz oluşturursunuz.
 
-Dashboard yapılandırmasını (ör. çoklu örnek dağıtımları için) değiştirme ihtiyacınız varsa dashboard belgelerine başvurun.
+Dosyanın içeriği [Çoklu Oturum Açma (Single Sign-On)](../../../sso/overview.md) bölümünde açıklanmıştır; dosyaya ihtiyaç duyulan yer de burasıdır: dashboard'un sunduğu oturum açma seçeneklerini ve çoklu örnek dağıtımlarında backend bağlantısını içerir.
 
 Web sunucunuzu seçin ve ilgili dağıtım adımlarını izleyin.
 
@@ -575,19 +580,24 @@ digna backend'i Windows hizmeti olarak çalıştırmak şu avantajları sağlar:
 - Çöktüğünde otomatik yeniden başlatma sağlar
 - Windows Hizmetleri üzerinden yönetilebilir
 
-### Hizmet Yönetim Dosyaları
+### `windows` Komutları
 
-Gerekli tüm dosyalar digna kurulum dizininin altında: `bin/` dizininde bulunur.
+Hizmet, `digna` yürütülebilir dosyasının kendisi tarafından, `digna windows`
+alt komutlarıyla yönetilir. Çalıştırılacak batch dosyası yoktur.
 
-Mevcut batch (.bat) dosyaları:
-- `install_service.bat` — digna'yı Windows hizmeti olarak kaydeder
-- `uninstall_service.bat` — hizmet kaydını kaldırır
-- `start_service.bat` — hizmeti başlatır
-- `stop_service.bat` — hizmeti durdurur
+| Komut | Amaç |
+|---|---|
+| `digna windows install` | digna'yı Windows hizmeti olarak kaydeder |
+| `digna windows start` | Kayıtlı hizmeti başlatır |
+| `digna windows stop` | Çalışan hizmeti durdurur |
+| `digna windows uninstall` | Hizmet kaydını kaldırır |
 
 !!! warning "Yönetici Gereklidir"
 
-    Tüm batch dosyaları Yönetici (Administrator) ayrıcalıklarıyla çalıştırılmalıdır.
+    Dört komutun tamamı, Yönetici olarak açılmış bir Komut İstemi'nden çalıştırılmalıdır.
+
+Her komut, varsayılan olmayan bir adla kaydedilmiş bir hizmete erişmek için `--name` seçeneğini kabul eder. Seçeneklerin
+tam listesi [CLI başvurusunda](../../../cli/Command_Line_Interface_202606.md) yer alır.
 
 ### Hizmeti Yükleme
 
@@ -595,77 +605,110 @@ Mevcut batch (.bat) dosyaları:
    - Komut İstemi üzerine sağ tıklayın
    - "Run as Administrator" (Yönetici olarak çalıştır) seçeneğini seçin
 
-2. **bin Klasörüne Gidin**
+2. **digna kurulum dizininize gidin**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Kurulum Script'ini Çalıştırın**
+3. **Hizmeti kaydedin**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-digna sunucusu artık otomatik başlatma etkinleştirilmiş bir Windows hizmeti olarak kayıtlıdır. Hizmet hemen başlamaz — başlatma için bir sonraki bölüme bakın.
+!!! important "Varsayılanlar size uymuyorsa adresi ve bağlantı noktasını belirtin"
+
+    `install`, adresi ve bağlantı noktasını hizmet kaydına yazar ve hizmet tam olarak kaydedilen
+    değerlere bağlanır. Varsayılanlar `127.0.0.1` ve `8000`'dir; bunlar yalnızca makinenin kendisinden
+    gelen bağlantıları kabul eder. Başka bir ana bilgisayardaki dashboard buna erişemez; bu nedenle
+    backend'in dinlemesi gereken adresi verin:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Bu değerler `config.toml` dosyasından okunmaz. Bunları sonradan değiştirmek için hizmeti kaldırın ve
+    yeni değerlerle yeniden yükleyin.
+
+Hizmet **otomatik başlatma** ile kaydedilir, bu nedenle Windows ile birlikte başlar. Hemen
+başlamaz — bir sonraki bölüme bakın.
+
+#### Yükleme Seçenekleri
+
+| Seçenek | Varsayılan | Amaç |
+|---|---|---|
+| `--name` | `digna` | Hizmetin kaydedileceği ad |
+| `--display-name` | `digna` | services.msc'de gösterilen ad |
+| `--description` | `digna data quality backend` | services.msc'de gösterilen açıklama |
+| `--address` | `127.0.0.1` | Hizmetin API'sini bağladığı adres |
+| `--port` | `8000` | Hizmetin API'sini bağladığı bağlantı noktası |
+| `--working-dir` | `digna` yürütülebilir dosyasının bulunduğu dizin | `config.toml` ve `license.toml` dosyalarını içeren ve hizmetin çalışma dizini olarak kullandığı dizin |
+| `--start-type` | `auto` | `auto` Windows ile birlikte başlar, `manual` yalnızca istendiğinde başlar, `disabled` hizmeti kaydeder ancak başlatılmasını reddeder |
+| `--account` | `LocalSystem` | Hizmetin çalışacağı hesap, ör. `DOMAIN\user` veya `.\user` |
+| `--password` | | `--account` hesabının parolası |
+
+!!! tip "Etki alanı hesabıyla çalıştırma"
+
+    `LocalSystem` hesabının ağ kimliği yoktur; bu nedenle SQL Server'a Windows Kimlik Doğrulaması ve
+    ağ paylaşımlarına her türlü erişim başarısız olur. Hizmetin kaynaklara belirli bir kullanıcı olarak
+    erişmesi gerekiyorsa `--account` ve `--password` ile yükleyin.
 
 ### Hizmeti Başlatma ve Durdurma
 
 #### Hizmeti Başlatmak İçin
 
-1. Komut İstemi'ni Yönetici olarak açın
-2. `digna\bin` dizinine gidin
-3. Şunu çalıştırın:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Hizmeti Durdurmak İçin
 
-1. Komut İstemi'ni Yönetici olarak açın
-2. `digna\bin` dizinine gidin
-3. Şunu çalıştırın:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "İpucu"
 
     Uygulama dosyalarını güncellemeden önce hizmeti her zaman durdurun.
 
-### Hizmeti Yeni Bir Dizin Altına Taımak
+### Hizmeti Yeni Bir Dizin Altına Taşımak
 
 digna kurulumunu taşımaya ihtiyacınız varsa:
 
-1. **Mevcut Hizmeti Kaldırın**
+1. **Mevcut hizmeti durdurun ve kaydını kaldırın**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Uygulama Dosyalarını Taşıyın**
    - Tüm digna kurulum klasörünü yeni konuma taşıyın
 
-3. **Hizmeti Yeniden Kurun**
+3. **Hizmeti yeni konumdan yeniden kaydedin**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   İlk seferde kullandığınız `--address`, `--port` veya `--account` değerlerini yineleyin — önceki
+   kayıt artık yoktur.
 
 4. **Hizmeti Başlatın**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Hizmeti Kaldırma
 
 1. **Çalışan Hizmeti Durdurun**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Hizmeti Kaldırın**
+2. **Hizmetin Kaydını Kaldırın**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 digna sunucusu artık Windows hizmeti olarak kayıtlı olmayacaktır.
@@ -704,14 +747,32 @@ Bir yedek, yükseltme sırasında beklenmeyen sorunlar çıkarsa geri dönüş y
 
 ### Yükseltme Süreci
 
-#### Adım 1: digna Hizmetini Durdurun
+#### Adım 1: Eski Hizmeti Durdurun ve Kaydını Kaldırın
 
-digna bir Windows hizmeti olarak çalışıyorsa, önce durdurun:
+digna bir Windows hizmeti olarak çalışıyorsa, onu **mevcut kurulumunuzun batch
+dosyalarıyla** durdurun — `digna windows` komutları yeni sürüme aittir ve henüz
+kullanılamaz:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Ardından hizmetin kaydını, yine eski batch dosyasıyla kaldırın. Kayıt, eski yürütülebilir dosyayı
+ve betiklerini gösterir; bu yükseltme ikisini de değiştirdiği için kayıt yeniden kullanılamaz:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Herhangi bir şeyi yeniden adlandırmadan önce kaydı kaldırın"
+
+    `uninstall_service.bat`, birazdan yeniden adlandıracağınız `bin` klasöründe bulunur ve oluşturduğu
+    kaydı kaldırabilen tek şey odur. Eski kurulum hâlâ yerindeyken çalıştırın. Klasör zaten
+    yeniden adlandırılmışsa eski adına geri çevirin, kaydı kaldırın ve ardından devam edin.
+
+    Hizmetin çalıştığı hesabı ve hizmet verdiği adres ile bağlantı noktasını not edin — bunlara
+    Adım 9'da ihtiyacınız olacak.
 
 #### Adım 2: Mevcut Kurulumu Yedekleyin
 
@@ -732,7 +793,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend ve dignacli artık kullanılmıyor"
 
-    2026.06 sürümünden itibaren `dignabackend` ve `dignacli`, arka uç ile CLI'yi birleştiren tek `digna` çalıştırılabilir dosyasıyla değiştirilmiştir. `dignabackend_old` ve `dignacli_old` klasörlerini yalnızca yükseltmeyi doğrulayana kadar saklayın — sonrasında her ikisini de silebilirsiniz. `dashboard_old` klasörünü, yapılandırma dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. adım 4).
+    2026.06 sürümünden itibaren `dignabackend` ve `dignacli`, arka uç ile CLI'yi birleştiren tek `digna` çalıştırılabilir dosyasıyla değiştirilmiştir. `dignabackend_old` ve `dignacli_old` klasörlerini yalnızca yükseltmeyi doğrulayana kadar saklayın — sonrasında her ikisini de silebilirsiniz. `dashboard_old` klasörünü, yapılandırma dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. adım 4). `bin` klasörü de kaldırılır: içindeki batch dosyaları eski hizmeti yönetiyordu ve 2026.06 bunları içermez; bu nedenle hizmetin kaydı Adım 1'de kaldırıldıktan sonra yanıltmaktan başka bir işe yaramazlar.
 
 #### Adım 3: Yeni Sürümü Çıkarın ve Dağıtın
 
@@ -742,7 +803,10 @@ ren dashboard dashboard_old
 
 !!! warning "Önemli"
 
-    `config.toml` dosyası asla kurulum ZIP'ine dahil edilmez. Mevcut yapılandırmanız korunur.
+    Ne `config.toml` ne de `dashboard/dashboard_config.toml` hiçbir zaman kurulum ZIP'ine
+    dahil edilmez — digna ekibi bu dosyaların hiçbirini göndermez. Bu nedenle mevcut yapılandırmanız
+    yükseltmeden etkilenmez ve yeniden adlandırılan `*_old` klasörlerindeki kopyalar elinizdeki
+    tek kopyalardır.
 
 #### Adım 4: Yapılandırma Dosyalarınızı Geri Yükleyin
 
@@ -793,7 +857,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Bölümü her sağlayıcı için yineleyin ve her anahtarı `dashboard_config.toml` içindeki `key` ile aynı tutun. Eski biçim yerinde kaldığı sürece `digna config check`, `oidc_clients` bölümünü FAILED olarak bildirir. Yalnızca çoklu oturum açma kullanan kurulumlar etkilenir.
 
-#### Adım 5: Yapılandırmayı Doğrulayın
+#### Adım 5: Web Sunucusunu Yeniden Yükleyin
+
+Dashboard bir statik dosyalar kümesidir; bu nedenle web sunucunuz — ve tarayıcı — hâlâ önceki
+sürümü sunuyor olabilir. `dashboard` klasörünü barındıran web sunucusunu yeniden yükleyin veya yeniden başlatın,
+ardından sayfayı zorla yenileyin (++ctrl+f5++).
+
+#### Adım 6: Yapılandırmayı Doğrulayın
 
 Depoya dokunmadan önce güncellenmiş `config.toml` dosyasının eksiksiz olduğunu doğrulayın:
 
@@ -803,7 +873,26 @@ digna config check
 
 Her bölüm OK bildirmelidir. FAILED olarak bildirilen her şeyi düzeltin ve devam etmeden önce komutu yeniden çalıştırın.
 
-#### Adım 6: Repository Şemasını Yükseltin
+#### Adım 7: Lisans Dosyasını Değiştirin
+
+Her sürüm ayrı olarak lisanslanır. digna ekibinin bu sürüm için sağladığı `license.toml` dosyasını
+kurulum dizinine kopyalayarak eskisinin yerine koyun:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Önceki lisansı saklamayın"
+
+    Önceki bir sürüm için verilmiş bir `license.toml` bu sürümü kapsamaz ve lisansı denetleyen
+    her komut — `user`, `inspection`, `repo` — denetim başarısız olduğunda depoya dokunmadan önce
+    sonlanır. Devam etmeden önce lisansı doğrulayın:
+
+    ```bash
+    digna license check
+    ```
+
+#### Adım 8: Repository Şemasını Yükseltin
 
 digna kurulum dizinine gidin ve şu komutu çalıştırın:
 
@@ -813,14 +902,22 @@ digna repo upgrade
 
 Bu komut PostgreSQL şemasını en son sürüme günceller ve mevcut tüm verileri korur.
 
-#### Adım 7: Servisleri Yeniden Başlatın
+#### Adım 9: Hizmeti Kaydedin ve Başlatın
 
-Windows hizmeti olarak çalışıyorsa:
+Eski kayıt Adım 1'de kaldırıldığı için hizmet yeniden kaydedilir — bu kez batch dosyası
+olmayan `digna` yürütülebilir dosyasıyla:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Yeni `127.0.0.1` ve `8000` varsayılanlarını istemiyorsanız `--address` ve `--port` için eski hizmetin
+hizmet verdiği değerleri verin; bu değerler kayda yazılır ve artık `config.toml` dosyasından
+okunmaz. Eski hizmet bir etki alanı hesabıyla çalışıyorsa `--account` ve `--password` ekleyin. Seçeneklerin
+tam listesi için bkz.
+[digna'yı Windows Hizmeti Olarak Çalıştırma](#running-digna-as-a-windows-service).
 
 Manuel olarak çalıştırıyorsanız, sunucuyu yeniden başlatın:
 
@@ -831,7 +928,7 @@ digna serve --address <address> --port <port>
 
 IIS veya Tomcat kullanıyorsanız ilgili web sunucusunu yeniden başlatın.
 
-#### Adım 8: Yükseltmeyi Doğrulayın
+#### Adım 10: Yükseltmeyi Doğrulayın
 
 1. digna dashboard'a erişin
 2. Arayüzün düzgün yüklendiğini doğrulayın

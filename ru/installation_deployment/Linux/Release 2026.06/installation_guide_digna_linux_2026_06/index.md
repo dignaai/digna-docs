@@ -1,112 +1,112 @@
-# Linux Installation Guide for digna Release 2026.06
+# Руководство по установке на Linux для digna Release 2026.06
 
-**Release:** 2026.06
+**Релиз:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Последнее обновление:** 5 сентября 2026
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a systemd Service](#running-digna-as-a-systemd-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Содержание
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows or macOS?
-
-This guide covers Linux. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
-
-### Which Distribution Does This Guide Cover?
-
-The instructions are written for the two most common server families. Where the two differ, both commands are given:
-
-- **Debian family** — Debian, Ubuntu. Package manager: `apt`.
-- **RHEL family** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Package manager: `dnf`.
-
-Any modern distribution with `systemd` will work; only the package names and a few configuration paths change.
+1. [Введение](#introduction)
+2. [Требования к системе](#system-requirements)
+3. [Подготовка к установке](#pre-installation-setup)
+4. [Настройка PostgreSQL сервера](#postgresql-server-setup)
+5. [Настройка веб-сервера](#web-server-configuration)
+6. [Первоначальная установка](#initial-installation)
+7. [Конфигурация backend](#backend-configuration)
+8. [Конфигурация Dashboard](#dashboard-configuration)
+9. [Запуск digna как сервиса systemd](#running-digna-as-a-systemd-service)
+10. [Обновление до новой версии](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Введение {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### О digna
 
-| Requirement | Specification |
+digna — это комплексная платформа на базе ИИ, разработанная для оптимизации управления качеством данных в различных средах, таких как хранилища данных (warehouses), озёра данных (lakes) и lakehouses. Платформа спроектирована для высокой масштабируемости и адаптируемости и решает современные задачи обработки данных с помощью автоматизации, мониторинга в реальном времени и обнаружения аномалий.
+
+digna состоит из двух основных компонентов:
+
+- **digna**: ядро приложения, отвечающее за обработку данных и выполнение проверок качества. Оно объединяет серверную часть и интерфейс командной строки в одном исполняемом файле, заменяя отдельные программы `dignabackend` и `dignacli` из прежних выпусков.
+- **dignadashboard**: веб-интерфейс, размещаемый на веб-сервере, обеспечивающий удобный способ взаимодействия с платформой digna и визуализации метрик качества данных.
+
+### Что нового в Release 2026.06
+
+В этом выпуске возможности наблюдаемости данных (data observability) интегрированы непосредственно в ваш код, что позволяет разработчикам отслеживать качество данных у источника. Полные подробности см. в [примечаниях к выпуску](http://docs.digna.ai/changelog/Release_202606/).
+
+### Ищете Windows или macOS?
+
+Это руководство охватывает Linux. Для других платформ см. [руководство по установке на Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) или [руководство по установке на macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
+
+### Какие дистрибутивы охватывает это руководство?
+
+Инструкции написаны для двух наиболее распространённых семейств серверных дистрибутивов. Там, где они различаются, приводятся обе команды:
+
+- **Семейство Debian** — Debian, Ubuntu. Менеджер пакетов: `apt`.
+- **Семейство RHEL** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Менеджер пакетов: `dnf`.
+
+Подойдёт любой современный дистрибутив с `systemd`; меняются только имена пакетов и несколько путей к конфигурации.
+
+---
+
+## Требования к системе {: #system-requirements }
+
+Перед началом установки убедитесь, что ваша система соответствует следующим минимальным требованиям:
+
+| Требование | Характеристика |
 |---|---|
-| **Operating System** | Ubuntu 22.04 LTS or later, Debian 12 or later, RHEL 9 / Rocky 9 / AlmaLinux 9 or later |
-| **Architecture** | x86_64 (amd64) or arm64 |
-| **Init System** | systemd |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
+| **Операционная система** | Ubuntu 22.04 LTS или новее, Debian 12 или новее, RHEL 9 / Rocky 9 / AlmaLinux 9 или новее |
+| **Архитектура** | x86_64 (amd64) или arm64 |
+| **Система инициализации** | systemd |
+| **Память (минимальная конфигурация)** | 16 ГБ ОЗУ |
+| **Место на диске** | 10 ГБ свободного места |
+| **База данных** | PostgreSQL Server 12 или выше |
+| **Веб-сервер** | nginx, Apache httpd или эквивалент |
 
-### Database Installation Options
+### Варианты установки базы данных
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Если PostgreSQL уже установлен:**
+Вы можете добавить новую базу данных для digna в ваш существующий сервер PostgreSQL.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Если вы устанавливаете PostgreSQL на той же машине, что и digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Рекомендуемые характеристики"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Память**: 32 ГБ ОЗУ (вместо 16 ГБ)
+    - **Место на диске**: 50 ГБ свободного места (вместо 10 ГБ)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Эти повышенные характеристики учитывают одновременную работу digna и PostgreSQL на одной машине.
 
-### Checking Your Distribution and Architecture
+### Как узнать дистрибутив и архитектуру
 
-Several commands in this guide differ between the Debian and RHEL families. To check which you are on, run:
+Некоторые команды в этом руководстве отличаются для семейств Debian и RHEL. Чтобы узнать, какое у вас семейство, выполните:
 
 ```bash
 cat /etc/os-release
 uname -m
 ```
 
-- `ID=ubuntu` or `ID=debian` — use the `apt` commands.
-- `ID=rhel`, `rocky`, `almalinux` or `fedora` — use the `dnf` commands.
-- `x86_64` or `aarch64` — the architecture of the installation package you need.
+- `ID=ubuntu` или `ID=debian` — используйте команды `apt`.
+- `ID=rhel`, `rocky`, `almalinux` или `fedora` — используйте команды `dnf`.
+- `x86_64` или `aarch64` — архитектура нужного вам установочного пакета.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Подготовка к установке {: #pre-installation-setup }
 
-Before installing digna, ensure that two key prerequisites are in place:
+Перед установкой digna убедитесь, что выполнены два ключевых предварительных условия:
 
-1. **PostgreSQL Server** – for storing calculated metrics and performance data
-2. **Web Server** – for hosting the digna Dashboard
+1. **PostgreSQL Server** – для хранения вычисляемых метрик и данных производительности
+2. **Веб-сервер** – для размещения digna Dashboard
 
-If these components are not already set up, follow the sections below to install and configure them.
+Если эти компоненты ещё не установлены, следуйте разделам ниже, чтобы установить и настроить их.
 
-### Refreshing the Package Index
+### Обновление индекса пакетов
 
-Update your package lists before installing anything:
+Перед установкой чего-либо обновите списки пакетов:
 
 ```bash
 sudo apt update
@@ -115,21 +115,21 @@ sudo apt update
 sudo dnf check-update
 ```
 
-!!! note "Note"
+!!! note "Примечание"
 
-    Throughout this guide, the first command in a pair is for the **Debian family** and the second for the **RHEL family**. Run only the one that matches your system.
+    Во всём этом руководстве первая команда в паре предназначена для **семейства Debian**, а вторая — для **семейства RHEL**. Выполняйте только ту, которая соответствует вашей системе.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Настройка PostgreSQL сервера {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Если PostgreSQL уже установлен
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Если PostgreSQL уже установлен и запущен на вашей локальной машине или вы используете управляемый удалённый сервер PostgreSQL, вы можете перейти к [следующему разделу](#web-server-configuration).
 
-### Installing PostgreSQL
+### Установка PostgreSQL
 
-#### Step 1: Install the Server Package
+#### Шаг 1: Установите пакет сервера
 
 ```bash
 sudo apt install -y postgresql postgresql-contrib
@@ -138,72 +138,72 @@ sudo apt install -y postgresql postgresql-contrib
 sudo dnf install -y postgresql-server postgresql-contrib
 ```
 
-!!! tip "Tip"
+!!! tip "Совет"
 
-    Distribution packages may lag behind the current PostgreSQL release. If you need a specific newer version, use the official [PostgreSQL apt or yum repository](https://www.postgresql.org/download/linux/) instead.
+    Пакеты дистрибутива могут отставать от текущего выпуска PostgreSQL. Если вам нужна определённая более новая версия, используйте вместо них официальный [репозиторий PostgreSQL для apt или yum](https://www.postgresql.org/download/linux/).
 
-#### Step 2: Initialize the Database Cluster
+#### Шаг 2: Инициализируйте кластер баз данных
 
-On the **Debian family**, the package creates and starts a cluster automatically — skip to the next step.
+В **семействе Debian** пакет создаёт и запускает кластер автоматически — перейдите к следующему шагу.
 
-On the **RHEL family**, the cluster must be created explicitly:
+В **семействе RHEL** кластер нужно создать явно:
 
 ```bash
 sudo postgresql-setup --initdb
 ```
 
-#### Step 3: Start and Enable the Service
+#### Шаг 3: Запустите сервис и включите автозапуск
 
 ```bash
 sudo systemctl enable --now postgresql
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically at boot.
+Эта команда запустит PostgreSQL немедленно и настроит его на автоматический запуск при загрузке системы.
 
-#### Step 4: Verify the Installation
+#### Шаг 4: Проверьте установку
 
 ```bash
 psql --version
 sudo systemctl status postgresql
 ```
 
-You should see the PostgreSQL version and an `active (running)` service.
+Вы должны увидеть версию PostgreSQL и сервис в состоянии `active (running)`.
 
-#### Step 5: Connect to the Server
+#### Шаг 5: Подключитесь к серверу
 
-A Linux PostgreSQL package creates a `postgres` system account that owns the cluster. Connect through it:
+Пакет PostgreSQL для Linux создаёт системную учётную запись `postgres`, которой принадлежит кластер. Подключайтесь через неё:
 
 ```bash
 sudo -u postgres psql
 ```
 
-!!! note "Note — Linux Differs From Windows Here"
+!!! note "Примечание — Linux отличается от Windows в этом моменте"
 
-    The Windows installer prompts you to set a password for the `postgres` superuser during setup. Linux packages do not. Instead, local connections are authenticated by **peer authentication**: the `postgres` operating-system user is allowed to connect as the `postgres` database user without a password.
+    Установщик для Windows во время установки предлагает задать пароль для суперпользователя `postgres`. Пакеты для Linux этого не делают. Вместо этого локальные подключения проходят **peer-аутентификацию** (peer authentication): пользователю операционной системы `postgres` разрешено подключаться как пользователь базы данных `postgres` без пароля.
 
-    This is why the command above uses `sudo -u postgres`. The digna backend connects over TCP with a username and password, so you will create an explicit digna user in [Initial Installation](#initial-installation).
+    Именно поэтому в команде выше используется `sudo -u postgres`. Backend digna подключается по TCP с именем пользователя и паролем, поэтому вы создадите отдельного пользователя для digna в разделе [Первоначальная установка](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### Шаг 6: Проверьте порт
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Порт PostgreSQL по умолчанию — `5432`. Чтобы подтвердить порт, на котором слушает сервер:
 
 ```bash
 sudo -u postgres psql -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Запомните значение — оно понадобится при настройке backend digna.
 
-#### Step 7: Enable Password Authentication for the digna User
+#### Шаг 7: Включите парольную аутентификацию для пользователя digna
 
-digna connects to PostgreSQL over TCP as `digna_user`, which requires password authentication rather than peer authentication. Check that your `pg_hba.conf` permits it.
+digna подключается к PostgreSQL по TCP как `digna_user`, что требует парольной аутентификации, а не peer-аутентификации. Убедитесь, что ваш `pg_hba.conf` это разрешает.
 
-Locate the file:
+Найдите файл:
 
 ```bash
 sudo -u postgres psql -c "SHOW hba_file;"
 ```
 
-Open it in an editor and confirm that the local TCP lines use `scram-sha-256` (or `md5` on older servers) rather than `ident`:
+Откройте его в редакторе и убедитесь, что в строках для локального TCP указан метод `scram-sha-256` (или `md5` на старых серверах), а не `ident`:
 
 ```
 # TYPE  DATABASE  USER  ADDRESS         METHOD
@@ -211,25 +211,25 @@ host    all       all   127.0.0.1/32    scram-sha-256
 host    all       all   ::1/128         scram-sha-256
 ```
 
-Reload PostgreSQL after any change:
+После любого изменения перезагрузите конфигурацию PostgreSQL:
 
 ```bash
 sudo systemctl reload postgresql
 ```
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    If digna reports `FATAL: Ident authentication failed for user "digna_user"`, this setting is the cause.
+    Если digna сообщает `FATAL: Ident authentication failed for user "digna_user"`, причина именно в этой настройке.
 
-#### Step 8: If PostgreSQL Runs on Another Machine
+#### Шаг 8: Если PostgreSQL работает на другой машине
 
-To accept connections from a different host, set `listen_addresses` in `postgresql.conf` and add a matching `host` line for your network in `pg_hba.conf`:
+Чтобы принимать подключения с другого узла, задайте `listen_addresses` в `postgresql.conf` и добавьте соответствующую строку `host` для вашей сети в `pg_hba.conf`:
 
 ```
 listen_addresses = '*'
 ```
 
-Then open the port in the firewall and restart the service:
+Затем откройте порт в брандмауэре и перезапустите сервис:
 
 ```bash
 sudo ufw allow 5432/tcp
@@ -243,27 +243,27 @@ sudo systemctl restart postgresql
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Настройка веб-сервера {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna требует веб-сервера для размещения dashboard. Выберите один из следующих вариантов:
 
-- [nginx](#nginx-setup) — lightweight and recommended
-- [Apache httpd](#apache-setup) — widely deployed alternative
+- [nginx](#nginx-setup) — лёгкий, рекомендуется
+- [Apache httpd](#apache-setup) — широко распространённая альтернатива
 
-You only need to install and configure **one** of these servers.
+Требуется установить и настроить **только один** из этих серверов.
 
-Both sections configure two things the dashboard depends on:
+Оба раздела настраивают два требования, от которых зависит dashboard:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Переадресация для single-page-приложения**, чтобы обновление URL dashboard не приводило к 404
+- **MIME-тип для `.md`**, чтобы Markdown-файлы отдавались корректно
 
-### nginx Setup {: #nginx-setup }
+### Настройка nginx {: #nginx-setup }
 
-#### Overview
+#### Обзор
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx — это лёгкий высокопроизводительный веб-сервер, хорошо подходящий для обслуживания статического dashboard digna.
 
-#### Installation
+#### Установка
 
 ```bash
 sudo apt install -y nginx
@@ -272,21 +272,21 @@ sudo apt install -y nginx
 sudo dnf install -y nginx
 ```
 
-#### Starting nginx
+#### Запуск nginx
 
 ```bash
 sudo systemctl enable --now nginx
 ```
 
-#### Verify the Installation
+#### Проверьте установку
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the nginx welcome page
+1. Откройте браузер
+2. Перейдите по адресу `http://localhost`
+3. Вы должны увидеть страницу приветствия nginx
 
-#### Opening the Firewall
+#### Открытие брандмауэра
 
-If the server is reached from other machines, allow HTTP traffic:
+Если к серверу обращаются с других машин, разрешите HTTP-трафик:
 
 ```bash
 sudo ufw allow 'Nginx Full'
@@ -295,15 +295,15 @@ sudo ufw allow 'Nginx Full'
 sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
 ```
 
-#### Configuring a Site for the Dashboard
+#### Настройка сайта для dashboard
 
-nginx includes every file in its `conf.d` directory on both distribution families. Create a dedicated configuration file for digna there:
+В обоих семействах дистрибутивов nginx подключает все файлы из своего каталога `conf.d`. Создайте там отдельный файл конфигурации для digna:
 
 ```bash
 sudo nano /etc/nginx/conf.d/digna.conf
 ```
 
-Paste the following, replacing `/opt/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Вставьте следующее, заменив `/opt/digna/dashboard` на фактический путь к вашей распакованной папке `dashboard`:
 
 ```nginx
 server {
@@ -327,23 +327,23 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Без директивы `try_files` перезагрузка любой страницы dashboard, отличной от корневого URL, вернёт 404. Это эквивалент модуля URL Rewrite, который требуется для IIS в Windows.
 
-#### Disable the Default Site
+#### Отключите сайт по умолчанию
 
-Only one server block may be the `default_server` for a port. On the **Debian family**, remove the packaged default so it does not conflict:
+Только один блок server может быть `default_server` для порта. В **семействе Debian** удалите сайт по умолчанию из пакета, чтобы он не конфликтовал:
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
-On the **RHEL family**, comment out or delete the `server { ... }` block inside `/etc/nginx/nginx.conf`.
+В **семействе RHEL** закомментируйте или удалите блок `server { ... }` в файле `/etc/nginx/nginx.conf`.
 
-#### Apply the Configuration
+#### Примените конфигурацию
 
-Test the configuration for syntax errors, then reload nginx:
+Проверьте конфигурацию на синтаксические ошибки, затем перезагрузите nginx:
 
 ```bash
 sudo nginx -t
@@ -352,13 +352,13 @@ sudo systemctl reload nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Настройка Apache httpd {: #apache-setup }
 
-#### Overview
+#### Обзор
 
-Apache httpd is available in the default repositories of every supported distribution. The package is named `apache2` on the Debian family and `httpd` on the RHEL family.
+Apache httpd доступен в стандартных репозиториях всех поддерживаемых дистрибутивов. В семействе Debian пакет называется `apache2`, в семействе RHEL — `httpd`.
 
-#### Installation
+#### Установка
 
 ```bash
 sudo apt install -y apache2
@@ -367,7 +367,7 @@ sudo apt install -y apache2
 sudo dnf install -y httpd
 ```
 
-#### Starting Apache
+#### Запуск Apache
 
 ```bash
 sudo systemctl enable --now apache2
@@ -376,32 +376,32 @@ sudo systemctl enable --now apache2
 sudo systemctl enable --now httpd
 ```
 
-#### Verify the Installation
+#### Проверьте установку
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the distribution's default Apache page
+1. Откройте браузер
+2. Перейдите по адресу `http://localhost`
+3. Вы должны увидеть стандартную страницу Apache вашего дистрибутива
 
-#### Required: Enable mod_rewrite
+#### Обязательно: включите mod_rewrite
 
-The dashboard requires URL rewriting.
+Dashboard требует перенаправления URL.
 
-On the **Debian family**, enable the module and restart:
+В **семействе Debian** включите модуль и перезапустите сервер:
 
 ```bash
 sudo a2enmod rewrite
 sudo systemctl restart apache2
 ```
 
-On the **RHEL family**, `mod_rewrite` is loaded by default. Confirm it:
+В **семействе RHEL** `mod_rewrite` загружается по умолчанию. Убедитесь в этом:
 
 ```bash
 httpd -M | grep rewrite
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Обязательно: разрешите переопределения в .htaccess
 
-Open the configuration file for your document root:
+Откройте конфигурационный файл для вашего корневого каталога документов:
 
 ```bash
 sudo nano /etc/apache2/apache2.conf
@@ -410,33 +410,33 @@ sudo nano /etc/apache2/apache2.conf
 sudo nano /etc/httpd/conf/httpd.conf
 ```
 
-Locate the `<Directory>` block covering your document root (`/var/www/html` on both families) and change:
+Найдите блок `<Directory>`, относящийся к корневому каталогу документов (`/var/www/html` в обоих семействах), и измените:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+на:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Обязательно: MIME-тип для файлов Markdown
 
-In the same file, add the following line so that Markdown files are served correctly:
+В том же файле добавьте следующую строку, чтобы Markdown-файлы отдавались корректно:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    Without this setting, `.md` files may not be served properly.
+    Без этой настройки `.md` файлы могут обслуживаться некорректно.
 
-#### Apply the Configuration
+#### Примените конфигурацию
 
-Check the configuration for syntax errors, then restart Apache:
+Проверьте конфигурацию на синтаксические ошибки, затем перезапустите Apache:
 
 ```bash
 sudo apachectl configtest
@@ -449,15 +449,15 @@ sudo systemctl restart httpd
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Первоначальная установка {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Шаг 1: Настройка репозитория digna
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Репозиторий digna хранит все метрики, вычисляемые digna. Он выступает в качестве центральной базы данных для аналитических данных и данных производительности.
 
-#### Create Repository Schema and User
+#### Создание схемы репозитория и пользователя
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Откройте ваш клиент PostgreSQL (psql, pgAdmin или аналогичный) и выполните следующие SQL-команды:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -467,13 +467,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Замените следующие заполнители:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — имя схемы по вашему выбору (например, `dignarepo`)
+- `<digna_repo_user>` — имя пользователя по вашему выбору (например, `digna_user`)
+- `<digna_repo_password>` — безопасный пароль для этого пользователя
 
-**Example:**
+**Пример:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -483,81 +483,81 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the shell in a single step:
+Чтобы выполнить эти команды из оболочки в один шаг:
 
 ```bash
 sudo -u postgres psql
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Затем вставьте команды в приглашении `postgres=#` и введите `\q` для выхода.
 
-!!! tip "Best Practice"
+!!! tip "Лучшие практики"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Используйте сложные, надёжные пароли для пользователей базы данных. Избегайте легко угадываемых учётных данных.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Шаг 2: Распакуйте установочный пакет digna
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
+1. Найдите ZIP-файл установки digna, предоставленный вам
+2. Распакуйте его в желаемое место установки — например `/opt/digna`
+3. После распаковки вы должны увидеть следующие элементы:
+   - `dashboard/` — веб-интерфейс dashboard
+   - `digna` — основной исполняемый файл (backend + CLI в одном)
 
-!!! info "The configuration and licence files are not in the package"
+!!! info "Файлы конфигурации и лицензии не входят в пакет"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
-    create both yourself, in [Backend Configuration](#backend-configuration) and
-    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
-    digna supplies it separately, as Step 3 describes.
+    Ни `config.toml`, ни `dashboard/dashboard_config.toml` не поставляются вместе с установкой — вы
+    создаёте оба файла самостоятельно, в разделах [Конфигурация backend](#backend-configuration) и
+    [Конфигурация Dashboard](#dashboard-configuration). `license.toml` тоже не поставляется;
+    digna предоставляет его отдельно, как описано в шаге 3.
 
-To extract from the shell:
+Чтобы распаковать из оболочки:
 
 ```bash
 sudo mkdir -p /opt/digna
 sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
 ```
 
-!!! note "Note"
+!!! note "Примечание"
 
-    If `unzip` is not installed, add it with `sudo apt install -y unzip` or `sudo dnf install -y unzip`.
+    Если `unzip` не установлен, добавьте его командой `sudo apt install -y unzip` или `sudo dnf install -y unzip`.
 
-#### Make the Executable Runnable
+#### Сделайте файл исполняемым
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+В зависимости от способа передачи архива, бит выполнения (executable bit) может не сохраниться при распаковке. Установите его явно:
 
 ```bash
 cd /opt/digna
 sudo chmod +x digna
 ```
 
-#### Create a Service Account
+#### Создайте служебную учётную запись
 
-Running the backend as a dedicated unprivileged user is recommended for production deployments:
+Для производственных развёртываний рекомендуется запускать backend от имени отдельного непривилегированного пользователя:
 
 ```bash
 sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
 sudo chown -R digna:digna /opt/digna
 ```
 
-!!! note "Note"
+!!! note "Примечание"
 
-    On the RHEL family the equivalent shell path is `/sbin/nologin`.
+    В семействе RHEL эквивалентный путь к оболочке — `/sbin/nologin`.
 
-### Step 3: Install the License File
+### Шаг 3: Установите файл лицензии
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Файл лицензии **не** включён в установочный пакет и будет предоставлен отдельно компанией digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Найдите файл `license.toml`, предоставленный вам
+2. Скопируйте его в корневой каталог установки digna (ту же папку, где находятся `config.toml` и исполняемый файл `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Почему это важно:**
+Файл лицензии содержит информацию о заказчике, дату истечения лицензии и цифровую подпись. **Не изменяйте этот файл** — любые изменения сделают его недействительным.
 
-**Directory structure after setup:**
+**Структура каталогов после настройки:**
 
 ```
 /opt/digna/
@@ -571,24 +571,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Конфигурация backend {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Шаг 1: Создание и редактирование файла конфигурации
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+Файл `config_template.toml` предоставлен в каталоге установки digna. Вам нужно только переименовать его в `config.toml`.
 
 ```bash
 cd /opt/digna
 sudo mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Расположение:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Откройте `config.toml` в текстовом редакторе и настройте каждый раздел ниже.
 
-#### [app] Section
+#### Раздел [app]
 
-This section configures the digna backend application settings:
+Этот раздел настраивает параметры приложения digna backend:
 
 ```toml
 [app]
@@ -598,20 +598,20 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значение | Примечания |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL фронтенда | Если dashboard размещён на другом сервере, укажите его URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Требуется для CORS с учётными данными |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Разрешить все HTTP-методы |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Разрешить все заголовки |
 
-!!! note "Note"
+!!! note "Примечание"
 
-    If you serve the dashboard from nginx or Apache on the default HTTP port, the origin to allow is `http://localhost` — or the server's public URL when the dashboard is reached from other machines.
+    Если вы обслуживаете dashboard через nginx или Apache на стандартном HTTP-порту, разрешаемым origin будет `http://localhost` — или публичный URL сервера, если к dashboard обращаются с других машин.
 
-#### [repo] Section
+#### Раздел [repo]
 
-This section configures the connection to the PostgreSQL database:
+Этот раздел настраивает подключение к базе данных PostgreSQL:
 
 ```toml
 [repo]
@@ -623,27 +623,27 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значение | Примечания |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` или IP | Хост PostgreSQL / IP-адрес |
+| `digna_REPO_PORT` | `5432` (по умолчанию) | Порт PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Имя базы данных |
+| `digna_REPO_SCHEMA` | `dignarepo` | Схема, созданная ранее |
+| `digna_REPO_USER` | `digna_user` | Пользователь, созданный при настройке PostgreSQL |
+| `digna_REPO_PASSWORD` | Ваш пароль | Пароль, заданный при создании схемы |
 
-!!! tip "Best Practice"
+!!! tip "Лучшие практики"
 
-    `config.toml` contains a database password in plain text. Restrict its permissions so that only the service account can read it:
+    `config.toml` содержит пароль базы данных в открытом виде. Ограничьте права доступа к нему, чтобы читать его могла только служебная учётная запись:
 
     ```bash
     sudo chown digna:digna /opt/digna/config.toml
     sudo chmod 600 /opt/digna/config.toml
     ```
 
-#### [base] Section
+#### Раздел [base]
 
-This section contains security and cookie settings:
+Этот раздел содержит параметры безопасности и cookie:
 
 ```toml
 [base]
@@ -658,44 +658,44 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значение | Примечания |
 |---|---|---|
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
-| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
+| `digna_COOKIE_DOMAIN` | `localhost` | Домен, соответствующий вашему фронтенду |
+| `digna_COOKIE_SECURE` | `false` (локально) / `true` (production) | Используйте `true` для HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | Всегда включено для безопасности |
+| `digna_COOKIE_SAME_SITE` | `lax` | Предотвращает CSRF-атаки |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 часа) | Время жизни сессии в секундах |
+| `digna_MAX_WORKERS` | Количество ядер CPU - 1 | Количество параллельных задач инспекции |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Максимальная задержка в секундах, которую планировщик может добавить перед запуском наступившей задачи |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Время суток (24-часовой формат `HH:MM`), когда начинается ежедневная очистка |
 
-!!! tip "Tip"
+!!! tip "Совет"
 
-    To find the number of CPU cores available on your server, run `nproc`.
+    Чтобы узнать количество ядер CPU, доступных на вашем сервере, выполните `nproc`.
 
-#### [encryption] Section
+#### Раздел [encryption]
 
-This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+Этот раздел содержит ключ, которым шифруются конфиденциальные значения, хранящиеся в репозитории. Он **обязателен** — `config check` сообщает о разделе `[encryption]` как FAILED, если ключ отсутствует.
 
 ```toml
 [encryption]
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значение | Примечания |
 |---|---|---|
-| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+| `DIGNA_ENCRYPTION_KEY` | Ключ в кодировке Base64 | Шифрует конфиденциальные значения, хранящиеся в репозитории digna |
 
-!!! warning "Protect config.toml"
+!!! warning "Защитите config.toml"
 
-    This key is a fixed value, identical across all digna installations, and it is what decrypts
-    the sensitive values in your repository. Restrict `config.toml` to the account that runs
-    digna, keep it out of source control and off shared drives, and exclude it from any backup
-    that is stored less securely than the repository itself.
+    Этот ключ — фиксированное значение, одинаковое во всех установках digna, и именно он
+    расшифровывает конфиденциальные значения вашего репозитория. Ограничьте доступ к `config.toml`
+    учётной записью, под которой работает digna, держите файл вне системы контроля версий и общих
+    дисков и исключите его из любой резервной копии, которая хранится менее защищённо, чем сам репозиторий.
 
-#### [logging] Section
+#### Раздел [logging]
 
-This section configures logging behavior:
+Этот раздел настраивает поведение логирования:
 
 ```toml
 [logging]
@@ -703,22 +703,22 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значение | Примечания |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` или `DEBUG` | `INFO` для production, `DEBUG` для отладки |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Количество ежедневных резервных копий логов, которые сохраняются |
 
 ---
 
-### Step 2: Validate the Configuration
+### Шаг 2: Проверьте конфигурацию
 
-Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+Перед инициализацией репозитория убедитесь, что `config.toml` полон и корректно построен. В каталоге установки digna выполните:
 
 ```bash
 ./digna config check
 ```
 
-Every section is validated on its own, so a single mistake does not hide the state of the rest:
+Каждый раздел проверяется отдельно, поэтому одна ошибка не скрывает состояние остальных:
 
 ```text
 Configuration validation report (source: config.toml):
@@ -732,76 +732,76 @@ Configuration validation report (source: config.toml):
 Overall: OK
 ```
 
-Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+Исправьте всё, о чём сообщено как FAILED, и выполните команду ещё раз, прежде чем продолжить. Полный список параметров приведён в [справочнике CLI](../../../cli/Command_Line_Interface_202606.md).
 
-### Step 3: Initialize the Repository
+### Шаг 3: Инициализируйте репозиторий
 
-1. Open a terminal
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Откройте терминал
+2. Перейдите в каталог установки digna (где находятся `config.toml` и исполняемый файл `digna`)
+3. Выполните проверку подключения:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Вы должны увидеть подтверждение установления соединения (сам репозиторий ещё не инициализирован).
 
-!!! note "Note"
+!!! note "Примечание"
 
-    On Linux, the current directory is not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add a symbolic link:
+    В Linux текущий каталог не входит в PATH, поэтому исполняемый файл вызывается как `./digna`, а не `digna`. Чтобы везде использовать короткую форму, добавьте символическую ссылку:
 
     ```bash
     sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
-### Step 4: Install the Repository Schema
+### Шаг 4: Установите схему репозитория
 
-In the same directory, run:
+В том же каталоге выполните:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Эта команда установит необходимые таблицы и схему в вашей базе данных PostgreSQL.
 
-### Step 5: Create an Admin User
+### Шаг 5: Создайте пользователя с правами администратора
 
-The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+Пользователь-администратор создаётся непосредственно в схеме репозитория, поэтому сервер пока не обязательно запускать. В каталоге установки digna выполните:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
 ```
 
-**Example:**
+**Пример:**
 
 ```bash
 ./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with email `admin@example.com` and full administrative privileges.
+Это создаёт пользователя с адресом электронной почты `admin@example.com` и полными правами администратора.
 
-!!! tip "Tip"
+!!! tip "Совет"
 
-    Wrap the password in single quotes. `bash` and `zsh` treat characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Заключайте пароль в одинарные кавычки. `bash` и `zsh` обрабатывают такие символы, как `!`, `$` и `*`, особым образом, и пароль без кавычек, содержащий их, не будет передан в том виде, в котором вы его ввели.
 
-!!! tip "Best Practice"
+!!! tip "Лучшие практики"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Используйте надёжный пароль, сочетающий прописные и строчные буквы, цифры и специальные символы.
 
-### Step 6: Start the digna Server
+### Шаг 6: Запустите сервер digna
 
-In the digna installation directory, start the server with:
+В каталоге установки digna запустите сервер:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Параметры:**
+- `--address` — хостнейм/IP сервера
+- `--port` — порт сервера
 
-You should see startup messages confirming the server is running:
+Вы должны увидеть сообщения при запуске, подтверждающие, что сервер работает:
 
 ```
 INFO:     Started server process [1234]
@@ -810,9 +810,9 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Совет"
 
-    If the dashboard is served from a different machine than the backend, open the API port in the firewall as well:
+    Если dashboard обслуживается с другой машины, чем backend, откройте в брандмауэре также порт API:
 
     ```bash
     sudo ufw allow 8082/tcp
@@ -821,62 +821,62 @@ INFO:     Uvicorn running on http://localhost:8082
     sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
     ```
 
-!!! note "The server holds the terminal"
+!!! note "Сервер занимает терминал"
 
-    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a systemd Service](#running-digna-as-a-systemd-service) to start it automatically at boot instead.
+    `serve` выполняется на переднем плане и продолжает работать, пока вы не остановите его сочетанием ++ctrl+c++. Оставьте его работающим, пока завершаете настройку; чтобы вместо этого запускать его автоматически при загрузке, см. [Запуск digna как сервиса systemd](#running-digna-as-a-systemd-service).
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Конфигурация Dashboard {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Шаг 1: Разверните Dashboard на веб-сервере
 
-The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
+Dashboard digna считывает собственную конфигурацию из файла `dashboard/dashboard_config.toml`. Этот файл не поставляется вместе с установкой — вы создаёте его в каталоге `dashboard/` рядом с файлами dashboard.
 
-Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
+Его содержимое описано в разделе [Единый вход (SSO)](../../../sso/overview.md), где этот файл и требуется: в нём задаются варианты входа, которые предлагает dashboard, а для мульти-инстансных развёртываний — подключение к backend.
 
-Choose your web server and follow the corresponding deployment steps.
+Выберите ваш веб-сервер и следуйте соответствующим шагам развертывания.
 
-#### Deploying to nginx
+#### Развёртывание в nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Если вы следовали разделу [Настройка nginx](#nginx-setup), блок server уже указывает на вашу папку `dashboard` и копирование не требуется.
 
-1. **Confirm the path**
-   - Open `/etc/nginx/conf.d/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Подтвердите путь**
+   - Откройте `/etc/nginx/conf.d/digna.conf`
+   - Убедитесь, что `root` указывает на распакованную папку `dashboard`
 
-2. **Ensure the folder is readable**
+2. **Убедитесь, что папка доступна для чтения**
    ```bash
    sudo chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Перезагрузите nginx**
    ```bash
    sudo nginx -t
    sudo systemctl reload nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Проверьте установку**
+   - Откройте браузер
+   - Перейдите по адресу `http://localhost` (или по вашему настроенному URL)
+   - Вы должны увидеть страницу входа в digna dashboard
 
-#### Deploying to Apache httpd
+#### Развёртывание в Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Скопируйте Dashboard в корневой каталог документов**
    ```bash
    sudo cp -R /opt/digna/dashboard /var/www/html/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Добавьте правила переписывания (Rewrite Rules)**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Создайте файл `.htaccess` внутри развёрнутой папки, чтобы маршруты dashboard не ломались при обновлении страницы:
 
    ```bash
    sudo nano /var/www/html/digna/.htaccess
    ```
 
-   Paste the following:
+   Вставьте следующее:
 
    ```apache
    RewriteEngine On
@@ -891,7 +891,7 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Перезапустите Apache**
    ```bash
    sudo systemctl restart apache2
    ```
@@ -899,114 +899,114 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    sudo systemctl restart httpd
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Доступ к Dashboard**
+   - Откройте браузер
+   - Перейдите по адресу `http://localhost/digna`
+   - Вы должны увидеть страницу входа в digna dashboard
 
-### Step 2: SELinux (RHEL Family Only)
+### Шаг 2: SELinux (только семейство RHEL)
 
-On RHEL, Rocky, AlmaLinux and Fedora, SELinux is enforcing by default and will block the web server from reading files outside its expected locations. Check whether it is active:
+В RHEL, Rocky, AlmaLinux и Fedora SELinux по умолчанию работает в принудительном режиме (enforcing) и не позволяет веб-серверу читать файлы за пределами ожидаемых расположений. Проверьте, активен ли он:
 
 ```bash
 getenforce
 ```
 
-If the result is `Enforcing` and you are serving the dashboard from `/opt/digna/dashboard`, label the directory so the web server may read it:
+Если результат — `Enforcing` и вы обслуживаете dashboard из `/opt/digna/dashboard`, назначьте каталогу метку, чтобы веб-сервер мог его читать:
 
 ```bash
 sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-!!! note "Note"
+!!! note "Примечание"
 
-    If `semanage` is not found, install it with `sudo dnf install -y policycoreutils-python-utils`.
+    Если `semanage` не найден, установите его командой `sudo dnf install -y policycoreutils-python-utils`.
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    A dashboard that returns **403 Forbidden** on a freshly configured RHEL server is almost always an SELinux labelling problem rather than a file-permission one. Confirm with `sudo ausearch -m avc -ts recent`.
+    Если dashboard на только что настроенном сервере RHEL возвращает **403 Forbidden**, это почти всегда проблема меток SELinux, а не прав доступа к файлам. Убедитесь в этом с помощью `sudo ausearch -m avc -ts recent`.
 
 ---
 
-## Running digna as a systemd Service {: #running-digna-as-a-systemd-service }
+## Запуск digna как сервиса systemd {: #running-digna-as-a-systemd-service }
 
-### Why Run digna as a Service?
+### Зачем запускать digna как сервис?
 
-Running the digna backend as a systemd service ensures it:
+Запуск backend digna как сервиса systemd гарантирует, что он:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open terminal window
-- Restarts automatically if it crashes
-- Can be managed through `systemctl`, the standard Linux service manager
+- Автоматически запускается при загрузке машины
+- Работает в фоновом режиме без открытого окна терминала
+- Автоматически перезапускается при сбое
+- Управляется через `systemctl`, стандартный менеджер сервисов Linux
 
-### Service Management Files
+### Файлы управления сервисом
 
-All necessary files are located in the digna installation directory under: `bin/`
+Все необходимые файлы находятся в каталоге установки digna в папке: `bin/`
 
-The following shell scripts are available:
+Доступны следующие shell-скрипты:
 
-- `install_service.sh` — Registers digna with systemd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — регистрирует digna в systemd
+- `uninstall_service.sh` — удаляет регистрацию сервиса
+- `start_service.sh` — запускает зарегистрированный сервис
+- `stop_service.sh` — останавливает запущенный сервис
 
-!!! warning "Root Privileges Required"
+!!! warning "Требуются права root"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes a unit file to `/etc/systemd/system`.
+    Все скрипты должны выполняться с `sudo`, поскольку регистрация сервиса с автозапуском при загрузке записывает unit-файл в `/etc/systemd/system`.
 
-### Making the Scripts Executable
+### Как сделать скрипты исполняемыми
 
-Extraction may not preserve the executable bit. Before first use:
+При распаковке бит выполнения мог не сохраниться. Перед первым использованием:
 
 ```bash
 cd /opt/digna/bin
 sudo chmod +x *.sh
 ```
 
-### Installing the Service
+### Установка сервиса
 
-1. **Open a terminal**
+1. **Откройте терминал**
 
-2. **Navigate to the bin Folder**
+2. **Перейдите в папку bin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Запустите скрипт установки**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with systemd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Сервер digna теперь зарегистрирован в systemd с включённым **автоматическим запуском**. Сервис не запускается сразу — см. следующий раздел для его запуска.
 
-### Starting and Stopping the Service
+### Запуск и остановка сервиса
 
-#### To Start the Service
+#### Чтобы запустить сервис
 
-1. Open a terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Откройте терминал
+2. Перейдите в `/opt/digna/bin`
+3. Выполните:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Чтобы остановить сервис
 
-1. Open a terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Откройте терминал
+2. Перейдите в `/opt/digna/bin`
+3. Выполните:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Совет"
 
-    Always stop the service before updating application files.
+    Всегда останавливайте сервис перед обновлением файлов приложения.
 
-### Managing the Service with systemctl
+### Управление сервисом с помощью systemctl
 
-Once registered, the service can also be controlled with the standard systemd commands from any directory:
+После регистрации сервисом также можно управлять стандартными командами systemd из любого каталога:
 
 ```bash
 sudo systemctl start digna
@@ -1015,151 +1015,151 @@ sudo systemctl restart digna
 sudo systemctl status digna
 ```
 
-### Verifying the Service
+### Проверка сервиса
 
-To confirm that the service is registered and running:
+Чтобы убедиться, что сервис зарегистрирован и запущен:
 
 ```bash
 systemctl is-enabled digna
 systemctl is-active digna
 ```
 
-`enabled` means the service starts at boot; `active` means it is running now.
+`enabled` означает, что сервис запускается при загрузке; `active` — что он работает сейчас.
 
-### Viewing the Service Logs
+### Просмотр журналов сервиса
 
-systemd captures everything the backend writes to the console. To read it:
+systemd перехватывает всё, что backend выводит в консоль. Чтобы прочитать эти записи:
 
 ```bash
 sudo journalctl -u digna -n 100
 ```
 
-To follow the log live while reproducing a problem:
+Чтобы следить за журналом в реальном времени, воспроизводя проблему:
 
 ```bash
 sudo journalctl -u digna -f
 ```
 
-!!! tip "Tip"
+!!! tip "Совет"
 
-    This is the fastest way to diagnose a service that starts and immediately stops. A repository connection failure or a missing `license.toml` is reported here.
+    Это самый быстрый способ диагностировать сервис, который запускается и сразу же останавливается. Ошибка подключения к репозиторию или отсутствующий `license.toml` отображаются именно здесь.
 
-### Moving the Service to a New Directory
+### Перенос сервиса в новый каталог
 
-The unit file stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+Unit-файл хранит абсолютный путь к исполняемому файлу, поэтому при переносе установки требуется повторная регистрация сервиса:
 
-1. **Uninstall the Current Service**
+1. **Удалите текущий сервис**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Переместите файлы приложения**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Переустановите сервис**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Запустите сервис**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Удаление сервиса
 
-1. **Stop the Running Service**
+1. **Остановите запущенный сервис**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Удалите сервис**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from systemd.
+Сервер digna теперь удалён из systemd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Обновление до новой версии {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Перед обновлением
 
-**Verify All Database Connections First**
+**Сначала проверьте все подключения к базам данных**
 
-From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
-offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
-The digna team decided to build on ODBC alone, because a single, standard interface gives you
-more than a set of bespoke drivers can:
+Начиная с выпуска 2026.06 digna обращается к каждой исходной технологии через **ODBC**. Прежние выпуски
+предлагали выбор между отдельным драйвером для каждой технологии и ODBC, задаваемый переключателем **Use ODBC**.
+Команда digna решила опираться только на ODBC, потому что единый стандартный интерфейс даёт больше,
+чем набор драйверов, написанных под заказ:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
-  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
-  update, rather than waiting for a digna release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of digna.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones digna does not publish a dedicated guide for.
+- **Аутентификация** — аутентификация является частью ODBC, поэтому подключение может использовать всё, что
+  поддерживает его драйвер: пароли, токены и PAT, Kerberos и Active Directory, MFA и единый вход через браузер,
+  облачные удостоверения, клиентские сертификаты и TLS. Новые методы появляются вместе с обновлением
+  драйвера, а не после ожидания выпуска digna.
+- **Драйверы, поддерживаемые производителями баз данных** — собственный драйвер производителя отслеживает новые версии
+  сервера и исправления безопасности, и вы можете обновлять его в своём темпе, независимо от digna.
+- **Единый способ настроить всё** — каждая технология — это список свойств «ключ/значение» с
+  одним и тем же интерфейсом, одинаковым шифрованием конфиденциальных значений и одинаковой диагностикой,
+  вместо разного набора полей для каждого источника.
+- **Тонкая настройка и охват** — параметры драйвера, такие как тайм-ауты, настройки TLS, прокси-серверы и размеры
+  выборки, доступны для любого источника, а подключить можно любую технологию с совместимым драйвером ODBC,
+  в том числе те, для которых digna не публикует отдельного руководства.
 
-In practice this means the **Use ODBC** switch and the separate host, port, database, user and
-password fields no longer exist. **Every connection that does not already use ODBC must be
-changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+На практике это означает, что переключателя **Use ODBC** и отдельных полей узла, порта, базы данных, пользователя и
+пароля больше нет. **Каждое подключение, ещё не использующее ODBC, должно быть
+переведено на ODBC** — автоматического преобразования нет, поэтому спланируйте это до обновления:
 
-1. Review every database connection defined in your installation and list the ones that are not
-   yet using ODBC — each of these has to be reconfigured.
-2. Install the matching ODBC driver on the digna host — connections are opened from the server
-   that runs the digna backend, not from the browser. See
-   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
-3. Have the ODBC properties ready for each affected connection. The
-   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
-   property set per source.
+1. Просмотрите каждое подключение к базе данных, определённое в вашей установке, и отметьте те, которые
+   ещё не используют ODBC — каждое из них придётся настроить заново.
+2. Установите соответствующий драйвер ODBC на узле digna — подключения открываются с сервера,
+   на котором работает серверная часть digna, а не из браузера. См.
+   [Установка драйвера ODBC на узле digna](../../../databases/overview.md#install-the-driver).
+3. Подготовьте свойства ODBC для каждого затронутого подключения.
+   [Руководства по технологиям](../../../databases/overview.md#technology-guides) приводят для каждого источника
+   проверенный набор свойств.
 
-After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
-see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
-and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+После обновления переведите каждое затронутое подключение на ODBC и проверьте его из панели управления —
+см. [Создание подключения к базе данных](../../../databases/overview.md#create-a-database-connection)
+и [Проверка подключения](../../../databases/overview.md#testing-a-connection).
 
-!!! warning "Databricks Legacy connections"
+!!! warning "Подключения Databricks Legacy"
 
-    The Databricks Legacy connector has been removed in this release. Migrate those connections
-    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+    Коннектор Databricks Legacy удалён в этом выпуске. Переведите такие подключения
+    на коннектор [Databricks](../../../databases/databricks_connector_guide.md).
 
-**Creating a digna Repository Backup is Mandatory**
+**Создание резервной копии репозитория digna обязательно**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Перед обновлением digna сделайте резервную копию вашего репозитория (PostgreSQL), чтобы защититься от потери данных.
+Резервная копия позволит восстановиться в случае непредвиденных проблем при обновлении.
 
-To create a backup from the shell:
+Чтобы создать резервную копию из оболочки:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Процесс обновления
 
-#### Step 1: Stop the digna Service
+#### Шаг 1: Остановите сервис digna
 
-If digna is running as a systemd service, stop it first:
+Если digna запущен как сервис systemd, сначала остановите его:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its terminal window.
+Если digna запущен на переднем плане, нажмите `Ctrl + C` в окне терминала, где он работает.
 
-#### Step 2: Backup Current Installation
+#### Шаг 2: Резервное копирование текущей установки
 
-In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
+В каталоге установки digna переименуйте папки текущей установки, чтобы новый выпуск можно было развернуть рядом с ними:
 
 ```bash
 cd /opt/digna
@@ -1172,37 +1172,37 @@ sudo mv dignacli dignacli_old
 sudo mv dashboard dashboard_old
 ```
 
-!!! info "dignabackend and dignacli are no longer used"
+!!! info "dignabackend и dignacli больше не используются"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Начиная с выпуска 2026.06 `dignabackend` и `dignacli` заменены одним исполняемым файлом `digna`, объединяющим серверную часть и CLI. Сохраняйте `dignabackend_old` и `dignacli_old` только до тех пор, пока не проверите обновление, — после этого обе папки можно удалить. Сохраняйте `dashboard_old`, пока не восстановите из неё свои файлы конфигурации (см. шаг 4).
 
-#### Step 3: Extract and Deploy New Version
+#### Шаг 3: Распакуйте и разверните новую версию
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and the ownership of the service account:
+1. Распакуйте новый ZIP-файл установки digna
+2. Скопируйте новый исполняемый файл `digna` и папку `dashboard` в каталог установки
+3. Восстановите бит выполнения и владельца — служебную учётную запись:
 
 ```bash
 sudo chmod +x /opt/digna/digna
 sudo chown -R digna:digna /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
-    installation ZIP — the digna team never ships either file. Your existing configuration is
-    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
-    only ones you have.
+    Ни `config.toml`, ни `dashboard/dashboard_config.toml` никогда не включаются в
+    ZIP с установкой — команда digna никогда не поставляет эти файлы. Поэтому обновление
+    не затрагивает вашу существующую конфигурацию, а копии в переименованных папках `*_old` — единственные,
+    которые у вас есть.
 
-#### Step 4: Restore Your Configuration Files
+#### Шаг 4: Восстановите файлы конфигурации
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-!!! warning "Release 2026.06 changes config.toml"
+!!! warning "Выпуск 2026.06 изменяет config.toml"
 
-    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Три параметра новые и обязательные, а три больше не используются. `config.toml`, перенесённый из прежнего выпуска, новых параметров не содержит, и digna не запустится, пока они отсутствуют. Добавьте в существующий `config.toml` следующее:
 
     ```toml
     [base]
@@ -1213,16 +1213,16 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
+    Добавьте два ключа `[base]` в существующий раздел `[base]` и добавьте `[encryption]` как новый раздел. Затем удалите параметры, которые больше не используются: **`digna_FERNET_KEY`** из `[base]`, а также **`digna_APP_HOST`** и **`digna_APP_PORT`** из `[app]` — адрес и порт сервер теперь берёт из `digna serve`.
 
-    See [Backend Configuration](#backend-configuration) for what each setting does.
+    Назначение каждого параметра описано в разделе [Конфигурация backend](#backend-configuration).
 
-!!! warning "Single sign-on: the [oidc_clients] format has changed"
+!!! warning "Единый вход: формат [oidc_clients] изменился"
 
-    Release 2026.06 replaces the array of tables with one table per provider, named after the
-    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+    В выпуске 2026.06 массив таблиц заменён отдельной таблицей для каждого поставщика, названной по
+    ключу поставщика. `DIGNA_OIDC_KEY` исчезает — ключ теперь является частью заголовка раздела.
 
-    Before:
+    Было:
 
     ```toml
     [[oidc_clients]]
@@ -1233,7 +1233,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    After:
+    Стало:
 
     ```toml
     [oidc_clients.microsoft]
@@ -1243,73 +1243,73 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Repeat the section for every provider, and keep each key matching the `key` in
-    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
-    old form is still in place. Only installations that use single sign-on are affected.
+    Повторите раздел для каждого поставщика и следите, чтобы каждый ключ совпадал с `key` в файле
+    `dashboard_config.toml`. `digna config check` сообщает о разделе `oidc_clients` как FAILED, пока
+    сохраняется прежняя форма. Это касается только установок, использующих единый вход.
 
-#### Step 5: Reload the Web Server
+#### Шаг 5: Перезагрузите веб-сервер
 
-The dashboard is a set of static files, so your web server — and the browser — may still be
-serving the previous version. Reload or restart whichever web server hosts the `dashboard`
-folder, then reload the page with a hard refresh (++ctrl+f5++).
+Dashboard — это набор статических файлов, поэтому ваш веб-сервер, а также браузер, могут по-прежнему
+отдавать предыдущую версию. Перезагрузите или перезапустите веб-сервер, на котором размещена папка `dashboard`,
+затем обновите страницу с полной перезагрузкой (++ctrl+f5++).
 
-#### Step 6: Validate the Configuration
+#### Шаг 6: Проверьте конфигурацию
 
-Confirm that the updated `config.toml` is complete before touching the repository:
+Прежде чем трогать репозиторий, убедитесь, что обновлённый `config.toml` полон:
 
 ```bash
 ./digna config check
 ```
 
-Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+Каждый раздел должен сообщить OK. Исправьте всё, о чём сообщено как FAILED, и выполните команду ещё раз, прежде чем продолжить.
 
-#### Step 7: Replace the License File
+#### Шаг 7: Замените файл лицензии
 
-Each release is licensed separately. Copy the `license.toml` that the digna team provided for
-this release into the installation directory, replacing the old one:
+Каждый выпуск лицензируется отдельно. Скопируйте `license.toml`, предоставленный командой digna для
+этого выпуска, в каталог установки, заменив старый:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
-!!! warning "Do not keep the previous license"
+!!! warning "Не оставляйте прежнюю лицензию"
 
-    A `license.toml` issued for an earlier release does not cover this one, and every command
-    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
-    repository when the check fails. Verify it before going further:
+    `license.toml`, выданный для более раннего выпуска, не распространяется на этот, и каждая команда,
+    проверяющая лицензию, — `user`, `inspection`, `repo` — прерывается, не затрагивая
+    репозиторий, если проверка не пройдена. Проверьте лицензию, прежде чем продолжить:
 
     ```bash
     ./digna license check
     ```
 
-#### Step 8: Upgrade the Repository Schema
+#### Шаг 8: Обновите схему репозитория
 
-Navigate to your digna installation directory and run:
+Перейдите в каталог установки digna и выполните:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Это обновит схему PostgreSQL до последней версии, сохранив все существующие данные.
 
-#### Step 9: Restart Services
+#### Шаг 9: Перезапустите сервисы
 
-If running as a systemd service:
+Если вы используете сервис systemd:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Если запускаете вручную, перезапустите сервер:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, reload the respective web server:
+Если используется nginx или Apache, перезагрузите соответствующий веб-сервер:
 
 ```bash
 sudo systemctl reload nginx
@@ -1318,19 +1318,19 @@ sudo systemctl reload nginx
 sudo systemctl restart apache2
 ```
 
-On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory was replaced:
+В семействе RHEL повторно примените метки SELinux, если каталог `dashboard` был заменён:
 
 ```bash
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Step 10: Verify the Upgrade
+#### Шаг 10: Проверьте корректность обновления
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-4. Change every connection that did not already use ODBC over to ODBC, then test all connections
-   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection):
+1. Откройте интерфейс digna dashboard
+2. Убедитесь, что интерфейс загружается корректно
+3. Проверьте журналы сервера на наличие ошибок
+4. Переведите на ODBC каждое подключение, которое его ещё не использовало, затем проверьте все подключения
+   — см. [Проверка подключения](../../../databases/overview.md#testing-a-connection):
 
 ```bash
 sudo journalctl -u digna -n 100

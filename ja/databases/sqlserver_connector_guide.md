@@ -1,86 +1,81 @@
-# Source Connector for MS SQL Server
+# MS SQL Server 用ソースコネクター
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+このガイドでは、**DSN レス** の接続文字列を使用して、**ODBC** 経由で Microsoft SQL Server に接続するよう *digna* を
+設定する方法を説明します。
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+セットアップの *digna* 側（接続を作成する場所、プロパティ値の暗号化方法、接続のテスト方法、プロファイリングモードの意味）は
+すべてのテクノロジーで共通であり、[データベース接続の概要](overview.md) で説明しています。このページでは SQL Server
+固有の内容を扱います。
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Synapse も SQL Server 接続として設定しますが、ホスト名が異なり、追加の考慮事項がいくつかあります。
+    [Azure Synapse](azure_synapse_connector_guide.md) を参照してください。
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. ODBC ドライバーをインストールする {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+[Microsoft のインストールガイド](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server) に従って、
+*digna* バックエンドを実行するマシンに **ODBC Driver 18 for SQL Server** をインストールします。
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Windows に **SQL Server** という名前だけで同梱されているドライバーも動作しますが、とうの昔に後継に置き換えられており、
+最新の TLS 設定にも Azure 認証にも対応していません。最新のドライバーをインストールできない場合にのみ使用してください。
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+[digna ホストに ODBC ドライバーをインストールする](overview.md#install-the-driver) の説明に従って、ホスト上で登録されている
+正確なドライバー名を確認してください。
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. ODBC プロパティ {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "これは例であり、仕様ではありません"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    以下のセットは、動作が確認されている組み合わせの 1 つです。プロパティは Microsoft の ODBC ドライバーに属するため、
+    その名前、既定値、受け付ける値はドライバーのバージョン（例えば Driver 18 は既定で暗号化しますが、Driver 17 は
+    そうではありませんでした）やプラットフォームによって異なります。これを出発点として使用し、インストールした
+    ドライバーバージョンのドキュメントを確認してください。
 
-Add the following properties in the **Add DB Connection** screen:
+**Add DB Connection** 画面で次のプロパティを追加します。
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | *digna* ホストに登録されているドライバー名と一致している必要があります |
+| `SERVER` | `sql.example.com` | サーバー名または IP アドレス。名前付きインスタンスは `host\instance`、既定以外のポートは `host,1433` |
+| `PORT` | `1433` | ポートがすでに `SERVER` に含まれている場合は省略します |
+| `DATABASE` | `digna_source_db` | ソーススキーマを保持するデータベース。この接続でプロファイリングできる唯一のデータベースです |
+| `UID` | `digna_source_user` | データベースユーザー |
+| `PWD` | `<password>` | **Encrypted** をオンにします |
 
-The resulting connection string looks like this:
+生成される接続文字列は次のようになります。
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### ODBC Driver 18 での暗号化
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 は既定で接続を暗号化し、サーバー証明書を検証します。*digna* ホストが信頼していない証明書（一般的には自己署名
+証明書）を持つサーバーに対しては、証明書チェーンのエラーで接続に失敗します。次を追加します。
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Driver 18 の既定値。サーバーが TLS に対応できない場合にのみ `no` に設定します |
+| `TrustServerCertificate` | `yes` | 証明書の検証をスキップします。テスト環境では便利ですが、本番環境では証明書をインストールすることをお勧めします |
 
-### Windows Authentication
+### Windows 認証
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+SQL ログインの代わりに *digna* サービスを実行するアカウントとして接続するには、`UID` と `PWD` を削除し、次を追加します。
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | *digna* のサービスアカウントにデータベースの権限が必要です |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* の設定 {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** 画面で、次の内容を入力します。
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +86,55 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. MS SQL Server に関する注意事項 {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **1 つの接続から見えるのは 1 つのデータベースです。** SQL Server は現在のデータベースのみをカタログとして報告するため、
+  *digna* は `DATABASE` で指定したデータベースのスキーマを提示します。別のデータベースにあるソーステーブルには、専用の
+  接続が必要です。
+- **プロファイリングモード。** *Permanent* は **Work Schema** にワークテーブルを作成するため、ユーザーにはそこでの
+  `CREATE TABLE` 権限が必要です。*Session* は `tempdb` 内のローカル一時テーブル（`#wt_…`）を使用し、**Work Schema** には
+  触れません。*Standard* に必要なのは読み取りアクセスのみです。
+- **`SERVER` にはインスタンスとポートを含めます。** 名前付きインスタンスで `host\instance` を使う場合は、SQL Server
+  Browser サービスに到達できる必要があります。`host,port` を使えばそれを回避できます。
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. ドライバーの動作確認（任意） {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+DSN レス接続では ODBC データソースの設定は必要ありませんが、ドライバー自体のウィザードを使うと、*digna* に入力する前に、
+ドライバーが動作し、サーバーが認証情報を受け付けることを手軽に確認できます。
 
-#### Step 1
+#### ステップ 1
 ![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+**Next >** ボタンをクリックします。
 
-#### Step 2
+#### ステップ 2
 ![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+認証方式（例: ユーザー名とパスワード）を選択し、
+必要な情報を入力します。
 
-Click the **Next >** button.
+**Next >** ボタンをクリックします。
 
-#### Step 3
+#### ステップ 3
 ![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+ANSI 準拠の設定を選択し、**Next >** ボタンをクリックします。
 
-#### Step 4
+#### ステップ 4
 ![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+既定の設定のままにするか、必要に応じてログのオプションを選択し、
+**Finish** ボタンをクリックします。
 
-#### Step 5
+#### ステップ 5
 ![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+次に **Test datasource** ボタンをクリックします。
 
-#### Step 6
+#### ステップ 6
 ![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+成功画面が表示されれば、ドライバーと認証情報が動作していることが確認できます。ここで入力した値は、
+[セクション 2](#2-odbc-properties) のプロパティに指定する値そのものです。

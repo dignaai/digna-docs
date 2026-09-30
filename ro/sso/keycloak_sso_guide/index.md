@@ -10,7 +10,7 @@ Acest ghid acoperă **partea Keycloak**: crearea clientului și colectarea valor
 
 | Cerință | Notițe |
 |---|---|
-| **Versiune Keycloak** | 17 sau mai recent pentru căile URL folosite aici — vedeți nota din Pasul 4 |
+| **Versiune Keycloak** | 17 sau mai recent pentru căile URL folosite aici — vedeți nota din Pasul 5 |
 | **Rol Keycloak** | `realm-admin` în realm-ul țintă, sau administrator de server |
 | **Realm** | Realm-ul din care fac parte utilizatorii digna, nu neapărat `master` |
 | **URI de redirect digna** | URL-ul la care utilizatorii revin după autentificare, ex. `https://digna.yourdomain.com/oidc/callback` |

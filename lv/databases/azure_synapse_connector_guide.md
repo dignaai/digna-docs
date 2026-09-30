@@ -1,92 +1,92 @@
-# Source Connector for Azure Synapse Analytics
+# Avota konektors Azure Synapse Analytics
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Šajā ceļvedī aprakstīts, kā konfigurēt *digna* savienojumu ar Azure Synapse Analytics caur
+**ODBC**, izmantojot savienojuma virkni **bez DSN** (DSN-less). Tiek atbalstīti gan serverless,
+gan dedicated SQL pūli.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+Iestatīšanas *digna* puse ir vienāda katrai tehnoloģijai — kur tiek veidoti savienojumi,
+kā tiek šifrētas rekvizītu vērtības, kā tiek testēts savienojums un ko nozīmē profilēšanas
+režīmi. Tā ir aprakstīta lapā [Datubāzu savienojumu pārskats](overview.md). Šī lapa aptver to,
+kas raksturīgs tieši Azure Synapse.
 
-!!! note "Technology"
+!!! note "Tehnoloģija"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Synapse izmanto SQL Server dialektu, tāpēc savienojums tiek izveidots ar **Technology:
+    SQL Server**. Lokālam serverim skatiet [MS SQL Server](sqlserver_connector_guide.md).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Instalēt ODBC draiveri {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Instalējiet **ODBC Driver 18 for SQL Server** datorā, kurā darbojas *digna* backend,
+sekojot [Microsoft instalēšanas ceļvedim](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+un nolasiet precīzu reģistrēto draivera nosaukumu savā resursdatorā, kā aprakstīts sadaļā
+[Instalēt ODBC draiveri digna resursdatorā](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. ODBC rekvizīti {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Piemērs, nevis specifikācija"
+
+    Tālāk norādītā kopa ir viena kombinācija, par kuru zināms, ka tā darbojas. Rekvizīti pieder
+    Microsoft ODBC draiverim, tāpēc to nosaukumi, noklusējuma vērtības un pieņemtās vērtības
+    atšķiras starp draivera versijām un platformām, un tas, ko pieprasa darbvieta (workspace), ir
+    atkarīgs no tās konfigurācijas — pūla tipa, autentifikācijas metodes, ugunsmūra. Izmantojiet
+    to kā sākumpunktu un pārbaudiet jūsu instalētās draivera versijas dokumentāciju.
+
+Ekrānā **Add DB Connection** pievienojiet šādus rekvizītus:
+
+| Atslēga | Vērtības piemērs | Piezīmes |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Jāatbilst draivera nosaukumam, kas reģistrēts *digna* resursdatorā |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Darbvietas nosaukums plus gala punkta sufikss — skatiet tālāk |
+| `DATABASE` | `dignadata` | Datubāze, kurā atrodas avota shēmas. Tā ir vienīgā datubāze, ko šis savienojums var profilēt |
+| `UID` | `sqladminuser` | SQL pieteikumvārds |
+| `PWD` | `<password>` | Atzīmējiet **Encrypted** |
 
-The resulting connection string looks like this:
+Iegūtā savienojuma virkne izskatās šādi:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### `SERVER` vērtība
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Ņemiet Synapse darbvietas nosaukumu un pievienojiet gala punkta sufiksu:
 
-| Pool | `SERVER` |
+| Pūls | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "Daļu `-ondemand` ir viegli palaist garām"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Bez tās nosaukums tiek atrisināts uz dedicated gala punktu, un savienojums vai nu neizdodas,
+    vai bez brīdinājuma sasniedz citu pūlu, nekā paredzēts. Abi gala punkti ir redzami darbvietas
+    pārskata lapā Azure portālā.
 
-### Firewall
+### Ugunsmūris
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Synapse darbvietas ugunsmūrim jāatļauj *digna* resursdatora izejošā adrese. Pirms savienojuma
+testēšanas pievienojiet to darbvietas sadaļā **Networking** — bloķēta adrese izpaužas kā
+savienojuma taimauts, nevis autentifikācijas kļūda.
 
-### Microsoft Entra ID authentication
+### Microsoft Entra ID autentifikācija
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+SQL pieteikumvārda vietā draiveris var autentificēties pret Entra ID. Aizstājiet `UID`/`PWD` ar
+autentifikācijas metodi, ko sagaida jūsu darbvieta, piemēram:
 
-| Key | Example value | Notes |
+| Atslēga | Vērtības piemērs | Piezīmes |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | Tad `UID` satur lietotnes (klienta) ID un `PWD` — klienta slepeno atslēgu |
+| `Authentication` | `ActiveDirectoryMSI` | *digna* resursdatora pārvaldītā identitāte (managed identity), akreditācijas dati nav nepieciešami |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigurācija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrānā **Add DB Connection** norādiet šādus datus:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -98,63 +98,63 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Piezīmes par Azure Synapse {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **Serverless pūli atbalsta tikai *Standard* profilēšanu.** Serverless SQL pūls nevar izveidot
+  tabulas datubāzē, tāpēc nevar darboties ne *Permanent*, ne *Session* profilēšana. *Standard*
+  aprēķina metrikas tieši avotā, un tas ir arī lētākais variants, jo par serverless tiek
+  maksāts pēc apstrādāto datu apjoma.
+- **Viens savienojums redz vienu datubāzi.** *digna* piedāvā tās datubāzes shēmas, kas norādīta
+  `DATABASE`, jo Synapse, tāpat kā SQL Server, kā katalogu norāda tikai pašreizējo datubāzi.
+- **Šifrēšana pēc noklusējuma ir ieslēgta** Driver 18, un Synapse gala punkti izmanto derīgus
+  publiskos sertifikātus, tāpēc rekvizīti `Encrypt` vai `TrustServerCertificate` nav nepieciešami.
+- **Serverless gala punkts pirmajā savienojumā var atsākt darbu pēc dīkstāves.** Ja savienojuma
+  testam iestājas taimauts pūlā, kas kādu laiku nav izmantots, mēģiniet vēlreiz.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Draivera pārbaude (pēc izvēles) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+Savienojumam bez DSN nav jākonfigurē ODBC datu avots, taču paša draivera vednis ir ērts veids,
+kā pārliecināties, ka draiveris darbojas un darbvieta pieņem jūsu akreditācijas datus, pirms tos
+ievadāt *digna*.
 
-#### Step 1
+#### 1. solis
 ![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Aizpildiet lauku "Server".
+Izmantojiet Synapse darbvietas nosaukumu un papildiniet to ar ".sql.azuresynapse.net".  
+**Uzmanību**: ja vēlaties savienoties, izmantojot serverless SQL pūlu, noteikti iekļaujiet
+"-ondemand", kā parādīts ekrānuzņēmumā iepriekš.
 
-Click the **Next >** button.
+Noklikšķiniet uz pogas **Next >**.
 
-#### Step 2
+#### 2. solis
 ![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Izvēlieties autentifikācijas metodi (piem., lietotājvārds un parole)
+un norādiet nepieciešamos datus.
 
-Click the **Next >** button.
+Noklikšķiniet uz pogas **Next >**.
 
-#### Step 3
+#### 3. solis
 ![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Izvēlieties ANSI atbilstošos iestatījumus, pēc tam noklikšķiniet uz pogas **Next >**.
 
-#### Step 4
+#### 4. solis
 ![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Varat atstāt noklusējuma iestatījumus vai izvēlēties opcijas pēc vajadzības
+un noklikšķināt uz pogas **Finish**.
 
-#### Step 5
+#### 5. solis
 ![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Tagad noklikšķiniet uz pogas **Test datasource**.
 
-#### Step 6
+#### 6. solis
 ![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Veiksmes ekrāns apstiprina, ka draiveris, gala punkts un akreditācijas dati darbojas. Ievadītās
+vērtības ir tieši tās, ko pieņem rekvizīti [2. sadaļā](#2-odbc-properties).

@@ -1,95 +1,95 @@
-# Set up SSO with Auth0
+# Ställ in SSO med Auth0
 
-Auth0 is OIDC-compliant and exposes a discovery endpoint per tenant. The main thing to get right is the tenant domain, which appears in the discovery URL and changes if you enable a custom domain.
+Auth0 följer OIDC-standarden och exponerar en discovery-endpoint per tenant. Det viktigaste att få rätt är tenant-domänen, som ingår i discovery-URL:en och ändras om du aktiverar en anpassad domän.
 
-This guide covers the **Auth0 side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Denna guide täcker **Auth0-sidan**: skapa applikationen och samla de värden digna behöver. digna-sidan — `dashboard_config.toml`, testning och felsökning — är densamma för alla leverantörer och beskrivs i [Översikt över Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Innan du börjar
 
-| Requirement | Notes |
+| Krav | Noteringar |
 |---|---|
-| **Auth0 role** | Admin on the tenant |
-| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Auth0-roll** | Admin i tenanten |
+| **Tenant-domän** | t.ex. `yourcompany.eu.auth0.com` — regionsegmentet spelar roll |
+| **digna redirect URI** | URL:en dit användarna återvänder efter inloggning, t.ex. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application
+## Steg 1: Skapa applikationen
 
-1. Sign in to the [Auth0 Dashboard](https://manage.auth0.com)
-2. Go to **Applications → Applications**
-3. Click **Create Application**
-4. Name it `digna` and choose **Regular Web Applications**
-5. Click **Create**
+1. Logga in i [Auth0 Dashboard](https://manage.auth0.com)
+2. Gå till **Applications → Applications**
+3. Klicka på **Create Application**
+4. Ge den namnet `digna` och välj **Regular Web Applications**
+5. Klicka på **Create**
 
-!!! warning "Choose Regular Web Applications"
+!!! warning "Välj Regular Web Applications"
 
-    *Single Page Application* and *Native* create public clients with no secret. digna performs the code exchange from its backend and needs a confidential client, so **Regular Web Applications** is the correct type. Unlike some providers, Auth0 does let you change the type later under **Settings → Application Type**.
+    *Single Page Application* och *Native* skapar publika klienter utan hemlighet. digna utför kodutbytet från sin backend och behöver en konfidentiell klient, så **Regular Web Applications** är rätt typ. Till skillnad från vissa leverantörer låter Auth0 dig ändra typen i efterhand under **Settings → Application Type**.
 
 ---
 
-## Step 2: Add the Callback URL
+## Steg 2: Lägg till callback-URL:en
 
-On the application's **Settings** tab:
+På applikationens flik **Settings**:
 
-1. Find **Allowed Callback URLs**
-2. Enter your digna callback URL:
+1. Leta upp **Allowed Callback URLs**
+2. Ange din digna callback-URL:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Allowed Logout URLs** to your dashboard URL
-4. Scroll to the bottom and click **Save Changes**
+3. Ange vid behov **Allowed Logout URLs** till din dashboard-URL
+4. Scrolla längst ned och klicka på **Save Changes**
 
-!!! note "Comma-Separated, Not Newline-Separated"
+!!! note "Kommaseparerade, inte radseparerade"
 
-    Auth0 accepts several callback URLs in this field, separated by commas. A list separated only by newlines is read as one malformed URL and silently matches nothing.
-
----
-
-## Step 3: Collect the Credentials
-
-Still on **Settings**, in the **Basic Information** panel:
-
-- **Domain** → goes into the discovery URL
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click to reveal)
+    Auth0 accepterar flera callback-URL:er i detta fält, separerade med kommatecken. En lista som bara är separerad med radbrytningar tolkas som en enda felaktig URL och matchar tyst ingenting.
 
 ---
 
-## Step 4: Confirm the Grant Type
+## Steg 3: Samla in inloggningsuppgifterna
 
-1. Go to **Settings → Advanced Settings → Grant Types**
-2. Confirm **Authorization Code** is ticked
+Fortfarande under **Settings**, i panelen **Basic Information**:
 
-It is enabled by default for Regular Web Applications. If it has been unticked, digna's login fails with `unauthorized_client`.
+- **Domain** → används i discovery-URL:en
+- **Client ID** → blir `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → blir `DIGNA_OIDC_CLIENT_SECRET` (klicka för att visa)
 
 ---
 
-## Step 5: Build the Discovery URL
+## Steg 4: Bekräfta grant-typen
 
-Substitute the **Domain** from Step 3:
+1. Gå till **Settings → Advanced Settings → Grant Types**
+2. Bekräfta att **Authorization Code** är ikryssad
+
+Den är aktiverad som standard för Regular Web Applications. Om den har avmarkerats misslyckas inloggningen i digna med `unauthorized_client`.
+
+---
+
+## Steg 5: Bygg discovery-URL:en
+
+Ersätt med **Domain** från Steg 3:
 
 ```
 https://<your_tenant_domain>/.well-known/openid-configuration
 ```
 
-For example:
+Till exempel:
 
 ```
 https://yourcompany.eu.auth0.com/.well-known/openid-configuration
 ```
 
-!!! warning "Custom Domains Change the Issuer"
+!!! warning "Anpassade domäner ändrar utfärdaren"
 
-    If your tenant uses a custom domain such as `login.yourcompany.com`, use that domain in the discovery URL. Mixing the two — the canonical domain in the discovery URL, the custom one in the browser — produces an issuer mismatch, and the token is rejected after an otherwise successful login.
+    Om din tenant använder en anpassad domän som `login.yourcompany.com`, använd den domänen i discovery-URL:en. Att blanda de två — den kanoniska domänen i discovery-URL:en och den anpassade i webbläsaren — ger en issuer mismatch, och token avvisas efter en i övrigt lyckad inloggning.
 
 ---
 
-## Step 6: Configure digna
+## Steg 6: Konfigurera digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -112,37 +112,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `auth0` here.
+`key` i båda filerna måste matcha — här `auth0`.
 
 ---
 
-## Step 7: Test
+## Steg 7: Testa
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Starta om backend och webbserver och öppna sedan dashboarden. Se [Testa inloggningen](overview.md#testing-login) för den fullständiga checklistan.
 
 ---
 
-## Troubleshooting Auth0
+## Felsökning av Auth0
 
 ### Callback URL Mismatch
 
-Auth0's error page names the URL it received. Add it to **Allowed Callback URLs**, checking that entries are comma-separated.
+Auth0:s felsida anger den URL som togs emot. Lägg till den i **Allowed Callback URLs** och kontrollera att posterna är kommaseparerade.
 
 ### unauthorized_client
 
-**Authorization Code** is not enabled under **Advanced Settings → Grant Types**, or the application type is not Regular Web Applications.
+**Authorization Code** är inte aktiverad under **Advanced Settings → Grant Types**, eller så är applikationstypen inte Regular Web Applications.
 
-### Access Denied After a Successful Login
+### Åtkomst nekas efter en lyckad inloggning
 
-A Rule, Action or Post-Login trigger in the tenant is rejecting the user. Check **Actions → Flows → Login** and the tenant logs under **Monitoring → Logs**, which show the exact reason.
+En Rule, Action eller Post-Login-trigger i tenanten avvisar användaren. Kontrollera **Actions → Flows → Login** och tenantloggarna under **Monitoring → Logs**, som visar den exakta orsaken.
 
-### Issuer Mismatch
+### Issuer mismatch
 
-The discovery URL and the domain the browser was sent to differ — usually the canonical tenant domain versus a custom domain. Use one consistently.
+Discovery-URL:en och domänen som webbläsaren skickades till skiljer sig åt — oftast den kanoniska tenant-domänen jämfört med en anpassad domän. Använd en av dem konsekvent.
 
 ---
 
-## See Also
+## Se även
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Översikt över Single Sign-On](overview.md) — konfigurationsreferens, testning och allmän felsökning
 - [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)

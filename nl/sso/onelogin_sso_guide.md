@@ -1,110 +1,110 @@
-# Set up SSO with OneLogin
+# SSO instellen met OneLogin
 
-OneLogin is OIDC-compliant. Its distinguishing feature is that the connector type is chosen from a catalogue when the app is created and cannot be changed afterwards.
+OneLogin is OIDC-conform. Het onderscheidende kenmerk is dat het connectortype bij het aanmaken van de app uit een catalogus wordt gekozen en daarna niet meer kan worden gewijzigd.
 
-This guide covers the **OneLogin side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Deze gids behandelt de **OneLogin-kant**: het aanmaken van de applicatie en het verzamelen van de waarden die digna nodig heeft. De digna-kant — `dashboard_config.toml`, testen en oplossen van problemen — is voor elke provider hetzelfde en wordt beschreven in het [Overzicht Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Voordat je begint
 
-| Requirement | Notes |
+| Vereiste | Opmerkingen |
 |---|---|
-| **OneLogin role** | Account owner or an administrator permitted to add applications |
-| **Subdomain** | e.g. `yourcompany.onelogin.com` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **OneLogin-rol** | Accounteigenaar of een beheerder die applicaties mag toevoegen |
+| **Subdomein** | bijv. `yourcompany.onelogin.com` |
+| **digna redirect URI** | De URL waar gebruikers na het inloggen naar terugkeren, bijv. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the OIDC Application
+## Stap 1: Maak de OIDC-applicatie aan
 
-1. Sign in to the OneLogin Admin portal
-2. Go to **Applications → Applications**
-3. Click **Add App**
-4. Search for `OpenId Connect` and select the **OpenId Connect (OIDC)** connector
-5. Set the **Display Name** to `digna`
-6. Click **Save**
+1. Log in op het OneLogin Admin-portaal
+2. Ga naar **Applications → Applications**
+3. Klik **Add App**
+4. Zoek naar `OpenId Connect` en selecteer de connector **OpenId Connect (OIDC)**
+5. Stel de **Display Name** in op `digna`
+6. Klik **Save**
 
-!!! warning "The Connector Type Is Fixed at Creation"
+!!! warning "Het connectortype ligt vast bij het aanmaken"
 
-    OneLogin has separate catalogue entries for SAML and OIDC, and an application cannot be converted from one to the other. If you pick a SAML connector by mistake, delete the app and add it again — there is no setting to switch protocols.
+    OneLogin heeft aparte catalogusitems voor SAML en OIDC, en een applicatie kan niet van het ene naar het andere worden omgezet. Als je per ongeluk een SAML-connector kiest, verwijder de app dan en voeg hem opnieuw toe — er is geen instelling om van protocol te wisselen.
 
 ---
 
-## Step 2: Configure the Redirect URI
+## Stap 2: Configureer de redirect URI
 
-1. Open the **Configuration** tab
-2. In **Redirect URI's**, enter your digna callback URL:
+1. Open het tabblad **Configuration**
+2. Voer in **Redirect URI's** je digna callback-URL in:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Post Logout Redirect URIs** to your dashboard URL
-4. Click **Save**
+3. Stel optioneel **Post Logout Redirect URIs** in op de URL van je dashboard
+4. Klik **Save**
 
-!!! note "One URI per Line"
+!!! note "Eén URI per regel"
 
-    Unlike providers that expect a comma-separated list, OneLogin's **Redirect URI's** field takes one URI per line.
-
----
-
-## Step 3: Set the Application Type and Authentication Method
-
-1. Open the **SSO** tab
-2. Confirm **Application Type** is *Web*
-3. Set **Token Endpoint → Authentication Method** to *POST* (`client_secret_post`) or *Basic* (`client_secret_basic`)
-
-!!! warning "Do Not Choose None"
-
-    Setting the authentication method to *None* makes the application a public client with no secret, and digna's backend code exchange will be rejected. Either POST or Basic works.
+    Anders dan providers die een door komma's gescheiden lijst verwachten, neemt het veld **Redirect URI's** van OneLogin één URI per regel.
 
 ---
 
-## Step 4: Collect the Credentials
+## Stap 3: Stel het applicatietype en de authenticatiemethode in
 
-Still on the **SSO** tab:
+1. Open het tabblad **SSO**
+2. Controleer of **Application Type** op *Web* staat
+3. Stel **Token Endpoint → Authentication Method** in op *POST* (`client_secret_post`) of *Basic* (`client_secret_basic`)
 
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click **Show client secret**)
+!!! warning "Kies niet None"
 
-The page also shows the **Issuer URL**, which confirms the discovery URL in the next step.
-
----
-
-## Step 5: Assign Users
-
-1. Open the **Access** tab
-2. Add the roles or groups whose members may use digna
-3. Click **Save**
-
-!!! note "Unassigned Users Are Refused After Login"
-
-    As with most providers, OneLogin authenticates the user first and checks entitlement second. An unassigned user signs in successfully and is then refused, which looks like a digna error rather than an access-control decision.
+    Als je de authenticatiemethode op *None* zet, wordt de applicatie een public client zonder secret, en wordt de code-uitwisseling in de digna-backend geweigerd. Zowel POST als Basic werkt.
 
 ---
 
-## Step 6: Build the Discovery URL
+## Stap 4: Verzamel de gegevens
 
-Substitute your OneLogin subdomain:
+Nog steeds op het tabblad **SSO**:
+
+- **Client ID** → wordt `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → wordt `DIGNA_OIDC_CLIENT_SECRET` (klik **Show client secret**)
+
+De pagina toont ook de **Issuer URL**, die de discovery-URL in de volgende stap bevestigt.
+
+---
+
+## Stap 5: Wijs gebruikers toe
+
+1. Open het tabblad **Access**
+2. Voeg de rollen of groepen toe waarvan de leden digna mogen gebruiken
+3. Klik **Save**
+
+!!! note "Niet-toegewezen gebruikers worden na het inloggen geweigerd"
+
+    Zoals bij de meeste providers authenticeert OneLogin eerst de gebruiker en controleert daarna pas de rechten. Een niet-toegewezen gebruiker logt succesvol in en wordt vervolgens geweigerd, wat eruitziet als een digna-fout in plaats van een beslissing van het toegangsbeheer.
+
+---
+
+## Stap 6: Bouw de discovery-URL
+
+Vul je OneLogin-subdomein in:
 
 ```
 https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
 ```
 
-For example:
+Bijvoorbeeld:
 
 ```
 https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
 ```
 
-!!! tip "The /2 Is the API Version"
+!!! tip "De /2 is de API-versie"
 
-    OneLogin's current OIDC implementation lives under `/oidc/2/`. Older documentation shows `/oidc/` without a version, which points at the retired first version. Check the **Issuer URL** on the SSO tab if in doubt — the discovery URL is the issuer plus `/.well-known/openid-configuration`.
+    De huidige OIDC-implementatie van OneLogin staat onder `/oidc/2/`. Oudere documentatie toont `/oidc/` zonder versie, wat verwijst naar de uitgefaseerde eerste versie. Controleer bij twijfel de **Issuer URL** op het tabblad SSO — de discovery-URL is de issuer plus `/.well-known/openid-configuration`.
 
 ---
 
-## Step 7: Configure digna
+## Stap 7: Configureer digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -127,37 +127,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `onelogin` here.
+De `key` moet in beide bestanden overeenkomen — hier `onelogin`.
 
 ---
 
-## Step 8: Test
+## Stap 8: Test
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Herstart de backend en de webserver, en open daarna het dashboard. Zie [Inloggen testen](overview.md#testing-login) voor de volledige checklist.
 
 ---
 
-## Troubleshooting OneLogin
+## Problemen oplossen met OneLogin
 
 ### redirect_uri did not match
 
-The callback URL is missing from **Configuration → Redirect URI's**, or the entries were separated by commas rather than newlines.
+De callback-URL ontbreekt in **Configuration → Redirect URI's**, of de items zijn gescheiden door komma's in plaats van nieuwe regels.
 
-### invalid_client at the Token Step
+### invalid_client bij de tokenstap
 
-**Token Endpoint → Authentication Method** is set to *None*, or the client secret in `config.toml` is stale. Reveal the secret on the **SSO** tab and compare.
+**Token Endpoint → Authentication Method** staat op *None*, of het client secret in `config.toml` is verouderd. Toon het secret op het tabblad **SSO** en vergelijk.
 
-### The App Does Not Appear for Users
+### De app verschijnt niet voor gebruikers
 
-No role or group has been granted access on the **Access** tab.
+Er is geen rol of groep toegang verleend op het tabblad **Access**.
 
-### 404 on the Discovery URL
+### 404 op de discovery-URL
 
-The subdomain is wrong, or the URL omits `/oidc/2/`. Compare against the **Issuer URL** shown on the SSO tab.
+Het subdomein is onjuist, of de URL mist `/oidc/2/`. Vergelijk met de **Issuer URL** op het tabblad SSO.
 
 ---
 
-## See Also
+## Zie ook
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Overzicht Single Sign-On](overview.md) — configuratiereferentie, testen en algemene probleemoplossing
 - [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)

@@ -431,8 +431,13 @@ Seejärel kleepige käsud `postgres=#` prompti ja väljumiseks tippige `\q`.
 3. Pärast lahtipakkimist peaksite nägema järgmisi üksusi:
    - `dashboard/` — veebi armatuurlaua liides
    - `digna` — peamine käivitatav fail (backend + CLI kombineeritud)
-   - `config.toml` — konfiguratsioonifail
-   - `license.toml` — litsentsifail (kopeerige siia oma fail)
+
+!!! info "Konfiguratsiooni- ja litsentsifailid ei ole paketis"
+
+    Paigaldusega ei kaasne ei `config.toml` ega `dashboard/dashboard_config.toml` — mõlemad
+    loote ise, jaotistes [Backendi konfiguratsioon](#backend-configuration) ja
+    [Armatuurlauai konfiguratsioon](#dashboard-configuration). Ka `license.toml` ei ole kaasas;
+    digna tarnib selle eraldi, nagu kirjeldab samm 3.
 
 Terminalist lahtipakkimiseks:
 
@@ -733,9 +738,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Samm 1: Paigaldage armatuurlaud veebiserverisse
 
-Digna armatuurlaual on oma eraldi `config.toml` fail, mis asub `dashboard/` kataloogis. See konfiguratsioon on esialgse seadistuse jaoks juba olemas ja tavaliselt pole seda vaja muuta. Muutke seda ainult juhul, kui peate kohandama backend'i ühendust või tegema multi-instantsi juurutust.
+digna armatuurlaud loeb oma konfiguratsiooni failist `dashboard/dashboard_config.toml`. See fail ei ole paigaldusega kaasas — loote selle kataloogi `dashboard/` armatuurlaua failide kõrvale.
 
-Kui peate armatuurlaua konfiguratsiooni muutma, vaadake armatuurlaua dokumentatsiooni.
+Selle sisu on kirjeldatud jaotises [Ühekordne sisselogimine (SSO)](../../../sso/overview.md), kus faili ka vaja läheb: see sisaldab armatuurlaua pakutavaid sisselogimisvalikuid ning mitme instantsiga juurutuste puhul ühendust backendiga.
 
 Valige veebiserver ja järgige vastavat juurutusprotseduuri.
 
@@ -1014,7 +1019,9 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Oluline"
 
-    Fail `config.toml` EI OLE kunagi kaasa pakitud installatsiooni ZIP-is. Teie olemasolev konfiguratsioon jääb muutmata.
+    Paigaldus-ZIP ei sisalda kunagi ei faili `config.toml` ega `dashboard/dashboard_config.toml`
+    — digna meeskond ei tarni kumbagi faili. Seetõttu ei puuduta uuendus teie olemasolevat
+    konfiguratsiooni ning ümbernimetatud `*_old` kaustades olevad koopiad on ainsad, mis teil on.
 
 #### Samm 4: Taastage konfiguratsioonifailid
 
@@ -1066,7 +1073,13 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Korrake sektsiooni iga pakkuja jaoks ja hoidke iga võti samana nagu `key` failis `dashboard_config.toml`. `digna config check` teatab `oidc_clients` sektsioonist FAILED, kuni vana vorm on veel alles. See puudutab ainult paigaldusi, mis kasutavad ühekordset sisselogimist.
 
-#### Samm 5: Kontrollige konfiguratsiooni
+#### Samm 5: Laadige veebiserver uuesti
+
+Armatuurlaud koosneb staatilistest failidest, seega võivad teie veebiserver — ja brauser — ikka veel
+serveerida eelmist versiooni. Laadige uuesti või taaskäivitage veebiserver, mis majutab kausta
+`dashboard`, ning seejärel laadige leht sundvärskendusega uuesti (++cmd+shift+r++).
+
+#### Samm 6: Kontrollige konfiguratsiooni
 
 Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:
 
@@ -1076,7 +1089,26 @@ Veenduge, et uuendatud `config.toml` on täielik, enne kui hoidlat puudutate:
 
 Iga sektsioon peab teatama OK. Parandage kõik, millest teatatakse FAILED, ja käivitage käsk enne jätkamist uuesti.
 
-#### Samm 6: Uuendage andmehoidla skeemi
+#### Samm 7: Asendage litsentsifail
+
+Iga väljalase litsentsitakse eraldi. Kopeerige digna meeskonna poolt selle väljalaske jaoks
+antud `license.toml` paigalduskataloogi, asendades vana faili:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ärge jätke alles eelmist litsentsi"
+
+    Varasema väljalaske jaoks väljastatud `license.toml` ei kehti selle väljalaske kohta ning iga
+    käsk, mis litsentsi kontrollib — `user`, `inspection`, `repo` — katkeb enne hoidla
+    puudutamist, kui kontroll ebaõnnestub. Kontrollige litsentsi enne jätkamist:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Samm 8: Uuendage andmehoidla skeemi
 
 Navigeerige digna paigalduskataloogi ja käivitage:
 
@@ -1087,7 +1119,7 @@ cd /opt/digna
 
 See uuendab PostgreSQL skeemi uusimale versioonile, säilitades kogu olemasoleva andmestiku.
 
-#### Samm 7: Taaskäivitage teenused
+#### Samm 9: Taaskäivitage teenused
 
 Kui jooksed taustateenusena:
 
@@ -1112,7 +1144,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Samm 8: Kinnitage uuendus
+#### Samm 10: Kinnitage uuendus
 
 1. Avage digna armatuurlaud
 2. Veenduge, et liides laeb korrektselt

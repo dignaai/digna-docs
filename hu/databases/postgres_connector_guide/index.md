@@ -1,65 +1,65 @@
-# Source Connector for PostgreSQL
+# Forráskonnektor PostgreSQL-hez
 
-This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
-**DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t a PostgreSQL-hez való csatlakozásra
+**ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to PostgreSQL.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself under a name that differs per platform and package — commonly
-**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
-the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
-for the `DRIVER` property below.
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami a PostgreSQL-re jellemző.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Telepítse a PostgreSQL ODBC illesztőprogramot (**psqlODBC**) arra a gépre, amely a *digna*
+backendet futtatja, a gyártó hivatalos telepítési útmutatója szerint.
 
-    The set below is one combination that is known to work. The properties belong to the
-    psqlODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what your server demands — SSL in particular — may differ too.
-    Use this as a starting point and check the documentation of the driver version you
-    installed.
+Az illesztőprogram platformonként és csomagonként eltérő néven regisztrálja magát — Windowson
+jellemzően **PostgreSQL Unicode(x64)**, Linuxon **PostgreSQL ODBC Driver(UNICODE)** néven.
+Olvassa le a pontos nevet a gépén, ahogyan az
+[Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver) részben le
+van írva, és ezt a nevet használja az alábbi `DRIVER` tulajdonsághoz.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
+
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    psqlODBC illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az elfogadott
+    értékek illesztőprogram-verziónként és platformonként eltérnek, és az is eltérhet, amit a
+    szervere megkövetel — különösen az SSL. Használja ezt kiindulópontként, és nézze meg a
+    telepített illesztőprogram-verzió dokumentációját.
+
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `db.example.com` | Server name or IP address |
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `SERVER` | `db.example.com` | Szervernév vagy IP-cím |
 | `PORT` | `5432` | |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
-| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+| `DATABASE` | `digna_source_db` | A forrássémákat tartalmazó adatbázis. Ez az egyetlen adatbázis, amelyet ez a kapcsolat profilozni tud |
+| `UID` | `digna_source_user` | Adatbázis-felhasználó |
+| `PWD` | `<password>` | Jelölje be az **Encrypted** opciót |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` vagy `verify-full` — a szervernek el kell fogadnia |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
 ```
 
-Any further psqlODBC option can be added as an additional property — for example
-`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
-time.
+Bármely további psqlODBC opció hozzáadható további tulajdonságként — például `ReadOnly=1` egy
+csak olvasható munkamenethez, vagy `ConnSettings` `SET` utasítások futtatásához a
+kapcsolódáskor.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -70,35 +70,38 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+## 4. Megjegyzések a PostgreSQL-hez {: #4-notes-on-postgresql }
 
-- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
-  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
-  be available to the driver on the *digna* host. If you had to choose a specific mode when
-  testing the driver, use the same one here.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Az `SSLMode`-nak egyeznie kell a szerverrel.** Egy `hostssl`-lel konfigurált szerver
+  elutasítja az `SSLMode=disable` beállítást, a `verify-ca` vagy `verify-full` pedig ezenfelül
+  megköveteli, hogy a gyökértanúsítvány elérhető legyen az illesztőprogram számára a *digna*
+  gépen. Ha az illesztőprogram tesztelésekor egy adott módot kellett választania, itt is
+  ugyanazt használja.
+- **Egy kapcsolat egy adatbázist lát.** A *digna* a `DATABASE`-ben megnevezett adatbázis
+  sémáit kínálja fel, mert a PostgreSQL csak az aktuális adatbázist jelenti katalógusként. Egy
+  másik adatbázisban lévő forrástáblákhoz saját kapcsolat kell.
+- **Profilozási módok.** A *Permanent* a munkatáblákat a **Work Schema**-ban hozza létre, ezért
+  a felhasználónak `CREATE` jogosultság kell azon a sémán. A *Session* `CREATE TEMPORARY TABLE`-t
+  használ, és nem érinti a **Work Schema**-t. A *Standard*-hoz csak olvasási hozzáférés
+  szükséges.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver works and that the server accepts
-your credentials and SSL mode before you enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az illesztőprogram működik, és a szerver elfogadja a hitelesítő adatait és az SSL-módot, mielőtt
+megadná őket a *digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/postgres/create_odbc_data_source_step1.png)
 
-#### Step 2 – Test the connection
+#### 2. lépés – A kapcsolat tesztelése
 
-Click the **Test Connection** button.
+Kattintson a **Test Connection** gombra.
 
 ![Step 2](images/postgres/create_odbc_data_source_step2.png)
 
-The values you entered here are exactly the values the properties in
-[section 2](#2-odbc-properties) take.
+Az itt megadott értékek pontosan azok, amelyeket a [2. szakasz](#2-odbc-properties)
+tulajdonságai kapnak.

@@ -1,86 +1,87 @@
-# Source Connector for MS SQL Server
+# Source Connector για τον MS SQL Server
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στον Microsoft SQL
+Server μέσω **ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για τον SQL Server.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Το Synapse διαμορφώνεται επίσης ως σύνδεση SQL Server, με διαφορετικό όνομα host και μερικά
+    επιπλέον ζητήματα — δείτε [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Εγκαταστήστε τον **ODBC Driver 18 for SQL Server** στο μηχάνημα που εκτελεί το backend του
+*digna*, ακολουθώντας τον [οδηγό εγκατάστασης της Microsoft](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Ο driver που περιλαμβάνεται στα Windows με το απλό όνομα **SQL Server** λειτουργεί επίσης, αλλά
+έχει αντικατασταθεί εδώ και καιρό και δεν υποστηρίζει ούτε σύγχρονες ρυθμίσεις TLS ούτε
+αυθεντικοποίηση Azure. Χρησιμοποιήστε τον μόνο όπου η εγκατάσταση του τρέχοντος driver δεν είναι
+εφικτή.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Διαβάστε το ακριβές καταχωρισμένο όνομα του driver στον host σας, όπως περιγράφεται στην ενότητα
+[Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Παράδειγμα, όχι προδιαγραφή"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον ODBC driver της Microsoft, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές
+    τιμές τους διαφέρουν ανάμεσα σε εκδόσεις driver — για παράδειγμα, ο Driver 18 κρυπτογραφεί
+    από προεπιλογή, ενώ ο Driver 17 όχι — και ανάμεσα σε πλατφόρμες. Χρησιμοποιήστε το ως σημείο
+    εκκίνησης και ελέγξτε την τεκμηρίωση της έκδοσης driver που εγκαταστήσατε.
 
-Add the following properties in the **Add DB Connection** screen:
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `SERVER` | `sql.example.com` | Όνομα server ή διεύθυνση IP. Named instances: `host\instance`· μη προεπιλεγμένο port: `host,1433` |
+| `PORT` | `1433` | Παραλείψτε το όταν το port είναι ήδη μέρος του `SERVER` |
+| `DATABASE` | `digna_source_db` | Η βάση δεδομένων που περιέχει τα schemas πηγής. Είναι η μόνη βάση δεδομένων στην οποία αυτή η σύνδεση μπορεί να κάνει profiling |
+| `UID` | `digna_source_user` | Χρήστης βάσης δεδομένων |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Κρυπτογράφηση με τον ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Ο Driver 18 κρυπτογραφεί τις συνδέσεις από προεπιλογή και επικυρώνει το πιστοποιητικό του
+server. Σε έναν server με πιστοποιητικό που ο host του *digna* δεν εμπιστεύεται — συνήθως ένα
+self-signed πιστοποιητικό — η σύνδεση αποτυγχάνει με σφάλμα αλυσίδας πιστοποιητικών. Προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Προεπιλογή στον Driver 18· ορίστε `no` μόνο αν ο server δεν υποστηρίζει TLS |
+| `TrustServerCertificate` | `yes` | Παρακάμπτει την επικύρωση του πιστοποιητικού. Βολικό σε περιβάλλοντα δοκιμών· στην παραγωγή προτιμήστε την εγκατάσταση του πιστοποιητικού |
 
 ### Windows Authentication
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Για να συνδεθείτε ως ο λογαριασμός που εκτελεί το service του *digna* αντί για SQL login,
+αφαιρέστε τα `UID` και `PWD` και προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | Ο λογαριασμός του service του *digna* χρειάζεται τα δικαιώματα στη βάση δεδομένων |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +92,57 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Σημειώσεις για τον MS SQL Server {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Μία σύνδεση βλέπει μία βάση δεδομένων.** Το *digna* προσφέρει τα schemas της βάσης δεδομένων
+  που ορίζεται στο `DATABASE`, επειδή ο SQL Server αναφέρει μόνο την τρέχουσα βάση δεδομένων ως
+  catalog. Πίνακες πηγής σε άλλη βάση δεδομένων χρειάζονται δική τους σύνδεση.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**, οπότε
+  ο χρήστης χρειάζεται `CREATE TABLE` εκεί. Το *Session* χρησιμοποιεί τοπικούς προσωρινούς πίνακες
+  (`#wt_…`) στο `tempdb` και δεν αγγίζει το **Work Schema**. Το *Standard* χρειάζεται μόνο
+  πρόσβαση ανάγνωσης.
+- **Το `SERVER` περιέχει το instance και το port.** Με named instance, το `host\instance`
+  απαιτεί να είναι προσβάσιμο το service SQL Server Browser· το `host,port` το αποφεύγει.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά ο οδηγός
+(wizard) του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver λειτουργεί
+και ότι ο server δέχεται τα διαπιστευτήριά σας, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 2
-![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+#### Βήμα 2
+![Βήμα 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Επιλέξτε τη μέθοδο αυθεντικοποίησης (π.χ. όνομα χρήστη και κωδικός πρόσβασης)
+και δώστε τα απαιτούμενα στοιχεία.
 
-Click the **Next >** button.
+Κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 3
-![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+#### Βήμα 3
+![Βήμα 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Επιλέξτε τις ρυθμίσεις συμβατότητας ANSI και έπειτα κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 4
-![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+#### Βήμα 4
+![Βήμα 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Μπορείτε να αφήσετε τις προεπιλεγμένες ρυθμίσεις ή να επιλέξετε επιλογές καταγραφής (logging)
+όπως χρειάζεστε και να κάνετε κλικ στο κουμπί **Finish**. 
 
-#### Step 5
-![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+#### Βήμα 5
+![Βήμα 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Τώρα κάντε κλικ στο κουμπί **Test datasource**.
 
-#### Step 6
-![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+#### Βήμα 6
+![Βήμα 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Μια οθόνη επιτυχίας επιβεβαιώνει ότι ο driver και τα διαπιστευτήρια λειτουργούν. Οι τιμές που
+εισαγάγατε είναι ακριβώς οι τιμές που παίρνουν οι ιδιότητες της [ενότητας 2](#2-odbc-properties).

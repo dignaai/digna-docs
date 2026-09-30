@@ -1,86 +1,85 @@
-# Source Connector for MS SQL Server
+# MS SQL Server용 소스 커넥터
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+이 가이드는 **DSN 없는(DSN-less)** 연결 문자열을 사용하여 **ODBC**로 Microsoft SQL Server에
+연결하도록 *digna*를 구성하는 방법을 설명합니다.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+설정 중 *digna* 측 부분은 모든 기술에서 동일합니다. 연결을 만드는 위치, 속성 값을 암호화하는 방법,
+연결을 테스트하는 방법, 프로파일링 모드의 의미가 여기에 해당하며
+[데이터베이스 연결 개요](overview.md)에 설명되어 있습니다. 이 페이지에서는 SQL Server에만 해당하는
+내용을 다룹니다.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Synapse도 SQL Server 연결로 구성하지만, 호스트 이름이 다르고 몇 가지 추가로 고려할 사항이
+    있습니다. [Azure Synapse](azure_synapse_connector_guide.md)를 참조하세요.
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. ODBC 드라이버 설치 {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+[Microsoft 설치 가이드](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)에
+따라 *digna* 백엔드가 실행되는 머신에 **ODBC Driver 18 for SQL Server**를 설치합니다.
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Windows에 **SQL Server**라는 이름으로 기본 제공되는 드라이버도 동작하지만, 오래전에 대체된
+드라이버로 최신 TLS 설정과 Azure 인증을 모두 지원하지 않습니다. 현재 드라이버를 설치할 수 없는
+경우에만 사용하세요.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+[digna 호스트에 ODBC 드라이버 설치](overview.md#install-the-driver)에 설명된 대로 호스트에서
+등록된 정확한 드라이버 이름을 확인합니다.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. ODBC 속성 {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "사양이 아닌 예시"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    아래 속성 세트는 정상 동작이 확인된 조합 중 하나입니다. 이 속성들은 Microsoft ODBC 드라이버에
+    속하므로 이름, 기본값, 허용되는 값이 드라이버 버전마다(예를 들어 Driver 18은 Driver 17과 달리
+    기본적으로 암호화합니다) 그리고 플랫폼마다 다릅니다. 이를 출발점으로 삼고, 설치한 드라이버 버전의
+    문서를 확인하세요.
 
-Add the following properties in the **Add DB Connection** screen:
+**Add DB Connection** 화면에서 다음 속성을 추가합니다:
 
-| Key | Example value | Notes |
+| 키 | 예시 값 | 참고 |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | *digna* 호스트에 등록된 드라이버 이름과 일치해야 합니다 |
+| `SERVER` | `sql.example.com` | 서버 이름 또는 IP 주소입니다. 명명된 인스턴스: `host\instance`, 기본값이 아닌 포트: `host,1433` |
+| `PORT` | `1433` | 포트가 이미 `SERVER`에 포함되어 있으면 생략합니다 |
+| `DATABASE` | `digna_source_db` | 소스 스키마가 있는 데이터베이스입니다. 이 연결로 프로파일링할 수 있는 유일한 데이터베이스입니다 |
+| `UID` | `digna_source_user` | 데이터베이스 사용자 |
+| `PWD` | `<password>` | **Encrypted**를 선택합니다 |
 
-The resulting connection string looks like this:
+결과 연결 문자열은 다음과 같습니다:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### ODBC Driver 18의 암호화
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18은 기본적으로 연결을 암호화하고 서버 인증서를 검증합니다. *digna* 호스트가 신뢰하지 않는
+인증서(일반적으로 자체 서명 인증서)를 사용하는 서버에 연결하면 인증서 체인 오류로 연결이 실패합니다.
+다음을 추가합니다:
 
-| Key | Example value | Notes |
+| 키 | 예시 값 | 참고 |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Driver 18의 기본값입니다. 서버가 TLS를 지원하지 않는 경우에만 `no`로 설정합니다 |
+| `TrustServerCertificate` | `yes` | 인증서 검증을 건너뜁니다. 테스트 환경에서는 편리하지만, 프로덕션에서는 인증서를 설치하는 것이 좋습니다 |
 
-### Windows Authentication
+### Windows 인증
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+SQL 로그인 대신 *digna* 서비스를 실행하는 계정으로 연결하려면 `UID`와 `PWD`를 제거하고 다음을
+추가합니다:
 
-| Key | Example value | Notes |
+| 키 | 예시 값 | 참고 |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | *digna* 서비스 계정에 데이터베이스 권한이 필요합니다 |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* 구성 {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** 화면에서 다음을 입력합니다:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +90,56 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. MS SQL Server 관련 참고 사항 {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **하나의 연결은 하나의 데이터베이스만 봅니다.** SQL Server는 현재 데이터베이스만 카탈로그로
+  보고하므로, *digna*는 `DATABASE`에 지정된 데이터베이스의 스키마를 제공합니다. 다른 데이터베이스에
+  있는 소스 테이블에는 별도의 연결이 필요합니다.
+- **프로파일링 모드.** *Permanent*는 **Work Schema**에 작업 테이블을 만들므로 사용자에게 그곳에
+  대한 `CREATE TABLE` 권한이 필요합니다. *Session*은 `tempdb`의 로컬 임시 테이블(`#wt_…`)을
+  사용하며 **Work Schema**를 건드리지 않습니다. *Standard*는 읽기 권한만 필요합니다.
+- **`SERVER`에 인스턴스와 포트가 포함됩니다.** 명명된 인스턴스를 `host\instance`로 지정하면 SQL
+  Server Browser 서비스에 접근할 수 있어야 합니다. `host,port`를 사용하면 이를 피할 수 있습니다.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. 드라이버 확인(선택 사항) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+DSN 없는 연결에는 ODBC 데이터 소스를 구성할 필요가 없지만, 드라이버 자체의 마법사를 사용하면
+*digna*에 값을 입력하기 전에 드라이버가 동작하는지, 서버가 자격 증명을 허용하는지 간편하게 확인할
+수 있습니다.
 
-#### Step 1
+#### 1단계
 ![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+**Next >** 버튼을 클릭합니다.
 
-#### Step 2
+#### 2단계
 ![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+인증 방식(예: 사용자 이름과 비밀번호)을 선택하고
+필요한 정보를 입력합니다.
 
-Click the **Next >** button.
+**Next >** 버튼을 클릭합니다.
 
-#### Step 3
+#### 3단계
 ![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+ANSI 호환 설정을 선택한 다음 **Next >** 버튼을 클릭합니다.
 
-#### Step 4
+#### 4단계
 ![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+기본 설정을 그대로 두거나 필요에 따라 로깅 옵션을 선택한 후
+**Finish** 버튼을 클릭합니다. 
 
-#### Step 5
+#### 5단계
 ![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+이제 **Test datasource** 버튼을 클릭합니다.
 
-#### Step 6
+#### 6단계
 ![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+성공 화면이 표시되면 드라이버와 자격 증명이 정상 동작하는 것입니다. 입력한 값이 바로
+[섹션 2](#2-odbc-properties)의 속성에 들어가는 값입니다.

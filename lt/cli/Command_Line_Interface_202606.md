@@ -53,6 +53,7 @@ Toliau pateiktoje lentelėje užfiksuota, ką kiekviena komandų kategorija įke
 | `license check` | ne | tai *ir yra* patikrinimas |
 | `crypt` | taip | ne |
 | `serve` | taip | ne |
+| `windows` | ne (tarnyba jį nuskaito paleidimo metu) | ne |
 | `project` | taip | ne |
 | `user` | taip | taip |
 | `inspection` | taip | taip |
@@ -217,6 +218,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Komanda `repo prune` pašalina eilutes, kurios liko po to, kai buvo ištrintas projektas ar duomenų šaltinis, kuriam jos priklausė.
+Ištrynus projektą ar duomenų šaltinį, pašalinamas pats objektas, tačiau jo profiliai, prognozės,
+būsenos ir eilučių skaičiai lieka — tai sąmoningas kompromisas, nes trynimas, kartu valantis ir šias lenteles,
+priverstų naudotoją ilgai laukti. `repo prune` yra tvarkymo veiksmas, kuris jas išvalo, ir jį saugu
+vykdyti bet kuriuo metu: jis šalina tik tas eilutes, kurių projektas ar duomenų šaltinis nebeegzistuoja.
+
+Eilutės, kurias Python backend įrašė į lenteles, nebenaudojamas dabartinėje laidoje, nepaliečiamos.
+
+#### Komandos naudojimas
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Parinktys
+- `--dry-run`: Parodo, kas būtų pašalinta, nieko nepašalinant.
+
+Išvardijamos tik lentelės, kuriose yra našlaičių eilučių. Jei tokių nėra, komanda praneša
+`No orphaned rows found.` ir baigia darbą.
+
+#### Pavyzdys
+```bash
+digna repo prune
+```
+
+#### Išvesties pavyzdys
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Norint pamatyti tą pačią ataskaitą nieko nepašalinant:
+```bash
+digna repo prune --dry-run
+```
+
+Eilučių skaičiai identiški; skiriasi tik paskutinė eilutė:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -528,6 +584,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Komanda `project cleanup` pašalina patikrų rezultatus, kuriuos projektas sukaupė per nurodytą datų
+intervalą — profilius, prognozes, eilučių skaičius ir visas patikrinimų, atributų, duomenų rinkinių ir duomenų šaltinių
+būsenas. Ji pašalina būtent tai, ką įrašė tų datų patikra, todėl vėliau intervalą galima
+patikrinti iš naujo ir rezultatus atkurti.
+
+Timeliness ir Schema Tracker istorija **nešalinama**: joje fiksuojama, ką digna stebėjo tam tikrą
+dieną, o ne iš to išvestas rezultatas, todėl praeities datų intervalo išvalymas jos
+nepaliečia.
+
+Kiekvienas duomenų šaltinis valomas atskiroje transakcijoje, todėl nutrauktas vykdymas palieka nepaliestus arba visiškai išvalytus duomenų šaltinius,
+o ne iš dalies išvalytą.
+
+#### Komandos naudojimas
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentai
+- **PROJECT_NAME**: Valomas projektas (privaloma). Vienu iškvietimu – vienas projektas.
+- **FROM_DATE**: Pirmoji data, kurios rezultatai šalinami, `YYYY-MM-DD` (privaloma).
+- **TO_DATE**: Paskutinė data, kurios rezultatai šalinami, imtinai, `YYYY-MM-DD` (privaloma).
+
+#### Parinktys
+- `--table-name`, `-n`: Apriboja valymą šiais duomenų šaltiniais. Kelis pavadinimus galima nurodyti
+  atskiriant tarpais.
+- `--table-filter`: Apriboja valymą duomenų šaltiniais, kurių pavadinime yra ši poeilutė.
+- `--dry-run`: Išvardija duomenų šaltinius, kurie būtų išvalyti, nieko nepašalinant.
+- `--timing`: Parodo, kiek laiko užtruko valymas.
+
+`--table-name` ir `--table-filter` jungiami kaip OR — duomenų šaltinis išvalomas, jei jis nurodytas pavadinimu arba
+jei atitinka poeilutė. Jei neatitinka nė vienas duomenų šaltinis, komanda baigiasi klaida, o ne praneša
+apie sėkmę valymo, kuris nieko nepadarė.
+
+#### Pavyzdys
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Apribojus vienu duomenų šaltiniu:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Išvesties pavyzdys
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Norint pamatyti, kurie duomenų šaltiniai būtų išvalyti, nieko nepašalinant:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Kiekviena eilutė pažymėta, todėl bandomojo vykdymo neįmanoma supainioti su tikru:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Patikrų valdymas
 
 ---
@@ -701,3 +829,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows tarnybos valdymas
+
+Prieinama tik Windows sistemoje. Šios komandos užregistruoja ***digna*** backend Windows
+tarnybų tvarkytuvėje ir jį valdo; pati tarnyba fone vykdo `serve`. Kiekvieną komandą
+reikia vykdyti iš komandų eilutės su administratoriaus teisėmis, ir kiekviena priima `--name`, kad būtų galima kreiptis į
+tarnybą, užregistruotą ne numatytuoju pavadinimu.
+
+---
+
+### windows install
+
+Komanda `windows install` užregistruoja ***digna*** kaip Windows tarnybą.
+
+Čia nurodyti adresas ir prievadas įrašomi į tarnybos registraciją ir prie jų
+tarnyba susiejama — jie neskaitomi iš `config.toml`. Norėdami juos vėliau pakeisti, pašalinkite
+tarnybą ir įdiekite ją iš naujo.
+
+#### Komandos naudojimas
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo registruojama tarnyba (numatytoji reikšmė: `digna`).
+- `--display-name`: Pavadinimas, rodomas services.msc (numatytoji reikšmė: `digna`).
+- `--description`: Aprašas, rodomas services.msc (numatytoji reikšmė: `digna data quality backend`).
+- `--address`: Adresas, prie kurio tarnyba susieja savo API (numatytoji reikšmė: `127.0.0.1`).
+- `--port`: Prievadas, prie kurio tarnyba susieja savo API (numatytoji reikšmė: `8000`).
+- `--working-dir`: Katalogas su `config.toml` ir `license.toml`, kurį tarnyba naudoja kaip
+  darbinį katalogą (numatytoji reikšmė: `digna` vykdomojo failo katalogas).
+- `--start-type`: Kada tarnyba paleidžiama — `auto` kartu su Windows, `manual` tik paprašius,
+  `disabled` užregistruota, bet atsisako pasileisti (numatytoji reikšmė: `auto`).
+- `--account`: Paskyra, kuria vykdoma tarnyba, pvz., `DOMAIN\user` arba `.\user` (numatytoji reikšmė: `LocalSystem`).
+- `--password`: `--account` paskyros slaptažodis.
+
+#### Pavyzdys
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registravimas antru pavadinimu, vykdant domeno paskyra:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Komanda `windows start` paleidžia užregistruotą tarnybą.
+
+#### Komandos naudojimas
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo užregistruota tarnyba (numatytoji reikšmė: `digna`).
+
+---
+
+### windows stop
+
+Komanda `windows stop` sustabdo veikiančią tarnybą. Prieš keisdami bet kurį
+programos failą, sustabdykite tarnybą.
+
+#### Komandos naudojimas
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo užregistruota tarnyba (numatytoji reikšmė: `digna`).
+
+---
+
+### windows uninstall
+
+Komanda `windows uninstall` išregistruoja tarnybą. Pirmiausia ją sustabdykite.
+
+#### Komandos naudojimas
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo užregistruota tarnyba (numatytoji reikšmė: `digna`).

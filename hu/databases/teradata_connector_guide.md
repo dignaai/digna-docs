@@ -1,63 +1,65 @@
-# Source Connector for Teradata
+# Forráskonnektor Teradata-hoz
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t a Teradata-hoz való csatlakozásra
+**ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami a Teradata-ra jellemző.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Telepítse az **ODBC Driver for Teradata** illesztőprogramot arra a gépre, amely a *digna*
+backendet futtatja, a gyártó hivatalos telepítési útmutatója szerint.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+Az illesztőprogram a nevében a verziószámmal regisztrálja magát, például
+**Teradata Database ODBC Driver 20.00**. Olvassa le a pontos regisztrált nevet a gépén, ahogyan
+az [Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver) részben
+le van írva.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
+
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    Teradata ODBC illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek illesztőprogram-verziónként eltérnek — a verzió maga is az
+    illesztőprogram nevének része —, valamint platformonként is. Használja ezt
+    kiindulópontként, és nézze meg a telepített illesztőprogram-verzió dokumentációját.
+
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `DBCNAME` | `teradata.example.com` | Szervernév vagy IP-cím. A Teradata saját neve a host tulajdonságra |
+| `UID` | `digna_source_user` | Adatbázis-felhasználó |
+| `PWD` | `<password>` | Jelölje be az **Encrypted** opciót |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Hasznos további tulajdonságok:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Bejelentkezési mechanizmus. A `TD2` a Teradata alapértelmezése; címtáralapú hitelesítéshez használjon `LDAP`-ot |
+| `DefaultDatabase` | `dad` | Az adatbázis, amelyben a munkamenet indul |
+| `CharacterSet` | `UTF8` | Akkor állítsa be, ha a munkamenet alapértelmezett karakterkészlete eltorzítaná a nem ASCII adatokat |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +70,41 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Megjegyzések a Teradata-hoz {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Egy Teradata adatbázis katalógus, nem séma.** A *digna* katalógusként listázza azokat az
+  adatbázisokat, amelyeket a felhasználó láthat (a `DBC.DatabasesV` alapján), és a sémaszint
+  nem alkalmazható. Adatforrás hozzáadásakor az adatbázist katalógusként válassza ki; a séma
+  *nem alkalmazható*ként jelenik meg.
+- **Egy kapcsolat minden engedélyezett adatbázist elér**, így egyetlen kapcsolat több adatbázis
+  forrásait is kiszolgálhatja — ellentétben azokkal a technológiákkal, ahol a kapcsolat egyetlen
+  adatbázishoz van kötve.
+- **A Work Schema egy adatbázis.** *Permanent* profilozáshoz adja meg azt a Teradata
+  adatbázist, amely a munkatáblákat tartalmazza, és adjon a felhasználónak `CREATE TABLE`
+  jogosultságot, valamint `PERM` területkiosztást benne — egy nulla perm területű adatbázis nem
+  tud táblát tárolni.
+- **Profilozási módok.** A *Permanent* a táblákat a **Work Schema**-ban hozza létre. A
+  *Session* `VOLATILE` táblát használ, amelyhez `SPOOL` terület szükséges, de perm terület és
+  jogosultság a **Work Schema**-ban nem. A *Standard*-hoz csak olvasási hozzáférés szükséges.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az illesztőprogram és a hitelesítő adatai működnek, mielőtt megadná őket a *digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Az itt látható **Name or IP address** mező a [2. szakasz](#2-odbc-properties) `DBCNAME`
+tulajdonságának felel meg.
 
-Click the **Test** button.
+Kattintson a **Test** gombra.
 
-#### Step 2
+#### 2. lépés
 ![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Adja meg a felhasználónevet és a jelszót, majd kattintson az **OK** gombra. Egy sikert jelző
+képernyő megerősíti, hogy az illesztőprogram és a hitelesítő adatok működnek.

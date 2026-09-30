@@ -1,262 +1,262 @@
-# Database Connections Overview
+# Datubāzu savienojumu pārskats
 
 ---
 
-## Table of Contents
+## Satura rādītājs
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
+1. [Kā darbojas savienojumi](#how-connections-work)
+2. [Tehnoloģiju ceļveži](#technology-guides)
+3. [Priekšnosacījums: instalēt ODBC draiveri digna resursdatorā](#install-the-driver)
+4. [Izveidot datubāzes savienojumu](#create-a-database-connection)
+5. [ODBC rekvizīti](#odbc-properties)
+6. [Rekvizītu vērtību šifrēšana](#encrypting-property-values)
+7. [Savienojuma testēšana](#testing-a-connection)
+8. [Kuru datubāzi redz savienojums](#which-database-the-connection-sees)
+9. [Profilēšanas režīms un darba shēma](#profiling-mode-and-work-schema)
+10. [DSN izmantošana](#using-a-dsn-instead)
+11. [Problēmu novēršana](#troubleshooting)
 
 ---
 
-## How Connections Work {: #how-connections-work }
+## Kā darbojas savienojumi {: #how-connections-work }
 
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
+*digna* sasniedz katru avota tehnoloģiju caur **ODBC**. Savienojums ir ODBC rekvizītu
+saraksts, ko ievadāt kā atslēgas/vērtības pārus. Kad *digna* atver savienojumu, tā apvieno šos
+pārus savienojuma virknē — `Key=Value`, atdalītus ar `;`, tādā secībā, kādā tos norādījāt —
+un nodod to ODBC draiveru pārvaldniekam *digna* resursdatorā.
 
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
+Tas, ka rekvizītus ievadāt paši, padara iestatīšanu **bez DSN** (DSN-less): savienojums satur
+visu, kas draiverim nepieciešams, tāpēc resursdatorā nav jāreģistrē ODBC datu avots (DSN).
+Šis ir ieteicamais veids, kā konfigurēt *digna*, jo savienojuma definīcija pilnībā atrodas
+*digna* un pārvietojas kopā ar to.
 
-### Why ODBC {: #why-odbc }
+### Kāpēc ODBC {: #why-odbc }
 
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
+Iepriekšējos izlaidumos varēja izvēlēties starp tehnoloģijai specifisku draiveri un ODBC,
+izmantojot slēdzi **Use ODBC**. Sākot ar Release 2026.06, *digna* balstās tikai uz ODBC.
+Viena standarta saskarne sniedz vairāk nekā atsevišķu pielāgotu draiveru kopa:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
+- **Autentifikācija** — autentifikācija ir daļa no ODBC, tāpēc savienojums var izmantot visu,
+  ko atbalsta tā draiveris: paroles, tokenus un PAT, Kerberos un Active Directory, MFA un
+  pārlūkā balstītu vienreizējo pieteikšanos, mākoņa identitāti, klienta sertifikātus un TLS.
+  Jaunas metodes kļūst pieejamas ar draivera atjauninājumu, negaidot *digna* izlaidumu.
+- **Draiveri, ko uztur datubāzu piegādātāji** — piegādātāja paša draiveris seko jaunām servera
+  versijām un drošības labojumiem, un jūs varat to atjaunināt pēc sava grafika, neatkarīgi no
   *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
+- **Viens veids, kā konfigurēt visu** — katra tehnoloģija ir atslēgas/vērtības rekvizītu
+  saraksts ar vienādu saskarni, vienādu sensitīvo vērtību šifrēšanu un vienādu problēmu
+  novēršanu, nevis atšķirīgu lauku kopu katram avotam.
+- **Pielāgošana un aptvērums** — draivera līmeņa opcijas, piemēram, taimauti, TLS iestatījumi,
+  starpniekserveri un ielādes apjomi, ir pieejamas katram avotam, un var pievienot jebkuru
+  tehnoloģiju ar atbilstošu ODBC draiveri, ieskaitot tādas, kurām *digna* nepublicē atsevišķu ceļvedi.
 
-!!! note "What changed in the interface"
+!!! note "Kas mainījās saskarnē"
 
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+    Slēdzis **Use ODBC** un atsevišķie resursdatora, porta, datubāzes, lietotāja un paroles lauki
+    vairs nepastāv. Savienojumam, kas vēl neizmanto ODBC, jāievada ODBC rekvizīti, pirms tas
+    atkal darbosies — skatiet
+    [Izveidot datubāzes savienojumu](#create-a-database-connection).
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Tehnoloģiju ceļveži {: #technology-guides }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+Rekvizītu nosaukumi katram draiverim atšķiras, un katrai tehnoloģijai ir viena vai divas
+īpatnības, kuru citām nav. Tālāk norādītie ceļveži aptver šo daļu; šī lapa aptver *digna* pusi,
+kas visiem ir vienāda.
 
-!!! important "The property sets in the guides are examples"
+!!! important "Rekvizītu kopas ceļvežos ir piemēri"
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+    Katrā ceļvedī parādīta viena kombinācija, par kuru zināms, ka tā darbojas — tā, ar kuru *digna*
+    tiek testēta. Tas ir sākumpunkts, nevis specifikācija: rekvizīti pieder ODBC draiverim, un tas,
+    kuri no tiem pastāv, kā tie saucas un kādas vērtības pieņem, atšķiras starp draiveru versijām
+    un piegādātājiem, starp Windows, Linux un macOS, kā arī atkarībā no avota servera
+    konfigurācijas — autentifikācijas metodes, TLS, vārtejas, porta. Rēķinieties, ka vienu vai
+    divas vērtības būs jāpielāgo, un par noteicošo uzskatiet jūsu instalētās draivera versijas dokumentāciju.
 
-| Technology | Guide | Worth knowing |
+| Tehnoloģija | Ceļvedis | Vērts zināt |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pūliem resursdatora nosaukumā nepieciešams `-ondemand`, un tie atbalsta tikai *Standard* profilēšanu |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Tokena autentifikācija: `UID=token`, PAT laukā `PWD` |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Katalogi nāk no draivera, nevis no vaicājuma |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Draivera nosaukums ir figūriekavās: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` pieņem vai nu pilnu savienojuma deskriptoru, vai `tnsnames.ora` aizstājvārdu |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` jāatbilst servera prasībām |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token ir testētais autentifikācijas veids |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` nosaka, kuras shēmas *digna* var redzēt |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Resursdators tiek norādīts `DBCNAME`; datubāzes darbojas kā shēmas |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Priekšnosacījums: instalēt ODBC draiveri digna resursdatorā {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* atver avota savienojumus no **servera, kurā darbojas digna backend**, nevis no
+pārlūka. Tāpēc ODBC draiverim jābūt instalētam šajā datorā, un tā nosaukumam jābūt
+reģistrētam lokālajā draiveru pārvaldniekā.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Instalējiet piegādātāja 64 bitu draiveri, pēc tam atveriet **ODBC Data Source Administrator (64-bit)**
+    un pārslēdzieties uz cilni **Drivers**. Tur norādītie nosaukumi ir tieši tās vērtības, ko
+    varat izmantot rekvizītam `Driver`.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Instalējiet **unixODBC** un piegādātāja draiveri, pēc tam izvadiet reģistrēto draiveru nosaukumus:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Kvadrātiekavās izvadītie nosaukumi ir vērtības, ko varat izmantot rekvizītam `Driver`. Tie
+    nāk no `/etc/odbcinst.ini` (vai faila, ko norāda `odbcinst -j`).
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Instalējiet **unixODBC** (piemēram, ar `brew install unixodbc`) un piegādātāja draiveri,
+    pēc tam izvadiet reģistrēto draiveru nosaukumus:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Draivera nosaukumam jāsakrīt līdz pēdējai rakstzīmei"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` tiek nodots draiveru pārvaldniekam nemainītā veidā. Draiveru pārvaldniekam
+    `Simba Spark ODBC Driver` un `Simba Spark ODBC Driver 64` ir dažādi draiveri, un
+    nereģistrēts nosaukums izraisa kļūdu *data source name not found*, lai gan DSN
+    nemaz netiek izmantots.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Reģistrēta nosaukuma vietā visi izplatītie draiveru pārvaldnieki pieņem arī pilnu ceļu uz
+draivera bibliotēku, piemēram, `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Tas
+noder, ja draiveris ir instalēts, bet nav reģistrēts.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Izveidot datubāzes savienojumu {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Atveriet **Admin Panel**, dodieties uz cilni **Database Connections** un noklikšķiniet
+**Add DB Connection**. Ekrānā jānorāda pieci elementi:
 
-| Field | Description |
+| Lauks | Apraksts |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Savienojuma nosaukums. Tas tiek izmantots, lai atsauktos uz savienojumu citos ekrānos. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake vai Hive. Tas nosaka SQL dialektu, ko ģenerē *digna*, tāpēc tam jāatbilst avotam, nevis draiverim. Azure Synapse Analytics ir **SQL Server** savienojums. |
+| **ODBC Properties** | Atslēgas/vērtības pāri, kas aprakstīti sadaļā [ODBC rekvizīti](#odbc-properties). |
+| **Profiling Mode** | *Standard*, *Permanent* vai *Session* — skatiet [Profilēšanas režīms un darba shēma](#profiling-mode-and-work-schema). |
+| **Work Schema** | Shēma, kurā atrodas darba tabulas *Permanent* profilēšanai. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Savienojums tiek administrēts centralizēti un pēc tam piešķirts vienam vai vairākiem projektiem,
+tāpēc viens un tas pats savienojums var apkalpot vairākus projektus.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## ODBC rekvizīti {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Katram rekvizītam noklikšķiniet **Add Property** un aizpildiet **Key**, **Value** un, slepenām
+vērtībām, izvēles rūtiņu **Encrypted**. Katras tehnoloģijas ceļvedī ir piemēra kopa šai
+tehnoloģijai, ko pielāgojat savai draivera versijai un serverim — skatiet
+[piezīmi iepriekš](#technology-guides).
 
-!!! tip "Tip"
+Neatkarīgi no draivera rekvizītu kopa aptver tās pašas četras lietas:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — reģistrētais draivera nosaukums, kā aprakstīts [iepriekš](#install-the-driver).
+- **Servera adrese** — atslēga katram draiverim atšķiras: `SERVER`, `HOST`, `DBCNAME`,
+  `Server` vai, Oracle gadījumā, `DBQ` savienojuma deskriptors.
+- **Akreditācijas dati** — parasti `UID` un `PWD`; Snowflake izmanto `UID` kopā ar `token`, un
+  Databricks izmanto burtisku lietotāju `token` kopā ar personīgās piekļuves tokenu laukā `PWD`.
+- **Datubāze vai katalogs, kurā strādāt**, ja tehnoloģijai tāds ir — skatiet
+  [Kuru datubāzi redz savienojums](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Jebko citu, ko dokumentē draiveris, var pievienot tādā pašā veidā — savienojumu pūlu, soketu
+taimautus, Kerberos iestatījumus, starpniekservera iestatījumus. *digna* neinterpretē rekvizītus;
+tā tikai nodod tos tālāk.
+
+!!! warning "Vērtības netiek ekranētas — visu ar semikolu ievietojiet figūriekavās"
+
+    Tā kā rekvizīti tiek apvienoti ar `;`, vērtība, kas pati satur `;`, sadalītu savienojuma
+    virkni nepareizā vietā. Ietveriet šādas vērtības figūriekavās: `PWD={p@ss;word}`.
+    Tas pats attiecas uz vērtībām ar `=` vai atstarpēm sākumā. Tādēļ arī dažus draiverus
+    ierasts rakstīt figūriekavās, piemēram, `{NetezzaSQL}` vai `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Rekvizītu vērtību šifrēšana {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Atzīmējiet **Encrypted** katram rekvizītam, kas satur noslēpumu — `PWD`, `token`, klienta
+slepeno atslēgu. Tad vērtība tiek šifrēta, pirms tā tiek saglabāta *digna* repozitorijā,
+ekrānā tā ir maskēta un tiek atšifrēta tikai tad, kad tiek veidota savienojuma virkne.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Padoms"
+
+    Šifrētu vērtību nevar nolasīt atpakaļ ne saskarnē, ne caur API — to var tikai aizstāt.
+    Glabājiet noslēpumus arī savā paroļu pārvaldniekā.
+
+Rekvizītus, kas nav slepeni — draivera nosaukumu, resursdatoru, portu, datubāzi —, labāk
+atstāt nešifrētus, lai tie paliktu salasāmi ikvienam, kurš vēlāk uzturēs savienojumu.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Savienojuma testēšana {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Dialogā *Add DB Connection* noklikšķiniet **Test** **pirms** saglabāšanas. Tests izmanto
+formā pašlaik esošās vērtības un veic reālu savienošanos, tāpēc tas ziņo tieši par to, ar ko
+saskartos inspekcija — nepareizu draivera nosaukumu, noraidītu paroli, nesasniedzamu resursdatoru.
+Nekas netiek saglabāts: testa savienojums tiek atritināts (rollback) neatkarīgi no tā, vai tas izdodas.
 
-| Technology | Catalogs offered |
+Esošam savienojumam novietojiet kursoru virs tā rindas cilnē **Database Connections** un
+noklikšķiniet uz **kontaktdakšas** ikonas, lai to pārbaudītu vēlreiz. Tas ir ātrākais veids,
+kā pārbaudīt, vai avots ir sasniedzams pēc paroles maiņas vai ugunsmūra izmaiņām.
+
+---
+
+## Kuru datubāzi redz savienojums {: #which-database-the-connection-sees }
+
+Kad pievienojat datu avotu, *digna* piedāvā katalogus, shēmas un tabulas, ko savienojums var
+sasniegt. Cik tālu tas sniedzas, ir atkarīgs no tehnoloģijas:
+
+| Tehnoloģija | Piedāvātie katalogi |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Tikai savienojuma **pašreizējā** datubāze |
+| **Teradata**, **Netezza**, **Databricks** | Visas datubāzes vai katalogi, ko lietotājam ir atļauts redzēt |
+| **Hive**, **Impala** | Tos norāda draiveris |
 
-!!! important "One connection, one database"
+!!! important "Viens savienojums, viena datubāze"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    PostgreSQL, SQL Server, Oracle un Snowflake gadījumā rekvizītiem jānorāda uz datubāzi,
+    kurā atrodas avota shēmas — `DATABASE=…`, `Database=…` vai pakalpojuma nosaukums Oracle
+    `DBQ` iekšpusē. Tabulas citā datubāzē caur šo savienojumu nav sasniedzamas; pievienojiet
+    tai otru savienojumu.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Profilēšanas režīms un darba shēma {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Profilēšanas režīms nosaka, kā *digna* apstrādā datus un aprēķina metrikas:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** Metrikas tiek aprēķinātas tieši avota tabulās, nekopējot datus.
+- **Permanent:** Inspicētās dienas dati tiek nokopēti pastāvīgā tabulā, un metrikas tiek
+  aprēķinātas nokopētajos datos.
+- **Session:** Dati tiek nokopēti sesijas jeb pagaidu tabulā, un metrikas tiek aprēķinātas
+  šajos pagaidu datos.
 
-The mode decides what the connection user must be allowed to do:
+Režīms nosaka, kas savienojuma lietotājam jādrīkst darīt:
 
-| Mode | Writes | Rights the connection user needs |
+| Režīms | Ieraksta | Tiesības, kas nepieciešamas savienojuma lietotājam |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | neko | Lasīšana avota tabulās |
+| **Permanent** | pa tabulai katram datu avotam shēmā **Work Schema** | Tabulu izveide un dzēšana shēmā **Work Schema** |
+| **Session** | pagaidu tabulu, ko datubāze dzēš kopā ar sesiju | Pagaidu tabulu izveide — **Work Schema** netiek izmantota |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* tikai lasa, tāpēc tas ir režīms, kas jāizvēlas, ja *digna* piešķirta tikai lasīšanas
+piekļuve. **Work Schema** tiek nolasīta tikai režīmā *Permanent*, taču to tik un tā vērts
+aizpildīt, lai savienojums turpinātu darboties, ja režīms vēlāk tiek mainīts.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## DSN izmantošana {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+DSN joprojām darbojas — `DSN` ir vienkārši vēl viens rekvizīts:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -264,131 +264,131 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+DSN jābūt reģistrētam *digna* resursdatorā tam pašam lietotāja kontam, ar kuru darbojas *digna*
+backend, un kā **System DSN**, ja *digna* darbojas kā pakalpojums. Visu, kas konfigurēts
+DSN, var pārrakstīt, pievienojot to arī kā rekvizītu.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
+Iestatīšana bez DSN ir dokumentētais noklusējums, jo tā novērš šo resursdatora puses stāvokli:
+savienojums ir pilnībā aprakstīts *digna*, un jaunā *digna* resursdatorā jāinstalē draiveris,
+bet nekas nav jākonfigurē.
 
 ---
 
-## Troubleshooting {: #troubleshooting }
+## Problēmu novēršana {: #troubleshooting }
 
 ### Data source name not found / no default driver specified
 
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
+**Simptomi:**
+- Poga **Test** ziņo par kļūdu, kurā minēts *data source name not found*, lai gan
+  iestatīšana ir bez DSN
 
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
-
----
-
-### The connection test times out
-
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
-
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Cēloņi un risinājumi:**
+1. `Driver` vērtība neatbilst reģistrētam draivera nosaukumam — salīdziniet to ar cilni **Drivers**
+   programmā *ODBC Data Source Administrator (64-bit)* vai ar `odbcinst -q -d`
+2. Draiveris ir instalēts jūsu darbstacijā, bet ne *digna* resursdatorā
+3. Draiveris ir 32 bitu, bet *digna* ir 64 bitu — instalējiet 64 bitu draiveri
+4. Rekvizīta `Driver` vispār nav, un nav norādīts arī `DSN`
+5. Linux un macOS draiveris ir instalēts, bet nav reģistrēts — tā vietā norādiet pilnu ceļu uz
+   draivera bibliotēku vai reģistrējiet to failā `odbcinst.ini`
 
 ---
 
-### Authentication fails although the credentials are correct
+### Savienojuma testam iestājas taimauts
 
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
+**Simptomi:**
+- **Test** uzkaras un pēc aptuveni pusminūtes neizdodas
 
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
-
----
-
-### The data source screen does not offer the expected database or schema
-
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
-
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
+**Cēloņi un risinājumi:**
+1. Resursdators vai ports nav sasniedzams no *digna* resursdatora — pārbaudiet ugunsmūri un,
+   mākoņa avotiem, IP atļauto sarakstu
+2. Resursdatora nosaukums ir pareizs, bet ports pieder citam pakalpojumam
+3. Avotam nepieciešams vairāk nekā noklusējuma 30 sekundes, lai pieņemtu savienojumu — palieliniet
+   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` faila `config.toml` sadaļā `[base]` (`0` gaida
+   bezgalīgi) un restartējiet backend
+4. Serverless gala punkts atsāk darbu pēc dīkstāves — mēģiniet vēlreiz, un, ja tas notiek regulāri,
+   palieliniet pieteikšanās taimautu, kā aprakstīts iepriekš
 
 ---
 
-### Profiling fails while the connection test succeeds
+### Autentifikācija neizdodas, lai gan akreditācijas dati ir pareizi
 
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
+**Simptomi:**
+- Draiveris ziņo par nederīgiem akreditācijas datiem, bet tas pats lietotājs darbojas citā SQL klientā
 
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
-
----
-
-## Best Practices
-
-**DO:**
-
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Cēloņi un risinājumi:**
+1. Parole satur `;` — ietveriet vērtību figūriekavās: `{p@ss;word}`
+2. Vērtībā tika iekopēta atstarpe beigās
+3. Draiveris sagaida konkrētu autentifikācijas mehānismu — piemēram, `AuthMech` Hive un
+   Databricks draiveriem vai `authenticator` Snowflake
+4. Vērtība tika saglabāta šifrēta un pēc tam rediģēta — šifrētas vērtības nevar nolasīt atpakaļ,
+   tāpēc ievadiet noslēpumu no jauna pilnībā
+5. Tokena derīgums ir beidzies — personīgās piekļuves tokeni un programmatic access tokeni tiek
+   izsniegti ar derīguma termiņu
 
 ---
 
-## Support
+### Datu avota ekrānā netiek piedāvāta gaidītā datubāze vai shēma
 
-Need help with a database connection?
+**Simptomi:**
+- Pievienojot datu avotu, trūkst katalogu, shēmu vai tabulu
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**Cēloņi un risinājumi:**
+1. Savienojums norāda uz citu datubāzi — skatiet
+   [Kuru datubāzi redz savienojums](#which-database-the-connection-sees)
+2. Savienojuma lietotājam nav lasīšanas tiesību shēmā vai datu vārdnīcā
+3. **Technology** neatbilst avotam, tāpēc *digna* vaicā nepareizo datu vārdnīcu
+4. Snowflake gadījumā lietotājam nav piešķirta noklusējuma noliktava (warehouse) un nav norādīts
+   rekvizīts `Warehouse`, tāpēc metadatu vaicājumus nevar izpildīt
 
 ---
 
-**Release:** 2026.06  
+### Profilēšana neizdodas, lai gan savienojuma tests ir veiksmīgs
+
+**Simptomi:**
+- **Test** ir veiksmīgs, bet inspekcija neizdodas, kad tiek veidotas darba tabulas
+
+**Cēloņi un risinājumi:**
+1. Ir izvēlēta *Permanent* profilēšana, un savienojuma lietotājs nevar izveidot tabulas shēmā
+   **Work Schema** — piešķiriet tiesības vai pārslēdzieties uz *Session* vai *Standard*
+2. **Work Schema** ir tukša vai norāda uz neesošu shēmu, kamēr ir izvēlēta *Permanent*
+   profilēšana
+3. Ir izvēlēta *Session* profilēšana, un savienojuma lietotājs nedrīkst izveidot pagaidu tabulas
+4. Ilgstošs profilēšanas vaicājums sasniedz vaicājuma taimautu — palieliniet
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` faila `config.toml` sadaļā `[base]` (noklusējums 3600
+   sekundes, `0` atspējo taimautu)
+
+---
+
+## Labākā prakse
+
+**DARĪT:**
+
+- Instalējiet un reģistrējiet draiveri *digna* resursdatorā pirms savienojuma konfigurēšanas
+- Atzīmējiet **Encrypted** katrai parolei un tokenam
+- Noklikšķiniet **Test** pirms saglabāšanas un testējiet vēlreiz pēc paroles maiņas
+- Nosauciet savienojumus pēc avota un vides, piemēram, `sales_dwh_prod`
+- Piešķiriet *digna* atsevišķu datubāzes lietotāju, ar tikai lasīšanas tiesībām, ja pietiek ar *Standard* profilēšanu
+- Uzturiet vienu savienojumu katrai avota datubāzei un pievienojiet otru, nevis pārslēdziet pirmo
+
+**NEDARĪT:**
+
+- Glabāt noslēpumus nešifrētus vai koplietot vienu datubāzes lietotāju starp *digna* un citiem rīkiem
+- Izmantot 32 bitu draiveri ar 64 bitu *digna* instalāciju
+- Paļauties uz User DSN, ja *digna* darbojas kā pakalpojums — tas nebūs redzams
+- Ievietot rekvizītā vērtību, kas satur `;`, bez figūriekavām
+- Norādīt **Work Schema** uz shēmu, kurā atrodas avota dati
+
+---
+
+## Atbalsts
+
+Nepieciešama palīdzība ar datubāzes savienojumu?
+
+- **E-pasts:** support@digna.ai
+- **Dokumentācija:** https://docs.digna.ai
+- **Tīmekļa vietne:** https://www.digna.ai
+
+---
+
+**Izlaidums:** 2026.06  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

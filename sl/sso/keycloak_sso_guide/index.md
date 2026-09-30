@@ -10,7 +10,7 @@ Ta vodnik pokriva **stran Keycloak**: ustvarjanje klienta in zbiranje vrednosti,
 
 | Zahteva | Opombe |
 |---|---|
-| **Keycloak verzija** | 17 ali novejša za URL poti uporabljene tukaj — glejte opombo v 4. koraku |
+| **Keycloak verzija** | 17 ali novejša za URL poti uporabljene tukaj — glejte opombo v 5. koraku |
 | **Vloga v Keycloak** | `realm-admin` na ciljnem realm, ali strežniški administrator |
 | **Realm** | Realm, kateremu pripadajo vaši digna uporabniki, ne nujno `master` |
 | **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |

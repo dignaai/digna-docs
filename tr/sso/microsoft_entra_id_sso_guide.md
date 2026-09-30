@@ -1,96 +1,96 @@
-# Set up SSO with Microsoft Entra ID
+# Microsoft Entra ID ile SSO Kurulumu
 
-Microsoft Entra ID (formerly Azure Active Directory) is a fully OIDC-compliant provider, so digna integrates with it through the standard discovery endpoint.
+Microsoft Entra ID (eski adıyla Azure Active Directory) OIDC ile tam uyumlu bir sağlayıcıdır; bu nedenle digna onunla standart keşif uç noktası üzerinden entegre olur.
 
-This guide covers the **Entra ID side**: registering the application and collecting the four values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Bu kılavuz **Entra ID tarafını** kapsar: uygulamayı kaydetme ve digna'nın ihtiyaç duyduğu dört değeri toplama. digna tarafı (`dashboard_config.toml`, test ve sorun giderme) her sağlayıcı için aynıdır ve [Çoklu Oturum Açma Genel Bakış](overview.md) sayfasında açıklanmıştır.
 
 ---
 
-## Before You Start
+## Başlamadan Önce
 
-| Requirement | Notes |
+| Gereksinim | Notlar |
 |---|---|
-| **Entra ID role** | Application Administrator, Cloud Application Administrator, or Global Administrator |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
-| **Tenant** | The directory your users sign in to |
+| **Entra ID rolü** | Application Administrator, Cloud Application Administrator veya Global Administrator |
+| **digna yönlendirme URI'si** | Kullanıcıların oturum açtıktan sonra döndüğü URL, ör. `https://digna.yourdomain.com/oidc/callback` |
+| **Kiracı** | Kullanıcılarınızın oturum açtığı dizin |
 
 ---
 
-## Step 1: Register the Application
+## Adım 1: Uygulamayı Kaydedin
 
-1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com)
-2. Go to **Identity → Applications → App registrations**
-3. Click **New registration**
-4. Configure:
-   - **Name**: `digna` (shown to users on the consent screen)
-   - **Supported account types**: *Accounts in this organizational directory only* for a single-tenant deployment
-5. Under **Redirect URI**, select platform **Web** and enter your digna callback URL:
+1. [Microsoft Entra admin center](https://entra.microsoft.com)'da oturum açın
+2. **Identity → Applications → App registrations** bölümüne gidin
+3. **New registration**'a tıklayın
+4. Şunları yapılandırın:
+   - **Name**: `digna` (onay ekranında kullanıcılara gösterilir)
+   - **Supported account types**: tek kiracılı bir dağıtım için *Accounts in this organizational directory only*
+5. **Redirect URI** altında **Web** platformunu seçin ve digna geri çağırma URL'nizi girin:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-6. Click **Register**
+6. **Register**'a tıklayın
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    The platform must be **Web**, not *Single-page application*. digna exchanges the authorization code from the backend using a client secret, which the SPA platform type does not permit.
-
----
-
-## Step 2: Collect the Client and Tenant IDs
-
-On the application's **Overview** page, copy:
-
-- **Application (client) ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Directory (tenant) ID** → goes into the discovery URL
+    Platform *Single-page application* değil, **Web** olmalıdır. digna yetkilendirme kodunu arka uçtan bir istemci gizli anahtarı kullanarak değiştirir; SPA platform türü buna izin vermez.
 
 ---
 
-## Step 3: Create a Client Secret
+## Adım 2: İstemci ve Kiracı Kimliklerini Toplayın
 
-1. Go to **Certificates & secrets → Client secrets**
-2. Click **New client secret**
-3. Enter a description and choose an expiry
-4. Click **Add**
-5. Copy the **Value** column immediately
+Uygulamanın **Overview** sayfasında şunları kopyalayın:
 
-!!! warning "Copy the Value, Not the Secret ID"
-
-    The **Value** is shown only once, on this page, and cannot be retrieved afterwards. The **Secret ID** next to it looks similar but is not the secret — using it produces an `invalid_client` error at login. If you navigate away before copying, delete the secret and create a new one.
-
-!!! tip "Tip"
-
-    Entra ID caps secret lifetime at 24 months, so every SSO integration has an expiry date. Note it somewhere you will see it — an expired secret takes SSO down for every user at once, with no warning on the login page.
+- **Application (client) ID** → `DIGNA_OIDC_CLIENT_ID` olur
+- **Directory (tenant) ID** → keşif URL'sine girer
 
 ---
 
-## Step 4: Confirm the API Permissions
+## Adım 3: Bir İstemci Gizli Anahtarı Oluşturun
 
-1. Go to **API permissions**
-2. Confirm that **Microsoft Graph → User.Read** (delegated) is present — it is added by default
+1. **Certificates & secrets → Client secrets** bölümüne gidin
+2. **New client secret**'a tıklayın
+3. Bir açıklama girin ve bir geçerlilik süresi seçin
+4. **Add**'e tıklayın
+5. **Value** sütununu hemen kopyalayın
 
-The `openid`, `profile` and `email` scopes digna requests are part of the standard OIDC set and need no separate grant. If your tenant requires admin consent for all applications, click **Grant admin consent for &lt;tenant&gt;**.
+!!! warning "Secret ID'yi Değil, Value'yu Kopyalayın"
+
+    **Value** yalnızca bir kez, bu sayfada gösterilir ve daha sonra alınamaz. Yanındaki **Secret ID** benzer görünür ancak gizli anahtar değildir; onu kullanmak oturum açmada `invalid_client` hatasına yol açar. Kopyalamadan sayfadan ayrılırsanız gizli anahtarı silin ve yenisini oluşturun.
+
+!!! tip "İpucu"
+
+    Entra ID gizli anahtar ömrünü en fazla 24 ay ile sınırlar, bu nedenle her SSO entegrasyonunun bir son kullanma tarihi vardır. Bunu göreceğiniz bir yere not edin; süresi dolmuş bir gizli anahtar, oturum açma sayfasında hiçbir uyarı olmadan SSO'yu tüm kullanıcılar için aynı anda devre dışı bırakır.
 
 ---
 
-## Step 5: Build the Discovery URL
+## Adım 4: API İzinlerini Doğrulayın
 
-Substitute the **Directory (tenant) ID** from Step 2:
+1. **API permissions** bölümüne gidin
+2. **Microsoft Graph → User.Read** (delegated) izninin mevcut olduğunu doğrulayın; bu izin varsayılan olarak eklenir
+
+digna'nın istediği `openid`, `profile` ve `email` kapsamları standart OIDC kümesinin bir parçasıdır ve ayrı bir izin gerektirmez. Kiracınız tüm uygulamalar için yönetici onayı gerektiriyorsa **Grant admin consent for &lt;tenant&gt;**'e tıklayın.
+
+---
+
+## Adım 5: Keşif URL'sini Oluşturun
+
+Adım 2'deki **Directory (tenant) ID** değerini yerine koyun:
 
 ```
 https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration
 ```
 
-!!! note "Use the v2.0 Endpoint"
+!!! note "v2.0 Uç Noktasını Kullanın"
 
-    The `/v2.0/` segment matters. The v1.0 endpoint at `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` issues tokens in an older format and does not return the standard OIDC claims digna expects.
+    `/v2.0/` kısmı önemlidir. `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` adresindeki v1.0 uç noktası token'ları daha eski bir biçimde verir ve digna'nın beklediği standart OIDC talep (claim) değerlerini döndürmez.
 
-Open the URL in a browser before continuing. A JSON document confirms the tenant ID is correct.
+Devam etmeden önce URL'yi bir tarayıcıda açın. Bir JSON belgesi, kiracı kimliğinin doğru olduğunu doğrular.
 
 ---
 
-## Step 6: Configure digna
+## Adım 6: digna'yı Yapılandırın
 
 ### `dashboard/dashboard_config.toml`
 
@@ -113,37 +113,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `microsoft` here.
+Her iki dosyadaki `key` eşleşmelidir; burada `microsoft`.
 
 ---
 
-## Step 7: Test
+## Adım 7: Test Edin
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
-
----
-
-## Troubleshooting Entra ID
-
-### AADSTS50011: Redirect URI Mismatch
-
-The URI in `DIGNA_OIDC_REDIRECT_URI` differs from the one registered in Step 1. Entra ID compares the full string, so a trailing slash, `http` versus `https`, or a different port all count as a mismatch. Check **Authentication → Web → Redirect URIs**.
-
-### AADSTS7000215: Invalid Client Secret
-
-Either the **Secret ID** was copied instead of the **Value**, or the secret has expired. Create a new secret and copy the Value column.
-
-### AADSTS650057: Invalid Resource
-
-The application registration was deleted or belongs to a different tenant than the one in the discovery URL. Confirm the Directory (tenant) ID on the Overview page.
-
-### Users Log In but Nothing Happens
-
-If the tenant requires admin consent and it has not been granted, the redirect returns without a usable token. Grant admin consent under **API permissions**.
+Arka ucu ve web sunucusunu yeniden başlatın, ardından dashboard'u açın. Tam kontrol listesi için bkz. [Oturum Açmayı Test Etme](overview.md#testing-login).
 
 ---
 
-## See Also
+## Entra ID Sorunlarını Giderme
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
-- [Microsoft: OAuth 2.0 authorization code flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
+### AADSTS50011: Yönlendirme URI'si Uyuşmazlığı
+
+`DIGNA_OIDC_REDIRECT_URI` içindeki URI, Adım 1'de kaydedilenden farklı. Entra ID dizenin tamamını karşılaştırır; bu nedenle sondaki bir eğik çizgi, `http` ile `https` farkı veya farklı bir port uyuşmazlık sayılır. **Authentication → Web → Redirect URIs** bölümünü kontrol edin.
+
+### AADSTS7000215: Geçersiz İstemci Gizli Anahtarı
+
+Ya **Value** yerine **Secret ID** kopyalanmış ya da gizli anahtarın süresi dolmuş. Yeni bir gizli anahtar oluşturun ve Value sütununu kopyalayın.
+
+### AADSTS650057: Geçersiz Kaynak
+
+Uygulama kaydı silinmiş veya keşif URL'sindekinden farklı bir kiracıya ait. Overview sayfasındaki Directory (tenant) ID değerini doğrulayın.
+
+### Kullanıcılar Oturum Açıyor Ancak Hiçbir Şey Olmuyor
+
+Kiracı yönetici onayı gerektiriyorsa ve bu onay verilmemişse yönlendirme, kullanılabilir bir token olmadan geri döner. **API permissions** altında yönetici onayını verin.
+
+---
+
+## Ayrıca Bakınız
+
+- [Çoklu Oturum Açma Genel Bakış](overview.md): yapılandırma başvurusu, test ve genel sorun giderme
+- [Microsoft: OAuth 2.0 yetkilendirme kodu akışı](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)

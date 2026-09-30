@@ -1,65 +1,50 @@
-# Source Connector for PostgreSQL
+# موصل المصدر لـ PostgreSQL
 
-This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
-**DSN-less** connection string.
+يشرح هذا الدليل كيفية تهيئة *digna* للاتصال بـ PostgreSQL عبر **ODBC**، باستخدام سلسلة اتصال **بدون DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to PostgreSQL.
+جانب *digna* من الإعداد متطابق لكل التقنيات — أين تُنشأ الاتصالات، وكيف تُشفَّر قيم الخصائص، وكيف يُختبر الاتصال، وما معنى أوضاع التنميط (profiling). وهو موضح في [نظرة عامة على اتصالات قواعد البيانات](overview.md). تغطي هذه الصفحة ما هو خاص بـ PostgreSQL.
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. تثبيت برنامج تشغيل ODBC {: #1-install-the-odbc-driver }
 
-Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
+ثبّت برنامج تشغيل PostgreSQL ODBC (**psqlODBC**) على الجهاز الذي يشغّل الواجهة الخلفية لـ *digna*، باتباع دليل التثبيت الرسمي من المورّد.
 
-The driver registers itself under a name that differs per platform and package — commonly
-**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
-the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
-for the `DRIVER` property below.
+يسجّل برنامج التشغيل نفسه تحت اسم يختلف حسب النظام الأساسي والحزمة — عادةً **PostgreSQL Unicode(x64)** على Windows و**PostgreSQL ODBC Driver(UNICODE)** على Linux. اقرأ الاسم بدقة على مضيفك كما هو موضح في [تثبيت برنامج تشغيل ODBC على مضيف digna](overview.md#install-the-driver)، واستخدم هذا الاسم للخاصية `DRIVER` أدناه.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. خصائص ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "مثال، وليس مواصفة"
 
-    The set below is one combination that is known to work. The properties belong to the
-    psqlODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what your server demands — SSL in particular — may differ too.
-    Use this as a starting point and check the documentation of the driver version you
-    installed.
+    المجموعة أدناه هي تركيبة واحدة معروف أنها تعمل. الخصائص تابعة لبرنامج التشغيل psqlODBC، لذا تختلف أسماؤها وقيمها الافتراضية والقيم المقبولة بين إصدارات برنامج التشغيل والأنظمة الأساسية، وقد يختلف أيضًا ما يتطلبه خادمك — ولا سيما SSL. استخدم هذه المجموعة كنقطة بداية وراجع وثائق إصدار برنامج التشغيل الذي ثبّته.
 
-Add the following properties in the **Add DB Connection** screen:
+أضف الخصائص التالية في شاشة **Add DB Connection**:
 
-| Key | Example value | Notes |
+| المفتاح | قيمة مثال | ملاحظات |
 |---|---|---|
-| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `db.example.com` | Server name or IP address |
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | يجب أن يطابق اسم برنامج التشغيل المسجَّل على مضيف *digna* |
+| `SERVER` | `db.example.com` | اسم الخادم أو عنوان IP |
 | `PORT` | `5432` | |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
-| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+| `DATABASE` | `digna_source_db` | قاعدة البيانات التي تحتوي على مخططات المصدر. وهي قاعدة البيانات الوحيدة التي يمكن لهذا الاتصال تنميطها |
+| `UID` | `digna_source_user` | مستخدم قاعدة البيانات |
+| `PWD` | `<password>` | فعّل **Encrypted** |
+| `SSLMode` | `prefer` | `disable` أو `allow` أو `prefer` أو `require` أو `verify-ca` أو `verify-full` — يجب أن يقبلها الخادم |
 
-The resulting connection string looks like this:
+تبدو سلسلة الاتصال الناتجة كما يلي:
 
 ```
 DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
 ```
 
-Any further psqlODBC option can be added as an additional property — for example
-`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
-time.
+يمكن إضافة أي خيار آخر من خيارات psqlODBC كخاصية إضافية — على سبيل المثال `ReadOnly=1` لجلسة للقراءة فقط، أو `ConnSettings` لتنفيذ عبارات `SET` عند الاتصال.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. تهيئة *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+في شاشة **Add DB Connection**، قدّم ما يلي:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -70,35 +55,25 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+## 4. ملاحظات حول PostgreSQL {: #4-notes-on-postgresql }
 
-- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
-  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
-  be available to the driver on the *digna* host. If you had to choose a specific mode when
-  testing the driver, use the same one here.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **يجب أن يطابق `SSLMode` الخادم.** يرفض الخادم المهيأ بـ `hostssl` القيمة `SSLMode=disable`، وتحتاج `verify-ca` أو `verify-full` أيضًا إلى أن تكون شهادة الجذر متاحة لبرنامج التشغيل على مضيف *digna*. إذا اضطررت إلى اختيار وضع معين عند اختبار برنامج التشغيل، فاستخدم الوضع نفسه هنا.
+- **الاتصال الواحد يرى قاعدة بيانات واحدة.** يعرض *digna* مخططات قاعدة البيانات المسماة في `DATABASE`، لأن PostgreSQL يُبلغ عن قاعدة البيانات الحالية فقط ككتالوج. جداول المصدر الموجودة في قاعدة بيانات أخرى تحتاج إلى اتصال خاص بها.
+- **أوضاع التنميط.** ينشئ *Permanent* جداول العمل في **Work Schema**، لذا يحتاج المستخدم إلى `CREATE` على ذلك المخطط. يستخدم *Session* الأمر `CREATE TEMPORARY TABLE` ولا يمسّ **Work Schema**. يحتاج *Standard* إلى صلاحية القراءة فقط.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. التحقق من برنامج التشغيل (اختياري) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver works and that the server accepts
-your credentials and SSL mode before you enter them in *digna*.
+تهيئة مصدر بيانات ODBC ليست مطلوبة لاتصال بدون DSN، لكن نافذة برنامج التشغيل نفسه طريقة مريحة للتأكد من أن برنامج التشغيل يعمل وأن الخادم يقبل بيانات اعتمادك ووضع SSL قبل إدخالها في *digna*.
 
-#### Step 1
+#### الخطوة 1
 ![Step 1](images/postgres/create_odbc_data_source_step1.png)
 
-#### Step 2 – Test the connection
+#### الخطوة 2 – اختبار الاتصال
 
-Click the **Test Connection** button.
+انقر الزر **Test Connection**.
 
 ![Step 2](images/postgres/create_odbc_data_source_step2.png)
 
-The values you entered here are exactly the values the properties in
-[section 2](#2-odbc-properties) take.
+القيم التي أدخلتها هنا هي بالضبط القيم التي تأخذها الخصائص في [القسم 2](#2-odbc-properties).

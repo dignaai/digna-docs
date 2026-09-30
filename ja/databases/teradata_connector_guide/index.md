@@ -1,63 +1,61 @@
-# Source Connector for Teradata
+# Teradata 用ソースコネクター
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+このガイドでは、**DSN レス** の接続文字列を使用して、**ODBC** 経由で Teradata に接続するよう *digna* を設定する方法を
+説明します。
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+セットアップの *digna* 側（接続を作成する場所、プロパティ値の暗号化方法、接続のテスト方法、プロファイリングモードの意味）は
+すべてのテクノロジーで共通であり、[データベース接続の概要](overview.md) で説明しています。このページでは Teradata 固有の
+内容を扱います。
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC ドライバーをインストールする {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+ベンダーの公式インストールガイドに従って、*digna* バックエンドを実行するマシンに **ODBC Driver for Teradata** を
+インストールします。
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+ドライバーは名前にバージョンを含めて登録されます。例: **Teradata Database ODBC Driver 20.00**。
+[digna ホストに ODBC ドライバーをインストールする](overview.md#install-the-driver) の説明に従って、ホスト上で登録されている
+正確な名前を確認してください。
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC プロパティ {: #2-odbc-properties }
+
+!!! important "これは例であり、仕様ではありません"
+
+    以下のセットは、動作が確認されている組み合わせの 1 つです。プロパティは Teradata ODBC ドライバーに属するため、
+    その名前、既定値、受け付ける値はドライバーのバージョン（バージョンはドライバー名自体の一部です）やプラットフォームに
+    よって異なります。これを出発点として使用し、インストールしたドライバーバージョンのドキュメントを確認してください。
+
+**Add DB Connection** 画面で次のプロパティを追加します。
+
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | *digna* ホストに登録されているドライバー名と一致している必要があります |
+| `DBCNAME` | `teradata.example.com` | サーバー名または IP アドレス。ホストプロパティに対する Teradata 独自の名称です |
+| `UID` | `digna_source_user` | データベースユーザー |
+| `PWD` | `<password>` | **Encrypted** をオンにします |
 
-The resulting connection string looks like this:
+生成される接続文字列は次のようになります。
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+便利な追加プロパティ:
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | ログオンメカニズム。`TD2` が Teradata の既定値です。ディレクトリ認証には `LDAP` を使用します |
+| `DefaultDatabase` | `dad` | セッションが開始されるデータベース |
+| `CharacterSet` | `UTF8` | 既定のセッション文字セットでは ASCII 以外のデータが文字化けする場合に設定します |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* の設定 {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** 画面で、次の内容を入力します。
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +66,36 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Teradata に関する注意事項 {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Teradata のデータベースはスキーマではなくカタログです。** *digna* はユーザーが参照できるデータベース
+  （`DBC.DatabasesV` から）をカタログとして一覧表示し、スキーマのレベルは適用されません。データソースを追加するときは、
+  データベースをカタログとして選択します。スキーマは *not applicable* として表示されます。
+- **1 つの接続から、許可されているすべてのデータベースに到達できます。** そのため、接続が 1 つのデータベースに固定される
+  テクノロジーとは異なり、1 つの接続で複数のデータベースにまたがるソースを扱えます。
+- **Work Schema はデータベースです。** *Permanent* プロファイリングでは、ワークテーブルを保持する Teradata データベースを
+  指定し、ユーザーにそのデータベースでの `CREATE TABLE` 権限と `PERM` スペースの割り当てを付与してください。PERM
+  スペースがゼロのデータベースにはテーブルを格納できません。
+- **プロファイリングモード。** *Permanent* は **Work Schema** にテーブルを作成します。*Session* は `VOLATILE` テーブルを
+  使用するため、`SPOOL` スペースが必要ですが、PERM スペースや **Work Schema** での権限は不要です。*Standard* に必要なのは
+  読み取りアクセスのみです。
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. ドライバーの動作確認（任意） {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+DSN レス接続では ODBC データソースの設定は必要ありませんが、ドライバー自体のダイアログを使うと、*digna* に入力する前に、
+ドライバーと認証情報が動作することを手軽に確認できます。
 
-#### Step 1
+#### ステップ 1
 ![Step 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+ここでの **Name or IP address** フィールドは、[セクション 2](#2-odbc-properties) の `DBCNAME` プロパティです。
 
-Click the **Test** button.
+**Test** ボタンをクリックします。
 
-#### Step 2
+#### ステップ 2
 ![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+ユーザー名とパスワードを入力し、**OK** ボタンをクリックします。成功画面が表示されれば、ドライバーと認証情報が
+動作していることが確認できます。

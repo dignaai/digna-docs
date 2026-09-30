@@ -1,77 +1,79 @@
-# Source Connector for Oracle
+# Forráskonnektor Oracle-höz
 
-This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
-using a **DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t az Oracle Database-hez való
+csatlakozásra **ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Oracle.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
-enough). Install it on the machine that runs the *digna* backend, following the vendor's
-official installation guide.
-
-The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
-`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
-installation, so read the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami az Oracle-re jellemző.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Az Oracle ODBC illesztőprogram az **Oracle Client** része (az Instant Client "ODBC" csomagja
+elegendő). Telepítse arra a gépre, amely a *digna* backendet futtatja, a gyártó hivatalos
+telepítési útmutatója szerint.
 
-    The set below is one combination that is known to work. The properties belong to the Oracle
-    ODBC driver, so their names, defaults and accepted values differ between client versions,
-    and the driver name in particular depends on the Oracle home on your host. Use this as a
-    starting point and check the documentation of the client version you installed.
+Az illesztőprogram **Oracle in `<OracleHomeName>`** néven regisztrálja magát — például
+`Oracle in OraDB21Home1` vagy `Oracle in instantclient_21_13`. A home neve telepítésenként
+eltér, ezért olvassa le a pontos nevet a gépén, ahogyan az
+[Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver) részben le
+van írva.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
+
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok az
+    Oracle ODBC illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek kliensverziónként eltérnek, és különösen az illesztőprogram neve függ a
+    gépén lévő Oracle home-tól. Használja ezt kiindulópontként, és nézze meg a telepített
+    kliensverzió dokumentációját.
+
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
-| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
-| `UID` | `DIGNA_SOURCE_USER` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `Driver` | `Oracle in OraDB21Home1` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Az adatbázis, amelyhez csatlakozni kell — lásd lent |
+| `UID` | `DIGNA_SOURCE_USER` | Adatbázis-felhasználó |
+| `PWD` | `<password>` | Jelölje be az **Encrypted** opciót |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
 ```
 
-### The `DBQ` value
+### A `DBQ` érték
 
-`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
-configured on the *digna* host:
+A `DBQ` háromféle formát fogad el. A *digna* számára egyenértékűek; abban különböznek, hogy mit
+kell konfigurálni a *digna* gépen:
 
-| Form | Example | Requires |
+| Forma | Példa | Előfeltétel |
 |---|---|---|
-| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
-| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
-| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+| **Teljes connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Semmi — minden a tulajdonságban van. Ajánlott |
+| **TNS alias** | `DIGNA_SOURCE` | Az aliasnak léteznie kell a *digna* gépen lévő Oracle Client `tnsnames.ora` fájljában |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Easy Connectet támogató Oracle Client (12c és újabb) |
 
-!!! tip "Prefer the full descriptor"
+!!! tip "Részesítse előnyben a teljes descriptort"
 
-    A TNS alias moves half of the connection definition into a file on the *digna* host, where
-    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
-    the connection self-contained — which is the point of a DSN-less setup.
+    Egy TNS alias a kapcsolatdefiníció felét egy fájlba helyezi át a *digna* gépen, ahol
+    könnyű megfeledkezni róla, amikor a gépet újraépítik vagy a *digna*-t áthelyezik. A teljes
+    descriptor önállóan tartja a kapcsolatot — éppen ez a DSN nélküli beállítás lényege.
 
-Note the parentheses in a descriptor are fine inside a connection string, but if your password
-contains `;`, brace it: `PWD={p@ss;word}`.
+A descriptorban lévő zárójelek nem okoznak gondot a kapcsolati karakterláncban, de ha a jelszava
+`;`-t tartalmaz, tegye kapcsos zárójelbe: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -82,44 +84,47 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle {: #4-notes-on-oracle }
+## 4. Megjegyzések az Oracle-höz {: #4-notes-on-oracle }
 
-- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
-  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
-  `SELECT` on those tables, either directly or through a role.
-- **One connection sees one database.** The catalog *digna* offers is the database the
-  connection is attached to, so `DBQ` decides which service, and therefore which database, is
-  profiled.
-- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
-  data dictionary, which is what Oracle stores — upper case for unquoted objects.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
-  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
-  needs read access only.
+- **A sémák felhasználók.** A *digna* az Oracle felhasználókat sémaként listázza, így a
+  forrásséma a táblák tulajdonosa — a fenti példában `DIGNA_SOURCE_USER`. A kapcsolat
+  felhasználójának `SELECT` jogosultság kell ezeken a táblákon, közvetlenül vagy egy szerepkörön
+  keresztül.
+- **Egy kapcsolat egy adatbázist lát.** A *digna* által felajánlott katalógus az az adatbázis,
+  amelyhez a kapcsolat csatlakozik, így a `DBQ` dönti el, melyik szolgáltatás, és ezáltal
+  melyik adatbázis kerül profilozásra.
+- **Az azonosítók idézőjelezés után megkülönböztetik a kis- és nagybetűket.** A *digna*
+  idézőjelek közé teszi az adatszótárból kiolvasott neveket, vagyis azt, amit az Oracle tárol —
+  az idézőjel nélkül létrehozott objektumoknál nagybetűvel.
+- **Profilozási módok.** A *Permanent* a munkatáblákat a **Work Schema**-ban hozza létre, ezért
+  a felhasználónak ott `CREATE TABLE` jogosultság és kvóta kell a tablespace-en. A *Session*
+  privát ideiglenes táblát (`ORA$PTT_…`, Oracle 18c és újabb) használ, és nem érinti a
+  **Work Schema**-t. A *Standard*-hoz csak olvasási hozzáférés szükséges.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the Oracle Client, the service name and your
-credentials work before you enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az Oracle Client, a szolgáltatásnév és a hitelesítő adatai működnek, mielőtt megadná őket a
+*digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/oracle/create_odbc_data_source_step1.png)
 
-The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
-installation — that is where the alias, and with it the host, port and service name, is
-defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+Az itt felkínált **TNS Service Name** az Oracle Client telepítésének `tnsnames.ora` fájljából
+származik — ott van definiálva az alias, és vele együtt a host, a port és a szolgáltatásnév. A
+*digna*-ban az aliast használhatja `DBQ`-ként, vagy helyette a teljes descriptort.
 
-#### Step 2 – Test the connection
+#### 2. lépés – A kapcsolat tesztelése
 
-Click the **Test Connection** button.
+Kattintson a **Test Connection** gombra.
 
 ![Step 2](images/oracle/create_odbc_data_source_step2.png)
 
-Provide the password and click the **OK** button.
+Adja meg a jelszót, és kattintson az **OK** gombra.
 
 ![Step 3](images/oracle/create_odbc_data_source_step3.png)
 
-A success message confirms that the driver and the credentials work.
+Egy sikert jelző üzenet megerősíti, hogy az illesztőprogram és a hitelesítő adatok működnek.

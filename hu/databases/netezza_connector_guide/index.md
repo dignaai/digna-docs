@@ -1,61 +1,63 @@
-# Source Connector for Netezza
+# Forráskonnektor Netezza-hoz
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t a Netezza-hoz való csatlakozásra
+**ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami a Netezza-ra jellemző.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Telepítse a **NetezzaSQL** ODBC illesztőprogramot (az IBM Netezza klienseszközök része) arra a
+gépre, amely a *digna* backendet futtatja, a gyártó hivatalos telepítési útmutatója szerint.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Olvassa le a pontos regisztrált illesztőprogram-nevet a gépén, ahogyan az
+[Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver) részben le
+van írva.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
+
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    NetezzaSQL illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek kliensverziónként és platformonként eltérnek, és egy TLS-sel védett
+    appliance-hez több kell az itt bemutatott tulajdonságoknál. Használja ezt
+    kiindulópontként, és nézze meg a telepített kliensverzió dokumentációját.
+
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel. A kapcsos zárójel a szokásos írásmódja ennek a névnek |
+| `SERVER` | `netezza.example.com` | Szervernév vagy IP-cím |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Az adatbázis, amelyben a munkamenet indul |
+| `UID` | `ADMIN` | Adatbázis-felhasználó |
+| `PWD` | `<password>` | Jelölje be az **Encrypted** opciót |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Az illesztőprogram verziójától, a beállítástól és a biztonsági követelményektől függően további
+tulajdonságokra lehet szükség — például `SecurityLevel` és `CaCertFile` egy TLS-sel védett
+appliance esetén. Minden opció, amelyet az illesztőprogram *Advanced*, *SSL* és *Driver*
+párbeszédablakai kínálnak, hozzáadható tulajdonságként.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -66,37 +68,39 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Megjegyzések a Netezza-hoz {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Katalógusok és sémák egyaránt érvényesek.** A *digna* katalógusként listázza azokat az
+  adatbázisokat, amelyeket a felhasználó láthat (a `_V_DATABASE` alapján), alattuk pedig a
+  sémáikat (a `_V_SCHEMA` alapján), így egy kapcsolat több adatbázis forrásait is
+  kiszolgálhatja. A `DATABASE` csak azt dönti el, hol indul a munkamenet.
+- **Az azonosítók nagybetűsek**, hacsak nem idézőjelek között hozták létre őket, ezért
+  használják a fenti példák a `TEST` és `ADMIN` neveket.
+- **Profilozási módok.** A *Permanent* a munkatáblákat a **Work Schema**-ban hozza létre, ezért
+  a felhasználónak ott `CREATE TABLE` jogosultság kell. A *Session* `CREATE TEMPORARY TABLE`-t
+  használ, és nem érinti a **Work Schema**-t. A *Standard*-hoz csak olvasási hozzáférés
+  szükséges.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az illesztőprogram és a hitelesítő adatai működnek, mielőtt megadná őket a *digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+A **DSN Options** mezői egy az egyben megfelelnek a [2. szakasz](#2-odbc-properties)
+tulajdonságainak. A Netezza illesztőprogramtól, a beállítástól és a biztonsági
+követelményektől függően az **Advanced DSN Options**, **SSL DSN Options** vagy
+**Driver Options** füleken is szükség lehet adatokra; a legegyszerűbb beállításhoz a
+**DSN Options** elegendő.
 
-Click the **Test Connection** button.
+Kattintson a **Test Connection** gombra.
 
-#### Step 2
+#### 2. lépés
 ![Step 2](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Amikor megjelenik a sikert jelző képernyő, az illesztőprogram működik, és az értékek helyesek.

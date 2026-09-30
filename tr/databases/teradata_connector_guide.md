@@ -1,63 +1,65 @@
-# Source Connector for Teradata
+# Teradata için Kaynak Bağlayıcısı
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Bu kılavuz, *digna*'nın **DSN'siz** bir bağlantı dizesi kullanarak **ODBC** üzerinden
+Teradata'ya bağlanacak şekilde nasıl yapılandırılacağını açıklar.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Kurulumun *digna* tarafı her teknoloji için aynıdır: bağlantıların nerede oluşturulduğu,
+özellik değerlerinin nasıl şifrelendiği, bir bağlantının nasıl test edildiği ve profil oluşturma
+modlarının ne anlama geldiği. Bunlar [Veritabanı Bağlantılarına Genel Bakış](overview.md)
+sayfasında açıklanmıştır. Bu sayfa Teradata'ya özgü konuları ele alır.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC Sürücüsünü Kurun {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Üreticinin resmi kurulum kılavuzunu izleyerek *digna* arka ucunu çalıştıran makineye
+**ODBC Driver for Teradata**'yı kurun.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+Sürücü kendini adında sürüm numarası bulunacak şekilde kaydeder; örneğin
+**Teradata Database ODBC Driver 20.00**. Kayıtlı adın tamamını
+[ODBC Sürücüsünü digna Ana Makinesine Kurun](overview.md#install-the-driver) bölümünde
+açıklandığı şekilde ana makinenizden okuyun.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC Özellikleri {: #2-odbc-properties }
+
+!!! important "Bir örnek, bir şartname değil"
+
+    Aşağıdaki küme, çalıştığı bilinen bir kombinasyondur. Özellikler Teradata ODBC sürücüsüne
+    aittir; bu nedenle adları, varsayılan değerleri ve kabul edilen değerleri sürücü
+    sürümlerine (sürüm, sürücü adının bir parçasıdır) ve platformlara göre farklılık gösterir.
+    Bunu bir başlangıç noktası olarak kullanın ve kurduğunuz sürücü sürümünün dokümantasyonunu
+    kontrol edin.
+
+**Add DB Connection** ekranında aşağıdaki özellikleri ekleyin:
+
+| Anahtar | Örnek değer | Notlar |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | *digna* ana makinesinde kayıtlı sürücü adıyla eşleşmelidir |
+| `DBCNAME` | `teradata.example.com` | Sunucu adı veya IP adresi. Teradata'nın ana makine özelliği için kullandığı ad |
+| `UID` | `digna_source_user` | Veritabanı kullanıcısı |
+| `PWD` | `<password>` | **Encrypted** seçeneğini işaretleyin |
 
-The resulting connection string looks like this:
+Ortaya çıkan bağlantı dizesi şöyle görünür:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Faydalı ek özellikler:
 
-| Key | Example value | Notes |
+| Anahtar | Örnek değer | Notlar |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Oturum açma mekanizması. `TD2` Teradata varsayılanıdır; dizin kimlik doğrulaması için `LDAP` kullanın |
+| `DefaultDatabase` | `dad` | Oturumun başladığı veritabanı |
+| `CharacterSet` | `UTF8` | Varsayılan oturum karakter kümesinin ASCII dışı verileri bozacağı durumlarda bunu ayarlayın |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* Yapılandırması {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** ekranında aşağıdakileri girin:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +70,40 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Teradata ile İlgili Notlar {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Bir Teradata veritabanı bir şema değil, bir katalogdur.** *digna*, kullanıcının
+  görebildiği veritabanlarını (`DBC.DatabasesV` üzerinden) katalog olarak listeler ve şema
+  düzeyi uygulanmaz. Bir veri kaynağı eklerken veritabanını katalog olarak seçin; şema
+  *not applicable* olarak bildirilir.
+- **Bir bağlantı izin verilen her veritabanına erişir**; bu nedenle, bağlantının tek bir
+  veritabanına sabitlendiği teknolojilerin aksine, tek bir bağlantı birden çok veritabanındaki
+  kaynaklara hizmet edebilir.
+- **Work Schema bir veritabanıdır.** *Permanent* profil oluşturma için çalışma tablolarını
+  barındıran Teradata veritabanını adlandırın ve kullanıcıya orada `CREATE TABLE` hakları ile
+  bir `PERM` alan tahsisi verin; perm alanı sıfır olan bir veritabanı tablo barındıramaz.
+- **Profil oluşturma modları.** *Permanent* tabloları **Work Schema** içinde oluşturur.
+  *Session* bir `VOLATILE` tablo kullanır; bu, `SPOOL` alanı gerektirir ancak perm alanı ve
+  **Work Schema** içinde hak gerektirmez. *Standard* yalnızca okuma erişimi gerektirir.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Sürücüyü Doğrulama (isteğe bağlı) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+DSN'siz bir bağlantı için bir ODBC veri kaynağı yapılandırmak gerekli değildir; ancak sürücünün
+kendi iletişim kutusu, bunları *digna*'ya girmeden önce sürücünün ve kimlik bilgilerinizin
+çalıştığını doğrulamanın pratik bir yoludur.
 
-#### Step 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+#### Adım 1
+![Adım 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Buradaki **Name or IP address** alanı, [bölüm 2](#2-odbc-properties) içindeki `DBCNAME`
+özelliğidir.
 
-Click the **Test** button.
+**Test** düğmesine tıklayın.
 
-#### Step 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+#### Adım 2
+![Adım 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Kullanıcı adını ve parolayı girin, ardından **OK** düğmesine tıklayın. Bir başarı ekranı,
+sürücünün ve kimlik bilgilerinin çalıştığını doğrular.

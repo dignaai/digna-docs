@@ -1,194 +1,194 @@
-# Windows Installation Guide for digna Release 2026.06
+# Посібник зі встановлення digna Release 2026.06 на Windows
 
-**Release:** 2026.06
+**Випуск:** 2026.06
 
-**Last Updated:** August 30, 2026
+**Останнє оновлення:** 30 серпня 2026 р.
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Windows Service](#running-digna-as-a-windows-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Зміст
 
-### About digna
+1. [Вступ](#introduction)
+2. [Системні вимоги](#system-requirements)
+3. [Підготовка до встановлення](#pre-installation-setup)
+4. [Налаштування сервера PostgreSQL](#postgresql-server-setup)
+5. [Налаштування веб‑сервера](#web-server-configuration)
+6. [Початкове встановлення](#initial-installation)
+7. [Налаштування серверної частини](#backend-configuration)
+8. [Налаштування панелі](#dashboard-configuration)
+9. [Запуск digna як служби Windows](#running-digna-as-a-windows-service)
+10. [Оновлення до нового випуску](#upgrading-to-a-new-release)
 
-digna — це комплексна платформа з підтримкою AI, призначена для оптимізації управління якістю даних у різних середовищах (warehouses, lakes, lakehouses). Побудована для високої масштабованості та адаптивності, digna вирішує сучасні завдання роботи з даними через автоматизацію, моніторинг у реальному часі та виявлення аномалій.
+---
+
+## Вступ {: #introduction }
+
+### Про digna
+
+digna — це комплексна платформа на основі AI, призначена для оптимізації управління якістю даних у різних середовищах даних, таких як сховища даних (warehouses), озера даних (lakes) і lakehouses. Побудована з розрахунком на високу масштабованість та адаптивність, digna вирішує сучасні завдання роботи з даними завдяки автоматизації, моніторингу в реальному часі та виявленню аномалій.
 
 digna складається з двох основних компонентів:
 
 - **digna**: ядро застосунку, відповідальне за обробку даних і виконання перевірок якості. Воно поєднує серверну частину та інтерфейс командного рядка в одному виконуваному файлі, замінюючи окремі програми `dignabackend` і `dignacli` з попередніх випусків.
 - **dignadashboard**: веб‑інтерфейс, розміщений на веб‑сервері, що забезпечує зручний спосіб взаємодії з платформою digna та візуалізації метрик якості даних.
 
-### What's New in Release 2026.06
+### Що нового в Release 2026.06
 
-У цьому релізі можливості спостереження за даними інтегровані безпосередньо в код, що дозволяє розробникам контролювати якість даних на джерелі. Деталі див. у [release notes](http://docs.digna.ai/changelog/Release_202606/).
+Цей випуск вбудовує можливості спостереження за даними безпосередньо у ваш код, що дає змогу розробникам контролювати якість даних на джерелі. Повні відомості див. у [примітках до випуску](http://docs.digna.ai/changelog/Release_202606/).
 
 ### Шукаєте macOS або Linux?
 
-Цей посібник охоплює Windows. Для інших платформ див. [Посібник зі встановлення macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) або [Посібник зі встановлення Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+Цей посібник охоплює Windows. Для інших платформ див. [Посібник зі встановлення на macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) або [Посібник зі встановлення на Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
-## System Requirements {: #system-requirements }
+## Системні вимоги {: #system-requirements }
 
-Перед початком встановлення переконайтесь, що ваша система відповідає мінімальним вимогам:
+Перш ніж почати встановлення, переконайтеся, що ваша система відповідає таким мінімальним вимогам:
 
-| Requirement | Specification |
+| Вимога | Специфікація |
 |---|---|
-| **Operating System** | Windows Server or Windows 10/11 |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | IIS, Apache Tomcat, or equivalent |
+| **Операційна система** | Windows Server або Windows 10/11 |
+| **Пам'ять (мінімальна конфігурація)** | 16 GB RAM |
+| **Дисковий простір** | 10 GB вільного місця |
+| **База даних** | PostgreSQL Server 12 або новіший |
+| **Веб‑сервер** | IIS, Apache Tomcat або аналог |
 
-### Database Installation Options
+### Варіанти встановлення бази даних
 
-**If PostgreSQL is already installed:**
-Ви можете додати нову базу даних для digna у вже існуючий сервер PostgreSQL.
+**Якщо PostgreSQL уже встановлено:**
+Ви можете додати нову базу даних для digna до наявного сервера PostgreSQL.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Якщо PostgreSQL встановлюється на тій самій машині, що й digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Рекомендовані характеристики"
 
-    - **Memory**: 32 GB RAM (замість 16 GB)
-    - **Disk Space**: 50 GB available storage (замість 10 GB)
+    - **Пам'ять**: 32 GB RAM (замість 16 GB)
+    - **Дисковий простір**: 50 GB вільного місця (замість 10 GB)
 
-    Ці підвищені характеристики враховують одночасну роботу digna та PostgreSQL на одній машині.
-
----
-
-## Pre-Installation Setup {: #pre-installation-setup }
-
-Перед встановленням digna переконайтесь, що на місці є два ключові попередні компоненти:
-
-1. **PostgreSQL Server** – для зберігання обчислених метрик та даних про продуктивність
-2. **Web Server** – для розміщення digna Dashboard
-
-Якщо ці компоненти ще не налаштовані, слідуйте розділам нижче для їх встановлення та конфігурації.
+    Ці підвищені характеристики розраховані на одночасну роботу digna та бази даних PostgreSQL.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Підготовка до встановлення {: #pre-installation-setup }
 
-### If You Already Have PostgreSQL
+Перед встановленням digna переконайтеся, що наявні дві ключові передумови:
 
-Якщо PostgreSQL вже встановлений і працює локально або ви використовуєте керований віддалений PostgreSQL-сервер, можете перейти до [наступного розділу](#web-server-configuration).
+1. **Сервер PostgreSQL** – для зберігання обчислених метрик і даних про продуктивність
+2. **Веб‑сервер** – для розміщення панелі digna (digna Dashboard)
 
-### Installing PostgreSQL
+Якщо ці компоненти ще не налаштовано, скористайтеся наведеними нижче розділами, щоб установити та налаштувати їх.
 
-Виконайте наступні кроки, щоб встановити PostgreSQL на Windows:
+---
 
-#### Step 1: Download PostgreSQL
+## Налаштування сервера PostgreSQL {: #postgresql-server-setup }
 
-1. Перейдіть на сторінку [PostgreSQL Downloads](https://www.postgresql.org/download/)
-2. Оберіть **Windows**
-3. Завантажте останній інсталятор
+### Якщо у вас уже є PostgreSQL
 
-#### Step 2: Run the Installer
+Якщо PostgreSQL уже встановлено й запущено на вашій локальній машині або ви використовуєте керований віддалений сервер PostgreSQL, можете перейти до [наступного розділу](#web-server-configuration).
 
-1. Двічі клацніть завантажений інсталятор
-2. Дійте за підказками майстра встановлення
+### Встановлення PostgreSQL
 
-#### Step 3: Choose Installation Directory
+Виконайте такі кроки, щоб установити PostgreSQL на Windows:
 
-Обрати каталог, куди буде встановлено PostgreSQL. Звичайне значення за замовчуванням підходить.
+#### Крок 1: Завантажте PostgreSQL
 
-#### Step 4: Select Components
+1. Перейдіть на [сторінку завантажень PostgreSQL](https://www.postgresql.org/download/)
+2. Виберіть **Windows**
+3. Завантажте найновіший інсталятор
 
-Для стандартної конфігурації залиште опції компонентів за замовчуванням.
+#### Крок 2: Запустіть інсталятор
 
-#### Step 5: Set PostgreSQL Superuser Password
+1. Двічі клацніть завантажений файл інсталятора
+2. Дотримуйтеся підказок майстра встановлення
 
-Введіть та підтвердіть пароль для суперкористувача PostgreSQL (`postgres`). **Збережіть цей пароль у безпечному місці** — він знадобиться пізніше.
+#### Крок 3: Виберіть каталог встановлення
 
-#### Step 6: Configure Port Number
+Виберіть каталог, у який буде встановлено PostgreSQL. Розташування за замовчуванням зазвичай підходить.
 
-Стандартний порт PostgreSQL — `5432`. Можете використовувати значення за замовчуванням або вказати інший порт за потреби.
+#### Крок 4: Виберіть компоненти
 
-!!! tip "Tip"
+Для стандартного налаштування залиште вибраними компоненти за замовчуванням.
 
-    Якщо порт 5432 вже використовується, виберіть альтернативний порт і зафіксуйте його для подальшої конфігурації.
+#### Крок 5: Задайте пароль суперкористувача PostgreSQL
 
-#### Step 7: Choose Locale
+Введіть і підтвердьте пароль суперкористувача PostgreSQL (`postgres`). **Надійно збережіть цей пароль** — він знадобиться вам пізніше.
 
-Виберіть локаль для вашої бази даних. За замовчуванням зазвичай підходить для більшості інсталяцій.
+#### Крок 6: Налаштуйте номер порту
 
-#### Step 8: Complete Installation
+Стандартний порт PostgreSQL — `5432`. Можете використати значення за замовчуванням або за потреби вказати інший порт.
 
-Клікайте **Next** у наступних кроках, потім **Finish**.
+!!! tip "Порада"
 
-#### Step 9: Verify Installation
+    Якщо порт 5432 уже зайнятий, виберіть інший порт і запишіть його для подальшого налаштування.
 
-Відкрийте Command Prompt і перевірте установку PostgreSQL:
+#### Крок 7: Виберіть локаль
+
+Виберіть локаль для вашої бази даних. Значення за замовчуванням зазвичай підходить для більшості встановлень.
+
+#### Крок 8: Завершіть встановлення
+
+Натискайте **Next** на решті кроків, а потім натисніть **Finish**.
+
+#### Крок 9: Перевірте встановлення
+
+Відкрийте Command Prompt і перевірте, що PostgreSQL встановлено:
 
 ```bash
 psql --version
 ```
 
-Якщо інсталяція пройшла успішно, ви побачите версію PostgreSQL.
+Якщо встановлення пройшло успішно, ви побачите версію PostgreSQL.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Налаштування веб‑сервера {: #web-server-configuration }
 
-digna потребує веб‑сервер для розміщення dashboard. Виберіть один із наступних варіантів:
+digna потребує веб‑сервера для розміщення панелі. Виберіть один із таких варіантів:
 
 - [Internet Information Services (IIS)](#iis-setup)
 - [Apache Tomcat](#apache-tomcat-setup)
 
-Потрібно встановити і налаштувати лише **один** із цих серверів.
+Потрібно встановити й налаштувати лише **один** із цих серверів.
 
-### IIS Setup {: #iis-setup }
+### Налаштування IIS {: #iis-setup }
 
-#### Overview
+#### Огляд
 
-Internet Information Services (IIS) — веб‑сервер Microsoft для розміщення сайтів і веб‑застосунків.
+Internet Information Services (IIS) — веб‑сервер Microsoft для розміщення вебсайтів і веб‑застосунків.
 
-#### Enabling IIS
+#### Увімкнення IIS
 
-1. **Open Control Panel**
+1. **Відкрийте Control Panel**
    - Натисніть `Win + R`
    - Введіть `control` і натисніть Enter
 
-2. **Navigate to Windows Features**
+2. **Перейдіть до компонентів Windows**
    - Клацніть **Programs**
-   - Оберіть **Turn Windows features on or off**
+   - Виберіть **Turn Windows features on or off**
 
-3. **Enable Internet Information Services**
-   - Знайдіть **Internet Information Services (IIS)**
-   - Позначте чекбокс, щоб увімкнути його
-   - Розкрийте вкладку за допомогою **+** і переконайтеся, що вибрано такі підкомпоненти:
+3. **Увімкніть Internet Information Services**
+   - Прокрутіть униз і знайдіть **Internet Information Services (IIS)**
+   - Позначте прапорець, щоб увімкнути його
+   - Клацніть **+**, щоб розгорнути список, і переконайтеся, що вибрано такі підкомпоненти:
      - **Web Management Tools**
      - **World Wide Web Services**
 
-4. **Click OK** для застосування змін
+4. **Натисніть OK**, щоб застосувати зміни
 
-5. **Verify IIS Installation**
+5. **Перевірте встановлення IIS**
    - Відкрийте браузер
-   - Перейдіть на `http://localhost`
+   - Перейдіть за адресою `http://localhost`
    - Ви повинні побачити сторінку привітання IIS
 
-#### Required: URL Rewrite Module
+#### Обов'язково: модуль URL Rewrite
 
-IIS вимагає компонент URL Rewrite. Завантажте та встановіть його з [офіційної сторінки Microsoft](https://www.iis.net/downloads/microsoft/url-rewrite).
+IIS потребує компонента URL Rewrite. Завантажте та встановіть його з [офіційної сторінки Microsoft](https://www.iis.net/downloads/microsoft/url-rewrite).
 
-#### Required: MIME Type for Markdown Files
+#### Обов'язково: тип MIME для файлів Markdown
 
-Щоб Markdown‑файли (`.md`) коректно віддавались IIS:
+Щоб IIS коректно віддавав файли Markdown (`.md`):
 
 1. Відкрийте **IIS Manager** (натисніть `Win + R`, введіть `inetmgr`, натисніть Enter)
 2. Перейдіть до **Your Site > MIME Types**
@@ -197,48 +197,48 @@ IIS вимагає компонент URL Rewrite. Завантажте та в�
    - **File name extension**: `.md`
    - **MIME type**: `text/markdown`
 
-!!! warning "Important"
+!!! warning "Важливо"
 
-    Без цієї настройки `.md` файли можуть не віддаватися коректно.
+    Без цього налаштування файли `.md` можуть віддаватися некоректно.
 
 ---
 
-### Apache Tomcat Setup {: #apache-tomcat-setup }
+### Налаштування Apache Tomcat {: #apache-tomcat-setup }
 
-#### Overview
+#### Огляд
 
-Apache Tomcat — відкрите середовище для виконання Java‑серветів і веб‑сервер.
+Apache Tomcat — контейнер Java‑сервлетів і веб‑сервер із відкритим кодом.
 
-#### Installation
+#### Встановлення
 
-1. **Download Apache Tomcat**
+1. **Завантажте Apache Tomcat**
    - Перейдіть на сторінку [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
-   - Завантажте ZIP‑розповсюдження для Windows
+   - Завантажте ZIP‑дистрибутив для Windows
 
-2. **Extract the Archive**
-   - Розпакуйте ZIP у каталог на вашій системі
+2. **Розпакуйте архів**
+   - Розпакуйте ZIP‑файл у каталог на вашій системі
    - Наприклад: `C:\Program Files\Apache Tomcat`
 
-3. **Verify Tomcat is Running**
+3. **Перевірте, що Tomcat працює**
    - Відкрийте браузер
-   - Перейдіть на `http://localhost:8080`
+   - Перейдіть за адресою `http://localhost:8080`
    - Ви повинні побачити сторінку привітання Apache Tomcat
 
-!!! tip "Tip"
+!!! tip "Порада"
 
-    Зазвичай Apache Tomcat запускається автоматично після встановлення. Якщо ні, відкрийте папку `bin` і запустіть `startup.bat`.
+    Зазвичай Apache Tomcat запускається автоматично після встановлення. Якщо цього не сталося, перейдіть до теки `bin` і запустіть `startup.bat`.
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Початкове встановлення {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Крок 1: Налаштуйте репозиторій digna
 
-Репозиторій digna зберігає всі метрики, обчислені digna. Він виступає центральною базою для аналітичних та показників продуктивності.
+Репозиторій digna зберігає всі метрики, обчислені digna. Він слугує центральною базою даних для аналітичних даних і даних про продуктивність.
 
-#### Create Repository Schema and User
+#### Створіть схему репозиторію та користувача
 
-Відкрийте ваш клієнт PostgreSQL (pgAdmin, psql або інший) і виконайте такі SQL‑команди:
+Відкрийте свій клієнт PostgreSQL (pgAdmin, psql або подібний) і виконайте такі SQL‑команди:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -248,11 +248,11 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Замініть наступні заповнювачі:**
+**Замініть такі заповнювачі:**
 
 - `<digna_repo_schema>` — бажана назва схеми (наприклад, `dignarepo`)
 - `<digna_repo_user>` — бажане ім'я користувача (наприклад, `digna_user`)
-- `<digna_repo_password>` — безпечний пароль для цього користувача
+- `<digna_repo_password>` — надійний пароль для цього користувача
 
 **Приклад:**
 
@@ -264,35 +264,40 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-!!! tip "Best Practice"
+!!! tip "Найкраща практика"
 
-    Використовуйте сильні, складні паролі для користувачів бази даних. Уникайте легко вгадуваних облікових даних.
+    Використовуйте надійні, складні паролі для користувачів бази даних. Уникайте облікових даних, які легко вгадати.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Крок 2: Розпакуйте інсталяційний пакет digna
 
-1. Знайдіть ZIP‑файл інсталяції digna, переданий вам
-2. Розпакуйте його в обране місце встановлення
-3. Після розпакування ви побачите наступні елементи:
-   - `dashboard/` — веб‑інтерфейс
-   - `digna` — основний виконуваний файл (backend + CLI разом)
-   - `config.toml` — файл конфігурації
-   - `license.toml` — файл ліцензії (скопіюйте сюди свій)
+1. Знайдіть наданий вам ZIP‑файл інсталяції digna
+2. Розпакуйте його в бажане місце встановлення
+3. Після розпакування ви побачите такі елементи:
+   - `dashboard/` — веб‑інтерфейс панелі
+   - `digna` — основний виконуваний файл (серверна частина та CLI разом)
 
-### Step 3: Install the License File
+!!! info "Файли конфігурації та ліцензії не входять до пакета"
 
-!!! warning "Important"
+    Ні `config.toml`, ні `dashboard/dashboard_config.toml` не постачаються разом зі встановленням — ви
+    створюєте обидва файли самостійно, у розділах [Налаштування серверної частини](#backend-configuration) і
+    [Налаштування панелі](#dashboard-configuration). `license.toml` також не постачається;
+    digna надає його окремо, як описано в кроці 3.
 
-    Файл ліцензії **не** входить до пакета встановлення і надається окремо компанією digna.
+### Крок 3: Встановіть файл ліцензії
 
-1. Знайдіть файл `license.toml`, наданий вам
-2. Скопіюйте його в кореневий каталог встановлення digna (там, де знаходяться `config.toml` та виконуваний файл `digna`)
+!!! warning "Важливо"
+
+    Файл ліцензії **не** входить до інсталяційного пакета й надається digna окремо.
+
+1. Знайдіть наданий вам файл `license.toml`
+2. Скопіюйте його в кореневий каталог встановлення digna (там, де розташовані `config.toml` і виконуваний файл `digna`)
 
 **Чому це важливо:**
-Файл ліцензії містить інформацію про клієнта, дату закінчення ліцензії та цифровий підпис. **Не змінюйте цей файл** — будь‑які зміни зроблять його недійсним.
+Файл ліцензії містить відомості про клієнта, дату закінчення терміну дії ліцензії та цифровий підпис. **Не змінюйте цей файл** — будь‑які зміни зроблять його недійсним.
 
-**Структура директорії після налаштування:**
+**Структура каталогу після налаштування:**
 
 ```
 digna_installation/
@@ -305,19 +310,19 @@ digna_installation/
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Налаштування серверної частини {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Крок 1: Створіть і відредагуйте файл конфігурації
 
 Файл `config_template.toml` постачається у вашому каталозі встановлення digna. Потрібно лише перейменувати його на `config.toml`.
 
-**Location:** `digna_installation/config.toml`
+**Розташування:** `digna_installation/config.toml`
 
-Відкрийте `config.toml` у текстовому редакторі і налаштуйте кожен розділ нижче.
+Відкрийте `config.toml` у текстовому редакторі й налаштуйте кожен із наведених нижче розділів.
 
-#### [app] Section
+#### Розділ [app]
 
-Цей розділ конфігурує налаштування backend застосунку digna:
+Цей розділ налаштовує параметри серверного застосунку digna:
 
 ```toml
 [app]
@@ -327,16 +332,16 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значення | Примітки |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | Якщо dashboard знаходиться на іншому сервері, додайте його URL |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontend | Якщо панель розміщено на іншому сервері, додайте її URL |
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Потрібно для CORS з обліковими даними |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Дозволити всі HTTP‑методи |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Дозволити всі методи HTTP |
 | `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Дозволити всі заголовки |
 
-#### [repo] Section
+#### Розділ [repo]
 
-Цей розділ налаштовує підключення до PostgreSQL:
+Цей розділ налаштовує підключення до бази даних PostgreSQL:
 
 ```toml
 [repo]
@@ -348,18 +353,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значення | Примітки |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | Хостнейм/IP PostgreSQL |
-| `digna_REPO_PORT` | `5432` (default) | Порт PostgreSQL |
+| `digna_REPO_HOST` | `localhost` або IP | Ім'я хоста / IP сервера PostgreSQL |
+| `digna_REPO_PORT` | `5432` (за замовчуванням) | Порт PostgreSQL |
 | `digna_REPO_DB` | `postgres` | Назва бази даних |
 | `digna_REPO_SCHEMA` | `dignarepo` | Схема, створена раніше |
-| `digna_REPO_USER` | `digna_user` | Користувач, створений у PostgreSQL |
-| `digna_REPO_PASSWORD` | Your password | Пароль, заданий при створенні користувача |
+| `digna_REPO_USER` | `digna_user` | Користувач, створений під час налаштування PostgreSQL |
+| `digna_REPO_PASSWORD` | Ваш пароль | Пароль, заданий під час створення схеми |
 
-#### [base] Section
+#### Розділ [base]
 
-Розділ з параметрами безпеки та cookie:
+Цей розділ містить параметри безпеки та cookie:
 
 ```toml
 [base]
@@ -374,18 +379,18 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значення | Примітки |
 |---|---|---|
 | `digna_COOKIE_DOMAIN` | `localhost` | Має відповідати домену frontend |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Використовуйте `true` для HTTPS |
-| `digna_COOKIE_HTTPONLY` | `true` | Завжди увімкнено для безпеки |
-| `digna_COOKIE_SAME_SITE` | `lax` | Запобігає CSRF‑атакам |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Час життя сесії в секундах |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Кількість паралельних завдань інспекції |
+| `digna_COOKIE_SECURE` | `false` (локально) / `true` (production) | Використовуйте `true` для з'єднань HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | Завжди ввімкнено з міркувань безпеки |
+| `digna_COOKIE_SAME_SITE` | `lax` | Запобігає атакам CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 години) | Тайм‑аут сесії в секундах |
+| `digna_MAX_WORKERS` | Кількість ядер CPU - 1 | Кількість паралельних завдань інспекції |
 | `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Максимальна затримка в секундах, яку планувальник може додати перед запуском завдання, термін якого настав |
 | `DIGNA_CLEANUP_TIME` | `"12:00"` | Час доби (24-годинний формат `HH:MM`), коли починається щоденне очищення |
 
-#### [encryption] Section
+#### Розділ [encryption]
 
 Цей розділ містить ключ, яким шифруються конфіденційні значення, що зберігаються в репозиторії. Він **обов'язковий** — `config check` повідомляє про розділ `[encryption]` як FAILED, якщо ключа немає.
 
@@ -394,17 +399,20 @@ DIGNA_CLEANUP_TIME = "12:00"
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значення | Примітки |
 |---|---|---|
 | `DIGNA_ENCRYPTION_KEY` | Ключ у кодуванні Base64 | Шифрує конфіденційні значення, що зберігаються в репозиторії digna |
 
 !!! warning "Захистіть config.toml"
 
-    Цей ключ — фіксоване значення, однакове в усіх установленнях digna, і саме він розшифровує конфіденційні значення вашого репозиторію. Обмежте доступ до `config.toml` обліковим записом, під яким працює digna, тримайте файл поза системою контролю версій і спільними дисками та виключіть його з будь-якої резервної копії, що зберігається менш захищено, ніж сам репозиторій.
+    Цей ключ — фіксоване значення, однакове в усіх установленнях digna, і саме він розшифровує
+    конфіденційні значення у вашому репозиторії. Обмежте доступ до `config.toml` обліковим записом, під яким працює
+    digna, тримайте файл поза системою контролю версій і спільними дисками та виключіть його з будь-якої резервної копії,
+    що зберігається менш захищено, ніж сам репозиторій.
 
-#### [logging] Section
+#### Розділ [logging]
 
-Розділ конфігурації логування:
+Цей розділ налаштовує поведінку журналювання:
 
 ```toml
 [logging]
@@ -412,16 +420,16 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Параметр | Значення | Примітки |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` — для production, `DEBUG` — для діагностики |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Кількість щоденних резервних логів для збереження |
+| `digna_LOGGING_MODE` | `INFO` або `DEBUG` | `INFO` — для production, `DEBUG` — для усунення несправностей |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Кількість щоденних резервних копій журналів, які зберігаються |
 
 ---
 
-### Step 2: Перевірте конфігурацію
+### Крок 2: Перевірте конфігурацію
 
-Перед ініціалізацією репозиторію переконайтеся, що `config.toml` повний і правильно побудований. У каталозі встановлення digna виконайте:
+Перед ініціалізацією репозиторію переконайтеся, що `config.toml` повний і правильно сформований. У каталозі встановлення digna виконайте:
 
 ```bash
 digna config check
@@ -443,33 +451,31 @@ Overall: OK
 
 Виправте все, про що повідомлено як FAILED, і виконайте команду ще раз, перш ніж продовжувати. Повний перелік параметрів наведено в [довіднику CLI](../../../cli/Command_Line_Interface_202606.md).
 
-### Step 3: Initialize the Repository
+### Крок 3: Ініціалізуйте репозиторій
 
 1. Відкрийте Command Prompt
-2. Перейдіть до каталогу встановлення digna (там, де `config.toml` та виконуваний файл `digna`)
+2. Перейдіть до каталогу встановлення digna (там, де розташовані `config.toml` і виконуваний файл `digna`)
 3. Запустіть перевірку підключення:
 
 ```bash
 digna repo check
 ```
 
-Ви повинні побачити підтвердження встановленого з'єднання (сам репозиторій ще не ініціалізовано).
+Ви повинні побачити підтвердження, що з'єднання встановлено (сам репозиторій ще не ініціалізовано).
 
-### Step 4: Install the Repository Schema
+### Крок 4: Встановіть схему репозиторію
 
-У тому ж каталозі виконайте:
+У тому самому каталозі виконайте:
 
 ```bash
 digna repo install
 ```
 
-Ця команда встановить необхідні таблиці та схему у вашій базі даних PostgreSQL.
+Ця команда встановлює необхідні таблиці та схему у вашій базі даних PostgreSQL.
 
-### Step 5: Create an Admin User
+### Крок 5: Створіть користувача‑адміністратора
 
-1. Відкрийте **нове** вікно Command Prompt
-2. Перейдіть у каталог встановлення digna
-3. Виконайте команду для створення адміністратора:
+Користувач‑адміністратор створюється безпосередньо у схемі репозиторію, тож сервер поки що не мусить працювати. У каталозі встановлення digna виконайте:
 
 ```bash
 digna user add <email> <password> "<display_name>" --admin
@@ -481,27 +487,25 @@ digna user add <email> <password> "<display_name>" --admin
 digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
 ```
 
-Це створить користувача з повними адміністративними правами.
+Це створює користувача з повними адміністративними правами.
 
-!!! tip "Best Practice"
+!!! tip "Найкраща практика"
 
-    Використовуйте сильний пароль із комбінацією великих і малих літер, цифр та спеціальних символів.
+    Використовуйте надійний пароль, що поєднує великі й малі літери, цифри та спеціальні символи.
 
----
+### Крок 6: Запустіть сервер digna
 
-### Step 6: Start the digna Server
-
-У каталозі встановлення digna запустіть сервер:
+У каталозі встановлення digna запустіть сервер командою:
 
 ```bash
 digna serve --address <host> --port <port>
 ```
 
 **Параметри:**
-- `--address` — хостнейм/IP сервера
-- `--port` — порт сервера
+- `--address` — ім'я хоста / IP сервера
+- `--port` — порт сервера 
 
-Ви повинні побачити повідомлення про запуск сервера:
+Ви повинні побачити повідомлення про запуск, що підтверджують роботу сервера:
 
 ```
 INFO:     Started server process [1234]
@@ -512,208 +516,287 @@ INFO:     Uvicorn running on http://localhost:8082
 
 !!! note "Сервер займає термінал"
 
-    `serve` виконується на передньому плані й працює, доки ви не зупините його комбінацією ++ctrl+c++. Залиште його працювати, доки завершуєте налаштування; щоб натомість запускати його автоматично під час завантаження, див. [Запуск digna як служби Windows](#running-digna-as-a-windows-service).
-
-## Dashboard Configuration {: #dashboard-configuration }
-
-### Step 1: Deploy Dashboard to Web Server
-
-У директорії `dashboard/` знаходиться окремий `config.toml` для digna dashboard. Ця конфігурація вже забезпечена і не потребує змін під час початкового налаштування. Змінювати її потрібно лише за потреби (наприклад, для мультиінстансних деплойментів).
-
-Якщо потрібно модифікувати конфігурацію dashboard (наприклад, для підключення до іншого backend), див. документацію dashboard.
-
-Оберіть свій веб‑сервер і дотримуйтесь відповідних кроків для деплою.
-
-#### Deploying to IIS
-
-1. **Open IIS Manager**
-   - Натисніть `Win + R`, введіть `inetmgr`, натисніть Enter
-
-2. **Create a New Website**
-   - У лівій панелі правою кнопкою миші клікніть **Sites**
-   - Оберіть **Add Website...**
-
-3. **Configure the Website**
-   - **Site Name**: введіть ім'я (наприклад, "dignaDashboard")
-   - **Physical Path**: натисніть Browse і вкажіть папку `dashboard`
-   - **Binding**: встановіть IP‑адресу та порт (за замовчуванням порт 80 для HTTP, 443 для HTTPS)
-
-4. **Start the Website**
-   - Натисніть **OK**, щоб створити сайт
-   - Правою кнопкою миші клікніть новий сайт і оберіть **Start**
-
-5. **Test the Installation**
-   - Відкрийте браузер
-   - Перейдіть на `http://localhost` (або ваш налаштований URL)
-   - Ви повинні побачити сторінку входу digna dashboard
-
-#### Deploying to Apache Tomcat
-
-1. **Copy Dashboard to Tomcat**
-   - Скопіюйте папку `dashboard` у директорію `webapps` вашого Tomcat
-   - За потреби перейменуйте (наприклад, в `digna`)
-   - Приклад: `C:\Program Files\Apache Tomcat\webapps\digna`
-
-2. **Verify Deployment**
-   - Оновіть або перезавантажте сторінку менеджменту Tomcat (http://localhost:8080)
-   - Ви повинні побачити "digna" (або обране ім'я) у списку розгорнутих застосунків
-
-3. **Access the Dashboard**
-   - Відкрийте браузер
-   - Перейдіть на `http://localhost:8080/digna`
-   - Ви повинні побачити сторінку входу digna dashboard
+    `serve` виконується на передньому плані й працює, доки ви не зупините його комбінацією ++ctrl+c++. Залиште його працювати, доки завершуєте налаштування; щоб натомість запускати його автоматично під час завантаження системи, див. [Запуск digna як служби Windows](#running-digna-as-a-windows-service).
 
 ---
 
-## Running digna as a Windows Service {: #running-digna-as-a-windows-service }
+## Налаштування панелі {: #dashboard-configuration }
 
-### Why Use a Windows Service?
+### Крок 1: Розгорніть панель на веб‑сервері
 
-Запуск digna backend як служби Windows гарантує, що він:
-- Автоматично стартує під час завантаження сервера
-- Працює у фоні без відкритого Command Prompt
-- Перезапускається автоматично у разі падіння
-- Керується через інструмент Windows Services
+Панель digna зчитує власну конфігурацію з `dashboard/dashboard_config.toml`. Цей файл не постачається разом зі встановленням — ви створюєте його в каталозі `dashboard/` поруч із файлами панелі.
 
-### Service Management Files
+Його вміст описано в розділі [Single Sign-On](../../../sso/overview.md), і саме там цей файл і потрібен: він містить варіанти входу, які пропонує панель, а для розгортань із кількома екземплярами — підключення до серверної частини.
 
-Усі необхідні файли розташовані в каталозі встановлення digna під: `bin/`
+Виберіть свій веб‑сервер і виконайте відповідні кроки розгортання.
 
-Доступні такі батч‑файли:
-- `install_service.bat` — реєстрація digna як служби Windows
-- `uninstall_service.bat` — видалення реєстрації служби
-- `start_service.bat` — запуск служби
-- `stop_service.bat` — зупинка служби
+#### Розгортання в IIS
 
-!!! warning "Administrator Required"
+1. **Відкрийте IIS Manager**
+   - Натисніть `Win + R`, введіть `inetmgr`, натисніть Enter
 
-    Усі батч‑файли повинні виконуватись з правами Адміністратора.
+2. **Створіть новий вебсайт**
+   - На лівій панелі клацніть правою кнопкою миші **Sites**
+   - Виберіть **Add Website...**
 
-### Installing the Service
+3. **Налаштуйте вебсайт**
+   - **Site Name**: введіть назву (наприклад, "dignaDashboard")
+   - **Physical Path**: натисніть Browse і виберіть теку `dashboard`
+   - **Binding**: задайте IP‑адресу та порт (за замовчуванням порт 80 для HTTP, 443 для HTTPS)
 
-1. **Open Command Prompt as Administrator**
-   - Клікніть правою кнопкою по Command Prompt
-   - Оберіть "Run as Administrator"
+4. **Запустіть вебсайт**
+   - Натисніть **OK**, щоб створити сайт
+   - Клацніть правою кнопкою миші новий сайт і виберіть **Start**
 
-2. **Navigate to the bin Folder**
+5. **Перевірте встановлення**
+   - Відкрийте браузер
+   - Перейдіть за адресою `http://localhost` (або за налаштованим вами URL)
+   - Ви повинні побачити сторінку входу панелі digna
+
+#### Розгортання в Apache Tomcat
+
+1. **Скопіюйте панель до Tomcat**
+   - Скопіюйте теку `dashboard` до каталогу `webapps` вашого Tomcat
+   - За потреби перейменуйте її (наприклад, на `digna`)
+   - Приклад: `C:\Program Files\Apache Tomcat\webapps\digna`
+
+2. **Перевірте розгортання**
+   - Оновіть або перезавантажте сторінку керування Tomcat (http://localhost:8080)
+   - Ви повинні побачити "digna" (або вибрану вами назву) у списку розгорнутих застосунків
+
+3. **Відкрийте панель**
+   - Відкрийте браузер
+   - Перейдіть за адресою `http://localhost:8080/digna`
+   - Ви повинні побачити сторінку входу панелі digna
+
+---
+
+## Запуск digna як служби Windows {: #running-digna-as-a-windows-service }
+
+### Навіщо використовувати службу Windows?
+
+Запуск серверної частини digna як служби Windows гарантує, що вона:
+- Автоматично запускається під час завантаження сервера
+- Працює у фоновому режимі без відкритого Command Prompt
+- Автоматично перезапускається в разі збою
+- Керується через Windows Services
+
+### Команди `windows`
+
+Службою керує сам виконуваний файл `digna` за допомогою підкоманд `digna windows`.
+Жодних пакетних файлів запускати не потрібно.
+
+| Команда | Призначення |
+|---|---|
+| `digna windows install` | Реєструє digna як службу Windows |
+| `digna windows start` | Запускає зареєстровану службу |
+| `digna windows stop` | Зупиняє запущену службу |
+| `digna windows uninstall` | Скасовує реєстрацію служби |
+
+!!! warning "Потрібні права адміністратора"
+
+    Усі чотири команди потрібно запускати з Command Prompt, відкритого від імені адміністратора.
+
+Кожна команда приймає `--name`, щоб звернутися до служби, зареєстрованої під нестандартною назвою. Повний
+перелік параметрів наведено в [довіднику CLI](../../../cli/Command_Line_Interface_202606.md).
+
+### Встановлення служби
+
+1. **Відкрийте Command Prompt від імені адміністратора**
+   - Клацніть правою кнопкою миші Command Prompt
+   - Виберіть "Run as Administrator"
+
+2. **Перейдіть до каталогу встановлення digna**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Run the Installation Script**
+3. **Зареєструйте службу**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Тепер digna зареєстровано як служба Windows з увімкненим **automatic startup**. Служба не запускається одразу після встановлення — див. наступний розділ для запуску.
+!!! important "Вкажіть адресу й порт, якщо значення за замовчуванням вам не підходять"
 
-### Starting and Stopping the Service
+    `install` записує адресу й порт у реєстрацію служби, і служба прив'язується саме до
+    записаних значень. За замовчуванням це `127.0.0.1` і `8000`, які приймають з'єднання
+    лише з самої машини. Панель на іншому хості не зможе до них достукатися, тож укажіть
+    адресу, яку має прослуховувати серверна частина:
 
-#### To Start the Service
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
 
-1. Відкрийте Command Prompt як Адміністратор
-2. Перейдіть у `digna\bin`
-3. Запустіть:
-   ```bash
-   start_service.bat
-   ```
+    Ці значення не зчитуються з `config.toml`. Щоб змінити їх згодом, видаліть службу й
+    установіть її знову з новими значеннями.
 
-#### To Stop the Service
+Службу зареєстровано з **автоматичним запуском**, тож вона запускатиметься разом із Windows. Одразу
+вона не запускається — див. наступний розділ.
 
-1. Відкрийте Command Prompt як Адміністратор
-2. Перейдіть у `digna\bin`
-3. Запустіть:
-   ```bash
-   stop_service.bat
-   ```
+#### Параметри встановлення
 
-!!! tip "Tip"
+| Параметр | За замовчуванням | Призначення |
+|---|---|---|
+| `--name` | `digna` | Назва, під якою реєструється служба |
+| `--display-name` | `digna` | Назва, що відображається в services.msc |
+| `--description` | `digna data quality backend` | Опис, що відображається в services.msc |
+| `--address` | `127.0.0.1` | Адреса, до якої служба прив'язує свій API |
+| `--port` | `8000` | Порт, до якого служба прив'язує свій API |
+| `--working-dir` | каталог виконуваного файлу `digna` | Каталог із `config.toml` і `license.toml`, який служба робить своїм робочим каталогом |
+| `--start-type` | `auto` | `auto` — запуск разом із Windows, `manual` — запуск лише на запит, `disabled` — служба реєструється, але її запуск заборонено |
+| `--account` | `LocalSystem` | Обліковий запис, від імені якого працює служба, наприклад `DOMAIN\user` або `.\user` |
+| `--password` | | Пароль облікового запису `--account` |
+
+!!! tip "Запуск від імені облікового запису домену"
+
+    `LocalSystem` не має мережевої ідентичності, тож автентифікація Windows у SQL Server і будь-який
+    доступ до мережевого ресурсу не спрацюють. Установлюйте службу з `--account` і `--password`, якщо
+    їй потрібен доступ до ресурсів від імені певного користувача.
+
+### Запуск і зупинка служби
+
+#### Щоб запустити службу
+
+```bash
+digna windows start
+```
+
+#### Щоб зупинити службу
+
+```bash
+digna windows stop
+```
+
+!!! tip "Порада"
 
     Завжди зупиняйте службу перед оновленням файлів застосунку.
 
-### Moving the Service to a New Directory
+### Перенесення служби до нового каталогу
 
-Якщо потрібно перемістити інсталяцію digna:
+Якщо потрібно перенести встановлення digna:
 
-1. **Uninstall the Current Service**
+1. **Зупиніть поточну службу та скасуйте її реєстрацію**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
-2. **Move the Application Files**
-   - Перемістіть всю папку встановлення digna в нове місце
+2. **Перемістіть файли застосунку**
+   - Перемістіть усю теку встановлення digna в нове розташування
 
-3. **Reinstall the Service**
+3. **Знову зареєструйте службу з нового розташування**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
 
-4. **Start the Service**
+   Повторіть усі значення `--address`, `--port` або `--account`, які ви використали першого разу — попередньої
+   реєстрації більше немає.
+
+4. **Запустіть службу**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
-### Uninstalling the Service
+### Видалення служби
 
-1. **Stop the Running Service**
+1. **Зупиніть запущену службу**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Uninstall the Service**
+2. **Скасуйте реєстрацію служби**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
-digna тепер знято з реєстрації як служба Windows.
+Реєстрацію сервера digna як служби Windows скасовано.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Оновлення до нового випуску {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Перед оновленням
 
 **Спершу перевірте всі підключення до баз даних**
 
-Починаючи з випуску 2026.06, digna звертається до кожної технології-джерела через **ODBC**. Попередні випуски пропонували вибір між окремим драйвером для кожної технології та ODBC, що задавався перемикачем **Use ODBC**. Команда digna вирішила спиратися лише на ODBC, бо єдиний стандартний інтерфейс дає більше, ніж набір драйверів, написаних на замовлення:
+Починаючи з Release 2026.06, digna звертається до кожної технології-джерела через **ODBC**. Попередні випуски
+пропонували вибір між окремим драйвером для кожної технології та ODBC, що задавався перемикачем **Use ODBC**.
+Команда digna вирішила спиратися лише на ODBC, бо єдиний стандартний інтерфейс дає вам
+більше, ніж набір спеціально написаних драйверів:
 
-- **Автентифікація** — автентифікація є частиною ODBC, тож підключення може використовувати все, що підтримує його драйвер: паролі, токени та PAT, Kerberos і Active Directory, MFA та єдиний вхід через браузер, хмарні ідентичності, клієнтські сертифікати й TLS. Нові методи з'являються разом з оновленням драйвера, а не після очікування випуску digna.
-- **Драйвери, які підтримують виробники баз даних** — власний драйвер виробника стежить за новими версіями сервера та виправленнями безпеки, і ви можете оновлювати його у власному темпі, незалежно від digna.
-- **Єдиний спосіб налаштувати все** — кожна технологія — це список властивостей «ключ/значення» з тим самим інтерфейсом, тим самим шифруванням конфіденційних значень і тим самим усуненням несправностей, замість різного набору полів для кожного джерела.
-- **Тонке налаштування та охоплення** — параметри драйвера, такі як тайм-аути, налаштування TLS, проксі-сервери та розміри вибірки, доступні для кожного джерела, а підключити можна будь-яку технологію із сумісним драйвером ODBC, зокрема ті, для яких digna не публікує окремого посібника.
+- **Автентифікація** — автентифікація є частиною ODBC, тож підключення може використовувати все, що підтримує його
+  драйвер: паролі, токени та PAT, Kerberos і Active Directory, MFA та єдиний вхід через браузер,
+  хмарні ідентичності, клієнтські сертифікати й TLS. Нові методи з'являються разом з оновленням драйвера,
+  а не після очікування випуску digna.
+- **Драйвери, які підтримують виробники баз даних** — власний драйвер виробника стежить за новими версіями
+  сервера та виправленнями безпеки, і ви можете оновлювати його за власним графіком, незалежно від digna.
+- **Єдиний спосіб налаштувати все** — кожна технологія — це список властивостей «ключ/значення» з
+  тим самим інтерфейсом, тим самим шифруванням конфіденційних значень і тим самим усуненням несправностей,
+  замість різного набору полів для кожного джерела.
+- **Тонке налаштування та охоплення** — параметри рівня драйвера, такі як тайм-аути, налаштування TLS, проксі та
+  розміри вибірки, доступні для кожного джерела, а підключити можна будь-яку технологію із сумісним драйвером ODBC,
+  зокрема ті, для яких digna не публікує окремого посібника.
 
-На практиці це означає, що перемикача **Use ODBC** та окремих полів вузла, порту, бази даних, користувача й пароля більше немає. **Кожне підключення, яке ще не використовує ODBC, має бути переведене на ODBC** — автоматичного перетворення немає, тож сплануйте це до оновлення:
+На практиці це означає, що перемикача **Use ODBC** та окремих полів хоста, порту, бази даних, користувача й
+пароля більше немає. **Кожне підключення, яке ще не використовує ODBC, має бути
+переведене на ODBC** — автоматичного перетворення немає, тож сплануйте це до оновлення:
 
-1. Перегляньте кожне підключення до бази даних, визначене у вашому встановленні, і занотуйте ті, що ще не використовують ODBC — кожне з них доведеться налаштувати заново.
-2. Встановіть відповідний драйвер ODBC на вузлі digna — підключення відкриваються із сервера, на якому працює серверна частина digna, а не з браузера. Див. [Встановлення драйвера ODBC на вузлі digna](../../../databases/overview.md#install-the-driver).
-3. Підготуйте властивості ODBC для кожного зачепленого підключення. [Посібники за технологіями](../../../databases/overview.md#technology-guides) наводять для кожного джерела перевірений набір властивостей.
+1. Перегляньте кожне підключення до бази даних, визначене у вашому встановленні, і складіть список тих, що ще
+   не використовують ODBC — кожне з них доведеться налаштувати заново.
+2. Встановіть відповідний драйвер ODBC на хості digna — підключення відкриваються із сервера,
+   на якому працює серверна частина digna, а не з браузера. Див.
+   [Встановлення драйвера ODBC на хості digna](../../../databases/overview.md#install-the-driver).
+3. Підготуйте властивості ODBC для кожного зачепленого підключення.
+   [Посібники за технологіями](../../../databases/overview.md#technology-guides) наводять для кожного джерела
+   перевірений набір властивостей.
 
-Після оновлення переведіть кожне зачеплене підключення на ODBC і перевірте його з панелі — див. [Створення підключення до бази даних](../../../databases/overview.md#create-a-database-connection) та [Перевірка підключення](../../../databases/overview.md#testing-a-connection).
+Після оновлення переведіть кожне зачеплене підключення на ODBC і перевірте його з панелі —
+див. [Створення підключення до бази даних](../../../databases/overview.md#create-a-database-connection)
+та [Перевірка підключення](../../../databases/overview.md#testing-a-connection).
 
 !!! warning "Підключення Databricks Legacy"
 
-    Конектор Databricks Legacy вилучено в цьому випуску. Переведіть такі підключення на конектор [Databricks](../../../databases/databricks_connector_guide.md).
+    Конектор Databricks Legacy вилучено в цьому випуску. Переведіть такі підключення
+    на конектор [Databricks](../../../databases/databricks_connector_guide.md).
 
-**Creating a digna Repository Backup is Mandatory**
+**Створення резервної копії репозиторію digna обов'язкове**
 
-Перед оновленням digna обов'язково створіть резервну копію вашого репозиторію (PostgreSQL), щоб захистити дані від втрати.
-Резервна копія дозволить відновити стан у разі виникнення непередбачених проблем під час оновлення.
+Перед оновленням digna створіть резервну копію свого репозиторію (PostgreSQL), щоб захиститися від втрати даних.
+Резервна копія дає змогу відновитися, якщо під час оновлення виникнуть непередбачені проблеми.
 
-### Upgrade Process
+### Процес оновлення
 
-#### Step 1: Stop digna Service
+#### Крок 1: Зупиніть стару службу та скасуйте її реєстрацію
 
-Якщо digna працює як служба Windows, спочатку зупиніть її:
+Якщо digna працює як служба Windows, зупиніть її за допомогою **пакетних файлів вашого поточного
+встановлення** — команди `digna windows` належать новому випуску й поки що
+недоступні:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
 
-#### Step 2: Резервне копіювання поточного встановлення
+Потім скасуйте реєстрацію служби — знову за допомогою старого пакетного файлу. Реєстрація вказує на старий
+виконуваний файл і його скрипти, які це оновлення замінює, тож повторно використати її неможливо:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Скасуйте реєстрацію, перш ніж щось перейменовувати"
+
+    `uninstall_service.bat` розташований у теці `bin`, яку ви збираєтеся перейменувати, і лише він
+    може видалити створену ним реєстрацію. Запустіть його, поки старе встановлення ще
+    на місці. Якщо теку вже перейменовано, поверніть їй попередню назву, скасуйте реєстрацію й лише тоді продовжуйте.
+
+    Запишіть обліковий запис, від імені якого працювала служба, а також адресу й порт, на яких вона працювала, — вони
+    знадобляться вам у кроці 9.
+
+#### Крок 2: Створіть резервну копію поточного встановлення
 
 У каталозі встановлення digna перейменуйте теки поточного встановлення, щоб новий випуск можна було розгорнути поруч із ними:
 
@@ -732,24 +815,27 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend і dignacli більше не використовуються"
 
-    Починаючи з випуску 2026.06, `dignabackend` і `dignacli` замінено одним виконуваним файлом `digna`, що поєднує серверну частину та CLI. Зберігайте `dignabackend_old` і `dignacli_old` лише доти, доки не перевірите оновлення — після цього обидві теки можна видалити. Зберігайте `dashboard_old`, доки не відновите з неї свої файли конфігурації (див. крок 4).
+    Починаючи з Release 2026.06, `dignabackend` і `dignacli` замінено одним виконуваним файлом `digna`, що поєднує серверну частину та CLI. Зберігайте `dignabackend_old` і `dignacli_old` лише доти, доки не перевірите оновлення — після цього обидві теки можна видалити. Зберігайте `dashboard_old`, доки не відновите з неї свої файли конфігурації (див. крок 4). Теку `bin` також можна прибрати: її пакетні файли керували старою службою, а 2026.06 їх не постачає, тож після того, як у кроці 1 реєстрацію служби скасовано, вони лише вводять в оману.
 
-#### Step 3: Extract and Deploy New Version
+#### Крок 3: Розпакуйте та розгорніть нову версію
 
 1. Розпакуйте ZIP‑файл нової інсталяції digna
-2. Скопіюйте новий виконуваний файл `digna`, папку `dashboard` у ваш каталог встановлення
+2. Скопіюйте новий виконуваний файл `digna` і теку `dashboard` до свого каталогу встановлення
 
 
-!!! warning "Important"
+!!! warning "Важливо"
 
-    Файл `config.toml` **ніколи** не включається до ZIP‑пакета інсталяції. Ваша існуюча конфігурація залишається безпечною.
+    Ні `config.toml`, ні `dashboard/dashboard_config.toml` ніколи не входять до
+    інсталяційного ZIP‑файлу — команда digna ніколи не постачає жодного з цих файлів. Тож оновлення
+    не зачіпає вашої наявної конфігурації, а копії в перейменованих теках `*_old` — це
+    єдині копії, які у вас є.
 
-#### Step 4: Restore Your Configuration Files
+#### Крок 4: Відновіть свої файли конфігурації
 
 ```bash
 copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
-!!! warning "Випуск 2026.06 змінює config.toml"
+!!! warning "Release 2026.06 змінює config.toml"
 
     Три параметри нові й обов'язкові, а три більше не використовуються. `config.toml`, перенесений із попереднього випуску, нових параметрів не містить, і digna не запуститься, доки їх бракує. Додайте до наявного `config.toml` таке:
 
@@ -768,7 +854,8 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
 !!! warning "Єдиний вхід: формат [oidc_clients] змінився"
 
-    У випуску 2026.06 масив таблиць замінено окремою таблицею для кожного постачальника, названою за ключем постачальника. `DIGNA_OIDC_KEY` зникає — ключ тепер є частиною заголовка розділу.
+    У Release 2026.06 масив таблиць замінено окремою таблицею для кожного постачальника, названою за
+    ключем постачальника. `DIGNA_OIDC_KEY` більше немає — ключ тепер є частиною заголовка розділу.
 
     Було:
 
@@ -791,9 +878,17 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Повторіть розділ для кожного постачальника і стежте, щоб кожен ключ збігався з `key` у файлі `dashboard_config.toml`. `digna config check` повідомляє про розділ `oidc_clients` як FAILED, доки лишається попередня форма. Це стосується лише інсталяцій, що використовують єдиний вхід.
+    Повторіть розділ для кожного постачальника і стежте, щоб кожен ключ збігався з `key` у
+    `dashboard_config.toml`. `digna config check` повідомляє про `oidc_clients` як FAILED, доки
+    лишається попередня форма. Це стосується лише встановлень, що використовують єдиний вхід.
 
-#### Step 5: Перевірте конфігурацію
+#### Крок 5: Перезавантажте веб‑сервер
+
+Панель — це набір статичних файлів, тож ваш веб‑сервер — і браузер — можуть досі
+віддавати попередню версію. Перезавантажте або перезапустіть веб‑сервер, на якому розміщено теку `dashboard`,
+а потім перезавантажте сторінку з примусовим оновленням (++ctrl+f5++).
+
+#### Крок 6: Перевірте конфігурацію
 
 Перш ніж торкатися репозиторію, переконайтеся, що оновлений `config.toml` повний:
 
@@ -803,26 +898,53 @@ digna config check
 
 Кожен розділ має повідомити OK. Виправте все, про що повідомлено як FAILED, і виконайте команду ще раз, перш ніж продовжувати.
 
-#### Step 6: Upgrade the Repository Schema
+#### Крок 7: Замініть файл ліцензії
 
-Перейдіть у каталог встановлення digna і виконайте:
+Кожен випуск ліцензується окремо. Скопіюйте `license.toml`, який команда digna надала для
+цього випуску, до каталогу встановлення, замінивши старий:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Не залишайте попередню ліцензію"
+
+    `license.toml`, виданий для попереднього випуску, не поширюється на цей, і кожна команда,
+    що перевіряє ліцензію, — `user`, `inspection`, `repo` — завершується, не торкаючись
+    репозиторію, якщо перевірка не пройдена. Перевірте ліцензію, перш ніж продовжувати:
+
+    ```bash
+    digna license check
+    ```
+
+#### Крок 8: Оновіть схему репозиторію
+
+Перейдіть до каталогу встановлення digna і виконайте:
 
 ```bash
 digna repo upgrade
 ```
 
-Це оновить схему PostgreSQL до останньої версії, зберігаючи всі існуючі дані.
+Це оновлює схему PostgreSQL до найновішої версії, зберігаючи всі наявні дані.
 
-#### Step 7: Restart Services
+#### Крок 9: Зареєструйте та запустіть службу
 
-Якщо використовується служба Windows:
+Стару реєстрацію видалено в кроці 1, тож службу реєструють знову — цього разу за допомогою
+виконуваного файлу `digna`, який не має пакетних файлів:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
 
-Якщо запускаєте вручну, перезапустіть сервер:
+Задайте для `--address` і `--port` значення, на яких працювала стара служба, якщо тільки вам не потрібні нові
+значення за замовчуванням `127.0.0.1` і `8000`; вони записуються в реєстрацію й більше не зчитуються
+з `config.toml`. Додайте `--account` і `--password`, якщо стара служба працювала від імені облікового запису
+домену. Повний перелік параметрів див. у розділі
+[Запуск digna як служби Windows](#running-digna-as-a-windows-service).
+
+Якщо сервер запускається вручну, перезапустіть його:
 
 ```bash
 cd C:\path\to\digna
@@ -831,9 +953,10 @@ digna serve --address <address> --port <port>
 
 Якщо використовуєте IIS або Tomcat, перезапустіть відповідний веб‑сервер.
 
-#### Step 8: Verify the Upgrade
+#### Крок 10: Перевірте оновлення
 
-1. Відкрийте digna dashboard
+1. Відкрийте панель digna
 2. Переконайтеся, що інтерфейс завантажується коректно
 3. Перевірте журнали сервера на наявність помилок
-4. Переведіть на ODBC кожне підключення, яке його ще не використовувало, а потім перевірте всі підключення — див. [Перевірка підключення](../../../databases/overview.md#testing-a-connection)
+4. Переведіть на ODBC кожне підключення, яке його ще не використовувало, а потім перевірте всі підключення
+   — див. [Перевірка підключення](../../../databases/overview.md#testing-a-connection)

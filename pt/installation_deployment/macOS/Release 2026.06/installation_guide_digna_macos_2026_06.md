@@ -431,8 +431,13 @@ Em seguida cole as instruções no prompt `postgres=#` e digite `\q` para sair.
 3. Após a extração, você deverá ver os seguintes itens:
    - `dashboard/` — Interface web do dashboard
    - `digna` — Executável principal (backend + CLI combinados)
-   - `config.toml` — Arquivo de configuração
-   - `license.toml` — Arquivo de licença (copie o seu aqui)
+
+!!! info "Os arquivos de configuração e de licença não estão no pacote"
+
+    Nem o `config.toml` nem o `dashboard/dashboard_config.toml` acompanham a instalação — você
+    cria os dois, em [Configuração do Backend](#backend-configuration) e
+    [Configuração do Dashboard](#dashboard-configuration). O `license.toml` também não acompanha;
+    o digna o fornece separadamente, conforme descrito no Passo 3.
 
 Para extrair pelo Terminal:
 
@@ -733,9 +738,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Passo 1: Fazer o Deploy do Dashboard no Servidor Web
 
-O dashboard do digna possui seu próprio arquivo `config.toml` separado localizado no diretório `dashboard/`. Esta configuração já é fornecida e não requer alterações durante a instalação inicial. Você só precisa configurá-la se precisar personalizar a conexão com o backend.
+O dashboard do digna lê sua própria configuração do arquivo `dashboard/dashboard_config.toml`. Esse arquivo não acompanha a instalação — você o cria no diretório `dashboard/`, junto com os arquivos do dashboard.
 
-Se precisar modificar a configuração do dashboard (por exemplo, para implantações com múltiplas instâncias), consulte a documentação do dashboard.
+O conteúdo dele está descrito em [Single Sign-On](../../../sso/overview.md), que é também onde o arquivo é necessário: ele contém as opções de login que o dashboard oferece e, em implantações com múltiplas instâncias, a conexão com o backend.
 
 Escolha seu servidor web e siga as etapas de implantação correspondentes.
 
@@ -1014,7 +1019,10 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Importante"
 
-    O arquivo `config.toml` **nunca** é incluído no ZIP de instalação. Sua configuração existente permanece segura.
+    Nem o `config.toml` nem o `dashboard/dashboard_config.toml` são incluídos no ZIP de
+    instalação — a equipe do digna nunca distribui nenhum dos dois arquivos. Por isso, sua
+    configuração existente não é afetada pela atualização, e as cópias nas pastas renomeadas
+    `*_old` são as únicas que você tem.
 
 #### Passo 4: Restaurar Seus Arquivos de Configuração
 
@@ -1066,7 +1074,13 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Repita a seção para cada provedor e mantenha cada chave igual ao `key` definido em `dashboard_config.toml`. O `digna config check` informa `oidc_clients` como FAILED enquanto a forma antiga permanecer. Apenas as instalações que usam logon único são afetadas.
 
-#### Passo 5: Validar a Configuração
+#### Passo 5: Recarregar o Servidor Web
+
+O dashboard é um conjunto de arquivos estáticos, então seu servidor web — e o navegador — podem
+ainda estar servindo a versão anterior. Recarregue ou reinicie o servidor web que hospeda a pasta
+`dashboard` e, em seguida, recarregue a página com uma atualização forçada (++cmd+shift+r++).
+
+#### Passo 6: Validar a Configuração
 
 Confirme que o `config.toml` atualizado está completo antes de mexer no repositório:
 
@@ -1076,7 +1090,26 @@ Confirme que o `config.toml` atualizado está completo antes de mexer no reposit
 
 Todas as seções devem informar OK. Corrija tudo o que for informado como FAILED e execute o comando novamente antes de continuar.
 
-#### Passo 6: Atualizar o Schema do Repositório
+#### Passo 7: Substituir o Arquivo de Licença
+
+Cada release é licenciada separadamente. Copie o `license.toml` que a equipe do digna forneceu
+para esta release para o diretório de instalação, substituindo o antigo:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Não mantenha a licença anterior"
+
+    Um `license.toml` emitido para uma release anterior não cobre esta, e todo comando que
+    verifica a licença — `user`, `inspection`, `repo` — é interrompido antes de mexer no
+    repositório quando a verificação falha. Verifique-a antes de prosseguir:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Passo 8: Atualizar o Schema do Repositório
 
 Navegue até o diretório de instalação do digna e execute:
 
@@ -1087,7 +1120,7 @@ cd /opt/digna
 
 Isto atualiza o schema do PostgreSQL para a versão mais recente preservando todos os dados existentes.
 
-#### Passo 7: Reiniciar Serviços
+#### Passo 9: Reiniciar Serviços
 
 Se estiver rodando como serviço em segundo plano:
 
@@ -1112,7 +1145,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Passo 8: Verificar a Atualização
+#### Passo 10: Verificar a Atualização
 
 1. Acesse o digna dashboard
 2. Verifique se a interface carrega corretamente

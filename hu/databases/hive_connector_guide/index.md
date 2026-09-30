@@ -1,77 +1,80 @@
-# Source Connector for Hive
+# Forráskonnektor Hive-hoz
 
-This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
-**DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t az Apache Hive-hoz való
+csatlakozásra **ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Hive.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
-backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami a Hive-ra jellemző.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Telepítse a **Cloudera ODBC Driver for Apache Hive** illesztőprogramot arra a gépre, amely a
+*digna* backendet futtatja, a gyártó hivatalos telepítési útmutatója szerint.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
-    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
-    point and check the documentation of the driver version you installed.
+Olvassa le a pontos regisztrált illesztőprogram-nevet a gépén, ahogyan az
+[Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver) részben le
+van írva.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
+
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    Cloudera Hive illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek illesztőprogram-verziónként és platformonként eltérnek, és hogy a
+    HiveServer2 mit fogad el, az teljes mértékben attól függ, hogyan van védve a cluster —
+    hitelesítési mechanizmus, átviteli mód, TLS, átjáró. Használja ezt kiindulópontként, és
+    nézze meg a telepített illesztőprogram-verzió dokumentációját.
+
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
-| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
-| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `HOST` | `hive.example.com` | A HiveServer2 hostneve vagy IP-címe |
+| `PORT` | `10000` | HiveServer2 port; HTTP transport esetén `10001` |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
 ```
 
-### Authentication
+### Hitelesítés
 
-An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
-is enabled, add:
+Egy védelem nélküli HiveServer2 a fenti három tulajdonságot változtatás nélkül elfogadja. Ahol
+a hitelesítés engedélyezve van, adja hozzá a következőket:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
-| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
-| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+| `AuthMech` | `3` | `0` nincs hitelesítés, `2` csak felhasználónév, `3` felhasználónév és jelszó, `1` Kerberos |
+| `UID` | `digna_source_user` | `AuthMech` `2` és `3` esetén kötelező |
+| `PWD` | `<password>` | `AuthMech` `3` esetén kötelező. Jelölje be az **Encrypted** opciót |
 
-For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
-the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+Kerberos (`AuthMech=1`) esetén a *digna* gépnek ezenfelül érvényes ticketre vagy keytabra van
+szüksége, valamint az illesztőprogram által dokumentált `KrbHostFQDN`, `KrbServiceName` és
+`KrbRealm` tulajdonságokra.
 
-### Transport and TLS
+### Átvitel és TLS
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
-| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
-| `SSL` | `1` | Where HiveServer2 is TLS-secured |
-| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
+| `ThriftTransport` | `2` | `0` bináris (az alapértelmezés, 10000-es port), `1` SASL, `2` HTTP (10001-es port, és ezt várja egy Knox átjáró) |
+| `HTTPPath` | `cliservice` | `ThriftTransport=2` esetén |
+| `SSL` | `1` | Ahol a HiveServer2 TLS-sel védett |
+| `Schema` | `dignadata` | Az a Hive adatbázis, amelyben a munkamenet indul. Opcionális — a *digna* minősített neveket használ a lekérdezéseiben |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -82,39 +85,43 @@ Work Schema:        Hive database for the work tables of "Permanent" profiling, 
 
 ---
 
-## 4. Notes on Hive {: #4-notes-on-hive }
+## 4. Megjegyzések a Hive-hoz {: #4-notes-on-hive }
 
-- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
-  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
-  schemas below it.
-- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
-  create and drop tables in it, and the underlying storage location must be writable.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
-  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
-  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
-  on a cluster where *digna* has no write access at all.
-- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
-  the queue *digna*'s user submits to should have enough capacity for the inspection window.
+- **A katalógusok az illesztőprogramtól származnak.** A Hive-nak nincs saját katalógusa, ezért
+  a *digna* azt veszi át, amit az illesztőprogram jelent — általában egyetlen `HIVE` nevű
+  bejegyzést —, és alatta sémaként listázza a Hive adatbázisokat.
+- **A Work Schema egy Hive adatbázis.** *Permanent* profilozáshoz a felhasználónak jogosultság
+  kell táblák létrehozására és törlésére benne, és a mögöttes tárolási helynek írhatónak kell
+  lennie.
+- **Profilozási módok.** A *Permanent* a munkatáblákat a **Work Schema**-ban hozza létre. A
+  *Session* `CREATE TEMPORARY TABLE`-t használ, amihez ideiglenes táblákat támogató
+  HiveServer2 szükséges, és nem érinti a **Work Schema**-t. A *Standard*-hoz csak olvasási
+  hozzáférés kell, és ezt a módot kell választani olyan clusteren, ahol a *digna*-nak egyáltalán
+  nincs írási hozzáférése.
+- **A profilozás lekérdezések sorozata, nem szkennelés.** Minden statisztikát a HiveServer2
+  számít ki, ezért annak a queue-nak, amelybe a *digna* felhasználója küldi a lekérdezéseket,
+  elegendő kapacitással kell rendelkeznie az inspection időablakához.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the transport mode and your
-credentials work before you enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az illesztőprogram, az átviteli mód és a hitelesítő adatai működnek, mielőtt megadná őket a
+*digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/hive/create_odbc_data_source_step1.png)
 
-The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
-the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
-[section 2](#2-odbc-properties).
+Az itt látható **Host**, **Port**, **Database**, **Mechanism** és **Thrift Transport** mezők a
+[2. szakasz](#2-odbc-properties) `HOST`, `PORT`, `Schema`, `AuthMech` és `ThriftTransport`
+tulajdonságainak felelnek meg.
 
-#### Step 2 – Test the connection
+#### 2. lépés – A kapcsolat tesztelése
 
-Provide the password and click the **Test** button.
+Adja meg a jelszót, és kattintson a **Test** gombra.
 
 ![Step 2](images/hive/create_odbc_data_source_step2.png)
 
-After a successful test, click the **OK** button.
+Sikeres teszt után kattintson az **OK** gombra.

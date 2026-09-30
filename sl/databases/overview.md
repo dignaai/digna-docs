@@ -1,262 +1,266 @@
-# Database Connections Overview
+# Pregled povezav z bazami podatkov
 
 ---
 
-## Table of Contents
+## Vsebina
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Kako delujejo povezave](#how-connections-work)
+2. [Vodiči za tehnologije](#technology-guides)
+3. [Predpogoj: namestite gonilnik ODBC na gostitelja digna](#install-the-driver)
+4. [Ustvarite povezavo z bazo podatkov](#create-a-database-connection)
+5. [Lastnosti ODBC](#odbc-properties)
+6. [Šifriranje vrednosti lastnosti](#encrypting-property-values)
+7. [Testiranje povezave](#testing-a-connection)
+8. [Katero bazo podatkov vidi povezava](#which-database-the-connection-sees)
+9. [Način profiliranja in delovna shema](#profiling-mode-and-work-schema)
+10. [Uporaba DSN](#using-a-dsn-instead)
+11. [Odpravljanje težav](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Kako delujejo povezave {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+*digna* dostopa do vsake izvorne tehnologije prek **ODBC**. Povezava je seznam lastnosti ODBC,
+ki jih vnesete kot pare ključ/vrednost. Ko *digna* odpre povezavo, te pare združi v niz za
+povezavo — `Key=Value`, ločeno z `;`, v vrstnem redu, v katerem ste jih navedli — in ga preda
+upravitelju gonilnikov ODBC na gostitelju *digna*.
 
-!!! important "The property sets in the guides are examples"
+Ker lastnosti vnesete sami, je nastavitev **brez DSN** (DSN-less): povezava vsebuje vse, kar
+gonilnik potrebuje, zato na gostitelju ni treba registrirati nobenega vira podatkov ODBC (DSN).
+To je priporočen način konfiguracije *digna*, saj definicija povezave v celoti živi v *digna* in
+se premika skupaj z njo.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Zakaj ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+Prejšnje različice so ponujale izbiro med gonilnikom za posamezno tehnologijo in ODBC, ki se je
+izbirala s stikalom **Use ODBC**. Od Release 2026.06 *digna* temelji izključno na ODBC. En sam
+standardni vmesnik vam ponuja več kot nabor namenskih gonilnikov:
+
+- **Avtentikacija** — avtentikacija je del ODBC, zato lahko povezava uporablja karkoli, kar
+  podpira njen gonilnik: gesla, žetone in PAT, Kerberos in Active Directory, MFA in enotno
+  prijavo v brskalniku, oblačno identiteto, odjemalske certifikate in TLS. Nove metode pridejo s
+  posodobitvijo gonilnika, namesto da bi čakali na izdajo *digna*.
+- **Gonilniki, ki jih vzdržujejo proizvajalci baz podatkov** — proizvajalčev lastni gonilnik
+  sledi novim različicam strežnika in varnostnim popravkom, posodobite pa ga lahko po lastnem
+  urniku, neodvisno od *digna*.
+- **En način za konfiguracijo vsega** — vsaka tehnologija je seznam lastnosti ključ/vrednost, z
+  istim vmesnikom, istim šifriranjem občutljivih vrednosti in istim odpravljanjem težav, namesto
+  različnega nabora polj za vsak vir.
+- **Prilagajanje in doseg** — možnosti na ravni gonilnika, kot so časovne omejitve, nastavitve
+  TLS, posredniški strežniki in velikosti pridobivanja (fetch size), so na voljo za vsak vir,
+  povežete pa lahko katero koli tehnologijo z ustreznim gonilnikom ODBC, vključno s tistimi, za
+  katere *digna* ne objavlja namenskega vodiča.
+
+!!! note "Kaj se je spremenilo v vmesniku"
+
+    Stikalo **Use ODBC** in ločena polja za gostitelja, vrata, bazo podatkov, uporabnika in
+    geslo ne obstajajo več. Za povezavo, ki še ne uporablja ODBC, morate vnesti lastnosti ODBC,
+    preden bo znova delovala — glejte
+    [Ustvarite povezavo z bazo podatkov](#create-a-database-connection).
+
+---
+
+## Vodiči za tehnologije {: #technology-guides }
+
+Imena lastnosti se razlikujejo glede na gonilnik, vsaka tehnologija pa ima eno ali dve
+podrobnosti, ki jih druge nimajo. Spodnji vodiči zajemajo ta del; ta stran zajema stran *digna*,
+ki je enaka za vse.
+
+!!! important "Nabori lastnosti v vodičih so primeri"
+
+    Vsak vodič prikazuje eno kombinacijo, za katero je znano, da deluje — tisto, s katero je
+    *digna* testirana. To je izhodišče, ne specifikacija: lastnosti pripadajo gonilniku ODBC,
+    katere obstajajo, kako se imenujejo in katere vrednosti sprejemajo, pa se razlikuje med
+    različicami gonilnikov in proizvajalci, med Windows, Linux in macOS ter glede na to, kako je
+    konfiguriran izvorni strežnik — metoda avtentikacije, TLS, prehod, vrata. Pričakujte, da
+    boste morali prilagoditi vrednost ali dve, za merodajno pa štejte dokumentacijo različice
+    gonilnika, ki ste jo namestili.
+
+| Tehnologija | Vodič | Dobro je vedeti |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless bazeni potrebujejo `-ondemand` v imenu gostitelja in podpirajo samo profiliranje *Standard* |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Avtentikacija z žetonom: `UID=token`, PAT v `PWD` |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Katalogi prihajajo iz gonilnika, ne iz poizvedbe |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Ime gonilnika je v zavitih oklepajih: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` sprejme celoten opisnik povezave (connect descriptor) ali vzdevek iz `tnsnames.ora` |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` se mora ujemati s tem, kar zahteva strežnik |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token je testirana pot avtentikacije |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` določa, katere sheme vidi *digna* |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Gostitelj gre v `DBCNAME`; baze podatkov delujejo kot sheme |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Predpogoj: namestite gonilnik ODBC na gostitelja digna {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* odpira povezave z viri s **strežnika, na katerem teče zaledje digna**, ne iz brskalnika.
+Gonilnik ODBC mora biti zato nameščen na tem računalniku, njegovo ime pa registrirano pri
+lokalnem upravitelju gonilnikov.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Namestite proizvajalčev 64-bitni gonilnik, nato odprite **ODBC Data Source Administrator
+    (64-bit)** in preklopite na zavihek **Drivers**. Tam navedena imena so natanko vrednosti,
+    ki jih lahko uporabite za lastnost `Driver`.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Namestite **unixODBC** in proizvajalčev gonilnik, nato izpišite registrirana imena
+    gonilnikov:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Imena, izpisana v oglatih oklepajih, so vrednosti, ki jih lahko uporabite za lastnost
+    `Driver`. Prihajajo iz `/etc/odbcinst.ini` (ali iz datoteke, ki jo navede `odbcinst -j`).
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Namestite **unixODBC** (na primer z `brew install unixodbc`) in proizvajalčev gonilnik,
+    nato izpišite registrirana imena gonilnikov:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Ime gonilnika se mora ujemati znak za znakom"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` se upravitelju gonilnikov preda nespremenjen. `Simba Spark ODBC Driver` in
+    `Simba Spark ODBC Driver 64` sta za upravitelja gonilnikov različna gonilnika, ime, ki ni
+    registrirano, pa povzroči napako *data source name not found*, čeprav DSN sploh ni
+    vpleten.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Namesto registriranega imena vsi običajni upravitelji gonilnikov sprejmejo tudi celotno pot do
+knjižnice gonilnika, na primer `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. To je
+uporabno, kadar je gonilnik nameščen, ni pa registriran.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Ustvarite povezavo z bazo podatkov {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Odprite **Admin Panel**, pojdite na zavihek **Database Connections** in kliknite
+**Add DB Connection**. Zaslon zahteva pet podatkov:
 
-| Field | Description |
+| Polje | Opis |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Ime povezave. Uporablja se za sklicevanje na povezavo na drugih zaslonih. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake ali Hive. Določa narečje SQL, ki ga ustvarja *digna*, zato se mora ujemati z virom — ne z gonilnikom. Azure Synapse Analytics je povezava **SQL Server**. |
+| **ODBC Properties** | Pari ključ/vrednost, opisani v [Lastnosti ODBC](#odbc-properties). |
+| **Profiling Mode** | *Standard*, *Permanent* ali *Session* — glejte [Način profiliranja in delovna shema](#profiling-mode-and-work-schema). |
+| **Work Schema** | Shema, ki vsebuje delovne tabele za profiliranje *Permanent*. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Povezava se upravlja centralno in se nato dodeli enemu ali več projektom, tako da lahko ista
+povezava služi več projektom.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## Lastnosti ODBC {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Za vsako lastnost kliknite **Add Property** in izpolnite **Key**, **Value** ter za skrivnosti
+potrditveno polje **Encrypted**. Vsak vodič za tehnologijo navaja primer nabora za to
+tehnologijo, ki ga prilagodite svoji različici gonilnika in strežniku — glejte
+[opombo zgoraj](#technology-guides).
 
-!!! tip "Tip"
+Ne glede na gonilnik nabor lastnosti zajema iste štiri stvari:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — registrirano ime gonilnika, kot je opisano [zgoraj](#install-the-driver).
+- **Naslov strežnika** — ključ se razlikuje glede na gonilnik: `SERVER`, `HOST`, `DBCNAME`,
+  `Server` ali, pri Oracle, opisnik povezave `DBQ`.
+- **Poverilnice** — običajno `UID` in `PWD`; Snowflake uporablja `UID` in `token`,
+  Databricks pa dobesednega uporabnika `token` in osebni dostopni žeton v `PWD`.
+- **Baza podatkov ali katalog, v katerem se dela**, kjer ga tehnologija ima — glejte
+  [Katero bazo podatkov vidi povezava](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Vse drugo, kar dokumentira gonilnik, lahko dodate na enak način — združevanje povezav
+(connection pooling), časovne omejitve vtičnic, nastavitve Kerberos, nastavitve posredniškega
+strežnika. *digna* lastnosti ne tolmači; samo posreduje jih naprej.
+
+!!! warning "Vrednosti se ne ubežijo — vse s podpičjem zavijte v zavite oklepaje"
+
+    Ker so lastnosti združene z `;`, bi vrednost, ki sama vsebuje `;`, razdelila niz za
+    povezavo na napačnem mestu. Takšne vrednosti zavijte v zavite oklepaje: `PWD={p@ss;word}`.
+    Enako velja za vrednosti z `=` ali presledki na začetku. Zato se nekateri gonilniki po
+    ustaljeni praksi pišejo v zavitih oklepajih, kot npr. `{NetezzaSQL}` ali
+    `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Šifriranje vrednosti lastnosti {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Označite **Encrypted** za vsako lastnost, ki vsebuje skrivnost — `PWD`, `token`, skrivnost
+odjemalca. Vrednost se nato šifrira, preden se shrani v repozitorij *digna*, na zaslonu je
+zakrita, dešifrira pa se šele, ko se sestavi niz za povezavo.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Nasvet"
+
+    Šifrirane vrednosti ni mogoče znova prebrati, niti v uporabniškem vmesniku niti prek API —
+    mogoče jo je samo zamenjati. Skrivnosti hranite tudi v svojem upravitelju gesel.
+
+Lastnosti, ki niso skrivne — ime gonilnika, gostitelj, vrata, baza podatkov — je najbolje
+pustiti nešifrirane, da ostanejo berljive za tistega, ki bo povezavo pozneje vzdrževal.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Testiranje povezave {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+V pogovornem oknu *Add DB Connection* kliknite **Test**, **preden** shranite. Test uporabi
+vrednosti, ki so trenutno v obrazcu, in izvede dejansko povezavo, zato poroča natanko to, na
+kar bi naletela inšpekcija — napačno ime gonilnika, zavrnjeno geslo, nedosegljivega gostitelja.
+Nič se ne shrani: testna povezava se razveljavi (rollback), ne glede na to, ali uspe ali ne.
 
-| Technology | Catalogs offered |
+Za povezavo, ki že obstaja, se na zavihku **Database Connections** z miško postavite nad njeno
+vrstico in kliknite ikono **vtiča**, da jo znova testirate. To je najhitrejši način, da
+preverite, ali je vir dosegljiv po menjavi gesla ali spremembi požarnega zidu.
+
+---
+
+## Katero bazo podatkov vidi povezava {: #which-database-the-connection-sees }
+
+Ko dodate vir podatkov, *digna* ponudi kataloge, sheme in tabele, ki jih povezava doseže. Kako
+daleč to seže, je odvisno od tehnologije:
+
+| Tehnologija | Ponujeni katalogi |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Samo **trenutna** baza podatkov povezave |
+| **Teradata**, **Netezza**, **Databricks** | Vse baze podatkov ali katalogi, ki jih uporabnik sme videti |
+| **Hive**, **Impala** | Sporoči jih gonilnik |
 
-!!! important "One connection, one database"
+!!! important "Ena povezava, ena baza podatkov"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    Pri PostgreSQL, SQL Server, Oracle in Snowflake morajo lastnosti kazati na bazo podatkov, ki
+    vsebuje izvorne sheme — `DATABASE=…`, `Database=…` ali ime storitve v Oraclovem `DBQ`.
+    Tabele v drugi bazi podatkov prek te povezave niso dosegljive; zanjo dodajte drugo
+    povezavo.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Način profiliranja in delovna shema {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Način profiliranja določa, kako *digna* obdeluje podatke in izračunava metrike:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** Metrike se izračunajo neposredno na izvornih tabelah, brez kopiranja podatkov.
+- **Permanent:** Podatki za pregledovani dan se kopirajo v trajno tabelo, metrike pa se
+  izračunajo na kopiranih podatkih.
+- **Session:** Podatki se kopirajo v sejno ali začasno tabelo, metrike pa se izračunajo na teh
+  začasnih podatkih.
 
-The mode decides what the connection user must be allowed to do:
+Način določa, kaj mora uporabnik povezave smeti početi:
 
-| Mode | Writes | Rights the connection user needs |
+| Način | Zapisuje | Pravice, ki jih potrebuje uporabnik povezave |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | nič | Branje izvornih tabel |
+| **Permanent** | tabelo za vsak vir podatkov v **Work Schema** | Ustvarjanje in brisanje tabel v **Work Schema** |
+| **Session** | začasno tabelo, ki jo baza podatkov izbriše skupaj s sejo | Ustvarjanje začasnih tabel — **Work Schema** se ne uporablja |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* samo bere, zato je to način, ki ga izberete, kadar ima *digna* dostop samo za
+branje. **Work Schema** se bere samo pri *Permanent*, vendar jo je vseeno vredno izpolniti, da
+povezava deluje naprej, če se način pozneje spremeni.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## Uporaba DSN {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+DSN še vedno deluje — `DSN` je le še ena lastnost:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -264,131 +268,135 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+DSN mora biti registriran na gostitelju *digna*, za isti uporabniški račun, pod katerim teče
+zaledje *digna*, in kot **System DSN**, kadar *digna* teče kot storitev. Vse, kar je
+konfigurirano v DSN, lahko preglasite tako, da to dodate tudi kot lastnost.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
+Brez DSN je dokumentirana privzeta možnost, ker se izogne temu stanju na strani gostitelja:
+povezava je v celoti opisana v *digna*, nov gostitelj *digna* pa potrebuje nameščen gonilnik,
+konfigurirati pa ni treba ničesar.
 
 ---
 
-## Troubleshooting {: #troubleshooting }
+## Odpravljanje težav {: #troubleshooting }
 
 ### Data source name not found / no default driver specified
 
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
+**Simptomi:**
+- Gumb **Test** sporoči napako, ki omenja *data source name not found*, čeprav je nastavitev
+  brez DSN
 
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
-
----
-
-### The connection test times out
-
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
-
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Vzroki in rešitve:**
+1. Vrednost `Driver` se ne ujema z imenom registriranega gonilnika — primerjajte jo z zavihkom
+   **Drivers** v *ODBC Data Source Administrator (64-bit)* ali z `odbcinst -q -d`
+2. Gonilnik je nameščen na vaši delovni postaji, ne pa na gostitelju *digna*
+3. Gonilnik je 32-bitni, *digna* pa je 64-bitna — namestite 64-bitni gonilnik
+4. Lastnost `Driver` v celoti manjka, prav tako ni bil podan `DSN`
+5. Na Linux in macOS je gonilnik nameščen, ni pa registriran — namesto tega navedite celotno
+   pot do knjižnice gonilnika ali ga registrirajte v `odbcinst.ini`
 
 ---
 
-### Authentication fails although the credentials are correct
+### Test povezave poteče
 
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
+**Simptomi:**
+- **Test** obvisi in nato po približno pol minute ne uspe
 
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
-
----
-
-### The data source screen does not offer the expected database or schema
-
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
-
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
+**Vzroki in rešitve:**
+1. Gostitelj ali vrata niso dosegljivi z gostitelja *digna* — preverite požarni zid in pri
+   oblačnih virih seznam dovoljenih naslovov IP
+2. Ime gostitelja je pravilno, vrata pa pripadajo drugi storitvi
+3. Vir potrebuje več kot privzetih 30 sekund, da sprejme povezavo — povečajte
+   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` v razdelku `[base]` datoteke `config.toml` (`0` čaka
+   neomejeno) in znova zaženite zaledje
+4. Serverless končna točka se prebuja iz mirovanja — poskusite znova, in če se to redno
+   dogaja, povečajte časovno omejitev prijave, kot je opisano zgoraj
 
 ---
 
-### Profiling fails while the connection test succeeds
+### Avtentikacija ne uspe, čeprav so poverilnice pravilne
 
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
+**Simptomi:**
+- Gonilnik sporoči neveljavne poverilnice, isti uporabnik pa deluje v drugem odjemalcu SQL
 
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
-
----
-
-## Best Practices
-
-**DO:**
-
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Vzroki in rešitve:**
+1. Geslo vsebuje `;` — vrednost zavijte v zavite oklepaje: `{p@ss;word}`
+2. V vrednost je bil skopiran presledek na koncu
+3. Gonilnik pričakuje določen mehanizem avtentikacije — na primer `AuthMech` za gonilnika
+   Hive in Databricks ali `authenticator` za Snowflake
+4. Vrednost je bila shranjena šifrirano in nato urejena — šifriranih vrednosti ni mogoče znova
+   prebrati, zato skrivnost znova vnesite v celoti
+5. Žeton je potekel — osebni dostopni žetoni in programmatic access tokens se izdajajo z
+   datumom poteka
 
 ---
 
-## Support
+### Zaslon za vir podatkov ne ponudi pričakovane baze podatkov ali sheme
 
-Need help with a database connection?
+**Simptomi:**
+- Ko dodajate vir podatkov, manjkajo katalogi, sheme ali tabele
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**Vzroki in rešitve:**
+1. Povezava kaže na drugo bazo podatkov — glejte
+   [Katero bazo podatkov vidi povezava](#which-database-the-connection-sees)
+2. Uporabnik povezave nima pravic za branje sheme ali podatkovnega slovarja
+3. **Technology** se ne ujema z virom, zato *digna* poizveduje po napačnem podatkovnem
+   slovarju
+4. Pri Snowflake uporabniku ni dodeljeno privzeto skladišče (warehouse) in lastnost
+   `Warehouse` ni bila podana, zato poizvedb po metapodatkih ni mogoče izvesti
 
 ---
 
-**Release:** 2026.06  
+### Profiliranje ne uspe, čeprav test povezave uspe
+
+**Simptomi:**
+- **Test** uspe, inšpekcija pa ne uspe pri ustvarjanju delovnih tabel
+
+**Vzroki in rešitve:**
+1. Izbrano je profiliranje *Permanent*, uporabnik povezave pa ne more ustvarjati tabel v
+   **Work Schema** — dodelite pravice ali preklopite na *Session* ali *Standard*
+2. **Work Schema** je prazna ali navaja shemo, ki ne obstaja, izbrano pa je profiliranje
+   *Permanent*
+3. Izbrano je profiliranje *Session*, uporabnik povezave pa ne sme ustvarjati začasnih tabel
+4. Dolgotrajna poizvedba profiliranja doseže časovno omejitev poizvedbe — povečajte
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` v razdelku `[base]` datoteke `config.toml` (privzeto 3600
+   sekund, `0` onemogoči časovno omejitev)
+
+---
+
+## Priporočene prakse
+
+**NAREDITE:**
+
+- Namestite in registrirajte gonilnik na gostitelju *digna*, preden konfigurirate povezavo
+- Označite **Encrypted** za vsako geslo in žeton
+- Pred shranjevanjem kliknite **Test** in po menjavi gesla povezavo znova testirajte
+- Povezave poimenujte po viru in okolju, na primer `sales_dwh_prod`
+- *digna* dodelite namenskega uporabnika baze podatkov, samo za branje, kjer zadošča
+  profiliranje *Standard*
+- Za vsako izvorno bazo podatkov imejte eno povezavo in raje dodajte drugo, kot da bi prvo
+  preklapljali
+
+**NE:**
+
+- Ne shranjujte skrivnosti nešifriranih in ne delite enega uporabnika baze podatkov med *digna*
+  in drugimi orodji
+- Ne uporabljajte 32-bitnega gonilnika s 64-bitno namestitvijo *digna*
+- Ne zanašajte se na User DSN, kadar *digna* teče kot storitev — ne bo viden
+- Ne vnašajte vrednosti, ki vsebuje `;`, v lastnost brez zavitih oklepajev
+- Ne usmerite **Work Schema** na shemo, ki vsebuje izvorne podatke
+
+---
+
+## Podpora
+
+Potrebujete pomoč pri povezavi z bazo podatkov?
+
+- **E-pošta:** support@digna.ai
+- **Dokumentacija:** https://docs.digna.ai
+- **Spletna stran:** https://www.digna.ai
+
+---
+
+**Izdaja:** 2026.06  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

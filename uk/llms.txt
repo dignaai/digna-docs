@@ -49,15 +49,15 @@
 
 ### Linux
 
-- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Step-by-step guide to installing digna Release 2026.06 on Linux — system requirements, PostgreSQL setup, nginx or Apache configuration, backend and dashboard configuration, running digna as a systemd service, and upgrading to a new release.
+- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Покроковий посібник зі встановлення digna Release 2026.06 на Linux — системні вимоги, налаштування PostgreSQL, конфігурація nginx або Apache, налаштування серверної частини та панелі, запуск digna як служби systemd та оновлення до нового випуску.
 
 ### macOS
 
-- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Step-by-step guide to installing digna Release 2026.06 on macOS — system requirements, Homebrew and PostgreSQL setup, nginx or Apache configuration, backend and dashboard configuration, running digna as a background service, and upgrading to a new release.
+- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): Покроковий посібник зі встановлення digna Release 2026.06 на macOS — системні вимоги, налаштування Homebrew і PostgreSQL, конфігурація nginx або Apache, налаштування серверної частини та панелі, запуск digna як фонової служби та оновлення до нового випуску.
 
 ### Windows
 
-- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Покроковий посібник зі встановлення digna Release 2026.06 на Windows — системні вимоги, налаштування PostgreSQL, конфігурація веб‑сервера, налаштування backend і dashboard, запуск digna як служби Windows та оновлення до нової версії.
+- [Release 2026.06](https://docs.digna.ai/uk/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Покроковий посібник зі встановлення digna Release 2026.06 на Windows — системні вимоги, налаштування PostgreSQL, конфігурація веб‑сервера, налаштування серверної частини та панелі, запуск digna як служби Windows та оновлення до нового випуску.
 
 ## Початок роботи
 
@@ -76,28 +76,28 @@
 
 ### Бази даних
 
-- [Overview](https://docs.digna.ai/uk/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
-- [Azure Synapse](https://docs.digna.ai/uk/databases/azure_synapse_connector_guide/): Configure digna to connect to Azure Synapse Analytics over ODBC with a DSN-less connection string. Supports serverless and dedicated SQL pools, with the required ODBC properties and digna-side connection settings.
-- [Databricks](https://docs.digna.ai/uk/databases/databricks_connector_guide/): Configure digna to connect to Databricks with Unity Catalog over ODBC with a DSN-less connection string. Covers the Databricks ODBC driver, personal access tokens, HTTP path and the digna-side connection settings.
-- [Hive](https://docs.digna.ai/uk/databases/hive_connector_guide/): Configure digna to connect to Apache Hive over ODBC with a DSN-less connection string. Covers the Cloudera Hive ODBC driver, authentication mechanisms, transport modes and the digna-side connection settings.
-- [Netezza](https://docs.digna.ai/uk/databases/netezza_connector_guide/): Configure digna to connect to Netezza over ODBC with a DSN-less connection string. Covers the NetezzaSQL driver, the required ODBC properties and the digna-side connection settings.
-- [Oracle](https://docs.digna.ai/uk/databases/oracle_connector_guide/): Configure digna to connect to Oracle over ODBC with a DSN-less connection string. Covers the Oracle ODBC driver, the DBQ connect descriptor, TNS aliases and the digna-side connection settings.
-- [PostgreSQL](https://docs.digna.ai/uk/databases/postgres_connector_guide/): Configure digna to connect to PostgreSQL over ODBC with a DSN-less connection string. Covers the psqlODBC driver, the required ODBC properties, SSL modes and the digna-side connection settings.
-- [Snowflake](https://docs.digna.ai/uk/databases/snowflake_connector_guide/): Configure digna to connect to Snowflake over ODBC with a DSN-less connection string. Covers the Snowflake ODBC driver, programmatic access tokens, warehouse and role selection and the digna-side connection settings.
-- [MS SQL Server](https://docs.digna.ai/uk/databases/sqlserver_connector_guide/): Configure digna to connect to Microsoft SQL Server over ODBC with a DSN-less connection string. Covers the Microsoft ODBC driver, the required ODBC properties, encryption settings and the digna-side connection settings.
-- [Teradata](https://docs.digna.ai/uk/databases/teradata_connector_guide/): Configure digna to connect to Teradata over ODBC with a DSN-less connection string. Covers the Teradata ODBC driver, the DBCNAME property, logon mechanisms and the digna-side connection settings.
+- [Overview](https://docs.digna.ai/uk/databases/overview/): Як працюють підключення до баз даних у digna. Кожна технологія джерела доступна через ODBC із рядком підключення без DSN, зібраним із властивостей ODBC. Охоплює встановлення драйвера на хості digna, екран Add DB Connection, шифрування властивостей, тестування підключення, усунення несправностей і посилання на посібники для окремих технологій.
+- [Azure Synapse](https://docs.digna.ai/uk/databases/azure_synapse_connector_guide/): Налаштуйте підключення digna до Azure Synapse Analytics через ODBC за допомогою рядка підключення без DSN. Підтримуються безсерверні та виділені пули SQL; описано потрібні властивості ODBC і параметри підключення на боці digna.
+- [Databricks](https://docs.digna.ai/uk/databases/databricks_connector_guide/): Налаштуйте підключення digna до Databricks з Unity Catalog через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер Databricks ODBC, персональні токени доступу, HTTP-шлях і параметри підключення на боці digna.
+- [Hive](https://docs.digna.ai/uk/databases/hive_connector_guide/): Налаштуйте підключення digna до Apache Hive через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер Cloudera Hive ODBC, механізми автентифікації, режими транспорту та параметри підключення на боці digna.
+- [Netezza](https://docs.digna.ai/uk/databases/netezza_connector_guide/): Налаштуйте підключення digna до Netezza через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер NetezzaSQL, потрібні властивості ODBC і параметри підключення на боці digna.
+- [Oracle](https://docs.digna.ai/uk/databases/oracle_connector_guide/): Налаштуйте підключення digna до Oracle через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер Oracle ODBC, дескриптор підключення DBQ, псевдоніми TNS і параметри підключення на боці digna.
+- [PostgreSQL](https://docs.digna.ai/uk/databases/postgres_connector_guide/): Налаштуйте підключення digna до PostgreSQL через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер psqlODBC, потрібні властивості ODBC, режими SSL і параметри підключення на боці digna.
+- [Snowflake](https://docs.digna.ai/uk/databases/snowflake_connector_guide/): Налаштуйте підключення digna до Snowflake через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер Snowflake ODBC, токени програмного доступу, вибір сховища та ролі й параметри підключення на боці digna.
+- [MS SQL Server](https://docs.digna.ai/uk/databases/sqlserver_connector_guide/): Налаштуйте підключення digna до Microsoft SQL Server через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер Microsoft ODBC, потрібні властивості ODBC, параметри шифрування та параметри підключення на боці digna.
+- [Teradata](https://docs.digna.ai/uk/databases/teradata_connector_guide/): Налаштуйте підключення digna до Teradata через ODBC за допомогою рядка підключення без DSN. Охоплює драйвер Teradata ODBC, властивість DBCNAME, механізми входу та параметри підключення на боці digna.
 
 ### Single Sign-On
 
-- [Overview](https://docs.digna.ai/uk/sso/overview/): How Single Sign-On works in digna using OpenID Connect (OIDC). Covers dashboard and backend configuration, testing, troubleshooting, and links to per-provider setup guides for Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne and AD FS.
-- [AD FS](https://docs.digna.ai/uk/sso/adfs_sso_guide/): Configure Single Sign-On for digna with Active Directory Federation Services using OpenID Connect — application group, server application, shared secret, permitted scopes and the matching digna configuration.
-- [Auth0](https://docs.digna.ai/uk/sso/auth0_sso_guide/): Configure Single Sign-On for digna with Auth0 using OpenID Connect — regular web application setup, allowed callback URLs, client credentials, tenant domain and the matching digna configuration.
-- [Google Workspace](https://docs.digna.ai/uk/sso/google_workspace_sso_guide/): Configure Single Sign-On for digna with Google Workspace using OpenID Connect — OAuth consent screen, OAuth client ID, authorized redirect URIs and the matching digna configuration.
-- [Keycloak](https://docs.digna.ai/uk/sso/keycloak_sso_guide/): Configure Single Sign-On for digna with Keycloak using OpenID Connect — realm and client setup, client authentication, valid redirect URIs, client secret and the matching digna configuration.
-- [Microsoft Entra ID](https://docs.digna.ai/uk/sso/microsoft_entra_id_sso_guide/): Configure Single Sign-On for digna with Microsoft Entra ID (formerly Azure AD) using OpenID Connect — app registration, redirect URI, client secret, tenant ID and the matching digna configuration.
-- [Okta](https://docs.digna.ai/uk/sso/okta_sso_guide/): Configure Single Sign-On for digna with Okta using OpenID Connect — app integration, sign-in redirect URIs, client credentials, authorization server choice and the matching digna configuration.
-- [OneLogin](https://docs.digna.ai/uk/sso/onelogin_sso_guide/): Configure Single Sign-On for digna with OneLogin using OpenID Connect — OIDC app creation, redirect URIs, client credentials, token endpoint authentication and the matching digna configuration.
-- [PingOne](https://docs.digna.ai/uk/sso/pingone_sso_guide/): Configure Single Sign-On for digna with PingOne using OpenID Connect — OIDC web app setup, redirect URIs, client credentials, environment ID, regional domains and the matching digna configuration.
+- [Overview](https://docs.digna.ai/uk/sso/overview/): Як працює єдиний вхід у digna на основі OpenID Connect (OIDC). Охоплює налаштування дашборду та бекенду, тестування, усунення несправностей і посилання на посібники з налаштування для Microsoft Entra ID, Google Workspace, Okta, Auth0, Keycloak, OneLogin, PingOne та AD FS.
+- [AD FS](https://docs.digna.ai/uk/sso/adfs_sso_guide/): Налаштуйте єдиний вхід для digna з Active Directory Federation Services за допомогою OpenID Connect — група застосунків, серверний застосунок, спільний секрет, дозволені області та відповідна конфігурація digna.
+- [Auth0](https://docs.digna.ai/uk/sso/auth0_sso_guide/): Налаштуйте єдиний вхід для digna з Auth0 за допомогою OpenID Connect — налаштування звичайного вебзастосунку, дозволені URL зворотного виклику, облікові дані клієнта, домен тенанта та відповідна конфігурація digna.
+- [Google Workspace](https://docs.digna.ai/uk/sso/google_workspace_sso_guide/): Налаштуйте єдиний вхід для digna з Google Workspace за допомогою OpenID Connect — екран згоди OAuth, ідентифікатор клієнта OAuth, дозволені URI перенаправлення та відповідна конфігурація digna.
+- [Keycloak](https://docs.digna.ai/uk/sso/keycloak_sso_guide/): Налаштуйте єдиний вхід для digna з Keycloak за допомогою OpenID Connect — налаштування realm і клієнта, автентифікація клієнта, дійсні URI перенаправлення, секрет клієнта та відповідна конфігурація digna.
+- [Microsoft Entra ID](https://docs.digna.ai/uk/sso/microsoft_entra_id_sso_guide/): Налаштуйте єдиний вхід для digna з Microsoft Entra ID (раніше Azure AD) за допомогою OpenID Connect — реєстрація застосунку, URI перенаправлення, секрет клієнта, ідентифікатор тенанта та відповідна конфігурація digna.
+- [Okta](https://docs.digna.ai/uk/sso/okta_sso_guide/): Налаштуйте єдиний вхід для digna з Okta за допомогою OpenID Connect — інтеграція застосунку, URI перенаправлення після входу, облікові дані клієнта, вибір сервера авторизації та відповідна конфігурація digna.
+- [OneLogin](https://docs.digna.ai/uk/sso/onelogin_sso_guide/): Налаштуйте єдиний вхід для digna з OneLogin за допомогою OpenID Connect — створення застосунку OIDC, URI перенаправлення, облікові дані клієнта, автентифікація на кінцевій точці токенів та відповідна конфігурація digna.
+- [PingOne](https://docs.digna.ai/uk/sso/pingone_sso_guide/): Налаштуйте єдиний вхід для digna з PingOne за допомогою OpenID Connect — налаштування вебзастосунку OIDC, URI перенаправлення, облікові дані клієнта, ідентифікатор середовища, регіональні домени та відповідна конфігурація digna.
 
 ## Довідник CLI
 

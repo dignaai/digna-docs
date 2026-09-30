@@ -1,65 +1,65 @@
-# Source Connector for PostgreSQL
+# PostgreSQL šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie PostgreSQL per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to PostgreSQL.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself under a name that differs per platform and package — commonly
-**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
-the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
-for the `DRIVER` property below.
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+PostgreSQL.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite PostgreSQL ODBC tvarkyklę (**psqlODBC**) kompiuteryje, kuriame veikia *digna* backend,
+laikydamiesi oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    psqlODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what your server demands — SSL in particular — may differ too.
-    Use this as a starting point and check the documentation of the driver version you
-    installed.
+Tvarkyklė užsiregistruoja pavadinimu, kuris skiriasi priklausomai nuo platformos ir paketo —
+dažniausiai **PostgreSQL Unicode(x64)** Windows sistemoje ir **PostgreSQL ODBC Driver(UNICODE)**
+Linux sistemoje. Nuskaitykite tikslų pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver), ir naudokite jį
+toliau nurodytai savybei `DRIVER`.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    psqlODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų ir platformų, o tai, ko reikalauja jūsų serveris — ypač
+    SSL, — taip pat gali skirtis. Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos
+    tvarkyklės versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `db.example.com` | Server name or IP address |
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `SERVER` | `db.example.com` | Serverio pavadinimas arba IP adresas |
 | `PORT` | `5432` | |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
-| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+| `DATABASE` | `digna_source_db` | Duomenų bazė, kurioje yra šaltinio schemos. Tai vienintelė duomenų bazė, kurią šis ryšys gali profiliuoti |
+| `UID` | `digna_source_user` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` arba `verify-full` — serveris turi jį priimti |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
 ```
 
-Any further psqlODBC option can be added as an additional property — for example
-`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
-time.
+Bet kurią kitą psqlODBC parinktį galima pridėti kaip papildomą savybę — pavyzdžiui,
+`ReadOnly=1` tik skaitymo seansui arba `ConnSettings`, kad prisijungiant būtų vykdomi `SET`
+sakiniai.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -70,35 +70,35 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+## 4. Pastabos apie PostgreSQL {: #4-notes-on-postgresql }
 
-- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
-  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
-  be available to the driver on the *digna* host. If you had to choose a specific mode when
-  testing the driver, use the same one here.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **`SSLMode` turi atitikti serverį.** Serveris, sukonfigūruotas su `hostssl`, atmeta
+  `SSLMode=disable`, o `verify-ca` ar `verify-full` papildomai reikalauja, kad šakninis
+  sertifikatas būtų prieinamas tvarkyklei *digna* serveryje. Jei testuodami tvarkyklę turėjote
+  pasirinkti konkretų režimą, naudokite tą patį ir čia.
+- **Vienas ryšys mato vieną duomenų bazę.** *digna* siūlo `DATABASE` nurodytos duomenų bazės
+  schemas, nes PostgreSQL kaip katalogą praneša tik dabartinę duomenų bazę. Šaltinio lentelėms
+  kitoje duomenų bazėje reikia atskiro ryšio.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui reikia teisės `CREATE` šiai schemai. *Session* naudoja `CREATE TEMPORARY TABLE` ir
+  **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver works and that the server accepts
-your credentials and SSL mode before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė veikia, o serveris priima jūsų prisijungimo
+duomenis ir SSL režimą, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/postgres/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/postgres/create_odbc_data_source_step1.png)
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Click the **Test Connection** button.
+Spustelėkite mygtuką **Test Connection**.
 
-![Step 2](images/postgres/create_odbc_data_source_step2.png)
+![2 žingsnis](images/postgres/create_odbc_data_source_step2.png)
 
-The values you entered here are exactly the values the properties in
-[section 2](#2-odbc-properties) take.
+Čia įvestos reikšmės yra būtent tos reikšmės, kurias priima savybės iš
+[2 skyriaus](#2-odbc-properties).

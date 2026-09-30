@@ -33,7 +33,7 @@ See versioon toob kaasa uue **digna Python SDK**, ametliku **Docker‑deploy toe
 ---
 
 ### Docker‑toe tugi – lihtsustatud kasutuselevõtt ja haldus  
-- Ametlik Docker imagе‑tugi voor digna  
+- Ametlik Docker image'i tugi digna jaoks  
 - Kiire ja ühtlane seadistus eri keskkondades  
 - Lihtsam onboardimine arenduse, testi ja tootmiskeskkondades  
 - Lihtne integreerimine Kubernetes’i ja konteineriplatvormidega  

@@ -1,84 +1,69 @@
-# Source Connector for Snowflake
+# موصل المصدر لـ Snowflake
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+يشرح هذا الدليل كيفية تهيئة *digna* للاتصال بـ Snowflake عبر **ODBC**، باستخدام سلسلة اتصال **بدون DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
+جانب *digna* من الإعداد متطابق لكل التقنيات — أين تُنشأ الاتصالات، وكيف تُشفَّر قيم الخصائص، وكيف يُختبر الاتصال، وما معنى أوضاع التنميط (profiling). وهو موضح في [نظرة عامة على اتصالات قواعد البيانات](overview.md). تغطي هذه الصفحة ما هو خاص بـ Snowflake.
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. تثبيت برنامج تشغيل ODBC {: #1-install-the-odbc-driver }
 
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
+ثبّت **Snowflake ODBC Driver** على الجهاز الذي يشغّل الواجهة الخلفية لـ *digna*، باتباع [دليل التثبيت من Snowflake](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+يسجّل برنامج التشغيل نفسه باسم **SnowflakeDSIIDriver**. اقرأ الاسم المسجَّل بدقة على مضيفك كما هو موضح في [تثبيت برنامج تشغيل ODBC على مضيف digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. خصائص ODBC {: #2-odbc-properties }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+يتم الوصول إلى Snowflake باستخدام **رمز وصول برمجي (programmatic access token، PAT)** — وهو مسار المصادقة الذي جرى التحقق من *digna* عليه، والمسار الذي يشترطه Snowflake للحسابات التي يُحظر فيها تسجيل الدخول بكلمة المرور وحدها.
 
-!!! important "An example, not a specification"
+!!! important "مثال، وليس مواصفة"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    المجموعة أدناه هي تركيبة واحدة معروف أنها تعمل. الخصائص تابعة لبرنامج تشغيل Snowflake ODBC، لذا تختلف أسماؤها وقيمها الافتراضية والقيم المقبولة بين إصدارات برنامج التشغيل والأنظمة الأساسية، وخيارات المصادقة التي يسمح بها حسابك تحددها سياسة الأمان الخاصة بالحساب. استخدم هذه المجموعة كنقطة بداية وراجع وثائق إصدار برنامج التشغيل الذي ثبّته.
 
-| Key | Example value | Notes |
+| المفتاح | قيمة مثال | ملاحظات |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | يجب أن يطابق اسم برنامج التشغيل المسجَّل على مضيف *digna* |
+| `Server` | `<account>.snowflakecomputing.com` | معرّف الحساب مع اللاحقة، مثل `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | مستخدم Snowflake الذي ينتمي إليه الرمز |
+| `Database` | `TEST` | قاعدة البيانات التي تحتوي على مخططات المصدر. وهي قاعدة البيانات الوحيدة التي يمكن لهذا الاتصال تنميطها |
+| `Schema` | `PUBLIC` | المخطط الافتراضي للجلسة |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | يختار المصادقة بالرمز |
+| `token` | `<programmatic access token>` | فعّل **Encrypted** |
 
-The resulting connection string looks like this:
+تبدو سلسلة الاتصال الناتجة كما يلي:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### المستودع والدور
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+تحتاج الاستعلامات إلى مستودع (warehouse). إذا كان لمستخدم *digna* مستودع افتراضي ودور افتراضي، فإن الجلسة تلتقطهما ولا حاجة إلى أي تهيئة. وإلا فأضف:
 
-| Key | Example value | Notes |
+| المفتاح | قيمة مثال | ملاحظات |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | المستودع الذي ينفّذ استعلامات التنميط |
+| `Role` | `DIGNA_READER` | الدور الذي تستخدم الجلسة صلاحياته |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "خصّص لـ digna مستودعًا خاصًا به"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    يُبقي مستودع منفصل وصغير يتوقف تلقائيًا تكلفةَ التنميط واضحة، ويمنع *digna* من منافسة المستخدمين التفاعليين على موارد الحوسبة.
 
-### Password authentication
+### المصادقة بكلمة المرور
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+حيثما لا يزال الحساب يسمح بذلك، تعمل كلمة المرور بدلًا من الرمز — احذف `authenticator` و`token` وأضف:
 
-| Key | Example value | Notes |
+| المفتاح | قيمة مثال | ملاحظات |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | فعّل **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. تهيئة *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+في شاشة **Add DB Connection**، قدّم ما يلي:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -89,40 +74,29 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. ملاحظات حول Snowflake {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **تنتهي صلاحية الرموز.** يُصدر رمز الوصول البرمجي بمدة صلاحية، ويتوقف التنميط في اليوم الذي تنتهي فيه. دوّن تاريخ الانتهاء عند إنشائه، وأعد إدخال الرمز الجديد في الخاصية `token` — يمكن استبدال القيم المشفرة لكن لا يمكن قراءتها مجددًا.
+- **الاتصال الواحد يرى قاعدة بيانات واحدة.** يعرض *digna* مخططات قاعدة البيانات المسماة في `Database`، لأن Snowflake يُبلغ عن قاعدة البيانات الحالية فقط ككتالوج. جداول المصدر الموجودة في قاعدة بيانات أخرى تحتاج إلى اتصال خاص بها.
+- **المعرّفات بأحرف كبيرة** ما لم تُنشأ بين علامات اقتباس. يستخدم *digna* الأسماء كما يُبلغ عنها Snowflake.
+- **أوضاع التنميط.** ينشئ *Permanent* جداول العمل في **Work Schema**، لذا يحتاج الدور إلى `CREATE TABLE` هناك. يستخدم *Session* الأمر `CREATE TEMPORARY TABLE` ولا يمسّ **Work Schema**. يحتاج *Standard* إلى صلاحية القراءة فقط — ولا يحتاج إلى أي صلاحيات كتابة على الإطلاق.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. التحقق من برنامج التشغيل (اختياري) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+تهيئة مصدر بيانات ODBC ليست مطلوبة لاتصال بدون DSN، لكن نافذة برنامج التشغيل نفسه طريقة مريحة للتأكد من أن برنامج التشغيل وعنوان URL للحساب وبيانات اعتمادك تعمل قبل إدخالها في *digna*.
 
-#### Step 1
+#### الخطوة 1
 ![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+ملاحظات:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
-  `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- تتكون قيمة **Server** من معرّف حساب Snowflake الخاص بك متبوعًا بـ `.snowflakecomputing.com`.
+- القيم **Database** و**Schema** و**Warehouse** المُدخلة هنا تقابل الخصائص `Database` و`Schema` و`Warehouse` في [القسم 2](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### الخطوة 2 – اختبار الاتصال
 
-Click the **TEST** button. A successful connection should look like this:
+انقر الزر **TEST**. يجب أن يبدو الاتصال الناجح هكذا:
 
 ![Step 2](images/snowflake/create_odbc_data_source_step2.png)

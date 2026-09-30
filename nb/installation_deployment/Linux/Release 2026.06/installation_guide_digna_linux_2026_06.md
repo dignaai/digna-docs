@@ -506,8 +506,13 @@ Lim så inn uttalelsene ved `postgres=#`-prompten og skriv `\q` for å avslutte.
 3. Etter utpakking skal du se følgende elementer:
    - `dashboard/` — web-dashboard grensesnitt
    - `digna` — hovedkjørbar (backend + CLI kombinert)
-   - `config.toml` — konfigurasjonsfil
-   - `license.toml` — lisensfil (kopier din fil hit)
+
+!!! info "Konfigurasjons- og lisensfilene er ikke med i pakken"
+
+    Verken `config.toml` eller `dashboard/dashboard_config.toml` følger med installasjonen — du
+    oppretter begge selv, i [Backend-konfigurasjon](#backend-configuration) og
+    [Dashboard-konfigurasjon](#dashboard-configuration). `license.toml` følger heller ikke med;
+    digna leverer den separat, slik Steg 3 beskriver.
 
 For å pakke ut fra shell:
 
@@ -827,9 +832,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Steg 1: Deploy dashboardet til webserveren
 
-digna-dashboardet har sin egen separate `config.toml`-fil plassert i `dashboard/`-katalogen. Denne konfigurasjonen er allerede levert og krever vanligvis ikke endringer under første oppsett. Du trenger kun å konfigurere den hvis du må tilpasse backend-tilkoblingen.
+digna-dashboardet leser sin egen konfigurasjon fra `dashboard/dashboard_config.toml`. Den filen følger ikke med installasjonen — du oppretter den i `dashboard/`-katalogen sammen med dashboardfilene.
 
-Hvis du må endre dashboard-konfigurasjonen (f.eks. for multi-instans distribusjoner), se dashboardets dokumentasjon.
+Innholdet er beskrevet under [Enkel pålogging](../../../sso/overview.md), som også er der filen trengs: den inneholder påloggingsalternativene dashboardet tilbyr og, for distribusjoner med flere instanser, backend-tilkoblingen.
 
 Velg webserver og følg tilsvarende distribusjonstrinn.
 
@@ -1164,7 +1169,10 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Viktig"
 
-    `config.toml`-filen er **aldri** inkludert i installasjons-ZIP-en. Din eksisterende konfigurasjon forblir trygg.
+    Verken `config.toml` eller `dashboard/dashboard_config.toml` er noensinne inkludert i
+    installasjons-ZIP-en — digna-teamet leverer aldri noen av filene. Din eksisterende konfigurasjon
+    berøres derfor ikke av oppgraderingen, og kopiene i de omdøpte `*_old`-mappene er de
+    eneste du har.
 
 #### Steg 4: Gjenopprett konfigurasjonsfiler
 
@@ -1216,7 +1224,13 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Gjenta seksjonen for hver leverandør, og hold hver nøkkel lik `key` i `dashboard_config.toml`. `digna config check` rapporterer `oidc_clients` som FAILED så lenge den gamle formen fortsatt finnes. Bare installasjoner som bruker enkel pålogging er berørt.
 
-#### Steg 5: Valider konfigurasjonen
+#### Steg 5: Last inn webserveren på nytt
+
+Dashboardet er et sett med statiske filer, så webserveren din — og nettleseren — kan fortsatt
+levere den forrige versjonen. Last inn på nytt eller start på nytt den webserveren som er vert for `dashboard`-mappen,
+og last deretter inn siden på nytt med en hard oppdatering (++ctrl+f5++).
+
+#### Steg 6: Valider konfigurasjonen
 
 Bekreft at den oppdaterte `config.toml` er fullstendig før du rører repositoryet:
 
@@ -1226,7 +1240,26 @@ Bekreft at den oppdaterte `config.toml` er fullstendig før du rører repository
 
 Hver seksjon må rapportere OK. Rett alt som rapporteres som FAILED, og kjør kommandoen på nytt før du går videre.
 
-#### Steg 6: Oppgrader repositories-skjemaet
+#### Steg 7: Erstatt lisensfilen
+
+Hver utgivelse lisensieres separat. Kopier `license.toml` som digna-teamet har levert for
+denne utgivelsen, til installasjonskatalogen, slik at den erstatter den gamle:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ikke behold den forrige lisensen"
+
+    En `license.toml` utstedt for en tidligere utgivelse dekker ikke denne, og alle kommandoer
+    som kontrollerer lisensen — `user`, `inspection`, `repo` — avbrytes før de berører
+    repositoriet når kontrollen feiler. Verifiser den før du går videre:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Steg 8: Oppgrader repositories-skjemaet
 
 Gå til din digna-installasjonsmappe og kjør:
 
@@ -1237,7 +1270,7 @@ cd /opt/digna
 
 Dette oppdaterer PostgreSQL-skjemaet til nyeste versjon samtidig som alle eksisterende data bevares.
 
-#### Steg 7: Start tjenestene på nytt
+#### Steg 9: Start tjenestene på nytt
 
 Hvis du kjører som en systemd-tjeneste:
 
@@ -1268,7 +1301,7 @@ På RHEL-familien, re-apply SELinux-labeling hvis `dashboard`-katalogen ble erst
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Steg 8: Verifiser oppgraderingen
+#### Steg 10: Verifiser oppgraderingen
 
 1. Åpne digna-dashboardet
 2. Bekreft at grensesnittet laster riktig

@@ -1,106 +1,111 @@
-# Source Connector for Databricks
+# Forráskonnektor Databricks-hez
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t a Databricks-hez való csatlakozásra
+**ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami a Databricks-re jellemző.
 
-!!! note "Unity Catalog is required"
+!!! note "Unity Catalog szükséges"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    A *digna* az elérhető katalógusokat a `system.information_schema.catalogs` táblából
+    olvassa ki, ezért a workspace-en engedélyezni kell a Unity Catalogot. A korábbi *digna*
+    kiadások külön "Databricks Legacy" technológiát kínáltak a Unity Catalog nélküli
+    workspace-ekhez; ez már nem érhető el.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Telepítse a **Databricks ODBC Driver** illesztőprogramot arra a gépre, amely a *digna*
+backendet futtatja, a [Databricks telepítési útmutatója](https://docs.databricks.com/aws/en/integrations/odbc/)
+szerint.
 
-| Databricks field | Used as |
+A verziótól függően az illesztőprogram **Simba Spark ODBC Driver** vagy
+**Databricks ODBC Driver** néven regisztrálja magát. Olvassa le a pontos regisztrált nevet a
+gépén, ahogyan az [Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver)
+részben le van írva.
+
+---
+
+## 2. A kapcsolati adatok összegyűjtése {: #2-gather-the-connection-details }
+
+Minden érték abból az SQL warehouse-ból (vagy clusterből) származik, amelyet a *digna*-val
+használni szeretne. Nyissa meg a Databricks workspace-ben, és lépjen a
+**Connection details** részre:
+
+| Databricks mező | Felhasználás |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, általában `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+A hitelesítéshez hozzon létre egy **personal access tokent** — lásd:
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+A tokenek egy felhasználóhoz vagy service principalhoz tartoznak, és ennek a principalnak
+`USE CATALOG`, `USE SCHEMA` és `SELECT` jogosultságra van szüksége a forrásadatokon.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. ODBC tulajdonságok {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Példa, nem specifikáció"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    Databricks/Simba illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek illesztőprogram-verziónként eltérnek — az illesztőprogramot többször
+    átnevezték, és a hitelesítési lehetőségeit többször bővítették —, valamint platformonként
+    is. Használja ezt kiindulópontként, és nézze meg a telepített illesztőprogram-verzió
+    dokumentációját.
 
-Add the following properties in the **Add DB Connection** screen:
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `Host` | `<workspace>.cloud.databricks.com` | A warehouse server hostname-je, pl. `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | A warehouse vagy cluster HTTP path-ja |
+| `SSL` | `1` | A Databricks végpontok csak TLS-t fogadnak |
+| `ThriftTransport` | `2` | HTTP transport, ezt beszélik az SQL végpontok |
+| `AuthMech` | `3` | Tokenes hitelesítés |
+| `UID` | `token` | Szó szerint a `token` szó, nem felhasználónév |
+| `PWD` | `dapi…` | A personal access token. Jelölje be az **Encrypted** opciót |
+| `UseNativeQuery` | `1` | A *digna* SQL-jét változatlanul továbbítja — lásd lent |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Tartsa meg a `UseNativeQuery=1` beállítást"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    `UseNativeQuery=0` esetén — ez az illesztőprogram alapértelmezése — az illesztőprogram a
+    bejövő SQL-t átírja arra, amit hordozható ODBC-szintaxisnak gondol. A *digna* már eleve
+    Databricks SQL-t generál, így az átírás megváltoztathatja a backtick-es idézést és a
+    dátumliterálokat, és a profilozás ekkor olyan utasításokon bukik el, amelyek az eredeti
+    formájukban érvényesek.
 
-### OAuth instead of a token
+### OAuth token helyett
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+OAuth machine-to-machine hitelesítést használó service principal esetén cserélje le az
+`AuthMech`, `UID` és `PWD` tulajdonságokat a következőkre:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
 | `Auth_Flow` | `1` | Client credentials |
 | `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Client_Secret` | `<client secret>` | Jelölje be az **Encrypted** opciót |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. *digna* konfiguráció {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -111,45 +116,46 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Megjegyzések a Databricks-hez {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **A warehouse-nak futnia kell**, vagy el kell tudnia indulni, amikor a *digna* csatlakozik.
+  Egy leállított állapotból induló warehouse-nak több idő kellhet, mint a kapcsolati
+  időkorlát — ha a teszt egy tétlen időszak utáni első próbálkozáskor sikertelen, próbálja
+  újra.
+- **A katalógusok a workspace-ből származnak.** A legtöbb technológiával ellentétben egy
+  Databricks kapcsolat minden olyan katalógust elér, amelyet a principal láthat, így egyetlen
+  kapcsolat több katalógus forrásait is kiszolgálhatja.
+- **Profilozási módok.** A *Permanent* a munkatáblákat a **Work Schema**-ban hozza létre, a
+  forrás katalógusán belül, ezért a principalnak ott `CREATE TABLE` jogosultság kell. A
+  *Session* `CREATE TEMPORARY TABLE`-t használ, és nem érinti a **Work Schema**-t. A
+  *Standard*-hoz csak olvasási hozzáférés szükséges.
+- **A serverless warehouse-ok** ugyanígy működnek; csak a `HTTPPath` különbözik.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. Az illesztőprogram ellenőrzése (opcionális) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az illesztőprogram, a warehouse és a token működik, mielőtt megadná őket a *digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
+#### 2. lépés
 ![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
+#### 3. lépés
 ![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
+#### 4. lépés
 ![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### 5. lépés – A kapcsolat tesztelése
 
-Click the **TEST** button. A successful connection should look like this:
+Kattintson a **TEST** gombra. Egy sikeres kapcsolat így néz ki:
 
 ![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+Az itt megadott host, HTTP path és token pontosan azok az értékek, amelyeket a
+[3. szakasz](#3-odbc-properties) tulajdonságai kapnak.

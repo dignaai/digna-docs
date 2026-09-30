@@ -4165,6 +4165,7 @@ Toliau pateiktoje lentelėje užfiksuota, ką kiekviena komandų kategorija įke
 | `license check` | ne | tai *ir yra* patikrinimas |
 | `crypt` | taip | ne |
 | `serve` | taip | ne |
+| `windows` | ne (tarnyba jį nuskaito paleidimo metu) | ne |
 | `project` | taip | ne |
 | `user` | taip | taip |
 | `inspection` | taip | taip |
@@ -4329,6 +4330,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Komanda `repo prune` pašalina eilutes, kurios liko po to, kai buvo ištrintas projektas ar duomenų šaltinis, kuriam jos priklausė.
+Ištrynus projektą ar duomenų šaltinį, pašalinamas pats objektas, tačiau jo profiliai, prognozės,
+būsenos ir eilučių skaičiai lieka — tai sąmoningas kompromisas, nes trynimas, kartu valantis ir šias lenteles,
+priverstų naudotoją ilgai laukti. `repo prune` yra tvarkymo veiksmas, kuris jas išvalo, ir jį saugu
+vykdyti bet kuriuo metu: jis šalina tik tas eilutes, kurių projektas ar duomenų šaltinis nebeegzistuoja.
+
+Eilutės, kurias Python backend įrašė į lenteles, nebenaudojamas dabartinėje laidoje, nepaliečiamos.
+
+#### Komandos naudojimas
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Parinktys
+- `--dry-run`: Parodo, kas būtų pašalinta, nieko nepašalinant.
+
+Išvardijamos tik lentelės, kuriose yra našlaičių eilučių. Jei tokių nėra, komanda praneša
+`No orphaned rows found.` ir baigia darbą.
+
+#### Pavyzdys
+```bash
+digna repo prune
+```
+
+#### Išvesties pavyzdys
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Norint pamatyti tą pačią ataskaitą nieko nepašalinant:
+```bash
+digna repo prune --dry-run
+```
+
+Eilučių skaičiai identiški; skiriasi tik paskutinė eilutė:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -4640,6 +4696,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Komanda `project cleanup` pašalina patikrų rezultatus, kuriuos projektas sukaupė per nurodytą datų
+intervalą — profilius, prognozes, eilučių skaičius ir visas patikrinimų, atributų, duomenų rinkinių ir duomenų šaltinių
+būsenas. Ji pašalina būtent tai, ką įrašė tų datų patikra, todėl vėliau intervalą galima
+patikrinti iš naujo ir rezultatus atkurti.
+
+Timeliness ir Schema Tracker istorija **nešalinama**: joje fiksuojama, ką digna stebėjo tam tikrą
+dieną, o ne iš to išvestas rezultatas, todėl praeities datų intervalo išvalymas jos
+nepaliečia.
+
+Kiekvienas duomenų šaltinis valomas atskiroje transakcijoje, todėl nutrauktas vykdymas palieka nepaliestus arba visiškai išvalytus duomenų šaltinius,
+o ne iš dalies išvalytą.
+
+#### Komandos naudojimas
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentai
+- **PROJECT_NAME**: Valomas projektas (privaloma). Vienu iškvietimu – vienas projektas.
+- **FROM_DATE**: Pirmoji data, kurios rezultatai šalinami, `YYYY-MM-DD` (privaloma).
+- **TO_DATE**: Paskutinė data, kurios rezultatai šalinami, imtinai, `YYYY-MM-DD` (privaloma).
+
+#### Parinktys
+- `--table-name`, `-n`: Apriboja valymą šiais duomenų šaltiniais. Kelis pavadinimus galima nurodyti
+  atskiriant tarpais.
+- `--table-filter`: Apriboja valymą duomenų šaltiniais, kurių pavadinime yra ši poeilutė.
+- `--dry-run`: Išvardija duomenų šaltinius, kurie būtų išvalyti, nieko nepašalinant.
+- `--timing`: Parodo, kiek laiko užtruko valymas.
+
+`--table-name` ir `--table-filter` jungiami kaip OR — duomenų šaltinis išvalomas, jei jis nurodytas pavadinimu arba
+jei atitinka poeilutė. Jei neatitinka nė vienas duomenų šaltinis, komanda baigiasi klaida, o ne praneša
+apie sėkmę valymo, kuris nieko nepadarė.
+
+#### Pavyzdys
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Apribojus vienu duomenų šaltiniu:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Išvesties pavyzdys
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Norint pamatyti, kurie duomenų šaltiniai būtų išvalyti, nieko nepašalinant:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Kiekviena eilutė pažymėta, todėl bandomojo vykdymo neįmanoma supainioti su tikru:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Patikrų valdymas
 
 ---
@@ -4816,98 +4944,188 @@ Server running on http://0.0.0.0:8000
 
 ---
 
+## Windows tarnybos valdymas
+
+Prieinama tik Windows sistemoje. Šios komandos užregistruoja ***digna*** backend Windows
+tarnybų tvarkytuvėje ir jį valdo; pati tarnyba fone vykdo `serve`. Kiekvieną komandą
+reikia vykdyti iš komandų eilutės su administratoriaus teisėmis, ir kiekviena priima `--name`, kad būtų galima kreiptis į
+tarnybą, užregistruotą ne numatytuoju pavadinimu.
+
+---
+
+### windows install
+
+Komanda `windows install` užregistruoja ***digna*** kaip Windows tarnybą.
+
+Čia nurodyti adresas ir prievadas įrašomi į tarnybos registraciją ir prie jų
+tarnyba susiejama — jie neskaitomi iš `config.toml`. Norėdami juos vėliau pakeisti, pašalinkite
+tarnybą ir įdiekite ją iš naujo.
+
+#### Komandos naudojimas
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo registruojama tarnyba (numatytoji reikšmė: `digna`).
+- `--display-name`: Pavadinimas, rodomas services.msc (numatytoji reikšmė: `digna`).
+- `--description`: Aprašas, rodomas services.msc (numatytoji reikšmė: `digna data quality backend`).
+- `--address`: Adresas, prie kurio tarnyba susieja savo API (numatytoji reikšmė: `127.0.0.1`).
+- `--port`: Prievadas, prie kurio tarnyba susieja savo API (numatytoji reikšmė: `8000`).
+- `--working-dir`: Katalogas su `config.toml` ir `license.toml`, kurį tarnyba naudoja kaip
+  darbinį katalogą (numatytoji reikšmė: `digna` vykdomojo failo katalogas).
+- `--start-type`: Kada tarnyba paleidžiama — `auto` kartu su Windows, `manual` tik paprašius,
+  `disabled` užregistruota, bet atsisako pasileisti (numatytoji reikšmė: `auto`).
+- `--account`: Paskyra, kuria vykdoma tarnyba, pvz., `DOMAIN\user` arba `.\user` (numatytoji reikšmė: `LocalSystem`).
+- `--password`: `--account` paskyros slaptažodis.
+
+#### Pavyzdys
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registravimas antru pavadinimu, vykdant domeno paskyra:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Komanda `windows start` paleidžia užregistruotą tarnybą.
+
+#### Komandos naudojimas
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo užregistruota tarnyba (numatytoji reikšmė: `digna`).
+
+---
+
+### windows stop
+
+Komanda `windows stop` sustabdo veikiančią tarnybą. Prieš keisdami bet kurį
+programos failą, sustabdykite tarnybą.
+
+#### Komandos naudojimas
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo užregistruota tarnyba (numatytoji reikšmė: `digna`).
+
+---
+
+### windows uninstall
+
+Komanda `windows uninstall` išregistruoja tarnybą. Pirmiausia ją sustabdykite.
+
+#### Komandos naudojimas
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Parinktys
+- `--name`: Pavadinimas, kuriuo užregistruota tarnyba (numatytoji reikšmė: `digna`).
+
+---
+
 # Azure Synapse
 Source: https://docs.digna.ai/lt/databases/azure_synapse_connector_guide/
 
-# Source Connector for Azure Synapse Analytics
+# Azure Synapse Analytics šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Azure Synapse Analytics per
+**ODBC**, naudojant ryšio eilutę **be DSN** (DSN-less). Palaikomi ir serverless, ir dedicated SQL
+telkiniai (pools).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Azure Synapse.
 
-!!! note "Technology"
+!!! note "Technologija"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Synapse naudoja SQL Server dialektą, todėl ryšys kuriamas su **Technology:
+    SQL Server**. Vietiniam (on-premises) serveriui žr. [MS SQL Server](sqlserver_connector_guide.md).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite **ODBC Driver 18 for SQL Server** kompiuteryje, kuriame veikia *digna* backend,
+laikydamiesi [Microsoft diegimo vadovo](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+ir nuskaitykite tikslų užregistruotos tvarkyklės pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. ODBC savybės {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Microsoft ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų ir platformų, o tai, ko reikalauja darbo sritis (workspace),
+    priklauso nuo jos konfigūracijos — telkinio tipo, autentifikacijos metodo, ugniasienės.
+    Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos tvarkyklės versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Darbo srities pavadinimas ir galinio taško priesaga — žr. toliau |
+| `DATABASE` | `dignadata` | Duomenų bazė, kurioje yra šaltinio schemos. Tai vienintelė duomenų bazė, kurią šis ryšys gali profiliuoti |
+| `UID` | `sqladminuser` | SQL prisijungimas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### Reikšmė `SERVER`
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Paimkite Synapse darbo srities pavadinimą ir pridėkite galinio taško priesagą:
 
-| Pool | `SERVER` |
+| Telkinys | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "Dalį `-ondemand` lengva praleisti"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Be jos pavadinimas nukreipiamas į dedicated galinį tašką, ir ryšys arba nepavyksta, arba
+    tyliai pasiekia kitą telkinį nei numatyta. Abu galiniai taškai rodomi darbo srities apžvalgos
+    puslapyje Azure portale.
 
-### Firewall
+### Ugniasienė
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Synapse darbo srities ugniasienė turi leisti *digna* serverio išeinantį adresą. Prieš testuodami
+ryšį, pridėkite jį darbo srities skiltyje **Networking** — užblokuotas adresas pasireiškia kaip
+ryšio laiko limito viršijimas, o ne kaip autentifikacijos klaida.
 
-### Microsoft Entra ID authentication
+### Microsoft Entra ID autentifikacija
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+Vietoje SQL prisijungimo tvarkyklė gali autentifikuotis per Entra ID. Pakeiskite `UID`/`PWD`
+autentifikacijos metodu, kurio tikisi jūsų darbo sritis, pavyzdžiui:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | Tada `UID` priima programos (kliento) ID, o `PWD` – kliento slaptumo raktą |
+| `Authentication` | `ActiveDirectoryMSI` | *digna* serverio valdoma tapatybė (managed identity), prisijungimo duomenų nereikia |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -4919,175 +5137,175 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Pastabos apie Azure Synapse {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **Serverless telkiniai palaiko tik *Standard* profiliavimą.** Serverless SQL telkinys negali
+  kurti lentelių duomenų bazėje, todėl negali veikti nei *Permanent*, nei *Session* profiliavimas.
+  *Standard* skaičiuoja metrikas tiesiogiai šaltinyje, o tai ir pigesnis variantas, nes serverless
+  apmokestinamas pagal apdorotų duomenų kiekį.
+- **Vienas ryšys mato vieną duomenų bazę.** *digna* siūlo `DATABASE` nurodytos duomenų bazės
+  schemas, nes Synapse, kaip ir SQL Server, kaip katalogą praneša tik dabartinę duomenų bazę.
+- **Šifravimas įjungtas pagal nutylėjimą** Driver 18 tvarkyklėje, o Synapse galiniai taškai
+  pateikia galiojančius viešus sertifikatus, todėl savybių `Encrypt` ar `TrustServerCertificate`
+  nereikia.
+- **Serverless galinis taškas gali atsibusti po neveiklumo** pirmojo prisijungimo metu. Jei ryšio
+  testui baigiasi laikas telkinyje, kuris kurį laiką nebuvo naudojamas, bandykite dar kartą.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės vedlys yra
+patogus būdas patvirtinti, kad tvarkyklė veikia ir kad darbo sritis priima jūsų prisijungimo
+duomenis, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Užpildykite lauką „Server“.
+Naudokite Synapse darbo srities pavadinimą ir papildykite jį „.sql.azuresynapse.net“.  
+**Dėmesio**: jei norite jungtis naudodami serverless SQL telkinį, būtinai įtraukite
+„-ondemand“, kaip parodyta ekrano nuotraukoje aukščiau.
 
-Click the **Next >** button.
+Spustelėkite mygtuką **Next >**.
 
-#### Step 2
-![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Pasirinkite autentifikacijos metodą (pvz., vartotojo vardas ir slaptažodis)
+ir pateikite reikiamus duomenis.
 
-Click the **Next >** button.
+Spustelėkite mygtuką **Next >**.
 
-#### Step 3
-![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
+#### 3 žingsnis
+![3 žingsnis](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Pasirinkite ANSI atitinkančius nustatymus ir spustelėkite mygtuką **Next >**.
 
-#### Step 4
-![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
+#### 4 žingsnis
+![4 žingsnis](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Galite palikti numatytuosius nustatymus arba pasirinkti reikiamas parinktis
+ir spustelėti mygtuką **Finish**.
 
-#### Step 5
-![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
+#### 5 žingsnis
+![5 žingsnis](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Dabar spustelėkite mygtuką **Test datasource**.
 
-#### Step 6
-![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
+#### 6 žingsnis
+![6 žingsnis](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Sėkmės ekranas patvirtina, kad tvarkyklė, galinis taškas ir prisijungimo duomenys veikia. Įvestos
+reikšmės yra būtent tos reikšmės, kurias priima savybės iš [2 skyriaus](#2-odbc-properties).
 
 ---
 
 # Databricks
 Source: https://docs.digna.ai/lt/databases/databricks_connector_guide/
 
-# Source Connector for Databricks
+# Databricks šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Databricks per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Databricks.
 
-!!! note "Unity Catalog is required"
+!!! note "Būtinas Unity Catalog"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    *digna* prieinamus katalogus nuskaito iš `system.information_schema.catalogs`, todėl darbo
+    sritis (workspace) turi turėti įjungtą Unity Catalog. Ankstesnės *digna* versijos siūlė
+    atskirą „Databricks Legacy“ technologiją darbo sritims be Unity Catalog; ji nebėra prieinama.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Įdiekite **Databricks ODBC Driver** kompiuteryje, kuriame veikia *digna* backend, laikydamiesi
+[Databricks diegimo vadovo](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-| Databricks field | Used as |
+Priklausomai nuo versijos, tvarkyklė užsiregistruoja kaip **Simba Spark ODBC Driver** arba kaip
+**Databricks ODBC Driver**. Nuskaitykite tikslų užregistruotą pavadinimą savo serveryje, kaip
+aprašyta skyriuje [ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
+
+---
+
+## 2. Surinkite ryšio duomenis {: #2-gather-the-connection-details }
+
+Visos reikšmės paimamos iš SQL warehouse (arba klasterio), kurį turi naudoti *digna*. Atidarykite
+jį Databricks darbo srityje ir eikite į **Connection details**:
+
+| Databricks laukas | Naudojamas kaip |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, paprastai `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+Autentifikacijai sukurkite **asmeninį prieigos žetoną** (personal access token) — žr.
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+Žetonai priklauso vartotojui arba paslaugos subjektui (service principal), ir tam subjektui
+šaltinio duomenims reikia teisių `USE CATALOG`, `USE SCHEMA` ir `SELECT`.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. ODBC savybės {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Pavyzdys, o ne specifikacija"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Databricks/Simba tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos
+    reikšmės skiriasi tarp tvarkyklės versijų — tvarkyklė ne kartą buvo pervadinta, o jos
+    autentifikacijos parinktys išplėstos — ir tarp platformų. Naudokite tai kaip atspirties
+    tašką ir patikrinkite įdiegtos tvarkyklės versijos dokumentaciją.
 
-Add the following properties in the **Add DB Connection** screen:
+Ekrane **Add DB Connection** pridėkite šias savybes:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `Host` | `<workspace>.cloud.databricks.com` | Warehouse serverio pavadinimas, pvz. `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | Warehouse arba klasterio HTTP kelias |
+| `SSL` | `1` | Databricks galiniai taškai veikia tik per TLS |
+| `ThriftTransport` | `2` | HTTP transportas, kurį naudoja SQL galiniai taškai |
+| `AuthMech` | `3` | Autentifikacija žetonu |
+| `UID` | `token` | Pažodžiui žodis `token`, o ne vartotojo vardas |
+| `PWD` | `dapi…` | Asmeninis prieigos žetonas. Pažymėkite **Encrypted** |
+| `UseNativeQuery` | `1` | Perduoda *digna* SQL nepakeistą — žr. toliau |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Palikite `UseNativeQuery=1`"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    Esant `UseNativeQuery=0` — tvarkyklės numatytajai reikšmei — tvarkyklė perrašo gaunamą SQL
+    į, jos manymu, perkeliamą ODBC sintaksę. *digna* jau generuoja Databricks SQL, todėl
+    perrašymas gali pakeisti kabučių (backtick) naudojimą ir datų literalus, ir tada
+    profiliavimas nepavyksta su sakiniais, kurie parašyti yra teisingi.
 
-### OAuth instead of a token
+### OAuth vietoje žetono
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+Paslaugos subjektui su OAuth mašina–mašina (machine-to-machine) autentifikacija pakeiskite
+`AuthMech`, `UID` ir `PWD` šiomis savybėmis:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
-| `Auth_Flow` | `1` | Client credentials |
-| `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Flow` | `1` | Kliento kredencialai (client credentials) |
+| `Auth_Client_ID` | `<application id>` | Paslaugos subjektas |
+| `Auth_Client_Secret` | `<client secret>` | Pažymėkite **Encrypted** |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. *digna* konfigūracija {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5098,128 +5316,129 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Pastabos apie Databricks {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **Warehouse turi veikti** arba galėti pasileisti, kai *digna* jungiasi. Warehouse, kuris
+  atsibunda iš sustabdytos būsenos, gali užtrukti ilgiau nei ryšio laiko limitas — jei testas
+  nepavyksta pirmu bandymu po neveiklumo laikotarpio, bandykite dar kartą.
+- **Katalogai paimami iš darbo srities.** Skirtingai nei daugumoje technologijų, vienas
+  Databricks ryšys pasiekia visus katalogus, kuriuos subjektui leidžiama matyti, todėl vienas
+  ryšys gali aptarnauti šaltinius keliuose kataloguose.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema** šaltinio
+  kataloge, todėl subjektui ten reikia teisės `CREATE TABLE`. *Session* naudoja
+  `CREATE TEMPORARY TABLE` ir **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos.
+- **Serverless warehouse veikia** tokiu pat būdu; skiriasi tik `HTTPPath`.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. Tvarkyklės patikrinimas (neprivaloma) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė, warehouse ir žetonas veikia, prieš įvedant
+juos į *digna*.
 
-#### Step 1
-![Step 1](images/databricks/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
-![Step 2](images/databricks/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
-![Step 3](images/databricks/create_odbc_data_source_step3.png)
+#### 3 žingsnis
+![3 žingsnis](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
-![Step 4](images/databricks/create_odbc_data_source_step4.png)
+#### 4 žingsnis
+![4 žingsnis](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### 5 žingsnis – Išbandykite ryšį
 
-Click the **TEST** button. A successful connection should look like this:
+Spustelėkite mygtuką **TEST**. Sėkmingas ryšys turėtų atrodyti taip:
 
-![Step 5](images/databricks/create_odbc_data_source_step5.png)
+![5 žingsnis](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+Čia įvesti serveris, HTTP kelias ir žetonas yra būtent tos reikšmės, kurias priima savybės iš
+[3 skyriaus](#3-odbc-properties).
 
 ---
 
 # Hive
 Source: https://docs.digna.ai/lt/databases/hive_connector_guide/
 
-# Source Connector for Hive
+# Hive šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Apache Hive per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Hive.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
-backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Hive.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite **Cloudera ODBC Driver for Apache Hive** kompiuteryje, kuriame veikia *digna* backend,
+laikydamiesi oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
-    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
-    point and check the documentation of the driver version you installed.
+Nuskaitykite tikslų užregistruotos tvarkyklės pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Cloudera Hive tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų ir platformų, o tai, ką priima HiveServer2, visiškai
+    priklauso nuo to, kaip apsaugotas klasteris — autentifikacijos mechanizmo, transporto
+    režimo, TLS, šliuzo. Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos tvarkyklės
+    versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
-| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
-| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `HOST` | `hive.example.com` | HiveServer2 serverio pavadinimas arba IP adresas |
+| `PORT` | `10000` | HiveServer2 prievadas; `10001` HTTP transportui |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
 ```
 
-### Authentication
+### Autentifikacija
 
-An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
-is enabled, add:
+Neapsaugotas HiveServer2 priima tris aukščiau nurodytas savybes tokias, kokios jos yra. Kai
+autentifikacija įjungta, pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
-| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
-| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+| `AuthMech` | `3` | `0` be autentifikacijos, `2` tik vartotojo vardas, `3` vartotojo vardas ir slaptažodis, `1` Kerberos |
+| `UID` | `digna_source_user` | Būtina, kai `AuthMech` yra `2` ir `3` |
+| `PWD` | `<password>` | Būtina, kai `AuthMech` yra `3`. Pažymėkite **Encrypted** |
 
-For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
-the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+Naudojant Kerberos (`AuthMech=1`), *digna* serveriui papildomai reikia galiojančio bilieto
+(ticket) arba keytab, taip pat tvarkyklės dokumentacijoje aprašytų savybių `KrbHostFQDN`,
+`KrbServiceName` ir `KrbRealm`.
 
-### Transport and TLS
+### Transportas ir TLS
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
-| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
-| `SSL` | `1` | Where HiveServer2 is TLS-secured |
-| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
+| `ThriftTransport` | `2` | `0` dvejetainis (numatytasis, prievadas 10000), `1` SASL, `2` HTTP (prievadas 10001, ir tai, ko tikisi Knox šliuzas) |
+| `HTTPPath` | `cliservice` | Su `ThriftTransport=2` |
+| `SSL` | `1` | Kai HiveServer2 apsaugotas TLS |
+| `Schema` | `dignadata` | Hive duomenų bazė, kurioje pradedamas seansas. Neprivaloma — *digna* savo užklausose nurodo pilnus pavadinimus |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5230,106 +5449,108 @@ Work Schema:        Hive database for the work tables of "Permanent" profiling, 
 
 ---
 
-## 4. Notes on Hive {: #4-notes-on-hive }
+## 4. Pastabos apie Hive {: #4-notes-on-hive }
 
-- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
-  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
-  schemas below it.
-- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
-  create and drop tables in it, and the underlying storage location must be writable.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
-  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
-  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
-  on a cluster where *digna* has no write access at all.
-- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
-  the queue *digna*'s user submits to should have enough capacity for the inspection window.
+- **Katalogus pateikia tvarkyklė.** Hive neturi savo katalogo, todėl *digna* paima tai, ką
+  praneša tvarkyklė — paprastai vieną įrašą pavadinimu `HIVE` — ir po juo išvardija Hive
+  duomenų bazes kaip schemas.
+- **Work Schema yra Hive duomenų bazė.** *Permanent* profiliavimui vartotojui reikia teisės kurti
+  ir šalinti joje lenteles, o pagrindinė saugojimo vieta turi būti įrašoma.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**. *Session*
+  naudoja `CREATE TEMPORARY TABLE`, kuriam reikia laikinąsias lenteles palaikančio HiveServer2,
+  ir **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos, ir šį režimą verta rinktis
+  klasteryje, kuriame *digna* visai neturi rašymo prieigos.
+- **Profiliavimas yra užklausų rinkinys, o ne skenavimas.** Kiekvieną statistiką apskaičiuoja
+  HiveServer2, todėl eilė, į kurią siunčia *digna* vartotojas, turėtų turėti pakankamai pajėgumų
+  inspekcijos laikotarpiui.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the transport mode and your
-credentials work before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė, transporto režimas ir jūsų prisijungimo
+duomenys veikia, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/hive/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/hive/create_odbc_data_source_step1.png)
 
-The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
-the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
-[section 2](#2-odbc-properties).
+Čia esantys laukai **Host**, **Port**, **Database**, **Mechanism** ir **Thrift Transport** atitinka
+savybes `HOST`, `PORT`, `Schema`, `AuthMech` ir `ThriftTransport` iš
+[2 skyriaus](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Provide the password and click the **Test** button.
+Įveskite slaptažodį ir spustelėkite mygtuką **Test**.
 
-![Step 2](images/hive/create_odbc_data_source_step2.png)
+![2 žingsnis](images/hive/create_odbc_data_source_step2.png)
 
-After a successful test, click the **OK** button.
+Po sėkmingo testo spustelėkite mygtuką **OK**.
 
 ---
 
 # Netezza
 Source: https://docs.digna.ai/lt/databases/netezza_connector_guide/
 
-# Source Connector for Netezza
+# Netezza šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Netezza per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Netezza.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite **NetezzaSQL** ODBC tvarkyklę (IBM Netezza kliento įrankių dalį) kompiuteryje, kuriame
+veikia *digna* backend, laikydamiesi oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Nuskaitykite tikslų užregistruotos tvarkyklės pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    NetezzaSQL tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp kliento versijų ir platformų, o TLS apsaugotam įrenginiui (appliance) reikia
+    daugiau savybių nei čia parodyta. Naudokite tai kaip atspirties tašką ir patikrinkite
+    įdiegtos kliento versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje. Riestiniai skliaustai yra įprastas šio pavadinimo rašymo būdas |
+| `SERVER` | `netezza.example.com` | Serverio pavadinimas arba IP adresas |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Duomenų bazė, kurioje pradedamas seansas |
+| `UID` | `ADMIN` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Priklausomai nuo tvarkyklės versijos, nustatymo ir saugumo reikalavimų, gali prireikti papildomų
+savybių — pavyzdžiui, `SecurityLevel` ir `CaCertFile` TLS apsaugotam įrenginiui. Kiekvieną
+parinktį, kurią siūlo tvarkyklės dialogo langai *Advanced*, *SSL* ir *Driver*, galima pridėti
+kaip savybę.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5340,120 +5561,120 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Pastabos apie Netezza {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Taikomi ir katalogai, ir schemos.** *digna* duomenų bazes, kurias vartotojas gali matyti (iš
+  `_V_DATABASE`), išvardija kaip katalogus, o jų schemas (iš `_V_SCHEMA`) — po jais, todėl vienas
+  ryšys gali aptarnauti šaltinius daugiau nei vienoje duomenų bazėje. `DATABASE` nulemia tik tai,
+  kur pradedamas seansas.
+- **Identifikatoriai rašomi didžiosiomis raidėmis**, nebent jie buvo sukurti kabutėse, todėl
+  aukščiau pateiktuose pavyzdžiuose naudojami `TEST` ir `ADMIN`.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui ten reikia teisės `CREATE TABLE`. *Session* naudoja `CREATE TEMPORARY TABLE` ir
+  **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė ir jūsų prisijungimo duomenys veikia, prieš
+įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/netezza/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+Laukai skirtuke **DSN Options** vienas prie vieno atitinka savybes iš
+[2 skyriaus](#2-odbc-properties). Priklausomai nuo jūsų Netezza tvarkyklės, nustatymo ir saugumo
+reikalavimų, gali prireikti duomenų ir skirtukuose **Advanced DSN Options**, **SSL DSN Options**
+arba **Driver Options**; paprasčiausiam nustatymui pakanka **DSN Options**.
 
-Click the **Test Connection** button.
+Spustelėkite mygtuką **Test Connection**.
 
-#### Step 2
-![Step 2](images/netezza/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Kai pamatote sėkmės ekraną, tvarkyklė veikia, o reikšmės yra teisingos.
 
 ---
 
 # Oracle
 Source: https://docs.digna.ai/lt/databases/oracle_connector_guide/
 
-# Source Connector for Oracle
+# Oracle šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
-using a **DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Oracle Database per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Oracle.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
-enough). Install it on the machine that runs the *digna* backend, following the vendor's
-official installation guide.
-
-The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
-`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
-installation, so read the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Oracle.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Oracle ODBC tvarkyklė yra **Oracle Client** dalis (pakanka Instant Client „ODBC“ paketo).
+Įdiekite ją kompiuteryje, kuriame veikia *digna* backend, laikydamiesi oficialaus gamintojo
+diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the Oracle
-    ODBC driver, so their names, defaults and accepted values differ between client versions,
-    and the driver name in particular depends on the Oracle home on your host. Use this as a
-    starting point and check the documentation of the client version you installed.
+Tvarkyklė užsiregistruoja kaip **Oracle in `<OracleHomeName>`** — pavyzdžiui,
+`Oracle in OraDB21Home1` arba `Oracle in instantclient_21_13`. Oracle home pavadinimas kiekviename
+diegime skiriasi, todėl nuskaitykite tikslų pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso Oracle
+    ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės skiriasi
+    tarp kliento versijų, o ypač tvarkyklės pavadinimas priklauso nuo Oracle home jūsų serveryje.
+    Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos kliento versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
-| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
-| `UID` | `DIGNA_SOURCE_USER` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `Driver` | `Oracle in OraDB21Home1` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Duomenų bazė, prie kurios jungiamasi — žr. toliau |
+| `UID` | `DIGNA_SOURCE_USER` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
 ```
 
-### The `DBQ` value
+### Reikšmė `DBQ`
 
-`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
-configured on the *digna* host:
+`DBQ` priima tris formas. *digna* jos lygiavertės; jos skiriasi tuo, ką reikia sukonfigūruoti
+*digna* serveryje:
 
-| Form | Example | Requires |
+| Forma | Pavyzdys | Reikalauja |
 |---|---|---|
-| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
-| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
-| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+| **Pilnas prisijungimo aprašas** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nieko — viskas yra savybėje. Rekomenduojama |
+| **TNS pseudonimas** | `DIGNA_SOURCE` | Pseudonimas turi būti apibrėžtas *digna* serverio Oracle Client faile `tnsnames.ora` |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Oracle Client, palaikantis Easy Connect (12c ir naujesni) |
 
-!!! tip "Prefer the full descriptor"
+!!! tip "Rinkitės pilną aprašą"
 
-    A TNS alias moves half of the connection definition into a file on the *digna* host, where
-    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
-    the connection self-contained — which is the point of a DSN-less setup.
+    TNS pseudonimas perkelia pusę ryšio apibrėžimo į failą *digna* serveryje, kur jį lengva
+    pamiršti, kai serveris perkuriamas ar *digna* perkeliama. Pilnas aprašas išlaiko ryšį
+    savarankišką — o tai ir yra nustatymo be DSN esmė.
 
-Note the parentheses in a descriptor are fine inside a connection string, but if your password
-contains `;`, brace it: `PWD={p@ss;word}`.
+Atkreipkite dėmesį, kad skliaustai apraše ryšio eilutėje netrukdo, tačiau jei jūsų slaptažodyje
+yra `;`, apgaubkite jį riestiniais skliaustais: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5464,312 +5685,317 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle {: #4-notes-on-oracle }
+## 4. Pastabos apie Oracle {: #4-notes-on-oracle }
 
-- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
-  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
-  `SELECT` on those tables, either directly or through a role.
-- **One connection sees one database.** The catalog *digna* offers is the database the
-  connection is attached to, so `DBQ` decides which service, and therefore which database, is
-  profiled.
-- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
-  data dictionary, which is what Oracle stores — upper case for unquoted objects.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
-  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
-  needs read access only.
+- **Schemos yra vartotojai.** *digna* Oracle vartotojus išvardija kaip schemas, todėl šaltinio
+  schema yra lentelių savininkas — aukščiau pateiktame pavyzdyje `DIGNA_SOURCE_USER`. Ryšio
+  vartotojui reikia teisės `SELECT` šioms lentelėms tiesiogiai arba per rolę.
+- **Vienas ryšys mato vieną duomenų bazę.** Katalogas, kurį siūlo *digna*, yra duomenų bazė, prie
+  kurios prijungtas ryšys, todėl `DBQ` nulemia, kuri paslauga, o kartu ir kuri duomenų bazė, yra
+  profiliuojama.
+- **Identifikatoriai kabutėse skiria didžiąsias ir mažąsias raides.** *digna* rašo kabutėse
+  pavadinimus, kuriuos nuskaito iš duomenų žodyno, t. y. tai, ką saugo Oracle — objektams be
+  kabučių didžiosiomis raidėmis.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui ten reikia teisės `CREATE TABLE` ir kvotos lentelių erdvėje (tablespace). *Session*
+  naudoja privačią laikinąją lentelę (`ORA$PTT_…`, Oracle 18c ir naujesni) ir **Work Schema**
+  neliečia. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the Oracle Client, the service name and your
-credentials work before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad Oracle Client, paslaugos pavadinimas ir jūsų
+prisijungimo duomenys veikia, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/oracle/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/oracle/create_odbc_data_source_step1.png)
 
-The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
-installation — that is where the alias, and with it the host, port and service name, is
-defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+Čia siūlomas **TNS Service Name** paimamas iš jūsų Oracle Client diegimo failo `tnsnames.ora` —
+būtent ten apibrėžiamas pseudonimas, o kartu ir serveris, prievadas bei paslaugos pavadinimas.
+*digna* galite naudoti pseudonimą kaip `DBQ` arba vietoje jo pilną aprašą.
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Click the **Test Connection** button.
+Spustelėkite mygtuką **Test Connection**.
 
-![Step 2](images/oracle/create_odbc_data_source_step2.png)
+![2 žingsnis](images/oracle/create_odbc_data_source_step2.png)
 
-Provide the password and click the **OK** button.
+Įveskite slaptažodį ir spustelėkite mygtuką **OK**.
 
-![Step 3](images/oracle/create_odbc_data_source_step3.png)
+![3 žingsnis](images/oracle/create_odbc_data_source_step3.png)
 
-A success message confirms that the driver and the credentials work.
+Sėkmės pranešimas patvirtina, kad tvarkyklė ir prisijungimo duomenys veikia.
 
 ---
 
 # Overview
 Source: https://docs.digna.ai/lt/databases/overview/
 
-# Database Connections Overview
+# Duomenų bazių ryšių apžvalga
 
 ---
 
-## Table of Contents
+## Turinys
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Kaip veikia ryšiai](#how-connections-work)
+2. [Technologijų vadovai](#technology-guides)
+3. [Būtina sąlyga: įdiekite ODBC tvarkyklę digna serveryje](#install-the-driver)
+4. [Duomenų bazės ryšio sukūrimas](#create-a-database-connection)
+5. [ODBC savybės](#odbc-properties)
+6. [Savybių reikšmių šifravimas](#encrypting-property-values)
+7. [Ryšio testavimas](#testing-a-connection)
+8. [Kurią duomenų bazę mato ryšys](#which-database-the-connection-sees)
+9. [Profiliavimo režimas ir Work Schema](#profiling-mode-and-work-schema)
+10. [DSN naudojimas](#using-a-dsn-instead)
+11. [Trikčių šalinimas](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Kaip veikia ryšiai {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+*digna* kiekvieną šaltinio technologiją pasiekia per **ODBC**. Ryšys yra ODBC savybių sąrašas,
+kurį įvedate kaip raktų ir reikšmių poras. Kai *digna* atidaro ryšį, ji sujungia šias poras į
+ryšio eilutę — `Key=Value`, atskirtas `;`, ta tvarka, kuria jas surašėte — ir perduoda ją
+ODBC tvarkyklių tvarkytuvei (driver manager) *digna* serveryje.
 
-!!! important "The property sets in the guides are examples"
+Būtent tai, kad savybes įvedate patys, daro nustatymą **be DSN** (DSN-less): ryšys turi viską,
+ko reikia tvarkyklei, todėl serveryje nereikia registruoti jokio ODBC duomenų šaltinio (DSN).
+Tai rekomenduojamas *digna* konfigūravimo būdas, nes ryšio apibrėžimas visas saugomas *digna*
+ir keliauja kartu su ja.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Kodėl ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+Ankstesnėse versijose buvo galima rinktis tarp konkrečiai technologijai skirtos tvarkyklės ir
+ODBC — tai buvo pasirenkama jungikliu **Use ODBC**. Nuo Release 2026.06 *digna* remiasi tik
+ODBC. Viena standartinė sąsaja suteikia daugiau, nei gali pasiūlyti atskirų specialių tvarkyklių
+rinkinys:
+
+- **Autentifikacija** — autentifikacija yra ODBC dalis, todėl ryšys gali naudoti bet ką, ką
+  palaiko jo tvarkyklė: slaptažodžius, žetonus ir PAT, Kerberos ir Active Directory, MFA ir
+  naršyklėje vykdomą vienkartinį prisijungimą (SSO), debesijos tapatybę, kliento sertifikatus ir
+  TLS. Nauji metodai atsiranda atnaujinus tvarkyklę, o ne laukiant naujos *digna* versijos.
+- **Tvarkyklės, kurias prižiūri duomenų bazių gamintojai** — gamintojo tvarkyklė seka naujas
+  serverio versijas ir saugumo pataisas, o jūs galite ją atnaujinti savo pasirinktu laiku,
+  nepriklausomai nuo *digna*.
+- **Vienas būdas viskam konfigūruoti** — kiekviena technologija yra raktų ir reikšmių savybių
+  sąrašas su ta pačia sąsaja, tuo pačiu jautrių reikšmių šifravimu ir tuo pačiu trikčių
+  šalinimu, o ne atskiru laukų rinkiniu kiekvienam šaltiniui.
+- **Derinimas ir aprėptis** — tvarkyklės lygmens parinktys, tokios kaip laiko limitai, TLS
+  nustatymai, tarpiniai serveriai (proxy) ir gavimo dydžiai (fetch size), prieinamos kiekvienam
+  šaltiniui, o prijungti galima bet kurią technologiją, turinčią standartą atitinkančią ODBC
+  tvarkyklę, įskaitant tas, kurioms *digna* neskelbia atskiro vadovo.
+
+!!! note "Kas pasikeitė sąsajoje"
+
+    Jungiklio **Use ODBC** ir atskirų serverio, prievado, duomenų bazės, vartotojo ir
+    slaptažodžio laukų nebėra. Ryšiui, kuris dar nenaudoja ODBC, reikia įvesti ODBC savybes,
+    kad jis vėl veiktų — žr.
+    [Duomenų bazės ryšio sukūrimas](#create-a-database-connection).
+
+---
+
+## Technologijų vadovai {: #technology-guides }
+
+Savybių pavadinimai skiriasi priklausomai nuo tvarkyklės, ir kiekviena technologija turi vieną
+ar dvi ypatybes, kurių neturi kitos. Toliau pateikti vadovai aprašo būtent tą dalį; šis
+puslapis aprašo *digna* pusę, kuri visoms jiems yra vienoda.
+
+!!! important "Vadovuose pateikti savybių rinkiniai yra pavyzdžiai"
+
+    Kiekviename vadove parodytas vienas žinomai veikiantis derinys — tas, su kuriuo *digna*
+    testuojama. Tai atspirties taškas, o ne specifikacija: savybės priklauso ODBC tvarkyklei, o
+    tai, kokios jų yra, kaip jos vadinasi ir kokias reikšmes priima, skiriasi tarp tvarkyklių
+    versijų ir gamintojų, tarp Windows, Linux ir macOS bei priklauso nuo to, kaip sukonfigūruotas
+    šaltinio serveris — autentifikacijos metodo, TLS, šliuzo, prievado. Tikėkitės, kad teks
+    pakoreguoti vieną ar dvi reikšmes, ir laikykite įdiegtos tvarkyklės versijos dokumentaciją
+    lemiamu šaltiniu.
+
+| Technologija | Vadovas | Verta žinoti |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless telkiniams serverio pavadinime reikia `-ondemand`, ir jie palaiko tik *Standard* profiliavimą |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Autentifikacija žetonu: `UID=token`, PAT lauke `PWD` |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Katalogus pateikia tvarkyklė, o ne užklausa |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Tvarkyklės pavadinimas rašomas riestiniuose skliaustuose: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` priima pilną prisijungimo aprašą (connect descriptor) arba `tnsnames.ora` pseudonimą |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` turi atitikti tai, ko reikalauja serveris |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programinės prieigos žetonas (programmatic access token) yra testuotas autentifikacijos būdas |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` nulemia, kurias schemas *digna* gali matyti |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Serveris nurodomas `DBCNAME`; duomenų bazės veikia kaip schemos |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Būtina sąlyga: įdiekite ODBC tvarkyklę digna serveryje {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* atidaro šaltinių ryšius iš **serverio, kuriame veikia digna backend**, o ne iš
+naršyklės. Todėl ODBC tvarkyklė turi būti įdiegta tame kompiuteryje, o jos pavadinimas turi būti
+užregistruotas vietinėje tvarkyklių tvarkytuvėje.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Įdiekite gamintojo 64 bitų tvarkyklę, tada atidarykite **ODBC Data Source Administrator (64-bit)**
+    ir pereikite į skirtuką **Drivers**. Ten išvardyti pavadinimai yra būtent tos reikšmės, kurias
+    galite naudoti savybei `Driver`.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Įdiekite **unixODBC** ir gamintojo tvarkyklę, tada išveskite užregistruotų tvarkyklių pavadinimus:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Laužtiniuose skliaustuose išvesti pavadinimai yra reikšmės, kurias galite naudoti savybei
+    `Driver`. Jie paimami iš `/etc/odbcinst.ini` (arba iš failo, kurį nurodo `odbcinst -j`).
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Įdiekite **unixODBC** (pavyzdžiui, su `brew install unixodbc`) ir gamintojo tvarkyklę,
+    tada išveskite užregistruotų tvarkyklių pavadinimus:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Tvarkyklės pavadinimas turi sutapti simbolis į simbolį"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` perduodamas tvarkyklių tvarkytuvei nepakeistas. `Simba Spark ODBC Driver` ir
+    `Simba Spark ODBC Driver 64` tvarkyklių tvarkytuvei yra skirtingos tvarkyklės, o
+    neužregistruotas pavadinimas sukelia klaidą *data source name not found*, nors jokio DSN
+    nenaudojama.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Vietoje užregistruoto pavadinimo visos įprastos tvarkyklių tvarkytuvės priima ir pilną kelią iki
+tvarkyklės bibliotekos, pavyzdžiui, `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Tai
+naudinga, kai tvarkyklė įdiegta, bet neužregistruota.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Duomenų bazės ryšio sukūrimas {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Atidarykite **Admin Panel**, eikite į skirtuką **Database Connections** ir spustelėkite
+**Add DB Connection**. Ekrane prašoma nurodyti penkis dalykus:
 
-| Field | Description |
+| Laukas | Aprašymas |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Ryšio pavadinimas. Juo ryšys nurodomas kituose ekranuose. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake arba Hive. Nuo jo priklauso SQL dialektas, kurį generuoja *digna*, todėl jis turi atitikti šaltinį, o ne tvarkyklę. Azure Synapse Analytics yra **SQL Server** ryšys. |
+| **ODBC Properties** | Raktų ir reikšmių poros, aprašytos skyriuje [ODBC savybės](#odbc-properties). |
+| **Profiling Mode** | *Standard*, *Permanent* arba *Session* — žr. [Profiliavimo režimas ir Work Schema](#profiling-mode-and-work-schema). |
+| **Work Schema** | Schema, kurioje laikomos darbinės lentelės *Permanent* profiliavimui. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Ryšys administruojamas centralizuotai ir tada priskiriamas vienam ar keliems projektams, todėl
+tas pats ryšys gali aptarnauti kelis projektus.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## ODBC savybės {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Kiekvienai savybei spustelėkite **Add Property** ir užpildykite **Key**, **Value**, o
+slaptoms reikšmėms pažymėkite žymimąjį langelį **Encrypted**. Kiekvieno technologijos vadove
+pateiktas tos technologijos pavyzdinis rinkinys, kurį pritaikote savo tvarkyklės versijai ir
+serveriui — žr. [pastabą aukščiau](#technology-guides).
 
-!!! tip "Tip"
+Nepriklausomai nuo tvarkyklės, savybių rinkinys apima tuos pačius keturis dalykus:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — užregistruotas tvarkyklės pavadinimas, kaip aprašyta [aukščiau](#install-the-driver).
+- **Serverio adresas** — raktas skiriasi priklausomai nuo tvarkyklės: `SERVER`, `HOST`, `DBCNAME`,
+  `Server` arba, Oracle atveju, prisijungimo aprašas `DBQ`.
+- **Prisijungimo duomenys** — paprastai `UID` ir `PWD`; Snowflake naudoja `UID` ir `token`, o
+  Databricks naudoja pažodinį vartotoją `token` ir asmeninį prieigos žetoną lauke `PWD`.
+- **Duomenų bazė arba katalogas, kuriame dirbama**, jei technologija tokį turi — žr.
+  [Kurią duomenų bazę mato ryšys](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Bet ką kita, kas aprašyta tvarkyklės dokumentacijoje, galima pridėti tokiu pat būdu — ryšių
+telkimą (connection pooling), lizdų laiko limitus, Kerberos nustatymus, tarpinio serverio
+nustatymus. *digna* savybių neinterpretuoja; ji tik jas perduoda.
+
+!!! warning "Reikšmės neišvengiamos (escape) — reikšmes su kabliataškiu rašykite riestiniuose skliaustuose"
+
+    Kadangi savybės sujungiamos su `;`, reikšmė, kurioje pačioje yra `;`, perskeltų ryšio
+    eilutę netinkamoje vietoje. Tokias reikšmes apgaubkite riestiniais skliaustais: `PWD={p@ss;word}`.
+    Tas pats taikoma reikšmėms su `=` arba pradiniais tarpais. Dėl tos pačios priežasties kai
+    kurių tvarkyklių pavadinimai įprastai rašomi riestiniuose skliaustuose, pvz., `{NetezzaSQL}`
+    arba `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Savybių reikšmių šifravimas {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Pažymėkite **Encrypted** kiekvienai savybei, kurioje saugoma paslaptis — `PWD`, `token`,
+kliento slaptumo raktas. Tada reikšmė užšifruojama prieš ją išsaugant *digna* saugykloje,
+ekrane ji paslepiama ir iššifruojama tik tada, kai sudaroma ryšio eilutė.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Patarimas"
+
+    Užšifruotos reikšmės negalima perskaityti atgal nei vartotojo sąsajoje, nei per API — ją
+    galima tik pakeisti. Paslaptis saugokite ir savo slaptažodžių tvarkyklėje.
+
+Neslaptas savybes — tvarkyklės pavadinimą, serverį, prievadą, duomenų bazę — geriau palikti
+neužšifruotas, kad jas galėtų perskaityti tas, kas vėliau prižiūrės ryšį.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Ryšio testavimas {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Dialogo lange *Add DB Connection* spustelėkite **Test** **prieš** išsaugodami. Testas naudoja
+formoje esamas reikšmes ir atlieka tikrą prisijungimą, todėl praneša būtent tai, su kuo
+susidurtų inspekcija — neteisingą tvarkyklės pavadinimą, atmestą slaptažodį, nepasiekiamą
+serverį. Niekas neišsaugoma: bandomasis ryšys atšaukiamas nepriklausomai nuo to, ar jis pavyko.
 
-| Technology | Catalogs offered |
+Jau esamą ryšį galite patikrinti iš naujo užvedę pelę ant jo eilutės skirtuke
+**Database Connections** ir spustelėję **kištuko** piktogramą. Tai greičiausias būdas
+patikrinti, ar šaltinis pasiekiamas po slaptažodžio pakeitimo ar ugniasienės pakeitimų.
+
+---
+
+## Kurią duomenų bazę mato ryšys {: #which-database-the-connection-sees }
+
+Kai pridedate duomenų šaltinį, *digna* pasiūlo katalogus, schemas ir lenteles, kuriuos ryšys
+gali pasiekti. Kiek toli tai siekia, priklauso nuo technologijos:
+
+| Technologija | Siūlomi katalogai |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Tik ryšio **dabartinė** duomenų bazė |
+| **Teradata**, **Netezza**, **Databricks** | Visos duomenų bazės ar katalogai, kuriuos vartotojui leidžiama matyti |
+| **Hive**, **Impala** | Pateikia tvarkyklė |
 
-!!! important "One connection, one database"
+!!! important "Vienas ryšys – viena duomenų bazė"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    PostgreSQL, SQL Server, Oracle ir Snowflake atveju savybės turi rodyti į duomenų bazę,
+    kurioje yra šaltinio schemos — `DATABASE=…`, `Database=…` arba paslaugos pavadinimą
+    Oracle `DBQ` viduje. Kitos duomenų bazės lentelės per tą ryšį nepasiekiamos; jai pridėkite
+    antrą ryšį.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Profiliavimo režimas ir Work Schema {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Profiliavimo režimas nulemia, kaip *digna* apdoroja duomenis ir skaičiuoja metrikas:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** metrikos skaičiuojamos tiesiogiai šaltinio lentelėse, nekopijuojant duomenų.
+- **Permanent:** tikrinamos dienos duomenys nukopijuojami į nuolatinę lentelę, o metrikos
+  skaičiuojamos pagal nukopijuotus duomenis.
+- **Session:** duomenys nukopijuojami į seanso arba laikinąją lentelę, o metrikos
+  skaičiuojamos pagal šiuos laikinus duomenis.
 
-The mode decides what the connection user must be allowed to do:
+Režimas nulemia, ką turi būti leidžiama daryti ryšio vartotojui:
 
-| Mode | Writes | Rights the connection user needs |
+| Režimas | Ką rašo | Ryšio vartotojui reikalingos teisės |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | nieko | Skaityti šaltinio lenteles |
+| **Permanent** | po lentelę kiekvienam duomenų šaltiniui schemoje **Work Schema** | Kurti ir šalinti lenteles schemoje **Work Schema** |
+| **Session** | laikinąją lentelę, kurią duomenų bazė pašalina kartu su seansu | Kurti laikinąsias lenteles — **Work Schema** nenaudojama |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* tik skaito, todėl šį režimą verta rinktis, kai *digna* suteikiama tik skaitymo
+prieiga. **Work Schema** skaitoma tik *Permanent* režimu, tačiau ją vis tiek verta užpildyti,
+kad ryšys ir toliau veiktų, jei režimas vėliau būtų pakeistas.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## DSN naudojimas {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+DSN vis dar veikia — `DSN` yra tiesiog dar viena savybė:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -5777,129 +6003,129 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+DSN turi būti užregistruotas *digna* serveryje tai pačiai vartotojo paskyrai, kuria veikia
+*digna* backend, o kai *digna* veikia kaip paslauga — kaip **System DSN**. Viską, kas
+sukonfigūruota DSN, galima perrašyti pridedant tai ir kaip savybę.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
+Nustatymas be DSN yra dokumentuotas numatytasis būdas, nes jis išvengia šios serverio pusės
+būsenos: ryšys visiškai aprašytas *digna*, o naujame *digna* serveryje reikia įdiegti tvarkyklę,
+bet nieko konfigūruoti nereikia.
 
 ---
 
-## Troubleshooting {: #troubleshooting }
+## Trikčių šalinimas {: #troubleshooting }
 
 ### Data source name not found / no default driver specified
 
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
+**Požymiai:**
+- Mygtukas **Test** praneša apie klaidą, kurioje minima *data source name not found*, nors
+  nustatymas yra be DSN
 
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
-
----
-
-### The connection test times out
-
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
-
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Priežastys ir sprendimai:**
+1. Reikšmė `Driver` nesutampa su užregistruotu tvarkyklės pavadinimu — palyginkite ją su
+   *ODBC Data Source Administrator (64-bit)* skirtuku **Drivers** arba su `odbcinst -q -d`
+2. Tvarkyklė įdiegta jūsų darbo stotyje, bet ne *digna* serveryje
+3. Tvarkyklė yra 32 bitų, o *digna* – 64 bitų — įdiekite 64 bitų tvarkyklę
+4. Savybės `Driver` visai nėra, ir nenurodytas ir `DSN`
+5. Linux ir macOS sistemose tvarkyklė įdiegta, bet neužregistruota — vietoje pavadinimo
+   nurodykite pilną kelią iki tvarkyklės bibliotekos arba užregistruokite ją `odbcinst.ini`
 
 ---
 
-### Authentication fails although the credentials are correct
+### Ryšio testui baigiasi laikas
 
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
+**Požymiai:**
+- **Test** pakimba ir maždaug po pusės minutės nepavyksta
 
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
-
----
-
-### The data source screen does not offer the expected database or schema
-
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
-
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
+**Priežastys ir sprendimai:**
+1. Serveris ar prievadas nepasiekiamas iš *digna* serverio — patikrinkite ugniasienę, o
+   debesijos šaltinių atveju — leidžiamų IP adresų sąrašą
+2. Serverio pavadinimas teisingas, bet prievadas priklauso kitai paslaugai
+3. Šaltiniui priimti ryšį reikia daugiau nei numatytųjų 30 sekundžių — padidinkite
+   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` faile `config.toml` skiltyje `[base]` (`0` laukia
+   neribotai) ir perkraukite backend
+4. Serverless galinis taškas atsibunda po neveiklumo — bandykite dar kartą, o jei tai nutinka
+   reguliariai, padidinkite prisijungimo laiko limitą, kaip nurodyta aukščiau
 
 ---
 
-### Profiling fails while the connection test succeeds
+### Autentifikacija nepavyksta, nors prisijungimo duomenys teisingi
 
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
+**Požymiai:**
+- Tvarkyklė praneša apie netinkamus prisijungimo duomenis, bet tas pats vartotojas veikia kitame SQL kliente
 
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
-
----
-
-## Best Practices
-
-**DO:**
-
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Priežastys ir sprendimai:**
+1. Slaptažodyje yra `;` — apgaubkite reikšmę riestiniais skliaustais: `{p@ss;word}`
+2. Į reikšmę buvo nukopijuotas galinis tarpas
+3. Tvarkyklė tikisi konkretaus autentifikacijos mechanizmo — pavyzdžiui, `AuthMech` Hive ir
+   Databricks tvarkyklėms arba `authenticator` Snowflake atveju
+4. Reikšmė buvo išsaugota užšifruota ir paskui redaguota — užšifruotų reikšmių negalima
+   perskaityti atgal, todėl įveskite paslaptį visą iš naujo
+5. Baigėsi žetono galiojimas — asmeniniai prieigos žetonai ir programinės prieigos žetonai
+   išduodami su galiojimo pabaigos data
 
 ---
 
-## Support
+### Duomenų šaltinio ekrane nesiūloma laukiama duomenų bazė ar schema
 
-Need help with a database connection?
+**Požymiai:**
+- Pridedant duomenų šaltinį trūksta katalogų, schemų ar lentelių
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**Priežastys ir sprendimai:**
+1. Ryšys rodo į kitą duomenų bazę — žr.
+   [Kurią duomenų bazę mato ryšys](#which-database-the-connection-sees)
+2. Ryšio vartotojas neturi skaitymo teisių schemai arba duomenų žodynui
+3. **Technology** neatitinka šaltinio, todėl *digna* užklausia netinkamo duomenų žodyno
+4. Snowflake atveju vartotojui nepriskirtas numatytasis warehouse ir nenurodyta savybė
+   `Warehouse`, todėl metaduomenų užklausos negali būti vykdomos
+
+---
+
+### Profiliavimas nepavyksta, nors ryšio testas sėkmingas
+
+**Požymiai:**
+- **Test** pavyksta, bet inspekcija nepavyksta kuriant darbines lenteles
+
+**Priežastys ir sprendimai:**
+1. Pasirinktas *Permanent* profiliavimas, o ryšio vartotojas negali kurti lentelių schemoje
+   **Work Schema** — suteikite teises arba perjunkite į *Session* ar *Standard*
+2. **Work Schema** tuščia arba nurodo neegzistuojančią schemą, kai pasirinktas *Permanent*
+   profiliavimas
+3. Pasirinktas *Session* profiliavimas, o ryšio vartotojui neleidžiama kurti laikinųjų lentelių
+4. Ilgai trunkanti profiliavimo užklausa viršija užklausos laiko limitą — padidinkite
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` faile `config.toml` skiltyje `[base]` (numatytoji reikšmė
+   3600 sekundžių, `0` išjungia laiko limitą)
+
+---
+
+## Geroji praktika
+
+**DARYKITE:**
+
+- Įdiekite ir užregistruokite tvarkyklę *digna* serveryje prieš konfigūruodami ryšį
+- Pažymėkite **Encrypted** kiekvienam slaptažodžiui ir žetonui
+- Prieš išsaugodami spustelėkite **Test**, o pakeitę slaptažodį patikrinkite iš naujo
+- Ryšius pavadinkite pagal šaltinį ir aplinką, pavyzdžiui, `sales_dwh_prod`
+- Suteikite *digna* atskirą duomenų bazės vartotoją, tik skaitymo teisėmis, kai pakanka *Standard* profiliavimo
+- Kiekvienai šaltinio duomenų bazei laikykite po vieną ryšį ir verčiau pridėkite antrą, nei perjunginėkite pirmąjį
+
+**NEDARYKITE:**
+
+- Nesaugokite paslapčių neužšifruotų ir nenaudokite vieno duomenų bazės vartotojo *digna* ir kitiems įrankiams
+- Nenaudokite 32 bitų tvarkyklės su 64 bitų *digna* diegimu
+- Nesiremkite User DSN, kai *digna* veikia kaip paslauga — jis nebus matomas
+- Nerašykite reikšmės su `;` į savybę be riestinių skliaustų
+- Nenukreipkite **Work Schema** į schemą, kurioje laikomi šaltinio duomenys
+
+---
+
+## Pagalba
+
+Reikia pagalbos dėl duomenų bazės ryšio?
+
+- **El. paštas:** support@digna.ai
+- **Dokumentacija:** https://docs.digna.ai
+- **Svetainė:** https://www.digna.ai
 
 ---
 
@@ -5911,68 +6137,68 @@ Need help with a database connection?
 # PostgreSQL
 Source: https://docs.digna.ai/lt/databases/postgres_connector_guide/
 
-# Source Connector for PostgreSQL
+# PostgreSQL šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie PostgreSQL per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to PostgreSQL.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself under a name that differs per platform and package — commonly
-**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
-the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
-for the `DRIVER` property below.
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+PostgreSQL.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite PostgreSQL ODBC tvarkyklę (**psqlODBC**) kompiuteryje, kuriame veikia *digna* backend,
+laikydamiesi oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    psqlODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what your server demands — SSL in particular — may differ too.
-    Use this as a starting point and check the documentation of the driver version you
-    installed.
+Tvarkyklė užsiregistruoja pavadinimu, kuris skiriasi priklausomai nuo platformos ir paketo —
+dažniausiai **PostgreSQL Unicode(x64)** Windows sistemoje ir **PostgreSQL ODBC Driver(UNICODE)**
+Linux sistemoje. Nuskaitykite tikslų pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver), ir naudokite jį
+toliau nurodytai savybei `DRIVER`.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    psqlODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų ir platformų, o tai, ko reikalauja jūsų serveris — ypač
+    SSL, — taip pat gali skirtis. Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos
+    tvarkyklės versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `db.example.com` | Server name or IP address |
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `SERVER` | `db.example.com` | Serverio pavadinimas arba IP adresas |
 | `PORT` | `5432` | |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
-| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+| `DATABASE` | `digna_source_db` | Duomenų bazė, kurioje yra šaltinio schemos. Tai vienintelė duomenų bazė, kurią šis ryšys gali profiliuoti |
+| `UID` | `digna_source_user` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` arba `verify-full` — serveris turi jį priimti |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
 ```
 
-Any further psqlODBC option can be added as an additional property — for example
-`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
-time.
+Bet kurią kitą psqlODBC parinktį galima pridėti kaip papildomą savybę — pavyzdžiui,
+`ReadOnly=1` tik skaitymo seansui arba `ConnSettings`, kad prisijungiant būtų vykdomi `SET`
+sakiniai.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5983,125 +6209,125 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+## 4. Pastabos apie PostgreSQL {: #4-notes-on-postgresql }
 
-- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
-  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
-  be available to the driver on the *digna* host. If you had to choose a specific mode when
-  testing the driver, use the same one here.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **`SSLMode` turi atitikti serverį.** Serveris, sukonfigūruotas su `hostssl`, atmeta
+  `SSLMode=disable`, o `verify-ca` ar `verify-full` papildomai reikalauja, kad šakninis
+  sertifikatas būtų prieinamas tvarkyklei *digna* serveryje. Jei testuodami tvarkyklę turėjote
+  pasirinkti konkretų režimą, naudokite tą patį ir čia.
+- **Vienas ryšys mato vieną duomenų bazę.** *digna* siūlo `DATABASE` nurodytos duomenų bazės
+  schemas, nes PostgreSQL kaip katalogą praneša tik dabartinę duomenų bazę. Šaltinio lentelėms
+  kitoje duomenų bazėje reikia atskiro ryšio.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui reikia teisės `CREATE` šiai schemai. *Session* naudoja `CREATE TEMPORARY TABLE` ir
+  **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver works and that the server accepts
-your credentials and SSL mode before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė veikia, o serveris priima jūsų prisijungimo
+duomenis ir SSL režimą, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/postgres/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/postgres/create_odbc_data_source_step1.png)
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Click the **Test Connection** button.
+Spustelėkite mygtuką **Test Connection**.
 
-![Step 2](images/postgres/create_odbc_data_source_step2.png)
+![2 žingsnis](images/postgres/create_odbc_data_source_step2.png)
 
-The values you entered here are exactly the values the properties in
-[section 2](#2-odbc-properties) take.
+Čia įvestos reikšmės yra būtent tos reikšmės, kurias priima savybės iš
+[2 skyriaus](#2-odbc-properties).
 
 ---
 
 # Snowflake
 Source: https://docs.digna.ai/lt/databases/snowflake_connector_guide/
 
-# Source Connector for Snowflake
+# Snowflake šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Snowflake per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Snowflake.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Įdiekite **Snowflake ODBC Driver** kompiuteryje, kuriame veikia *digna* backend, laikydamiesi
+[Snowflake diegimo vadovo](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-!!! important "An example, not a specification"
+Tvarkyklė užsiregistruoja kaip **SnowflakeDSIIDriver**. Nuskaitykite tikslų užregistruotą
+pavadinimą savo serveryje, kaip aprašyta skyriuje [ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+Prie Snowflake jungiamasi naudojant **programinės prieigos žetoną (PAT, programmatic access
+token)** — tai autentifikacijos būdas, su kuriuo *digna* patikrinta, ir būdas, kurio Snowflake
+reikalauja paskyrose, kuriose prisijungimas vien slaptažodžiu užblokuotas.
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Snowflake ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų ir platformų, o tai, kokias autentifikacijos parinktis
+    leidžia jūsų paskyra, nulemia paskyros saugumo politika. Naudokite tai kaip atspirties tašką
+    ir patikrinkite įdiegtos tvarkyklės versijos dokumentaciją.
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `Server` | `<account>.snowflakecomputing.com` | Paskyros identifikatorius ir priesaga, pvz. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake vartotojas, kuriam priklauso žetonas |
+| `Database` | `TEST` | Duomenų bazė, kurioje yra šaltinio schemos. Tai vienintelė duomenų bazė, kurią šis ryšys gali profiliuoti |
+| `Schema` | `PUBLIC` | Numatytoji seanso schema |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Pasirenka autentifikaciją žetonu |
+| `token` | `<programmatic access token>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Warehouse ir rolė
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+Užklausoms reikia warehouse. Jei *digna* vartotojas turi numatytąjį warehouse ir numatytąją rolę,
+seansas juos perima, ir nieko konfigūruoti nereikia. Priešingu atveju pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | Warehouse, kuriame vykdomos profiliavimo užklausos |
+| `Role` | `DIGNA_READER` | Rolė, kurios teises naudoja seansas |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Skirkite digna atskirą warehouse"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Atskiras, mažas, automatiškai sustabdomas warehouse leidžia matyti profiliavimo kainą ir
+    neleidžia *digna* konkuruoti dėl skaičiavimo išteklių su interaktyviais vartotojais.
 
-### Password authentication
+### Autentifikacija slaptažodžiu
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Kai paskyra tai dar leidžia, vietoje žetono galima naudoti slaptažodį — pašalinkite
+`authenticator` ir `token` ir pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -6112,132 +6338,133 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Pastabos apie Snowflake {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **Žetonų galiojimas baigiasi.** Programinės prieigos žetonas išduodamas su galiojimo trukme, ir
+  profiliavimas sustoja tą dieną, kai jis nustoja galioti. Kurdami žetoną užsirašykite galiojimo
+  pabaigos datą ir įveskite naują žetoną savybėje `token` — užšifruotas reikšmes galima pakeisti,
+  bet ne perskaityti atgal.
+- **Vienas ryšys mato vieną duomenų bazę.** *digna* siūlo `Database` nurodytos duomenų bazės
+  schemas, nes Snowflake kaip katalogą praneša tik dabartinę duomenų bazę. Šaltinio lentelėms
+  kitoje duomenų bazėje reikia atskiro ryšio.
+- **Identifikatoriai rašomi didžiosiomis raidėmis**, nebent jie buvo sukurti kabutėse. *digna*
+  naudoja pavadinimus taip, kaip juos praneša Snowflake.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  rolei ten reikia teisės `CREATE TABLE`. *Session* naudoja `CREATE TEMPORARY TABLE` ir
+  **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos — ir jokių rašymo teisių.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė, paskyros URL ir jūsų prisijungimo duomenys
+veikia, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/snowflake/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Pastabos:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
+- Lauko **Server** reikšmę sudaro jūsų Snowflake paskyros identifikatorius, po kurio eina
   `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- Čia įvesti **Database**, **Schema** ir **Warehouse** atitinka savybes `Database`,
+  `Schema` ir `Warehouse` iš [2 skyriaus](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Click the **TEST** button. A successful connection should look like this:
+Spustelėkite mygtuką **TEST**. Sėkmingas ryšys turėtų atrodyti taip:
 
-![Step 2](images/snowflake/create_odbc_data_source_step2.png)
+![2 žingsnis](images/snowflake/create_odbc_data_source_step2.png)
 
 ---
 
 # MS SQL Server
 Source: https://docs.digna.ai/lt/databases/sqlserver_connector_guide/
 
-# Source Connector for MS SQL Server
+# MS SQL Server šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Microsoft SQL Server per
+**ODBC**, naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+SQL Server.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Synapse taip pat konfigūruojamas kaip SQL Server ryšys, tik su kitu serverio pavadinimu ir
+    keliais papildomais aspektais — žr. [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Įdiekite **ODBC Driver 18 for SQL Server** kompiuteryje, kuriame veikia *digna* backend,
+laikydamiesi [Microsoft diegimo vadovo](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Kartu su Windows pateikiama tvarkyklė paprastu pavadinimu **SQL Server** taip pat veikia, tačiau
+ji seniai pasenusi ir nepalaiko nei šiuolaikinių TLS nustatymų, nei Azure autentifikacijos.
+Naudokite ją tik tada, kai dabartinės tvarkyklės įdiegti neįmanoma.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Nuskaitykite tikslų užregistruotos tvarkyklės pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. ODBC savybės {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Pavyzdys, o ne specifikacija"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Microsoft ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų — pavyzdžiui, Driver 18 pagal nutylėjimą šifruoja, o
+    Driver 17 to nedarė — ir tarp platformų. Naudokite tai kaip atspirties tašką ir patikrinkite
+    įdiegtos tvarkyklės versijos dokumentaciją.
 
-Add the following properties in the **Add DB Connection** screen:
+Ekrane **Add DB Connection** pridėkite šias savybes:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `SERVER` | `sql.example.com` | Serverio pavadinimas arba IP adresas. Pavadintiems egzemplioriams: `host\instance`; nestandartiniam prievadui: `host,1433` |
+| `PORT` | `1433` | Praleiskite, kai prievadas jau yra `SERVER` dalis |
+| `DATABASE` | `digna_source_db` | Duomenų bazė, kurioje yra šaltinio schemos. Tai vienintelė duomenų bazė, kurią šis ryšys gali profiliuoti |
+| `UID` | `digna_source_user` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Šifravimas su ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 pagal nutylėjimą šifruoja ryšius ir tikrina serverio sertifikatą. Jungiantis prie
+serverio, kurio sertifikatu jūsų *digna* serveris nepasitiki — paprastai savarankiškai pasirašyto
+sertifikato, — prisijungimas nepavyksta su sertifikatų grandinės klaida. Pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Numatytoji reikšmė Driver 18; nustatykite `no` tik tada, jei serveris nepalaiko TLS |
+| `TrustServerCertificate` | `yes` | Praleidžia sertifikato tikrinimą. Patogu testavimo aplinkose; gamybinėje aplinkoje verčiau įdiekite sertifikatą |
 
-### Windows Authentication
+### Windows autentifikacija
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Norėdami jungtis paskyra, kuria veikia *digna* paslauga, o ne SQL prisijungimu, pašalinkite
+`UID` ir `PWD` ir pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | *digna* paslaugos paskyrai reikia duomenų bazės teisių |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -6248,125 +6475,127 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Pastabos apie MS SQL Server {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Vienas ryšys mato vieną duomenų bazę.** *digna* siūlo `DATABASE` nurodytos duomenų bazės
+  schemas, nes SQL Server kaip katalogą praneša tik dabartinę duomenų bazę. Šaltinio lentelėms
+  kitoje duomenų bazėje reikia atskiro ryšio.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui ten reikia teisės `CREATE TABLE`. *Session* naudoja vietines laikinąsias lenteles
+  (`#wt_…`) duomenų bazėje `tempdb` ir **Work Schema** neliečia. *Standard* reikia tik skaitymo
+  prieigos.
+- **`SERVER` nurodo egzempliorių ir prievadą.** Naudojant pavadintą egzempliorių, `host\instance`
+  reikalauja, kad būtų pasiekiama paslauga SQL Server Browser; `host,port` to išvengia.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės vedlys yra
+patogus būdas patvirtinti, kad tvarkyklė veikia ir kad serveris priima jūsų prisijungimo
+duomenis, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Spustelėkite mygtuką **Next >**.
 
-#### Step 2
-![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Pasirinkite autentifikacijos metodą (pvz., vartotojo vardas ir slaptažodis)
+ir pateikite reikiamus duomenis.
 
-Click the **Next >** button.
+Spustelėkite mygtuką **Next >**.
 
-#### Step 3
-![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+#### 3 žingsnis
+![3 žingsnis](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Pasirinkite ANSI atitinkančius nustatymus ir spustelėkite mygtuką **Next >**.
 
-#### Step 4
-![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+#### 4 žingsnis
+![4 žingsnis](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Galite palikti numatytuosius nustatymus arba pasirinkti reikiamas žurnalo (logging) parinktis
+ir spustelėti mygtuką **Finish**.
 
-#### Step 5
-![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+#### 5 žingsnis
+![5 žingsnis](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Dabar spustelėkite mygtuką **Test datasource**.
 
-#### Step 6
-![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+#### 6 žingsnis
+![6 žingsnis](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Sėkmės ekranas patvirtina, kad tvarkyklė ir prisijungimo duomenys veikia. Įvestos reikšmės yra
+būtent tos reikšmės, kurias priima savybės iš [2 skyriaus](#2-odbc-properties).
 
 ---
 
 # Teradata
 Source: https://docs.digna.ai/lt/databases/teradata_connector_guide/
 
-# Source Connector for Teradata
+# Teradata šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Teradata per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Teradata.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite **ODBC Driver for Teradata** kompiuteryje, kuriame veikia *digna* backend, laikydamiesi
+oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+Tvarkyklė užsiregistruoja su versija pavadinime, pavyzdžiui,
+**Teradata Database ODBC Driver 20.00**. Nuskaitykite tikslų užregistruotą pavadinimą savo
+serveryje, kaip aprašyta skyriuje [ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Teradata ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų — versija yra paties tvarkyklės pavadinimo dalis — ir tarp
+    platformų. Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos tvarkyklės versijos
+    dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `DBCNAME` | `teradata.example.com` | Serverio pavadinimas arba IP adresas. Taip Teradata vadina serverio savybę |
+| `UID` | `digna_source_user` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Naudingos papildomos savybės:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Prisijungimo mechanizmas. `TD2` yra Teradata numatytasis; katalogo tarnybos (directory) autentifikacijai naudokite `LDAP` |
+| `DefaultDatabase` | `dad` | Duomenų bazė, kurioje pradedamas seansas |
+| `CharacterSet` | `UTF8` | Nustatykite, kai numatytasis seanso simbolių rinkinys sugadintų ne ASCII duomenis |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -6377,41 +6606,43 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Pastabos apie Teradata {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Teradata duomenų bazė yra katalogas, o ne schema.** *digna* duomenų bazes, kurias vartotojas
+  gali matyti (iš `DBC.DatabasesV`), išvardija kaip katalogus, o schemos lygmuo netaikomas.
+  Pridėdami duomenų šaltinį, pasirinkite duomenų bazę kaip katalogą; schema pažymima kaip
+  *netaikoma* (not applicable).
+- **Vienas ryšys pasiekia kiekvieną leidžiamą duomenų bazę**, todėl vienas ryšys gali aptarnauti
+  šaltinius keliose duomenų bazėse — skirtingai nei technologijose, kuriose ryšys susietas su
+  viena duomenų baze.
+- **Work Schema yra duomenų bazė.** *Permanent* profiliavimui nurodykite Teradata duomenų bazę,
+  kurioje laikomos darbinės lentelės, ir suteikite vartotojui teisę `CREATE TABLE` bei `PERM`
+  vietos skyrimą joje — duomenų bazė su nuline perm vieta negali turėti lentelės.
+- **Profiliavimo režimai.** *Permanent* kuria lenteles schemoje **Work Schema**. *Session*
+  naudoja `VOLATILE` lentelę, kuriai reikia `SPOOL` vietos, bet nereikia perm vietos ir teisių
+  **Work Schema**. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė ir jūsų prisijungimo duomenys veikia, prieš
+įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Čia esantis laukas **Name or IP address** atitinka savybę `DBCNAME` iš
+[2 skyriaus](#2-odbc-properties).
 
-Click the **Test** button.
+Spustelėkite mygtuką **Test**.
 
-#### Step 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Įveskite vartotojo vardą ir slaptažodį, tada spustelėkite mygtuką **OK**. Sėkmės ekranas
+patvirtina, kad tvarkyklė ir prisijungimo duomenys veikia.
 
 ---
 
@@ -7134,8 +7365,13 @@ Tada įklijuokite sakinius prie `postgres=#` prompto ir įveskite `\q`, kad iše
 3. Po išarchyvavimo turėtumėte pamatyti šiuos elementus:
    - `dashboard/` — web dashboard sąsaja
    - `digna` — pagrindinis vykdomasis failas (backend + CLI kartu)
-   - `config.toml` — konfigūracijos failas
-   - `license.toml` — licencijos failas (įdėkite savo kopiją čia)
+
+!!! info "Konfigūracijos ir licencijos failų pakete nėra"
+
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` diegimo pakete nepateikiami — abu
+    failus sukuriate patys, skyriuose [Backend konfigūracija](#backend-configuration) ir
+    [Dashboard konfigūracija](#dashboard-configuration). `license.toml` taip pat nepateikiamas;
+    digna jį pateikia atskirai, kaip aprašyta 3 žingsnyje.
 
 Išarchyvavimui iš shell:
 
@@ -7455,9 +7691,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1 žingsnis: patalpinkite dashboard tinklapio serveryje
 
-digna dashboard turi atskirą `config.toml` failą, esantį `dashboard/` kataloge. Ši konfigūracija jau pateikta ir pradiniam nustatymui ją keisti nereikia. Ją reikės keisti tik tuo atveju, jei norite pritaikyti backend ryšį arba atlikti sudėtingesnes diegimo konfigūracijas.
+digna dashboard savo konfigūraciją skaito iš `dashboard/dashboard_config.toml`. Šis failas diegimo pakete nepateikiamas — jį sukuriate `dashboard/` kataloge šalia dashboard failų.
 
-Jei reikia modifikuoti dashboard konfigūraciją (pvz., daugiaserveriniams diegimams), žiūrėkite dashboard dokumentaciją.
+Jo turinys aprašytas skyriuje [Vienkartinis prisijungimas (SSO)](../../../sso/overview.md), kur šis failas ir reikalingas: jame nurodomos dashboard siūlomos prisijungimo parinktys, o daugiainstanciniams diegimams — ir ryšys su backend.
 
 Pasirinkite tinklapio serverį ir vykdykite atitinkamus diegimo veiksmus.
 
@@ -7792,7 +8028,10 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Svarbu"
 
-    `config.toml` failas **niekada** nėra įtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka nepažeista.
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` niekada nėra įtraukti į
+    diegimo ZIP — digna komanda niekada nepateikia nė vieno iš šių failų. Todėl atnaujinimas jūsų
+    esamos konfigūracijos nepaliečia, o kopijos pervadintuose `*_old` aplankuose yra
+    vienintelės, kurias turite.
 
 #### 4 žingsnis: atstatykite konfigūracijos failus
 
@@ -7844,7 +8083,13 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
 
-#### 5 žingsnis: Patikrinkite konfigūraciją
+#### 5 žingsnis: perkraukite tinklapio serverį
+
+Dashboard yra statinių failų rinkinys, todėl jūsų tinklapio serveris — ir naršyklė — gali vis dar
+pateikti ankstesnę versiją. Perkraukite arba iš naujo paleiskite tinklapio serverį, kuriame talpinamas `dashboard`
+aplankas, tada iš naujo įkelkite puslapį priverstiniu atnaujinimu (++ctrl+f5++).
+
+#### 6 žingsnis: Patikrinkite konfigūraciją
 
 Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:
 
@@ -7854,7 +8099,26 @@ Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsa
 
 Kiekvienas skyrius turi pranešti OK. Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą.
 
-#### 6 žingsnis: atnaujinkite saugyklos schemą
+#### 7 žingsnis: pakeiskite licencijos failą
+
+Kiekvienai laidai licencija išduodama atskirai. Nukopijuokite `license.toml`, kurį digna komanda pateikė
+šiai laidai, į diegimo katalogą, pakeisdami senąjį:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Nepalikite ankstesnės licencijos"
+
+    Ankstesnei laidai išduotas `license.toml` šios laidos neapima, o kiekviena komanda,
+    tikrinanti licenciją — `user`, `inspection`, `repo` — nepavykus patikrinimui nutraukiama dar prieš paliečiant
+    saugyklą. Prieš tęsdami ją patikrinkite:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### 8 žingsnis: atnaujinkite saugyklos schemą
 
 Eikite į digna diegimo katalogą ir vykdykite:
 
@@ -7865,7 +8129,7 @@ cd /opt/digna
 
 Tai atnaujins PostgreSQL schemą į naujausią versiją, išsaugant visus esamus duomenis.
 
-#### 7 žingsnis: paleiskite paslaugas iš naujo
+#### 9 žingsnis: paleiskite paslaugas iš naujo
 
 Jei naudojate systemd paslaugą:
 
@@ -7896,7 +8160,7 @@ RHEL šeimoje, jei pakeitėte `dashboard` katalogą, iš naujo pritaikykite SELi
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### 8 žingsnis: patikrinkite atnaujinimą
+#### 10 žingsnis: patikrinkite atnaujinimą
 
 1. Prisijunkite prie digna dashboard
 2. Patikrinkite, ar sąsaja užsikrauna teisingai
@@ -8191,8 +8455,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Po išskleidimo turėtumėte matyti šiuos elementus:
    - `dashboard/` — web dashboard sąsaja
    - `digna` — pagrindinis vykdomasis failas (backend + CLI kartu)
-   - `config.toml` — konfigūracijos failas
-   - `license.toml` — licencijos failas (kopijuokite čia savo licenciją)
+
+!!! info "Konfigūracijos ir licencijos failų pakete nėra"
+
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` diegimo pakete nepateikiami — abu
+    failus sukuriate patys, skyriuose [Backend konfigūracija](#backend-configuration) ir
+    [Dashboard konfigūracija](#dashboard-configuration). `license.toml` taip pat nepateikiamas;
+    digna jį pateikia atskirai, kaip aprašyta 3 žingsnyje.
 
 ### 3 žingsnis: Įdiekite licencijos failą
 
@@ -8432,9 +8701,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1 žingsnis: Patalpinkite dashboard į žiniatinklio serverį
 
-digna dashboard turi atskirą `config.toml` failą, esantį `dashboard/` kataloge. Ši konfigūracija jau pateikta ir pradiniame diegime jos keisti nereikia. Ją reikia keisti tik tuo atveju, jei norite pritaikyti backend prisijungimą.
+digna dashboard savo konfigūraciją skaito iš `dashboard/dashboard_config.toml`. Šis failas diegimo pakete nepateikiamas — jį sukuriate `dashboard/` kataloge šalia dashboard failų.
 
-Jei reikia modifikuoti dashboard konfigūraciją (pvz., daugiaserveriniam diegimui), kreipkitės į dashboard dokumentaciją.
+Jo turinys aprašytas skyriuje [Vienkartinis prisijungimas (SSO)](../../../sso/overview.md), kur šis failas ir reikalingas: jame nurodomos dashboard siūlomos prisijungimo parinktys, o daugiainstanciniams diegimams — ir ryšys su backend.
 
 Pasirinkite žiniatinklio serverį ir atlikite atitinkamus diegimo veiksmus.
 
@@ -8489,19 +8758,24 @@ digna backend paleidus kaip Windows paslaugą užtikrinama, kad jis:
 - Automatiškai paleidžiamas iš naujo, jei sugestų
 - Gali būti valdomas per Windows Services
 
-### Paslaugos valdymo failai
+### `windows` komandos
 
-Visi reikalingi failai yra digna diegimo kataloge, po: `bin/`
+Paslaugą valdo pats `digna` vykdomasis failas, naudodamas `digna windows`
+subkomandas. Jokių batch failų vykdyti nereikia.
 
-Šie batch failai yra prieinami:
-- `install_service.bat` — registruoja digna kaip Windows paslaugą
-- `uninstall_service.bat` — panaikina paslaugos registraciją
-- `start_service.bat` — paleidžia paslaugą
-- `stop_service.bat` — sustabdo paslaugą
+| Komanda | Paskirtis |
+|---|---|
+| `digna windows install` | Užregistruoja digna kaip Windows paslaugą |
+| `digna windows start` | Paleidžia užregistruotą paslaugą |
+| `digna windows stop` | Sustabdo veikiančią paslaugą |
+| `digna windows uninstall` | Panaikina paslaugos registraciją |
 
 !!! warning "Reikalingos administratoriaus teisės"
 
-    Visi batch failai turi būti vykdomi su Administrator privilegijomis.
+    Visas keturias komandas reikia vykdyti iš Command Prompt, atidaryto kaip administratorius.
+
+Kiekviena komanda priima `--name`, kad būtų galima kreiptis į paslaugą, užregistruotą ne numatytuoju pavadinimu. Visas
+parinkčių sąrašas pateiktas [CLI žinyne](../../../cli/Command_Line_Interface_202606.md).
 
 ### Paslaugos įdiegimas
 
@@ -8509,37 +8783,66 @@ Visi reikalingi failai yra digna diegimo kataloge, po: `bin/`
    - Dešiniuoju pelės mygtuku spustelėkite Command Prompt
    - Pasirinkite "Run as Administrator"
 
-2. **Nueikite į bin katalogą**
+2. **Nueikite į savo digna diegimo katalogą**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Paleiskite diegimo skriptą**
+3. **Užregistruokite paslaugą**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Digna serveris dabar užregistruotas kaip Windows paslauga su **automatinio paleidimo** nustatymu. Paslauga nebus paleista iš karto — žr. kitą skyrių, kaip ją paleisti.
+!!! important "Nurodykite adresą ir prievadą, nebent numatytosios reikšmės jums tinka"
+
+    `install` įrašo adresą ir prievadą į paslaugos registraciją, o paslauga susiejama būtent
+    su tuo, kas įrašyta. Numatytosios reikšmės yra `127.0.0.1` ir `8000`, kurios priima ryšius
+    tik iš pačios mašinos. Kitame kompiuteryje veikiantis dashboard jų nepasieks, todėl nurodykite
+    adresą, kuriuo backend turi klausytis:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Šios reikšmės neskaitomos iš `config.toml`. Norėdami jas vėliau pakeisti, pašalinkite paslaugą ir
+    įdiekite ją iš naujo su naujomis reikšmėmis.
+
+Paslauga užregistruojama su **automatiniu paleidimu**, todėl ji bus paleidžiama kartu su Windows. Iš karto
+ji nepaleidžiama — žr. kitą skyrių.
+
+#### Diegimo parinktys
+
+| Parinktis | Numatytoji reikšmė | Paskirtis |
+|---|---|---|
+| `--name` | `digna` | Pavadinimas, kuriuo registruojama paslauga |
+| `--display-name` | `digna` | Pavadinimas, rodomas services.msc |
+| `--description` | `digna data quality backend` | Aprašas, rodomas services.msc |
+| `--address` | `127.0.0.1` | Adresas, prie kurio paslauga susieja savo API |
+| `--port` | `8000` | Prievadas, prie kurio paslauga susieja savo API |
+| `--working-dir` | `digna` vykdomojo failo katalogas | Katalogas su `config.toml` ir `license.toml`, kurį paslauga naudoja kaip darbinį katalogą |
+| `--start-type` | `auto` | `auto` paleidžiama kartu su Windows, `manual` paleidžiama tik paprašius, `disabled` užregistruoja paslaugą, bet neleidžia jos paleisti |
+| `--account` | `LocalSystem` | Paskyra, kuria vykdoma paslauga, pvz., `DOMAIN\user` arba `.\user` |
+| `--password` | | `--account` paskyros slaptažodis |
+
+!!! tip "Vykdymas domeno paskyra"
+
+    `LocalSystem` neturi tinklo tapatybės, todėl Windows Authentication prie SQL Server ir bet kokia
+    prieiga prie tinklo bendrinamo aplanko nepavyks. Jei paslaugai reikia pasiekti išteklius kaip konkrečiam naudotojui,
+    įdiekite ją su `--account` ir `--password`.
 
 ### Paslaugos paleidimas ir sustabdymas
 
 #### Paslauga paleidimui
 
-1. Atidarykite Command Prompt kaip administratorius
-2. Nueikite į `digna\bin`
-3. Vykdykite:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Paslauga sustabdymui
 
-1. Atidarykite Command Prompt kaip administratorius
-2. Nueikite į `digna\bin`
-3. Vykdykite:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Patarimas"
 
@@ -8549,37 +8852,41 @@ Digna serveris dabar užregistruotas kaip Windows paslauga su **automatinio pale
 
 Jei reikia perkelti digna diegimą:
 
-1. **Išjunkite esamą paslaugą**
+1. **Sustabdykite ir išregistruokite esamą paslaugą**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Perkelkite aplikacijos failus**
    - Perkelkite visą digna diegimo aplanką į naują vietą
 
-3. **Įdiekite paslaugą iš naujo**
+3. **Vėl užregistruokite paslaugą iš naujos vietos**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Pakartokite visas `--address`, `--port` ar `--account` reikšmes, kurias naudojote pirmą kartą — ankstesnės
+   registracijos nebėra.
 
 4. **Paleiskite paslaugą**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Paslaugos pašalinimas
 
 1. **Sustabdykite veikiančią paslaugą**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Pašalinkite paslaugą**
+2. **Išregistruokite paslaugą**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Digna serveris dabar atregistruotas kaip Windows paslauga.
@@ -8618,14 +8925,32 @@ Atsarginė kopija leis atkurti duomenis, jei atnaujinimo metu kils nenumatytų p
 
 ### Atnaujinimo procesas
 
-#### 1 žingsnis: Sustabdykite digna paslaugą
+#### 1 žingsnis: Sustabdykite ir išregistruokite senąją paslaugą
 
-Jei digna veikia kaip Windows paslauga, pirmiausia ją sustabdykite:
+Jei digna veikia kaip Windows paslauga, sustabdykite ją **dabartinio diegimo batch failais**
+— `digna windows` komandos priklauso naujajam leidimui ir dar nėra
+prieinamos:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Tada išregistruokite paslaugą, vėl naudodami senąjį batch failą. Registracija nurodo į senąjį
+vykdomąjį failą ir jo skriptus, kuriuos abu šis atnaujinimas pakeičia, todėl jos panaudoti pakartotinai negalima:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Išregistruokite prieš ką nors pervadindami"
+
+    `uninstall_service.bat` yra `bin` aplanke, kurį netrukus pervadinsite, ir tik jis gali
+    pašalinti savo sukurtą registraciją. Vykdykite jį, kol senasis diegimas dar yra savo vietoje.
+    Jei aplankas jau pervadintas, grąžinkite jam senąjį pavadinimą, išregistruokite paslaugą ir tęskite.
+
+    Užsirašykite paskyrą, kuria veikė paslauga, bei adresą ir prievadą, kuriais ji veikė — jų
+    prireiks 9 žingsnyje.
 
 #### 2 žingsnis: Sukurkite dabartinio diegimo atsarginę kopiją
 
@@ -8646,7 +8971,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend ir dignacli nebenaudojami"
 
-    Nuo leidimo 2026.06 `dignabackend` ir `dignacli` pakeičia vienas vykdomasis failas `digna`, sujungiantis užkulisinę dalį ir CLI. Aplankus `dignabackend_old` ir `dignacli_old` laikykite tik tol, kol patikrinsite naujinimą — po to abu galite ištrinti. Aplanką `dashboard_old` laikykite, kol iš jo atkursite savo konfigūracijos failus (žiūrėkite 4 žingsnį).
+    Nuo leidimo 2026.06 `dignabackend` ir `dignacli` pakeičia vienas vykdomasis failas `digna`, sujungiantis užkulisinę dalį ir CLI. Aplankus `dignabackend_old` ir `dignacli_old` laikykite tik tol, kol patikrinsite naujinimą — po to abu galite ištrinti. Aplanką `dashboard_old` laikykite, kol iš jo atkursite savo konfigūracijos failus (žiūrėkite 4 žingsnį). Pašalinamas ir `bin` aplankas: jo batch failai valdė senąją paslaugą, o 2026.06 jų nebepateikia, todėl 1 žingsnyje išregistravus paslaugą jie tik klaidintų.
 
 #### 3 žingsnis: Išskleiskite ir naudokite naują versiją
 
@@ -8656,7 +8981,10 @@ ren dashboard dashboard_old
 
 !!! warning "Svarbu"
 
-    `config.toml` failas **niekada** neįtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka saugi.
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` niekada nėra įtraukti į
+    diegimo ZIP — digna komanda niekada nepateikia nė vieno iš šių failų. Todėl atnaujinimas jūsų
+    esamos konfigūracijos nepaliečia, o kopijos pervadintuose `*_old` aplankuose yra
+    vienintelės, kurias turite.
 
 #### 4 žingsnis: Atkurkite konfigūracijos failus
 
@@ -8707,7 +9035,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
 
-#### 5 žingsnis: Patikrinkite konfigūraciją
+#### 5 žingsnis: Perkraukite žiniatinklio serverį
+
+Dashboard yra statinių failų rinkinys, todėl jūsų žiniatinklio serveris — ir naršyklė — gali vis dar
+pateikti ankstesnę versiją. Perkraukite arba iš naujo paleiskite žiniatinklio serverį, kuriame talpinamas `dashboard`
+aplankas, tada iš naujo įkelkite puslapį priverstiniu atnaujinimu (++ctrl+f5++).
+
+#### 6 žingsnis: Patikrinkite konfigūraciją
 
 Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:
 
@@ -8717,7 +9051,26 @@ digna config check
 
 Kiekvienas skyrius turi pranešti OK. Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą.
 
-#### 6 žingsnis: Atnaujinkite repozitorijos schemą
+#### 7 žingsnis: Pakeiskite licencijos failą
+
+Kiekvienai laidai licencija išduodama atskirai. Nukopijuokite `license.toml`, kurį digna komanda pateikė
+šiai laidai, į diegimo katalogą, pakeisdami senąjį:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Nepalikite ankstesnės licencijos"
+
+    Ankstesnei laidai išduotas `license.toml` šios laidos neapima, o kiekviena komanda,
+    tikrinanti licenciją — `user`, `inspection`, `repo` — nepavykus patikrinimui nutraukiama dar prieš paliečiant
+    saugyklą. Prieš tęsdami ją patikrinkite:
+
+    ```bash
+    digna license check
+    ```
+
+#### 8 žingsnis: Atnaujinkite repozitorijos schemą
 
 Nueikite į savo digna diegimo katalogą ir paleiskite:
 
@@ -8727,14 +9080,22 @@ digna repo upgrade
 
 Tai atnaujins PostgreSQL schemą į naujausią versiją, išsaugant visus esamus duomenis.
 
-#### 7 žingsnis: Perkraukite paslaugas
+#### 9 žingsnis: Užregistruokite ir paleiskite paslaugą
 
-Jei naudojate Windows paslaugą:
+Senoji registracija buvo pašalinta 1 žingsnyje, todėl paslauga registruojama iš naujo — šį kartą
+naudojant `digna` vykdomąjį failą, kuris neturi batch failų:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Parinktims `--address` ir `--port` nurodykite reikšmes, kuriomis veikė senoji paslauga, nebent norite naujų
+numatytųjų reikšmių `127.0.0.1` ir `8000`; jos įrašomos į registraciją ir nebėra skaitomos
+iš `config.toml`. Jei senoji paslauga veikė domeno paskyra, pridėkite `--account` ir `--password`.
+Visą parinkčių sąrašą rasite skyriuje
+[digna paleidimas kaip Windows paslauga](#running-digna-as-a-windows-service).
 
 Jei paleidžiate rankiniu būdu, paleiskite serverį iš naujo:
 
@@ -8745,7 +9106,7 @@ digna serve --address <address> --port <port>
 
 Jei naudojate IIS arba Tomcat, perkraukite atitinkamą žiniatinklio serverį.
 
-#### 8 žingsnis: Patikrinkite atnaujinimą
+#### 10 žingsnis: Patikrinkite atnaujinimą
 
 1. Atidarykite digna dashboard
 2. Patikrinkite, ar sąsaja pakraunama teisingai
@@ -9190,8 +9551,13 @@ Tada įklijuokite šias komandas prie `postgres=#` eilutės ir įveskite `\q`, k
 3. Po išarchyvavimo turėtumėte matyti šiuos elementus:
    - `dashboard/` — žiniatinklio dashboard sąsaja
    - `digna` — pagrindinis vykdomasis failas (backend + CLI kartu)
-   - `config.toml` — konfigūracijos failas
-   - `license.toml` — licencijos failas (kopijuokite savo failą čia)
+
+!!! info "Konfigūracijos ir licencijos failų pakete nėra"
+
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` diegimo pakete nepateikiami — abu
+    failus sukuriate patys, skyriuose [Backend konfigūracija](#backend-configuration) ir
+    [Dashboard konfigūracija](#dashboard-configuration). `license.toml` taip pat nepateikiamas;
+    digna jį pateikia atskirai, kaip aprašyta 3 žingsnyje.
 
 Norint išarchyvuoti per Terminalą:
 
@@ -9492,9 +9858,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1 žingsnis: patalpinkite dashboard į tinklapio serverį
 
-Digna dashboard turi atskirą `config.toml` failą `dashboard/` kataloge. Ši konfigūracija jau pateikta ir pradiniam diegimui keisti jos nereikia. Keiskite tik jei reikia pritaikyti ryšį su backend ar naudoti daugiainstancinį išdėstymą.
+digna dashboard savo konfigūraciją skaito iš `dashboard/dashboard_config.toml`. Šis failas diegimo pakete nepateikiamas — jį sukuriate `dashboard/` kataloge šalia dashboard failų.
 
-Jei reikia pakeisti dashboard konfigūraciją (pvz., daugiaserijiniams diegimams), vadovaukitės dashboard dokumentacija.
+Jo turinys aprašytas skyriuje [Vienkartinis prisijungimas (SSO)](../../../sso/overview.md), kur šis failas ir reikalingas: jame nurodomos dashboard siūlomos prisijungimo parinktys, o daugiainstanciniams diegimams — ir ryšys su backend.
 
 Pasirinkite savo tinklapio serverį ir vykdykite atitinkamus diegimo veiksmus.
 
@@ -9773,7 +10139,10 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Svarbu"
 
-    `config.toml` failas **niekada** neįtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka saugi.
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` niekada nėra įtraukti į
+    diegimo ZIP — digna komanda niekada nepateikia nė vieno iš šių failų. Todėl atnaujinimas jūsų
+    esamos konfigūracijos nepaliečia, o kopijos pervadintuose `*_old` aplankuose yra
+    vienintelės, kurias turite.
 
 #### 4 žingsnis: atstatykite konfigūracijos failus
 
@@ -9825,7 +10194,13 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
 
-#### 5 žingsnis: Patikrinkite konfigūraciją
+#### 5 žingsnis: perkraukite tinklapio serverį
+
+Dashboard yra statinių failų rinkinys, todėl jūsų tinklapio serveris — ir naršyklė — gali vis dar
+pateikti ankstesnę versiją. Perkraukite arba iš naujo paleiskite tinklapio serverį, kuriame talpinamas `dashboard`
+aplankas, tada iš naujo įkelkite puslapį priverstiniu atnaujinimu (++cmd+shift+r++).
+
+#### 6 žingsnis: Patikrinkite konfigūraciją
 
 Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:
 
@@ -9835,7 +10210,26 @@ Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsa
 
 Kiekvienas skyrius turi pranešti OK. Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą.
 
-#### 6 žingsnis: atnaujinkite repozitorijos schemą
+#### 7 žingsnis: pakeiskite licencijos failą
+
+Kiekvienai laidai licencija išduodama atskirai. Nukopijuokite `license.toml`, kurį digna komanda pateikė
+šiai laidai, į diegimo katalogą, pakeisdami senąjį:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Nepalikite ankstesnės licencijos"
+
+    Ankstesnei laidai išduotas `license.toml` šios laidos neapima, o kiekviena komanda,
+    tikrinanti licenciją — `user`, `inspection`, `repo` — nepavykus patikrinimui nutraukiama dar prieš paliečiant
+    saugyklą. Prieš tęsdami ją patikrinkite:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### 8 žingsnis: atnaujinkite repozitorijos schemą
 
 Eikite į digna diegimo katalogą ir vykdykite:
 
@@ -9846,7 +10240,7 @@ cd /opt/digna
 
 Tai atnaujins PostgreSQL schemą į naujausią versiją, išsaugant visus esamus duomenis.
 
-#### 7 žingsnis: perkraukite paslaugas
+#### 9 žingsnis: perkraukite paslaugas
 
 Jei naudojate foninę paslaugą:
 
@@ -9871,7 +10265,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### 8 žingsnis: patikrinkite atnaujinimą
+#### 10 žingsnis: patikrinkite atnaujinimą
 
 1. Atidarykite digna dashboard
 2. Patikrinkite, ar sąsaja užsikrauna teisingai
@@ -11249,7 +11643,7 @@ Keycloak yra savarankiškai talpinamas, pilnai OIDC suderinamas tapatybės tiek�
 
 | Reikalavimas | Pastabos |
 |---|---|
-| **Keycloak versija** | 17 arba naujesnė dėl čia naudojamų URL kelių — žr. pastabą 4 žingsnyje |
+| **Keycloak versija** | 17 arba naujesnė dėl čia naudojamų URL kelių — žr. pastabą 5 žingsnyje |
 | **Keycloak rolė** | `realm-admin` tiksliniame realm arba serverio administratorius |
 | **Realm** | Realm, kuriam priklauso jūsų digna vartotojai — nebūtinai `master` |
 | **digna peradresavimo URI** | URL, į kurį vartotojai grįžta po prisijungimo, pvz. `https://digna.yourdomain.com/oidc/callback` |
@@ -12356,6 +12750,188 @@ Reikia pagalbos konfigūruojant SSO?
 **Paskutinį kartą atnaujinta:** August 30, 2026  
 **Išleidimas:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**
+
+---
+
+# PingOne
+Source: https://docs.digna.ai/lt/sso/pingone_sso_guide/
+
+# SSO su PingOne nustatymas
+
+PingOne atitinka OIDC standartą. Dvi jo reikšmės reikalauja dėmesio: **aplinkos ID** (environment ID), kuris yra kiekvieno galinio taško URL dalis, ir **regioninis domenas**, kuris skiriasi Šiaurės Amerikos, Europos, Kanados, Azijos ir Ramiojo vandenyno bei Australijos nuomininkams (tenants).
+
+Ši instrukcija apima **PingOne pusę**: programos sukūrimą ir verčių, kurių reikia digna, surinkimą. digna pusė — `dashboard_config.toml`, testavimas ir trikčių šalinimas — yra tokia pati visiems tiekėjams ir aprašyta [Vienkartinio prisijungimo (SSO) apžvalgoje](overview.md).
+
+---
+
+## Prieš pradėdami
+
+| Reikalavimas | Pastabos |
+|---|---|
+| **PingOne rolė** | Environment Admin arba Identity Data Admin tikslinėje aplinkoje |
+| **Aplinka** | PingOne aplinka, kuriai priklauso jūsų digna vartotojai |
+| **digna peradresavimo URI** | URL, į kurį vartotojai grįžta po prisijungimo, pvz. `https://digna.yourdomain.com/oidc/callback` |
+
+---
+
+## 1 žingsnis: Sukurkite programą
+
+1. Prisijunkite prie PingOne administravimo konsolės ir pasirinkite savo aplinką
+2. Eikite į **Applications → Applications**
+3. Spauskite mygtuką **+**
+4. Laukelyje **Application Name** įveskite `digna`
+5. Pasirinkite **OIDC Web App**
+6. Spauskite **Save**
+
+!!! warning "Rinkitės OIDC Web App, o ne Single-Page App"
+
+    *Single-Page App* ir *Native App* sukuria viešuosius klientus, kurie negali saugoti slaptumo rakto. digna keičia autorizacijos kodą savo backend'e, todėl jai reikia konfidencialaus **OIDC Web App** tipo.
+
+---
+
+## 2 žingsnis: Sukonfigūruokite peradresavimo URI
+
+1. Atidarykite programos skirtuką **Configuration**
+2. Spauskite pieštuko piktogramą, kad redaguotumėte
+3. Patikrinkite, ar **Response Type** yra *Code*, o **Grant Type** yra *Authorization Code*
+4. Skiltyje **Redirect URIs** įveskite savo digna callback URL:
+
+```
+https://digna.yourdomain.com/oidc/callback
+```
+
+5. **Token Endpoint Authentication Method** nustatykite į *Client Secret Post* arba *Client Secret Basic*
+6. Spauskite **Save**
+
+---
+
+## 3 žingsnis: Įjunkite programą
+
+Programos eilutėje arba detalių skydelyje perjunkite jungiklį į **enabled**.
+
+!!! warning "Naujos programos sukuriamos išjungtos"
+
+    PingOne sukuria programas išjungtoje būsenoje. Išjungta programa autorizacijos žingsnyje grąžina klaidą, kurioje jungiklis neminimas, todėl verta tai patikrinti prieš ieškant kitų klaidų.
+
+---
+
+## 4 žingsnis: Suteikite apimtis (scopes)
+
+1. Atidarykite skirtuką **Resources**
+2. Patikrinkite, ar suteikta `openid`, ir pridėkite `profile` bei `email` iš resurso **OpenID Connect**
+3. Spauskite **Save**
+
+---
+
+## 5 žingsnis: Priskirkite vartotojus
+
+1. Atidarykite skirtuką **Access**
+2. Pridėkite populiaciją (population) arba grupes, kurių nariai gali naudotis digna
+3. Spauskite **Save**
+
+---
+
+## 6 žingsnis: Surinkite kredencialus ir aplinkos ID
+
+Skirtuke **Configuration** išskleiskite **General**:
+
+- **Client ID** → tampa `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → tampa `DIGNA_OIDC_CLIENT_SECRET` (spauskite akies piktogramą)
+- **Environment ID** → įrašomas į atradimo (discovery) URL
+
+Tame pačiame skirtuke nurodytas ir paruoštas **OIDC Discovery Endpoint**, kurį galite nukopijuoti tiesiogiai, užuot sudarinėję rankiniu būdu.
+
+---
+
+## 7 žingsnis: Sudarykite atradimo URL
+
+Įrašykite aplinkos ID ir savo regiono domeną:
+
+```
+https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
+```
+
+| Regionas | Domenas |
+|---|---|
+| Šiaurės Amerika | `auth.pingone.com` |
+| Europa | `auth.pingone.eu` |
+| Kanada | `auth.pingone.ca` |
+| Azija ir Ramusis vandenynas | `auth.pingone.asia` |
+| Australija | `auth.pingone.com.au` |
+
+Europos aplinkai:
+
+```
+https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
+```
+
+!!! tip "Kopijuokite, o ne rašykite ranka"
+
+    Regioninis domenas yra dažniausia klaida PingOne integracijoje, o neteisingas regionas grąžina 404, o ne naudingą pranešimą. Naudokite **OIDC Discovery Endpoint** reikšmę iš 6 žingsnio.
+
+---
+
+## 8 žingsnis: Konfigūruokite digna
+
+### `dashboard/dashboard_config.toml`
+
+```toml
+[login]
+usePassword = true
+
+[[login.oidc]]
+key = "pingone"
+label = "Login with PingOne"
+```
+
+### `config.toml`
+
+```toml
+[oidc_clients.pingone]
+DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
+DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
+DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
+```
+
+Abiejuose failuose `key` turi sutapti — čia `pingone`.
+
+---
+
+## 9 žingsnis: Išbandykite
+
+Perkraukite backend ir web serverį, tada atidarykite dashboard. Visą kontrolinį sąrašą rasite skyriuje [Prisijungimo testavimas](overview.md#testing-login).
+
+---
+
+## PingOne trikčių šalinimas
+
+### 404 atradimo URL
+
+Neteisingas regioninis domenas arba aplinkos ID. Palyginkite su **OIDC Discovery Endpoint**, rodomu programos skirtuke Configuration.
+
+### NOT_FOUND arba Application Disabled
+
+Programos jungiklis iš 3 žingsnio vis dar išjungtas.
+
+### Redirect URI Mismatch
+
+PingOne lygina visą eilutę. Patikrinkite **Configuration → Redirect URIs**, ar nėra galinio brūkšnio (/) arba schemos skirtumo.
+
+### Prisijungimas pavyksta, bet email teiginys (claim) nepasiekia digna
+
+Skirtuke **Resources** nesuteiktos apimtys `email` ir `profile`.
+
+### Vartotojas nemato programos
+
+Skirtuke **Access** jokiai populiacijai ar grupei nesuteikta prieiga.
+
+---
+
+## Taip pat žiūrėkite
+
+- [Vienkartinio prisijungimo (SSO) apžvalga](overview.md) — konfigūracijos nuorodos, testavimas ir bendras trikčių šalinimas
+- [PingOne: OIDC programos konfigūracija](https://docs.pingidentity.com/pingone/)
 
 ---
 
@@ -14047,185 +14623,3 @@ Structural monitoring works across the data platforms *digna* connects to — Te
 - [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
 
 ---
-
----
-
-# PingOne
-Source: https://docs.digna.ai/lt/sso/pingone_sso_guide/
-
-# Set up SSO with PingOne
-
-PingOne is OIDC-compliant. Two of its values need care: the **environment ID**, which appears in every endpoint URL, and the **regional domain**, which differs between the North American, European, Canadian, Asia-Pacific and Australian tenants.
-
-This guide covers the **PingOne side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
-
----
-
-## Before You Start
-
-| Requirement | Notes |
-|---|---|
-| **PingOne role** | Environment Admin or Identity Data Admin on the target environment |
-| **Environment** | The PingOne environment your digna users belong to |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
-
----
-
-## Step 1: Create the Application
-
-1. Sign in to the PingOne admin console and select your environment
-2. Go to **Applications → Applications**
-3. Click the **+** button
-4. Enter `digna` as the **Application Name**
-5. Select **OIDC Web App**
-6. Click **Save**
-
-!!! warning "Pick OIDC Web App, Not Single-Page App"
-
-    *Single-Page App* and *Native App* create public clients that cannot hold a secret. digna exchanges the authorization code from its backend and needs the confidential **OIDC Web App** type.
-
----
-
-## Step 2: Configure the Redirect URI
-
-1. Open the application's **Configuration** tab
-2. Click the pencil icon to edit
-3. Confirm **Response Type** is *Code* and **Grant Type** is *Authorization Code*
-4. Under **Redirect URIs**, enter your digna callback URL:
-
-```
-https://digna.yourdomain.com/oidc/callback
-```
-
-5. Set **Token Endpoint Authentication Method** to *Client Secret Post* or *Client Secret Basic*
-6. Click **Save**
-
----
-
-## Step 3: Enable the Application
-
-On the application's row or detail panel, switch the toggle to **enabled**.
-
-!!! warning "New Applications Start Disabled"
-
-    PingOne creates applications in a disabled state. A disabled application produces an error at the authorization step that does not mention the toggle, so this is worth confirming before debugging anything else.
-
----
-
-## Step 4: Grant the Scopes
-
-1. Open the **Resources** tab
-2. Confirm that `openid` is granted, and add `profile` and `email` from the **OpenID Connect** resource
-3. Click **Save**
-
----
-
-## Step 5: Assign Users
-
-1. Open the **Access** tab
-2. Add the population or groups whose members may use digna
-3. Click **Save**
-
----
-
-## Step 6: Collect the Credentials and Environment ID
-
-On the **Configuration** tab, expand **General**:
-
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon)
-- **Environment ID** → goes into the discovery URL
-
-The same tab lists the ready-made **OIDC Discovery Endpoint**, which you can copy directly instead of assembling it by hand.
-
----
-
-## Step 7: Build the Discovery URL
-
-Substitute the environment ID and the domain for your region:
-
-```
-https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
-```
-
-| Region | Domain |
-|---|---|
-| North America | `auth.pingone.com` |
-| Europe | `auth.pingone.eu` |
-| Canada | `auth.pingone.ca` |
-| Asia-Pacific | `auth.pingone.asia` |
-| Australia | `auth.pingone.com.au` |
-
-For a European environment:
-
-```
-https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
-```
-
-!!! tip "Copy It Rather Than Type It"
-
-    The regional domain is the single most common mistake in a PingOne integration, and a wrong region gives a 404 rather than a helpful message. Use the **OIDC Discovery Endpoint** value from Step 6.
-
----
-
-## Step 8: Configure digna
-
-### `dashboard/dashboard_config.toml`
-
-```toml
-[login]
-usePassword = true
-
-[[login.oidc]]
-key = "pingone"
-label = "Login with PingOne"
-```
-
-### `config.toml`
-
-```toml
-[oidc_clients.pingone]
-DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
-DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
-DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
-```
-
-The `key` in both files must match — `pingone` here.
-
----
-
-## Step 9: Test
-
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
-
----
-
-## Troubleshooting PingOne
-
-### 404 on the Discovery URL
-
-The regional domain or the environment ID is wrong. Compare with the **OIDC Discovery Endpoint** shown on the application's Configuration tab.
-
-### NOT_FOUND or Application Disabled
-
-The application toggle from Step 3 is still off.
-
-### Redirect URI Mismatch
-
-PingOne matches the full string. Check **Configuration → Redirect URIs** for a trailing slash or a scheme difference.
-
-### Login Succeeds but No Email Claim Reaches digna
-
-The `email` and `profile` scopes have not been granted on the **Resources** tab.
-
-### The User Cannot See the Application
-
-No population or group has been granted access on the **Access** tab.
-
----
-
-## See Also
-
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
-- [PingOne: OIDC application configuration](https://docs.pingidentity.com/pingone/)

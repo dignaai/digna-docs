@@ -1,110 +1,110 @@
-# Set up SSO with AD FS
+# Configurar SSO com AD FS
 
-Active Directory Federation Services is the on-premises option: your own servers issue the tokens, and the discovery URL is your own host name. AD FS supports OpenID Connect from **Windows Server 2016** onwards.
+O Active Directory Federation Services é a opção on-premises: seus próprios servidores emitem os tokens, e a URL de discovery é o seu próprio nome de host. O AD FS suporta OpenID Connect a partir do **Windows Server 2016**.
 
-This guide covers the **AD FS side**: creating the application group and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Este guia cobre o **lado do AD FS**: criar o grupo de aplicativos e recolher os valores que o digna precisa. O lado do digna — `dashboard_config.toml`, testes e resolução de problemas — é o mesmo para todos os provedores e está descrito na [Visão Geral do Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Antes de Começar
 
-| Requirement | Notes |
+| Requisito | Observações |
 |---|---|
-| **AD FS version** | Windows Server 2016 or later — earlier versions have no OIDC support |
-| **Access** | Local administrator on the AD FS server |
-| **Federation service name** | e.g. `adfs.yourdomain.com` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Versão do AD FS** | Windows Server 2016 ou posterior — versões anteriores não têm suporte a OIDC |
+| **Acesso** | Administrador local no servidor AD FS |
+| **Nome do serviço de federação** | ex.: `adfs.yourdomain.com` |
+| **URI de redirect do digna** | A URL para onde os usuários retornam após o login, ex.: `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application Group
+## Passo 1: Criar o Grupo de Aplicativos
 
-1. On the AD FS server, open **AD FS Management**
-2. Right-click **Application Groups** and choose **Add Application Group**
-3. Enter `digna` as the name
-4. Under **Standalone applications** — or **Client-Server applications** depending on your version — select **Server application accessing a web API**
-5. Click **Next**
+1. No servidor AD FS, abra o **AD FS Management**
+2. Clique com o botão direito em **Application Groups** e escolha **Add Application Group**
+3. Insira `digna` como nome
+4. Em **Standalone applications** — ou **Client-Server applications**, dependendo da sua versão — selecione **Server application accessing a web API**
+5. Clique em **Next**
 
 ---
 
-## Step 2: Configure the Server Application
+## Passo 2: Configurar o Aplicativo de Servidor
 
 1. **Name**: `digna backend`
-2. **Client Identifier**: AD FS generates a GUID. Copy it — this becomes `DIGNA_OIDC_CLIENT_ID`
-3. **Redirect URI**: enter your digna callback URL and click **Add**:
+2. **Client Identifier**: o AD FS gera um GUID. Copie-o — ele se torna `DIGNA_OIDC_CLIENT_ID`
+3. **Redirect URI**: insira sua URL de callback do digna e clique em **Add**:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-4. Click **Next**
+4. Clique em **Next**
 
-!!! warning "Click Add, Not Just Next"
+!!! warning "Clique em Add, Não Apenas em Next"
 
-    The redirect URI field has its own **Add** button. Typing a URI and clicking **Next** without pressing **Add** discards it, and the wizard gives no warning. Confirm the URI appears in the list below the field before continuing.
-
----
-
-## Step 3: Generate the Shared Secret
-
-1. Tick **Generate a shared secret**
-2. Copy the generated secret → becomes `DIGNA_OIDC_CLIENT_SECRET`
-3. Click **Next**
-
-!!! warning "The Secret Is Shown Once"
-
-    AD FS displays the shared secret only on this wizard page and cannot show it again. If you lose it, reset it later from the application group's properties.
+    O campo de URI de redirect tem seu próprio botão **Add**. Digitar um URI e clicar em **Next** sem pressionar **Add** o descarta, e o assistente não dá nenhum aviso. Confirme que o URI aparece na lista abaixo do campo antes de continuar.
 
 ---
 
-## Step 4: Configure the Web API
+## Passo 3: Gerar o Segredo Compartilhado
 
-1. **Identifier**: enter the same client identifier from Step 2 and click **Add**
-2. Click **Next**
-3. Choose an **Access Control Policy** — *Permit everyone* is the simplest starting point; restrict it to a group for production
-4. Click **Next**
+1. Marque **Generate a shared secret**
+2. Copie o segredo gerado → torna-se `DIGNA_OIDC_CLIENT_SECRET`
+3. Clique em **Next**
+
+!!! warning "O Segredo É Exibido Uma Única Vez"
+
+    O AD FS exibe o segredo compartilhado apenas nesta página do assistente e não pode mostrá-lo novamente. Se você o perder, redefina-o depois nas propriedades do grupo de aplicativos.
 
 ---
 
-## Step 5: Grant the Permitted Scopes
+## Passo 4: Configurar a Web API
 
-On the **Configure Application Permissions** step, tick:
+1. **Identifier**: insira o mesmo client identifier do Passo 2 e clique em **Add**
+2. Clique em **Next**
+3. Escolha uma **Access Control Policy** — *Permit everyone* é o ponto de partida mais simples; restrinja-a a um grupo em produção
+4. Clique em **Next**
+
+---
+
+## Passo 5: Conceder os Scopes Permitidos
+
+Na etapa **Configure Application Permissions**, marque:
 
 - `openid`
 - `profile`
 - `email`
 
-Then click **Next** and complete the wizard.
+Depois clique em **Next** e conclua o assistente.
 
-!!! warning "openid Is Not Ticked by Default"
+!!! warning "openid Não Vem Marcado por Padrão"
 
-    AD FS pre-selects only `user_impersonation` in some versions. Without `openid`, the token endpoint returns an OAuth access token rather than an ID token, and digna cannot identify the user.
+    Em algumas versões, o AD FS pré-seleciona apenas `user_impersonation`. Sem `openid`, o endpoint de token retorna um access token OAuth em vez de um ID token, e o digna não consegue identificar o usuário.
 
 ---
 
-## Step 6: Confirm the Discovery Endpoint
+## Passo 6: Confirmar o Endpoint de Discovery
 
-Substitute your federation service name:
+Substitua pelo nome do seu serviço de federação:
 
 ```
 https://<adfs_host>/adfs/.well-known/openid-configuration
 ```
 
-For example:
+Por exemplo:
 
 ```
 https://adfs.yourdomain.com/adfs/.well-known/openid-configuration
 ```
 
-Open it in a browser. A JSON document confirms OIDC is enabled and the host name is right.
+Abra-a em um navegador. Um documento JSON confirma que o OIDC está habilitado e que o nome de host está correto.
 
-!!! note "The Backend Must Trust the Certificate"
+!!! note "O Backend Deve Confiar no Certificado"
 
-    An internal certificate authority is common for AD FS. The machine running the digna backend makes its own outbound HTTPS call to this URL, so the issuing CA must be in that machine's trust store — not only in the browsers of the people logging in.
+    Uma autoridade certificadora interna é comum no AD FS. A máquina que executa o backend do digna faz sua própria chamada HTTPS de saída para esta URL, portanto a CA emissora deve estar no repositório de confiança dessa máquina — não apenas nos navegadores das pessoas que fazem login.
 
 ---
 
-## Step 7: Configure digna
+## Passo 7: Configurar o digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -127,41 +127,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://adfs.yourdomain.com/adfs/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `adfs` here.
+A `key` em ambos os arquivos deve coincidir — `adfs` aqui.
 
 ---
 
-## Step 8: Test
+## Passo 8: Testar
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
-
----
-
-## Troubleshooting AD FS
-
-### MSIS9611: The Client Is Not Allowed to Access the Resource
-
-The web API identifier in Step 4 does not match the client identifier, or the scopes in Step 5 were not granted. Both are editable from the application group's properties.
-
-### MSIS9602: Invalid redirect_uri
-
-The URI was typed but not added with the **Add** button, or differs from `DIGNA_OIDC_REDIRECT_URI`. Check **Application Groups → digna → digna backend → Properties**.
-
-### No ID Token Is Returned
-
-The `openid` scope is missing from the application permissions.
-
-### The Backend Cannot Reach the Discovery URL
-
-Either DNS on the backend host does not resolve the federation service name, or the AD FS certificate is not trusted there. Test with `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` from the digna server itself.
-
-### Events to Check
-
-The AD FS server logs failures to **Applications and Services Logs → AD FS → Admin** in Event Viewer, usually with a more specific reason than the browser shows.
+Reinicie o backend e o servidor web, depois abra o dashboard. Veja [Teste de Login](overview.md#testing-login) para a lista completa de verificação.
 
 ---
 
-## See Also
+## Resolução de Problemas do AD FS
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
-- [Microsoft: AD FS OpenID Connect scenarios](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)
+### MSIS9611: O Cliente Não Tem Permissão para Acessar o Recurso
+
+O identificador da web API no Passo 4 não corresponde ao client identifier, ou os scopes do Passo 5 não foram concedidos. Ambos podem ser editados nas propriedades do grupo de aplicativos.
+
+### MSIS9602: redirect_uri Inválido
+
+O URI foi digitado, mas não adicionado com o botão **Add**, ou difere de `DIGNA_OIDC_REDIRECT_URI`. Verifique **Application Groups → digna → digna backend → Properties**.
+
+### Nenhum ID Token É Retornado
+
+O scope `openid` está faltando nas permissões do aplicativo.
+
+### O Backend Não Consegue Acessar a URL de Discovery
+
+Ou o DNS no host do backend não resolve o nome do serviço de federação, ou o certificado do AD FS não é confiável ali. Teste com `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` a partir do próprio servidor do digna.
+
+### Eventos a Verificar
+
+O servidor AD FS registra as falhas em **Applications and Services Logs → AD FS → Admin** no Event Viewer, geralmente com um motivo mais específico do que o navegador mostra.
+
+---
+
+## Veja Também
+
+- [Visão Geral do Single Sign-On](overview.md) — referência de configuração, testes e resolução geral de problemas
+- [Microsoft: cenários de OpenID Connect do AD FS](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)

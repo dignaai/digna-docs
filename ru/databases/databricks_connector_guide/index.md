@@ -1,106 +1,106 @@
-# Source Connector for Databricks
+# Коннектор источника для Databricks
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Это руководство описывает, как настроить *digna* для подключения к Databricks через **ODBC** со
+строкой подключения **без DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+Сторона *digna* одинакова для всех технологий — где создаются подключения, как шифруются
+значения свойств, как проверяется подключение и что означают режимы профилирования. Она описана
+в разделе [Обзор подключений к базам данных](overview.md). Эта страница описывает то, что
+специфично для Databricks.
 
-!!! note "Unity Catalog is required"
+!!! note "Требуется Unity Catalog"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    *digna* считывает доступные каталоги из `system.information_schema.catalogs`, поэтому в
+    рабочей области должен быть включён Unity Catalog. В ранних релизах *digna* для рабочих
+    областей без Unity Catalog была отдельная технология «Databricks Legacy»; она больше
+    недоступна.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Установка драйвера ODBC {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Установите **Databricks ODBC Driver** на машину, где работает бэкенд *digna*, следуя
+[руководству по установке Databricks](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-| Databricks field | Used as |
+В зависимости от версии драйвер регистрируется как **Simba Spark ODBC Driver** или как
+**Databricks ODBC Driver**. Узнайте точное зарегистрированное имя на вашем хосте, как описано в
+разделе [Установка драйвера ODBC на хосте digna](overview.md#install-the-driver).
+
+---
+
+## 2. Сбор параметров подключения {: #2-gather-the-connection-details }
+
+Все значения берутся из SQL warehouse (или кластера), который должна использовать *digna*.
+Откройте его в рабочей области Databricks и перейдите в **Connection details**:
+
+| Поле Databricks | Используется как |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, обычно `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+Для аутентификации создайте **personal access token** — см.
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+Токены принадлежат пользователю или сервисному принципалу (service principal), и этому
+принципалу нужны права `USE CATALOG`, `USE SCHEMA` и `SELECT` на исходные данные.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. Свойства ODBC {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Пример, а не спецификация"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    Набор ниже — одна комбинация, которая заведомо работает. Свойства принадлежат драйверу
+    Databricks/Simba, поэтому их имена, значения по умолчанию и допустимые значения различаются
+    между версиями драйвера — драйвер не раз переименовывали и расширяли его параметры
+    аутентификации — и между платформами. Используйте этот набор как отправную точку и
+    сверяйтесь с документацией установленной версии драйвера.
 
-Add the following properties in the **Add DB Connection** screen:
+Добавьте следующие свойства на экране **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Ключ | Пример значения | Примечания |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Должно совпадать с именем драйвера, зарегистрированным на хосте *digna* |
+| `Host` | `<workspace>.cloud.databricks.com` | Server hostname хранилища, например `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path хранилища или кластера |
+| `SSL` | `1` | Конечные точки Databricks работают только по TLS |
+| `ThriftTransport` | `2` | Транспорт HTTP, который используют конечные точки SQL |
+| `AuthMech` | `3` | Аутентификация по токену |
+| `UID` | `token` | Буквально слово `token`, а не имя пользователя |
+| `PWD` | `dapi…` | Personal access token. Отметьте **Encrypted** |
+| `UseNativeQuery` | `1` | Передаёт SQL *digna* без изменений — см. ниже |
 
-The resulting connection string looks like this:
+Итоговая строка подключения выглядит так:
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Оставляйте `UseNativeQuery=1`"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    При `UseNativeQuery=0` — значении драйвера по умолчанию — драйвер переписывает входящий SQL
+    в то, что он считает переносимым синтаксисом ODBC. *digna* уже генерирует Databricks SQL,
+    поэтому такое переписывание может изменить экранирование обратными кавычками и литералы дат,
+    и профилирование завершается ошибкой на операторах, которые корректны в исходном виде.
 
-### OAuth instead of a token
+### OAuth вместо токена
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+Для сервисного принципала с аутентификацией OAuth machine-to-machine замените `AuthMech`,
+`UID` и `PWD` на:
 
-| Key | Example value | Notes |
+| Ключ | Пример значения | Примечания |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
 | `Auth_Flow` | `1` | Client credentials |
-| `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Client_ID` | `<application id>` | Сервисный принципал |
+| `Auth_Client_Secret` | `<client secret>` | Отметьте **Encrypted** |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. Настройка *digna* {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+На экране **Add DB Connection** укажите следующее:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -111,45 +111,47 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Особенности Databricks {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **Хранилище (warehouse) должно быть запущено** или иметь возможность запуститься в момент
+  подключения *digna*. Запуск хранилища из остановленного состояния может занять больше времени,
+  чем тайм-аут подключения, — если проверка не проходит с первой попытки после простоя,
+  повторите её.
+- **Каталоги берутся из рабочей области.** В отличие от большинства технологий, одно подключение
+  к Databricks охватывает все каталоги, которые разрешено видеть принципалу, поэтому одно
+  подключение может обслуживать источники из разных каталогов.
+- **Режимы профилирования.** *Permanent* создаёт рабочие таблицы в **Work Schema** внутри
+  каталога источника, поэтому принципалу нужно право `CREATE TABLE` в ней. *Session* использует
+  `CREATE TEMPORARY TABLE` и не затрагивает **Work Schema**. Для *Standard* нужен только доступ на
+  чтение.
+- **Бессерверные хранилища (serverless warehouses) работают** так же; отличается только
+  `HTTPPath`.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. Проверка драйвера (необязательно) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+Для подключения без DSN настраивать источник данных ODBC не требуется, но собственный диалог
+драйвера — удобный способ убедиться, что драйвер, хранилище и токен работают, прежде чем
+вводить их в *digna*.
 
-#### Step 1
-![Step 1](images/databricks/create_odbc_data_source_step1.png)
+#### Шаг 1
+![Шаг 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
-![Step 2](images/databricks/create_odbc_data_source_step2.png)
+#### Шаг 2
+![Шаг 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
-![Step 3](images/databricks/create_odbc_data_source_step3.png)
+#### Шаг 3
+![Шаг 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
-![Step 4](images/databricks/create_odbc_data_source_step4.png)
+#### Шаг 4
+![Шаг 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### Шаг 5 – проверка подключения
 
-Click the **TEST** button. A successful connection should look like this:
+Нажмите кнопку **TEST**. Успешное подключение должно выглядеть так:
 
-![Step 5](images/databricks/create_odbc_data_source_step5.png)
+![Шаг 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+Введённые здесь хост, HTTP path и токен — это именно те значения, которые принимают свойства из
+[раздела 3](#3-odbc-properties).

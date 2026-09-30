@@ -1,95 +1,95 @@
-# Set up SSO with Auth0
+# Налаштування SSO з Auth0
 
-Auth0 is OIDC-compliant and exposes a discovery endpoint per tenant. The main thing to get right is the tenant domain, which appears in the discovery URL and changes if you enable a custom domain.
+Auth0 сумісний з OIDC і надає кінцеву точку виявлення для кожного тенанта. Найважливіше — правильно вказати домен тенанта, який входить до URL виявлення і змінюється, якщо ввімкнути власний домен.
 
-This guide covers the **Auth0 side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Цей посібник охоплює **бік Auth0**: створення застосунку та збирання значень, потрібних digna. Бік digna — `dashboard_config.toml`, тестування та усунення несправностей — однаковий для всіх постачальників і описаний в [Огляді єдиного входу](overview.md).
 
 ---
 
-## Before You Start
+## Перш ніж почати
 
-| Requirement | Notes |
+| Вимога | Примітки |
 |---|---|
-| **Auth0 role** | Admin on the tenant |
-| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Роль в Auth0** | Адміністратор тенанта |
+| **Домен тенанта** | наприклад, `yourcompany.eu.auth0.com` — сегмент регіону має значення |
+| **URI перенаправлення digna** | URL, на який користувачі повертаються після входу, наприклад `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application
+## Крок 1: Створіть застосунок
 
-1. Sign in to the [Auth0 Dashboard](https://manage.auth0.com)
-2. Go to **Applications → Applications**
-3. Click **Create Application**
-4. Name it `digna` and choose **Regular Web Applications**
-5. Click **Create**
+1. Увійдіть в [Auth0 Dashboard](https://manage.auth0.com)
+2. Перейдіть до **Applications → Applications**
+3. Натисніть **Create Application**
+4. Назвіть його `digna` і виберіть **Regular Web Applications**
+5. Натисніть **Create**
 
-!!! warning "Choose Regular Web Applications"
+!!! warning "Виберіть Regular Web Applications"
 
-    *Single Page Application* and *Native* create public clients with no secret. digna performs the code exchange from its backend and needs a confidential client, so **Regular Web Applications** is the correct type. Unlike some providers, Auth0 does let you change the type later under **Settings → Application Type**.
+    *Single Page Application* і *Native* створюють публічних клієнтів без секрету. digna виконує обмін кодом зі свого бекенду, і їй потрібен конфіденційний клієнт, тому правильний тип — **Regular Web Applications**. На відміну від деяких постачальників, Auth0 дозволяє змінити тип пізніше в **Settings → Application Type**.
 
 ---
 
-## Step 2: Add the Callback URL
+## Крок 2: Додайте URL зворотного виклику
 
-On the application's **Settings** tab:
+На вкладці **Settings** застосунку:
 
-1. Find **Allowed Callback URLs**
-2. Enter your digna callback URL:
+1. Знайдіть **Allowed Callback URLs**
+2. Введіть URL зворотного виклику digna:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Allowed Logout URLs** to your dashboard URL
-4. Scroll to the bottom and click **Save Changes**
+3. За бажанням укажіть в **Allowed Logout URLs** URL свого дашборду
+4. Прокрутіть донизу і натисніть **Save Changes**
 
-!!! note "Comma-Separated, Not Newline-Separated"
+!!! note "Розділяйте комами, а не новими рядками"
 
-    Auth0 accepts several callback URLs in this field, separated by commas. A list separated only by newlines is read as one malformed URL and silently matches nothing.
-
----
-
-## Step 3: Collect the Credentials
-
-Still on **Settings**, in the **Basic Information** panel:
-
-- **Domain** → goes into the discovery URL
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click to reveal)
+    Auth0 приймає в цьому полі кілька URL зворотного виклику, розділених комами. Список, розділений лише новими рядками, сприймається як один некоректний URL і непомітно не збігається ні з чим.
 
 ---
 
-## Step 4: Confirm the Grant Type
+## Крок 3: Зберіть облікові дані
 
-1. Go to **Settings → Advanced Settings → Grant Types**
-2. Confirm **Authorization Code** is ticked
+Там само, у **Settings**, на панелі **Basic Information**:
 
-It is enabled by default for Regular Web Applications. If it has been unticked, digna's login fails with `unauthorized_client`.
+- **Domain** → входить до URL виявлення
+- **Client ID** → це буде `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → це буде `DIGNA_OIDC_CLIENT_SECRET` (натисніть, щоб показати)
 
 ---
 
-## Step 5: Build the Discovery URL
+## Крок 4: Перевірте тип дозволу (grant type)
 
-Substitute the **Domain** from Step 3:
+1. Перейдіть до **Settings → Advanced Settings → Grant Types**
+2. Переконайтеся, що **Authorization Code** позначено
+
+Для Regular Web Applications його ввімкнено за замовчуванням. Якщо позначку знято, вхід у digna не вдається з помилкою `unauthorized_client`.
+
+---
+
+## Крок 5: Складіть URL виявлення
+
+Підставте **Domain** з кроку 3:
 
 ```
 https://<your_tenant_domain>/.well-known/openid-configuration
 ```
 
-For example:
+Наприклад:
 
 ```
 https://yourcompany.eu.auth0.com/.well-known/openid-configuration
 ```
 
-!!! warning "Custom Domains Change the Issuer"
+!!! warning "Власні домени змінюють видавця (issuer)"
 
-    If your tenant uses a custom domain such as `login.yourcompany.com`, use that domain in the discovery URL. Mixing the two — the canonical domain in the discovery URL, the custom one in the browser — produces an issuer mismatch, and the token is rejected after an otherwise successful login.
+    Якщо ваш тенант використовує власний домен, наприклад `login.yourcompany.com`, укажіть цей домен в URL виявлення. Змішування обох — канонічного домену в URL виявлення і власного в браузері — призводить до невідповідності видавця, і токен відхиляється після загалом успішного входу.
 
 ---
 
-## Step 6: Configure digna
+## Крок 6: Налаштуйте digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -112,37 +112,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `auth0` here.
+`key` в обох файлах має збігатися — тут це `auth0`.
 
 ---
 
-## Step 7: Test
+## Крок 7: Тестування
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Перезапустіть бекенд і вебсервер, потім відкрийте дашборд. Повний контрольний список див. у розділі [Тестування входу](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Auth0
+## Усунення несправностей Auth0
 
-### Callback URL Mismatch
+### Невідповідність URL зворотного виклику
 
-Auth0's error page names the URL it received. Add it to **Allowed Callback URLs**, checking that entries are comma-separated.
+Сторінка помилки Auth0 показує отриманий URL. Додайте його в **Allowed Callback URLs**, перевіривши, що записи розділено комами.
 
 ### unauthorized_client
 
-**Authorization Code** is not enabled under **Advanced Settings → Grant Types**, or the application type is not Regular Web Applications.
+**Authorization Code** не ввімкнено в **Advanced Settings → Grant Types**, або тип застосунку не Regular Web Applications.
 
-### Access Denied After a Successful Login
+### Доступ заборонено після успішного входу
 
-A Rule, Action or Post-Login trigger in the tenant is rejecting the user. Check **Actions → Flows → Login** and the tenant logs under **Monitoring → Logs**, which show the exact reason.
+Правило (Rule), дія (Action) або тригер Post-Login у тенанті відхиляє користувача. Перевірте **Actions → Flows → Login** і журнали тенанта в **Monitoring → Logs**, де вказано точну причину.
 
-### Issuer Mismatch
+### Невідповідність видавця
 
-The discovery URL and the domain the browser was sent to differ — usually the canonical tenant domain versus a custom domain. Use one consistently.
+URL виявлення і домен, на який було спрямовано браузер, відрізняються — зазвичай це канонічний домен тенанта і власний домен. Використовуйте один із них послідовно.
 
 ---
 
-## See Also
+## Див. також
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Огляд єдиного входу](overview.md) — довідник з конфігурації, тестування та загальне усунення несправностей
 - [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)

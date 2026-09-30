@@ -1,106 +1,107 @@
-# Source Connector for Databricks
+# Bronconnector voor Databricks
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Deze gids beschrijft hoe je *digna* configureert om via **ODBC** verbinding te maken met
+Databricks, met een **DSN-loze** connection string.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+De *digna*-kant van de configuratie is voor elke technologie hetzelfde — waar verbindingen worden
+aangemaakt, hoe property-waarden worden versleuteld, hoe een verbinding wordt getest en wat de
+profiling modes betekenen. Dat wordt beschreven in het
+[Overzicht databaseverbindingen](overview.md). Deze pagina behandelt wat specifiek is voor
+Databricks.
 
-!!! note "Unity Catalog is required"
+!!! note "Unity Catalog is vereist"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    *digna* leest de beschikbare catalogs uit `system.information_schema.catalogs`, dus de
+    workspace moet Unity Catalog ingeschakeld hebben. Eerdere *digna*-releases boden een aparte
+    technologie "Databricks Legacy" voor workspaces zonder Unity Catalog; die is niet meer
+    beschikbaar.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Installeer de ODBC-driver {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Installeer de **Databricks ODBC Driver** op de machine waarop de *digna*-backend draait, volgens
+de [installatiegids van Databricks](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-| Databricks field | Used as |
+Afhankelijk van de versie registreert de driver zich als **Simba Spark ODBC Driver** of als
+**Databricks ODBC Driver**. Lees de exacte geregistreerde naam op je host af zoals beschreven in
+[Installeer de ODBC-driver op de digna-host](overview.md#install-the-driver).
+
+---
+
+## 2. Verzamel de verbindingsgegevens {: #2-gather-the-connection-details }
+
+Alle waarden komen van het SQL warehouse (of cluster) dat *digna* moet gebruiken. Open het in de
+Databricks-workspace en ga naar **Connection details**:
+
+| Databricks-veld | Gebruikt als |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, normaal `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+Maak voor de authenticatie een **personal access token** aan — zie
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+Tokens horen bij een gebruiker of service principal, en die principal heeft `USE CATALOG`,
+`USE SCHEMA` en `SELECT` op de brondata nodig.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. ODBC-properties {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Een voorbeeld, geen specificatie"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    De onderstaande set is één combinatie waarvan bekend is dat ze werkt. De properties horen bij
+    de Databricks/Simba-driver, dus hun namen, standaardwaarden en toegestane waarden verschillen
+    per driverversie — de driver is meer dan eens hernoemd en de authenticatieopties zijn
+    uitgebreid — en per platform. Gebruik dit als startpunt en raadpleeg de documentatie van de
+    geïnstalleerde driverversie.
 
-Add the following properties in the **Add DB Connection** screen:
+Voeg de volgende properties toe in het scherm **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Key | Voorbeeldwaarde | Opmerkingen |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Moet overeenkomen met de drivernaam die op de *digna*-host is geregistreerd |
+| `Host` | `<workspace>.cloud.databricks.com` | Server hostname van het warehouse, bijv. `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP-pad van het warehouse of cluster |
+| `SSL` | `1` | Databricks-endpoints werken alleen met TLS |
+| `ThriftTransport` | `2` | HTTP-transport, dat is wat de SQL-endpoints spreken |
+| `AuthMech` | `3` | Tokenauthenticatie |
+| `UID` | `token` | Het letterlijke woord `token`, geen gebruikersnaam |
+| `PWD` | `dapi…` | Het personal access token. Vink **Encrypted** aan |
+| `UseNativeQuery` | `1` | Geeft de SQL van *digna* ongewijzigd door — zie hieronder |
 
-The resulting connection string looks like this:
+De resulterende connection string ziet er zo uit:
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Houd `UseNativeQuery=1` aan"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    Met `UseNativeQuery=0` — de standaardinstelling van de driver — herschrijft de driver
+    binnenkomende SQL naar wat hij als portabele ODBC-syntaxis beschouwt. *digna* genereert al
+    Databricks-SQL, dus het herschrijven kan de quoting met backticks en datumliteralen
+    veranderen, waarna profiling mislukt op statements die zoals geschreven geldig zijn.
 
-### OAuth instead of a token
+### OAuth in plaats van een token
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+Voor een service principal met OAuth machine-to-machine-authenticatie vervang je `AuthMech`,
+`UID` en `PWD` door:
 
-| Key | Example value | Notes |
+| Key | Voorbeeldwaarde | Opmerkingen |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
 | `Auth_Flow` | `1` | Client credentials |
 | `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Client_Secret` | `<client secret>` | Vink **Encrypted** aan |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. *digna*-configuratie {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Geef in het scherm **Add DB Connection** het volgende op:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -111,45 +112,46 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Opmerkingen over Databricks {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **Het warehouse moet draaien**, of kunnen starten, wanneer *digna* verbinding maakt. Een
+  warehouse dat vanuit een gestopte toestand opstart, kan langer nodig hebben dan de
+  verbindingstime-out — als de test bij de eerste poging na een periode van inactiviteit mislukt,
+  probeer het dan opnieuw.
+- **Catalogs komen uit de workspace.** Anders dan bij de meeste technologieën bereikt één
+  Databricks-verbinding elke catalog die de principal mag zien, dus één verbinding kan bronnen in
+  meerdere catalogs bedienen.
+- **Profiling modes.** *Permanent* maakt de werktabellen aan in **Work Schema** binnen de catalog
+  van de bron, dus de principal heeft daar `CREATE TABLE` nodig. *Session* gebruikt
+  `CREATE TEMPORARY TABLE` en raakt **Work Schema** niet aan. *Standard* heeft alleen leesrechten
+  nodig.
+- **Serverless warehouses werken** op dezelfde manier; alleen `HTTPPath` verschilt.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. De driver controleren (optioneel) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+Voor een DSN-loze verbinding hoef je geen ODBC-databron te configureren, maar het eigen
+dialoogvenster van de driver is een handige manier om te bevestigen dat de driver, het warehouse
+en het token werken, voordat je ze in *digna* invoert.
 
-#### Step 1
-![Step 1](images/databricks/create_odbc_data_source_step1.png)
+#### Stap 1
+![Stap 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
-![Step 2](images/databricks/create_odbc_data_source_step2.png)
+#### Stap 2
+![Stap 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
-![Step 3](images/databricks/create_odbc_data_source_step3.png)
+#### Stap 3
+![Stap 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
-![Step 4](images/databricks/create_odbc_data_source_step4.png)
+#### Stap 4
+![Stap 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### Stap 5 – Test de verbinding
 
-Click the **TEST** button. A successful connection should look like this:
+Klik op de knop **TEST**. Een geslaagde verbinding ziet er zo uit:
 
-![Step 5](images/databricks/create_odbc_data_source_step5.png)
+![Stap 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+De host, het HTTP-pad en het token die je hier invoert, zijn precies de waarden die de properties
+in [sectie 3](#3-odbc-properties) krijgen.

@@ -1,84 +1,86 @@
-# Source Connector for Snowflake
+# Коннектор источника для Snowflake
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+Это руководство описывает, как настроить *digna* для подключения к Snowflake через **ODBC** со
+строкой подключения **без DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Сторона *digna* одинакова для всех технологий — где создаются подключения, как шифруются
+значения свойств, как проверяется подключение и что означают режимы профилирования. Она описана
+в разделе [Обзор подключений к базам данных](overview.md). Эта страница описывает то, что
+специфично для Snowflake.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Установка драйвера ODBC {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Установите **Snowflake ODBC Driver** на машину, где работает бэкенд *digna*, следуя
+[руководству по установке Snowflake](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-!!! important "An example, not a specification"
+Драйвер регистрируется как **SnowflakeDSIIDriver**. Узнайте точное зарегистрированное имя на
+вашем хосте, как описано в разделе [Установка драйвера ODBC на хосте digna](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. Свойства ODBC {: #2-odbc-properties }
+
+Подключение к Snowflake выполняется с помощью **programmatic access token (PAT)** — это способ
+аутентификации, на котором проверена *digna*, и именно его Snowflake требует для учётных
+записей, где вход только по паролю заблокирован.
+
+!!! important "Пример, а не спецификация"
+
+    Набор ниже — одна комбинация, которая заведомо работает. Свойства принадлежат драйверу
+    Snowflake ODBC, поэтому их имена, значения по умолчанию и допустимые значения различаются
+    между версиями драйвера и платформами, а то, какие варианты аутентификации разрешены для
+    вашей учётной записи, определяется её политикой безопасности. Используйте этот набор как
+    отправную точку и сверяйтесь с документацией установленной версии драйвера.
+
+| Ключ | Пример значения | Примечания |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Должно совпадать с именем драйвера, зарегистрированным на хосте *digna* |
+| `Server` | `<account>.snowflakecomputing.com` | Идентификатор учётной записи плюс суффикс, например `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Пользователь Snowflake, которому принадлежит токен |
+| `Database` | `TEST` | База данных, содержащая исходные схемы. Это единственная база данных, которую может профилировать это подключение |
+| `Schema` | `PUBLIC` | Схема сессии по умолчанию |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Включает аутентификацию по токену |
+| `token` | `<programmatic access token>` | Отметьте **Encrypted** |
 
-The resulting connection string looks like this:
+Итоговая строка подключения выглядит так:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Хранилище (warehouse) и роль
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+Для выполнения запросов нужно хранилище (warehouse). Если у пользователя *digna* есть хранилище и
+роль по умолчанию, сессия использует их, и настраивать ничего не нужно. В противном случае
+добавьте:
 
-| Key | Example value | Notes |
+| Ключ | Пример значения | Примечания |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | Хранилище, в котором выполняются запросы профилирования |
+| `Role` | `DIGNA_READER` | Роль, права которой использует сессия |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Выделите digna собственное хранилище"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Отдельное небольшое хранилище с автоматической приостановкой делает затраты на
+    профилирование прозрачными и не даёт *digna* конкурировать за вычислительные ресурсы с
+    интерактивными пользователями.
 
-### Password authentication
+### Аутентификация по паролю
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Если учётная запись это ещё допускает, вместо токена можно использовать пароль — удалите
+`authenticator` и `token` и добавьте:
 
-| Key | Example value | Notes |
+| Ключ | Пример значения | Примечания |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Отметьте **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Настройка *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+На экране **Add DB Connection** укажите следующее:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -89,40 +91,41 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Особенности Snowflake {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **Срок действия токенов истекает.** Programmatic access token выдаётся с ограниченным сроком
+  действия, и профилирование прекращается в день его истечения. Запишите дату окончания срока
+  при создании токена и введите новый токен в свойство `token` — зашифрованные значения можно
+  заменить, но нельзя прочитать обратно.
+- **Одно подключение видит одну базу данных.** *digna* предлагает схемы базы данных, указанной в
+  `Database`, потому что Snowflake сообщает в качестве каталога только текущую базу данных. Для
+  исходных таблиц в другой базе данных нужно отдельное подключение.
+- **Идентификаторы записываются в верхнем регистре**, если только они не были созданы в
+  кавычках. *digna* использует имена в том виде, в каком их сообщает Snowflake.
+- **Режимы профилирования.** *Permanent* создаёт рабочие таблицы в **Work Schema**, поэтому роли
+  нужно право `CREATE TABLE` в ней. *Session* использует `CREATE TEMPORARY TABLE` и не затрагивает
+  **Work Schema**. Для *Standard* нужен только доступ на чтение — и никаких прав на запись.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Проверка драйвера (необязательно) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+Для подключения без DSN настраивать источник данных ODBC не требуется, но собственный диалог
+драйвера — удобный способ убедиться, что драйвер, URL учётной записи и ваши учётные данные
+работают, прежде чем вводить их в *digna*.
 
-#### Step 1
-![Step 1](images/snowflake/create_odbc_data_source_step1.png)
+#### Шаг 1
+![Шаг 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Примечания:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
-  `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- Значение для **Server** состоит из идентификатора вашей учётной записи Snowflake, за которым
+  следует `.snowflakecomputing.com`.
+- Введённые здесь **Database**, **Schema** и **Warehouse** соответствуют свойствам `Database`,
+  `Schema` и `Warehouse` из [раздела 2](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### Шаг 2 – проверка подключения
 
-Click the **TEST** button. A successful connection should look like this:
+Нажмите кнопку **TEST**. Успешное подключение должно выглядеть так:
 
-![Step 2](images/snowflake/create_odbc_data_source_step2.png)
+![Шаг 2](images/snowflake/create_odbc_data_source_step2.png)

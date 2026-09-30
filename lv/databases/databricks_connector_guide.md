@@ -1,106 +1,106 @@
-# Source Connector for Databricks
+# Avota konektors Databricks
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Šajā ceļvedī aprakstīts, kā konfigurēt *digna* savienojumu ar Databricks caur **ODBC**,
+izmantojot savienojuma virkni **bez DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+Iestatīšanas *digna* puse ir vienāda katrai tehnoloģijai — kur tiek veidoti savienojumi,
+kā tiek šifrētas rekvizītu vērtības, kā tiek testēts savienojums un ko nozīmē profilēšanas
+režīmi. Tā ir aprakstīta lapā [Datubāzu savienojumu pārskats](overview.md). Šī lapa aptver to,
+kas raksturīgs tieši Databricks.
 
-!!! note "Unity Catalog is required"
+!!! note "Nepieciešams Unity Catalog"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    *digna* nolasa pieejamos katalogus no `system.information_schema.catalogs`, tāpēc darbvietā
+    (workspace) jābūt iespējotam Unity Catalog. Iepriekšējos *digna* izlaidumos bija pieejama
+    atsevišķa tehnoloģija "Databricks Legacy" darbvietām bez Unity Catalog; tā vairs nav
+    pieejama.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Instalēt ODBC draiveri {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Instalējiet **Databricks ODBC Driver** datorā, kurā darbojas *digna* backend, sekojot
+[Databricks instalēšanas ceļvedim](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-| Databricks field | Used as |
+Atkarībā no versijas draiveris reģistrējas kā **Simba Spark ODBC Driver** vai kā
+**Databricks ODBC Driver**. Nolasiet precīzu reģistrēto nosaukumu savā resursdatorā, kā aprakstīts sadaļā
+[Instalēt ODBC draiveri digna resursdatorā](overview.md#install-the-driver).
+
+---
+
+## 2. Savākt savienojuma datus {: #2-gather-the-connection-details }
+
+Visas vērtības nāk no SQL noliktavas (warehouse) vai klastera, ko vēlaties, lai *digna* izmantotu.
+Atveriet to Databricks darbvietā un dodieties uz **Connection details**:
+
+| Databricks lauks | Tiek izmantots kā |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, parasti `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+Autentifikācijai izveidojiet **personīgās piekļuves tokenu** (personal access token) — skatiet
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+Tokeni pieder lietotājam vai servisa principālim (service principal), un šim principālim avota
+datos nepieciešamas tiesības `USE CATALOG`, `USE SCHEMA` un `SELECT`.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. ODBC rekvizīti {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Piemērs, nevis specifikācija"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    Tālāk norādītā kopa ir viena kombinācija, par kuru zināms, ka tā darbojas. Rekvizīti pieder
+    Databricks/Simba draiverim, tāpēc to nosaukumi, noklusējuma vērtības un pieņemtās vērtības
+    atšķiras starp draivera versijām — draiveris ir vairākkārt pārdēvēts un tā autentifikācijas
+    opcijas paplašinātas — un starp platformām. Izmantojiet to kā sākumpunktu un pārbaudiet jūsu
+    instalētās draivera versijas dokumentāciju.
 
-Add the following properties in the **Add DB Connection** screen:
+Ekrānā **Add DB Connection** pievienojiet šādus rekvizītus:
 
-| Key | Example value | Notes |
+| Atslēga | Vērtības piemērs | Piezīmes |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Jāatbilst draivera nosaukumam, kas reģistrēts *digna* resursdatorā |
+| `Host` | `<workspace>.cloud.databricks.com` | Noliktavas servera resursdatora nosaukums, piem. `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | Noliktavas vai klastera HTTP ceļš |
+| `SSL` | `1` | Databricks gala punkti darbojas tikai ar TLS |
+| `ThriftTransport` | `2` | HTTP transports, ko izmanto SQL gala punkti |
+| `AuthMech` | `3` | Tokena autentifikācija |
+| `UID` | `token` | Burtiski vārds `token`, nevis lietotājvārds |
+| `PWD` | `dapi…` | Personīgās piekļuves tokens. Atzīmējiet **Encrypted** |
+| `UseNativeQuery` | `1` | Nodod *digna* SQL nemainītu — skatiet tālāk |
 
-The resulting connection string looks like this:
+Iegūtā savienojuma virkne izskatās šādi:
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Saglabājiet `UseNativeQuery=1`"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    Ar `UseNativeQuery=0` — draivera noklusējumu — draiveris pārraksta ienākošo SQL tajā, ko tas
+    uzskata par pārnesamu ODBC sintaksi. *digna* jau ģenerē Databricks SQL, tāpēc pārrakstīšana
+    var mainīt apostrofu (backtick) pēdiņas un datumu literāļus, un profilēšana tad neizdodas ar
+    priekšrakstiem, kas oriģinālajā formā ir derīgi.
 
-### OAuth instead of a token
+### OAuth tokena vietā
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+Servisa principālim ar OAuth machine-to-machine autentifikāciju aizstājiet `AuthMech`,
+`UID` un `PWD` ar:
 
-| Key | Example value | Notes |
+| Atslēga | Vērtības piemērs | Piezīmes |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
-| `Auth_Flow` | `1` | Client credentials |
-| `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Flow` | `1` | Klienta akreditācijas dati (client credentials) |
+| `Auth_Client_ID` | `<application id>` | Servisa principālis |
+| `Auth_Client_Secret` | `<client secret>` | Atzīmējiet **Encrypted** |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. *digna* konfigurācija {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrānā **Add DB Connection** norādiet šādus datus:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -111,45 +111,44 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Piezīmes par Databricks {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **Noliktavai jādarbojas** vai jāspēj startēt, kad *digna* savienojas. Noliktavai, kas atsāk
+  darbu no apturēta stāvokļa, var būt nepieciešams vairāk laika nekā savienojuma taimauts — ja
+  tests neizdodas pirmajā mēģinājumā pēc dīkstāves, mēģiniet vēlreiz.
+- **Katalogi nāk no darbvietas.** Atšķirībā no vairuma tehnoloģiju viens Databricks savienojums
+  sasniedz katru katalogu, ko principālim ir atļauts redzēt, tāpēc viens savienojums var
+  apkalpot avotus vairākos katalogos.
+- **Profilēšanas režīmi.** *Permanent* izveido darba tabulas shēmā **Work Schema** avota
+  katalogā, tāpēc principālim tur nepieciešamas tiesības `CREATE TABLE`. *Session* izmanto
+  `CREATE TEMPORARY TABLE` un neskar **Work Schema**. *Standard* nepieciešama tikai lasīšanas
+  piekļuve.
+- **Serverless noliktavas darbojas** tādā pašā veidā; atšķiras tikai `HTTPPath`.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. Draivera pārbaude (pēc izvēles) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+Savienojumam bez DSN nav jākonfigurē ODBC datu avots, taču paša draivera dialogs ir ērts veids,
+kā pārliecināties, ka draiveris, noliktava un tokens darbojas, pirms tos ievadāt *digna*.
 
-#### Step 1
+#### 1. solis
 ![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
+#### 2. solis
 ![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
+#### 3. solis
 ![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
+#### 4. solis
 ![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### 5. solis – Testēt savienojumu
 
-Click the **TEST** button. A successful connection should look like this:
+Noklikšķiniet uz pogas **TEST**. Veiksmīgs savienojums izskatās šādi:
 
 ![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+Šeit ievadītais resursdators, HTTP ceļš un tokens ir tieši tās vērtības, ko pieņem rekvizīti
+[3. sadaļā](#3-odbc-properties).

@@ -277,8 +277,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Pēc izpakošanas jums jāredz sekojošas vienības:
    - `dashboard/` — tīmekļa paneļa saskarne
    - `digna` — galvenais izpildāmais fails (backend + CLI apvienots)
-   - `config.toml` — konfigurācijas fails
-   - `license.toml` — licences fails (ielīmējiet savu šeit)
+
+!!! info "Konfigurācijas un licences faili pakotnē nav iekļauti"
+
+    Ne `config.toml`, ne `dashboard/dashboard_config.toml` instalācijā nav iekļauts — abus jūs
+    izveidojat paši sadaļās [Backend konfigurācija](#backend-configuration) un
+    [Paneļa konfigurācija](#dashboard-configuration). Arī `license.toml` nav iekļauts;
+    digna to nodrošina atsevišķi, kā aprakstīts 3. solī.
 
 ### 3. solis: Instalēt licences failu
 
@@ -382,7 +387,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 | `digna_COOKIE_SAME_SITE` | `lax` | Novērš CSRF uzbrukumus |
 | `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma laiks sekundēs |
 | `digna_MAX_WORKERS` | Skaitlis: CPU kodolu skaits - 1 | Paralēlo inspekciju uzdevumu skaits |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maksimālā aizture sekundēs, ko plotājs drīkst pievienot pirms termiņā esoša darba sākšanas |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maksimālā aizture sekundēs, ko plānotājs drīkst pievienot pirms termiņā esoša darba sākšanas |
 | `DIGNA_CLEANUP_TIME` | `"12:00"` | Diennakts laiks (24 stundu formāts `HH:MM`), kad sākas ikdienas tīrīšana |
 
 #### [encryption] sadaļa
@@ -518,9 +523,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1. solis: Izvietot paneli uz tīmekļa servera
 
-digna panelim ir atsevišķs `config.toml` fails, kas atrodas `dashboard/` direktorijā. Šī konfigurācija parasti jau ir nodrošināta un sākotnējā iestatīšanā nav jāmaina. Jāveic izmaiņas tikai tad, ja nepieciešams pielāgot backend savienojumu.
+digna panelis savu konfigurāciju nolasa no faila `dashboard/dashboard_config.toml`. Šis fails instalācijā nav iekļauts — jūs to izveidojat `dashboard/` direktorijā līdzās paneļa failiem.
 
-Ja nepieciešams modificēt paneļa konfigurāciju (piem., daudzinstanču izvietošanai), skatiet paneļa dokumentāciju.
+Tā saturs ir aprakstīts sadaļā [Vienotā pieteikšanās (SSO)](../../../sso/overview.md), kur šis fails arī ir nepieciešams: tajā ir panelī piedāvātās pieteikšanās iespējas un, daudzinstanču izvietošanai, backend savienojums.
 
 Izvēlieties jūsu tīmekļa serveri un izpildiet atbilstošos izvietošanas soļus.
 
@@ -575,19 +580,24 @@ digna backend darbināšana kā Windows serviss nodrošina, ka tas:
 - Automātiski restartējas, ja notiek avārija
 - To var pārvaldīt caur Windows Services rīku
 
-### Servisa pārvaldības faili
+### Komandas `windows`
 
-Visi nepieciešamie faili atrodas digna instalācijas direktorijā zem: `bin/`
+Servisu pārvalda pats izpildāmais fails `digna`, izmantojot apakškomandas `digna windows`.
+Nekādi batch faili nav jāpalaiž.
 
-Sekojošas batch skripti ir pieejami:
-- `install_service.bat` — reģistrē digna kā Windows servisu
-- `uninstall_service.bat` — atreģistrē servisu
-- `start_service.bat` — palaiž servisu
-- `stop_service.bat` — aptur servisu
+| Komanda | Mērķis |
+|---|---|
+| `digna windows install` | Reģistrē digna kā Windows servisu |
+| `digna windows start` | Palaiž reģistrēto servisu |
+| `digna windows stop` | Aptur darbojošos servisu |
+| `digna windows uninstall` | Atreģistrē servisu |
 
 !!! warning "Nepieciešamas administratīvās tiesības"
 
-    Visus batch failus jāizpilda ar Administratora tiesībām.
+    Visas četras komandas jāpalaiž no Command Prompt, kas atvērts kā administrators.
+
+Katra komanda pieņem `--name`, lai vērstos pie servisa, kas reģistrēts ar nenoklusējuma nosaukumu. Pilns
+opciju saraksts ir [CLI rokasgrāmatā](../../../cli/Command_Line_Interface_202606.md).
 
 ### Servisa instalēšana
 
@@ -595,37 +605,66 @@ Sekojošas batch skripti ir pieejami:
    - Ar peles labo pogu klikšķiniet uz Command Prompt
    - Izvēlieties "Run as Administrator"
 
-2. **Pārejiet uz bin mapi**
+2. **Pārejiet uz savu digna instalācijas direktoriju**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Palaidiet instalācijas skriptu**
+3. **Reģistrējiet servisu**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-digna serveris tagad ir reģistrēts kā Windows serviss ar **automātisku startēšanu**. Serviss netiek sāknēts uzreiz — skatiet nākamo sadaļu, lai to palaistu.
+!!! important "Norādiet adresi un portu, ja vien noklusējuma vērtības jums neder"
+
+    `install` ieraksta adresi un portu servisa reģistrācijā, un serviss piesaistās tieši
+    ierakstītajām vērtībām. Noklusējuma vērtības ir `127.0.0.1` un `8000`, kas pieņem savienojumus
+    tikai no pašas mašīnas. Panelis citā resursdatorā tām nevar piekļūt, tāpēc norādiet adresi,
+    kurā backend jāklausās:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Šīs vērtības netiek nolasītas no `config.toml`. Lai tās vēlāk mainītu, atinstalējiet servisu un
+    instalējiet to vēlreiz ar jaunajām vērtībām.
+
+Serviss tiek reģistrēts ar **automātisku startēšanu**, tāpēc tas startēsies kopā ar Windows. Tas
+netiek palaists uzreiz — skatiet nākamo sadaļu.
+
+#### Instalēšanas opcijas
+
+| Opcija | Noklusējums | Mērķis |
+|---|---|---|
+| `--name` | `digna` | Nosaukums, ar kādu reģistrēt servisu |
+| `--display-name` | `digna` | Nosaukums, kas tiek rādīts services.msc |
+| `--description` | `digna data quality backend` | Apraksts, kas tiek rādīts services.msc |
+| `--address` | `127.0.0.1` | Adrese, kurai serviss piesaista savu API |
+| `--port` | `8000` | Ports, kuram serviss piesaista savu API |
+| `--working-dir` | izpildāmā faila `digna` direktorija | Direktorija, kurā atrodas `config.toml` un `license.toml` un kuru serviss izmanto kā darba direktoriju |
+| `--start-type` | `auto` | `auto` startējas kopā ar Windows, `manual` startējas tikai pēc pieprasījuma, `disabled` reģistrē servisu, taču atsakās to startēt |
+| `--account` | `LocalSystem` | Konts, ar kuru darbināt servisu, piem., `DOMAIN\user` vai `.\user` |
+| `--password` | | `--account` parole |
+
+!!! tip "Darbināšana ar domēna kontu"
+
+    `LocalSystem` nav tīkla identitātes, tāpēc Windows autentifikācija pret SQL Server un jebkāda
+    piekļuve tīkla koplietojumam neizdosies. Instalējiet ar `--account` un `--password`, ja servisam
+    resursiem jāpiekļūst kā konkrētam lietotājam.
 
 ### Servisa palaišana un apturēšana
 
 #### Lai palaistu servisu
 
-1. Atveriet Command Prompt kā administrators
-2. Pārejiet uz `digna\bin`
-3. Palaidiet:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Lai apturētu servisu
 
-1. Atveriet Command Prompt kā administrators
-2. Pārejiet uz `digna\bin`
-3. Palaidiet:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Padoms"
 
@@ -635,37 +674,41 @@ digna serveris tagad ir reģistrēts kā Windows serviss ar **automātisku start
 
 Ja nepieciešams pārvietot digna instalāciju:
 
-1. **Atinstalēt esošo servisu**
+1. **Apturēt un atreģistrēt esošo servisu**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Pārvietot aplikācijas failus**
    - Pārvietojiet visu digna instalācijas mapi uz jauno atrašanās vietu
 
-3. **Pārinstalēt servisu**
+3. **Reģistrēt servisu no jauna no jaunās atrašanās vietas**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Atkārtojiet visas `--address`, `--port` vai `--account` vērtības, ko izmantojāt pirmajā reizē — iepriekšējā
+   reģistrācija vairs nepastāv.
 
 4. **Palaist servisu**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Servisa atinstalēšana
 
 1. **Apturēt darbojošos servisu**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Atinstalēt servisu**
+2. **Atreģistrēt servisu**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 digna serveris tagad vairs nav reģistrēts kā Windows serviss.
@@ -703,14 +746,31 @@ Pirms digna jaunināšanas veiciet rezerves kopiju sava repozitorija (PostgreSQL
 
 ### Jaunināšanas process
 
-#### 1. solis: Apturēt digna servisu
+#### 1. solis: Apturēt un atreģistrēt veco servisu
 
-Ja digna darbojas kā Windows serviss, vispirms to apturiet:
+Ja digna darbojas kā Windows serviss, apturiet to ar **pašreizējās instalācijas batch failiem** —
+komandas `digna windows` pieder jaunajam laidienam un vēl nav pieejamas:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Pēc tam atreģistrējiet servisu, atkal ar veco batch failu. Reģistrācija norāda uz veco
+izpildāmo failu un tā skriptiem, un šī jaunināšana aizstāj abus, tāpēc to nevar izmantot atkārtoti:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Atreģistrējiet, pirms kaut ko pārdēvējat"
+
+    `uninstall_service.bat` atrodas `bin` mapē, kuru jūs tūlīt pārdēvēsiet, un tas ir vienīgais,
+    kas var noņemt tā izveidoto reģistrāciju. Palaidiet to, kamēr vecā instalācija vēl ir savā vietā.
+    Ja mape jau ir pārdēvēta, pārdēvējiet to atpakaļ, atreģistrējiet servisu un tad turpiniet.
+
+    Pierakstiet kontu, ar kuru serviss darbojās, kā arī adresi un portu, kurā tas apkalpoja — tie
+    jums būs vajadzīgi 9. solī.
 
 #### 2. solis: Izveidojiet pašreizējās instalācijas dublējumu
 
@@ -731,7 +791,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend un dignacli vairs netiek izmantoti"
 
-    Sākot ar laidienu 2026.06, `dignabackend` un `dignacli` aizstāj viens izpildāmais fails `digna`, kas apvieno aizmuguri un CLI. Saglabājiet `dignabackend_old` un `dignacli_old` tikai līdz brīdim, kad esat pārbaudījis jauninājumu — pēc tam varat izdzēst abas mapes. Saglabājiet `dashboard_old`, līdz esat no tās atjaunojis savus konfigurācijas failus (skatiet 4. soli).
+    Sākot ar laidienu 2026.06, `dignabackend` un `dignacli` aizstāj viens izpildāmais fails `digna`, kas apvieno aizmuguri un CLI. Saglabājiet `dignabackend_old` un `dignacli_old` tikai līdz brīdim, kad esat pārbaudījis jauninājumu — pēc tam varat izdzēst abas mapes. Saglabājiet `dashboard_old`, līdz esat no tās atjaunojis savus konfigurācijas failus (skatiet 4. soli). Arī mape `bin` vairs nav vajadzīga: tās batch faili vadīja veco servisu, un 2026.06 tos vairs nepiegādā, tāpēc pēc servisa atreģistrēšanas 1. solī tie var tikai maldināt.
 
 #### 3. solis: Izpakot un izvietot jauno versiju
 
@@ -741,7 +801,9 @@ ren dashboard dashboard_old
 
 !!! warning "Svarīgi"
 
-    `config.toml` fails **nekad** netiek iekļauts instalācijas ZIP. Jūsu esošā konfigurācija paliek droša.
+    Ne `config.toml`, ne `dashboard/dashboard_config.toml` nekad netiek iekļauts
+    instalācijas ZIP — digna komanda nekad nepiegādā nevienu no šiem failiem. Tāpēc jaunināšana jūsu esošo
+    konfigurāciju neskar, un kopijas pārdēvētajās `*_old` mapēs ir vienīgās, kas jums ir.
 
 #### 4. solis: Atjaunot jūsu konfigurācijas failus
 
@@ -792,7 +854,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Atkārtojiet sadaļu katram nodrošinātājam un saglabājiet katru atslēgu tādu pašu kā `key` failā `dashboard_config.toml`. `digna config check` ziņo par `oidc_clients` kā FAILED, kamēr saglabājas vecā forma. Tas skar tikai instalācijas, kas izmanto vienoto pieteikšanos.
 
-#### 5. solis: Parbaudiet konfigurāciju
+#### 5. solis: Pārlādēt tīmekļa serveri
+
+Panelis ir statisku failu kopums, tāpēc jūsu tīmekļa serveris — un pārlūkprogramma — joprojām var
+pasniegt iepriekšējo versiju. Pārlādējiet vai restartējiet tīmekļa serveri, kurā mitināta mape `dashboard`,
+un pēc tam pārlādējiet lapu ar pilnu atsvaidzināšanu (++ctrl+f5++).
+
+#### 6. solis: Pārbaudiet konfigurāciju
 
 Pirms pieskarties repozitorijam pārliecinieties, ka atjauninātais `config.toml` ir pilnīgs:
 
@@ -802,7 +870,26 @@ digna config check
 
 Katrai sadaļai jāziņo OK. Izlabojiet visu, kas ziņots kā FAILED, un pirms turpināšanas palaidiet komandu vēlreiz.
 
-#### 6. solis: Jaunināt repozitorija shēmu
+#### 7. solis: Aizstāt licences failu
+
+Katram laidienam ir atsevišķa licence. Nokopējiet `license.toml`, ko digna komanda nodrošināja
+šim laidienam, instalācijas direktorijā, aizstājot veco:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Nepaturiet iepriekšējo licenci"
+
+    Agrākam laidienam izsniegts `license.toml` neattiecas uz šo laidienu, un katra komanda,
+    kas pārbauda licenci — `user`, `inspection`, `repo` —, tiek pārtraukta pirms pieskaršanās
+    repozitorijam, ja pārbaude neizdodas. Pārbaudiet licenci, pirms turpināt:
+
+    ```bash
+    digna license check
+    ```
+
+#### 8. solis: Jaunināt repozitorija shēmu
 
 Pārejiet uz jūsu digna instalācijas direktoriju un palaidiet:
 
@@ -812,14 +899,22 @@ digna repo upgrade
 
 Tas atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visu esošo datu integritāti.
 
-#### 7. solis: Restartēt servisus
+#### 9. solis: Reģistrēt un palaist servisu
 
-Ja darbināt kā Windows servisu:
+Vecā reģistrācija tika noņemta 1. solī, tāpēc serviss tiek reģistrēts no jauna — šoreiz ar
+izpildāmo failu `digna`, kuram batch failu nav:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Norādiet `--address` un `--port` tās vērtības, kurās apkalpoja vecais serviss, ja vien nevēlaties jaunās
+noklusējuma vērtības `127.0.0.1` un `8000`; tās tiek ierakstītas reģistrācijā un vairs netiek nolasītas
+no `config.toml`. Pievienojiet `--account` un `--password`, ja vecais serviss darbojās ar domēna
+kontu. Pilnu opciju sarakstu skatiet sadaļā
+[digna palaide kā Windows serviss](#running-digna-as-a-windows-service).
 
 Ja darbināt manuāli, restartējiet serveri:
 
@@ -830,7 +925,7 @@ digna serve --address <address> --port <port>
 
 Ja izmantojat IIS vai Tomcat, restartējiet attiecīgo tīmekļa serveri.
 
-#### 8. solis: Pārbaudīt jaunināšanu
+#### 10. solis: Pārbaudīt jaunināšanu
 
 1. Piekļūstiet digna panelim
 2. Pārbaudiet, vai saskarne ielādējas pareizi

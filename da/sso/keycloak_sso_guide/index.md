@@ -10,7 +10,7 @@ Denne vejledning dækker **Keycloak-delen**: oprettelse af client og indsamling 
 
 | Krav | Bemærkninger |
 |---|---|
-| **Keycloak version** | 17 eller nyere for de URL-stier, der bruges her — se bemærkningen i Trin 4 |
+| **Keycloak version** | 17 eller nyere for de URL-stier, der bruges her — se bemærkningen i Trin 5 |
 | **Keycloak-rolle** | `realm-admin` på den pågældende realm, eller en serveradministrator |
 | **Realm** | Den realm, dine digna-brugere tilhører, ikke nødvendigvis `master` |
 | **digna redirect URI** | URL'en brugerne returneres til efter login, f.eks. `https://digna.yourdomain.com/oidc/callback` |

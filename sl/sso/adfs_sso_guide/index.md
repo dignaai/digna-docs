@@ -1,110 +1,110 @@
-# Set up SSO with AD FS
+# Nastavite SSO z AD FS
 
-Active Directory Federation Services is the on-premises option: your own servers issue the tokens, and the discovery URL is your own host name. AD FS supports OpenID Connect from **Windows Server 2016** onwards.
+Active Directory Federation Services je lokalna (on-premises) možnost: žetone izdajajo vaši lastni strežniki, discovery URL pa je vaše lastno ime gostitelja. AD FS podpira OpenID Connect od različice **Windows Server 2016** naprej.
 
-This guide covers the **AD FS side**: creating the application group and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Ta vodič zajema **AD FS stran**: ustvarjanje skupine aplikacij in zbiranje vrednosti, ki jih potrebuje digna. Digna stran — `dashboard_config.toml`, testiranje in odpravljanje težav — je enaka za vse ponudnike in je opisana v [Pregled Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Preden začnete
 
-| Requirement | Notes |
+| Zahteva | Opombe |
 |---|---|
-| **AD FS version** | Windows Server 2016 or later — earlier versions have no OIDC support |
-| **Access** | Local administrator on the AD FS server |
-| **Federation service name** | e.g. `adfs.yourdomain.com` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Različica AD FS** | Windows Server 2016 ali novejši — starejše različice ne podpirajo OIDC |
+| **Dostop** | Lokalni skrbnik na strežniku AD FS |
+| **Ime storitve federacije** | npr. `adfs.yourdomain.com` |
+| **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application Group
+## 1. korak: Ustvarite skupino aplikacij
 
-1. On the AD FS server, open **AD FS Management**
-2. Right-click **Application Groups** and choose **Add Application Group**
-3. Enter `digna` as the name
-4. Under **Standalone applications** — or **Client-Server applications** depending on your version — select **Server application accessing a web API**
-5. Click **Next**
+1. Na strežniku AD FS odprite **AD FS Management**
+2. Z desno tipko miške kliknite **Application Groups** in izberite **Add Application Group**
+3. Kot ime vnesite `digna`
+4. Pod **Standalone applications** — ali **Client-Server applications**, odvisno od vaše različice — izberite **Server application accessing a web API**
+5. Kliknite **Next**
 
 ---
 
-## Step 2: Configure the Server Application
+## 2. korak: Konfigurirajte strežniško aplikacijo
 
 1. **Name**: `digna backend`
-2. **Client Identifier**: AD FS generates a GUID. Copy it — this becomes `DIGNA_OIDC_CLIENT_ID`
-3. **Redirect URI**: enter your digna callback URL and click **Add**:
+2. **Client Identifier**: AD FS ustvari GUID. Kopirajte ga — postane `DIGNA_OIDC_CLIENT_ID`
+3. **Redirect URI**: vnesite svoj digna callback URL in kliknite **Add**:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-4. Click **Next**
+4. Kliknite **Next**
 
-!!! warning "Click Add, Not Just Next"
+!!! warning "Kliknite Add, ne samo Next"
 
-    The redirect URI field has its own **Add** button. Typing a URI and clicking **Next** without pressing **Add** discards it, and the wizard gives no warning. Confirm the URI appears in the list below the field before continuing.
-
----
-
-## Step 3: Generate the Shared Secret
-
-1. Tick **Generate a shared secret**
-2. Copy the generated secret → becomes `DIGNA_OIDC_CLIENT_SECRET`
-3. Click **Next**
-
-!!! warning "The Secret Is Shown Once"
-
-    AD FS displays the shared secret only on this wizard page and cannot show it again. If you lose it, reset it later from the application group's properties.
+    Polje za redirect URI ima svoj gumb **Add**. Če vnesete URI in kliknete **Next**, ne da bi pritisnili **Add**, se URI zavrže, čarovnik pa vas na to ne opozori. Preden nadaljujete, preverite, da se URI prikaže na seznamu pod poljem.
 
 ---
 
-## Step 4: Configure the Web API
+## 3. korak: Ustvarite deljeno skrivnost
 
-1. **Identifier**: enter the same client identifier from Step 2 and click **Add**
-2. Click **Next**
-3. Choose an **Access Control Policy** — *Permit everyone* is the simplest starting point; restrict it to a group for production
-4. Click **Next**
+1. Označite **Generate a shared secret**
+2. Kopirajte ustvarjeno skrivnost → postane `DIGNA_OIDC_CLIENT_SECRET`
+3. Kliknite **Next**
+
+!!! warning "Skrivnost je prikazana samo enkrat"
+
+    AD FS prikaže deljeno skrivnost samo na tej strani čarovnika in je ne more prikazati znova. Če jo izgubite, jo pozneje ponastavite v lastnostih skupine aplikacij.
 
 ---
 
-## Step 5: Grant the Permitted Scopes
+## 4. korak: Konfigurirajte spletni API
 
-On the **Configure Application Permissions** step, tick:
+1. **Identifier**: vnesite isti identifikator odjemalca iz 2. koraka in kliknite **Add**
+2. Kliknite **Next**
+3. Izberite **Access Control Policy** — *Permit everyone* je najpreprostejše izhodišče; za produkcijo dostop omejite na skupino
+4. Kliknite **Next**
+
+---
+
+## 5. korak: Dodelite dovoljene obsege
+
+V koraku **Configure Application Permissions** označite:
 
 - `openid`
 - `profile`
 - `email`
 
-Then click **Next** and complete the wizard.
+Nato kliknite **Next** in dokončajte čarovnika.
 
-!!! warning "openid Is Not Ticked by Default"
+!!! warning "openid ni privzeto označen"
 
-    AD FS pre-selects only `user_impersonation` in some versions. Without `openid`, the token endpoint returns an OAuth access token rather than an ID token, and digna cannot identify the user.
+    AD FS v nekaterih različicah vnaprej izbere samo `user_impersonation`. Brez `openid` končna točka za žetone vrne dostopni žeton OAuth namesto žetona ID, digna pa uporabnika ne more identificirati.
 
 ---
 
-## Step 6: Confirm the Discovery Endpoint
+## 6. korak: Preverite končno točko discovery
 
-Substitute your federation service name:
+Vstavite ime svoje storitve federacije:
 
 ```
 https://<adfs_host>/adfs/.well-known/openid-configuration
 ```
 
-For example:
+Na primer:
 
 ```
 https://adfs.yourdomain.com/adfs/.well-known/openid-configuration
 ```
 
-Open it in a browser. A JSON document confirms OIDC is enabled and the host name is right.
+Odprite ga v brskalniku. Dokument JSON potrjuje, da je OIDC omogočen in da je ime gostitelja pravilno.
 
-!!! note "The Backend Must Trust the Certificate"
+!!! note "Zaledje mora zaupati certifikatu"
 
-    An internal certificate authority is common for AD FS. The machine running the digna backend makes its own outbound HTTPS call to this URL, so the issuing CA must be in that machine's trust store — not only in the browsers of the people logging in.
+    Za AD FS je pogosta interna overitelj certifikatov (CA). Računalnik, na katerem teče digna zaledje, sam izvede odhodni klic HTTPS na ta URL, zato mora biti izdajateljski CA v shrambi zaupanja tega računalnika — ne le v brskalnikih ljudi, ki se prijavljajo.
 
 ---
 
-## Step 7: Configure digna
+## 7. korak: Konfigurirajte digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -127,41 +127,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://adfs.yourdomain.com/adfs/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `adfs` here.
+Vrednost `key` se mora v obeh datotekah ujemati — tukaj `adfs`.
 
 ---
 
-## Step 8: Test
+## 8. korak: Testirajte
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Znova zaženite zaledje in spletni strežnik, nato odprite nadzorno ploščo. Za celoten kontrolni seznam si oglejte [Testiranje prijave](overview.md#testing-login).
 
 ---
 
-## Troubleshooting AD FS
+## Odpravljanje težav z AD FS
 
 ### MSIS9611: The Client Is Not Allowed to Access the Resource
 
-The web API identifier in Step 4 does not match the client identifier, or the scopes in Step 5 were not granted. Both are editable from the application group's properties.
+Identifikator spletnega API-ja iz 4. koraka se ne ujema z identifikatorjem odjemalca ali pa obsegi iz 5. koraka niso bili dodeljeni. Oboje lahko uredite v lastnostih skupine aplikacij.
 
 ### MSIS9602: Invalid redirect_uri
 
-The URI was typed but not added with the **Add** button, or differs from `DIGNA_OIDC_REDIRECT_URI`. Check **Application Groups → digna → digna backend → Properties**.
+URI je bil vnesen, ne pa dodan z gumbom **Add**, ali pa se razlikuje od `DIGNA_OIDC_REDIRECT_URI`. Preverite **Application Groups → digna → digna backend → Properties**.
 
-### No ID Token Is Returned
+### Žeton ID ni vrnjen
 
-The `openid` scope is missing from the application permissions.
+V dovoljenjih aplikacije manjka obseg `openid`.
 
-### The Backend Cannot Reach the Discovery URL
+### Zaledje ne doseže discovery URL-ja
 
-Either DNS on the backend host does not resolve the federation service name, or the AD FS certificate is not trusted there. Test with `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` from the digna server itself.
+Bodisi DNS na gostitelju zaledja ne razreši imena storitve federacije bodisi certifikatu AD FS tam ni zaupano. Preizkusite z `curl https://adfs.yourdomain.com/adfs/.well-known/openid-configuration` neposredno s strežnika digna.
 
-### Events to Check
+### Dogodki, ki jih preverite
 
-The AD FS server logs failures to **Applications and Services Logs → AD FS → Admin** in Event Viewer, usually with a more specific reason than the browser shows.
+Strežnik AD FS beleži napake v **Applications and Services Logs → AD FS → Admin** v pregledovalniku dogodkov (Event Viewer), običajno z natančnejšim razlogom, kot ga prikaže brskalnik.
 
 ---
 
-## See Also
+## Povezane vsebine
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Pregled Single Sign-On](overview.md) — referenca konfiguracije, testiranje in splošno odpravljanje težav
 - [Microsoft: AD FS OpenID Connect scenarios](https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-flows-scenarios)

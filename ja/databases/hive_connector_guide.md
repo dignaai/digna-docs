@@ -1,77 +1,75 @@
-# Source Connector for Hive
+# Hive 用ソースコネクター
 
-This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
-**DSN-less** connection string.
+このガイドでは、**DSN レス** の接続文字列を使用して、**ODBC** 経由で Apache Hive に接続するよう *digna* を設定する方法を
+説明します。
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Hive.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
-backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+セットアップの *digna* 側（接続を作成する場所、プロパティ値の暗号化方法、接続のテスト方法、プロファイリングモードの意味）は
+すべてのテクノロジーで共通であり、[データベース接続の概要](overview.md) で説明しています。このページでは Hive 固有の
+内容を扱います。
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC ドライバーをインストールする {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+ベンダーの公式インストールガイドに従って、*digna* バックエンドを実行するマシンに
+**Cloudera ODBC Driver for Apache Hive** をインストールします。
 
-    The set below is one combination that is known to work. The properties belong to the
-    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
-    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
-    point and check the documentation of the driver version you installed.
+[digna ホストに ODBC ドライバーをインストールする](overview.md#install-the-driver) の説明に従って、ホスト上で登録されている
+正確なドライバー名を確認してください。
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC プロパティ {: #2-odbc-properties }
+
+!!! important "これは例であり、仕様ではありません"
+
+    以下のセットは、動作が確認されている組み合わせの 1 つです。プロパティは Cloudera Hive ドライバーに属するため、
+    その名前、既定値、受け付ける値はドライバーのバージョンやプラットフォームによって異なり、HiveServer2 が何を受け付けるかは
+    クラスターのセキュリティ構成（認証メカニズム、トランスポートモード、TLS、ゲートウェイ）に完全に依存します。これを
+    出発点として使用し、インストールしたドライバーバージョンのドキュメントを確認してください。
+
+**Add DB Connection** 画面で次のプロパティを追加します。
+
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
-| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
-| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | *digna* ホストに登録されているドライバー名と一致している必要があります |
+| `HOST` | `hive.example.com` | HiveServer2 のホスト名または IP アドレス |
+| `PORT` | `10000` | HiveServer2 のポート。HTTP トランスポートの場合は `10001` |
 
-The resulting connection string looks like this:
+生成される接続文字列は次のようになります。
 
 ```
 DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
 ```
 
-### Authentication
+### 認証
 
-An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
-is enabled, add:
+セキュリティ保護されていない HiveServer2 は、上記の 3 つのプロパティをそのまま受け付けます。認証が有効になっている場合は、
+次を追加します。
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
-| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
-| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+| `AuthMech` | `3` | `0` 認証なし、`2` ユーザー名のみ、`3` ユーザー名とパスワード、`1` Kerberos |
+| `UID` | `digna_source_user` | `AuthMech` が `2` と `3` の場合に必須 |
+| `PWD` | `<password>` | `AuthMech` が `3` の場合に必須。**Encrypted** をオンにします |
 
-For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
-the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+Kerberos (`AuthMech=1`) の場合、*digna* ホストには有効なチケットまたは keytab に加えて、ドライバーのドキュメントに
+記載されている `KrbHostFQDN`、`KrbServiceName`、`KrbRealm` プロパティが必要です。
 
-### Transport and TLS
+### トランスポートと TLS
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
-| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
-| `SSL` | `1` | Where HiveServer2 is TLS-secured |
-| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
+| `ThriftTransport` | `2` | `0` バイナリ（既定、ポート 10000）、`1` SASL、`2` HTTP（ポート 10001、Knox ゲートウェイが想定する方式） |
+| `HTTPPath` | `cliservice` | `ThriftTransport=2` の場合 |
+| `SSL` | `1` | HiveServer2 が TLS で保護されている場合 |
+| `Schema` | `dignadata` | セッションが開始される Hive データベース。任意 — *digna* はクエリを修飾して発行します |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* の設定 {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** 画面で、次の内容を入力します。
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -82,39 +80,36 @@ Work Schema:        Hive database for the work tables of "Permanent" profiling, 
 
 ---
 
-## 4. Notes on Hive {: #4-notes-on-hive }
+## 4. Hive に関する注意事項 {: #4-notes-on-hive }
 
-- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
-  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
-  schemas below it.
-- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
-  create and drop tables in it, and the underlying storage location must be writable.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
-  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
-  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
-  on a cluster where *digna* has no write access at all.
-- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
-  the queue *digna*'s user submits to should have enough capacity for the inspection window.
+- **カタログはドライバーから取得されます。** Hive には独自のカタログがないため、*digna* はドライバーが報告するもの
+  （通常は `HIVE` という名前の 1 つのエントリ）を使用し、その下に Hive データベースをスキーマとして一覧表示します。
+- **Work Schema は Hive データベースです。** *Permanent* プロファイリングでは、ユーザーにそのデータベース内でテーブルを
+  作成・削除する権限が必要であり、基盤となるストレージの場所が書き込み可能である必要があります。
+- **プロファイリングモード。** *Permanent* は **Work Schema** にワークテーブルを作成します。*Session* は
+  `CREATE TEMPORARY TABLE` を使用するため、一時テーブルをサポートする HiveServer2 が必要で、**Work Schema** には
+  触れません。*Standard* に必要なのは読み取りアクセスのみで、*digna* に書き込みアクセスがまったくないクラスターでは
+  このモードを選択します。
+- **プロファイリングはスキャンではなく、一連のクエリです。** すべての統計は HiveServer2 によって計算されるため、*digna* の
+  ユーザーがジョブを投入するキューには、インスペクションの時間帯に十分な容量が必要です。
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. ドライバーの動作確認（任意） {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the transport mode and your
-credentials work before you enter them in *digna*.
+DSN レス接続では ODBC データソースの設定は必要ありませんが、ドライバー自体のダイアログを使うと、*digna* に入力する前に、
+ドライバー、トランスポートモード、認証情報が動作することを手軽に確認できます。
 
-#### Step 1
+#### ステップ 1
 ![Step 1](images/hive/create_odbc_data_source_step1.png)
 
-The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
-the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
-[section 2](#2-odbc-properties).
+ここでの **Host**、**Port**、**Database**、**Mechanism**、**Thrift Transport** フィールドは、
+[セクション 2](#2-odbc-properties) の `HOST`、`PORT`、`Schema`、`AuthMech`、`ThriftTransport` プロパティに対応します。
 
-#### Step 2 – Test the connection
+#### ステップ 2 – 接続をテストする
 
-Provide the password and click the **Test** button.
+パスワードを入力し、**Test** ボタンをクリックします。
 
 ![Step 2](images/hive/create_odbc_data_source_step2.png)
 
-After a successful test, click the **OK** button.
+テストが成功したら、**OK** ボタンをクリックします。

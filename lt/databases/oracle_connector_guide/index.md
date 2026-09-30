@@ -1,77 +1,77 @@
-# Source Connector for Oracle
+# Oracle šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
-using a **DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Oracle Database per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Oracle.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
-enough). Install it on the machine that runs the *digna* backend, following the vendor's
-official installation guide.
-
-The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
-`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
-installation, so read the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Oracle.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Oracle ODBC tvarkyklė yra **Oracle Client** dalis (pakanka Instant Client „ODBC“ paketo).
+Įdiekite ją kompiuteryje, kuriame veikia *digna* backend, laikydamiesi oficialaus gamintojo
+diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the Oracle
-    ODBC driver, so their names, defaults and accepted values differ between client versions,
-    and the driver name in particular depends on the Oracle home on your host. Use this as a
-    starting point and check the documentation of the client version you installed.
+Tvarkyklė užsiregistruoja kaip **Oracle in `<OracleHomeName>`** — pavyzdžiui,
+`Oracle in OraDB21Home1` arba `Oracle in instantclient_21_13`. Oracle home pavadinimas kiekviename
+diegime skiriasi, todėl nuskaitykite tikslų pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso Oracle
+    ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės skiriasi
+    tarp kliento versijų, o ypač tvarkyklės pavadinimas priklauso nuo Oracle home jūsų serveryje.
+    Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos kliento versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
-| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
-| `UID` | `DIGNA_SOURCE_USER` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `Driver` | `Oracle in OraDB21Home1` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Duomenų bazė, prie kurios jungiamasi — žr. toliau |
+| `UID` | `DIGNA_SOURCE_USER` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
 ```
 
-### The `DBQ` value
+### Reikšmė `DBQ`
 
-`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
-configured on the *digna* host:
+`DBQ` priima tris formas. *digna* jos lygiavertės; jos skiriasi tuo, ką reikia sukonfigūruoti
+*digna* serveryje:
 
-| Form | Example | Requires |
+| Forma | Pavyzdys | Reikalauja |
 |---|---|---|
-| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
-| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
-| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+| **Pilnas prisijungimo aprašas** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nieko — viskas yra savybėje. Rekomenduojama |
+| **TNS pseudonimas** | `DIGNA_SOURCE` | Pseudonimas turi būti apibrėžtas *digna* serverio Oracle Client faile `tnsnames.ora` |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Oracle Client, palaikantis Easy Connect (12c ir naujesni) |
 
-!!! tip "Prefer the full descriptor"
+!!! tip "Rinkitės pilną aprašą"
 
-    A TNS alias moves half of the connection definition into a file on the *digna* host, where
-    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
-    the connection self-contained — which is the point of a DSN-less setup.
+    TNS pseudonimas perkelia pusę ryšio apibrėžimo į failą *digna* serveryje, kur jį lengva
+    pamiršti, kai serveris perkuriamas ar *digna* perkeliama. Pilnas aprašas išlaiko ryšį
+    savarankišką — o tai ir yra nustatymo be DSN esmė.
 
-Note the parentheses in a descriptor are fine inside a connection string, but if your password
-contains `;`, brace it: `PWD={p@ss;word}`.
+Atkreipkite dėmesį, kad skliaustai apraše ryšio eilutėje netrukdo, tačiau jei jūsų slaptažodyje
+yra `;`, apgaubkite jį riestiniais skliaustais: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -82,44 +82,45 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle {: #4-notes-on-oracle }
+## 4. Pastabos apie Oracle {: #4-notes-on-oracle }
 
-- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
-  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
-  `SELECT` on those tables, either directly or through a role.
-- **One connection sees one database.** The catalog *digna* offers is the database the
-  connection is attached to, so `DBQ` decides which service, and therefore which database, is
-  profiled.
-- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
-  data dictionary, which is what Oracle stores — upper case for unquoted objects.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
-  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
-  needs read access only.
+- **Schemos yra vartotojai.** *digna* Oracle vartotojus išvardija kaip schemas, todėl šaltinio
+  schema yra lentelių savininkas — aukščiau pateiktame pavyzdyje `DIGNA_SOURCE_USER`. Ryšio
+  vartotojui reikia teisės `SELECT` šioms lentelėms tiesiogiai arba per rolę.
+- **Vienas ryšys mato vieną duomenų bazę.** Katalogas, kurį siūlo *digna*, yra duomenų bazė, prie
+  kurios prijungtas ryšys, todėl `DBQ` nulemia, kuri paslauga, o kartu ir kuri duomenų bazė, yra
+  profiliuojama.
+- **Identifikatoriai kabutėse skiria didžiąsias ir mažąsias raides.** *digna* rašo kabutėse
+  pavadinimus, kuriuos nuskaito iš duomenų žodyno, t. y. tai, ką saugo Oracle — objektams be
+  kabučių didžiosiomis raidėmis.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui ten reikia teisės `CREATE TABLE` ir kvotos lentelių erdvėje (tablespace). *Session*
+  naudoja privačią laikinąją lentelę (`ORA$PTT_…`, Oracle 18c ir naujesni) ir **Work Schema**
+  neliečia. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the Oracle Client, the service name and your
-credentials work before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad Oracle Client, paslaugos pavadinimas ir jūsų
+prisijungimo duomenys veikia, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/oracle/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/oracle/create_odbc_data_source_step1.png)
 
-The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
-installation — that is where the alias, and with it the host, port and service name, is
-defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+Čia siūlomas **TNS Service Name** paimamas iš jūsų Oracle Client diegimo failo `tnsnames.ora` —
+būtent ten apibrėžiamas pseudonimas, o kartu ir serveris, prievadas bei paslaugos pavadinimas.
+*digna* galite naudoti pseudonimą kaip `DBQ` arba vietoje jo pilną aprašą.
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Click the **Test Connection** button.
+Spustelėkite mygtuką **Test Connection**.
 
-![Step 2](images/oracle/create_odbc_data_source_step2.png)
+![2 žingsnis](images/oracle/create_odbc_data_source_step2.png)
 
-Provide the password and click the **OK** button.
+Įveskite slaptažodį ir spustelėkite mygtuką **OK**.
 
-![Step 3](images/oracle/create_odbc_data_source_step3.png)
+![3 žingsnis](images/oracle/create_odbc_data_source_step3.png)
 
-A success message confirms that the driver and the credentials work.
+Sėkmės pranešimas patvirtina, kad tvarkyklė ir prisijungimo duomenys veikia.

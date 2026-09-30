@@ -1,84 +1,89 @@
-# Source Connector for Snowflake
+# Forráskonnektor Snowflake-hez
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t a Snowflake-hez való csatlakozásra
+**ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami a Snowflake-re jellemző.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Telepítse a **Snowflake ODBC Driver** illesztőprogramot arra a gépre, amely a *digna*
+backendet futtatja, a [Snowflake telepítési útmutatója](https://docs.snowflake.com/en/developer-guide/odbc/odbc)
+szerint.
 
-!!! important "An example, not a specification"
+Az illesztőprogram **SnowflakeDSIIDriver** néven regisztrálja magát. Olvassa le a pontos
+regisztrált nevet a gépén, ahogyan az [Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver)
+részben le van írva.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
+
+A Snowflake **programmatic access tokennel (PAT)** érhető el — ez az a hitelesítési mód,
+amellyel a *digna*-t ellenőrizték, és amelyet a Snowflake megkövetel azoknál a fiókoknál,
+ahol a csak jelszavas bejelentkezés le van tiltva.
+
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    Snowflake ODBC illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek illesztőprogram-verziónként és platformonként eltérnek, és hogy a fiókja
+    milyen hitelesítési lehetőségeket enged, azt a fiók biztonsági szabályzata határozza meg.
+    Használja ezt kiindulópontként, és nézze meg a telepített illesztőprogram-verzió
+    dokumentációját.
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `Server` | `<account>.snowflakecomputing.com` | A fiókazonosító plusz az utótag, pl. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Az a Snowflake felhasználó, amelyhez a token tartozik |
+| `Database` | `TEST` | A forrássémákat tartalmazó adatbázis. Ez az egyetlen adatbázis, amelyet ez a kapcsolat profilozni tud |
+| `Schema` | `PUBLIC` | A munkamenet alapértelmezett sémája |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Tokenes hitelesítést választ ki |
+| `token` | `<programmatic access token>` | Jelölje be az **Encrypted** opciót |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Warehouse és szerepkör
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+A lekérdezésekhez warehouse szükséges. Ha a *digna* felhasználónak van alapértelmezett
+warehouse-a és alapértelmezett szerepköre, a munkamenet ezeket használja, és semmit sem kell
+konfigurálni. Ellenkező esetben adja hozzá a következőket:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | A profilozási lekérdezéseket futtató warehouse |
+| `Role` | `DIGNA_READER` | Az a szerepkör, amelynek jogosultságait a munkamenet használja |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Adjon a dignának saját warehouse-t"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Egy külön, kicsi, automatikusan felfüggesztődő warehouse láthatóvá teszi a profilozás
+    költségét, és megakadályozza, hogy a *digna* az interaktív felhasználókkal versengjen a
+    számítási kapacitásért.
 
-### Password authentication
+### Jelszavas hitelesítés
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Ahol a fiók még engedi, a token helyett jelszó is használható — hagyja el az `authenticator`
+és `token` tulajdonságokat, és adja hozzá a következőt:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Jelölje be az **Encrypted** opciót |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -89,40 +94,43 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Megjegyzések a Snowflake-hez {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **A tokenek lejárnak.** Egy programmatic access token meghatározott élettartammal kerül
+  kiadásra, és a profilozás azon a napon leáll, amikor lejár. Jegyezze fel a lejárati dátumot a
+  létrehozáskor, és adja meg újra az új tokent a `token` tulajdonságban — a titkosított értékek
+  lecserélhetők, de nem olvashatók vissza.
+- **Egy kapcsolat egy adatbázist lát.** A *digna* a `Database`-ben megnevezett adatbázis
+  sémáit kínálja fel, mert a Snowflake csak az aktuális adatbázist jelenti katalógusként. Egy
+  másik adatbázisban lévő forrástáblákhoz saját kapcsolat kell.
+- **Az azonosítók nagybetűsek**, hacsak nem idézőjelek között hozták létre őket. A *digna* a
+  neveket úgy használja, ahogyan a Snowflake jelenti őket.
+- **Profilozási módok.** A *Permanent* a munkatáblákat a **Work Schema**-ban hozza létre, ezért
+  a szerepkörnek ott `CREATE TABLE` jogosultság kell. A *Session* `CREATE TEMPORARY TABLE`-t
+  használ, és nem érinti a **Work Schema**-t. A *Standard*-hoz csak olvasási hozzáférés
+  szükséges — írási jogosultság egyáltalán nem.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját párbeszédablaka kényelmes módja annak, hogy megbizonyosodjon arról, hogy
+az illesztőprogram, a fiók URL-je és a hitelesítő adatai működnek, mielőtt megadná őket a
+*digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Megjegyzések:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
-  `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- A **Server** értéke a Snowflake fiókazonosítóból és az azt követő
+  `.snowflakecomputing.com` utótagból áll.
+- Az itt megadott **Database**, **Schema** és **Warehouse** a [2. szakasz](#2-odbc-properties)
+  `Database`, `Schema` és `Warehouse` tulajdonságainak felel meg.
 
-#### Step 2 – Test the connection
+#### 2. lépés – A kapcsolat tesztelése
 
-Click the **TEST** button. A successful connection should look like this:
+Kattintson a **TEST** gombra. Egy sikeres kapcsolat így néz ki:
 
 ![Step 2](images/snowflake/create_odbc_data_source_step2.png)

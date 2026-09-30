@@ -10,7 +10,7 @@ Tämä ohje kattaa **Keycloak-puolen**: clientin luomisen ja arvot, jotka digna 
 
 | Vaatimus | Huomautuksia |
 |---|---|
-| **Keycloak-versio** | Versio 17 tai uudempi käytetyille URL-poluille — katso huomautus kohdassa 4 |
+| **Keycloak-versio** | Versio 17 tai uudempi käytetyille URL-poluille — katso huomautus kohdassa 5 |
 | **Keycloak-rooli** | `realm-admin` kohderealmissa, tai palvelimen ylläpitäjä |
 | **Realm** | Realm, johon dignan käyttäjät kuuluvat — ei välttämättä `master` |
 | **digna redirect URI** | URL, johon käyttäjät palaavat kirjautumisen jälkeen, esim. `https://digna.yourdomain.com/oidc/callback` |

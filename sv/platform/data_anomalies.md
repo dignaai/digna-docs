@@ -105,7 +105,7 @@ Basera på historiska fördelningar markerar digna det nya värdet som oväntat 
 - [digna Data Analytics](https://docs.digna.ai/platform/data_analytics/index.md) — trend- och volatilitetsmått.  
 - [digna Data Validation](https://docs.digna.ai/platform//data_validation/index.md) — regelbaserad dataverifiering.  
 - [digna Data Timeliness](https://docs.digna.ai/platform//data_timeliness/index.md) — övervakning av dataleveransscheman.  
-- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — upptäckt av schemafӧrändringar.
+- [digna Data Schema Tracker](https://docs.digna.ai/platform//data_schema_tracker/index.md) — upptäckt av schemaförändringar.
 
 ---
 

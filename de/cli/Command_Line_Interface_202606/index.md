@@ -53,6 +53,7 @@ Die folgende Tabelle hält fest, was jede Befehlskategorie lädt, bevor sie übe
 | `license check` | nein | sie *ist* die Prüfung |
 | `crypt` | ja | nein |
 | `serve` | ja | nein |
+| `windows` | nein (der Dienst liest sie beim Start) | nein |
 | `project` | ja | nein |
 | `user` | ja | ja |
 | `inspection` | ja | ja |
@@ -217,6 +218,64 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Der Befehl `repo prune` entfernt Zeilen, die das Projekt oder die Datenquelle, zu der sie gehörten,
+überdauert haben. Das Löschen eines Projekts oder einer Datenquelle entfernt das Objekt selbst,
+lässt aber seine Profile, Vorhersagen, Status und Zeilenanzahlen zurück — ein bewusster
+Kompromiss, denn ein Löschvorgang, der auch diese Tabellen bereinigt, würde den Benutzer warten
+lassen. `repo prune` ist der Aufräumdurchlauf, der sie entfernt, und kann jederzeit gefahrlos
+ausgeführt werden: Er entfernt ausschließlich Zeilen, deren Projekt oder Datenquelle nicht mehr
+existiert.
+
+Zeilen, die das Python-Backend in Tabellen geschrieben hat, die das aktuelle Release nicht mehr
+verwendet, bleiben unangetastet.
+
+#### Befehlsverwendung
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Optionen
+- `--dry-run`: Meldet, was entfernt würde, ohne etwas zu entfernen.
+
+Aufgeführt werden nur Tabellen mit verwaisten Zeilen. Gibt es keine, meldet der Befehl
+`No orphaned rows found.` und beendet sich.
+
+#### Beispiel
+```bash
+digna repo prune
+```
+
+#### Beispielausgabe
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+So sehen Sie denselben Bericht, ohne etwas zu entfernen:
+```bash
+digna repo prune --dry-run
+```
+
+Die Zeilenanzahlen sind identisch; nur die letzte Zeile unterscheidet sich:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -528,6 +587,79 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Der Befehl `project cleanup` entfernt die Inspektionsergebnisse, die ein Projekt über einen
+Datumsbereich angesammelt hat — Profile, Vorhersagen, Zeilenanzahlen sowie jeden Status von
+Prüfungen, Attributen, Datensätzen und Datenquellen. Er entfernt genau das, was eine Inspektion
+dieser Daten geschrieben hat, sodass der Bereich anschließend erneut inspiziert werden kann, um ihn
+neu aufzubauen.
+
+Der Verlauf von Timeliness und Schema Tracker wird **nicht** entfernt: Er hält fest, was digna an
+einem bestimmten Tag beobachtet hat, und ist kein daraus abgeleitetes Ergebnis. Eine Bereinigung
+eines vergangenen Datumsbereichs lässt ihn daher unverändert.
+
+Jede Datenquelle wird in einer eigenen Transaktion bereinigt, sodass ein unterbrochener Lauf nur
+vollständige Datenquellen hinterlässt statt einer halb bereinigten.
+
+#### Befehlsverwendung
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumente
+- **PROJECT_NAME**: Zu bereinigendes Projekt (erforderlich). Ein Projekt pro Aufruf.
+- **FROM_DATE**: Erstes Datum, für das Ergebnisse entfernt werden, `YYYY-MM-DD` (erforderlich).
+- **TO_DATE**: Letztes Datum (einschließlich), für das Ergebnisse entfernt werden, `YYYY-MM-DD` (erforderlich).
+
+#### Optionen
+- `--table-name`, `-n`: Beschränkt die Bereinigung auf diese Datenquellen. Mehrere Namen können
+  durch Leerzeichen getrennt angegeben werden.
+- `--table-filter`: Beschränkt die Bereinigung auf Datenquellen, deren Name diese Zeichenfolge enthält.
+- `--dry-run`: Listet die Datenquellen auf, die bereinigt würden, ohne etwas zu entfernen.
+- `--timing`: Zeigt an, wie lange die Bereinigung gedauert hat.
+
+`--table-name` und `--table-filter` werden mit ODER verknüpft — eine Datenquelle wird bereinigt,
+wenn sie namentlich angegeben ist oder die Zeichenfolge passt. Passt keine Datenquelle, schlägt der
+Befehl fehl, statt Erfolg für eine Bereinigung zu melden, die nichts bewirkt hat.
+
+#### Beispiel
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Beschränkt auf eine Datenquelle:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Beispielausgabe
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+So sehen Sie, welche Datenquellen bereinigt würden, ohne etwas zu entfernen:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Jede Zeile ist gekennzeichnet, sodass ein Probelauf nicht mit einem echten Lauf verwechselt werden kann:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Inspektionsverwaltung
 
 ---
@@ -701,3 +833,94 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows-Dienstverwaltung
+
+Nur unter Windows verfügbar. Die Befehle registrieren das ***digna***-Backend beim
+Windows-Dienststeuerungs-Manager und steuern es; der Dienst selbst führt `serve` im Hintergrund
+aus. Jeder Befehl muss in einer Eingabeaufforderung mit erhöhten Rechten ausgeführt werden, und
+jeder akzeptiert `--name`, damit ein unter einem vom Standard abweichenden Namen registrierter
+Dienst angesprochen werden kann.
+
+---
+
+### windows install
+
+Der Befehl `windows install` registriert ***digna*** als Windows-Dienst.
+
+Die hier angegebene Adresse und der Port werden in der Dienstregistrierung hinterlegt, und der
+Dienst bindet sich daran — sie werden nicht aus der `config.toml` gelesen. Um sie nachträglich zu
+ändern, deinstallieren Sie den Dienst und installieren Sie ihn erneut.
+
+#### Befehlsverwendung
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Optionen
+- `--name`: Name, unter dem der Dienst registriert wird (Standard: `digna`).
+- `--display-name`: In services.msc angezeigter Name (Standard: `digna`).
+- `--description`: In services.msc angezeigte Beschreibung (Standard: `digna data quality backend`).
+- `--address`: Adresse, an die der Dienst seine API bindet (Standard: `127.0.0.1`).
+- `--port`: Port, an den der Dienst seine API bindet (Standard: `8000`).
+- `--working-dir`: Verzeichnis mit `config.toml` und `license.toml`, das der Dienst zu seinem
+  Arbeitsverzeichnis macht (Standard: das Verzeichnis der ausführbaren Datei `digna`).
+- `--start-type`: Wann der Dienst startet — `auto` mit Windows, `manual` nur auf Anforderung,
+  `disabled` registriert, verweigert aber den Start (Standard: `auto`).
+- `--account`: Konto, unter dem der Dienst läuft, z. B. `DOMAIN\user` oder `.\user` (Standard: `LocalSystem`).
+- `--password`: Passwort von `--account`.
+
+#### Beispiel
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Unter einem zweiten Namen registrieren, ausgeführt unter einem Domänenkonto:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Der Befehl `windows start` startet einen registrierten Dienst.
+
+#### Befehlsverwendung
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Optionen
+- `--name`: Name, unter dem der Dienst registriert ist (Standard: `digna`).
+
+---
+
+### windows stop
+
+Der Befehl `windows stop` stoppt einen laufenden Dienst. Stoppen Sie den Dienst, bevor Sie
+Anwendungsdateien ersetzen.
+
+#### Befehlsverwendung
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Optionen
+- `--name`: Name, unter dem der Dienst registriert ist (Standard: `digna`).
+
+---
+
+### windows uninstall
+
+Der Befehl `windows uninstall` hebt die Registrierung des Dienstes auf. Stoppen Sie ihn zuvor.
+
+#### Befehlsverwendung
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Optionen
+- `--name`: Name, unter dem der Dienst registriert ist (Standard: `digna`).

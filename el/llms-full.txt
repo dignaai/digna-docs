@@ -4168,6 +4168,7 @@ digna repo check --stacktrace     # rejected: unknown argument
 | `license check` | όχι | *είναι* ο ίδιος ο έλεγχος |
 | `crypt` | ναι | όχι |
 | `serve` | ναι | όχι |
+| `windows` | όχι (η υπηρεσία το διαβάζει κατά την εκκίνησή της) | όχι |
 | `project` | ναι | όχι |
 | `user` | ναι | ναι |
 | `inspection` | ναι | ναι |
@@ -4332,6 +4333,56 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Η εντολή `repo prune` αφαιρεί γραμμές που επέζησαν του έργου ή της πηγής δεδομένων στην οποία ανήκαν. Η διαγραφή ενός έργου ή μιας πηγής δεδομένων αφαιρεί το ίδιο το αντικείμενο, αλλά αφήνει πίσω τα προφίλ, τις προβλέψεις, τις καταστάσεις και τους αριθμούς γραμμών του — μια σκόπιμη επιλογή, αφού μια διαγραφή που θα καθάριζε και αυτούς τους πίνακες θα κρατούσε τον χρήστη σε αναμονή. Η `repo prune` είναι το πέρασμα καθαρισμού που τα αφαιρεί, και μπορεί να εκτελεστεί με ασφάλεια οποιαδήποτε στιγμή: αφαιρεί μόνο γραμμές των οποίων το έργο ή η πηγή δεδομένων δεν υπάρχει πλέον.
+
+Οι γραμμές που έγραψε το Python backend σε πίνακες που η τρέχουσα έκδοση δεν χρησιμοποιεί πλέον δεν αγγίζονται.
+
+#### Χρήση εντολής
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Επιλογές
+- `--dry-run`: Αναφέρει τι θα αφαιρούνταν χωρίς να αφαιρέσει τίποτα.
+
+Εμφανίζονται μόνο οι πίνακες με ορφανές γραμμές. Αν δεν υπάρχουν, η εντολή αναφέρει `No orphaned rows found.` και τερματίζεται.
+
+#### Παράδειγμα
+```bash
+digna repo prune
+```
+
+#### Παράδειγμα εξόδου
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Για να δείτε την ίδια αναφορά χωρίς να αφαιρεθεί τίποτα:
+```bash
+digna repo prune --dry-run
+```
+
+Οι αριθμοί γραμμών είναι ίδιοι· διαφέρει μόνο η τελευταία γραμμή:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -4643,6 +4694,69 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Η εντολή `project cleanup` αφαιρεί τα αποτελέσματα επιθεωρήσεων που συσσώρευσε ένα έργο σε ένα εύρος ημερομηνιών — προφίλ, προβλέψεις, αριθμούς γραμμών και κάθε κατάσταση ελέγχου, χαρακτηριστικού, συνόλου δεδομένων και πηγής δεδομένων. Αφαιρεί ακριβώς ό,τι έγραψε μια επιθεώρηση αυτών των ημερομηνιών, ώστε το εύρος να μπορεί στη συνέχεια να επιθεωρηθεί ξανά για να αναδημιουργηθεί.
+
+Το ιστορικό Timeliness και Schema Tracker **δεν** αφαιρείται: καταγράφει τι παρατήρησε το digna σε μια συγκεκριμένη ημέρα και όχι ένα αποτέλεσμα που προέκυψε από αυτό, οπότε ο καθαρισμός ενός παρελθοντικού εύρους ημερομηνιών το αφήνει ανέπαφο.
+
+Κάθε πηγή δεδομένων καθαρίζεται στη δική της συναλλαγή, οπότε μια διακοπείσα εκτέλεση αφήνει ολόκληρες πηγές δεδομένων και όχι μια μισοκαθαρισμένη.
+
+#### Χρήση εντολής
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Ορίσματα
+- **PROJECT_NAME**: Το έργο που θα καθαριστεί (υποχρεωτικό). Ένα έργο ανά κλήση.
+- **FROM_DATE**: Η πρώτη ημερομηνία για την οποία αφαιρούνται αποτελέσματα, `YYYY-MM-DD` (υποχρεωτικό).
+- **TO_DATE**: Η τελευταία ημερομηνία για την οποία αφαιρούνται αποτελέσματα, συμπεριλαμβανομένης, `YYYY-MM-DD` (υποχρεωτικό).
+
+#### Επιλογές
+- `--table-name`, `-n`: Περιορίζει τον καθαρισμό σε αυτές τις πηγές δεδομένων. Μπορούν να δοθούν πολλά ονόματα χωρισμένα με κενά.
+- `--table-filter`: Περιορίζει τον καθαρισμό σε πηγές δεδομένων των οποίων το όνομα περιέχει αυτή την υποσυμβολοσειρά.
+- `--dry-run`: Εμφανίζει τις πηγές δεδομένων που θα καθαρίζονταν χωρίς να αφαιρέσει τίποτα.
+- `--timing`: Εμφανίζει πόσο διήρκεσε ο καθαρισμός.
+
+Τα `--table-name` και `--table-filter` συνδυάζονται ως OR — μια πηγή δεδομένων καθαρίζεται αν κατονομάζεται ή αν ταιριάζει η υποσυμβολοσειρά. Η εντολή αποτυγχάνει αν δεν ταιριάζει καμία πηγή δεδομένων, αντί να αναφέρει επιτυχία για έναν καθαρισμό που δεν έκανε τίποτα.
+
+#### Παράδειγμα
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Περιορισμένο σε μία πηγή δεδομένων:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Παράδειγμα εξόδου
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Για να δείτε ποιες πηγές δεδομένων θα καθαρίζονταν χωρίς να αφαιρεθεί τίποτα:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Κάθε γραμμή επισημαίνεται, ώστε μια δοκιμαστική εκτέλεση να μην μπορεί να συγχυστεί με μια πραγματική:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Διαχείριση επιθεωρήσεων
 
 ---
@@ -4819,98 +4933,183 @@ Server running on http://0.0.0.0:8000
 
 ---
 
+## Διαχείριση υπηρεσίας Windows
+
+Διαθέσιμο μόνο στα Windows. Οι εντολές εγγράφουν το backend του ***digna*** στη διαχείριση υπηρεσιών των Windows και το ελέγχουν· η ίδια η υπηρεσία εκτελεί την `serve` στο παρασκήνιο. Κάθε εντολή πρέπει να εκτελείται από Command Prompt με αυξημένα δικαιώματα, και καθεμία δέχεται την επιλογή `--name`, ώστε να μπορεί να απευθυνθεί σε υπηρεσία εγγεγραμμένη με μη προεπιλεγμένο όνομα.
+
+---
+
+### windows install
+
+Η εντολή `windows install` εγγράφει το ***digna*** ως υπηρεσία Windows.
+
+Η διεύθυνση και η θύρα που δίνονται εδώ καταγράφονται στην εγγραφή της υπηρεσίας και σε αυτές δεσμεύεται η υπηρεσία — δεν διαβάζονται από το `config.toml`. Για να τις αλλάξετε αργότερα, απεγκαταστήστε την υπηρεσία και εγκαταστήστε την ξανά.
+
+#### Χρήση εντολής
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Επιλογές
+- `--name`: Όνομα με το οποίο εγγράφεται η υπηρεσία (προεπιλογή: `digna`).
+- `--display-name`: Όνομα που εμφανίζεται στο services.msc (προεπιλογή: `digna`).
+- `--description`: Περιγραφή που εμφανίζεται στο services.msc (προεπιλογή: `digna data quality backend`).
+- `--address`: Διεύθυνση στην οποία η υπηρεσία δεσμεύει το API της (προεπιλογή: `127.0.0.1`).
+- `--port`: Θύρα στην οποία η υπηρεσία δεσμεύει το API της (προεπιλογή: `8000`).
+- `--working-dir`: Κατάλογος που περιέχει τα `config.toml` και `license.toml`, τον οποίο η υπηρεσία χρησιμοποιεί ως κατάλογο εργασίας (προεπιλογή: ο κατάλογος του εκτελέσιμου `digna`).
+- `--start-type`: Πότε ξεκινά η υπηρεσία — `auto` μαζί με τα Windows, `manual` μόνο όταν ζητηθεί, `disabled` εγγεγραμμένη αλλά αρνείται να ξεκινήσει (προεπιλογή: `auto`).
+- `--account`: Λογαριασμός με τον οποίο εκτελείται, π.χ. `DOMAIN\user` ή `.\user` (προεπιλογή: `LocalSystem`).
+- `--password`: Κωδικός πρόσβασης του `--account`.
+
+#### Παράδειγμα
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Εγγραφή με δεύτερο όνομα, με εκτέλεση υπό λογαριασμό domain:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Η εντολή `windows start` ξεκινά μια εγγεγραμμένη υπηρεσία.
+
+#### Χρήση εντολής
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Επιλογές
+- `--name`: Όνομα με το οποίο είναι εγγεγραμμένη η υπηρεσία (προεπιλογή: `digna`).
+
+---
+
+### windows stop
+
+Η εντολή `windows stop` σταματά μια υπηρεσία που εκτελείται. Σταματήστε την υπηρεσία πριν αντικαταστήσετε οποιοδήποτε αρχείο της εφαρμογής.
+
+#### Χρήση εντολής
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Επιλογές
+- `--name`: Όνομα με το οποίο είναι εγγεγραμμένη η υπηρεσία (προεπιλογή: `digna`).
+
+---
+
+### windows uninstall
+
+Η εντολή `windows uninstall` αφαιρεί την εγγραφή της υπηρεσίας. Σταματήστε την πρώτα.
+
+#### Χρήση εντολής
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Επιλογές
+- `--name`: Όνομα με το οποίο είναι εγγεγραμμένη η υπηρεσία (προεπιλογή: `digna`).
+
+---
+
 # Azure Synapse
 Source: https://docs.digna.ai/el/databases/azure_synapse_connector_guide/
 
-# Source Connector for Azure Synapse Analytics
+# Source Connector για το Azure Synapse Analytics
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Azure Synapse
+Analytics μέσω **ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
+Υποστηρίζονται τόσο τα serverless όσο και τα dedicated SQL pools.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Azure Synapse.
 
 !!! note "Technology"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
+    Το Synapse χρησιμοποιεί τη διάλεκτο του SQL Server, οπότε η σύνδεση δημιουργείται με
+    **Technology: SQL Server**. Δείτε [MS SQL Server](sqlserver_connector_guide.md) για έναν
+    server on-premises.
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Εγκαταστήστε τον **ODBC Driver 18 for SQL Server** στο μηχάνημα που εκτελεί το backend του
+*digna*, ακολουθώντας τον [οδηγό εγκατάστασης της Microsoft](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+και διαβάστε το ακριβές καταχωρισμένο όνομα του driver στον host σας, όπως περιγράφεται στην
+ενότητα [Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Παράδειγμα, όχι προδιαγραφή"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον ODBC driver της Microsoft, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές
+    τιμές τους διαφέρουν ανάμεσα σε εκδόσεις driver και πλατφόρμες, και το τι απαιτεί το
+    workspace εξαρτάται από το πώς είναι διαμορφωμένο — τύπος pool, μέθοδος αυθεντικοποίησης,
+    firewall. Χρησιμοποιήστε το ως σημείο εκκίνησης και ελέγξτε την τεκμηρίωση της έκδοσης
+    driver που εγκαταστήσατε.
 
-Add the following properties in the **Add DB Connection** screen:
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Όνομα του workspace μαζί με το επίθημα του endpoint — δείτε παρακάτω |
+| `DATABASE` | `dignadata` | Η βάση δεδομένων που περιέχει τα schemas πηγής. Είναι η μόνη βάση δεδομένων στην οποία αυτή η σύνδεση μπορεί να κάνει profiling |
 | `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### Η τιμή `SERVER`
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Πάρτε το όνομα του Synapse workspace και προσθέστε το επίθημα του endpoint:
 
 | Pool | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "Το τμήμα `-ondemand` παραλείπεται εύκολα"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Χωρίς αυτό, το όνομα αντιστοιχεί στο dedicated endpoint, και η σύνδεση είτε αποτυγχάνει είτε
+    φτάνει σιωπηλά σε διαφορετικό pool από το επιθυμητό. Και τα δύο endpoints εμφανίζονται στη
+    σελίδα επισκόπησης του workspace στο Azure portal.
 
 ### Firewall
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Το firewall του Synapse workspace πρέπει να επιτρέπει την εξερχόμενη διεύθυνση του host του
+*digna*. Προσθέστε την στην ενότητα **Networking** του workspace πριν δοκιμάσετε τη σύνδεση —
+μια αποκλεισμένη διεύθυνση εμφανίζεται ως λήξη χρονικού ορίου σύνδεσης και όχι ως σφάλμα
+αυθεντικοποίησης.
 
-### Microsoft Entra ID authentication
+### Αυθεντικοποίηση με Microsoft Entra ID
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+Αντί για SQL login, ο driver μπορεί να αυθεντικοποιηθεί μέσω Entra ID. Αντικαταστήστε τα
+`UID`/`PWD` με τη μέθοδο αυθεντικοποίησης που αναμένει το workspace σας, για παράδειγμα:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | Το `UID` παίρνει τότε το application (client) ID και το `PWD` το client secret |
+| `Authentication` | `ActiveDirectoryMSI` | Managed identity του host του *digna*, δεν χρειάζονται διαπιστευτήρια |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -4922,175 +5121,180 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Σημειώσεις για το Azure Synapse {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **Τα serverless pools υποστηρίζουν μόνο *Standard* profiling.** Ένα serverless SQL pool δεν
+  μπορεί να δημιουργήσει πίνακες σε βάση δεδομένων, οπότε δεν μπορεί να εκτελεστεί ούτε
+  *Permanent* ούτε *Session* profiling. Το *Standard* υπολογίζει τις μετρικές απευθείας στην
+  πηγή, κάτι που είναι και η φθηνότερη επιλογή, αφού το serverless χρεώνεται ανά όγκο δεδομένων
+  που επεξεργάζεται.
+- **Μία σύνδεση βλέπει μία βάση δεδομένων.** Το *digna* προσφέρει τα schemas της βάσης δεδομένων
+  που ορίζεται στο `DATABASE`, επειδή το Synapse, όπως και ο SQL Server, αναφέρει μόνο την
+  τρέχουσα βάση δεδομένων ως catalog.
+- **Η κρυπτογράφηση είναι ενεργή από προεπιλογή** στον Driver 18, και τα endpoints του Synapse
+  παρουσιάζουν έγκυρα δημόσια πιστοποιητικά, οπότε δεν χρειάζεται ιδιότητα `Encrypt` ή
+  `TrustServerCertificate`.
+- **Ένα serverless endpoint μπορεί να επανέρχεται από αδράνεια** στην πρώτη σύνδεση. Αν η δοκιμή
+  σύνδεσης λήξει λόγω χρονικού ορίου σε ένα pool που δεν έχει χρησιμοποιηθεί για κάποιο διάστημα,
+  δοκιμάστε ξανά.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά ο οδηγός
+(wizard) του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver λειτουργεί
+και ότι το workspace δέχεται τα διαπιστευτήριά σας, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Συμπληρώστε το πεδίο "Server".
+Χρησιμοποιήστε το όνομα του Synapse workspace και επεκτείνετέ το με ".sql.azuresynapse.net".  
+**Προσοχή**: αν θέλετε να συνδεθείτε μέσω serverless SQL pool, βεβαιωθείτε ότι συμπεριλάβατε το
+"-ondemand", όπως φαίνεται στο παραπάνω στιγμιότυπο οθόνης.
 
-Click the **Next >** button.
+Κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 2
-![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
+#### Βήμα 2
+![Βήμα 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Επιλέξτε τη μέθοδο αυθεντικοποίησης (π.χ. όνομα χρήστη και κωδικός πρόσβασης)
+και δώστε τα απαιτούμενα στοιχεία.
 
-Click the **Next >** button.
+Κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 3
-![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
+#### Βήμα 3
+![Βήμα 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Επιλέξτε τις ρυθμίσεις συμβατότητας ANSI και έπειτα κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 4
-![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
+#### Βήμα 4
+![Βήμα 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Μπορείτε να αφήσετε τις προεπιλεγμένες ρυθμίσεις ή να επιλέξετε όσες χρειάζεστε
+και να κάνετε κλικ στο κουμπί **Finish**. 
 
-#### Step 5
-![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
+#### Βήμα 5
+![Βήμα 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Τώρα κάντε κλικ στο κουμπί **Test datasource**.
 
-#### Step 6
-![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
+#### Βήμα 6
+![Βήμα 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Μια οθόνη επιτυχίας επιβεβαιώνει ότι ο driver, το endpoint και τα διαπιστευτήρια λειτουργούν. Οι
+τιμές που εισαγάγατε είναι ακριβώς οι τιμές που παίρνουν οι ιδιότητες της [ενότητας 2](#2-odbc-properties).
 
 ---
 
 # Databricks
 Source: https://docs.digna.ai/el/databases/databricks_connector_guide/
 
-# Source Connector for Databricks
+# Source Connector για το Databricks
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Databricks μέσω
+**ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Databricks.
 
-!!! note "Unity Catalog is required"
+!!! note "Απαιτείται Unity Catalog"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
-
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Το *digna* διαβάζει τους διαθέσιμους catalogs από το `system.information_schema.catalogs`,
+    οπότε το workspace πρέπει να έχει ενεργοποιημένο το Unity Catalog. Παλαιότερες εκδόσεις του
+    *digna* πρόσφεραν ξεχωριστή τεχνολογία "Databricks Legacy" για workspaces χωρίς Unity
+    Catalog· αυτή δεν είναι πλέον διαθέσιμη.
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+Εγκαταστήστε τον **Databricks ODBC Driver** στο μηχάνημα που εκτελεί το backend του *digna*,
+ακολουθώντας τον [οδηγό εγκατάστασης της Databricks](https://docs.databricks.com/aws/en/integrations/odbc/).
 
-| Databricks field | Used as |
+Ανάλογα με την έκδοση, ο driver καταχωρίζεται ως **Simba Spark ODBC Driver** ή ως
+**Databricks ODBC Driver**. Διαβάστε το ακριβές καταχωρισμένο όνομα στον host σας, όπως
+περιγράφεται στην ενότητα [Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
+
+---
+
+## 2. Συλλογή των Στοιχείων Σύνδεσης {: #2-gather-the-connection-details }
+
+Όλες οι τιμές προέρχονται από το SQL warehouse (ή το cluster) που θέλετε να χρησιμοποιεί το
+*digna*. Ανοίξτε το στο Databricks workspace και μεταβείτε στο **Connection details**:
+
+| Πεδίο Databricks | Χρησιμοποιείται ως |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`, συνήθως `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
+Για την αυθεντικοποίηση, δημιουργήστε ένα **personal access token** — δείτε
 [Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+Τα tokens ανήκουν σε έναν χρήστη ή service principal, και αυτό το principal χρειάζεται
+`USE CATALOG`, `USE SCHEMA` και `SELECT` στα δεδομένα πηγής.
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. Ιδιότητες ODBC {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Παράδειγμα, όχι προδιαγραφή"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον driver Databricks/Simba, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές
+    τιμές τους διαφέρουν ανάμεσα σε εκδόσεις driver — ο driver έχει μετονομαστεί και οι επιλογές
+    αυθεντικοποίησής του έχουν επεκταθεί περισσότερες από μία φορές — και ανάμεσα σε πλατφόρμες.
+    Χρησιμοποιήστε το ως σημείο εκκίνησης και ελέγξτε την τεκμηρίωση της έκδοσης driver που
+    εγκαταστήσατε.
 
-Add the following properties in the **Add DB Connection** screen:
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `Host` | `<workspace>.cloud.databricks.com` | Server hostname του warehouse, π.χ. `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path του warehouse ή του cluster |
+| `SSL` | `1` | Τα endpoints του Databricks λειτουργούν μόνο με TLS |
+| `ThriftTransport` | `2` | HTTP transport, που είναι αυτό που χρησιμοποιούν τα SQL endpoints |
+| `AuthMech` | `3` | Αυθεντικοποίηση με token |
+| `UID` | `token` | Η κυριολεκτική λέξη `token`, όχι όνομα χρήστη |
+| `PWD` | `dapi…` | Το personal access token. Επιλέξτε **Encrypted** |
+| `UseNativeQuery` | `1` | Μεταβιβάζει τη SQL του *digna* αμετάβλητη — δείτε παρακάτω |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "Διατηρήστε το `UseNativeQuery=1`"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    Με `UseNativeQuery=0` — την προεπιλογή του driver — ο driver ξαναγράφει την εισερχόμενη SQL
+    σε ό,τι θεωρεί φορητή σύνταξη ODBC. Το *digna* παράγει ήδη Databricks SQL, οπότε η
+    αναδιατύπωση μπορεί να αλλάξει τα backticks και τα literals ημερομηνιών, και το profiling
+    αποτυγχάνει τότε σε εντολές που είναι έγκυρες όπως είναι γραμμένες.
 
-### OAuth instead of a token
+### OAuth αντί για token
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+Για ένα service principal με αυθεντικοποίηση OAuth machine-to-machine, αντικαταστήστε τα
+`AuthMech`, `UID` και `PWD` με:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
 | `Auth_Flow` | `1` | Client credentials |
 | `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Client_Secret` | `<client secret>` | Επιλέξτε **Encrypted** |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. Διαμόρφωση του *digna* {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5101,128 +5305,130 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Σημειώσεις για το Databricks {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- **Το warehouse πρέπει να εκτελείται**, ή να μπορεί να ξεκινήσει, όταν συνδέεται το *digna*.
+  Ένα warehouse που επανέρχεται από κατάσταση διακοπής μπορεί να χρειαστεί περισσότερο χρόνο από
+  το χρονικό όριο σύνδεσης — αν η δοκιμή αποτύχει στην πρώτη απόπειρα μετά από περίοδο
+  αδράνειας, δοκιμάστε ξανά.
+- **Οι catalogs προέρχονται από το workspace.** Σε αντίθεση με τις περισσότερες τεχνολογίες, μία
+  σύνδεση Databricks προσεγγίζει κάθε catalog που επιτρέπεται να δει το principal, οπότε μία
+  μόνο σύνδεση μπορεί να εξυπηρετεί πηγές σε διαφορετικούς catalogs.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema** μέσα
+  στον catalog της πηγής, οπότε το principal χρειάζεται `CREATE TABLE` εκεί. Το *Session*
+  χρησιμοποιεί `CREATE TEMPORARY TABLE` και δεν αγγίζει το **Work Schema**. Το *Standard*
+  χρειάζεται μόνο πρόσβαση ανάγνωσης.
+- **Τα serverless warehouses λειτουργούν** με τον ίδιο τρόπο· διαφέρει μόνο το `HTTPPath`.
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. Επαλήθευση του Driver (προαιρετικό) {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver, το
+warehouse και το token λειτουργούν, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/databricks/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
-![Step 2](images/databricks/create_odbc_data_source_step2.png)
+#### Βήμα 2
+![Βήμα 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
-![Step 3](images/databricks/create_odbc_data_source_step3.png)
+#### Βήμα 3
+![Βήμα 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
-![Step 4](images/databricks/create_odbc_data_source_step4.png)
+#### Βήμα 4
+![Βήμα 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### Βήμα 5 – Δοκιμή της σύνδεσης
 
-Click the **TEST** button. A successful connection should look like this:
+Κάντε κλικ στο κουμπί **TEST**. Μια επιτυχημένη σύνδεση θα πρέπει να μοιάζει ως εξής:
 
-![Step 5](images/databricks/create_odbc_data_source_step5.png)
+![Βήμα 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+Ο host, το HTTP path και το token που εισάγονται εδώ είναι ακριβώς οι τιμές που παίρνουν οι
+ιδιότητες της [ενότητας 3](#3-odbc-properties).
 
 ---
 
 # Hive
 Source: https://docs.digna.ai/el/databases/hive_connector_guide/
 
-# Source Connector for Hive
+# Source Connector για το Hive
 
-This guide describes how to configure *digna* to connect to Apache Hive over **ODBC**, using a
-**DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Apache Hive μέσω
+**ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Hive.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Cloudera ODBC Driver for Apache Hive** on the machine that runs the *digna*
-backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Hive.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Εγκαταστήστε τον **Cloudera ODBC Driver for Apache Hive** στο μηχάνημα που εκτελεί το backend
+του *digna*, ακολουθώντας τον επίσημο οδηγό εγκατάστασης του κατασκευαστή.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Cloudera Hive driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what HiveServer2 accepts depends entirely on how the cluster is
-    secured — authentication mechanism, transport mode, TLS, gateway. Use this as a starting
-    point and check the documentation of the driver version you installed.
+Διαβάστε το ακριβές καταχωρισμένο όνομα του driver στον host σας, όπως περιγράφεται στην ενότητα
+[Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
+
+!!! important "Παράδειγμα, όχι προδιαγραφή"
+
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον Cloudera Hive driver, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές τιμές
+    τους διαφέρουν ανάμεσα σε εκδόσεις driver και πλατφόρμες, και το τι δέχεται ο HiveServer2
+    εξαρτάται πλήρως από το πώς είναι ασφαλισμένο το cluster — μηχανισμός αυθεντικοποίησης,
+    transport mode, TLS, gateway. Χρησιμοποιήστε το ως σημείο εκκίνησης και ελέγξτε την
+    τεκμηρίωση της έκδοσης driver που εγκαταστήσατε.
+
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
+
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Must match the driver name registered on the *digna* host |
-| `HOST` | `hive.example.com` | HiveServer2 host name or IP address |
-| `PORT` | `10000` | HiveServer2 port; `10001` for HTTP transport |
+| `DRIVER` | `Cloudera ODBC Driver for Apache Hive` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `HOST` | `hive.example.com` | Όνομα host ή διεύθυνση IP του HiveServer2 |
+| `PORT` | `10000` | Port του HiveServer2· `10001` για HTTP transport |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER=Cloudera ODBC Driver for Apache Hive;HOST=hive.example.com;PORT=10000
 ```
 
-### Authentication
+### Αυθεντικοποίηση
 
-An unsecured HiveServer2 accepts the three properties above as they are. Where authentication
-is enabled, add:
+Ένας HiveServer2 χωρίς ασφάλεια δέχεται τις τρεις παραπάνω ιδιότητες όπως είναι. Όπου είναι
+ενεργοποιημένη η αυθεντικοποίηση, προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `AuthMech` | `3` | `0` no authentication, `2` user name only, `3` user name and password, `1` Kerberos |
-| `UID` | `digna_source_user` | Required for `AuthMech` `2` and `3` |
-| `PWD` | `<password>` | Required for `AuthMech` `3`. Tick **Encrypted** |
+| `AuthMech` | `3` | `0` χωρίς αυθεντικοποίηση, `2` μόνο όνομα χρήστη, `3` όνομα χρήστη και κωδικός πρόσβασης, `1` Kerberos |
+| `UID` | `digna_source_user` | Απαιτείται για `AuthMech` `2` και `3` |
+| `PWD` | `<password>` | Απαιτείται για `AuthMech` `3`. Επιλέξτε **Encrypted** |
 
-For Kerberos (`AuthMech=1`), the *digna* host additionally needs a valid ticket or keytab, plus
-the `KrbHostFQDN`, `KrbServiceName` and `KrbRealm` properties the driver documents.
+Για Kerberos (`AuthMech=1`), ο host του *digna* χρειάζεται επιπλέον ένα έγκυρο ticket ή keytab,
+καθώς και τις ιδιότητες `KrbHostFQDN`, `KrbServiceName` και `KrbRealm` που τεκμηριώνει ο driver.
 
-### Transport and TLS
+### Transport και TLS
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `ThriftTransport` | `2` | `0` binary (the default, port 10000), `1` SASL, `2` HTTP (port 10001, and what a Knox gateway expects) |
-| `HTTPPath` | `cliservice` | With `ThriftTransport=2` |
-| `SSL` | `1` | Where HiveServer2 is TLS-secured |
-| `Schema` | `dignadata` | Hive database the session starts in. Optional — *digna* qualifies its queries |
+| `ThriftTransport` | `2` | `0` binary (η προεπιλογή, port 10000), `1` SASL, `2` HTTP (port 10001, και αυτό που αναμένει ένα Knox gateway) |
+| `HTTPPath` | `cliservice` | Με `ThriftTransport=2` |
+| `SSL` | `1` | Όπου ο HiveServer2 είναι ασφαλισμένος με TLS |
+| `Schema` | `dignadata` | Η βάση δεδομένων Hive στην οποία ξεκινά το session. Προαιρετικό — το *digna* χρησιμοποιεί πλήρως προσδιορισμένα ονόματα στα queries του |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5233,106 +5439,111 @@ Work Schema:        Hive database for the work tables of "Permanent" profiling, 
 
 ---
 
-## 4. Notes on Hive {: #4-notes-on-hive }
+## 4. Σημειώσεις για το Hive {: #4-notes-on-hive }
 
-- **Catalogs come from the driver.** Hive has no catalog of its own, so *digna* takes what the
-  driver reports — normally a single entry named `HIVE` — and lists the Hive databases as
-  schemas below it.
-- **Work Schema is a Hive database.** For *Permanent* profiling, the user needs the right to
-  create and drop tables in it, and the underlying storage location must be writable.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**. *Session* uses
-  `CREATE TEMPORARY TABLE`, which needs a HiveServer2 that supports temporary tables and
-  does not touch **Work Schema**. *Standard* needs read access only, and is the mode to choose
-  on a cluster where *digna* has no write access at all.
-- **Profiling is a set of queries, not a scan.** Every statistic is computed by HiveServer2, so
-  the queue *digna*'s user submits to should have enough capacity for the inspection window.
+- **Οι catalogs προέρχονται από τον driver.** Το Hive δεν έχει δικό του catalog, οπότε το
+  *digna* παίρνει ό,τι αναφέρει ο driver — συνήθως μία μόνο καταχώριση με όνομα `HIVE` — και
+  παραθέτει τις βάσεις δεδομένων Hive ως schemas κάτω από αυτήν.
+- **Το Work Schema είναι μια βάση δεδομένων Hive.** Για το *Permanent* profiling, ο χρήστης
+  χρειάζεται δικαίωμα δημιουργίας και διαγραφής πινάκων σε αυτήν, και η υποκείμενη θέση
+  αποθήκευσης πρέπει να είναι εγγράψιμη.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**. Το
+  *Session* χρησιμοποιεί `CREATE TEMPORARY TABLE`, που απαιτεί HiveServer2 με υποστήριξη
+  προσωρινών πινάκων, και δεν αγγίζει το **Work Schema**. Το *Standard* χρειάζεται μόνο
+  πρόσβαση ανάγνωσης και είναι το mode που επιλέγετε σε cluster όπου το *digna* δεν έχει καθόλου
+  πρόσβαση εγγραφής.
+- **Το profiling είναι ένα σύνολο queries, όχι σάρωση.** Κάθε στατιστικό υπολογίζεται από τον
+  HiveServer2, οπότε η ουρά (queue) στην οποία υποβάλλει εργασίες ο χρήστης του *digna* πρέπει να
+  έχει επαρκή χωρητικότητα για το χρονικό παράθυρο του inspection.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the transport mode and your
-credentials work before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver, το
+transport mode και τα διαπιστευτήριά σας λειτουργούν, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/hive/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/hive/create_odbc_data_source_step1.png)
 
-The **Host**, **Port**, **Database**, **Mechanism** and **Thrift Transport** fields here are
-the `HOST`, `PORT`, `Schema`, `AuthMech` and `ThriftTransport` properties in
-[section 2](#2-odbc-properties).
+Τα πεδία **Host**, **Port**, **Database**, **Mechanism** και **Thrift Transport** εδώ
+αντιστοιχούν στις ιδιότητες `HOST`, `PORT`, `Schema`, `AuthMech` και `ThriftTransport` της
+[ενότητας 2](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### Βήμα 2 – Δοκιμή της σύνδεσης
 
-Provide the password and click the **Test** button.
+Δώστε τον κωδικό πρόσβασης και κάντε κλικ στο κουμπί **Test**.
 
-![Step 2](images/hive/create_odbc_data_source_step2.png)
+![Βήμα 2](images/hive/create_odbc_data_source_step2.png)
 
-After a successful test, click the **OK** button.
+Μετά από επιτυχημένη δοκιμή, κάντε κλικ στο κουμπί **OK**.
 
 ---
 
 # Netezza
 Source: https://docs.digna.ai/el/databases/netezza_connector_guide/
 
-# Source Connector for Netezza
+# Source Connector για το Netezza
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Netezza μέσω
+**ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Netezza.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Εγκαταστήστε τον ODBC driver **NetezzaSQL** (μέρος των IBM Netezza client tools) στο μηχάνημα
+που εκτελεί το backend του *digna*, ακολουθώντας τον επίσημο οδηγό εγκατάστασης του
+κατασκευαστή.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Διαβάστε το ακριβές καταχωρισμένο όνομα του driver στον host σας, όπως περιγράφεται στην ενότητα
+[Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
+
+!!! important "Παράδειγμα, όχι προδιαγραφή"
+
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον driver NetezzaSQL, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές τιμές τους
+    διαφέρουν ανάμεσα σε εκδόσεις client και πλατφόρμες, και ένα appliance ασφαλισμένο με TLS
+    χρειάζεται περισσότερες ιδιότητες από αυτές που φαίνονται εδώ. Χρησιμοποιήστε το ως σημείο
+    εκκίνησης και ελέγξτε την τεκμηρίωση της έκδοσης client που εγκαταστήσατε.
+
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
+
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna*. Τα άγκιστρα είναι ο συνήθης τρόπος γραφής αυτού του ονόματος |
+| `SERVER` | `netezza.example.com` | Όνομα server ή διεύθυνση IP |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Η βάση δεδομένων στην οποία ξεκινά το session |
+| `UID` | `ADMIN` | Χρήστης βάσης δεδομένων |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Ανάλογα με την έκδοση του driver, τη ρύθμιση και τις απαιτήσεις ασφαλείας σας, μπορεί να
+χρειαστούν επιπλέον ιδιότητες — για παράδειγμα `SecurityLevel` και `CaCertFile` για ένα
+appliance ασφαλισμένο με TLS. Κάθε επιλογή που προσφέρουν τα παράθυρα διαλόγου *Advanced*,
+*SSL* και *Driver* του driver μπορεί να προστεθεί ως ιδιότητα.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5343,120 +5554,121 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Σημειώσεις για το Netezza {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Ισχύουν τόσο οι catalogs όσο και τα schemas.** Το *digna* παραθέτει τις βάσεις δεδομένων που
+  επιτρέπεται να δει ο χρήστης (από το `_V_DATABASE`) ως catalogs και τα schemas τους (από το
+  `_V_SCHEMA`) κάτω από αυτές, οπότε μία σύνδεση μπορεί να εξυπηρετεί πηγές σε περισσότερες από
+  μία βάσεις δεδομένων. Το `DATABASE` καθορίζει μόνο πού ξεκινά το session.
+- **Τα αναγνωριστικά είναι με κεφαλαία**, εκτός αν δημιουργήθηκαν σε εισαγωγικά, γι' αυτό τα
+  παραπάνω παραδείγματα χρησιμοποιούν `TEST` και `ADMIN`.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**, οπότε
+  ο χρήστης χρειάζεται `CREATE TABLE` εκεί. Το *Session* χρησιμοποιεί `CREATE TEMPORARY TABLE` και
+  δεν αγγίζει το **Work Schema**. Το *Standard* χρειάζεται μόνο πρόσβαση ανάγνωσης.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver και τα
+διαπιστευτήριά σας λειτουργούν, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/netezza/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+Τα πεδία στο **DSN Options** αντιστοιχούν ένα προς ένα στις ιδιότητες της
+[ενότητας 2](#2-odbc-properties). Ανάλογα με τον Netezza driver, τη ρύθμιση και τις απαιτήσεις
+ασφαλείας σας, μπορεί να χρειαστείτε επίσης στοιχεία στις καρτέλες **Advanced DSN Options**,
+**SSL DSN Options** ή **Driver Options**· για την απλούστερη ρύθμιση, αρκεί το **DSN Options**.
 
-Click the **Test Connection** button.
+Κάντε κλικ στο κουμπί **Test Connection**.
 
-#### Step 2
-![Step 2](images/netezza/create_odbc_data_source_step2.png)
+#### Βήμα 2
+![Βήμα 2](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Όταν εμφανιστεί η οθόνη επιτυχίας, ο driver λειτουργεί και οι τιμές είναι σωστές.
 
 ---
 
 # Oracle
 Source: https://docs.digna.ai/el/databases/oracle_connector_guide/
 
-# Source Connector for Oracle
+# Source Connector για το Oracle
 
-This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
-using a **DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Oracle Database
+μέσω **ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Oracle.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
-enough). Install it on the machine that runs the *digna* backend, following the vendor's
-official installation guide.
-
-The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
-`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
-installation, so read the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Oracle.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Ο Oracle ODBC driver είναι μέρος του **Oracle Client** (αρκεί το πακέτο "ODBC" του Instant
+Client). Εγκαταστήστε τον στο μηχάνημα που εκτελεί το backend του *digna*, ακολουθώντας τον
+επίσημο οδηγό εγκατάστασης του κατασκευαστή.
 
-    The set below is one combination that is known to work. The properties belong to the Oracle
-    ODBC driver, so their names, defaults and accepted values differ between client versions,
-    and the driver name in particular depends on the Oracle home on your host. Use this as a
-    starting point and check the documentation of the client version you installed.
+Ο driver καταχωρίζεται ως **Oracle in `<OracleHomeName>`** — για παράδειγμα
+`Oracle in OraDB21Home1` ή `Oracle in instantclient_21_13`. Το όνομα του home διαφέρει ανά
+εγκατάσταση, οπότε διαβάστε το ακριβές όνομα στον host σας, όπως περιγράφεται στην ενότητα
+[Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
+
+!!! important "Παράδειγμα, όχι προδιαγραφή"
+
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον Oracle ODBC driver, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές τιμές
+    τους διαφέρουν ανάμεσα σε εκδόσεις client, και ειδικά το όνομα του driver εξαρτάται από το
+    Oracle home στον host σας. Χρησιμοποιήστε το ως σημείο εκκίνησης και ελέγξτε την τεκμηρίωση
+    της έκδοσης client που εγκαταστήσατε.
+
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
+
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
-| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
-| `UID` | `DIGNA_SOURCE_USER` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `Driver` | `Oracle in OraDB21Home1` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Η βάση δεδομένων στην οποία γίνεται η σύνδεση — δείτε παρακάτω |
+| `UID` | `DIGNA_SOURCE_USER` | Χρήστης βάσης δεδομένων |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
 ```
 
-### The `DBQ` value
+### Η τιμή `DBQ`
 
-`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
-configured on the *digna* host:
+Το `DBQ` δέχεται τρεις μορφές. Είναι ισοδύναμες για το *digna*· διαφέρουν ως προς το τι πρέπει
+να διαμορφωθεί στον host του *digna*:
 
-| Form | Example | Requires |
+| Μορφή | Παράδειγμα | Απαιτεί |
 |---|---|---|
-| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
-| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
-| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+| **Πλήρης connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Τίποτα — όλα βρίσκονται στην ιδιότητα. Συνιστάται |
+| **TNS alias** | `DIGNA_SOURCE` | Το alias πρέπει να υπάρχει στο `tnsnames.ora` του Oracle Client στον host του *digna* |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Έναν Oracle Client που υποστηρίζει Easy Connect (12c και νεότερο) |
 
-!!! tip "Prefer the full descriptor"
+!!! tip "Προτιμήστε τον πλήρη descriptor"
 
-    A TNS alias moves half of the connection definition into a file on the *digna* host, where
-    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
-    the connection self-contained — which is the point of a DSN-less setup.
+    Ένα TNS alias μεταφέρει τον μισό ορισμό της σύνδεσης σε ένα αρχείο στον host του *digna*,
+    όπου ξεχνιέται εύκολα όταν ο host ξαναστήνεται ή το *digna* μεταφέρεται. Ο πλήρης
+    descriptor κρατά τη σύνδεση αυτοτελή — που είναι και ο σκοπός μιας ρύθμισης χωρίς DSN.
 
-Note the parentheses in a descriptor are fine inside a connection string, but if your password
-contains `;`, brace it: `PWD={p@ss;word}`.
+Σημειώστε ότι οι παρενθέσεις ενός descriptor δεν προκαλούν πρόβλημα μέσα σε ένα connection
+string, αλλά αν ο κωδικός σας περιέχει `;`, βάλτε τον σε άγκιστρα: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5467,312 +5679,325 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle {: #4-notes-on-oracle }
+## 4. Σημειώσεις για το Oracle {: #4-notes-on-oracle }
 
-- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
-  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
-  `SELECT` on those tables, either directly or through a role.
-- **One connection sees one database.** The catalog *digna* offers is the database the
-  connection is attached to, so `DBQ` decides which service, and therefore which database, is
-  profiled.
-- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
-  data dictionary, which is what Oracle stores — upper case for unquoted objects.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
-  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
-  needs read access only.
+- **Τα schemas είναι χρήστες.** Το *digna* παραθέτει τους χρήστες του Oracle ως schemas, οπότε
+  το schema πηγής είναι ο ιδιοκτήτης των πινάκων — `DIGNA_SOURCE_USER` στο παραπάνω παράδειγμα. Ο
+  χρήστης της σύνδεσης χρειάζεται `SELECT` σε αυτούς τους πίνακες, είτε απευθείας είτε μέσω
+  ρόλου.
+- **Μία σύνδεση βλέπει μία βάση δεδομένων.** Ο catalog που προσφέρει το *digna* είναι η βάση
+  δεδομένων στην οποία είναι συνδεδεμένη η σύνδεση, οπότε το `DBQ` καθορίζει ποιο service, και
+  επομένως ποια βάση δεδομένων, υποβάλλεται σε profiling.
+- **Τα αναγνωριστικά γίνονται case-sensitive όταν μπαίνουν σε εισαγωγικά.** Το *digna* βάζει σε
+  εισαγωγικά τα ονόματα που διαβάζει από το data dictionary, δηλαδή ό,τι αποθηκεύει το Oracle —
+  κεφαλαία για αντικείμενα χωρίς εισαγωγικά.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**, οπότε
+  ο χρήστης χρειάζεται `CREATE TABLE` εκεί και quota στο tablespace. Το *Session* χρησιμοποιεί
+  έναν private temporary table (`ORA$PTT_…`, Oracle 18c και νεότερο) και δεν αγγίζει το
+  **Work Schema**. Το *Standard* χρειάζεται μόνο πρόσβαση ανάγνωσης.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the Oracle Client, the service name and your
-credentials work before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο Oracle Client, το
+service name και τα διαπιστευτήριά σας λειτουργούν, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/oracle/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/oracle/create_odbc_data_source_step1.png)
 
-The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
-installation — that is where the alias, and with it the host, port and service name, is
-defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+Το **TNS Service Name** που προσφέρεται εδώ προέρχεται από το `tnsnames.ora` της εγκατάστασης
+του Oracle Client σας — εκεί ορίζεται το alias, και μαζί του ο host, το port και το service
+name. Στο *digna* μπορείτε να χρησιμοποιήσετε το alias ως `DBQ` ή, εναλλακτικά, τον πλήρη
+descriptor.
 
-#### Step 2 – Test the connection
+#### Βήμα 2 – Δοκιμή της σύνδεσης
 
-Click the **Test Connection** button.
+Κάντε κλικ στο κουμπί **Test Connection**.
 
-![Step 2](images/oracle/create_odbc_data_source_step2.png)
+![Βήμα 2](images/oracle/create_odbc_data_source_step2.png)
 
-Provide the password and click the **OK** button.
+Δώστε τον κωδικό πρόσβασης και κάντε κλικ στο κουμπί **OK**.
 
-![Step 3](images/oracle/create_odbc_data_source_step3.png)
+![Βήμα 3](images/oracle/create_odbc_data_source_step3.png)
 
-A success message confirms that the driver and the credentials work.
+Ένα μήνυμα επιτυχίας επιβεβαιώνει ότι ο driver και τα διαπιστευτήρια λειτουργούν.
 
 ---
 
 # Overview
 Source: https://docs.digna.ai/el/databases/overview/
 
-# Database Connections Overview
+# Επισκόπηση Συνδέσεων Βάσεων Δεδομένων
 
 ---
 
-## Table of Contents
+## Πίνακας Περιεχομένων
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Πώς Λειτουργούν οι Συνδέσεις](#how-connections-work)
+2. [Οδηγοί ανά Τεχνολογία](#technology-guides)
+3. [Προαπαιτούμενο: Εγκατάσταση του ODBC Driver στον Host του digna](#install-the-driver)
+4. [Δημιουργία Σύνδεσης Βάσης Δεδομένων](#create-a-database-connection)
+5. [Ιδιότητες ODBC](#odbc-properties)
+6. [Κρυπτογράφηση Τιμών Ιδιοτήτων](#encrypting-property-values)
+7. [Δοκιμή Σύνδεσης](#testing-a-connection)
+8. [Ποια Βάση Δεδομένων Βλέπει η Σύνδεση](#which-database-the-connection-sees)
+9. [Profiling Mode και Work Schema](#profiling-mode-and-work-schema)
+10. [Χρήση DSN Εναλλακτικά](#using-a-dsn-instead)
+11. [Αντιμετώπιση Προβλημάτων](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Πώς Λειτουργούν οι Συνδέσεις {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+Το *digna* προσεγγίζει κάθε τεχνολογία πηγής μέσω **ODBC**. Μια σύνδεση είναι μια λίστα
+ιδιοτήτων ODBC που εισάγετε ως ζεύγη κλειδιού/τιμής. Όταν το *digna* ανοίγει τη σύνδεση, ενώνει
+αυτά τα ζεύγη σε ένα connection string — `Key=Value`, χωρισμένα με `;`, με τη σειρά που τα
+καταχωρίσατε — και το παραδίδει στον ODBC driver manager του host του *digna*.
 
-!!! important "The property sets in the guides are examples"
+Το ότι εισάγετε μόνοι σας τις ιδιότητες είναι αυτό που κάνει τη ρύθμιση **χωρίς DSN** (DSN-less):
+η σύνδεση περιέχει όλα όσα χρειάζεται ο driver, οπότε δεν χρειάζεται να καταχωριστεί καμία
+πηγή δεδομένων ODBC (DSN) στον host. Αυτός είναι ο συνιστώμενος τρόπος διαμόρφωσης του *digna*,
+επειδή ο ορισμός της σύνδεσης βρίσκεται εξ ολοκλήρου στο *digna* και μεταφέρεται μαζί του.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Γιατί ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+Παλαιότερες εκδόσεις πρόσφεραν επιλογή ανάμεσα σε έναν driver ανά τεχνολογία και στο ODBC, μέσω
+του διακόπτη **Use ODBC**. Από το Release 2026.06, το *digna* βασίζεται αποκλειστικά στο ODBC. Μια
+ενιαία, τυποποιημένη διεπαφή σας προσφέρει περισσότερα από ένα σύνολο εξειδικευμένων drivers:
+
+- **Αυθεντικοποίηση** — η αυθεντικοποίηση είναι μέρος του ODBC, οπότε μια σύνδεση μπορεί να
+  χρησιμοποιήσει ό,τι υποστηρίζει ο driver της: κωδικούς πρόσβασης, tokens και PATs, Kerberos και
+  Active Directory, MFA και single sign-on μέσω browser, cloud identity, πιστοποιητικά πελάτη και
+  TLS. Νέες μέθοδοι έρχονται με μια ενημέρωση του driver, χωρίς αναμονή για νέα έκδοση του *digna*.
+- **Drivers που συντηρούνται από τους κατασκευαστές των βάσεων δεδομένων** — ο driver του ίδιου
+  του κατασκευαστή ακολουθεί τις νέες εκδόσεις του server και τις διορθώσεις ασφαλείας, και
+  μπορείτε να τον ενημερώνετε με το δικό σας χρονοδιάγραμμα, ανεξάρτητα από το *digna*.
+- **Ένας τρόπος διαμόρφωσης για όλα** — κάθε τεχνολογία είναι μια λίστα ιδιοτήτων κλειδιού/τιμής,
+  με την ίδια διεπαφή, την ίδια κρυπτογράφηση ευαίσθητων τιμών και την ίδια αντιμετώπιση
+  προβλημάτων, αντί για διαφορετικό σύνολο πεδίων ανά πηγή.
+- **Ρύθμιση και εμβέλεια** — επιλογές σε επίπεδο driver, όπως timeouts, ρυθμίσεις TLS, proxies και
+  fetch sizes, είναι διαθέσιμες για κάθε πηγή, και οποιαδήποτε τεχνολογία με συμβατό ODBC driver
+  μπορεί να συνδεθεί, ακόμη και αυτές για τις οποίες το *digna* δεν δημοσιεύει ξεχωριστό οδηγό.
+
+!!! note "Τι άλλαξε στη διεπαφή"
+
+    Ο διακόπτης **Use ODBC** και τα ξεχωριστά πεδία host, port, database, user και password δεν
+    υπάρχουν πλέον. Μια σύνδεση που δεν χρησιμοποιεί ήδη ODBC χρειάζεται να εισαχθούν οι ιδιότητες
+    ODBC της για να λειτουργήσει ξανά — δείτε
+    [Δημιουργία Σύνδεσης Βάσης Δεδομένων](#create-a-database-connection).
+
+---
+
+## Οδηγοί ανά Τεχνολογία {: #technology-guides }
+
+Τα ονόματα των ιδιοτήτων διαφέρουν ανά driver, και κάθε τεχνολογία έχει μία ή δύο λεπτομέρειες
+που δεν έχουν οι υπόλοιπες. Οι παρακάτω οδηγοί καλύπτουν αυτό το μέρος· αυτή η σελίδα καλύπτει
+την πλευρά του *digna*, που είναι ίδια για όλες.
+
+!!! important "Τα σύνολα ιδιοτήτων στους οδηγούς είναι παραδείγματα"
+
+    Κάθε οδηγός δείχνει έναν συνδυασμό που είναι γνωστό ότι λειτουργεί — αυτόν με τον οποίο
+    δοκιμάζεται το *digna*. Είναι σημείο εκκίνησης, όχι προδιαγραφή: οι ιδιότητες ανήκουν στον
+    ODBC driver, και το ποιες υπάρχουν, πώς ονομάζονται και ποιες τιμές δέχονται διαφέρει ανάμεσα
+    σε εκδόσεις driver και κατασκευαστές, ανάμεσα σε Windows, Linux και macOS, και ανάλογα με το
+    πώς είναι διαμορφωμένος ο server πηγής — μέθοδος αυθεντικοποίησης, TLS, gateway, port.
+    Αναμένετε να προσαρμόσετε μία ή δύο τιμές, και θεωρήστε την τεκμηρίωση της έκδοσης driver που
+    εγκαταστήσατε ως την έγκυρη πηγή.
+
+| Τεχνολογία | Οδηγός | Αξίζει να γνωρίζετε |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Τα serverless pools χρειάζονται `-ondemand` στο όνομα του host και υποστηρίζουν μόνο *Standard* profiling |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Αυθεντικοποίηση με token: `UID=token`, PAT στο `PWD` |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Οι catalogs προέρχονται από τον driver, όχι από ένα query |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Το όνομα του driver γράφεται σε άγκιστρα: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | Το `DBQ` δέχεται είτε πλήρη connect descriptor είτε alias του `tnsnames.ora` |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | Το `SSLMode` πρέπει να ταιριάζει με αυτό που απαιτεί ο server |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Το programmatic access token είναι η δοκιμασμένη μέθοδος αυθεντικοποίησης |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | Το `DATABASE` καθορίζει ποια schemas μπορεί να δει το *digna* |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Ο host μπαίνει στο `DBCNAME`· οι βάσεις δεδομένων λειτουργούν ως schemas |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Προαπαιτούμενο: Εγκατάσταση του ODBC Driver στον Host του digna {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+Το *digna* ανοίγει τις συνδέσεις πηγών από τον **server που εκτελεί το backend του digna**, όχι
+από τον browser. Επομένως ο ODBC driver πρέπει να είναι εγκατεστημένος σε εκείνο το μηχάνημα, και
+το όνομά του πρέπει να είναι καταχωρισμένο στον τοπικό driver manager.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Εγκαταστήστε τον 64-bit driver του κατασκευαστή, έπειτα ανοίξτε το **ODBC Data Source
+    Administrator (64-bit)** και μεταβείτε στην καρτέλα **Drivers**. Τα ονόματα που εμφανίζονται
+    εκεί είναι ακριβώς οι τιμές που μπορείτε να χρησιμοποιήσετε για την ιδιότητα `Driver`.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Εγκαταστήστε το **unixODBC** και τον driver του κατασκευαστή, έπειτα εμφανίστε τα
+    καταχωρισμένα ονόματα drivers:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Τα ονόματα που εμφανίζονται σε αγκύλες είναι οι τιμές που μπορείτε να χρησιμοποιήσετε για
+    την ιδιότητα `Driver`. Προέρχονται από το `/etc/odbcinst.ini` (ή από το αρχείο που αναφέρει
+    το `odbcinst -j`).
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Εγκαταστήστε το **unixODBC** (για παράδειγμα με `brew install unixodbc`) και τον driver του
+    κατασκευαστή, έπειτα εμφανίστε τα καταχωρισμένα ονόματα drivers:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Το όνομα του driver πρέπει να ταιριάζει χαρακτήρα προς χαρακτήρα"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    Το `Driver` περνά στον driver manager αμετάβλητο. Τα `Simba Spark ODBC Driver` και
+    `Simba Spark ODBC Driver 64` είναι διαφορετικοί drivers για τον driver manager, και ένα όνομα
+    που δεν είναι καταχωρισμένο προκαλεί σφάλμα *data source name not found*, παρόλο που δεν
+    εμπλέκεται κανένα DSN.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Αντί για καταχωρισμένο όνομα, όλοι οι συνήθεις driver managers δέχονται επίσης την πλήρη
+διαδρομή προς τη βιβλιοθήκη του driver, για παράδειγμα
+`Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Αυτό είναι χρήσιμο όταν ο driver είναι
+εγκατεστημένος αλλά όχι καταχωρισμένος.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Δημιουργία Σύνδεσης Βάσης Δεδομένων {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Ανοίξτε το **Admin Panel**, μεταβείτε στην καρτέλα **Database Connections** και κάντε κλικ στο
+**Add DB Connection**. Η οθόνη ζητά πέντε στοιχεία:
 
-| Field | Description |
+| Πεδίο | Περιγραφή |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Όνομα της σύνδεσης. Χρησιμοποιείται για την αναφορά στη σύνδεση σε άλλες οθόνες. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake ή Hive. Επιλέγει τη διάλεκτο SQL που παράγει το *digna*, οπότε πρέπει να ταιριάζει με την πηγή — όχι με τον driver. Το Azure Synapse Analytics είναι σύνδεση **SQL Server**. |
+| **ODBC Properties** | Τα ζεύγη κλειδιού/τιμής που περιγράφονται στις [Ιδιότητες ODBC](#odbc-properties). |
+| **Profiling Mode** | *Standard*, *Permanent* ή *Session* — δείτε [Profiling Mode και Work Schema](#profiling-mode-and-work-schema). |
+| **Work Schema** | Schema που περιέχει τους πίνακες εργασίας για το *Permanent* profiling. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Μια σύνδεση διαχειρίζεται κεντρικά και έπειτα εκχωρείται σε ένα ή περισσότερα έργα, οπότε η ίδια
+σύνδεση μπορεί να εξυπηρετεί πολλά έργα.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## Ιδιότητες ODBC {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Κάντε κλικ στο **Add Property** για κάθε ιδιότητα και συμπληρώστε **Key**, **Value** και, για
+μυστικά, το πλαίσιο ελέγχου **Encrypted**. Κάθε οδηγός τεχνολογίας παραθέτει ένα παράδειγμα
+συνόλου για εκείνη την τεχνολογία, το οποίο προσαρμόζετε στην έκδοση του driver και στον server
+σας — δείτε [τη σημείωση παραπάνω](#technology-guides).
 
-!!! tip "Tip"
+Όποιος κι αν είναι ο driver, ένα σύνολο ιδιοτήτων καλύπτει τα ίδια τέσσερα στοιχεία:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — το καταχωρισμένο όνομα του driver, όπως περιγράφεται [παραπάνω](#install-the-driver).
+- **Η διεύθυνση του server** — το κλειδί διαφέρει ανά driver: `SERVER`, `HOST`, `DBCNAME`,
+  `Server` ή, για το Oracle, ο connect descriptor `DBQ`.
+- **Διαπιστευτήρια** — συνήθως `UID` και `PWD`· το Snowflake χρησιμοποιεί `UID` μαζί με ένα
+  `token`, και το Databricks χρησιμοποιεί τον κυριολεκτικό χρήστη `token` μαζί με το personal
+  access token στο `PWD`.
+- **Η βάση δεδομένων ή ο catalog στον οποίο εργάζεται**, όπου η τεχνολογία έχει κάτι τέτοιο —
+  δείτε [Ποια Βάση Δεδομένων Βλέπει η Σύνδεση](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Οτιδήποτε άλλο τεκμηριώνει ο driver μπορεί να προστεθεί με τον ίδιο τρόπο — connection pooling,
+socket timeouts, ρυθμίσεις Kerberos, ρυθμίσεις proxy. Το *digna* δεν ερμηνεύει τις ιδιότητες·
+απλώς τις μεταβιβάζει.
+
+!!! warning "Οι τιμές δεν γίνονται escape — βάλτε σε άγκιστρα ό,τι περιέχει ερωτηματικό"
+
+    Επειδή οι ιδιότητες ενώνονται με `;`, μια τιμή που περιέχει η ίδια `;` θα χώριζε το
+    connection string σε λάθος σημείο. Περικλείστε τέτοιες τιμές σε άγκιστρα: `PWD={p@ss;word}`.
+    Το ίδιο ισχύει για τιμές με `=` ή με αρχικά κενά. Γι' αυτό επίσης ορισμένοι drivers γράφονται
+    κατά σύμβαση σε άγκιστρα, όπως `{NetezzaSQL}` ή `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Κρυπτογράφηση Τιμών Ιδιοτήτων {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Επιλέξτε **Encrypted** για κάθε ιδιότητα που περιέχει μυστικό — `PWD`, `token`, ένα client
+secret. Η τιμή τότε κρυπτογραφείται πριν αποθηκευτεί στο repository του *digna*, αποκρύπτεται
+στην οθόνη και αποκρυπτογραφείται μόνο όταν συντίθεται το connection string.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Συμβουλή"
+
+    Μια κρυπτογραφημένη τιμή δεν μπορεί να διαβαστεί ξανά, ούτε στο UI ούτε μέσω του API —
+    μπορεί μόνο να αντικατασταθεί. Φυλάσσετε τα μυστικά και στον δικό σας password manager.
+
+Ιδιότητες που δεν είναι μυστικές — το όνομα του driver, ο host, το port, η βάση δεδομένων — είναι
+προτιμότερο να μένουν μη κρυπτογραφημένες, ώστε να παραμένουν αναγνώσιμες για όποιον συντηρήσει
+τη σύνδεση αργότερα.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Δοκιμή Σύνδεσης {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Κάντε κλικ στο **Test** στο παράθυρο διαλόγου *Add DB Connection* **πριν** την αποθήκευση. Η
+δοκιμή χρησιμοποιεί τις τιμές που βρίσκονται τη στιγμή εκείνη στη φόρμα και εκτελεί πραγματική
+σύνδεση, οπότε αναφέρει ακριβώς ό,τι θα συναντούσε ένα inspection — λάθος όνομα driver, κωδικό
+που απορρίφθηκε, host που δεν είναι προσβάσιμος. Τίποτα δεν αποθηκεύεται: η δοκιμαστική σύνδεση
+αναιρείται (rollback) είτε πετύχει είτε αποτύχει.
 
-| Technology | Catalogs offered |
+Για μια σύνδεση που υπάρχει ήδη, περάστε τον δείκτη πάνω από τη γραμμή της στην καρτέλα
+**Database Connections** και κάντε κλικ στο εικονίδιο **plug** για να την ξαναδοκιμάσετε. Αυτός
+είναι ο γρηγορότερος τρόπος να ελέγξετε αν μια πηγή είναι προσβάσιμη μετά από αλλαγή κωδικού ή
+αλλαγή στο firewall.
+
+---
+
+## Ποια Βάση Δεδομένων Βλέπει η Σύνδεση {: #which-database-the-connection-sees }
+
+Όταν προσθέτετε μια πηγή δεδομένων, το *digna* προσφέρει τους catalogs, τα schemas και τους
+πίνακες που μπορεί να προσεγγίσει η σύνδεση. Το εύρος αυτό εξαρτάται από την τεχνολογία:
+
+| Τεχνολογία | Catalogs που προσφέρονται |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Μόνο η **τρέχουσα** βάση δεδομένων της σύνδεσης |
+| **Teradata**, **Netezza**, **Databricks** | Όλες οι βάσεις δεδομένων ή οι catalogs που επιτρέπεται να δει ο χρήστης |
+| **Hive**, **Impala** | Αναφέρονται από τον driver |
 
-!!! important "One connection, one database"
+!!! important "Μία σύνδεση, μία βάση δεδομένων"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    Για PostgreSQL, SQL Server, Oracle και Snowflake, οι ιδιότητες πρέπει να δείχνουν στη βάση
+    δεδομένων που περιέχει τα schemas πηγής — `DATABASE=…`, `Database=…` ή το service name μέσα
+    στο `DBQ` του Oracle. Πίνακες σε άλλη βάση δεδομένων δεν είναι προσβάσιμοι μέσω αυτής της
+    σύνδεσης· προσθέστε μια δεύτερη σύνδεση γι' αυτήν.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Profiling Mode και Work Schema {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Το profiling mode καθορίζει πώς το *digna* επεξεργάζεται τα δεδομένα και υπολογίζει τις
+μετρικές:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** Οι μετρικές υπολογίζονται απευθείας στους πίνακες πηγής χωρίς αντιγραφή των
+  δεδομένων.
+- **Permanent:** Τα δεδομένα της ημέρας που εξετάζεται αντιγράφονται σε έναν μόνιμο πίνακα, και οι
+  μετρικές υπολογίζονται στα αντιγραμμένα δεδομένα.
+- **Session:** Τα δεδομένα αντιγράφονται σε έναν πίνακα session ή προσωρινό πίνακα, και οι
+  μετρικές υπολογίζονται σε αυτά τα προσωρινά δεδομένα.
 
-The mode decides what the connection user must be allowed to do:
+Το mode καθορίζει τι πρέπει να επιτρέπεται να κάνει ο χρήστης της σύνδεσης:
 
-| Mode | Writes | Rights the connection user needs |
+| Mode | Τι γράφει | Δικαιώματα που χρειάζεται ο χρήστης της σύνδεσης |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | τίποτα | Ανάγνωση στους πίνακες πηγής |
+| **Permanent** | έναν πίνακα ανά πηγή δεδομένων στο **Work Schema** | Δημιουργία και διαγραφή πινάκων στο **Work Schema** |
+| **Session** | έναν προσωρινό πίνακα που η βάση δεδομένων διαγράφει μαζί με το session | Δημιουργία προσωρινών πινάκων — το **Work Schema** δεν χρησιμοποιείται |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+Το *Standard* μόνο διαβάζει, γι' αυτό είναι το mode που επιλέγετε όταν στο *digna* παραχωρείται
+πρόσβαση μόνο ανάγνωσης. Το **Work Schema** διαβάζεται μόνο για το *Permanent*, αλλά αξίζει να το
+συμπληρώσετε ούτως ή άλλως, ώστε η σύνδεση να συνεχίσει να λειτουργεί αν αλλάξει αργότερα το mode.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## Χρήση DSN Εναλλακτικά {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+Ένα DSN εξακολουθεί να λειτουργεί — το `DSN` είναι απλώς μια ακόμη ιδιότητα:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -5780,129 +6005,134 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+Το DSN πρέπει να είναι καταχωρισμένο στον host του *digna*, για τον ίδιο λογαριασμό χρήστη που
+εκτελεί το backend του *digna*, και ως **System DSN** όταν το *digna* εκτελείται ως service.
+Οτιδήποτε έχει διαμορφωθεί στο DSN μπορεί επίσης να παρακαμφθεί, προσθέτοντάς το ως ιδιότητα.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
+Η ρύθμιση χωρίς DSN είναι η τεκμηριωμένη προεπιλογή επειδή αποφεύγει αυτή την κατάσταση στην
+πλευρά του host: η σύνδεση περιγράφεται πλήρως στο *digna*, και ένας νέος host του *digna*
+χρειάζεται μόνο εγκατεστημένο τον driver, χωρίς καμία διαμόρφωση.
 
 ---
 
-## Troubleshooting {: #troubleshooting }
+## Αντιμετώπιση Προβλημάτων {: #troubleshooting }
 
 ### Data source name not found / no default driver specified
 
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
+**Συμπτώματα:**
+- Το κουμπί **Test** αναφέρει σφάλμα που αναφέρει *data source name not found*, παρόλο που η
+  ρύθμιση είναι χωρίς DSN
 
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
-
----
-
-### The connection test times out
-
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
-
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Αιτίες & Λύσεις:**
+1. Η τιμή του `Driver` δεν ταιριάζει με καταχωρισμένο όνομα driver — συγκρίνετέ την με την
+   καρτέλα **Drivers** του *ODBC Data Source Administrator (64-bit)* ή με το `odbcinst -q -d`
+2. Ο driver είναι εγκατεστημένος στον σταθμό εργασίας σας αλλά όχι στον host του *digna*
+3. Ο driver είναι 32-bit ενώ το *digna* είναι 64-bit — εγκαταστήστε τον 64-bit driver
+4. Η ιδιότητα `Driver` λείπει εντελώς, και δεν δόθηκε ούτε `DSN`
+5. Σε Linux και macOS, ο driver είναι εγκατεστημένος αλλά όχι καταχωρισμένος — δώστε αντί γι'
+   αυτό την πλήρη διαδρομή προς τη βιβλιοθήκη του driver, ή καταχωρίστε τον στο `odbcinst.ini`
 
 ---
 
-### Authentication fails although the credentials are correct
+### Η δοκιμή σύνδεσης λήγει λόγω χρονικού ορίου
 
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
+**Συμπτώματα:**
+- Το **Test** κολλάει και έπειτα αποτυγχάνει μετά από περίπου μισό λεπτό
 
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
-
----
-
-### The data source screen does not offer the expected database or schema
-
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
-
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
+**Αιτίες & Λύσεις:**
+1. Ο host ή το port δεν είναι προσβάσιμα από τον host του *digna* — ελέγξτε το firewall και, για
+   πηγές στο cloud, τη λίστα επιτρεπόμενων IP
+2. Το όνομα του host είναι σωστό αλλά το port ανήκει σε άλλη υπηρεσία
+3. Η πηγή χρειάζεται περισσότερο από τα προεπιλεγμένα 30 δευτερόλεπτα για να δεχτεί σύνδεση —
+   αυξήστε το `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` στην ενότητα `[base]` του `config.toml` (το `0`
+   σημαίνει αναμονή χωρίς όριο) και επανεκκινήστε το backend
+4. Ένα serverless endpoint επανέρχεται από αδράνεια — δοκιμάστε ξανά, και αν συμβαίνει τακτικά,
+   αυξήστε το login timeout όπως παραπάνω
 
 ---
 
-### Profiling fails while the connection test succeeds
+### Η αυθεντικοποίηση αποτυγχάνει παρόλο που τα διαπιστευτήρια είναι σωστά
 
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
+**Συμπτώματα:**
+- Ο driver αναφέρει μη έγκυρα διαπιστευτήρια, αλλά ο ίδιος χρήστης λειτουργεί σε άλλον SQL client
 
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
-
----
-
-## Best Practices
-
-**DO:**
-
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Αιτίες & Λύσεις:**
+1. Ο κωδικός περιέχει `;` — περικλείστε την τιμή σε άγκιστρα: `{p@ss;word}`
+2. Αντιγράφηκε ένα κενό στο τέλος της τιμής
+3. Ο driver αναμένει συγκεκριμένο μηχανισμό αυθεντικοποίησης — για παράδειγμα `AuthMech` για
+   τους drivers Hive και Databricks, ή `authenticator` για το Snowflake
+4. Η τιμή αποθηκεύτηκε κρυπτογραφημένη και έπειτα επεξεργάστηκε — οι κρυπτογραφημένες τιμές δεν
+   μπορούν να διαβαστούν ξανά, οπότε εισαγάγετε ξανά ολόκληρο το μυστικό
+5. Ένα token έχει λήξει — τα personal access tokens και τα programmatic access tokens εκδίδονται
+   με ημερομηνία λήξης
 
 ---
 
-## Support
+### Η οθόνη πηγής δεδομένων δεν προσφέρει την αναμενόμενη βάση δεδομένων ή το αναμενόμενο schema
 
-Need help with a database connection?
+**Συμπτώματα:**
+- Λείπουν catalogs, schemas ή πίνακες όταν προστίθεται μια πηγή δεδομένων
+
+**Αιτίες & Λύσεις:**
+1. Η σύνδεση δείχνει σε διαφορετική βάση δεδομένων — δείτε
+   [Ποια Βάση Δεδομένων Βλέπει η Σύνδεση](#which-database-the-connection-sees)
+2. Ο χρήστης της σύνδεσης δεν έχει δικαιώματα ανάγνωσης στο schema ή στο data dictionary
+3. Το **Technology** δεν ταιριάζει με την πηγή, οπότε το *digna* κάνει query στο λάθος data
+   dictionary
+4. Για το Snowflake, δεν έχει εκχωρηθεί προεπιλεγμένο warehouse στον χρήστη και δεν δόθηκε
+   ιδιότητα `Warehouse`, οπότε τα queries μεταδεδομένων δεν μπορούν να εκτελεστούν
+
+---
+
+### Το profiling αποτυγχάνει ενώ η δοκιμή σύνδεσης πετυχαίνει
+
+**Συμπτώματα:**
+- Το **Test** περνά, αλλά ένα inspection αποτυγχάνει κατά τη δημιουργία πινάκων εργασίας
+
+**Αιτίες & Λύσεις:**
+1. Έχει επιλεγεί *Permanent* profiling και ο χρήστης της σύνδεσης δεν μπορεί να δημιουργήσει
+   πίνακες στο **Work Schema** — παραχωρήστε τα δικαιώματα ή αλλάξτε σε *Session* ή *Standard*
+2. Το **Work Schema** είναι κενό ή ονομάζει schema που δεν υπάρχει, ενώ έχει επιλεγεί *Permanent*
+   profiling
+3. Έχει επιλεγεί *Session* profiling και ο χρήστης της σύνδεσης δεν επιτρέπεται να δημιουργεί
+   προσωρινούς πίνακες
+4. Ένα μακροχρόνιο query profiling φτάνει το query timeout — αυξήστε το
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` στην ενότητα `[base]` του `config.toml` (προεπιλογή 3600
+   δευτερόλεπτα, το `0` απενεργοποιεί το timeout)
+
+---
+
+## Βέλτιστες Πρακτικές
+
+**ΚΑΝΤΕ:**
+
+- Εγκαταστήστε και καταχωρίστε τον driver στον host του *digna* πριν διαμορφώσετε τη σύνδεση
+- Επιλέξτε **Encrypted** για κάθε κωδικό πρόσβασης και token
+- Κάντε κλικ στο **Test** πριν την αποθήκευση, και ξαναδοκιμάστε μετά από αλλαγή κωδικού
+- Ονομάστε τις συνδέσεις με βάση την πηγή και το περιβάλλον, για παράδειγμα `sales_dwh_prod`
+- Δώστε στο *digna* έναν αποκλειστικό χρήστη βάσης δεδομένων, μόνο ανάγνωσης όπου αρκεί το
+  *Standard* profiling
+- Κρατήστε μία σύνδεση ανά βάση δεδομένων πηγής, και προσθέστε μια δεύτερη αντί να αλλάζετε την
+  πρώτη
+
+**ΜΗΝ ΚΑΝΕΤΕ:**
+
+- Μην αποθηκεύετε μυστικά χωρίς κρυπτογράφηση, και μη μοιράζεστε έναν χρήστη βάσης δεδομένων
+  ανάμεσα στο *digna* και σε άλλα εργαλεία
+- Μη χρησιμοποιείτε 32-bit driver με εγκατάσταση 64-bit του *digna*
+- Μη βασίζεστε σε User DSN όταν το *digna* εκτελείται ως service — δεν θα είναι ορατό
+- Μη βάζετε τιμή που περιέχει `;` σε ιδιότητα χωρίς άγκιστρα
+- Μην κατευθύνετε το **Work Schema** σε schema που περιέχει δεδομένα πηγής
+
+---
+
+## Υποστήριξη
+
+Χρειάζεστε βοήθεια με μια σύνδεση βάσης δεδομένων;
 
 - **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+- **Τεκμηρίωση:** https://docs.digna.ai
+- **Ιστότοπος:** https://www.digna.ai
 
 ---
 
@@ -5914,68 +6144,68 @@ Need help with a database connection?
 # PostgreSQL
 Source: https://docs.digna.ai/el/databases/postgres_connector_guide/
 
-# Source Connector for PostgreSQL
+# Source Connector για το PostgreSQL
 
-This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
-**DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο PostgreSQL μέσω
+**ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to PostgreSQL.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself under a name that differs per platform and package — commonly
-**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
-the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
-for the `DRIVER` property below.
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το PostgreSQL.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Εγκαταστήστε τον PostgreSQL ODBC driver (**psqlODBC**) στο μηχάνημα που εκτελεί το backend του
+*digna*, ακολουθώντας τον επίσημο οδηγό εγκατάστασης του κατασκευαστή.
 
-    The set below is one combination that is known to work. The properties belong to the
-    psqlODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what your server demands — SSL in particular — may differ too.
-    Use this as a starting point and check the documentation of the driver version you
-    installed.
+Ο driver καταχωρίζεται με όνομα που διαφέρει ανά πλατφόρμα και πακέτο — συνήθως
+**PostgreSQL Unicode(x64)** στα Windows και **PostgreSQL ODBC Driver(UNICODE)** στο Linux.
+Διαβάστε το ακριβές όνομα στον host σας, όπως περιγράφεται στην ενότητα
+[Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver), και
+χρησιμοποιήστε αυτό το όνομα για την ιδιότητα `DRIVER` παρακάτω.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
+
+!!! important "Παράδειγμα, όχι προδιαγραφή"
+
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον driver psqlODBC, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές τιμές τους
+    διαφέρουν ανάμεσα σε εκδόσεις driver και πλατφόρμες, και το τι απαιτεί ο server σας —
+    ειδικά ως προς το SSL — μπορεί επίσης να διαφέρει. Χρησιμοποιήστε το ως σημείο εκκίνησης και
+    ελέγξτε την τεκμηρίωση της έκδοσης driver που εγκαταστήσατε.
+
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
+
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `db.example.com` | Server name or IP address |
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `SERVER` | `db.example.com` | Όνομα server ή διεύθυνση IP |
 | `PORT` | `5432` | |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
-| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+| `DATABASE` | `digna_source_db` | Η βάση δεδομένων που περιέχει τα schemas πηγής. Είναι η μόνη βάση δεδομένων στην οποία αυτή η σύνδεση μπορεί να κάνει profiling |
+| `UID` | `digna_source_user` | Χρήστης βάσης δεδομένων |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` ή `verify-full` — πρέπει να γίνεται δεκτό από τον server |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
 ```
 
-Any further psqlODBC option can be added as an additional property — for example
-`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
-time.
+Οποιαδήποτε άλλη επιλογή του psqlODBC μπορεί να προστεθεί ως επιπλέον ιδιότητα — για
+παράδειγμα `ReadOnly=1` για session μόνο ανάγνωσης, ή `ConnSettings` για εκτέλεση εντολών `SET`
+κατά τη σύνδεση.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -5986,125 +6216,129 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+## 4. Σημειώσεις για το PostgreSQL {: #4-notes-on-postgresql }
 
-- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
-  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
-  be available to the driver on the *digna* host. If you had to choose a specific mode when
-  testing the driver, use the same one here.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Το `SSLMode` πρέπει να ταιριάζει με τον server.** Ένας server διαμορφωμένος με `hostssl`
+  απορρίπτει το `SSLMode=disable`, και τα `verify-ca` ή `verify-full` απαιτούν επιπλέον το root
+  certificate να είναι διαθέσιμο στον driver στον host του *digna*. Αν χρειάστηκε να επιλέξετε
+  συγκεκριμένο mode κατά τη δοκιμή του driver, χρησιμοποιήστε το ίδιο και εδώ.
+- **Μία σύνδεση βλέπει μία βάση δεδομένων.** Το *digna* προσφέρει τα schemas της βάσης δεδομένων
+  που ορίζεται στο `DATABASE`, επειδή το PostgreSQL αναφέρει μόνο την τρέχουσα βάση δεδομένων
+  ως catalog. Πίνακες πηγής σε άλλη βάση δεδομένων χρειάζονται δική τους σύνδεση.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**, οπότε
+  ο χρήστης χρειάζεται `CREATE` σε αυτό το schema. Το *Session* χρησιμοποιεί
+  `CREATE TEMPORARY TABLE` και δεν αγγίζει το **Work Schema**. Το *Standard* χρειάζεται μόνο
+  πρόσβαση ανάγνωσης.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver works and that the server accepts
-your credentials and SSL mode before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver λειτουργεί
+και ότι ο server δέχεται τα διαπιστευτήρια και το SSL mode σας, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/postgres/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/postgres/create_odbc_data_source_step1.png)
 
-#### Step 2 – Test the connection
+#### Βήμα 2 – Δοκιμή της σύνδεσης
 
-Click the **Test Connection** button.
+Κάντε κλικ στο κουμπί **Test Connection**.
 
-![Step 2](images/postgres/create_odbc_data_source_step2.png)
+![Βήμα 2](images/postgres/create_odbc_data_source_step2.png)
 
-The values you entered here are exactly the values the properties in
-[section 2](#2-odbc-properties) take.
+Οι τιμές που εισαγάγατε εδώ είναι ακριβώς οι τιμές που παίρνουν οι ιδιότητες της
+[ενότητας 2](#2-odbc-properties).
 
 ---
 
 # Snowflake
 Source: https://docs.digna.ai/el/databases/snowflake_connector_guide/
 
-# Source Connector for Snowflake
+# Source Connector για το Snowflake
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Snowflake μέσω
+**ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Snowflake.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Εγκαταστήστε τον **Snowflake ODBC Driver** στο μηχάνημα που εκτελεί το backend του *digna*,
+ακολουθώντας τον [οδηγό εγκατάστασης της Snowflake](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-!!! important "An example, not a specification"
+Ο driver καταχωρίζεται ως **SnowflakeDSIIDriver**. Διαβάστε το ακριβές καταχωρισμένο όνομα στον
+host σας, όπως περιγράφεται στην ενότητα [Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
+
+Η πρόσβαση στο Snowflake γίνεται με ένα **programmatic access token (PAT)** — τη μέθοδο
+αυθεντικοποίησης με την οποία έχει επαληθευτεί το *digna*, και αυτήν που απαιτεί το Snowflake
+για λογαριασμούς στους οποίους η είσοδος μόνο με κωδικό πρόσβασης είναι αποκλεισμένη.
+
+!!! important "Παράδειγμα, όχι προδιαγραφή"
+
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον Snowflake ODBC driver, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές τιμές
+    τους διαφέρουν ανάμεσα σε εκδόσεις driver και πλατφόρμες, και το ποιες επιλογές
+    αυθεντικοποίησης επιτρέπει ο λογαριασμός σας καθορίζεται από την πολιτική ασφαλείας του
+    λογαριασμού. Χρησιμοποιήστε το ως σημείο εκκίνησης και ελέγξτε την τεκμηρίωση της έκδοσης
+    driver που εγκαταστήσατε.
+
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `Server` | `<account>.snowflakecomputing.com` | Αναγνωριστικό λογαριασμού μαζί με το επίθημα, π.χ. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Ο χρήστης Snowflake στον οποίο ανήκει το token |
+| `Database` | `TEST` | Η βάση δεδομένων που περιέχει τα schemas πηγής. Είναι η μόνη βάση δεδομένων στην οποία αυτή η σύνδεση μπορεί να κάνει profiling |
+| `Schema` | `PUBLIC` | Προεπιλεγμένο schema του session |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Επιλέγει την αυθεντικοποίηση με token |
+| `token` | `<programmatic access token>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Warehouse και role
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+Τα queries χρειάζονται ένα warehouse. Αν ο χρήστης του *digna* έχει προεπιλεγμένο warehouse και
+προεπιλεγμένο role, το session τα χρησιμοποιεί αυτόματα και δεν χρειάζεται καμία διαμόρφωση.
+Διαφορετικά προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | Το warehouse που εκτελεί τα queries profiling |
+| `Role` | `DIGNA_READER` | Το role του οποίου τα grants χρησιμοποιεί το session |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Δώστε στο digna δικό του warehouse"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Ένα ξεχωριστό, μικρό warehouse με auto-suspend κρατά το κόστος του profiling ορατό και
+    αποτρέπει το *digna* από το να ανταγωνίζεται τους διαδραστικούς χρήστες για υπολογιστικούς
+    πόρους.
 
-### Password authentication
+### Αυθεντικοποίηση με κωδικό πρόσβασης
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Όπου ο λογαριασμός το επιτρέπει ακόμη, ένας κωδικός πρόσβασης λειτουργεί στη θέση του token —
+αφαιρέστε τα `authenticator` και `token` και προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -6115,132 +6349,135 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Σημειώσεις για το Snowflake {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **Τα tokens λήγουν.** Ένα programmatic access token εκδίδεται με συγκεκριμένη διάρκεια ζωής, και
+  το profiling σταματά την ημέρα που λήγει. Σημειώστε την ημερομηνία λήξης όταν το δημιουργείτε,
+  και εισαγάγετε ξανά το νέο token στην ιδιότητα `token` — οι κρυπτογραφημένες τιμές μπορούν να
+  αντικατασταθούν αλλά όχι να διαβαστούν ξανά.
+- **Μία σύνδεση βλέπει μία βάση δεδομένων.** Το *digna* προσφέρει τα schemas της βάσης δεδομένων
+  που ορίζεται στο `Database`, επειδή το Snowflake αναφέρει μόνο την τρέχουσα βάση δεδομένων ως
+  catalog. Πίνακες πηγής σε άλλη βάση δεδομένων χρειάζονται δική τους σύνδεση.
+- **Τα αναγνωριστικά είναι με κεφαλαία**, εκτός αν δημιουργήθηκαν σε εισαγωγικά. Το *digna*
+  χρησιμοποιεί τα ονόματα όπως τα αναφέρει το Snowflake.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**, οπότε
+  το role χρειάζεται `CREATE TABLE` εκεί. Το *Session* χρησιμοποιεί `CREATE TEMPORARY TABLE` και
+  δεν αγγίζει το **Work Schema**. Το *Standard* χρειάζεται μόνο πρόσβαση ανάγνωσης — και κανένα
+  grant εγγραφής.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver, το URL
+του λογαριασμού και τα διαπιστευτήριά σας λειτουργούν, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/snowflake/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Σημειώσεις:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
-  `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- Η τιμή για το **Server** αποτελείται από το αναγνωριστικό του λογαριασμού σας στο Snowflake,
+  ακολουθούμενο από `.snowflakecomputing.com`.
+- Τα **Database**, **Schema** και **Warehouse** που εισάγονται εδώ αντιστοιχούν στις ιδιότητες
+  `Database`, `Schema` και `Warehouse` της [ενότητας 2](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### Βήμα 2 – Δοκιμή της σύνδεσης
 
-Click the **TEST** button. A successful connection should look like this:
+Κάντε κλικ στο κουμπί **TEST**. Μια επιτυχημένη σύνδεση θα πρέπει να μοιάζει ως εξής:
 
-![Step 2](images/snowflake/create_odbc_data_source_step2.png)
+![Βήμα 2](images/snowflake/create_odbc_data_source_step2.png)
 
 ---
 
 # MS SQL Server
 Source: https://docs.digna.ai/el/databases/sqlserver_connector_guide/
 
-# Source Connector for MS SQL Server
+# Source Connector για τον MS SQL Server
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στον Microsoft SQL
+Server μέσω **ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για τον SQL Server.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Το Synapse διαμορφώνεται επίσης ως σύνδεση SQL Server, με διαφορετικό όνομα host και μερικά
+    επιπλέον ζητήματα — δείτε [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Εγκαταστήστε τον **ODBC Driver 18 for SQL Server** στο μηχάνημα που εκτελεί το backend του
+*digna*, ακολουθώντας τον [οδηγό εγκατάστασης της Microsoft](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Ο driver που περιλαμβάνεται στα Windows με το απλό όνομα **SQL Server** λειτουργεί επίσης, αλλά
+έχει αντικατασταθεί εδώ και καιρό και δεν υποστηρίζει ούτε σύγχρονες ρυθμίσεις TLS ούτε
+αυθεντικοποίηση Azure. Χρησιμοποιήστε τον μόνο όπου η εγκατάσταση του τρέχοντος driver δεν είναι
+εφικτή.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Διαβάστε το ακριβές καταχωρισμένο όνομα του driver στον host σας, όπως περιγράφεται στην ενότητα
+[Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Παράδειγμα, όχι προδιαγραφή"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον ODBC driver της Microsoft, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές
+    τιμές τους διαφέρουν ανάμεσα σε εκδόσεις driver — για παράδειγμα, ο Driver 18 κρυπτογραφεί
+    από προεπιλογή, ενώ ο Driver 17 όχι — και ανάμεσα σε πλατφόρμες. Χρησιμοποιήστε το ως σημείο
+    εκκίνησης και ελέγξτε την τεκμηρίωση της έκδοσης driver που εγκαταστήσατε.
 
-Add the following properties in the **Add DB Connection** screen:
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `SERVER` | `sql.example.com` | Όνομα server ή διεύθυνση IP. Named instances: `host\instance`· μη προεπιλεγμένο port: `host,1433` |
+| `PORT` | `1433` | Παραλείψτε το όταν το port είναι ήδη μέρος του `SERVER` |
+| `DATABASE` | `digna_source_db` | Η βάση δεδομένων που περιέχει τα schemas πηγής. Είναι η μόνη βάση δεδομένων στην οποία αυτή η σύνδεση μπορεί να κάνει profiling |
+| `UID` | `digna_source_user` | Χρήστης βάσης δεδομένων |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Κρυπτογράφηση με τον ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Ο Driver 18 κρυπτογραφεί τις συνδέσεις από προεπιλογή και επικυρώνει το πιστοποιητικό του
+server. Σε έναν server με πιστοποιητικό που ο host του *digna* δεν εμπιστεύεται — συνήθως ένα
+self-signed πιστοποιητικό — η σύνδεση αποτυγχάνει με σφάλμα αλυσίδας πιστοποιητικών. Προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Προεπιλογή στον Driver 18· ορίστε `no` μόνο αν ο server δεν υποστηρίζει TLS |
+| `TrustServerCertificate` | `yes` | Παρακάμπτει την επικύρωση του πιστοποιητικού. Βολικό σε περιβάλλοντα δοκιμών· στην παραγωγή προτιμήστε την εγκατάσταση του πιστοποιητικού |
 
 ### Windows Authentication
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Για να συνδεθείτε ως ο λογαριασμός που εκτελεί το service του *digna* αντί για SQL login,
+αφαιρέστε τα `UID` και `PWD` και προσθέστε:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | Ο λογαριασμός του service του *digna* χρειάζεται τα δικαιώματα στη βάση δεδομένων |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -6251,125 +6488,127 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Σημειώσεις για τον MS SQL Server {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Μία σύνδεση βλέπει μία βάση δεδομένων.** Το *digna* προσφέρει τα schemas της βάσης δεδομένων
+  που ορίζεται στο `DATABASE`, επειδή ο SQL Server αναφέρει μόνο την τρέχουσα βάση δεδομένων ως
+  catalog. Πίνακες πηγής σε άλλη βάση δεδομένων χρειάζονται δική τους σύνδεση.
+- **Profiling modes.** Το *Permanent* δημιουργεί τους πίνακες εργασίας στο **Work Schema**, οπότε
+  ο χρήστης χρειάζεται `CREATE TABLE` εκεί. Το *Session* χρησιμοποιεί τοπικούς προσωρινούς πίνακες
+  (`#wt_…`) στο `tempdb` και δεν αγγίζει το **Work Schema**. Το *Standard* χρειάζεται μόνο
+  πρόσβαση ανάγνωσης.
+- **Το `SERVER` περιέχει το instance και το port.** Με named instance, το `host\instance`
+  απαιτεί να είναι προσβάσιμο το service SQL Server Browser· το `host,port` το αποφεύγει.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά ο οδηγός
+(wizard) του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver λειτουργεί
+και ότι ο server δέχεται τα διαπιστευτήριά σας, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 2
-![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+#### Βήμα 2
+![Βήμα 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Επιλέξτε τη μέθοδο αυθεντικοποίησης (π.χ. όνομα χρήστη και κωδικός πρόσβασης)
+και δώστε τα απαιτούμενα στοιχεία.
 
-Click the **Next >** button.
+Κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 3
-![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+#### Βήμα 3
+![Βήμα 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Επιλέξτε τις ρυθμίσεις συμβατότητας ANSI και έπειτα κάντε κλικ στο κουμπί **Next >**.
 
-#### Step 4
-![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+#### Βήμα 4
+![Βήμα 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Μπορείτε να αφήσετε τις προεπιλεγμένες ρυθμίσεις ή να επιλέξετε επιλογές καταγραφής (logging)
+όπως χρειάζεστε και να κάνετε κλικ στο κουμπί **Finish**. 
 
-#### Step 5
-![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+#### Βήμα 5
+![Βήμα 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Τώρα κάντε κλικ στο κουμπί **Test datasource**.
 
-#### Step 6
-![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+#### Βήμα 6
+![Βήμα 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Μια οθόνη επιτυχίας επιβεβαιώνει ότι ο driver και τα διαπιστευτήρια λειτουργούν. Οι τιμές που
+εισαγάγατε είναι ακριβώς οι τιμές που παίρνουν οι ιδιότητες της [ενότητας 2](#2-odbc-properties).
 
 ---
 
 # Teradata
 Source: https://docs.digna.ai/el/databases/teradata_connector_guide/
 
-# Source Connector for Teradata
+# Source Connector για το Teradata
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Αυτός ο οδηγός περιγράφει πώς να διαμορφώσετε το *digna* ώστε να συνδέεται στο Teradata μέσω
+**ODBC**, χρησιμοποιώντας ένα connection string **χωρίς DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Η πλευρά του *digna* στη ρύθμιση είναι ίδια για κάθε τεχνολογία — πού δημιουργούνται οι
+συνδέσεις, πώς κρυπτογραφούνται οι τιμές των ιδιοτήτων, πώς δοκιμάζεται μια σύνδεση και τι
+σημαίνουν τα profiling modes. Περιγράφεται στην [Επισκόπηση Συνδέσεων Βάσεων Δεδομένων](overview.md).
+Αυτή η σελίδα καλύπτει ό,τι είναι ειδικό για το Teradata.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Εγκατάσταση του ODBC Driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Εγκαταστήστε τον **ODBC Driver for Teradata** στο μηχάνημα που εκτελεί το backend του *digna*,
+ακολουθώντας τον επίσημο οδηγό εγκατάστασης του κατασκευαστή.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+Ο driver καταχωρίζεται με την έκδοσή του στο όνομα, για παράδειγμα
+**Teradata Database ODBC Driver 20.00**. Διαβάστε το ακριβές καταχωρισμένο όνομα στον host σας,
+όπως περιγράφεται στην ενότητα [Εγκατάσταση του ODBC Driver στον Host του digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Ιδιότητες ODBC {: #2-odbc-properties }
+
+!!! important "Παράδειγμα, όχι προδιαγραφή"
+
+    Το παρακάτω σύνολο είναι ένας συνδυασμός που είναι γνωστό ότι λειτουργεί. Οι ιδιότητες
+    ανήκουν στον Teradata ODBC driver, οπότε τα ονόματα, οι προεπιλογές και οι αποδεκτές τιμές
+    τους διαφέρουν ανάμεσα σε εκδόσεις driver — η έκδοση είναι μέρος του ίδιου του ονόματος του
+    driver — και ανάμεσα σε πλατφόρμες. Χρησιμοποιήστε το ως σημείο εκκίνησης και ελέγξτε την
+    τεκμηρίωση της έκδοσης driver που εγκαταστήσατε.
+
+Προσθέστε τις παρακάτω ιδιότητες στην οθόνη **Add DB Connection**:
+
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Πρέπει να ταιριάζει με το όνομα του driver που είναι καταχωρισμένο στον host του *digna* |
+| `DBCNAME` | `teradata.example.com` | Όνομα server ή διεύθυνση IP. Το όνομα που δίνει το ίδιο το Teradata στην ιδιότητα του host |
+| `UID` | `digna_source_user` | Χρήστης βάσης δεδομένων |
+| `PWD` | `<password>` | Επιλέξτε **Encrypted** |
 
-The resulting connection string looks like this:
+Το connection string που προκύπτει μοιάζει ως εξής:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Χρήσιμες επιπλέον ιδιότητες:
 
-| Key | Example value | Notes |
+| Κλειδί | Παράδειγμα τιμής | Σημειώσεις |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Μηχανισμός logon. Το `TD2` είναι η προεπιλογή του Teradata· χρησιμοποιήστε `LDAP` για αυθεντικοποίηση μέσω directory |
+| `DefaultDatabase` | `dad` | Η βάση δεδομένων στην οποία ξεκινά το session |
+| `CharacterSet` | `UTF8` | Ορίστε το όπου το προεπιλεγμένο σύνολο χαρακτήρων του session θα αλλοίωνε δεδομένα εκτός ASCII |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Διαμόρφωση του *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Στην οθόνη **Add DB Connection**, δώστε τα εξής:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -6380,41 +6619,45 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Σημειώσεις για το Teradata {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Μια βάση δεδομένων Teradata είναι catalog, όχι schema.** Το *digna* παραθέτει τις βάσεις
+  δεδομένων που επιτρέπεται να δει ο χρήστης (από το `DBC.DatabasesV`) ως catalogs, και το
+  επίπεδο schema δεν εφαρμόζεται. Όταν προσθέτετε μια πηγή δεδομένων, επιλέξτε τη βάση δεδομένων
+  ως catalog· το schema εμφανίζεται ως *not applicable*.
+- **Μία σύνδεση προσεγγίζει κάθε επιτρεπόμενη βάση δεδομένων**, οπότε μία μόνο σύνδεση μπορεί να
+  εξυπηρετεί πηγές σε διαφορετικές βάσεις δεδομένων — σε αντίθεση με τις τεχνολογίες όπου η
+  σύνδεση είναι δεσμευμένη σε μία βάση δεδομένων.
+- **Το Work Schema είναι μια βάση δεδομένων.** Για το *Permanent* profiling, ορίστε τη βάση
+  δεδομένων Teradata που περιέχει τους πίνακες εργασίας, και δώστε στον χρήστη δικαιώματα
+  `CREATE TABLE` καθώς και κατανομή χώρου `PERM` σε αυτήν — μια βάση δεδομένων με μηδενικό perm
+  space δεν μπορεί να περιέχει πίνακα.
+- **Profiling modes.** Το *Permanent* δημιουργεί πίνακες στο **Work Schema**. Το *Session*
+  χρησιμοποιεί έναν πίνακα `VOLATILE`, που χρειάζεται χώρο `SPOOL` αλλά όχι perm space ούτε
+  δικαιώματα στο **Work
+  Schema**. Το *Standard* χρειάζεται μόνο πρόσβαση ανάγνωσης.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Επαλήθευση του Driver (προαιρετικό) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Η διαμόρφωση μιας πηγής δεδομένων ODBC δεν απαιτείται για σύνδεση χωρίς DSN, αλλά το παράθυρο
+διαλόγου του ίδιου του driver είναι ένας βολικός τρόπος να επιβεβαιώσετε ότι ο driver και τα
+διαπιστευτήριά σας λειτουργούν, πριν τα εισαγάγετε στο *digna*.
 
-#### Step 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+#### Βήμα 1
+![Βήμα 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Το πεδίο **Name or IP address** εδώ αντιστοιχεί στην ιδιότητα `DBCNAME` της
+[ενότητας 2](#2-odbc-properties).
 
-Click the **Test** button.
+Κάντε κλικ στο κουμπί **Test**.
 
-#### Step 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+#### Βήμα 2
+![Βήμα 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Δώστε όνομα χρήστη και κωδικό πρόσβασης και έπειτα κάντε κλικ στο κουμπί **OK**. Μια οθόνη
+επιτυχίας επιβεβαιώνει ότι ο driver και τα διαπιστευτήρια λειτουργούν.
 
 ---
 
@@ -7138,8 +7381,10 @@ sudo -u postgres psql
 3. Μετά την αποσυμπίεση, θα πρέπει να δείτε τα παρακάτω αντικείμενα:
    - `dashboard/` — Διεπαφή web dashboard
    - `digna` — Κύριο εκτελέσιμο (backend + CLI σε ένα)
-   - `config.toml` — Αρχείο διαμόρφωσης
-   - `license.toml` — Αρχείο άδειας (τοποθετήστε εδώ τη δική σας άδεια)
+
+!!! info "Τα αρχεία διαμόρφωσης και άδειας δεν περιλαμβάνονται στο πακέτο"
+
+    Ούτε το `config.toml` ούτε το `dashboard/dashboard_config.toml` παρέχονται με την εγκατάσταση — τα δημιουργείτε και τα δύο εσείς, στις ενότητες [Διαμόρφωση Backend](#backend-configuration) και [Διαμόρφωση Dashboard](#dashboard-configuration). Ούτε το `license.toml` παρέχεται με το πακέτο· η digna το παρέχει ξεχωριστά, όπως περιγράφεται στο Βήμα 3.
 
 Για να αποσυμπιέσετε από το shell:
 
@@ -7459,9 +7704,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Βήμα 1: Ανάπτυξη του Dashboard στον Web Server
 
-Το digna dashboard έχει το δικό του ξεχωριστό αρχείο `config.toml` που βρίσκεται στον κατάλογο `dashboard/`. Αυτή η διαμόρφωση παρέχεται ήδη και δεν απαιτεί αλλαγές κατά την αρχική εγκατάσταση. Θα χρειαστεί να την αλλάξετε μόνο εάν θέλετε να προσαρμόσετε τη σύνδεση με το backend.
+Το digna dashboard διαβάζει τη δική του διαμόρφωση από το `dashboard/dashboard_config.toml`. Το αρχείο αυτό δεν παρέχεται με την εγκατάσταση — το δημιουργείτε στον κατάλογο `dashboard/`, δίπλα στα αρχεία του dashboard.
 
-Εάν χρειάζεται να τροποποιήσετε τη διαμόρφωση του dashboard (π.χ., για multi-instance deployments), ανατρέξτε στην τεκμηρίωση του dashboard.
+Το περιεχόμενό του περιγράφεται στην ενότητα [Ενιαία Σύνδεση (SSO)](../../../sso/overview.md), όπου και χρειάζεται το αρχείο: περιέχει τις επιλογές σύνδεσης που προσφέρει το dashboard και, για αναπτύξεις πολλαπλών instances, τη σύνδεση με το backend.
 
 Επιλέξτε τον web server σας και ακολουθήστε τα αντίστοιχα βήματα ανάπτυξης.
 
@@ -7796,7 +8041,7 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Σημαντικό"
 
-    Το αρχείο `config.toml` **δε**ν περιλαμβάνεται ποτέ στο ZIP εγκατάστασης. Η υπάρχουσα διαμόρφωσή σας παραμένει ασφαλής.
+    Ούτε το `config.toml` ούτε το `dashboard/dashboard_config.toml` περιλαμβάνονται **ποτέ** στο ZIP εγκατάστασης — η ομάδα της digna δεν παρέχει ποτέ κανένα από τα δύο αρχεία. Η υπάρχουσα διαμόρφωσή σας επομένως δεν επηρεάζεται από την αναβάθμιση, και τα αντίγραφα στους μετονομασμένους φακέλους `*_old` είναι τα μόνα που έχετε.
 
 #### Βήμα 4: Επαναφορά των Αρχείων Διαμόρφωσης
 
@@ -7848,7 +8093,11 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
 
-#### Βήμα 5: Επικυρώστε τη διαμόρφωση
+#### Βήμα 5: Επαναφόρτωση του Web Server
+
+Το dashboard είναι ένα σύνολο στατικών αρχείων, οπότε ο web server σας — και ο browser — μπορεί να εξακολουθούν να σερβίρουν την προηγούμενη έκδοση. Επαναφορτώστε ή επανεκκινήστε τον web server που φιλοξενεί τον φάκελο `dashboard` και στη συνέχεια φορτώστε ξανά τη σελίδα με πλήρη ανανέωση (++ctrl+f5++).
+
+#### Βήμα 6: Επικυρώστε τη διαμόρφωση
 
 Βεβαιωθείτε ότι το ενημερωμένο `config.toml` είναι πλήρες πριν αγγίξετε το repository:
 
@@ -7858,7 +8107,23 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 Κάθε ενότητα πρέπει να αναφέρει OK. Διορθώστε ό,τι αναφέρεται ως FAILED και εκτελέστε ξανά την εντολή πριν συνεχίσετε.
 
-#### Βήμα 6: Αναβάθμιση του Σχήματος Repository
+#### Βήμα 7: Αντικατάσταση του Αρχείου Άδειας
+
+Κάθε έκδοση αδειοδοτείται ξεχωριστά. Αντιγράψτε το `license.toml` που σας παρείχε η ομάδα της digna για αυτή την έκδοση στον κατάλογο εγκατάστασης, αντικαθιστώντας το παλιό:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Μην κρατήσετε την προηγούμενη άδεια"
+
+    Ένα `license.toml` που εκδόθηκε για προηγούμενη έκδοση δεν καλύπτει αυτή την έκδοση, και κάθε εντολή που ελέγχει την άδεια — `user`, `inspection`, `repo` — διακόπτεται πριν αγγίξει το repository όταν ο έλεγχος αποτύχει. Επαληθεύστε την πριν προχωρήσετε:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Βήμα 8: Αναβάθμιση του Σχήματος Repository
 
 Πλοηγηθείτε στον κατάλογο εγκατάστασης της digna και τρέξτε:
 
@@ -7869,7 +8134,7 @@ cd /opt/digna
 
 Αυτό ενημερώνει το σχήμα PostgreSQL στην πιο πρόσφατη έκδοση ενώ διατηρεί όλα τα υπάρχοντα δεδομένα.
 
-#### Βήμα 7: Επανεκκίνηση των Υπηρεσιών
+#### Βήμα 9: Επανεκκίνηση των Υπηρεσιών
 
 Εάν τρέχετε ως υπηρεσία systemd:
 
@@ -7900,7 +8165,7 @@ sudo systemctl restart apache2
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Βήμα 8: Επαλήθευση της Αναβάθμισης
+#### Βήμα 10: Επαλήθευση της Αναβάθμισης
 
 1. Πρόσβαση στο digna dashboard
 2. Επιβεβαιώστε ότι η διεπαφή φορτώνει σωστά
@@ -8195,8 +8460,10 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Μετά την εξαγωγή, θα δείτε τα εξής στοιχεία:
    - `dashboard/` — Web διεπαφή dashboard
    - `digna` — Κύριο εκτελέσιμο (backend + CLI σε ένα)
-   - `config.toml` — Αρχείο ρυθμίσεων
-   - `license.toml` — Αρχείο άδειας (τοποθετήστε εδώ τη δική σας άδεια)
+
+!!! info "Τα αρχεία διαμόρφωσης και άδειας δεν περιλαμβάνονται στο πακέτο"
+
+    Ούτε το `config.toml` ούτε το `dashboard/dashboard_config.toml` παρέχονται με την εγκατάσταση — τα δημιουργείτε και τα δύο εσείς, στις ενότητες [Διαμόρφωση Backend](#backend-configuration) και [Διαμόρφωση Dashboard](#dashboard-configuration). Ούτε το `license.toml` παρέχεται με το πακέτο· η digna το παρέχει ξεχωριστά, όπως περιγράφεται στο Βήμα 3.
 
 ### Βήμα 3: Εγκατάσταση του Αρχείου Άδειας
 
@@ -8436,9 +8703,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Βήμα 1: Ανάπτυξη του Dashboard στον Web Server
 
-Το digna dashboard έχει το δικό του ξεχωριστό αρχείο `config.toml` που βρίσκεται στον κατάλογο `dashboard/`. Αυτή η διαμόρφωση παρέχεται ήδη και δεν απαιτεί αλλαγές κατά την αρχική εγκατάσταση. Θα χρειαστεί να την τροποποιήσετε μόνο αν θέλετε να προσαρμόσετε τη σύνδεση με το backend.
+Το digna dashboard διαβάζει τη δική του διαμόρφωση από το `dashboard/dashboard_config.toml`. Το αρχείο αυτό δεν παρέχεται με την εγκατάσταση — το δημιουργείτε στον κατάλογο `dashboard/`, δίπλα στα αρχεία του dashboard.
 
-Αν χρειάζεται να τροποποιήσετε τη ρύθμιση του dashboard (π.χ., για multi-instance deployments), ανατρέξτε στην τεκμηρίωση του dashboard.
+Το περιεχόμενό του περιγράφεται στην ενότητα [Ενιαία Σύνδεση (SSO)](../../../sso/overview.md), όπου και χρειάζεται το αρχείο: περιέχει τις επιλογές σύνδεσης που προσφέρει το dashboard και, για αναπτύξεις πολλαπλών instances, τη σύνδεση με το backend.
 
 Επιλέξτε τον web server σας και ακολουθήστε τα αντίστοιχα βήματα ανάπτυξης.
 
@@ -8493,19 +8760,22 @@ INFO:     Uvicorn running on http://localhost:8082
 - Επανεκκινείται αυτόματα αν παρουσιαστεί σφάλμα
 - Μπορεί να διαχειρίζεται μέσω των Windows Services
 
-### Αρχεία Διαχείρισης Υπηρεσίας
+### Οι Εντολές `windows`
 
-Όλα τα απαραίτητα αρχεία βρίσκονται στο φάκελο εγκατάστασης του digna υπό: `bin/`
+Η υπηρεσία διαχειρίζεται από το ίδιο το εκτελέσιμο `digna`, μέσω των υποεντολών `digna windows`. Δεν υπάρχουν αρχεία batch προς εκτέλεση.
 
-Τα παρακάτω αρχεία batch είναι διαθέσιμα:
-- `install_service.bat` — Εγγράφει το digna ως υπηρεσία Windows
-- `uninstall_service.bat` — Αφαιρεί την εγγραφή της υπηρεσίας
-- `start_service.bat` — Ξεκινά την υπηρεσία
-- `stop_service.bat` — Σταματά την υπηρεσία
+| Εντολή | Σκοπός |
+|---|---|
+| `digna windows install` | Εγγράφει το digna ως υπηρεσία Windows |
+| `digna windows start` | Ξεκινά την εγγεγραμμένη υπηρεσία |
+| `digna windows stop` | Σταματά την υπηρεσία που εκτελείται |
+| `digna windows uninstall` | Αφαιρεί την εγγραφή της υπηρεσίας |
 
 !!! warning "Απαιτούνται δικαιώματα διαχειριστή"
 
-    Όλα τα batch αρχεία πρέπει να εκτελούνται με δικαιώματα Administrator.
+    Και οι τέσσερις εντολές πρέπει να εκτελούνται από Command Prompt που έχει ανοιχτεί ως Administrator.
+
+Κάθε εντολή δέχεται την επιλογή `--name` για να απευθυνθεί σε υπηρεσία εγγεγραμμένη με μη προεπιλεγμένο όνομα. Η πλήρης λίστα επιλογών βρίσκεται στην [αναφορά του CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Εγκατάσταση της Υπηρεσίας
 
@@ -8513,37 +8783,59 @@ INFO:     Uvicorn running on http://localhost:8082
    - Δεξί κλικ στο Command Prompt
    - Επιλέξτε "Run as Administrator"
 
-2. **Πλοήγηση στο φάκελο bin**
+2. **Πλοήγηση στον κατάλογο εγκατάστασης του digna**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Εκτέλεση του Script Εγκατάστασης**
+3. **Εγγραφή της υπηρεσίας**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Η υπηρεσία digna καταχωρείται τώρα ως υπηρεσία Windows με ενεργοποιημένη την **αυτόματη εκκίνηση**. Η υπηρεσία δεν ξεκινά αμέσως — δείτε την επόμενη ενότητα για το πώς να την ξεκινήσετε.
+!!! important "Ορίστε τη διεύθυνση και τη θύρα, εκτός αν σας καλύπτουν οι προεπιλογές"
+
+    Η `install` καταγράφει τη διεύθυνση και τη θύρα στην εγγραφή της υπηρεσίας, και η υπηρεσία δεσμεύεται ακριβώς σε ό,τι καταγράφηκε. Οι προεπιλογές είναι `127.0.0.1` και `8000`, οι οποίες δέχονται συνδέσεις μόνο από το ίδιο το μηχάνημα. Ένα dashboard σε άλλον host δεν μπορεί να συνδεθεί εκεί, οπότε δώστε τη διεύθυνση στην οποία θα ακούει το backend:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Οι τιμές αυτές δεν διαβάζονται από το `config.toml`. Για να τις αλλάξετε αργότερα, απεγκαταστήστε την υπηρεσία και εγκαταστήστε την ξανά με τις νέες τιμές.
+
+Η υπηρεσία εγγράφεται με **αυτόματη εκκίνηση**, οπότε θα ξεκινά μαζί με τα Windows. Δεν ξεκινά αμέσως — δείτε την επόμενη ενότητα.
+
+#### Επιλογές Εγκατάστασης
+
+| Επιλογή | Προεπιλογή | Σκοπός |
+|---|---|---|
+| `--name` | `digna` | Όνομα με το οποίο εγγράφεται η υπηρεσία |
+| `--display-name` | `digna` | Όνομα που εμφανίζεται στο services.msc |
+| `--description` | `digna data quality backend` | Περιγραφή που εμφανίζεται στο services.msc |
+| `--address` | `127.0.0.1` | Διεύθυνση στην οποία η υπηρεσία δεσμεύει το API της |
+| `--port` | `8000` | Θύρα στην οποία η υπηρεσία δεσμεύει το API της |
+| `--working-dir` | ο κατάλογος του εκτελέσιμου `digna` | Κατάλογος που περιέχει τα `config.toml` και `license.toml`, τον οποίο η υπηρεσία χρησιμοποιεί ως κατάλογο εργασίας |
+| `--start-type` | `auto` | Το `auto` ξεκινά με τα Windows, το `manual` ξεκινά μόνο όταν ζητηθεί, το `disabled` εγγράφει την υπηρεσία αλλά αρνείται να την ξεκινήσει |
+| `--account` | `LocalSystem` | Λογαριασμός με τον οποίο εκτελείται, π.χ. `DOMAIN\user` ή `.\user` |
+| `--password` | | Κωδικός πρόσβασης του `--account` |
+
+!!! tip "Εκτέλεση με λογαριασμό domain"
+
+    Ο `LocalSystem` δεν έχει ταυτότητα δικτύου, οπότε ο Windows Authentication προς τον SQL Server και κάθε πρόσβαση σε κοινόχρηστο φάκελο δικτύου θα αποτύχουν. Εγκαταστήστε με `--account` και `--password` όταν η υπηρεσία πρέπει να έχει πρόσβαση σε πόρους ως συγκεκριμένος χρήστης.
 
 ### Εκκίνηση και Σταμάτημα της Υπηρεσίας
 
 #### Για να ξεκινήσετε την υπηρεσία
 
-1. Ανοίξτε Command Prompt ως Administrator
-2. Πλοηγηθείτε στο `digna\bin`
-3. Εκτελέστε:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Για να σταματήσετε την υπηρεσία
 
-1. Ανοίξτε Command Prompt ως Administrator
-2. Πλοηγηθείτε στο `digna\bin`
-3. Εκτελέστε:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Συμβουλή"
 
@@ -8553,37 +8845,40 @@ INFO:     Uvicorn running on http://localhost:8082
 
 Αν χρειαστεί να μετακινήσετε την εγκατάσταση του digna:
 
-1. **Απεγκατάσταση της τρέχουσας υπηρεσίας**
+1. **Σταματήστε και αφαιρέστε την εγγραφή της τρέχουσας υπηρεσίας**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Μετακίνηση των αρχείων της εφαρμογής**
    - Μετακινήστε ολόκληρο τον φάκελο εγκατάστασης του digna στη νέα τοποθεσία
 
-3. **Εγκατάσταση ξανά της υπηρεσίας**
+3. **Εγγράψτε ξανά την υπηρεσία από τη νέα τοποθεσία**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Επαναλάβετε όσες τιμές `--address`, `--port` ή `--account` χρησιμοποιήσατε την πρώτη φορά — η προηγούμενη εγγραφή δεν υπάρχει πλέον.
 
 4. **Εκκίνηση της υπηρεσίας**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Απεγκατάσταση της Υπηρεσίας
 
 1. **Σταματήστε την Τρέχουσα Υπηρεσία**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Απεγκαταστήστε την Υπηρεσία**
+2. **Αφαιρέστε την Εγγραφή της Υπηρεσίας**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Η υπηρεσία digna έχει πλέον αφαιρεθεί από τις υπηρεσίες των Windows.
@@ -8622,14 +8917,26 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Διαδικασία Αναβάθμισης
 
-#### Βήμα 1: Σταματήστε την υπηρεσία digna
+#### Βήμα 1: Σταματήστε και Αφαιρέστε την Εγγραφή της Παλιάς Υπηρεσίας
 
-Αν το digna τρέχει ως υπηρεσία Windows, σταματήστε το πρώτα:
+Αν το digna τρέχει ως υπηρεσία Windows, σταματήστε το με τα **αρχεία batch της τρέχουσας εγκατάστασής σας** — οι εντολές `digna windows` ανήκουν στη νέα έκδοση και δεν είναι ακόμη διαθέσιμες:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Στη συνέχεια αφαιρέστε την εγγραφή της υπηρεσίας, πάλι με το παλιό αρχείο batch. Η εγγραφή δείχνει στο παλιό εκτελέσιμο και στα scripts του, τα οποία αντικαθιστά αυτή η αναβάθμιση, οπότε δεν μπορεί να επαναχρησιμοποιηθεί:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Αφαιρέστε την εγγραφή πριν μετονομάσετε οτιδήποτε"
+
+    Το `uninstall_service.bat` βρίσκεται στον φάκελο `bin` που πρόκειται να μετονομάσετε, και είναι το μόνο που μπορεί να αφαιρέσει την εγγραφή που δημιούργησε. Εκτελέστε το όσο η παλιά εγκατάσταση βρίσκεται ακόμη στη θέση της. Αν ο φάκελος έχει ήδη μετονομαστεί, επαναφέρετε το όνομά του, αφαιρέστε την εγγραφή και έπειτα συνεχίστε.
+
+    Σημειώστε τον λογαριασμό με τον οποίο εκτελούνταν η υπηρεσία, καθώς και τη διεύθυνση και τη θύρα στις οποίες εξυπηρετούσε — θα τα χρειαστείτε στο Βήμα 9.
 
 #### Βήμα 2: Δημιουργήστε αντίγραφο της τρέχουσας εγκατάστασης
 
@@ -8650,7 +8957,7 @@ ren dashboard dashboard_old
 
 !!! info "τα dignabackend και dignacli δεν χρησιμοποιούνται πλέον"
 
-    Από την έκδοση 2026.06, τα `dignabackend` και `dignacli` αντικαθίστανται από το ενιαίο εκτελέσιμο `digna`, που ενοποιεί το backend και το CLI. Κρατήστε τα `dignabackend_old` και `dignacli_old` μόνο μέχρι να επαληθεύσετε την αναβάθμιση — μετά μπορείτε να διαγράψετε και τους δύο φακέλους. Κρατήστε τον `dashboard_old` μέχρι να επαναφέρετε από αυτόν τα αρχεία διαμόρφωσής σας (δείτε το βήμα 4).
+    Από την έκδοση 2026.06, τα `dignabackend` και `dignacli` αντικαθίστανται από το ενιαίο εκτελέσιμο `digna`, που ενοποιεί το backend και το CLI. Κρατήστε τα `dignabackend_old` και `dignacli_old` μόνο μέχρι να επαληθεύσετε την αναβάθμιση — μετά μπορείτε να διαγράψετε και τους δύο φακέλους. Κρατήστε τον `dashboard_old` μέχρι να επαναφέρετε από αυτόν τα αρχεία διαμόρφωσής σας (δείτε το βήμα 4). Ο φάκελος `bin` αφαιρείται επίσης: τα αρχεία batch του έλεγχαν την παλιά υπηρεσία και η 2026.06 δεν τα περιλαμβάνει, οπότε μόλις αφαιρεθεί η εγγραφή της υπηρεσίας στο Βήμα 1, το μόνο που κάνουν είναι να παραπλανούν.
 
 #### Βήμα 3: Εξαγωγή και Ανάπτυξη της Νέας Έκδοσης
 
@@ -8660,7 +8967,7 @@ ren dashboard dashboard_old
 
 !!! warning "Σημαντικό"
 
-    Το αρχείο `config.toml` **ποτέ** δεν περιλαμβάνεται στο ZIP εγκατάστασης. Η υπάρχουσα διαμόρφωσή σας παραμένει ασφαλής.
+    Ούτε το `config.toml` ούτε το `dashboard/dashboard_config.toml` περιλαμβάνονται **ποτέ** στο ZIP εγκατάστασης — η ομάδα της digna δεν παρέχει ποτέ κανένα από τα δύο αρχεία. Η υπάρχουσα διαμόρφωσή σας επομένως δεν επηρεάζεται από την αναβάθμιση, και τα αντίγραφα στους μετονομασμένους φακέλους `*_old` είναι τα μόνα που έχετε.
 
 #### Βήμα 4: Επαναφορά των Αρχείων Διαμόρφωσης
 
@@ -8711,7 +9018,11 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
 
-#### Βήμα 5: Επικυρώστε τη διαμόρφωση
+#### Βήμα 5: Επαναφόρτωση του Web Server
+
+Το dashboard είναι ένα σύνολο στατικών αρχείων, οπότε ο web server σας — και ο browser — μπορεί να εξακολουθούν να σερβίρουν την προηγούμενη έκδοση. Επαναφορτώστε ή επανεκκινήστε τον web server που φιλοξενεί τον φάκελο `dashboard` και στη συνέχεια φορτώστε ξανά τη σελίδα με πλήρη ανανέωση (++ctrl+f5++).
+
+#### Βήμα 6: Επικυρώστε τη διαμόρφωση
 
 Βεβαιωθείτε ότι το ενημερωμένο `config.toml` είναι πλήρες πριν αγγίξετε το repository:
 
@@ -8721,7 +9032,23 @@ digna config check
 
 Κάθε ενότητα πρέπει να αναφέρει OK. Διορθώστε ό,τι αναφέρεται ως FAILED και εκτελέστε ξανά την εντολή πριν συνεχίσετε.
 
-#### Βήμα 6: Αναβάθμιση του Schema του Repository
+#### Βήμα 7: Αντικατάσταση του Αρχείου Άδειας
+
+Κάθε έκδοση αδειοδοτείται ξεχωριστά. Αντιγράψτε το `license.toml` που σας παρείχε η ομάδα της digna για αυτή την έκδοση στον κατάλογο εγκατάστασης, αντικαθιστώντας το παλιό:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Μην κρατήσετε την προηγούμενη άδεια"
+
+    Ένα `license.toml` που εκδόθηκε για προηγούμενη έκδοση δεν καλύπτει αυτή την έκδοση, και κάθε εντολή που ελέγχει την άδεια — `user`, `inspection`, `repo` — διακόπτεται πριν αγγίξει το repository όταν ο έλεγχος αποτύχει. Επαληθεύστε την πριν προχωρήσετε:
+
+    ```bash
+    digna license check
+    ```
+
+#### Βήμα 8: Αναβάθμιση του Schema του Repository
 
 Πλοηγηθείτε στον κατάλογο εγκατάστασης του digna και εκτελέστε:
 
@@ -8731,14 +9058,17 @@ digna repo upgrade
 
 Αυτό ενημερώνει το schema του PostgreSQL στην τελευταία έκδοση διατηρώντας όλα τα υπάρχοντα δεδομένα.
 
-#### Βήμα 7: Επανεκκίνηση των Υπηρεσιών
+#### Βήμα 9: Εγγραφή και Εκκίνηση της Υπηρεσίας
 
-Αν τρέχει ως υπηρεσία Windows:
+Η παλιά εγγραφή αφαιρέθηκε στο Βήμα 1, οπότε η υπηρεσία εγγράφεται ξανά — αυτή τη φορά με το εκτελέσιμο `digna`, το οποίο δεν έχει αρχεία batch:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Δώστε στα `--address` και `--port` τις τιμές στις οποίες εξυπηρετούσε η παλιά υπηρεσία, εκτός αν θέλετε τις νέες προεπιλογές `127.0.0.1` και `8000`· καταγράφονται στην εγγραφή και δεν διαβάζονται πλέον από το `config.toml`. Προσθέστε `--account` και `--password` αν η παλιά υπηρεσία εκτελούνταν με λογαριασμό domain. Δείτε την ενότητα [Εκτέλεση του digna ως Υπηρεσία Windows](#running-digna-as-a-windows-service) για την πλήρη λίστα επιλογών.
 
 Αν τρέχετε χειροκίνητα, επανεκκινήστε τον server:
 
@@ -8749,7 +9079,7 @@ digna serve --address <address> --port <port>
 
 Αν χρησιμοποιείτε IIS ή Tomcat, επανεκκινήστε τον αντίστοιχο web server.
 
-#### Βήμα 8: Επαλήθευση της Αναβάθμισης
+#### Βήμα 10: Επαλήθευση της Αναβάθμισης
 
 1. Πρόσβαση στο digna dashboard
 2. Επαληθεύστε ότι η διεπαφή φορτώνει σωστά
@@ -9194,8 +9524,10 @@ psql postgres
 3. Μετά την αποσυμπίεση, πρέπει να δείτε τα ακόλουθα στοιχεία:
    - `dashboard/` — Διεπαφή web dashboard
    - `digna` — Κύριο εκτελέσιμο (backend + CLI σε ένα)
-   - `config.toml` — Αρχείο ρυθμίσεων
-   - `license.toml` — Αρχείο άδειας (τοποθετήστε εδώ τη δική σας άδεια)
+
+!!! info "Τα αρχεία διαμόρφωσης και άδειας δεν περιλαμβάνονται στο πακέτο"
+
+    Ούτε το `config.toml` ούτε το `dashboard/dashboard_config.toml` παρέχονται με την εγκατάσταση — τα δημιουργείτε και τα δύο εσείς, στις ενότητες [Διαμόρφωση Backend](#backend-configuration) και [Διαμόρφωση Dashboard](#dashboard-configuration). Ούτε το `license.toml` παρέχεται με το πακέτο· η digna το παρέχει ξεχωριστά, όπως περιγράφεται στο Βήμα 3.
 
 Για να αποσυμπιέσετε από το Terminal:
 
@@ -9496,9 +9828,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Βήμα 1: Ανάπτυξη του Dashboard στον Web Server
 
-Το dashboard της digna έχει το δικό του ξεχωριστό αρχείο `config.toml` που βρίσκεται στον φάκελο `dashboard/`. Αυτή η ρύθμιση παρέχεται ήδη και συνήθως δεν χρειάζεται αλλαγές κατά την αρχική εγκατάσταση. Θα χρειαστεί να την τροποποιήσετε μόνο εάν απαιτείται προσαρμογή της σύνδεσης προς το backend.
+Το digna dashboard διαβάζει τη δική του διαμόρφωση από το `dashboard/dashboard_config.toml`. Το αρχείο αυτό δεν παρέχεται με την εγκατάσταση — το δημιουργείτε στον κατάλογο `dashboard/`, δίπλα στα αρχεία του dashboard.
 
-Εάν χρειαστεί να αλλάξετε τη διαμόρφωση του dashboard (π.χ. για multi-instance deployments), ανατρέξτε στην τεκμηρίωση του dashboard.
+Το περιεχόμενό του περιγράφεται στην ενότητα [Ενιαία Σύνδεση (SSO)](../../../sso/overview.md), όπου και χρειάζεται το αρχείο: περιέχει τις επιλογές σύνδεσης που προσφέρει το dashboard και, για αναπτύξεις πολλαπλών instances, τη σύνδεση με το backend.
 
 Επιλέξτε τον web server σας και ακολουθήστε τα αντίστοιχα βήματα ανάπτυξης.
 
@@ -9777,7 +10109,7 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Σημαντικό"
 
-    Το αρχείο `config.toml` **δεν** περιλαμβάνεται ποτέ στο ZIP εγκατάστασης. Η υπάρχουσα διαμόρφωσή σας παραμένει ασφαλής.
+    Ούτε το `config.toml` ούτε το `dashboard/dashboard_config.toml` περιλαμβάνονται **ποτέ** στο ZIP εγκατάστασης — η ομάδα της digna δεν παρέχει ποτέ κανένα από τα δύο αρχεία. Η υπάρχουσα διαμόρφωσή σας επομένως δεν επηρεάζεται από την αναβάθμιση, και τα αντίγραφα στους μετονομασμένους φακέλους `*_old` είναι τα μόνα που έχετε.
 
 #### Βήμα 4: Επαναφορά των Αρχείων Διαμόρφωσης
 
@@ -9829,7 +10161,11 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Επαναλάβετε την ενότητα για κάθε πάροχο και διατηρήστε κάθε κλειδί ίδιο με το `key` στο `dashboard_config.toml`. Το `digna config check` αναφέρει το `oidc_clients` ως FAILED όσο παραμένει η παλιά μορφή. Επηρεάζονται μόνο οι εγκαταστάσεις που χρησιμοποιούν ενιαία σύνδεση.
 
-#### Βήμα 5: Επικυρώστε τη διαμόρφωση
+#### Βήμα 5: Επαναφόρτωση του Web Server
+
+Το dashboard είναι ένα σύνολο στατικών αρχείων, οπότε ο web server σας — και ο browser — μπορεί να εξακολουθούν να σερβίρουν την προηγούμενη έκδοση. Επαναφορτώστε ή επανεκκινήστε τον web server που φιλοξενεί τον φάκελο `dashboard` και στη συνέχεια φορτώστε ξανά τη σελίδα με πλήρη ανανέωση (++cmd+shift+r++).
+
+#### Βήμα 6: Επικυρώστε τη διαμόρφωση
 
 Βεβαιωθείτε ότι το ενημερωμένο `config.toml` είναι πλήρες πριν αγγίξετε το repository:
 
@@ -9839,7 +10175,23 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 Κάθε ενότητα πρέπει να αναφέρει OK. Διορθώστε ό,τι αναφέρεται ως FAILED και εκτελέστε ξανά την εντολή πριν συνεχίσετε.
 
-#### Βήμα 6: Αναβάθμιση του Schema του Repository
+#### Βήμα 7: Αντικατάσταση του Αρχείου Άδειας
+
+Κάθε έκδοση αδειοδοτείται ξεχωριστά. Αντιγράψτε το `license.toml` που σας παρείχε η ομάδα της digna για αυτή την έκδοση στον κατάλογο εγκατάστασης, αντικαθιστώντας το παλιό:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Μην κρατήσετε την προηγούμενη άδεια"
+
+    Ένα `license.toml` που εκδόθηκε για προηγούμενη έκδοση δεν καλύπτει αυτή την έκδοση, και κάθε εντολή που ελέγχει την άδεια — `user`, `inspection`, `repo` — διακόπτεται πριν αγγίξει το repository όταν ο έλεγχος αποτύχει. Επαληθεύστε την πριν προχωρήσετε:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Βήμα 8: Αναβάθμιση του Schema του Repository
 
 Πλοηγηθείτε στον κατάλογο εγκατάστασης της digna και εκτελέστε:
 
@@ -9850,7 +10202,7 @@ cd /opt/digna
 
 Αυτό ενημερώνει το schema του PostgreSQL στην τελευταία έκδοση διατηρώντας όλα τα υπάρχοντα δεδομένα.
 
-#### Βήμα 7: Επανεκκίνηση Υπηρεσιών
+#### Βήμα 9: Επανεκκίνηση Υπηρεσιών
 
 Εάν τρέχει ως υπηρεσία στο παρασκήνιο:
 
@@ -9875,7 +10227,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Βήμα 8: Επαλήθευση Αναβάθμισης
+#### Βήμα 10: Επαλήθευση Αναβάθμισης
 
 1. Πλοηγηθείτε στο dashboard της digna
 2. Επιβεβαιώστε ότι το περιβάλλον φορτώνει σωστά
@@ -11253,7 +11605,7 @@ Source: https://docs.digna.ai/el/sso/keycloak_sso_guide/
 
 | Απαίτηση | Σημειώσεις |
 |---|---|
-| **Keycloak version** | 17 ή νεότερη για τα URL paths που χρησιμοποιούνται εδώ — δείτε τη σημείωση στο Βήμα 4 |
+| **Keycloak version** | 17 ή νεότερη για τα URL paths που χρησιμοποιούνται εδώ — δείτε τη σημείωση στο Βήμα 5 |
 | **Keycloak role** | `realm-admin` στο στοχευόμενο realm, ή διαχειριστής του server |
 | **Realm** | Το realm στο οποίο ανήκουν οι χρήστες του digna, όχι απαραίτητα το `master` |
 | **digna redirect URI** | Το URL στο οποίο επιστρέφουν οι χρήστες μετά την είσοδο, π.χ. `https://digna.yourdomain.com/oidc/callback` |

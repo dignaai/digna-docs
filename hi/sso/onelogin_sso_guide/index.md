@@ -100,7 +100,7 @@ https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
 
 !!! tip "/2 API वर्ज़न है"
 
-    OneLogin का वर्तमान OIDC इम्प्लिमेंटेशन `/oidc/2/` के तहत है। पुरानी डॉ큐मेंटेशन में `/oidc/` बिना वर्ज़न के दिखता है, जो पहले रिटायर्ड वर्ज़न की ओर इशारा करता है। शंका होने पर **SSO** टैब पर दिख रहे **Issuer URL** से मिलान करें — discovery URL issuer के साथ `/.well-known/openid-configuration` जोड़कर बनता है।
+    OneLogin का वर्तमान OIDC इम्प्लिमेंटेशन `/oidc/2/` के तहत है। पुरानी डॉक्यूमेंटेशन में `/oidc/` बिना वर्ज़न के दिखता है, जो पहले रिटायर्ड वर्ज़न की ओर इशारा करता है। शंका होने पर **SSO** टैब पर दिख रहे **Issuer URL** से मिलान करें — discovery URL issuer के साथ `/.well-known/openid-configuration` जोड़कर बनता है।
 
 ---
 

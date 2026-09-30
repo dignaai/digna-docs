@@ -1,88 +1,88 @@
-# Single Sign-On Overview
+# Prezentarea Single Sign-On
 
 ---
 
-## Table of Contents
+## Cuprins
 
-1. [Introduction and Overview](#introduction-and-overview)
-2. [Provider Guides](#provider-guides)
-3. [Configuration Steps](#configuration-steps)
-4. [Dashboard Configuration](#dashboard-configuration)
-5. [Backend Configuration](#backend-configuration)
-6. [Testing Login](#testing-login)
-7. [Troubleshooting](#troubleshooting)
-8. [Supported Providers](#supported-providers)
-
----
-
-## Introduction and Overview {: #introduction-and-overview }
-
-This guide provides step-by-step instructions for integrating Single Sign-On (SSO) with the digna platform using **OpenID Connect (OIDC)**.
-
-### What is SSO?
-
-Single Sign-On allows users to log in to digna securely using their enterprise credentials through external identity providers. Users can authenticate with their corporate credentials instead of managing separate digna passwords.
-
-### How It Works
-
-SSO in digna is implemented using the OIDC protocol. Multiple identity providers can be configured in parallel by adjusting two key configuration files:
-
-- **`dashboard_config.toml`** — Controls the frontend login interface
-- **`config.toml`** — Configures the backend OIDC connections
-
-### Supported Providers {: #supported-providers-overview }
-
-Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
+1. [Introducere și prezentare generală](#introduction-and-overview)
+2. [Ghiduri pe furnizori](#provider-guides)
+3. [Pașii de configurare](#configuration-steps)
+4. [Configurarea dashboard-ului](#dashboard-configuration)
+5. [Configurarea backend-ului](#backend-configuration)
+6. [Testarea autentificării](#testing-login)
+7. [Depanare](#troubleshooting)
+8. [Furnizori acceptați](#supported-providers)
 
 ---
 
-## Provider Guides {: #provider-guides }
+## Introducere și prezentare generală {: #introduction-and-overview }
 
-Every provider needs the same four values — a client ID, a client secret, a redirect URI and a discovery URL — but each one puts them in a different place in its admin console, and several have a provider-specific step that the others do not. The guides below cover that half of the work; this page covers the digna half, which is identical for all of them.
+Acest ghid oferă instrucțiuni pas cu pas pentru integrarea Single Sign-On (SSO) cu platforma digna folosind **OpenID Connect (OIDC)**.
 
-| Provider | Guide | Worth knowing |
+### Ce este SSO?
+
+Single Sign-On permite utilizatorilor să se autentifice în siguranță în digna folosind acreditările enterprise prin furnizori de identitate externi. Utilizatorii se pot autentifica cu acreditările corporative în loc să gestioneze parole digna separate.
+
+### Cum funcționează
+
+SSO în digna este implementat folosind protocolul OIDC. Mai mulți furnizori de identitate pot fi configurați în paralel prin ajustarea a două fișiere de configurare principale:
+
+- **`dashboard_config.toml`** — Controlează interfața de autentificare din frontend
+- **`config.toml`** — Configurează conexiunile OIDC din backend
+
+### Furnizori acceptați {: #supported-providers-overview }
+
+Exemplele din acest ghid folosesc **Microsoft** și **Google**, dar **orice furnizor compatibil OIDC** poate fi integrat urmând aceeași structură.
+
+---
+
+## Ghiduri pe furnizori {: #provider-guides }
+
+Fiecare furnizor are nevoie de aceleași patru valori — un client ID, un client secret, un redirect URI și un URL de discovery — dar fiecare le plasează în alt loc în consola sa de administrare, iar unii au un pas specific pe care ceilalți nu îl au. Ghidurile de mai jos acoperă această jumătate a muncii; această pagină acoperă jumătatea digna, care este identică pentru toți.
+
+| Furnizor | Ghid | Bine de știut |
 |---|---|---|
-| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
-| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
-| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
-| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
-| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
-| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
-| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
-| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+| **AD FS** | [Configurați SSO cu AD FS](adfs_sso_guide.md) | Auto-găzduit; singurul furnizor de aici la care controlați serviciul de token-uri |
+| **Auth0** | [Configurați SSO cu Auth0](auth0_sso_guide.md) | URL-ul de discovery este specific fiecărui tenant, iar domeniile personalizate îl modifică |
+| **Google Workspace** | [Configurați SSO cu Google Workspace](google_workspace_sso_guide.md) | Ecranul de consimțământ trebuie publicat înainte ca utilizatorii care nu sunt de test să se poată autentifica |
+| **Keycloak** | [Configurați SSO cu Keycloak](keycloak_sso_guide.md) | Auto-găzduit; URL-ul de discovery este specific fiecărui realm |
+| **Microsoft Entra ID** | [Configurați SSO cu Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | ID-ul tenantului apare în URL-ul de discovery; secretele expiră |
+| **Okta** | [Configurați SSO cu Okta](okta_sso_guide.md) | Alegerea serverului de autorizare modifică URL-ul de discovery |
+| **OneLogin** | [Configurați SSO cu OneLogin](onelogin_sso_guide.md) | Tipul aplicației OIDC trebuie ales la creare și nu poate fi schimbat |
+| **PingOne** | [Configurați SSO cu PingOne](pingone_sso_guide.md) | ID-ul mediului (environment) apare în URL-ul de discovery |
 
-Any other OIDC-compliant provider works the same way — see [Other OIDC Providers](#supported-providers).
+Orice alt furnizor compatibil OIDC funcționează în același mod — consultați [Alți furnizori OIDC](#supported-providers).
 
 ---
 
-## Configuration Steps {: #configuration-steps }
+## Pașii de configurare {: #configuration-steps }
 
-SSO configuration requires updates to two files. This section explains how to configure each one.
+Configurarea SSO necesită actualizarea a două fișiere. Această secțiune explică cum se configurează fiecare.
 
-### Overview of Configuration Files
+### Prezentarea fișierelor de configurare
 
-| File | Location | Purpose |
+| Fișier | Locație | Scop |
 |---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
-| **config.toml** | `/config.toml` | Backend OIDC connections |
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Interfața de autentificare din frontend |
+| **config.toml** | `/config.toml` | Conexiunile OIDC din backend |
 
-Both files must be configured for SSO to work properly.
+Ambele fișiere trebuie configurate pentru ca SSO să funcționeze corect.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Configurarea dashboard-ului {: #dashboard-configuration }
 
-### File Location
+### Locația fișierului
 
 ```
 dashboard/dashboard_config.toml
 ```
 
-### Step 1: Add OIDC Providers
+### Pasul 1: Adăugați furnizorii OIDC
 
-Add entries under the `[[login.oidc]]` array for each identity provider you want to support.
+Adăugați intrări în array-ul `[[login.oidc]]` pentru fiecare furnizor de identitate pe care doriți să îl acceptați.
 
-**Example with Microsoft and Google:**
+**Exemplu cu Microsoft și Google:**
 
 ```toml
 [[login.oidc]]
@@ -94,48 +94,48 @@ key = "google"
 label = "Login with Google"
 ```
 
-### Step 2: Configure Login Options
+### Pasul 2: Configurați opțiunile de autentificare
 
-Specify whether password-based login should be allowed:
+Specificați dacă autentificarea cu parolă trebuie permisă:
 
 ```toml
 [login]
 usePassword = true
 ```
 
-### Configuration Parameters
+### Parametrii de configurare
 
-#### `[[login.oidc]]` Section
+#### Secțiunea `[[login.oidc]]`
 
-| Parameter | Type | Required | Description |
+| Parametru | Tip | Obligatoriu | Descriere |
 |---|---|---|---|
-| `key` | string | Yes | Unique identifier for the OIDC connection (must match key in config.toml) |
-| `label` | string | Yes | Text displayed on the login button (e.g., "Login with Microsoft") |
+| `key` | string | Da | Identificator unic pentru conexiunea OIDC (trebuie să corespundă cheii din config.toml) |
+| `label` | string | Da | Textul afișat pe butonul de autentificare (de ex. „Login with Microsoft”) |
 
-#### `[login]` Section
+#### Secțiunea `[login]`
 
-| Parameter | Type | Default | Description |
+| Parametru | Tip | Implicit | Descriere |
 |---|---|---|---|
-| `usePassword` | boolean | false | Allow password-based login in addition to SSO |
+| `usePassword` | boolean | false | Permite autentificarea cu parolă pe lângă SSO |
 
-### Understanding usePassword
+### Înțelegerea usePassword
 
-**If `usePassword = true`:**
-- Login screen shows SSO buttons (e.g., "Login with Microsoft")
-- Login screen also shows username and password fields
-- Users can authenticate with either method
-- Allows hybrid setups where some users use SSO and others use passwords
+**Dacă `usePassword = true`:**
+- Ecranul de autentificare afișează butoanele SSO (de ex. „Login with Microsoft”)
+- Ecranul de autentificare afișează și câmpurile pentru nume de utilizator și parolă
+- Utilizatorii se pot autentifica prin oricare dintre metode
+- Permite configurări hibride, în care unii utilizatori folosesc SSO, iar alții parole
 
-**If `usePassword = false` (or omitted):**
-- Login screen shows only SSO buttons
-- No username/password fields
-- Only OIDC authentication is available
+**Dacă `usePassword = false` (sau omis):**
+- Ecranul de autentificare afișează doar butoanele SSO
+- Nu există câmpuri pentru nume de utilizator/parolă
+- Este disponibilă doar autentificarea OIDC
 
-!!! tip "Tip"
+!!! tip "Sfat"
 
-    Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
+    Autentificarea cu parolă este disponibilă doar pentru utilizatorii care au fost creați cu parole folosind comanda `digna user add` sau prin dashboard.
 
-### Complete Example
+### Exemplu complet
 
 ```toml
 [login]
@@ -156,21 +156,21 @@ label = "Login with Okta"
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Configurarea backend-ului {: #backend-configuration }
 
-### File Location
+### Locația fișierului
 
 ```
 /config.toml
 ```
 
-(Root digna installation directory)
+(Directorul rădăcină al instalării digna)
 
-### Step 1: Add OIDC Provider Sections
+### Pasul 1: Adăugați secțiunile pentru furnizorii OIDC
 
-Each provider must have a dedicated `[oidc_clients.<key>]` section. The key must match the `key` defined in `dashboard_config.toml`.
+Fiecare furnizor trebuie să aibă o secțiune dedicată `[oidc_clients.<key>]`. Cheia trebuie să corespundă valorii `key` definite în `dashboard_config.toml`.
 
-### Microsoft Configuration
+### Configurația Microsoft
 
 ```toml
 [oidc_clients.microsoft]
@@ -180,7 +180,7 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
 ```
 
-### Google Configuration
+### Configurația Google
 
 ```toml
 [oidc_clients.google]
@@ -190,32 +190,32 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-### Configuration Parameters
+### Parametrii de configurare
 
-| Parameter | Type | Required | Description | Example |
+| Parametru | Tip | Obligatoriu | Descriere | Exemplu |
 |---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID from identity provider | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret from identity provider | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
+| `DIGNA_OIDC_CLIENT_ID` | string | Da | Client ID de la furnizorul de identitate | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Da | Client secret de la furnizorul de identitate | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Da | URL-ul de callback după autentificare | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Da | Endpoint-ul de configurare OIDC | `https://login.microsoftonline.com/...` |
 
 !!! warning "Important"
 
-    Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
+    Înlocuiți valorile substituent (`<client_id>`, `<client_secret>`, `<tenant_id>`) cu acreditările reale din portalul pentru dezvoltatori al furnizorului de identitate.
 
 ### Redirect URI
 
-The redirect URI must be the same in your identity provider configuration:
+Redirect URI-ul trebuie să fie același în configurația furnizorului de identitate:
 
 ```
 http://localhost:5173/oidc/callback
 ```
 
-If digna is hosted at a different domain, update accordingly:
+Dacă digna este găzduită pe un alt domeniu, actualizați-l corespunzător:
 - Local: `http://localhost:5173/oidc/callback`
-- Production: `https://digna.yourdomain.com/oidc/callback`
+- Producție: `https://digna.yourdomain.com/oidc/callback`
 
-### Complete Example
+### Exemplu complet
 
 ```toml
 [oidc_clients.microsoft]
@@ -233,238 +233,238 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ---
 
-## Testing Login {: #testing-login }
+## Testarea autentificării {: #testing-login }
 
-After completing the configuration, verify that SSO is working correctly.
+După finalizarea configurării, verificați că SSO funcționează corect.
 
-### Pre-Testing Checklist
+### Listă de verificare înainte de testare
 
-Before testing, ensure:
+Înainte de testare, asigurați-vă că:
 
-- [ ] `dashboard_config.toml` has been updated with OIDC providers
-- [ ] `config.toml` has been updated with OIDC credentials
-- [ ] Both files have been saved
-- [ ] Credentials are correct (client ID, client secret)
-- [ ] Redirect URI matches your deployment URL
-- [ ] Identity provider application is configured with the redirect URI
+- [ ] `dashboard_config.toml` a fost actualizat cu furnizorii OIDC
+- [ ] `config.toml` a fost actualizat cu acreditările OIDC
+- [ ] Ambele fișiere au fost salvate
+- [ ] Acreditările sunt corecte (client ID, client secret)
+- [ ] Redirect URI-ul corespunde URL-ului implementării dvs.
+- [ ] Aplicația din furnizorul de identitate este configurată cu redirect URI-ul
 
-### Testing Steps
+### Pașii de testare
 
-#### Step 1: Restart Services
+#### Pasul 1: Reporniți serviciile
 
-Restart the digna backend and web server to apply changes.
+Reporniți backend-ul digna și serverul web pentru a aplica modificările.
 
-**If running as a service on Windows:**
+**Dacă rulează ca serviciu pe Windows:**
 ```bash
 cd C:\path\to\digna
 digna windows stop
 digna windows start
 ```
 
-**If running as a service on Linux or macOS:**
+**Dacă rulează ca serviciu pe Linux sau macOS:**
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 sudo ./start_service.sh
 ```
 
-**If running manually:**
+**Dacă rulează manual:**
 ```bash
 digna serve --address localhost --port 8082
 ```
 
-**Restart the web server too** — IIS or Tomcat on Windows, nginx or Apache on Linux and macOS.
+**Reporniți și serverul web** — IIS sau Tomcat pe Windows, nginx sau Apache pe Linux și macOS.
 
-#### Step 2: Open Dashboard
+#### Pasul 2: Deschideți dashboard-ul
 
-Open the digna dashboard in your browser:
+Deschideți dashboard-ul digna în browser:
 
 ```
 http://localhost:5173
 ```
 
-(or your configured dashboard URL)
+(sau URL-ul dashboard-ului configurat de dvs.)
 
-#### Step 3: Verify Login Buttons
+#### Pasul 3: Verificați butoanele de autentificare
 
-Check that login buttons appear for each configured provider:
+Verificați că apar butoanele de autentificare pentru fiecare furnizor configurat:
 
-- Should see "Login with Microsoft" button
-- Should see "Login with Google" button
-- (If usePassword = true) Should see username/password fields
+- Ar trebui să vedeți butonul „Login with Microsoft”
+- Ar trebui să vedeți butonul „Login with Google”
+- (Dacă usePassword = true) Ar trebui să vedeți câmpurile pentru nume de utilizator/parolă
 
-If buttons don't appear:
-- Check that `dashboard_config.toml` was saved
-- Check that dashboard service was restarted
-- Check browser console (F12) for errors
+Dacă butoanele nu apar:
+- Verificați că `dashboard_config.toml` a fost salvat
+- Verificați că serviciul dashboard a fost repornit
+- Verificați consola browserului (F12) pentru erori
 
-#### Step 4: Test SSO Login
+#### Pasul 4: Testați autentificarea SSO
 
-Click one of the SSO buttons (e.g., "Login with Microsoft"):
+Faceți clic pe unul dintre butoanele SSO (de ex. „Login with Microsoft”):
 
-1. You should be redirected to the identity provider's login page
-2. Log in with your enterprise credentials
-3. You should be redirected back to digna
-4. You should be logged in to digna
+1. Ar trebui să fiți redirecționat către pagina de autentificare a furnizorului de identitate
+2. Autentificați-vă cu acreditările enterprise
+3. Ar trebui să fiți redirecționat înapoi către digna
+4. Ar trebui să fiți autentificat în digna
 
-#### Step 5: Verify User Creation
+#### Pasul 5: Verificați crearea utilizatorului
 
-After successful SSO login:
+După o autentificare SSO reușită:
 
-- User should be automatically created in digna
-- User should be logged in
-- User profile should display your identity provider credentials
-- You should see the digna dashboard
+- Utilizatorul ar trebui creat automat în digna
+- Utilizatorul ar trebui să fie autentificat
+- Profilul utilizatorului ar trebui să afișeze datele de la furnizorul de identitate
+- Ar trebui să vedeți dashboard-ul digna
 
-#### Step 6: Test Password Login (If Enabled)
+#### Pasul 6: Testați autentificarea cu parolă (dacă este activată)
 
-If `usePassword = true`:
+Dacă `usePassword = true`:
 
-1. Log out of digna
-2. On the login page, enter a username and password
-3. You should be able to log in with password credentials
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Login Buttons Don't Appear
-
-**Symptoms:**
-- OIDC login buttons not visible on login page
-- Only see password fields (if usePassword = true)
-
-**Causes & Solutions:**
-1. Check `dashboard_config.toml` is in `dashboard/` directory
-2. Verify `[[login.oidc]]` sections are present with correct syntax
-3. Restart dashboard service
-4. Clear browser cache (Ctrl+Shift+Delete or Cmd+Shift+Delete)
-5. Check browser console (F12 → Console tab) for errors
+1. Deconectați-vă din digna
+2. Pe pagina de autentificare, introduceți un nume de utilizator și o parolă
+3. Ar trebui să vă puteți autentifica cu acreditările cu parolă
 
 ---
 
-### Redirect URI Mismatch Error
+## Depanare {: #troubleshooting }
 
-**Symptoms:**
-- After clicking SSO button, error about "redirect_uri mismatch"
-- "The redirect URI is not registered" error
+### Butoanele de autentificare nu apar
 
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_REDIRECT_URI` in `config.toml` is correct
-2. Verify redirect URI is registered in identity provider settings
-3. Ensure both use identical URLs (including protocol, domain, path)
-4. Check for typos in the redirect URI
-5. If using HTTPS, ensure certificate is valid
+**Simptome:**
+- Butoanele de autentificare OIDC nu sunt vizibile pe pagina de autentificare
+- Se văd doar câmpurile pentru parolă (dacă usePassword = true)
 
----
-
-### Invalid Client Credentials Error
-
-**Symptoms:**
-- "Invalid client ID or secret" error
-- Authentication fails with credentials error
-
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_CLIENT_ID` and `DIGNA_OIDC_CLIENT_SECRET` are correct
-2. Ensure no extra spaces or special characters
-3. Check credentials haven't expired or been revoked
-4. Restart backend service after updating config
-5. Check identity provider console to confirm credentials are active
+**Cauze și soluții:**
+1. Verificați că `dashboard_config.toml` se află în directorul `dashboard/`
+2. Verificați că secțiunile `[[login.oidc]]` sunt prezente, cu sintaxa corectă
+3. Reporniți serviciul dashboard
+4. Goliți memoria cache a browserului (Ctrl+Shift+Delete sau Cmd+Shift+Delete)
+5. Verificați consola browserului (F12 → fila Console) pentru erori
 
 ---
 
-### Login Hangs or Times Out
+### Eroare de nepotrivire a redirect URI-ului
 
-**Symptoms:**
-- Clicking SSO button does nothing
-- Timeout after several seconds
-- Browser shows "Failed to connect" or similar
+**Simptome:**
+- După clic pe butonul SSO, apare o eroare despre „redirect_uri mismatch”
+- Eroare „The redirect URI is not registered”
 
-**Causes & Solutions:**
-1. Verify digna backend is running: `digna repo check`
-2. Check network connectivity to identity provider
-3. Verify `DIGNA_OIDC_CONFIGURATION_URL` is accessible
-4. Check firewall rules allow outbound HTTPS connections
-5. Verify backend and dashboard can reach each other
-
----
-
-### Users Not Automatically Created
-
-**Symptoms:**
-- SSO login succeeds but user not created in digna
-- Get permission error after SSO login
-
-**Causes & Solutions:**
-1. Verify OIDC configuration is correct
-2. Check user permissions are set up
-3. Review digna logs for error messages
-4. Restart backend service
-5. Contact support@digna.ai if issue persists
+**Cauze și soluții:**
+1. Verificați că `DIGNA_OIDC_REDIRECT_URI` din `config.toml` este corect
+2. Verificați că redirect URI-ul este înregistrat în setările furnizorului de identitate
+3. Asigurați-vă că ambele folosesc URL-uri identice (inclusiv protocolul, domeniul și calea)
+4. Verificați dacă există greșeli de scriere în redirect URI
+5. Dacă folosiți HTTPS, asigurați-vă că certificatul este valid
 
 ---
 
-## Supported Providers {: #supported-providers }
+### Eroare de acreditări client invalide
 
-### Tested & Supported
+**Simptome:**
+- Eroare „Invalid client ID or secret”
+- Autentificarea eșuează cu o eroare de acreditări
 
-The following OIDC providers have been tested and are known to work:
+**Cauze și soluții:**
+1. Verificați că `DIGNA_OIDC_CLIENT_ID` și `DIGNA_OIDC_CLIENT_SECRET` sunt corecte
+2. Asigurați-vă că nu există spații sau caractere speciale în plus
+3. Verificați că acreditările nu au expirat și nu au fost revocate
+4. Reporniți serviciul backend după actualizarea configurației
+5. Verificați în consola furnizorului de identitate că acreditările sunt active
 
-| Provider | Configuration URL | Setup Guide |
+---
+
+### Autentificarea se blochează sau expiră
+
+**Simptome:**
+- Clic pe butonul SSO nu are niciun efect
+- Timeout după câteva secunde
+- Browserul afișează „Failed to connect” sau un mesaj similar
+
+**Cauze și soluții:**
+1. Verificați că backend-ul digna rulează: `digna repo check`
+2. Verificați conectivitatea la rețea către furnizorul de identitate
+3. Verificați că `DIGNA_OIDC_CONFIGURATION_URL` este accesibil
+4. Verificați că regulile firewall permit conexiunile HTTPS de ieșire
+5. Verificați că backend-ul și dashboard-ul pot comunica între ele
+
+---
+
+### Utilizatorii nu sunt creați automat
+
+**Simptome:**
+- Autentificarea SSO reușește, dar utilizatorul nu este creat în digna
+- Apare o eroare de permisiune după autentificarea SSO
+
+**Cauze și soluții:**
+1. Verificați că configurația OIDC este corectă
+2. Verificați că permisiunile utilizatorilor sunt configurate
+3. Examinați logurile digna pentru mesaje de eroare
+4. Reporniți serviciul backend
+5. Contactați support@digna.ai dacă problema persistă
+
+---
+
+## Furnizori acceptați {: #supported-providers }
+
+### Testați și acceptați
+
+Următorii furnizori OIDC au fost testați și se știe că funcționează:
+
+| Furnizor | URL de configurare | Ghid de configurare |
 |---|---|---|
-| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
-| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
-| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
-| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
-| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Configurați SSO cu AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Configurați SSO cu Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Configurați SSO cu Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Configurați SSO cu Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Configurați SSO cu Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Configurați SSO cu Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Configurați SSO cu OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Configurați SSO cu PingOne](pingone_sso_guide.md) |
 
-### Other OIDC Providers
+### Alți furnizori OIDC
 
-Any provider that supports OpenID Connect can be integrated. Required information:
+Orice furnizor care acceptă OpenID Connect poate fi integrat. Informații necesare:
 
 - Client ID
 - Client secret
-- OpenID configuration URL (usually at `/.well-known/openid-configuration`)
-- Supported scopes (typically `openid profile email`)
+- URL-ul de configurare OpenID (de obicei la `/.well-known/openid-configuration`)
+- Scope-urile acceptate (de obicei `openid profile email`)
 
-Contact support@digna.ai if you need help integrating a specific provider.
-
----
-
-## Best Practices
-
-**DO:**
-- Use HTTPS in production (not HTTP)
-- Store client secrets securely (use environment variables if possible)
-- Rotate secrets periodically
-- Test in a non-production environment first
-- Document which providers are configured
-- Monitor login logs for unusual activity
-- Keep identity provider configuration in sync with digna config
-
-**DON'T:**
-- Store client secrets in version control
-- Use HTTP redirect URIs in production
-- Configure multiple providers with the same key
-- Leave default/test credentials in production
-- Expose config files containing secrets
-- Mix development and production credentials
+Contactați support@digna.ai dacă aveți nevoie de ajutor pentru integrarea unui anumit furnizor.
 
 ---
 
-## Support
+## Bune practici
 
-Need help with SSO configuration?
+**RECOMANDAT:**
+- Folosiți HTTPS în producție (nu HTTP)
+- Stocați client secret-urile în siguranță (folosiți variabile de mediu, dacă este posibil)
+- Rotiți secretele periodic
+- Testați mai întâi într-un mediu care nu este de producție
+- Documentați ce furnizori sunt configurați
+- Monitorizați logurile de autentificare pentru activități neobișnuite
+- Păstrați configurația furnizorului de identitate sincronizată cu configurația digna
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
+**DE EVITAT:**
+- Stocarea client secret-urilor în sistemul de control al versiunilor
+- Utilizarea redirect URI-urilor HTTP în producție
+- Configurarea mai multor furnizori cu aceeași cheie
+- Lăsarea acreditărilor implicite/de test în producție
+- Expunerea fișierelor de configurare care conțin secrete
+- Amestecarea acreditărilor de dezvoltare cu cele de producție
+
+---
+
+## Suport
+
+Aveți nevoie de ajutor cu configurarea SSO?
+
+- **E-mail:** support@digna.ai
+- **Documentație:** https://docs.digna.ai
 - **Website:** https://www.digna.ai
 
 ---
 
-**Last Updated:** August 30, 2026  
+**Ultima actualizare:** 30 august 2026  
 **Release:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

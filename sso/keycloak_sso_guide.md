@@ -10,7 +10,7 @@ This guide covers the **Keycloak side**: creating the client and collecting the 
 
 | Requirement | Notes |
 |---|---|
-| **Keycloak version** | 17 or later for the URL paths used here — see the note in Step 4 |
+| **Keycloak version** | 17 or later for the URL paths used here — see the note in Step 5 |
 | **Keycloak role** | `realm-admin` on the target realm, or a server administrator |
 | **Realm** | The realm your digna users belong to, not necessarily `master` |
 | **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |

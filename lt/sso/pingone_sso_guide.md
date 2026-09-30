@@ -1,119 +1,119 @@
-# Set up SSO with PingOne
+# SSO su PingOne nustatymas
 
-PingOne is OIDC-compliant. Two of its values need care: the **environment ID**, which appears in every endpoint URL, and the **regional domain**, which differs between the North American, European, Canadian, Asia-Pacific and Australian tenants.
+PingOne atitinka OIDC standartą. Dvi jo reikšmės reikalauja dėmesio: **aplinkos ID** (environment ID), kuris yra kiekvieno galinio taško URL dalis, ir **regioninis domenas**, kuris skiriasi Šiaurės Amerikos, Europos, Kanados, Azijos ir Ramiojo vandenyno bei Australijos nuomininkams (tenants).
 
-This guide covers the **PingOne side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Ši instrukcija apima **PingOne pusę**: programos sukūrimą ir verčių, kurių reikia digna, surinkimą. digna pusė — `dashboard_config.toml`, testavimas ir trikčių šalinimas — yra tokia pati visiems tiekėjams ir aprašyta [Vienkartinio prisijungimo (SSO) apžvalgoje](overview.md).
 
 ---
 
-## Before You Start
+## Prieš pradėdami
 
-| Requirement | Notes |
+| Reikalavimas | Pastabos |
 |---|---|
-| **PingOne role** | Environment Admin or Identity Data Admin on the target environment |
-| **Environment** | The PingOne environment your digna users belong to |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **PingOne rolė** | Environment Admin arba Identity Data Admin tikslinėje aplinkoje |
+| **Aplinka** | PingOne aplinka, kuriai priklauso jūsų digna vartotojai |
+| **digna peradresavimo URI** | URL, į kurį vartotojai grįžta po prisijungimo, pvz. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application
+## 1 žingsnis: Sukurkite programą
 
-1. Sign in to the PingOne admin console and select your environment
-2. Go to **Applications → Applications**
-3. Click the **+** button
-4. Enter `digna` as the **Application Name**
-5. Select **OIDC Web App**
-6. Click **Save**
+1. Prisijunkite prie PingOne administravimo konsolės ir pasirinkite savo aplinką
+2. Eikite į **Applications → Applications**
+3. Spauskite mygtuką **+**
+4. Laukelyje **Application Name** įveskite `digna`
+5. Pasirinkite **OIDC Web App**
+6. Spauskite **Save**
 
-!!! warning "Pick OIDC Web App, Not Single-Page App"
+!!! warning "Rinkitės OIDC Web App, o ne Single-Page App"
 
-    *Single-Page App* and *Native App* create public clients that cannot hold a secret. digna exchanges the authorization code from its backend and needs the confidential **OIDC Web App** type.
+    *Single-Page App* ir *Native App* sukuria viešuosius klientus, kurie negali saugoti slaptumo rakto. digna keičia autorizacijos kodą savo backend'e, todėl jai reikia konfidencialaus **OIDC Web App** tipo.
 
 ---
 
-## Step 2: Configure the Redirect URI
+## 2 žingsnis: Sukonfigūruokite peradresavimo URI
 
-1. Open the application's **Configuration** tab
-2. Click the pencil icon to edit
-3. Confirm **Response Type** is *Code* and **Grant Type** is *Authorization Code*
-4. Under **Redirect URIs**, enter your digna callback URL:
+1. Atidarykite programos skirtuką **Configuration**
+2. Spauskite pieštuko piktogramą, kad redaguotumėte
+3. Patikrinkite, ar **Response Type** yra *Code*, o **Grant Type** yra *Authorization Code*
+4. Skiltyje **Redirect URIs** įveskite savo digna callback URL:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-5. Set **Token Endpoint Authentication Method** to *Client Secret Post* or *Client Secret Basic*
-6. Click **Save**
+5. **Token Endpoint Authentication Method** nustatykite į *Client Secret Post* arba *Client Secret Basic*
+6. Spauskite **Save**
 
 ---
 
-## Step 3: Enable the Application
+## 3 žingsnis: Įjunkite programą
 
-On the application's row or detail panel, switch the toggle to **enabled**.
+Programos eilutėje arba detalių skydelyje perjunkite jungiklį į **enabled**.
 
-!!! warning "New Applications Start Disabled"
+!!! warning "Naujos programos sukuriamos išjungtos"
 
-    PingOne creates applications in a disabled state. A disabled application produces an error at the authorization step that does not mention the toggle, so this is worth confirming before debugging anything else.
-
----
-
-## Step 4: Grant the Scopes
-
-1. Open the **Resources** tab
-2. Confirm that `openid` is granted, and add `profile` and `email` from the **OpenID Connect** resource
-3. Click **Save**
+    PingOne sukuria programas išjungtoje būsenoje. Išjungta programa autorizacijos žingsnyje grąžina klaidą, kurioje jungiklis neminimas, todėl verta tai patikrinti prieš ieškant kitų klaidų.
 
 ---
 
-## Step 5: Assign Users
+## 4 žingsnis: Suteikite apimtis (scopes)
 
-1. Open the **Access** tab
-2. Add the population or groups whose members may use digna
-3. Click **Save**
-
----
-
-## Step 6: Collect the Credentials and Environment ID
-
-On the **Configuration** tab, expand **General**:
-
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon)
-- **Environment ID** → goes into the discovery URL
-
-The same tab lists the ready-made **OIDC Discovery Endpoint**, which you can copy directly instead of assembling it by hand.
+1. Atidarykite skirtuką **Resources**
+2. Patikrinkite, ar suteikta `openid`, ir pridėkite `profile` bei `email` iš resurso **OpenID Connect**
+3. Spauskite **Save**
 
 ---
 
-## Step 7: Build the Discovery URL
+## 5 žingsnis: Priskirkite vartotojus
 
-Substitute the environment ID and the domain for your region:
+1. Atidarykite skirtuką **Access**
+2. Pridėkite populiaciją (population) arba grupes, kurių nariai gali naudotis digna
+3. Spauskite **Save**
+
+---
+
+## 6 žingsnis: Surinkite kredencialus ir aplinkos ID
+
+Skirtuke **Configuration** išskleiskite **General**:
+
+- **Client ID** → tampa `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → tampa `DIGNA_OIDC_CLIENT_SECRET` (spauskite akies piktogramą)
+- **Environment ID** → įrašomas į atradimo (discovery) URL
+
+Tame pačiame skirtuke nurodytas ir paruoštas **OIDC Discovery Endpoint**, kurį galite nukopijuoti tiesiogiai, užuot sudarinėję rankiniu būdu.
+
+---
+
+## 7 žingsnis: Sudarykite atradimo URL
+
+Įrašykite aplinkos ID ir savo regiono domeną:
 
 ```
 https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
 ```
 
-| Region | Domain |
+| Regionas | Domenas |
 |---|---|
-| North America | `auth.pingone.com` |
-| Europe | `auth.pingone.eu` |
-| Canada | `auth.pingone.ca` |
-| Asia-Pacific | `auth.pingone.asia` |
-| Australia | `auth.pingone.com.au` |
+| Šiaurės Amerika | `auth.pingone.com` |
+| Europa | `auth.pingone.eu` |
+| Kanada | `auth.pingone.ca` |
+| Azija ir Ramusis vandenynas | `auth.pingone.asia` |
+| Australija | `auth.pingone.com.au` |
 
-For a European environment:
+Europos aplinkai:
 
 ```
 https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
 ```
 
-!!! tip "Copy It Rather Than Type It"
+!!! tip "Kopijuokite, o ne rašykite ranka"
 
-    The regional domain is the single most common mistake in a PingOne integration, and a wrong region gives a 404 rather than a helpful message. Use the **OIDC Discovery Endpoint** value from Step 6.
+    Regioninis domenas yra dažniausia klaida PingOne integracijoje, o neteisingas regionas grąžina 404, o ne naudingą pranešimą. Naudokite **OIDC Discovery Endpoint** reikšmę iš 6 žingsnio.
 
 ---
 
-## Step 8: Configure digna
+## 8 žingsnis: Konfigūruokite digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -136,41 +136,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `pingone` here.
+Abiejuose failuose `key` turi sutapti — čia `pingone`.
 
 ---
 
-## Step 9: Test
+## 9 žingsnis: Išbandykite
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Perkraukite backend ir web serverį, tada atidarykite dashboard. Visą kontrolinį sąrašą rasite skyriuje [Prisijungimo testavimas](overview.md#testing-login).
 
 ---
 
-## Troubleshooting PingOne
+## PingOne trikčių šalinimas
 
-### 404 on the Discovery URL
+### 404 atradimo URL
 
-The regional domain or the environment ID is wrong. Compare with the **OIDC Discovery Endpoint** shown on the application's Configuration tab.
+Neteisingas regioninis domenas arba aplinkos ID. Palyginkite su **OIDC Discovery Endpoint**, rodomu programos skirtuke Configuration.
 
-### NOT_FOUND or Application Disabled
+### NOT_FOUND arba Application Disabled
 
-The application toggle from Step 3 is still off.
+Programos jungiklis iš 3 žingsnio vis dar išjungtas.
 
 ### Redirect URI Mismatch
 
-PingOne matches the full string. Check **Configuration → Redirect URIs** for a trailing slash or a scheme difference.
+PingOne lygina visą eilutę. Patikrinkite **Configuration → Redirect URIs**, ar nėra galinio brūkšnio (/) arba schemos skirtumo.
 
-### Login Succeeds but No Email Claim Reaches digna
+### Prisijungimas pavyksta, bet email teiginys (claim) nepasiekia digna
 
-The `email` and `profile` scopes have not been granted on the **Resources** tab.
+Skirtuke **Resources** nesuteiktos apimtys `email` ir `profile`.
 
-### The User Cannot See the Application
+### Vartotojas nemato programos
 
-No population or group has been granted access on the **Access** tab.
+Skirtuke **Access** jokiai populiacijai ar grupei nesuteikta prieiga.
 
 ---
 
-## See Also
+## Taip pat žiūrėkite
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
-- [PingOne: OIDC application configuration](https://docs.pingidentity.com/pingone/)
+- [Vienkartinio prisijungimo (SSO) apžvalga](overview.md) — konfigūracijos nuorodos, testavimas ir bendras trikčių šalinimas
+- [PingOne: OIDC programos konfigūracija](https://docs.pingidentity.com/pingone/)

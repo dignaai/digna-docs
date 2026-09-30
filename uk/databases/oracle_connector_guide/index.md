@@ -1,77 +1,78 @@
-# Source Connector for Oracle
+# Конектор джерела для Oracle
 
-This guide describes how to configure *digna* to connect to Oracle Database over **ODBC**,
-using a **DSN-less** connection string.
+У цьому посібнику описано, як налаштувати *digna* для підключення до Oracle Database через **ODBC**
+за допомогою рядка підключення **без DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Oracle.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-The Oracle ODBC driver is part of the **Oracle Client** (the Instant Client "ODBC" package is
-enough). Install it on the machine that runs the *digna* backend, following the vendor's
-official installation guide.
-
-The driver registers itself as **Oracle in `<OracleHomeName>`** — for example
-`Oracle in OraDB21Home1` or `Oracle in instantclient_21_13`. The home name differs per
-installation, so read the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Налаштування на боці *digna* однакове для всіх технологій — де створюються підключення, як
+шифруються значення властивостей, як тестується підключення та що означають режими профілювання.
+Це описано в розділі [Огляд підключень до баз даних](overview.md). Ця сторінка охоплює те, що
+специфічне для Oracle.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Встановлення драйвера ODBC {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Драйвер Oracle ODBC входить до складу **Oracle Client** (достатньо пакета "ODBC" з Instant Client).
+Встановіть його на машині, де працює бекенд *digna*, відповідно до офіційного посібника зі
+встановлення від постачальника.
 
-    The set below is one combination that is known to work. The properties belong to the Oracle
-    ODBC driver, so their names, defaults and accepted values differ between client versions,
-    and the driver name in particular depends on the Oracle home on your host. Use this as a
-    starting point and check the documentation of the client version you installed.
+Драйвер реєструється як **Oracle in `<OracleHomeName>`** — наприклад,
+`Oracle in OraDB21Home1` або `Oracle in instantclient_21_13`. Назва домашнього каталогу Oracle
+відрізняється для кожної інсталяції, тому прочитайте точну назву на своєму хості, як описано в розділі
+[Встановлення драйвера ODBC на хості digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Властивості ODBC {: #2-odbc-properties }
+
+!!! important "Приклад, а не специфікація"
+
+    Наведений нижче набір — одна комбінація, яка гарантовано працює. Властивості належать драйверу
+    Oracle ODBC, тому їхні назви, значення за замовчуванням і допустимі значення відрізняються між
+    версіями клієнта, а назва драйвера, зокрема, залежить від домашнього каталогу Oracle на вашому
+    хості. Використовуйте це як відправну точку та звіряйтеся з документацією встановленої версії
+    клієнта.
+
+Додайте такі властивості на екрані **Add DB Connection**:
+
+| Ключ | Приклад значення | Примітки |
 |---|---|---|
-| `Driver` | `Oracle in OraDB21Home1` | Must match the driver name registered on the *digna* host |
-| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | The database to connect to — see below |
-| `UID` | `DIGNA_SOURCE_USER` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `Driver` | `Oracle in OraDB21Home1` | Має збігатися з назвою драйвера, зареєстрованою на хості *digna* |
+| `DBQ` | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | База даних для підключення — див. нижче |
+| `UID` | `DIGNA_SOURCE_USER` | Користувач бази даних |
+| `PWD` | `<password>` | Позначте **Encrypted** |
 
-The resulting connection string looks like this:
+Отриманий рядок підключення виглядає так:
 
 ```
 Driver=Oracle in OraDB21Home1;DBQ=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)));UID=DIGNA_SOURCE_USER;PWD=<password>
 ```
 
-### The `DBQ` value
+### Значення `DBQ`
 
-`DBQ` accepts three forms. They are equivalent for *digna*; they differ in what has to be
-configured on the *digna* host:
+`DBQ` приймає три форми. Для *digna* вони рівнозначні; відрізняються тим, що потрібно налаштувати
+на хості *digna*:
 
-| Form | Example | Requires |
+| Форма | Приклад | Потребує |
 |---|---|---|
-| **Full connect descriptor** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Nothing — everything is in the property. Recommended |
-| **TNS alias** | `DIGNA_SOURCE` | The alias must exist in the `tnsnames.ora` of the Oracle Client on the *digna* host |
-| **Easy Connect** | `db.example.com:1521/digna_source_db` | An Oracle Client that supports Easy Connect (12c and later) |
+| **Повний дескриптор підключення** | `(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=db.example.com)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=digna_source_db)))` | Нічого — усе міститься у властивості. Рекомендовано |
+| **Псевдонім TNS** | `DIGNA_SOURCE` | Псевдонім має існувати в `tnsnames.ora` клієнта Oracle на хості *digna* |
+| **Easy Connect** | `db.example.com:1521/digna_source_db` | Oracle Client із підтримкою Easy Connect (12c і новіші) |
 
-!!! tip "Prefer the full descriptor"
+!!! tip "Надавайте перевагу повному дескриптору"
 
-    A TNS alias moves half of the connection definition into a file on the *digna* host, where
-    it is easy to forget when the host is rebuilt or *digna* is moved. The full descriptor keeps
-    the connection self-contained — which is the point of a DSN-less setup.
+    Псевдонім TNS переносить половину визначення підключення у файл на хості *digna*, про який
+    легко забути, коли хост перебудовують або *digna* переносять. Повний дескриптор робить
+    підключення самодостатнім — у цьому й полягає сенс налаштування без DSN.
 
-Note the parentheses in a descriptor are fine inside a connection string, but if your password
-contains `;`, brace it: `PWD={p@ss;word}`.
+Дужки в дескрипторі не створюють проблем у рядку підключення, але якщо ваш пароль містить `;`,
+візьміть його у фігурні дужки: `PWD={p@ss;word}`.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Налаштування *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+На екрані **Add DB Connection** вкажіть таке:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -82,44 +83,45 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Oracle {: #4-notes-on-oracle }
+## 4. Примітки щодо Oracle {: #4-notes-on-oracle }
 
-- **Schemas are users.** *digna* lists Oracle users as schemas, so the source schema is the
-  owner of the tables — `DIGNA_SOURCE_USER` in the example above. The connection user needs
-  `SELECT` on those tables, either directly or through a role.
-- **One connection sees one database.** The catalog *digna* offers is the database the
-  connection is attached to, so `DBQ` decides which service, and therefore which database, is
-  profiled.
-- **Identifiers are case-sensitive once quoted.** *digna* quotes the names it reads from the
-  data dictionary, which is what Oracle stores — upper case for unquoted objects.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there and a quota on the tablespace. *Session* uses a private temporary
-  table (`ORA$PTT_…`, Oracle 18c and later) and does not touch **Work Schema**. *Standard*
-  needs read access only.
+- **Схеми — це користувачі.** *digna* показує користувачів Oracle як схеми, тому схема джерела — це
+  власник таблиць, у наведеному вище прикладі `DIGNA_SOURCE_USER`. Користувачеві підключення
+  потрібне право `SELECT` на ці таблиці — безпосередньо або через роль.
+- **Одне підключення бачить одну базу даних.** Каталог, який пропонує *digna*, — це база даних, до
+  якої приєднано підключення, тому `DBQ` визначає, яка служба, а отже, яка база даних
+  профілюється.
+- **Після взяття в лапки ідентифікатори чутливі до регістру.** *digna* бере в лапки імена, які
+  зчитує зі словника даних, тобто в тому вигляді, як їх зберігає Oracle — великими літерами для
+  об'єктів без лапок.
+- **Режими профілювання.** *Permanent* створює робочі таблиці в **Work Schema**, тому користувачеві
+  потрібне там право `CREATE TABLE` і квота на табличний простір. *Session* використовує приватну
+  тимчасову таблицю (`ORA$PTT_…`, Oracle 18c і новіші) і не зачіпає **Work Schema**. *Standard*
+  потребує лише доступу для читання.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Перевірка драйвера (необов'язково) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the Oracle Client, the service name and your
-credentials work before you enter them in *digna*.
+Для підключення без DSN налаштовувати джерело даних ODBC не потрібно, але власний діалог драйвера —
+зручний спосіб переконатися, що Oracle Client, ім'я служби та ваші облікові дані працюють, перш ніж
+вводити їх у *digna*.
 
-#### Step 1
+#### Крок 1
 ![Step 1](images/oracle/create_odbc_data_source_step1.png)
 
-The **TNS Service Name** offered here comes from the `tnsnames.ora` of your Oracle Client
-installation — that is where the alias, and with it the host, port and service name, is
-defined. In *digna* you can use the alias as `DBQ`, or the full descriptor instead.
+**TNS Service Name**, запропоноване тут, береться з `tnsnames.ora` вашої інсталяції Oracle Client —
+саме там визначено псевдонім, а разом із ним хост, порт та ім'я служби. У *digna* можна використати
+цей псевдонім як `DBQ` або замість нього повний дескриптор.
 
-#### Step 2 – Test the connection
+#### Крок 2 – Тестування підключення
 
-Click the **Test Connection** button.
+Натисніть кнопку **Test Connection**.
 
 ![Step 2](images/oracle/create_odbc_data_source_step2.png)
 
-Provide the password and click the **OK** button.
+Введіть пароль і натисніть кнопку **OK**.
 
 ![Step 3](images/oracle/create_odbc_data_source_step3.png)
 
-A success message confirms that the driver and the credentials work.
+Повідомлення про успіх підтверджує, що драйвер і облікові дані працюють.

@@ -1,61 +1,61 @@
-# Source Connector for Netezza
+# Конектор джерела для Netezza
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+У цьому посібнику описано, як налаштувати *digna* для підключення до Netezza через **ODBC** за
+допомогою рядка підключення **без DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Налаштування на боці *digna* однакове для всіх технологій — де створюються підключення, як
+шифруються значення властивостей, як тестується підключення та що означають режими профілювання.
+Це описано в розділі [Огляд підключень до баз даних](overview.md). Ця сторінка охоплює те, що
+специфічне для Netezza.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Встановлення драйвера ODBC {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Встановіть драйвер ODBC **NetezzaSQL** (входить до клієнтських інструментів IBM Netezza) на машині,
+де працює бекенд *digna*, відповідно до офіційного посібника зі встановлення від постачальника.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Прочитайте точну зареєстровану назву драйвера на своєму хості, як описано в розділі
+[Встановлення драйвера ODBC на хості digna](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. Властивості ODBC {: #2-odbc-properties }
+
+!!! important "Приклад, а не специфікація"
+
+    Наведений нижче набір — одна комбінація, яка гарантовано працює. Властивості належать драйверу
+    NetezzaSQL, тому їхні назви, значення за замовчуванням і допустимі значення відрізняються між
+    версіями клієнта та платформами, а для захищеного TLS пристрою потрібні додаткові властивості,
+    крім наведених тут. Використовуйте це як відправну точку та звіряйтеся з документацією
+    встановленої версії клієнта.
+
+Додайте такі властивості на екрані **Add DB Connection**:
+
+| Ключ | Приклад значення | Примітки |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Має збігатися з назвою драйвера, зареєстрованою на хості *digna*. Фігурні дужки — звичний спосіб запису цієї назви |
+| `SERVER` | `netezza.example.com` | Ім'я сервера або IP-адреса |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | База даних, з якої починається сесія |
+| `UID` | `ADMIN` | Користувач бази даних |
+| `PWD` | `<password>` | Позначте **Encrypted** |
 
-The resulting connection string looks like this:
+Отриманий рядок підключення виглядає так:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Залежно від версії драйвера, налаштування та вимог безпеки можуть знадобитися додаткові
+властивості — наприклад, `SecurityLevel` і `CaCertFile` для пристрою, захищеного TLS. Кожен
+параметр, який пропонують діалоги драйвера *Advanced*, *SSL* і *Driver*, можна додати як властивість.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Налаштування *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+На екрані **Add DB Connection** вкажіть таке:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -66,37 +66,36 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Примітки щодо Netezza {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Застосовуються і каталоги, і схеми.** *digna* показує бази даних, які може бачити користувач
+  (з `_V_DATABASE`), як каталоги, а їхні схеми (з `_V_SCHEMA`) — під ними, тому одне підключення
+  може обслуговувати джерела в кількох базах даних. `DATABASE` визначає лише те, де починається
+  сесія.
+- **Ідентифікатори записуються великими літерами**, якщо їх не було створено в лапках, — тому
+  у наведених вище прикладах використано `TEST` і `ADMIN`.
+- **Режими профілювання.** *Permanent* створює робочі таблиці в **Work Schema**, тому користувачеві
+  потрібне там право `CREATE TABLE`. *Session* використовує `CREATE TEMPORARY TABLE` і не зачіпає
+  **Work Schema**. *Standard* потребує лише доступу для читання.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Перевірка драйвера (необов'язково) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Для підключення без DSN налаштовувати джерело даних ODBC не потрібно, але власний діалог драйвера —
+зручний спосіб переконатися, що драйвер і ваші облікові дані працюють, перш ніж вводити їх у *digna*.
 
-#### Step 1
+#### Крок 1
 ![Step 1](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+Поля в **DSN Options** один до одного відповідають властивостям із
+[розділу 2](#2-odbc-properties). Залежно від вашого драйвера Netezza, налаштування та вимог
+безпеки вам також можуть знадобитися дані на вкладках **Advanced DSN Options**, **SSL DSN Options**
+або **Driver Options**; для найпростішого налаштування достатньо **DSN Options**.
 
-Click the **Test Connection** button.
+Натисніть кнопку **Test Connection**.
 
-#### Step 2
+#### Крок 2
 ![Step 2](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Якщо з'явився екран успіху, драйвер працює, а значення правильні.

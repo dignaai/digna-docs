@@ -1,65 +1,65 @@
-# Source Connector for PostgreSQL
+# Bronconnector voor PostgreSQL
 
-This guide describes how to configure *digna* to connect to PostgreSQL over **ODBC**, using a
-**DSN-less** connection string.
+Deze gids beschrijft hoe je *digna* configureert om via **ODBC** verbinding te maken met
+PostgreSQL, met een **DSN-loze** connection string.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to PostgreSQL.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the PostgreSQL ODBC driver (**psqlODBC**) on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself under a name that differs per platform and package — commonly
-**PostgreSQL Unicode(x64)** on Windows and **PostgreSQL ODBC Driver(UNICODE)** on Linux. Read
-the exact name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver), and use that name
-for the `DRIVER` property below.
+De *digna*-kant van de configuratie is voor elke technologie hetzelfde — waar verbindingen worden
+aangemaakt, hoe property-waarden worden versleuteld, hoe een verbinding wordt getest en wat de
+profiling modes betekenen. Dat wordt beschreven in het
+[Overzicht databaseverbindingen](overview.md). Deze pagina behandelt wat specifiek is voor
+PostgreSQL.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Installeer de ODBC-driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Installeer de PostgreSQL ODBC-driver (**psqlODBC**) op de machine waarop de *digna*-backend
+draait, volgens de officiële installatiegids van de leverancier.
 
-    The set below is one combination that is known to work. The properties belong to the
-    psqlODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what your server demands — SSL in particular — may differ too.
-    Use this as a starting point and check the documentation of the driver version you
-    installed.
+De driver registreert zich onder een naam die per platform en pakket verschilt — gewoonlijk
+**PostgreSQL Unicode(x64)** op Windows en **PostgreSQL ODBC Driver(UNICODE)** op Linux. Lees de
+exacte naam op je host af zoals beschreven in
+[Installeer de ODBC-driver op de digna-host](overview.md#install-the-driver), en gebruik die naam
+voor de property `DRIVER` hieronder.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC-properties {: #2-odbc-properties }
+
+!!! important "Een voorbeeld, geen specificatie"
+
+    De onderstaande set is één combinatie waarvan bekend is dat ze werkt. De properties horen bij
+    de psqlODBC-driver, dus hun namen, standaardwaarden en toegestane waarden verschillen per
+    driverversie en platform, en ook wat je server eist — vooral SSL — kan afwijken. Gebruik dit
+    als startpunt en raadpleeg de documentatie van de geïnstalleerde driverversie.
+
+Voeg de volgende properties toe in het scherm **Add DB Connection**:
+
+| Key | Voorbeeldwaarde | Opmerkingen |
 |---|---|---|
-| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `db.example.com` | Server name or IP address |
+| `DRIVER` | `PostgreSQL ODBC Driver(UNICODE)` | Moet overeenkomen met de drivernaam die op de *digna*-host is geregistreerd |
+| `SERVER` | `db.example.com` | Servernaam of IP-adres |
 | `PORT` | `5432` | |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
-| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` or `verify-full` — must be accepted by the server |
+| `DATABASE` | `digna_source_db` | Database die de bronschema's bevat. Het is de enige database die deze verbinding kan profilen |
+| `UID` | `digna_source_user` | Databasegebruiker |
+| `PWD` | `<password>` | Vink **Encrypted** aan |
+| `SSLMode` | `prefer` | `disable`, `allow`, `prefer`, `require`, `verify-ca` of `verify-full` — moet door de server worden geaccepteerd |
 
-The resulting connection string looks like this:
+De resulterende connection string ziet er zo uit:
 
 ```
 DRIVER=PostgreSQL ODBC Driver(UNICODE);SERVER=db.example.com;PORT=5432;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>;SSLMode=prefer
 ```
 
-Any further psqlODBC option can be added as an additional property — for example
-`ReadOnly=1` for a read-only session, or `ConnSettings` to run `SET` statements at connect
-time.
+Elke andere psqlODBC-optie kan als extra property worden toegevoegd — bijvoorbeeld `ReadOnly=1`
+voor een alleen-lezen sessie, of `ConnSettings` om bij het verbinden `SET`-statements uit te
+voeren.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna*-configuratie {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Geef in het scherm **Add DB Connection** het volgende op:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -70,35 +70,35 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on PostgreSQL {: #4-notes-on-postgresql }
+## 4. Opmerkingen over PostgreSQL {: #4-notes-on-postgresql }
 
-- **`SSLMode` must match the server.** A server configured with `hostssl` rejects
-  `SSLMode=disable`, and `verify-ca` or `verify-full` additionally need the root certificate to
-  be available to the driver on the *digna* host. If you had to choose a specific mode when
-  testing the driver, use the same one here.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because PostgreSQL reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE` on that schema. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **`SSLMode` moet overeenkomen met de server.** Een server die met `hostssl` is geconfigureerd,
+  weigert `SSLMode=disable`, en `verify-ca` of `verify-full` vereisen bovendien dat het
+  rootcertificaat voor de driver op de *digna*-host beschikbaar is. Als je bij het testen van de
+  driver een specifieke modus moest kiezen, gebruik die dan ook hier.
+- **Eén verbinding ziet één database.** *digna* biedt de schema's aan van de database die in
+  `DATABASE` is opgegeven, omdat PostgreSQL alleen de huidige database als catalog meldt.
+  Brontabellen in een andere database hebben een eigen verbinding nodig.
+- **Profiling modes.** *Permanent* maakt de werktabellen aan in **Work Schema**, dus de gebruiker
+  heeft `CREATE` op dat schema nodig. *Session* gebruikt `CREATE TEMPORARY TABLE` en raakt
+  **Work Schema** niet aan. *Standard* heeft alleen leesrechten nodig.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. De driver controleren (optioneel) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver works and that the server accepts
-your credentials and SSL mode before you enter them in *digna*.
+Voor een DSN-loze verbinding hoef je geen ODBC-databron te configureren, maar het eigen
+dialoogvenster van de driver is een handige manier om te bevestigen dat de driver werkt en dat de
+server je inloggegevens en SSL-modus accepteert, voordat je ze in *digna* invoert.
 
-#### Step 1
-![Step 1](images/postgres/create_odbc_data_source_step1.png)
+#### Stap 1
+![Stap 1](images/postgres/create_odbc_data_source_step1.png)
 
-#### Step 2 – Test the connection
+#### Stap 2 – Test de verbinding
 
-Click the **Test Connection** button.
+Klik op de knop **Test Connection**.
 
-![Step 2](images/postgres/create_odbc_data_source_step2.png)
+![Stap 2](images/postgres/create_odbc_data_source_step2.png)
 
-The values you entered here are exactly the values the properties in
-[section 2](#2-odbc-properties) take.
+De waarden die je hier hebt ingevoerd, zijn precies de waarden die de properties in
+[sectie 2](#2-odbc-properties) krijgen.

@@ -1,110 +1,110 @@
-# Set up SSO with OneLogin
+# Skonfiguruj SSO z OneLogin
 
-OneLogin is OIDC-compliant. Its distinguishing feature is that the connector type is chosen from a catalogue when the app is created and cannot be changed afterwards.
+OneLogin jest zgodny z OIDC. Jego cechą wyróżniającą jest to, że typ konektora wybiera się z katalogu podczas tworzenia aplikacji i nie można go później zmienić.
 
-This guide covers the **OneLogin side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Ten przewodnik obejmuje **stronę OneLogin**: tworzenie aplikacji i zebranie wartości, których potrzebuje digna. Strona digna — `dashboard_config.toml`, testowanie i rozwiązywanie problemów — jest taka sama dla każdego dostawcy i opisana w [Przegląd Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Zanim zaczniesz
 
-| Requirement | Notes |
+| Wymaganie | Uwagi |
 |---|---|
-| **OneLogin role** | Account owner or an administrator permitted to add applications |
-| **Subdomain** | e.g. `yourcompany.onelogin.com` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Rola w OneLogin** | Właściciel konta lub administrator uprawniony do dodawania aplikacji |
+| **Subdomena** | np. `yourcompany.onelogin.com` |
+| **Redirect URI digna** | URL, na który użytkownicy wracają po logowaniu, np. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the OIDC Application
+## Krok 1: Utwórz aplikację OIDC
 
-1. Sign in to the OneLogin Admin portal
-2. Go to **Applications → Applications**
-3. Click **Add App**
-4. Search for `OpenId Connect` and select the **OpenId Connect (OIDC)** connector
-5. Set the **Display Name** to `digna`
-6. Click **Save**
+1. Zaloguj się do OneLogin Admin portal
+2. Przejdź do **Applications → Applications**
+3. Kliknij **Add App**
+4. Wyszukaj `OpenId Connect` i wybierz konektor **OpenId Connect (OIDC)**
+5. Ustaw **Display Name** na `digna`
+6. Kliknij **Save**
 
-!!! warning "The Connector Type Is Fixed at Creation"
+!!! warning "Typ konektora jest ustalany przy tworzeniu"
 
-    OneLogin has separate catalogue entries for SAML and OIDC, and an application cannot be converted from one to the other. If you pick a SAML connector by mistake, delete the app and add it again — there is no setting to switch protocols.
+    OneLogin ma osobne pozycje katalogu dla SAML i OIDC, a aplikacji nie można przekonwertować z jednego na drugi. Jeśli przez pomyłkę wybierzesz konektor SAML, usuń aplikację i dodaj ją ponownie — nie ma ustawienia pozwalającego przełączyć protokół.
 
 ---
 
-## Step 2: Configure the Redirect URI
+## Krok 2: Skonfiguruj redirect URI
 
-1. Open the **Configuration** tab
-2. In **Redirect URI's**, enter your digna callback URL:
+1. Otwórz kartę **Configuration**
+2. W polu **Redirect URI's** wpisz callback URL digna:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Post Logout Redirect URIs** to your dashboard URL
-4. Click **Save**
+3. Opcjonalnie ustaw **Post Logout Redirect URIs** na URL dashboardu
+4. Kliknij **Save**
 
-!!! note "One URI per Line"
+!!! note "Jedno URI na linię"
 
-    Unlike providers that expect a comma-separated list, OneLogin's **Redirect URI's** field takes one URI per line.
-
----
-
-## Step 3: Set the Application Type and Authentication Method
-
-1. Open the **SSO** tab
-2. Confirm **Application Type** is *Web*
-3. Set **Token Endpoint → Authentication Method** to *POST* (`client_secret_post`) or *Basic* (`client_secret_basic`)
-
-!!! warning "Do Not Choose None"
-
-    Setting the authentication method to *None* makes the application a public client with no secret, and digna's backend code exchange will be rejected. Either POST or Basic works.
+    W przeciwieństwie do dostawców oczekujących listy oddzielonej przecinkami, pole **Redirect URI's** w OneLogin przyjmuje jedno URI na linię.
 
 ---
 
-## Step 4: Collect the Credentials
+## Krok 3: Ustaw typ aplikacji i metodę uwierzytelniania
 
-Still on the **SSO** tab:
+1. Otwórz kartę **SSO**
+2. Potwierdź, że **Application Type** to *Web*
+3. Ustaw **Token Endpoint → Authentication Method** na *POST* (`client_secret_post`) lub *Basic* (`client_secret_basic`)
 
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click **Show client secret**)
+!!! warning "Nie wybieraj None"
 
-The page also shows the **Issuer URL**, which confirms the discovery URL in the next step.
-
----
-
-## Step 5: Assign Users
-
-1. Open the **Access** tab
-2. Add the roles or groups whose members may use digna
-3. Click **Save**
-
-!!! note "Unassigned Users Are Refused After Login"
-
-    As with most providers, OneLogin authenticates the user first and checks entitlement second. An unassigned user signs in successfully and is then refused, which looks like a digna error rather than an access-control decision.
+    Ustawienie metody uwierzytelniania na *None* czyni aplikację klientem publicznym bez sekretu, a wymiana kodu w backendzie digna zostanie odrzucona. Działa zarówno POST, jak i Basic.
 
 ---
 
-## Step 6: Build the Discovery URL
+## Krok 4: Zbierz poświadczenia
 
-Substitute your OneLogin subdomain:
+Nadal na karcie **SSO**:
+
+- **Client ID** → staje się `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → staje się `DIGNA_OIDC_CLIENT_SECRET` (kliknij **Show client secret**)
+
+Strona pokazuje również **Issuer URL**, który potwierdza discovery URL z następnego kroku.
+
+---
+
+## Krok 5: Przypisz użytkowników
+
+1. Otwórz kartę **Access**
+2. Dodaj role lub grupy, których członkowie mogą korzystać z digna
+3. Kliknij **Save**
+
+!!! note "Nieprzypisani użytkownicy są odrzucani po zalogowaniu"
+
+    Podobnie jak większość dostawców, OneLogin najpierw uwierzytelnia użytkownika, a dopiero potem sprawdza uprawnienia. Nieprzypisany użytkownik loguje się pomyślnie, a następnie zostaje odrzucony, co wygląda jak błąd digna, a nie jak decyzja kontroli dostępu.
+
+---
+
+## Krok 6: Zbuduj discovery URL
+
+Podstaw swoją subdomenę OneLogin:
 
 ```
 https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
 ```
 
-For example:
+Na przykład:
 
 ```
 https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
 ```
 
-!!! tip "The /2 Is the API Version"
+!!! tip "/2 to wersja API"
 
-    OneLogin's current OIDC implementation lives under `/oidc/2/`. Older documentation shows `/oidc/` without a version, which points at the retired first version. Check the **Issuer URL** on the SSO tab if in doubt — the discovery URL is the issuer plus `/.well-known/openid-configuration`.
+    Obecna implementacja OIDC w OneLogin znajduje się pod `/oidc/2/`. Starsza dokumentacja pokazuje `/oidc/` bez wersji, co wskazuje na wycofaną pierwszą wersję. W razie wątpliwości sprawdź **Issuer URL** na karcie SSO — discovery URL to issuer z dopisanym `/.well-known/openid-configuration`.
 
 ---
 
-## Step 7: Configure digna
+## Krok 7: Skonfiguruj digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -127,37 +127,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `onelogin` here.
+Klucz `key` w obu plikach musi się zgadzać — tutaj `onelogin`.
 
 ---
 
-## Step 8: Test
+## Krok 8: Testowanie
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Zrestartuj backend i serwer WWW, a następnie otwórz dashboard. Zobacz [Testowanie logowania](overview.md#testing-login) po pełną listę kontrolną.
 
 ---
 
-## Troubleshooting OneLogin
+## Rozwiązywanie problemów z OneLogin
 
 ### redirect_uri did not match
 
-The callback URL is missing from **Configuration → Redirect URI's**, or the entries were separated by commas rather than newlines.
+Brakuje callback URL w **Configuration → Redirect URI's** albo wpisy zostały oddzielone przecinkami zamiast znakami nowej linii.
 
-### invalid_client at the Token Step
+### invalid_client na etapie tokenu
 
-**Token Endpoint → Authentication Method** is set to *None*, or the client secret in `config.toml` is stale. Reveal the secret on the **SSO** tab and compare.
+**Token Endpoint → Authentication Method** jest ustawione na *None* albo sekret klienta w `config.toml` jest nieaktualny. Odsłoń sekret na karcie **SSO** i porównaj.
 
-### The App Does Not Appear for Users
+### Aplikacja nie jest widoczna dla użytkowników
 
-No role or group has been granted access on the **Access** tab.
+Żadna rola ani grupa nie otrzymała dostępu na karcie **Access**.
 
-### 404 on the Discovery URL
+### 404 dla discovery URL
 
-The subdomain is wrong, or the URL omits `/oidc/2/`. Compare against the **Issuer URL** shown on the SSO tab.
+Subdomena jest błędna albo w URL brakuje `/oidc/2/`. Porównaj z **Issuer URL** pokazanym na karcie SSO.
 
 ---
 
-## See Also
+## Zobacz także
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Przegląd Single Sign-On](overview.md) — odniesienie konfiguracyjne, testowanie i ogólne rozwiązywanie problemów
 - [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)

@@ -1,95 +1,95 @@
-# Set up SSO with Auth0
+# Nastavite SSO z Auth0
 
-Auth0 is OIDC-compliant and exposes a discovery endpoint per tenant. The main thing to get right is the tenant domain, which appears in the discovery URL and changes if you enable a custom domain.
+Auth0 je združljiv z OIDC in za vsakega najemnika (tenant) ponuja končno točko discovery. Najpomembneje je pravilno nastaviti domeno najemnika, ki se pojavi v discovery URL-ju in se spremeni, če omogočite prilagojeno domeno.
 
-This guide covers the **Auth0 side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Ta vodič zajema **Auth0 stran**: ustvarjanje aplikacije in zbiranje vrednosti, ki jih potrebuje digna. Digna stran — `dashboard_config.toml`, testiranje in odpravljanje težav — je enaka za vse ponudnike in je opisana v [Pregled Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Preden začnete
 
-| Requirement | Notes |
+| Zahteva | Opombe |
 |---|---|
-| **Auth0 role** | Admin on the tenant |
-| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Vloga v Auth0** | Skrbnik (Admin) najemnika |
+| **Domena najemnika** | npr. `yourcompany.eu.auth0.com` — segment regije je pomemben |
+| **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application
+## 1. korak: Ustvarite aplikacijo
 
-1. Sign in to the [Auth0 Dashboard](https://manage.auth0.com)
-2. Go to **Applications → Applications**
-3. Click **Create Application**
-4. Name it `digna` and choose **Regular Web Applications**
-5. Click **Create**
+1. Prijavite se v [Auth0 Dashboard](https://manage.auth0.com)
+2. Pojdite na **Applications → Applications**
+3. Kliknite **Create Application**
+4. Poimenujte jo `digna` in izberite **Regular Web Applications**
+5. Kliknite **Create**
 
-!!! warning "Choose Regular Web Applications"
+!!! warning "Izberite Regular Web Applications"
 
-    *Single Page Application* and *Native* create public clients with no secret. digna performs the code exchange from its backend and needs a confidential client, so **Regular Web Applications** is the correct type. Unlike some providers, Auth0 does let you change the type later under **Settings → Application Type**.
+    *Single Page Application* in *Native* ustvarita javna odjemalca brez skrivnosti. digna izvede izmenjavo kode v svojem zaledju in potrebuje zaupnega odjemalca, zato je **Regular Web Applications** pravilen tip. Za razliko od nekaterih ponudnikov Auth0 omogoča, da tip pozneje spremenite pod **Settings → Application Type**.
 
 ---
 
-## Step 2: Add the Callback URL
+## 2. korak: Dodajte callback URL
 
-On the application's **Settings** tab:
+Na zavihku **Settings** aplikacije:
 
-1. Find **Allowed Callback URLs**
-2. Enter your digna callback URL:
+1. Poiščite **Allowed Callback URLs**
+2. Vnesite svoj digna callback URL:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Allowed Logout URLs** to your dashboard URL
-4. Scroll to the bottom and click **Save Changes**
+3. Po želji nastavite **Allowed Logout URLs** na URL svoje nadzorne plošče
+4. Pomaknite se na dno in kliknite **Save Changes**
 
-!!! note "Comma-Separated, Not Newline-Separated"
+!!! note "Ločeno z vejicami, ne z novimi vrsticami"
 
-    Auth0 accepts several callback URLs in this field, separated by commas. A list separated only by newlines is read as one malformed URL and silently matches nothing.
-
----
-
-## Step 3: Collect the Credentials
-
-Still on **Settings**, in the **Basic Information** panel:
-
-- **Domain** → goes into the discovery URL
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click to reveal)
+    Auth0 v tem polju sprejme več callback URL-jev, ločenih z vejicami. Seznam, ločen samo z novimi vrsticami, se prebere kot en nepravilno oblikovan URL in se brez opozorila ne ujema z ničemer.
 
 ---
 
-## Step 4: Confirm the Grant Type
+## 3. korak: Zberite poverilnice
 
-1. Go to **Settings → Advanced Settings → Grant Types**
-2. Confirm **Authorization Code** is ticked
+Še vedno v **Settings**, v plošči **Basic Information**:
 
-It is enabled by default for Regular Web Applications. If it has been unticked, digna's login fails with `unauthorized_client`.
+- **Domain** → gre v discovery URL
+- **Client ID** → postane `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → postane `DIGNA_OIDC_CLIENT_SECRET` (kliknite za razkritje)
 
 ---
 
-## Step 5: Build the Discovery URL
+## 4. korak: Preverite tip dodelitve (grant type)
 
-Substitute the **Domain** from Step 3:
+1. Pojdite na **Settings → Advanced Settings → Grant Types**
+2. Preverite, da je označen **Authorization Code**
+
+Za Regular Web Applications je privzeto omogočen. Če je bil odznačen, prijava v digna ne uspe z napako `unauthorized_client`.
+
+---
+
+## 5. korak: Sestavite discovery URL
+
+Vstavite **Domain** iz 3. koraka:
 
 ```
 https://<your_tenant_domain>/.well-known/openid-configuration
 ```
 
-For example:
+Na primer:
 
 ```
 https://yourcompany.eu.auth0.com/.well-known/openid-configuration
 ```
 
-!!! warning "Custom Domains Change the Issuer"
+!!! warning "Prilagojene domene spremenijo izdajatelja"
 
-    If your tenant uses a custom domain such as `login.yourcompany.com`, use that domain in the discovery URL. Mixing the two — the canonical domain in the discovery URL, the custom one in the browser — produces an issuer mismatch, and the token is rejected after an otherwise successful login.
+    Če vaš najemnik uporablja prilagojeno domeno, kot je `login.yourcompany.com`, uporabite to domeno v discovery URL-ju. Mešanje obeh — kanonične domene v discovery URL-ju in prilagojene v brskalniku — povzroči neujemanje izdajatelja (issuer), žeton pa je zavrnjen po sicer uspešni prijavi.
 
 ---
 
-## Step 6: Configure digna
+## 6. korak: Konfigurirajte digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -112,37 +112,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `auth0` here.
+Vrednost `key` se mora v obeh datotekah ujemati — tukaj `auth0`.
 
 ---
 
-## Step 7: Test
+## 7. korak: Testirajte
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Znova zaženite zaledje in spletni strežnik, nato odprite nadzorno ploščo. Za celoten kontrolni seznam si oglejte [Testiranje prijave](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Auth0
+## Odpravljanje težav z Auth0
 
-### Callback URL Mismatch
+### Neujemanje callback URL-ja
 
-Auth0's error page names the URL it received. Add it to **Allowed Callback URLs**, checking that entries are comma-separated.
+Stran z napako Auth0 navede URL, ki ga je prejela. Dodajte ga v **Allowed Callback URLs** in preverite, da so vnosi ločeni z vejicami.
 
 ### unauthorized_client
 
-**Authorization Code** is not enabled under **Advanced Settings → Grant Types**, or the application type is not Regular Web Applications.
+**Authorization Code** ni omogočen pod **Advanced Settings → Grant Types** ali pa tip aplikacije ni Regular Web Applications.
 
-### Access Denied After a Successful Login
+### Dostop zavrnjen po uspešni prijavi
 
-A Rule, Action or Post-Login trigger in the tenant is rejecting the user. Check **Actions → Flows → Login** and the tenant logs under **Monitoring → Logs**, which show the exact reason.
+Pravilo (Rule), dejanje (Action) ali sprožilec Post-Login v najemniku zavrača uporabnika. Preverite **Actions → Flows → Login** in dnevnike najemnika pod **Monitoring → Logs**, ki prikažejo natančen razlog.
 
-### Issuer Mismatch
+### Neujemanje izdajatelja
 
-The discovery URL and the domain the browser was sent to differ — usually the canonical tenant domain versus a custom domain. Use one consistently.
+Discovery URL in domena, na katero je bil preusmerjen brskalnik, se razlikujeta — običajno kanonična domena najemnika in prilagojena domena. Dosledno uporabljajte eno od njiju.
 
 ---
 
-## See Also
+## Povezane vsebine
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Pregled Single Sign-On](overview.md) — referenca konfiguracije, testiranje in splošno odpravljanje težav
 - [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)

@@ -504,8 +504,10 @@ Puis collez les instructions à l'invite `postgres=#` et tapez `\q` pour quitter
 3. Après extraction, vous devriez voir les éléments suivants :
    - `dashboard/` — interface du tableau de bord Web
    - `digna` — exécutable principal (backend + CLI combinés)
-   - `config.toml` — fichier de configuration
-   - `license.toml` — fichier de licence (copiez le vôtre ici)
+
+!!! info "Les fichiers de configuration et de licence ne font pas partie du paquet"
+
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont livrés avec l'installation — vous créez les deux vous-même, dans [Configuration du backend](#backend-configuration) et [Configuration du tableau de bord](#dashboard-configuration). `license.toml` n'est pas livré non plus ; digna le fournit séparément, comme le décrit l'étape 3.
 
 Pour extraire depuis le shell :
 
@@ -825,9 +827,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Étape 1 : Déployer le tableau de bord sur le serveur Web
 
-Le tableau de bord digna possède son propre fichier `config.toml` séparé situé dans le répertoire `dashboard/`. Cette configuration est déjà fournie et ne nécessite pas de modification lors de l'installation initiale. Vous ne devez la modifier que si vous voulez personnaliser la connexion au backend.
+Le tableau de bord digna lit sa propre configuration dans `dashboard/dashboard_config.toml`. Ce fichier n'est pas livré avec l'installation — vous le créez dans le répertoire `dashboard/`, à côté des fichiers du tableau de bord.
 
-Si vous devez modifier la configuration du tableau de bord (par ex. pour des déploiements multi‑instance), reportez-vous à la documentation du tableau de bord.
+Son contenu est décrit sous [Authentification unique (SSO)](../../../sso/overview.md), là où le fichier est également nécessaire : il contient les options de connexion proposées par le tableau de bord et, pour les déploiements multi‑instance, la connexion au backend.
 
 Choisissez votre serveur web et suivez les étapes de déploiement correspondantes.
 
@@ -1162,7 +1164,7 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Important"
 
-    Le fichier `config.toml` **n'est jamais** inclus dans le ZIP d'installation. Votre configuration existante reste en sécurité.
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont jamais inclus dans le ZIP d'installation — l'équipe digna ne livre jamais aucun de ces deux fichiers. Votre configuration existante n'est donc pas touchée par la mise à niveau, et les copies se trouvant dans les dossiers renommés `*_old` sont les seules dont vous disposez.
 
 #### Étape 4 : Restaurer vos fichiers de configuration
 
@@ -1214,7 +1216,11 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Répétez la section pour chaque fournisseur, et gardez chaque clé identique au `key` défini dans `dashboard_config.toml`. `digna config check` signale `oidc_clients` comme FAILED tant que l'ancienne forme subsiste. Seules les installations qui utilisent l'authentification unique sont concernées.
 
-#### Étape 5 : Vérifier la configuration
+#### Étape 5 : Recharger le serveur Web
+
+Le tableau de bord est un ensemble de fichiers statiques ; votre serveur Web — ainsi que le navigateur — peut donc encore servir la version précédente. Rechargez ou redémarrez le serveur Web qui héberge le dossier `dashboard`, puis rechargez la page en forçant l'actualisation (++ctrl+f5++).
+
+#### Étape 6 : Vérifier la configuration
 
 Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au référentiel :
 
@@ -1224,7 +1230,23 @@ Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au r�
 
 Chaque section doit être signalée OK. Corrigez tout ce qui est signalé comme FAILED et relancez la commande avant de continuer.
 
-#### Étape 6 : Mettre à niveau le schéma du repository
+#### Étape 7 : Remplacer le fichier de licence
+
+Chaque release fait l'objet d'une licence distincte. Copiez le `license.toml` fourni par l'équipe digna pour cette release dans le répertoire d'installation, en remplaçant l'ancien :
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ne conservez pas la licence précédente"
+
+    Un `license.toml` émis pour une release antérieure ne couvre pas celle-ci, et chaque commande qui vérifie la licence — `user`, `inspection`, `repo` — s'interrompt avant de toucher au référentiel lorsque la vérification échoue. Vérifiez-la avant d'aller plus loin :
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Étape 8 : Mettre à niveau le schéma du repository
 
 Placez-vous dans votre répertoire d'installation digna et exécutez :
 
@@ -1235,7 +1257,7 @@ cd /opt/digna
 
 Cela met à jour le schéma PostgreSQL vers la dernière version tout en préservant toutes les données existantes.
 
-#### Étape 7 : Redémarrer les services
+#### Étape 9 : Redémarrer les services
 
 Si vous l'exécutez en tant que service systemd :
 
@@ -1266,7 +1288,7 @@ Sur la famille RHEL, réappliquez l'étiquetage SELinux si le répertoire `dashb
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Étape 8 : Vérifier la mise à niveau
+#### Étape 10 : Vérifier la mise à niveau
 
 1. Accédez au tableau de bord digna
 2. Vérifiez que l'interface se charge correctement

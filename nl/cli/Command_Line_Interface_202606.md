@@ -53,6 +53,7 @@ De volgende tabel legt vast wat elke opdrachtcategorie laadt voordat ze ook maar
 | `license check` | nee | het *is* de controle |
 | `crypt` | ja | nee |
 | `serve` | ja | nee |
+| `windows` | nee (de service leest het bij het starten) | nee |
 | `project` | ja | nee |
 | `user` | ja | ja |
 | `inspection` | ja | ja |
@@ -217,6 +218,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+De opdracht `repo prune` verwijdert rijen die langer zijn blijven bestaan dan het project of de gegevensbron waartoe ze behoorden.
+Het verwijderen van een project of gegevensbron verwijdert het object zelf, maar laat de bijbehorende profielen, voorspellingen,
+statussen en rijaantallen achter — een bewuste afweging, want een verwijdering die ook die tabellen zou opruimen,
+zou de gebruiker laten wachten. `repo prune` is de opruimronde die ze verwijdert, en de opdracht kan veilig
+op elk moment worden uitgevoerd: ze verwijdert alleen rijen waarvan het project of de gegevensbron niet meer bestaat.
+
+Rijen die de Python-backend heeft geschreven in tabellen die de huidige release niet meer gebruikt, blijven ongemoeid.
+
+#### Gebruik van de opdracht
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Opties
+- `--dry-run`: Rapporteert wat zou worden verwijderd, zonder iets te verwijderen.
+
+Alleen tabellen met verweesde rijen worden weergegeven. Als er geen zijn, meldt de opdracht
+`No orphaned rows found.` en stopt ze.
+
+#### Voorbeeld
+```bash
+digna repo prune
+```
+
+#### Voorbeelduitvoer
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Om hetzelfde rapport te zien zonder iets te verwijderen:
+```bash
+digna repo prune --dry-run
+```
+
+De rijaantallen zijn identiek; alleen de slotregel verschilt:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -528,6 +584,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+De opdracht `project cleanup` verwijdert de inspectieresultaten die een project over een datumbereik
+heeft verzameld — profielen, voorspellingen, rijaantallen en elke status van controles, attributen, gegevenssets en
+gegevensbronnen. Ze verwijdert precies wat een inspectie van die datums heeft geschreven, zodat het bereik
+daarna opnieuw kan worden geïnspecteerd om het weer op te bouwen.
+
+De geschiedenis van Timeliness en Schema Tracker wordt **niet** verwijderd: die legt vast wat digna op een
+bepaalde dag heeft waargenomen, en niet een daarvan afgeleid resultaat, dus een opschoning van een datumbereik in het verleden
+laat die intact.
+
+Elke gegevensbron wordt in een eigen transactie opgeschoond, zodat een onderbroken uitvoering alleen volledige gegevensbronnen
+achterlaat en nooit een half opgeschoonde.
+
+#### Gebruik van de opdracht
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenten
+- **PROJECT_NAME**: Project dat moet worden opgeschoond (vereist). Eén project per aanroep.
+- **FROM_DATE**: Eerste datum waarvoor resultaten worden verwijderd, `YYYY-MM-DD` (vereist).
+- **TO_DATE**: Laatste datum waarvoor resultaten worden verwijderd, inclusief, `YYYY-MM-DD` (vereist).
+
+#### Opties
+- `--table-name`, `-n`: Beperkt de opschoning tot deze gegevensbronnen. Meerdere namen kunnen
+  gescheiden door spaties worden opgegeven.
+- `--table-filter`: Beperkt de opschoning tot gegevensbronnen waarvan de naam deze substring bevat.
+- `--dry-run`: Toont de gegevensbronnen die zouden worden opgeschoond, zonder iets te verwijderen.
+- `--timing`: Toont hoe lang de opschoning heeft geduurd.
+
+`--table-name` en `--table-filter` worden gecombineerd als een OF — een gegevensbron wordt opgeschoond als deze wordt genoemd of
+als de substring overeenkomt. De opdracht mislukt als geen enkele gegevensbron overeenkomt, in plaats van succes te melden
+voor een opschoning die niets heeft gedaan.
+
+#### Voorbeeld
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Beperkt tot één gegevensbron:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Voorbeelduitvoer
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Om te zien welke gegevensbronnen zouden worden opgeschoond, zonder iets te verwijderen:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Elke regel is gemarkeerd, zodat een proefuitvoering niet voor een echte kan worden aangezien:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Inspectiebeheer
 
 ---
@@ -701,3 +829,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows-servicebeheer
+
+Alleen beschikbaar op Windows. De opdrachten registreren de ***digna***-backend bij de Windows-
+servicebeheerder en besturen hem; de service zelf voert `serve` op de achtergrond uit. Elke opdracht
+moet worden uitgevoerd vanuit een Opdrachtprompt met verhoogde rechten, en elke opdracht accepteert `--name`, zodat een service
+die onder een andere dan de standaardnaam is geregistreerd, kan worden aangesproken.
+
+---
+
+### windows install
+
+De opdracht `windows install` registreert ***digna*** als Windows-service.
+
+Het adres en de poort die hier worden opgegeven, worden vastgelegd in de serviceregistratie en bepalen waaraan de
+service zich bindt — ze worden niet uit `config.toml` gelezen. Om ze achteraf te wijzigen, verwijdert u
+de service en installeert u deze opnieuw.
+
+#### Gebruik van de opdracht
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service wordt geregistreerd (standaard: `digna`).
+- `--display-name`: Naam die in services.msc wordt getoond (standaard: `digna`).
+- `--description`: Beschrijving die in services.msc wordt getoond (standaard: `digna data quality backend`).
+- `--address`: Adres waaraan de service zijn API bindt (standaard: `127.0.0.1`).
+- `--port`: Poort waaraan de service zijn API bindt (standaard: `8000`).
+- `--working-dir`: Map met `config.toml` en `license.toml`, die de service als
+  werkmap gebruikt (standaard: de map van het `digna`-uitvoerbare bestand).
+- `--start-type`: Wanneer de service start — `auto` met Windows, `manual` alleen op verzoek,
+  `disabled` geregistreerd maar weigert te starten (standaard: `auto`).
+- `--account`: Account waaronder de service draait, bijv. `DOMAIN\user` of `.\user` (standaard: `LocalSystem`).
+- `--password`: Wachtwoord van `--account`.
+
+#### Voorbeeld
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registreren onder een tweede naam, draaiend onder een domeinaccount:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+De opdracht `windows start` start een geregistreerde service.
+
+#### Gebruik van de opdracht
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service is geregistreerd (standaard: `digna`).
+
+---
+
+### windows stop
+
+De opdracht `windows stop` stopt een draaiende service. Stop de service voordat u een
+applicatiebestand vervangt.
+
+#### Gebruik van de opdracht
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service is geregistreerd (standaard: `digna`).
+
+---
+
+### windows uninstall
+
+De opdracht `windows uninstall` deregistreert de service. Stop deze eerst.
+
+#### Gebruik van de opdracht
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service is geregistreerd (standaard: `digna`).

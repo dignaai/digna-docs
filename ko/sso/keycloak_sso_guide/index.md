@@ -10,7 +10,7 @@ Keycloak은 자체 호스팅되는, 완전한 OIDC 호환 아이덴티티 공급
 
 | 요구사항 | 설명 |
 |---|---|
-| **Keycloak 버전** | 여기에서 사용하는 URL 경로는 17 이상 — 4단계의 주의사항 참조 |
+| **Keycloak 버전** | 여기에서 사용하는 URL 경로는 17 이상 — 5단계의 주의사항 참조 |
 | **Keycloak 역할** | 대상 realm의 `realm-admin`, 또는 서버 관리자 |
 | **Realm** | digna 사용자가 속한 realm, 반드시 `master`일 필요는 없음 |
 | **digna 리디렉트 URI** | 로그인 후 사용자가 돌아올 URL, 예: `https://digna.yourdomain.com/oidc/callback` |

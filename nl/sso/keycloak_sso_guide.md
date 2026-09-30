@@ -10,7 +10,7 @@ Deze gids behandelt de **Keycloak-kant**: het aanmaken van de client en het verz
 
 | Vereiste | Opmerkingen |
 |---|---|
-| **Keycloak-versie** | 17 of later voor de hier gebruikte URL-paden — zie de opmerking in Stap 4 |
+| **Keycloak-versie** | 17 of later voor de hier gebruikte URL-paden — zie de opmerking in Stap 5 |
 | **Keycloak-rol** | `realm-admin` op de doel-realm, of een serverbeheerder |
 | **Realm** | De realm waartoe je digna-gebruikers behoren, niet per se `master` |
 | **digna redirect URI** | De URL waar gebruikers na inloggen naar terugkeren, bijv. `https://digna.yourdomain.com/oidc/callback` |

@@ -277,8 +277,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Po rozbalení byste měli vidět následující položky:
    - `dashboard/` — Webové rozhraní dashboardu
    - `digna` — Hlavní spustitelný soubor (backend + CLI dohromady)
-   - `config.toml` — Konfigurační soubor
-   - `license.toml` — Licenční soubor (sem zkopírujte váš soubor)
+
+!!! info "Konfigurační a licenční soubory nejsou součástí balíčku"
+
+    Soubory `config.toml` ani `dashboard/dashboard_config.toml` nejsou součástí instalace — oba
+    si vytvoříte sami, v částech [Konfigurace backendu](#backend-configuration) a
+    [Konfigurace dashboardu](#dashboard-configuration). Ani `license.toml` není součástí
+    balíčku; digna jej dodává samostatně, jak popisuje krok 3.
 
 ### Krok 3: Instalace licenčního souboru
 
@@ -518,9 +523,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Krok 1: Nasazení dashboardu na webový server
 
-Dashboard digna má vlastní konfigurační soubor `config.toml` umístěný ve složce `dashboard/`. Tento konfigurační soubor je již poskytnut a během počátečního nastavení obvykle není nutné jej měnit. Pokud potřebujete přizpůsobit připojení na backend, upravte jej podle potřeby.
+Dashboard digna načítá svou vlastní konfiguraci ze souboru `dashboard/dashboard_config.toml`. Tento soubor není součástí instalace — vytvoříte jej ve složce `dashboard/` vedle souborů dashboardu.
 
-Pokud potřebujete upravit konfiguraci dashboardu (např. pro nasazení více instancí), nahlédněte do dokumentace dashboardu.
+Jeho obsah je popsán v části [Jednotné přihlášení (SSO)](../../../sso/overview.md), kde je soubor také potřeba: obsahuje možnosti přihlášení, které dashboard nabízí, a u nasazení s více instancemi také připojení k backendu.
 
 Zvolte svůj webový server a postupujte podle odpovídajících kroků nasazení.
 
@@ -575,19 +580,24 @@ Spuštění backendu digna jako služby Windows zajistí, že:
 - se automaticky restartuje v případě selhání
 - lze ji spravovat přes správu služeb Windows
 
-### Soubory pro správu služby
+### Příkazy `windows`
 
-Všechny potřebné soubory se nacházejí v instalačním adresáři digna ve složce: `bin/`
+Službu spravuje přímo spustitelný soubor `digna` prostřednictvím podpříkazů `digna windows`.
+Nespouštějí se žádné batch soubory.
 
-Následující batch soubory jsou k dispozici:
-- `install_service.bat` — Registruje digna jako službu Windows
-- `uninstall_service.bat` — Odregistrovává službu
-- `start_service.bat` — Spustí běžící službu
-- `stop_service.bat` — Zastaví běžící službu
+| Příkaz | Účel |
+|---|---|
+| `digna windows install` | Registruje digna jako službu Windows |
+| `digna windows start` | Spustí registrovanou službu |
+| `digna windows stop` | Zastaví běžící službu |
+| `digna windows uninstall` | Odregistruje službu |
 
 !!! warning "Vyžadováno oprávnění správce"
 
-    Všechny batch soubory musí být spuštěny s oprávněními administrátora.
+    Všechny čtyři příkazy musí být spuštěny z Příkazového řádku otevřeného jako správce.
+
+Každý příkaz přijímá `--name` pro práci se službou registrovanou pod jiným než výchozím názvem.
+Úplný seznam voleb je v [referenční příručce CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Instalace služby
 
@@ -595,37 +605,66 @@ Následující batch soubory jsou k dispozici:
    - Klikněte pravým tlačítkem na Příkazový řádek
    - Vyberte "Spustit jako správce"
 
-2. **Přejděte do složky bin**
+2. **Přejděte do instalačního adresáře digna**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Spusťte instalační skript**
+3. **Zaregistrujte službu**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Server digna je nyní registrován jako služba Windows s povoleným **automatickým spuštěním**. Služba se však nespustí okamžitě — viz následující sekci pro spuštění.
+!!! important "Zadejte adresu a port, pokud vám nevyhovují výchozí hodnoty"
+
+    `install` zaznamená adresu a port do registrace služby a služba se naváže přesně na to, co
+    bylo zaznamenáno. Výchozí hodnoty jsou `127.0.0.1` a `8000`, které přijímají připojení
+    pouze z tohoto počítače. Dashboard na jiném hostiteli se k nim nepřipojí, proto zadejte
+    adresu, na které má backend naslouchat:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Tyto hodnoty se nenačítají z `config.toml`. Chcete-li je později změnit, službu
+    odinstalujte a nainstalujte znovu s novými hodnotami.
+
+Služba je registrována s **automatickým spuštěním**, takže se spustí spolu s Windows. Okamžitě
+se však nespustí — viz následující sekci.
+
+#### Volby instalace
+
+| Volba | Výchozí hodnota | Účel |
+|---|---|---|
+| `--name` | `digna` | Název, pod kterým se služba registruje |
+| `--display-name` | `digna` | Název zobrazený v services.msc |
+| `--description` | `digna data quality backend` | Popis zobrazený v services.msc |
+| `--address` | `127.0.0.1` | Adresa, na kterou služba naváže své API |
+| `--port` | `8000` | Port, na který služba naváže své API |
+| `--working-dir` | adresář spustitelného souboru `digna` | Adresář obsahující `config.toml` a `license.toml`, který služba použije jako svůj pracovní adresář |
+| `--start-type` | `auto` | `auto` se spouští s Windows, `manual` se spouští jen na vyžádání, `disabled` službu zaregistruje, ale odmítne ji spustit |
+| `--account` | `LocalSystem` | Účet, pod kterým služba běží, např. `DOMAIN\user` nebo `.\user` |
+| `--password` | | Heslo účtu `--account` |
+
+!!! tip "Spuštění pod doménovým účtem"
+
+    `LocalSystem` nemá žádnou síťovou identitu, takže ověřování Windows vůči SQL Serveru
+    i jakýkoli přístup ke sdílené síťové složce selže. Pokud služba potřebuje přistupovat
+    k prostředkům jako konkrétní uživatel, nainstalujte ji s `--account` a `--password`.
 
 ### Spuštění a zastavení služby
 
 #### Pro spuštění služby
 
-1. Otevřete Příkazový řádek jako administrátor
-2. Přejděte do `digna\bin`
-3. Spusťte:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Pro zastavení služby
 
-1. Otevřete Příkazový řádek jako administrátor
-2. Přejděte do `digna\bin`
-3. Spusťte:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Tip"
 
@@ -635,37 +674,41 @@ Server digna je nyní registrován jako služba Windows s povoleným **automatic
 
 Pokud je potřeba přesunout instalaci digna:
 
-1. **Odinštalujte současnou službu**
+1. **Zastavte a odregistrujte současnou službu**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Přesuňte soubory aplikace**
    - Přesuňte celý instalační adresář digna na nové místo
 
-3. **Znovu nainstalujte službu**
+3. **Zaregistrujte službu znovu z nového umístění**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Zopakujte všechny hodnoty `--address`, `--port` nebo `--account`, které jste použili
+   poprvé — předchozí registrace již neexistuje.
 
 4. **Spusťte službu**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Odinštalování služby
 
 1. **Zastavte běžící službu**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Odinštalujte službu**
+2. **Odregistrujte službu**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Server digna je nyní odregistrován jako služba Windows.
@@ -704,14 +747,32 @@ Záloha zaručí, že v případě neočekávaných problémů s upgradem může
 
 ### Proces upgradu
 
-#### Krok 1: Zastavte službu digna
+#### Krok 1: Zastavte a odregistrujte starou službu
 
-Pokud běží digna jako služba Windows, nejprve ji zastavte:
+Pokud běží digna jako služba Windows, zastavte ji pomocí **batch souborů vaší stávající
+instalace** — příkazy `digna windows` patří k nové verzi a zatím nejsou k dispozici:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Poté službu odregistrujte, opět pomocí starého batch souboru. Registrace odkazuje na starý
+spustitelný soubor a jeho skripty, které tento upgrade oba nahrazuje, takže ji nelze znovu použít:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Odregistrujte službu dříve, než cokoli přejmenujete"
+
+    `uninstall_service.bat` se nachází ve složce `bin`, kterou se chystáte přejmenovat, a je to
+    jediná věc, která může odstranit registraci, kterou vytvořil. Spusťte jej, dokud je stará
+    instalace ještě na svém místě. Pokud již byla složka přejmenována, přejmenujte ji zpět,
+    službu odregistrujte a poté pokračujte.
+
+    Poznamenejte si účet, pod kterým služba běžela, a adresu a port, na kterých poskytovala
+    služby — budete je potřebovat v kroku 9.
 
 #### Krok 2: Zálohujte stávající instalaci
 
@@ -732,7 +793,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend a dignacli se již nepoužívají"
 
-    Od verze 2026.06 jsou `dignabackend` a `dignacli` nahrazeny jediným spustitelným souborem `digna`, který spojuje backend a CLI. Složky `dignabackend_old` a `dignacli_old` si ponechte jen do doby, než upgrade ověříte — poté je můžete obě smazat. Složku `dashboard_old` si ponechte, dokud z ní neobnovíte své konfigurační soubory (viz krok 4).
+    Od verze 2026.06 jsou `dignabackend` a `dignacli` nahrazeny jediným spustitelným souborem `digna`, který spojuje backend a CLI. Složky `dignabackend_old` a `dignacli_old` si ponechte jen do doby, než upgrade ověříte — poté je můžete obě smazat. Složku `dashboard_old` si ponechte, dokud z ní neobnovíte své konfigurační soubory (viz krok 4). Odstraňuje se také složka `bin`: její batch soubory ovládaly starou službu a verze 2026.06 je nedodává, takže jakmile je služba v kroku 1 odregistrována, jsou jen zavádějící.
 
 #### Krok 3: Rozbalte a nasadte novou verzi
 
@@ -742,7 +803,10 @@ ren dashboard dashboard_old
 
 !!! warning "Důležité"
 
-    Soubor `config.toml` **nikdy** není součástí instalačního ZIP. Vaše stávající konfigurace zůstane nedotčena.
+    Soubory `config.toml` ani `dashboard/dashboard_config.toml` nejsou nikdy součástí
+    instalačního ZIP — tým digna žádný z nich nedodává. Vaše stávající konfigurace proto
+    zůstane upgradem nedotčena a kopie v přejmenovaných složkách `*_old` jsou jediné,
+    které máte.
 
 #### Krok 4: Obnovení konfiguračních souborů
 
@@ -793,7 +857,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Sekci zopakujte pro každého poskytovatele a každý klíč udržujte shodný s `key` v souboru `dashboard_config.toml`. `digna config check` hlásí `oidc_clients` jako FAILED, dokud stará podoba zůstává. Týká se to pouze instalací, které používají jednotné přihlášení.
 
-#### Krok 5: Ověřte konfiguraci
+#### Krok 5: Opětovné načtení webového serveru
+
+Dashboard je sada statických souborů, takže váš webový server — i prohlížeč — může stále
+servírovat předchozí verzi. Znovu načtěte nebo restartujte webový server, který hostuje složku
+`dashboard`, a poté stránku znovu načtěte s vynuceným obnovením (++ctrl+f5++).
+
+#### Krok 6: Ověřte konfiguraci
 
 Než sáhnete na repozitář, ověřte, že je aktualizovaný `config.toml` úplný:
 
@@ -803,7 +873,26 @@ digna config check
 
 Každá sekce musí hlásit OK. Opravte vše, co je hlášeno jako FAILED, a před pokračováním příkaz spusťte znovu.
 
-#### Krok 6: Upgrade schématu repozitáře
+#### Krok 7: Nahrazení licenčního souboru
+
+Každé vydání je licencováno samostatně. Zkopírujte soubor `license.toml`, který vám pro toto
+vydání poskytl tým digna, do instalačního adresáře a nahraďte jím ten starý:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Nenechávejte si předchozí licenci"
+
+    Soubor `license.toml` vydaný pro dřívější vydání toto vydání nepokrývá a každý příkaz,
+    který licenci kontroluje — `user`, `inspection`, `repo` — se při neúspěšné kontrole
+    ukončí dříve, než se repozitáře dotkne. Než budete pokračovat, ověřte ji:
+
+    ```bash
+    digna license check
+    ```
+
+#### Krok 8: Upgrade schématu repozitáře
 
 Přejděte do instalačního adresáře digna a spusťte:
 
@@ -813,14 +902,22 @@ digna repo upgrade
 
 Tím se aktualizuje PostgreSQL schéma na nejnovější verzi při zachování všech existujících dat.
 
-#### Krok 7: Restart služeb
+#### Krok 9: Registrace a spuštění služby
 
-Pokud běží jako služba Windows:
+Stará registrace byla odstraněna v kroku 1, proto se služba registruje znovu — tentokrát
+pomocí spustitelného souboru `digna`, který batch soubory nemá:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Pro `--address` a `--port` zadejte hodnoty, na kterých poskytovala služby stará služba, pokud
+nechcete nové výchozí hodnoty `127.0.0.1` a `8000`; zaznamenávají se do registrace a již se
+nenačítají z `config.toml`. Pokud stará služba běžela pod doménovým účtem, přidejte
+`--account` a `--password`. Úplný seznam voleb najdete v části
+[Spuštění digna jako služby Windows](#running-digna-as-a-windows-service).
 
 Pokud běží ručně, restartujte server:
 
@@ -831,7 +928,7 @@ digna serve --address <address> --port <port>
 
 Pokud používáte IIS nebo Tomcat, restartujte příslušný webový server.
 
-#### Krok 8: Ověření upgradu
+#### Krok 10: Ověření upgradu
 
 1. Přistupte k dashboardu digna
 2. Ověřte, že se rozhraní načítá správně

@@ -1,262 +1,270 @@
-# Database Connections Overview
+# Veritabanı Bağlantılarına Genel Bakış
 
 ---
 
-## Table of Contents
+## İçindekiler
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Bağlantılar Nasıl Çalışır](#how-connections-work)
+2. [Teknoloji Kılavuzları](#technology-guides)
+3. [Ön Koşul: ODBC Sürücüsünü digna Ana Makinesine Kurun](#install-the-driver)
+4. [Veritabanı Bağlantısı Oluşturma](#create-a-database-connection)
+5. [ODBC Özellikleri](#odbc-properties)
+6. [Özellik Değerlerini Şifreleme](#encrypting-property-values)
+7. [Bir Bağlantıyı Test Etme](#testing-a-connection)
+8. [Bağlantının Gördüğü Veritabanı](#which-database-the-connection-sees)
+9. [Profil Oluşturma Modu ve Çalışma Şeması](#profiling-mode-and-work-schema)
+10. [Bunun Yerine DSN Kullanma](#using-a-dsn-instead)
+11. [Sorun Giderme](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Bağlantılar Nasıl Çalışır {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+*digna* her kaynak teknolojiye **ODBC** üzerinden erişir. Bir bağlantı, anahtar/değer çiftleri
+olarak girdiğiniz ODBC özelliklerinin bir listesidir. *digna* bağlantıyı açtığında bu çiftleri
+bir bağlantı dizesinde birleştirir (`Key=Value`, `;` ile ayrılmış, listelediğiniz sırayla) ve
+bunu *digna* ana makinesindeki ODBC sürücü yöneticisine iletir.
 
-!!! important "The property sets in the guides are examples"
+Özellikleri kendiniz girmeniz kurulumu **DSN'siz** kılar: bağlantı, sürücünün ihtiyaç duyduğu
+her şeyi taşır, bu nedenle ana makinede herhangi bir ODBC veri kaynağının (DSN) kaydedilmesi
+gerekmez. Bağlantı tanımı tamamen *digna* içinde bulunduğu ve onunla birlikte taşındığı için
+*digna*'yı yapılandırmanın önerilen yolu budur.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Neden ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+Önceki sürümler, **Use ODBC** anahtarıyla seçilen, teknolojiye özel bir sürücü ile ODBC
+arasında seçim sunuyordu. Release 2026.06 itibarıyla *digna* yalnızca ODBC üzerine kuruludur.
+Tek ve standart bir arayüz, bir dizi özel sürücünün sunabileceğinden fazlasını sağlar:
+
+- **Kimlik doğrulama**: kimlik doğrulama ODBC'nin bir parçasıdır, bu nedenle bir bağlantı
+  sürücüsünün desteklediği her yöntemi kullanabilir: parolalar, token'lar ve PAT'ler, Kerberos
+  ve Active Directory, MFA ve tarayıcı tabanlı çoklu oturum açma, bulut kimliği, istemci
+  sertifikaları ve TLS. Yeni yöntemler bir *digna* sürümünü beklemeden sürücü güncellemesiyle
+  gelir.
+- **Veritabanı üreticileri tarafından bakımı yapılan sürücüler**: üreticinin kendi sürücüsü
+  yeni sunucu sürümlerini ve güvenlik düzeltmelerini takip eder; siz de onu *digna*'dan
+  bağımsız olarak kendi takviminize göre güncelleyebilirsiniz.
+- **Her şeyi yapılandırmanın tek yolu**: her kaynak için farklı bir alan kümesi yerine, her
+  teknoloji aynı arayüze, hassas değerlerin aynı şekilde şifrelenmesine ve aynı sorun giderme
+  yöntemine sahip bir anahtar/değer özellikleri listesidir.
+- **İnce ayar ve kapsam**: zaman aşımları, TLS ayarları, proxy'ler ve getirme boyutları gibi
+  sürücü düzeyindeki seçenekler her kaynak için kullanılabilir ve uyumlu bir ODBC sürücüsüne
+  sahip her teknoloji bağlanabilir; *digna*'nın özel bir kılavuz yayımlamadığı teknolojiler de
+  buna dahildir.
+
+!!! note "Arayüzde neler değişti"
+
+    **Use ODBC** anahtarı ile ayrı ana makine, port, veritabanı, kullanıcı ve parola alanları
+    artık mevcut değildir. Henüz ODBC kullanmayan bir bağlantının yeniden çalışabilmesi için
+    ODBC özelliklerinin girilmesi gerekir; bkz.
+    [Veritabanı Bağlantısı Oluşturma](#create-a-database-connection).
+
+---
+
+## Teknoloji Kılavuzları {: #technology-guides }
+
+Özellik adları sürücüye göre farklılık gösterir ve her teknolojinin diğerlerinde bulunmayan bir
+veya iki ayrıntısı vardır. Aşağıdaki kılavuzlar bu kısmı kapsar; bu sayfa ise hepsi için aynı
+olan *digna* tarafını ele alır.
+
+!!! important "Kılavuzlardaki özellik kümeleri örnektir"
+
+    Her kılavuz çalıştığı bilinen bir kombinasyonu, yani *digna*'nın test edildiği kombinasyonu
+    gösterir. Bu bir şartname değil, bir başlangıç noktasıdır: özellikler ODBC sürücüsüne
+    aittir ve hangilerinin mevcut olduğu, nasıl adlandırıldıkları ve hangi değerleri kabul
+    ettikleri sürücü sürümlerine ve üreticilere, Windows, Linux ve macOS arasında ve kaynak
+    sunucunun nasıl yapılandırıldığına (kimlik doğrulama yöntemi, TLS, ağ geçidi, port) göre
+    farklılık gösterir. Bir iki değeri ayarlamanız gerekebileceğini göz önünde bulundurun ve
+    kurduğunuz sürücü sürümünün dokümantasyonunu esas alın.
+
+| Teknoloji | Kılavuz | Bilinmesi gerekenler |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Sunucusuz havuzlar ana makine adında `-ondemand` gerektirir ve yalnızca *Standard* profil oluşturmayı destekler |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Token kimlik doğrulaması: `UID=token`, PAT `PWD` içinde |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | Kataloglar bir sorgudan değil, sürücüden gelir |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Sürücü adı süslü parantez içindedir: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` ya tam bir bağlantı tanımlayıcısı ya da bir `tnsnames.ora` takma adı alır |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode`, sunucunun talep ettiğiyle eşleşmelidir |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Test edilen kimlik doğrulama yolu programatik erişim token'ıdır |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | *digna*'nın hangi şemaları görebileceğini `DATABASE` belirler |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | Ana makine `DBCNAME` içine yazılır; veritabanları şema işlevi görür |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Ön Koşul: ODBC Sürücüsünü digna Ana Makinesine Kurun {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* kaynak bağlantılarını tarayıcıdan değil, **digna arka ucunu çalıştıran sunucudan**
+açar. Bu nedenle ODBC sürücüsünün o makineye kurulması ve adının yerel sürücü yöneticisine
+kaydedilmesi gerekir.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Üreticinin 64 bit sürücüsünü kurun, ardından **ODBC Data Source Administrator (64-bit)**
+    uygulamasını açın ve **Drivers** sekmesine geçin. Orada listelenen adlar, `Driver` özelliği
+    için kullanabileceğiniz değerlerin tam olarak kendisidir.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    **unixODBC**'yi ve üreticinin sürücüsünü kurun, ardından kayıtlı sürücü adlarını listeleyin:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    Köşeli parantez içinde yazdırılan adlar, `Driver` özelliği için kullanabileceğiniz
+    değerlerdir. Bunlar `/etc/odbcinst.ini` dosyasından (veya `odbcinst -j` komutunun bildirdiği
+    dosyadan) gelir.
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    **unixODBC**'yi (örneğin `brew install unixodbc` ile) ve üreticinin sürücüsünü kurun,
+    ardından kayıtlı sürücü adlarını listeleyin:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Sürücü adı karakteri karakterine eşleşmelidir"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` sürücü yöneticisine değiştirilmeden iletilir. Sürücü yöneticisi açısından
+    `Simba Spark ODBC Driver` ve `Simba Spark ODBC Driver 64` farklı sürücülerdir; kayıtlı
+    olmayan bir ad, ortada hiçbir DSN olmamasına rağmen *data source name not found* hatasına
+    yol açar.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Kayıtlı bir ad yerine, yaygın sürücü yöneticilerinin tümü sürücü kitaplığının tam yolunu da
+kabul eder; örneğin `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Bu, sürücü kurulu
+olduğu halde kayıtlı olmadığında kullanışlıdır.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Veritabanı Bağlantısı Oluşturma {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+**Admin Panel**'i açın, **Database Connections** sekmesine gidin ve **Add DB Connection**'a
+tıklayın. Ekran beş bilgi ister:
 
-| Field | Description |
+| Alan | Açıklama |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | Bağlantının adı. Bağlantıya diğer ekranlarda başvurmak için kullanılır. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake veya Hive. *digna*'nın ürettiği SQL lehçesini seçer, bu nedenle sürücüyle değil kaynakla eşleşmelidir. Azure Synapse Analytics bir **SQL Server** bağlantısıdır. |
+| **ODBC Properties** | [ODBC Özellikleri](#odbc-properties) bölümünde açıklanan anahtar/değer çiftleri. |
+| **Profiling Mode** | *Standard*, *Permanent* veya *Session*; bkz. [Profil Oluşturma Modu ve Çalışma Şeması](#profiling-mode-and-work-schema). |
+| **Work Schema** | *Permanent* profil oluşturma için çalışma tablolarını barındıran şema. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+Bir bağlantı merkezi olarak yönetilir ve ardından bir veya daha fazla projeye atanır; böylece
+aynı bağlantı birden çok projeye hizmet edebilir.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## ODBC Özellikleri {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Her özellik için **Add Property**'ye tıklayın ve **Key**, **Value** alanlarını ve gizli
+değerler için **Encrypted** onay kutusunu doldurun. Her teknoloji kılavuzu, o teknoloji için
+sürücü sürümünüze ve sunucunuza uyarlayacağınız bir örnek küme listeler; bkz.
+[yukarıdaki not](#technology-guides).
 
-!!! tip "Tip"
+Sürücü ne olursa olsun, bir özellik kümesi aynı dört şeyi kapsar:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`**: [yukarıda](#install-the-driver) açıklandığı şekilde kayıtlı sürücü adı.
+- **Sunucunun adresi**: anahtar sürücüye göre değişir: `SERVER`, `HOST`, `DBCNAME`,
+  `Server` veya Oracle için `DBQ` bağlantı tanımlayıcısı.
+- **Kimlik bilgileri**: genellikle `UID` ve `PWD`; Snowflake `UID` ile birlikte bir `token`
+  kullanır, Databricks ise `token` değişmez kullanıcı adını ve `PWD` içinde kişisel erişim
+  token'ını kullanır.
+- **Üzerinde çalışılacak veritabanı veya katalog** (teknolojide varsa); bkz.
+  [Bağlantının Gördüğü Veritabanı](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Sürücünün belgelediği diğer her şey de aynı şekilde eklenebilir: bağlantı havuzu, soket zaman
+aşımları, Kerberos ayarları, proxy ayarları. *digna* özellikleri yorumlamaz; yalnızca iletir.
+
+!!! warning "Değerler kaçış karakteriyle işlenmez; noktalı virgül içeren her şeyi süslü paranteze alın"
+
+    Özellikler `;` ile birleştirildiğinden, kendisi `;` içeren bir değer bağlantı dizesini
+    yanlış yerden böler. Bu tür değerleri süslü parantez içine alın: `PWD={p@ss;word}`.
+    Aynısı `=` veya baştaki boşluklar içeren değerler için de geçerlidir. Bazı sürücülerin
+    geleneksel olarak `{NetezzaSQL}` veya `{SnowflakeDSIIDriver}` gibi süslü parantezle
+    yazılmasının nedeni de budur.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Özellik Değerlerini Şifreleme {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Gizli bir değer tutan her özellik için **Encrypted** seçeneğini işaretleyin: `PWD`, `token`,
+bir istemci gizli anahtarı. Değer bu durumda *digna* deposunda saklanmadan önce şifrelenir,
+ekranda maskelenir ve yalnızca bağlantı dizesi oluşturulurken şifresi çözülür.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "İpucu"
+
+    Şifrelenmiş bir değer ne kullanıcı arayüzünde ne de API üzerinden geri okunabilir; yalnızca
+    değiştirilebilir. Gizli bilgileri kendi parola yöneticinizde de saklayın.
+
+Gizli olmayan özellikleri (sürücü adı, ana makine, port, veritabanı) şifrelemeden bırakmak en
+iyisidir; böylece bağlantının bakımını daha sonra yapacak kişi için okunabilir kalırlar.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Bir Bağlantıyı Test Etme {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Kaydetmeden **önce** *Add DB Connection* iletişim kutusunda **Test**'e tıklayın. Test, o anda
+formda bulunan değerleri kullanır ve gerçek bir bağlantı kurar; bu nedenle bir incelemenin
+karşılaşacağı sorunu tam olarak bildirir: yanlış bir sürücü adı, reddedilen bir parola,
+erişilemeyen bir ana makine. Hiçbir şey saklanmaz: test bağlantısı başarılı da olsa başarısız
+da olsa geri alınır.
 
-| Technology | Catalogs offered |
+Zaten var olan bir bağlantıyı yeniden test etmek için **Database Connections** sekmesinde
+satırının üzerine gelin ve **fiş** simgesine tıklayın. Bu, bir parola değişikliğinden veya
+güvenlik duvarı değişikliğinden sonra bir kaynağa erişilip erişilemediğini kontrol etmenin en
+hızlı yoludur.
+
+---
+
+## Bağlantının Gördüğü Veritabanı {: #which-database-the-connection-sees }
+
+Bir veri kaynağı eklediğinizde *digna*, bağlantının erişebildiği katalogları, şemaları ve
+tabloları sunar. Bu erişimin ne kadar geniş olduğu teknolojiye bağlıdır:
+
+| Teknoloji | Sunulan kataloglar |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Yalnızca bağlantının **geçerli** veritabanı |
+| **Teradata**, **Netezza**, **Databricks** | Kullanıcının görmesine izin verilen tüm veritabanları veya kataloglar |
+| **Hive**, **Impala** | Sürücü tarafından bildirilir |
 
-!!! important "One connection, one database"
+!!! important "Bir bağlantı, bir veritabanı"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    PostgreSQL, SQL Server, Oracle ve Snowflake için özellikler kaynak şemaları barındıran
+    veritabanını göstermelidir: `DATABASE=…`, `Database=…` veya Oracle'ın `DBQ` içindeki hizmet
+    adı. Başka bir veritabanındaki tablolara bu bağlantı üzerinden erişilemez; onun için ikinci
+    bir bağlantı ekleyin.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Profil Oluşturma Modu ve Çalışma Şeması {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+Profil oluşturma modu, *digna*'nın verileri nasıl işlediğini ve metrikleri nasıl hesapladığını
+belirler:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** Metrikler, veriler kopyalanmadan doğrudan kaynak tablolar üzerinde hesaplanır.
+- **Permanent:** İncelenen güne ait veriler kalıcı bir tabloya kopyalanır ve metrikler
+  kopyalanan veriler üzerinde hesaplanır.
+- **Session:** Veriler bir oturum tablosuna veya geçici tabloya kopyalanır ve metrikler bu
+  geçici veriler üzerinde hesaplanır.
 
-The mode decides what the connection user must be allowed to do:
+Mod, bağlantı kullanıcısının neleri yapabilmesi gerektiğini belirler:
 
-| Mode | Writes | Rights the connection user needs |
+| Mod | Yazılanlar | Bağlantı kullanıcısının ihtiyaç duyduğu haklar |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | hiçbir şey | Kaynak tablolarda okuma |
+| **Permanent** | **Work Schema** içinde veri kaynağı başına bir tablo | **Work Schema** içinde tablo oluşturma ve silme |
+| **Session** | veritabanının oturumla birlikte sildiği geçici bir tablo | Geçici tablo oluşturma; **Work Schema** kullanılmaz |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* yalnızca okuma yapar; bu da onu *digna*'ya salt okunur erişim verildiğinde
+seçilecek mod yapar. **Work Schema** yalnızca *Permanent* için okunur, ancak mod daha sonra
+değiştirilirse bağlantının çalışmaya devam etmesi için yine de doldurulmaya değer.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## Bunun Yerine DSN Kullanma {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+Bir DSN hâlâ çalışır; `DSN` yalnızca başka bir özelliktir:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -264,131 +272,137 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+DSN, *digna* ana makinesinde, *digna* arka ucunu çalıştıran kullanıcı hesabı için ve *digna*
+bir hizmet olarak çalıştığında **System DSN** olarak kaydedilmelidir. DSN'de yapılandırılan
+her şey, ayrıca bir özellik olarak eklenerek geçersiz kılınabilir.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Data source name not found / no default driver specified
-
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
-
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
+DSN'siz yöntem, ana makine tarafındaki bu durumdan kaçındığı için belgelenen varsayılandır:
+bağlantı tamamen *digna* içinde tanımlanır ve yeni bir *digna* ana makinesinde sürücünün kurulu
+olması yeterlidir, başka bir şeyin yapılandırılması gerekmez.
 
 ---
 
-### The connection test times out
+## Sorun Giderme {: #troubleshooting }
 
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
+### Veri kaynağı adı bulunamadı / varsayılan sürücü belirtilmedi
 
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Belirtiler:**
+- **Test** düğmesi, kurulum DSN'siz olmasına rağmen *data source name not found* ifadesini
+  içeren bir hata bildiriyor
 
----
-
-### Authentication fails although the credentials are correct
-
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
-
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
+**Nedenler ve Çözümler:**
+1. `Driver` değeri kayıtlı bir sürücü adıyla eşleşmiyor; bunu
+   *ODBC Data Source Administrator (64-bit)* uygulamasının **Drivers** sekmesiyle veya
+   `odbcinst -q -d` çıktısıyla karşılaştırın
+2. Sürücü iş istasyonunuzda kurulu, ancak *digna* ana makinesinde kurulu değil
+3. *digna* 64 bit iken sürücü 32 bit; 64 bit sürücüyü kurun
+4. `Driver` özelliği tamamen eksik ve bir `DSN` de verilmemiş
+5. Linux ve macOS'ta sürücü kurulu ancak kayıtlı değil; bunun yerine sürücü kitaplığının tam
+   yolunu verin veya sürücüyü `odbcinst.ini` içinde kaydedin
 
 ---
 
-### The data source screen does not offer the expected database or schema
+### Bağlantı testi zaman aşımına uğruyor
 
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
+**Belirtiler:**
+- **Test** takılıyor ve yaklaşık yarım dakika sonra başarısız oluyor
 
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
-
----
-
-### Profiling fails while the connection test succeeds
-
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
-
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
+**Nedenler ve Çözümler:**
+1. Ana makineye veya porta *digna* ana makinesinden erişilemiyor; güvenlik duvarını ve bulut
+   kaynakları için IP izin listesini kontrol edin
+2. Ana makine adı doğru, ancak port başka bir hizmete ait
+3. Kaynağın bir bağlantıyı kabul etmesi varsayılan 30 saniyeden uzun sürüyor; `config.toml`
+   dosyasının `[base]` bölümündeki `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` değerini artırın (`0`
+   süresiz bekler) ve arka ucu yeniden başlatın
+4. Sunucusuz bir uç nokta boşta kalma durumundan devam ediyor; yeniden deneyin ve bu düzenli
+   olarak oluyorsa oturum açma zaman aşımını yukarıdaki gibi artırın
 
 ---
 
-## Best Practices
+### Kimlik bilgileri doğru olmasına rağmen kimlik doğrulama başarısız oluyor
 
-**DO:**
+**Belirtiler:**
+- Sürücü geçersiz kimlik bilgileri bildiriyor, ancak aynı kullanıcı başka bir SQL istemcisinde
+  çalışıyor
 
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Nedenler ve Çözümler:**
+1. Parola `;` içeriyor; değeri süslü parantez içine alın: `{p@ss;word}`
+2. Değere sondaki bir boşluk kopyalanmış
+3. Sürücü belirli bir kimlik doğrulama mekanizması bekliyor; örneğin Hive ve Databricks
+   sürücüleri için `AuthMech` veya Snowflake için `authenticator`
+4. Değer şifrelenmiş olarak saklanmış ve ardından düzenlenmiş; şifrelenmiş değerler geri
+   okunamaz, bu nedenle gizli değeri eksiksiz olarak yeniden girin
+5. Bir token'ın süresi dolmuş; kişisel erişim token'ları ve programatik erişim token'ları bir
+   son kullanma tarihiyle verilir
 
 ---
 
-## Support
+### Veri kaynağı ekranı beklenen veritabanını veya şemayı sunmuyor
 
-Need help with a database connection?
+**Belirtiler:**
+- Bir veri kaynağı eklenirken kataloglar, şemalar veya tablolar eksik
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**Nedenler ve Çözümler:**
+1. Bağlantı farklı bir veritabanını gösteriyor; bkz.
+   [Bağlantının Gördüğü Veritabanı](#which-database-the-connection-sees)
+2. Bağlantı kullanıcısının şema veya veri sözlüğü üzerinde okuma hakları yok
+3. **Technology** kaynakla eşleşmiyor, bu nedenle *digna* yanlış veri sözlüğünü sorguluyor
+4. Snowflake için kullanıcıya varsayılan bir warehouse atanmamış ve `Warehouse` özelliği de
+   verilmemiş, bu nedenle meta veri sorguları çalışamıyor
 
 ---
 
-**Release:** 2026.06  
+### Bağlantı testi başarılı olurken profil oluşturma başarısız oluyor
+
+**Belirtiler:**
+- **Test** başarılı oluyor, ancak çalışma tabloları oluşturulurken bir inceleme başarısız
+  oluyor
+
+**Nedenler ve Çözümler:**
+1. *Permanent* profil oluşturma seçili ve bağlantı kullanıcısı **Work Schema** içinde tablo
+   oluşturamıyor; hakları verin veya *Session* ya da *Standard* moduna geçin
+2. *Permanent* profil oluşturma seçiliyken **Work Schema** boş veya var olmayan bir şemayı
+   adlandırıyor
+3. *Session* profil oluşturma seçili ve bağlantı kullanıcısı geçici tablo oluşturamıyor
+4. Uzun süren bir profil oluşturma sorgusu sorgu zaman aşımına takılıyor; `config.toml`
+   dosyasının `[base]` bölümündeki `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` değerini artırın
+   (varsayılan 3600 saniye, `0` zaman aşımını devre dışı bırakır)
+
+---
+
+## En İyi Uygulamalar
+
+**YAPIN:**
+
+- Bağlantıyı yapılandırmadan önce sürücüyü *digna* ana makinesine kurun ve kaydedin
+- Her parola ve token için **Encrypted** seçeneğini işaretleyin
+- Kaydetmeden önce **Test**'e tıklayın ve bir parola değişikliğinden sonra yeniden test edin
+- Bağlantıları kaynağa ve ortama göre adlandırın, örneğin `sales_dwh_prod`
+- *digna*'ya özel bir veritabanı kullanıcısı verin; *Standard* profil oluşturmanın yeterli
+  olduğu yerlerde salt okunur olsun
+- Kaynak veritabanı başına bir bağlantı tutun ve ilkini değiştirmek yerine ikinci bir bağlantı
+  ekleyin
+
+**YAPMAYIN:**
+
+- Gizli bilgileri şifrelenmemiş olarak saklamayın veya bir veritabanı kullanıcısını *digna* ile
+  diğer araçlar arasında paylaşmayın
+- 64 bit bir *digna* kurulumuyla 32 bit bir sürücü kullanmayın
+- *digna* bir hizmet olarak çalıştığında bir User DSN'e güvenmeyin; görünür olmayacaktır
+- `;` içeren bir değeri süslü parantez olmadan bir özelliğe koymayın
+- **Work Schema**'yı kaynak verileri barındıran bir şemaya yönlendirmeyin
+
+---
+
+## Destek
+
+Bir veritabanı bağlantısı konusunda yardıma mı ihtiyacınız var?
+
+- **E-posta:** support@digna.ai
+- **Dokümantasyon:** https://docs.digna.ai
+- **Web sitesi:** https://www.digna.ai
+
+---
+
+**Sürüm:** 2026.06  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

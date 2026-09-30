@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# macOS instalācijas ceļvedis digna Release 2026.06
 
-**Release:** 2026.06
+**Izlaidums:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Pēdējais atjauninājums:** 2026. gada 5. septembris
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Saturs
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows or Linux?
-
-This guide covers macOS. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+1. [Ievads](#introduction)
+2. [Sistēmas prasības](#system-requirements)
+3. [Priekšinstalācijas sagatavošana](#pre-installation-setup)
+4. [PostgreSQL servera iestatīšana](#postgresql-server-setup)
+5. [Tīmekļa servera konfigurācija](#web-server-configuration)
+6. [Sākotnējā instalācija](#initial-installation)
+7. [Backend konfigurācija](#backend-configuration)
+8. [Paneļa konfigurācija](#dashboard-configuration)
+9. [digna palaide kā fona serviss](#running-digna-as-a-background-service)
+10. [Jaunināšana uz jaunu izlaidumu](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Ievads {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### Par digna
 
-| Requirement | Specification |
+digna ir visaptveroša ar mākslīgo intelektu balstīta platforma, kas paredzēta datu kvalitātes pārvaldības optimizēšanai dažādās datu vidēs, piemēram, noliktavās, ezeros un lakehouse risinājumos. Izstrādāta kā mērogojama un pielāgojama sistēma, digna risina mūsdienu datu izaicinājumus, izmantojot automatizāciju, reāllaika uzraudzību un anomāliju atklāšanu.
+
+digna sastāv no divām galvenajām komponentēm:
+
+- **digna**: lietojumprogrammas kodols, kas atbild par datu apstrādi un kvalitātes pārbaužu veikšanu. Tas apvieno backend un komandrindas saskarni vienā izpildāmajā failā un aizstāj iepriekšējo laidienu atsevišķās programmas `dignabackend` un `dignacli`.
+- **dignadashboard**: tīmekļa saskarne, kas izvietota uz tīmekļa servera un nodrošina lietotājam draudzīgu veidu, kā mijiedarboties ar digna platformu un vizualizēt datu kvalitātes metrikas.
+
+### Kas jauns izlaidumā 2026.06
+
+Šajā izlaidumā datu novērošanas iespējas ir integrētas tieši jūsu kodā, ļaujot izstrādātājiem uzraudzīt datu kvalitāti pie avota. Pilnas detaļas skatiet [izlaiduma piezīmēs](http://docs.digna.ai/changelog/Release_202606/).
+
+### Meklējat Windows vai Linux?
+
+Šis ceļvedis attiecas uz macOS. Citu platformu instalācijas skaidrojumu skatiet [Windows instalācijas ceļvedī](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) vai [Linux instalācijas ceļvedī](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Sistēmas prasības {: #system-requirements }
+
+Pirms instalācijas pārliecinieties, ka jūsu sistēma atbilst šādām minimālajām prasībām:
+
+| Prasība | Specifikācija |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **Operētājsistēma** | macOS 13 (Ventura) vai jaunāka |
+| **Arhitektūra** | Apple Silicon (arm64) vai Intel (x86_64) |
+| **Atmiņa (minimālā konfigurācija)** | 16 GB RAM |
+| **Diskā nepieciešamā vieta** | 10 GB brīvas vietas |
+| **Datubāze** | PostgreSQL Server 12 vai jaunāks |
+| **Tīmekļa serveris** | nginx, Apache httpd vai ekvivalents |
+| **Komandrindas rīki** | Xcode Command Line Tools (nepieciešami Homebrew) |
 
-### Database Installation Options
+### Datubāzes instalācijas iespējas
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Ja PostgreSQL jau ir instalēts:**
+Jūs varat pievienot jaunu datubāzi digna esošajam PostgreSQL serverim.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Ja instalējat PostgreSQL uz tā paša datora kā digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Ieteicamās specifikācijas"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Atmiņa**: 32 GB RAM (nevis 16 GB)
+    - **Diskā nepieciešamā vieta**: 50 GB brīvas vietas (nevis 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Šīs augstākās specifikācijas nodrošina pietiekamus resursus vienlaicīgai digna un PostgreSQL datubāzes darbībai.
 
-### Checking Your Architecture
+### Arhitektūras noskaidrošana
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Vairāki šī ceļveža ceļi atšķiras Apple Silicon un Intel Mac datoriem. Lai noskaidrotu, kurš ir jums, atveriet **Terminal** un palaidiet:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew tiek instalēts direktorijā `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew tiek instalēts direktorijā `/usr/local`.
 
-!!! tip "Tip"
+!!! tip "Padoms"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    Tā vietā, lai norādītu kādu no ceļiem tieši, šajā ceļvedī tiek izmantots `$(brew --prefix)`, kas abās arhitektūrās izvēršas par pareizo atrašanās vietu. Komandas varat kopēt burtiski.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Priekšinstalācijas sagatavošana {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Pirms digna instalēšanas pārliecinieties, ka ir izpildīti trīs galvenie priekšnosacījumi:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – pakotņu pārvaldnieks, ar ko tiek instalētas tālāk minētās sastāvdaļas
+2. **PostgreSQL Server** – aprēķināto metrikas un veiktspējas datu glabāšanai
+3. **Tīmekļa serveris** – digna paneļa izvietošanai
 
-If these components are not already set up, follow the sections below to install and configure them.
+Ja šīs sastāvdaļas vēl nav iestatītas, izpildiet tālāk norādītās sadaļas, lai tās instalētu un konfigurētu.
 
-### Installing Homebrew
+### Homebrew instalēšana
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew ir standarta pakotņu pārvaldnieks operētājsistēmai macOS, un visā šajā ceļvedī tas tiek izmantots PostgreSQL un nginx instalēšanai.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### 1. solis: Pārbaudīt, vai Homebrew jau ir instalēts
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Atveriet **Terminal** (nospiediet `Cmd + Space`, ierakstiet `Terminal`, nospiediet Enter) un palaidiet:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Ja tiek atgriezts versijas numurs, pārejiet uz sadaļu [PostgreSQL servera iestatīšana](#postgresql-server-setup).
 
-#### Step 2: Install Homebrew
+#### 2. solis: Instalēt Homebrew
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Ja komanda netika atrasta, instalējiet Homebrew, izpildot norādījumus [oficiālajā Homebrew vietnē](https://brew.sh). Instalators arī instalē Xcode Command Line Tools, ja tie vēl nav pieejami.
 
-#### Step 3: Add Homebrew to Your PATH
+#### 3. solis: Pievienot Homebrew savam PATH
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Apple Silicon datoros instalators izvada divas komandas, kas pievieno Homebrew jūsu čaulas videi. Palaidiet tās, kā norādīts, un pēc tam pārbaudiet:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Tam jāizvada `/opt/homebrew` Apple Silicon datorā vai `/usr/local` Intel datorā.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL servera iestatīšana {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Ja PostgreSQL jau ir pieejams
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Ja PostgreSQL jau ir instalēts un darbojas uz jūsu lokālā datora vai ja izmantojat pārvaldītu attālo PostgreSQL serveri, varat pāriet uz [nākamo sadaļu](#web-server-configuration).
 
-### Installation Options
+### Instalācijas iespējas
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS piedāvā divus vienkāršus PostgreSQL instalēšanas veidus. Izvēlieties **vienu**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — instalēšana no komandrindas, ieteicama servera izvietojumiem
+- [Postgres.app](#postgresql-app) — grafiska instalēšana, ērta lokālai izvērtēšanai
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### PostgreSQL instalēšana ar Homebrew {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### 1. solis: Instalēt PostgreSQL formulu
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### 2. solis: Pievienot PostgreSQL savam PATH
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+Versionētās PostgreSQL formulas ir *keg-only*, kas nozīmē, ka Homebrew to komandas automātiski nepiesaista jūsu PATH. Pievienojiet tās paši:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Piezīme"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Tas pieņem, ka izmantojat macOS noklusējuma čaulu `zsh`. Ja izmantojat `bash`, tā vietā pievienojiet to pašu rindu failam `~/.bash_profile`.
 
-#### Step 3: Start the PostgreSQL Service
+#### 3. solis: Palaist PostgreSQL servisu
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+Tas nekavējoties palaiž PostgreSQL un konfigurē to automātiski startēt atkal, kad jūs piesakāties.
 
-#### Step 4: Verify the Installation
+#### 4. solis: Pārbaudīt instalāciju
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Ja instalācija bija veiksmīga, tiks parādīta PostgreSQL versija.
 
-#### Step 5: Connect to the Server
+#### 5. solis: Pieslēgties serverim
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Svarīgi — šeit macOS atšķiras no Windows"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Windows instalators lūdz izveidot superlietotāju `postgres` un paroli. Homebrew to nedara. Tā vietā tas izveido superlietotāju, kas nosaukts jūsu **macOS konta** vārdā, bez paroles un pieejamu tikai no lokālā datora.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    Tas nozīmē, ka svaigā Homebrew instalācijā lomas `postgres` nav. Kad nepieciešams superlietotājs, izmantojiet sava konta vārdu, un izveidojiet atsevišķu digna lietotāju, kā aprakstīts sadaļā [Sākotnējā instalācija](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### 6. solis: Pārbaudīt portu
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Noklusējuma PostgreSQL ports ir `5432`. Lai pārbaudītu, kurā portā jūsu serveris klausās:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Pierakstiet šo vērtību — tā būs nepieciešama, konfigurējot digna backend.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### PostgreSQL instalēšana ar Postgres.app {: #postgresql-app }
 
-If you prefer a graphical installation:
+Ja dodat priekšroku grafiskai instalēšanai:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Lejupielādējiet [Postgres.app](https://postgresapp.com) un ievelciet to mapē **Applications**
+2. Atveriet lietotni un noklikšķiniet **Initialize**, lai izveidotu jaunu serveri
+3. Izpildiet lietotnes norādījumus, lai pievienotu tās komandrindas rīkus savam PATH
+4. Pārbaudiet instalāciju:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Arī Postgres.app izveido superlietotāju, kas nosaukts jūsu macOS konta vārdā.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Tīmekļa servera konfigurācija {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna prasa tīmekļa serveri paneļa izvietošanai. Izvēlieties vienu no šīm iespējām:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — instalēts ar Homebrew, ieteicams
+- [Apache httpd](#apache-setup) — iekļauts macOS
 
-You only need to install and configure **one** of these servers.
+Nepieciešams instalēt un konfigurēt tikai **vienu** no šiem serveriem.
 
-Both sections configure two things the dashboard depends on:
+Abās sadaļās tiek konfigurētas divas lietas, no kurām panelis ir atkarīgs:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Vienas lapas lietotnes (SPA) rezerves maršruts**, lai paneļa URL atsvaidzināšana neatgrieztu 404
+- **`.md` MIME tips**, lai Markdown faili tiktu servēti pareizi
 
-### nginx Setup {: #nginx-setup }
+### nginx iestatīšana {: #nginx-setup }
 
-#### Overview
+#### Pārskats
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx ir viegls, augstas veiktspējas tīmekļa serveris, kas labi piemērots statiskā digna paneļa servēšanai.
 
-#### Installation
+#### Instalēšana
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### nginx palaišana
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Pārbaudīt instalāciju
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Atveriet pārlūkprogrammu
+2. Dodieties uz `http://localhost:8080`
+3. Jums jāredz nginx sveiciena lapa
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Piezīme — noklusējuma ports ir 8080, nevis 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew konfigurē nginx klausīties portā `8080`, lai tas varētu darboties bez administratora tiesībām. macOS sistēmā piesaistei portam `80` vai jebkuram citam portam zem 1024 nepieciešamas root tiesības.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    Lai servētu paneli portā 80, tālāk dotajā konfigurācijā nomainiet `listen 8080;` uz `listen 80;` un palaidiet nginx ar `sudo brew services start nginx`.
 
-#### Configuring a Site for the Dashboard
+#### Vietnes konfigurēšana panelim
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Homebrew nginx konfigurācija iekļauj katru failu no savas `servers` direktorijas. Izveidojiet tur atsevišķu konfigurācijas failu digna vajadzībām:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Ielīmējiet tālāk norādīto, aizstājot `/path/to/digna/dashboard` ar faktisko ceļu līdz izpakotajai `dashboard` mapei:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Svarīgi"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Bez direktīvas `try_files` jebkuras paneļa lapas, izņemot saknes URL, pārlādēšana atgriež 404. Tas ir nginx ekvivalents URL Rewrite modulim, kas nepieciešams IIS operētājsistēmā Windows.
 
-#### Apply the Configuration
+#### Piemērot konfigurāciju
 
-Test the configuration for syntax errors, then reload nginx:
+Pārbaudiet, vai konfigurācijā nav sintakses kļūdu, un pēc tam pārlādējiet nginx:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd iestatīšana {: #apache-setup }
 
-#### Overview
+#### Pārskats
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS ietver Apache httpd, tāpēc instalēšana nav nepieciešama. Pēc noklusējuma tas ir atspējots.
 
-#### Starting Apache
+#### Apache palaišana
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Pārbaudīt instalāciju
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Atveriet pārlūkprogrammu
+2. Dodieties uz `http://localhost`
+3. Jums jāredz ziņojums "It works!"
 
-#### Required: Enable mod_rewrite
+#### Obligāti: iespējot mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+Panelim nepieciešama URL pārrakstīšana. Atveriet Apache konfigurāciju:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Atrodiet šo rindu un noņemiet sākumā esošo `#`, lai to atkomentētu:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Obligāti: atļaut .htaccess pārrakstīšanu
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+Tajā pašā failā atrodiet bloku `<Directory "/Library/WebServer/Documents">` un nomainiet:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+uz:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Obligāti: MIME tips Markdown failiem
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Joprojām failā `httpd.conf` pievienojiet šādu rindu, lai Markdown faili tiktu servēti pareizi:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Svarīgi"
 
-    Without this setting, `.md` files may not be served properly.
+    Bez šī iestatījuma `.md` faili var netikt pareizi servēti.
 
-#### Apply the Configuration
+#### Piemērot konfigurāciju
 
-Check the configuration for syntax errors, then restart Apache:
+Pārbaudiet, vai konfigurācijā nav sintakses kļūdu, un pēc tam restartējiet Apache:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Sākotnējā instalācija {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### 1. solis: Iestatīt digna repozitoriju
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+digna repozitorijs glabā visas ar digna aprēķinātās metrikas. Tas darbojas kā centrālā datubāze analītiskajiem un veiktspējas datiem.
 
-#### Create Repository Schema and User
+#### Izveidot repozitorija shēmu un lietotāju
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Atveriet savu PostgreSQL klientu (psql, pgAdmin vai līdzīgu) un izpildiet šādas SQL komandas:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Aizvietojiet šādus aizstājējvārdus:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — Vēlamais shēmas nosaukums (piem., `dignarepo`)
+- `<digna_repo_user>` — Vēlamais lietotājvārds (piem., `digna_user`)
+- `<digna_repo_password>` — Droša parole šim lietotājam
 
-**Example:**
+**Piemērs:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,77 +410,77 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+Lai tās palaistu no Terminal vienā solī:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Pēc tam ielīmējiet priekšrakstus uzvednē `postgres=#` un ierakstiet `\q`, lai izietu.
 
-!!! tip "Best Practice"
+!!! tip "Laba prakse"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Lietojiet stipras, sarežģītas paroles datubāzes lietotājiem. Izvairieties no viegli uzminamiem akreditācijas datiem.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### 2. solis: Izpakot digna instalācijas pakotni
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
+1. Atrodiet jums nodoto digna instalācijas ZIP failu
+2. Izpakojiet to vēlamajā instalācijas vietā — piemēram, `/opt/digna` vai `~/digna`
+3. Pēc izpakošanas jums jāredz sekojošas vienības:
+   - `dashboard/` — tīmekļa paneļa saskarne
+   - `digna` — galvenais izpildāmais fails (backend + CLI apvienots)
 
-!!! info "The configuration and licence files are not in the package"
+!!! info "Konfigurācijas un licences faili pakotnē nav iekļauti"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
-    create both yourself, in [Backend Configuration](#backend-configuration) and
-    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
-    digna supplies it separately, as Step 3 describes.
+    Ne `config.toml`, ne `dashboard/dashboard_config.toml` instalācijā nav iekļauts — abus jūs
+    izveidojat paši sadaļās [Backend konfigurācija](#backend-configuration) un
+    [Paneļa konfigurācija](#dashboard-configuration). Arī `license.toml` nav iekļauts;
+    digna to nodrošina atsevišķi, kā aprakstīts 3. solī.
 
-To extract from the Terminal:
+Lai izpakotu no Terminal:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Padarīt failu izpildāmu
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+Atkarībā no tā, kā arhīvs tika pārsūtīts, izpildes bits izpakošanas laikā var netikt saglabāts. Iestatiet to skaidri:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Ja macOS bloķē lietojumprogrammu
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Faili, kas lejupielādēti ar pārlūkprogrammu vai e-pasta klientu, tiek marķēti ar karantīnas atribūtu. Ja macOS ziņo, ka lietotni *"cannot be opened because the developer cannot be verified"*, noņemiet atribūtu no instalācijas direktorijas:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Vai arī atveriet **System Settings → Privacy & Security**, atrodiet bloķēto vienumu lapas apakšā un noklikšķiniet **Open Anyway**.
 
-!!! note "Note"
+!!! note "Piezīme"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Šis solis ir nepieciešams tikai tad, ja macOS patiešām bloķē izpildāmo failu. Pakotnes, kas pārsūtītas caur SSH vai no iekšējiem failu koplietojumiem, parasti netiek ievietotas karantīnā.
 
-### Step 3: Install the License File
+### 3. solis: Instalēt licences failu
 
-!!! warning "Important"
+!!! warning "Svarīgi"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Licences fails **nav** iekļauts instalācijas paketē un tiks nodrošināts atsevišķi no digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Atrodiet jums nodoto `license.toml` failu
+2. Kopējiet to uz digna instalācijas saknes direktoriju (tur, kur atrodas `config.toml` un izpildāmais `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Kāpēc tas ir svarīgi:**
+Licences fails satur jūsu klienta informāciju, licences derīguma termiņu un digitālo parakstu. **Nemainiet šo failu** — jebkuras izmaiņas to inaktivizēs.
 
-**Directory structure after setup:**
+**Direktorijas struktūra pēc iestatīšanas:**
 
 ```
 /opt/digna/
@@ -494,24 +494,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backend konfigurācija {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### 1. solis: Izveidot un rediģēt konfigurācijas failu
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+`config_template.toml` fails ir iekļauts jūsu digna instalācijas direktorijā. Pietiek to pārdēvēt par `config.toml`.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Atrašanās vieta:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Atveriet `config.toml` teksta redaktorā un konfigurējiet katru sadaļu zemāk.
 
-#### [app] Section
+#### [app] sadaļa
 
-This section configures the digna backend application settings:
+Šī sadaļa konfigurē digna backend lietojumprogrammas iestatījumus:
 
 ```toml
 [app]
@@ -521,20 +521,20 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontenda URL | Ja panelis atrodas citā serverī, iekļaujiet tā URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Nepieciešams CORS ar akreditācijas datiem |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Atļaut visus HTTP metodus |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Atļaut visus header laukus |
 
-!!! note "Note"
+!!! note "Piezīme"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Ja panelis tiek servēts no Homebrew nginx tā noklusējuma portā, atļaujamā izcelsme ir `http://localhost:8080`.
 
-#### [repo] Section
+#### [repo] sadaļa
 
-This section configures the connection to the PostgreSQL database:
+Šī sadaļa konfigurē savienojumu ar PostgreSQL datubāzi:
 
 ```toml
 [repo]
@@ -546,18 +546,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` vai IP | PostgreSQL servera hostname/IP |
+| `digna_REPO_PORT` | `5432` (noklusējums) | PostgreSQL ports |
+| `digna_REPO_DB` | `postgres` | Datubāzes nosaukums |
+| `digna_REPO_SCHEMA` | `dignarepo` | Iepriekš izveidotā shēma |
+| `digna_REPO_USER` | `digna_user` | Lietotājs izveidots PostgreSQL iestatīšanā |
+| `digna_REPO_PASSWORD` | Jūsu parole | Parole, iestatīta shēmas izveidē |
 
-#### [base] Section
+#### [base] sadaļa
 
-This section contains security and cookie settings:
+Šī sadaļa satur drošības un sīkfailu iestatījumus:
 
 ```toml
 [base]
@@ -572,44 +572,41 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
-| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
+| `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontenda domēnam |
+| `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcijā) | Lietojiet `true` HTTPS savienojumiem |
+| `digna_COOKIE_HTTPONLY` | `true` | Vienmēr iespējots drošībai |
+| `digna_COOKIE_SAME_SITE` | `lax` | Novērš CSRF uzbrukumus |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 stundas) | Sesijas derīguma laiks sekundēs |
+| `digna_MAX_WORKERS` | Skaitlis: CPU kodolu skaits - 1 | Paralēlo inspekciju uzdevumu skaits |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maksimālā aizture sekundēs, ko plānotājs drīkst pievienot pirms termiņā esoša darba sākšanas |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Diennakts laiks (24 stundu formāts `HH:MM`), kad sākas ikdienas tīrīšana |
 
-!!! tip "Tip"
+!!! tip "Padoms"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Lai uzzinātu, cik CPU kodolu ir pieejami jūsu Mac datorā, palaidiet `sysctl -n hw.ncpu`.
 
-#### [encryption] Section
+#### [encryption] sadaļa
 
-This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+Šajā sadaļā ir atslēga, ar kuru tiek šifrētas repozitorijā glabātās sensitīvās vērtības. Tā ir **obligāta** — `config check` ziņo par sadaļu `[encryption]` kā FAILED, ja atslēgas trūkst.
 
 ```toml
 [encryption]
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+| `DIGNA_ENCRYPTION_KEY` | Base64 kodēta atslēga | Šifrē sensitīvās vērtības, kas glabājas digna repozitorijā |
 
-!!! warning "Protect config.toml"
+!!! warning "Aizsargājiet config.toml"
 
-    This key is a fixed value, identical across all digna installations, and it is what decrypts
-    the sensitive values in your repository. Restrict `config.toml` to the account that runs
-    digna, keep it out of source control and off shared drives, and exclude it from any backup
-    that is stored less securely than the repository itself.
+    Šī atslēga ir fiksēta vērtība, kas ir vienāda visās digna instalācijās, un tieši tā atkodē jūsu repozitorija sensitīvās vērtības. Ierobežojiet piekļuvi `config.toml` līdz kontam, ar kuru darbojas digna, glabājiet failu ārpus versiju kontroles un koplietojamiem diskiem un izslēdziet to no jebkuras dublējuma kopijas, kas tiek glabāta mazāk droši nekā pats repozitorijs.
 
-#### [logging] Section
+#### [logging] sadaļa
 
-This section configures logging behavior:
+Šī sadaļa konfigurē žurnālu (logu) uzvedību:
 
 ```toml
 [logging]
@@ -617,22 +614,22 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parametrs | Vērtība | Piezīmes |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` vai `DEBUG` | `INFO` produkcijai, `DEBUG` problēmu novēršanai |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Cik dienu žurnālu dublējumu saglabāt |
 
 ---
 
-### Step 2: Validate the Configuration
+### 2. solis: Pārbaudiet konfigurāciju
 
-Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+Pirms repozitorija inicializēšanas pārbaudiet, vai `config.toml` ir pilnīgs un pareizi veidots. Savā digna instalācijas direktorijā palaidiet:
 
 ```bash
 ./digna config check
 ```
 
-Every section is validated on its own, so a single mistake does not hide the state of the rest:
+Katra sadaļa tiek pārbaudīta atsevišķi, tāpēc viena kļūda neaizsedz pārējo stāvokli:
 
 ```text
 Configuration validation report (source: config.toml):
@@ -646,77 +643,77 @@ Configuration validation report (source: config.toml):
 Overall: OK
 ```
 
-Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+Izlabojiet visu, kas ziņots kā FAILED, un pirms turpināšanas palaidiet komandu vēlreiz. Pilns opciju saraksts ir [CLI atsaucē](../../../cli/Command_Line_Interface_202606.md).
 
-### Step 3: Initialize the Repository
+### 3. solis: Inicializēt repozitoriju
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Atveriet **Terminal**
+2. Pārejiet uz jūsu digna instalācijas direktoriju (tur, kur atrodas `config.toml` un izpildāmais `digna`)
+3. Palaidiet savienojuma pārbaudi:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Jums jāsaņem apstiprinājums, ka savienojums ir izveidots (repozitorijs pats par sevi vēl nav inicializēts).
 
-!!! note "Note"
+!!! note "Piezīme"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    macOS sistēmā pašreizējās direktorijas komandas nav iekļautas PATH, tāpēc izpildāmais fails tiek izsaukts kā `./digna`, nevis `digna`. Lai visur izmantotu īsāko formu, pievienojiet instalācijas direktoriju savam PATH:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 4: Install the Repository Schema
+### 4. solis: Instalēt repozitorija shēmu
 
-In the same directory, run:
+Tajā pašā direktorijā palaidiet:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Šī komanda instalē nepieciešamās tabulas un shēmu jūsu PostgreSQL datubāzē.
 
-### Step 5: Create an Admin User
+### 5. solis: Izveidot administratora lietotāju
 
-The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+Administratora lietotājs tiek izveidots tieši repozitorija shēmā, tāpēc serverim vēl nav jādarbojas. digna instalācijas direktorijā palaidiet:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
 ```
 
-**Example:**
+**Piemērs:**
 
 ```bash
 ./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with email `admin@example.com` and full administrative privileges.
+Šī komanda izveido lietotāju ar e-pasta adresi `admin@example.com` un pilnām administratīvām tiesībām.
 
-!!! tip "Tip"
+!!! tip "Padoms"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Ietveriet paroli vienpēdiņās. `zsh` tādas rakstzīmes kā `!`, `$` un `*` apstrādā īpaši, un parole bez pēdiņām, kas tās satur, netiks nodota tieši tā, kā ierakstīta.
 
-!!! tip "Best Practice"
+!!! tip "Laba prakse"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Izmantojiet stipru paroli ar lielajiem un maziem burtiem, cipariem un speciālajām zīmēm.
 
-### Step 6: Start the digna Server
+### 6. solis: Palaist digna serveri
 
-In the digna installation directory, start the server with:
+digna instalācijas direktorijā palaidiet serveri ar:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Parametri:**
+- `--address` — servera hostname/IP
+- `--port` — servera ports
 
-You should see startup messages confirming the server is running:
+Jums jāredz startēšanas ziņas, kas apstiprina, ka serveris darbojas:
 
 ```
 INFO:     Started server process [1234]
@@ -725,66 +722,66 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Padoms"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    Pirmo reizi palaižot serveri, macOS var jautāt, vai vēlaties, lai lietojumprogramma pieņemtu ienākošos tīkla savienojumus. Noklikšķiniet **Allow**, citādi panelis nevarēs sasniegt backend.
 
-!!! note "The server holds the terminal"
+!!! note "Serveris aizņem termināli"
 
-    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a Background Service](#running-digna-as-a-background-service) to start it automatically at boot instead.
+    `serve` darbojas priekšplānā un turpina, līdz to apturat ar ++ctrl+c++. Atstājiet to darbojamies, kamēr pabeidzat iestatīšanu; lai to automātiski palaistu sistēmas sāknēšanas laikā, skatiet [digna palaide kā fona serviss](#running-digna-as-a-background-service).
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Paneļa konfigurācija {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### 1. solis: Izvietot paneli uz tīmekļa servera
 
-The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
+digna panelis savu konfigurāciju nolasa no faila `dashboard/dashboard_config.toml`. Šis fails instalācijā nav iekļauts — jūs to izveidojat `dashboard/` direktorijā līdzās paneļa failiem.
 
-Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
+Tā saturs ir aprakstīts sadaļā [Vienotā pieteikšanās (SSO)](../../../sso/overview.md), kur šis fails arī ir nepieciešams: tajā ir panelī piedāvātās pieteikšanās iespējas un, daudzinstanču izvietošanai, backend savienojums.
 
-Choose your web server and follow the corresponding deployment steps.
+Izvēlieties jūsu tīmekļa serveri un izpildiet atbilstošos izvietošanas soļus.
 
-#### Deploying to nginx
+#### Izvietošana uz nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Ja izpildījāt sadaļu [nginx iestatīšana](#nginx-setup), server bloks jau norāda uz jūsu `dashboard` mapi, un nekas nav jākopē.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Pārbaudiet ceļu**
+   - Atveriet `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Pārliecinieties, ka `root` norāda uz jūsu izpakoto `dashboard` mapi
 
-2. **Ensure the folder is readable**
+2. **Nodrošiniet, ka mape ir nolasāma**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Pārlādējiet nginx**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Pārbaudiet instalāciju**
+   - Atveriet pārlūkprogrammu
+   - Dodieties uz `http://localhost:8080` (vai jūsu konfigurēto URL)
+   - Jums jāredz digna paneļa pieteikšanās lapa
 
-#### Deploying to Apache httpd
+#### Izvietošana uz Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Kopējiet paneli uz dokumentu sakni**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Pievienojiet pārrakstīšanas noteikumus**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Izvietotajā mapē izveidojiet failu `.htaccess`, lai paneļa maršruti saglabātos pēc pārlūkprogrammas atsvaidzināšanas:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Ielīmējiet tālāk norādīto:
 
    ```apache
    RewriteEngine On
@@ -799,219 +796,202 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Restartējiet Apache**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Piekļūstiet panelim**
+   - Atveriet pārlūkprogrammu
+   - Dodieties uz `http://localhost/digna`
+   - Jums jāredz digna paneļa pieteikšanās lapa
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## digna palaide kā fona serviss {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### Kāpēc darbināt digna kā servisu?
 
-Running the digna backend as a background service ensures it:
+digna backend darbināšana kā fona serviss nodrošina, ka tas:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Automātiski startējas, kad dators tiek sāknēts
+- Darbojas fonā bez atvērta Terminal loga
+- Automātiski restartējas, ja notiek avārija
+- To var pārvaldīt ar `launchctl`, macOS servisu pārvaldnieku
 
-### Service Management Files
+### Servisa pārvaldības faili
 
-All necessary files are located in the digna installation directory under: `bin/`
+Visi nepieciešamie faili atrodas digna instalācijas direktorijā zem: `bin/`
 
-The following shell scripts are available:
+Pieejami šādi čaulas skripti:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — reģistrē digna sistēmā launchd
+- `uninstall_service.sh` — atreģistrē servisu
+- `start_service.sh` — palaiž reģistrēto servisu
+- `stop_service.sh` — aptur darbojošos servisu
 
-!!! warning "Administrator Required"
+!!! warning "Nepieciešamas administratīvās tiesības"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Visi skripti jāizpilda ar `sudo`, jo servisa, kas startējas sāknēšanas laikā, reģistrēšana veic ierakstu direktorijā `/Library/LaunchDaemons`.
 
-### Making the Scripts Executable
+### Skriptu padarīšana izpildāmus
 
-Extraction may not preserve the executable bit. Before first use:
+Izpakošana var nesaglabāt izpildes bitu. Pirms pirmās lietošanas:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### Servisa instalēšana
 
-1. **Open Terminal**
+1. **Atveriet Terminal**
 
-2. **Navigate to the bin Folder**
+2. **Pārejiet uz bin mapi**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Palaidiet instalācijas skriptu**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+digna serveris tagad ir reģistrēts sistēmā launchd ar **automātisku startēšanu**. Serviss netiek palaists uzreiz — skatiet nākamo sadaļu, lai to palaistu.
 
-### Starting and Stopping the Service
+### Servisa palaišana un apturēšana
 
-#### To Start the Service
+#### Lai palaistu servisu
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Atveriet Terminal
+2. Pārejiet uz `/opt/digna/bin`
+3. Palaidiet:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Lai apturētu servisu
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Atveriet Terminal
+2. Pārejiet uz `/opt/digna/bin`
+3. Palaidiet:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Padoms"
 
-    Always stop the service before updating application files.
+    Vienmēr apturiet servisu, pirms atjaunināt lietojumprogrammas failus.
 
-### Verifying the Service
+### Servisa pārbaude
 
-To confirm that the service is registered and running:
+Lai pārliecinātos, ka serviss ir reģistrēts un darbojas:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+Rinda, kas sākas ar procesa ID, norāda, ka serviss darbojas. `-` pirmajā kolonnā nozīmē, ka tas ir reģistrēts, bet apturēts.
 
-### Moving the Service to a New Directory
+### Pārvietot servisu uz jaunu direktoriju
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd glabā absolūto ceļu līdz izpildāmajam failam, tāpēc instalācijas pārvietošanai serviss ir jāreģistrē no jauna:
 
-1. **Uninstall the Current Service**
+1. **Atinstalēt esošo servisu**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Pārvietot aplikācijas failus**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Pārinstalēt servisu**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Palaist servisu**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Servisa atinstalēšana
 
-1. **Stop the Running Service**
+1. **Apturēt darbojošos servisu**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Atinstalēt servisu**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+digna serveris tagad vairs nav reģistrēts sistēmā launchd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Jaunināšana uz jaunu izlaidumu {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Pirms jaunināšanas
 
-**Verify All Database Connections First**
+**Vispirms pārbaudiet visus datubāžu savienojumus**
 
-From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
-offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
-The digna team decided to build on ODBC alone, because a single, standard interface gives you
-more than a set of bespoke drivers can:
+Sākot ar laidienu 2026.06, digna katru avota tehnoloģiju sasniedz caur **ODBC**. Iepriekšējie laidieni piedāvāja izvēli starp katrai tehnoloģijai pašu draiveri un ODBC, ko izvēlējās ar slēdzi **Use ODBC**. digna komanda nolēma balstīties tikai uz ODBC, jo viena standarta saskarne sniedz vairāk nekā pēc pasūtījuma veidotu draiveru kopums:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
-  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
-  update, rather than waiting for a digna release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of digna.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones digna does not publish a dedicated guide for.
+- **Autentifikācija** — autentifikācija ir daļa no ODBC, tāpēc savienojums var izmantot visu, ko atbalsta tā draiveris: paroles, pilnvaras un PAT, Kerberos un Active Directory, MFA un pārlūkprogrammas vienoto pieteikšanos, mākoņa identitātes, klienta sertifikātus un TLS. Jaunas metodes nāk līdzi draivera atjauninājumam, nevis gaidot digna laidienu.
+- **Draiveri, ko uztur datubāžu ražotāji** — ražotāja draiveris seko jaunām servera versijām un drošības labojumiem, un jūs varat to atjaunināt pēc sava grafika, neatkarīgi no digna.
+- **Viens veids, kā konfigurēt visu** — katra tehnoloģija ir atslēgu un vērtību īpašību saraksts ar to pašu saskarni, to pašu sensitīvo vērtību šifrēšanu un to pašu problēmu novēršanu, nevis atšķirīgu lauku kopu katram avotam.
+- **Pielāgošana un aptvērums** — draivera opcijas, piemēram, noildzes, TLS iestatījumi, starpniekserveri un ielādes izmēri, ir pieejamas katram avotam, un pievienot var jebkuru tehnoloģiju ar atbilstošu ODBC draiveri, arī tādu, kurai digna nepublicē atsevišķu rokasgrāmatu.
 
-In practice this means the **Use ODBC** switch and the separate host, port, database, user and
-password fields no longer exist. **Every connection that does not already use ODBC must be
-changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+Praksē tas nozīmē, ka slēdzis **Use ODBC** un atsevišķie resursdatora, porta, datubāzes, lietotāja un paroles lauki vairs nepastāv. **Katrs savienojums, kas vēl neizmanto ODBC, ir jāpārceļ uz ODBC** — automātiskas konvertēšanas nav, tāpēc ieplānojiet to pirms jaunināšanas:
 
-1. Review every database connection defined in your installation and list the ones that are not
-   yet using ODBC — each of these has to be reconfigured.
-2. Install the matching ODBC driver on the digna host — connections are opened from the server
-   that runs the digna backend, not from the browser. See
-   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
-3. Have the ODBC properties ready for each affected connection. The
-   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
-   property set per source.
+1. Pārskatiet katru jūsu instalācijā definēto datubāzes savienojumu un atzīmējiet tos, kas vēl neizmanto ODBC — katrs no tiem būs jākonfigurē no jauna.
+2. Instalējiet atbilstošo ODBC draiveri digna resursdatorā — savienojumi tiek atvērti no servera, kurā darbojas digna backend, nevis no pārlūkprogrammas. Skatiet
+   [ODBC draivera instalēšana digna resursdatorā](../../../databases/overview.md#install-the-driver).
+3. Sagatavojiet ODBC īpašības katram skartajam savienojumam.
+   [Tehnoloģiju rokasgrāmatas](../../../databases/overview.md#technology-guides) katram avotam norāda pārbaudītu īpašību kopu.
 
-After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
-see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
-and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+Pēc jaunināšanas katru skarto savienojumu pārceliet uz ODBC un pārbaudiet to no paneļa — skatiet
+[Datubāzes savienojuma izveide](../../../databases/overview.md#create-a-database-connection)
+un [Savienojuma pārbaude](../../../databases/overview.md#testing-a-connection).
 
-!!! warning "Databricks Legacy connections"
+!!! warning "Databricks Legacy savienojumi"
 
-    The Databricks Legacy connector has been removed in this release. Migrate those connections
-    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+    Databricks Legacy savienotājs šajā laidienā ir noņemts. Pārceliet šos savienojumus uz [Databricks](../../../databases/databricks_connector_guide.md) savienotāju.
 
-**Creating a digna Repository Backup is Mandatory**
+**digna repozitorija rezerves kopijas izveide ir obligāta**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Pirms digna jaunināšanas veiciet rezerves kopiju sava repozitorija (PostgreSQL), lai izvairītos no datu zuduma.
+Rezerves kopija nodrošina atjaunošanas iespēju, ja jaunināšanas laikā rodas neparedzētas problēmas.
 
-To create a backup from the Terminal:
+Lai izveidotu rezerves kopiju no Terminal:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Jaunināšanas process
 
-#### Step 1: Stop the digna Service
+#### 1. solis: Apturēt digna servisu
 
-If digna is running as a background service, stop it first:
+Ja digna darbojas kā fona serviss, vispirms to apturiet:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Ja digna darbojas priekšplānā, tā Terminal logā nospiediet `Ctrl + C`.
 
-#### Step 2: Backup Current Installation
+#### 2. solis: Izveidojiet pašreizējās instalācijas dublējumu
 
-In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
+Savā digna instalācijas direktorijā pārdēvējiet pašreizējās instalācijas mapes, lai jauno laidienu varētu izvietot tiem līdzās:
 
 ```bash
 cd /opt/digna
@@ -1024,37 +1004,36 @@ mv dignacli dignacli_old
 mv dashboard dashboard_old
 ```
 
-!!! info "dignabackend and dignacli are no longer used"
+!!! info "dignabackend un dignacli vairs netiek izmantoti"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Sākot ar laidienu 2026.06, `dignabackend` un `dignacli` aizstāj viens izpildāmais fails `digna`, kas apvieno backend un CLI. Saglabājiet `dignabackend_old` un `dignacli_old` tikai līdz brīdim, kad esat pārbaudījis jauninājumu — pēc tam varat izdzēst abas mapes. Saglabājiet `dashboard_old`, līdz esat no tās atjaunojis savus konfigurācijas failus (skatiet 4. soli).
 
-#### Step 3: Extract and Deploy New Version
+#### 3. solis: Izpakot un izvietot jauno versiju
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Izpakojiet jauno digna instalācijas ZIP failu
+2. Kopējiet jauno `digna` izpildāmo failu un `dashboard` mapi uz jūsu instalācijas direktoriju
+3. Atjaunojiet izpildes bitu un, ja nepieciešams, noņemiet karantīnas atribūtu:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Svarīgi"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
-    installation ZIP — the digna team never ships either file. Your existing configuration is
-    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
-    only ones you have.
+    Ne `config.toml`, ne `dashboard/dashboard_config.toml` nekad netiek iekļauts
+    instalācijas ZIP — digna komanda nekad nepiegādā nevienu no šiem failiem. Tāpēc jaunināšana jūsu esošo
+    konfigurāciju neskar, un kopijas pārdēvētajās `*_old` mapēs ir vienīgās, kas jums ir.
 
-#### Step 4: Restore Your Configuration Files
+#### 4. solis: Atjaunot jūsu konfigurācijas failus
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-!!! warning "Release 2026.06 changes config.toml"
+!!! warning "Laidiens 2026.06 maina config.toml"
 
-    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Trīs iestatījumi ir jauni un obligāti, bet trīs vairs netiek izmantoti. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
 
     ```toml
     [base]
@@ -1065,16 +1044,16 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
+    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet iestatījumus, kas vairs netiek izmantoti: **`digna_FERNET_KEY`** no `[base]`, kā arī **`digna_APP_HOST`** un **`digna_APP_PORT`** no `[app]` — adresi un portu serveris tagad iegūst no `digna serve`.
 
-    See [Backend Configuration](#backend-configuration) for what each setting does.
+    Ko dara katrs iestatījums, aprakstīts sadaļā [Backend konfigurācija](#backend-configuration).
 
-!!! warning "Single sign-on: the [oidc_clients] format has changed"
+!!! warning "Vienotā pieteikšanās: [oidc_clients] formāts ir mainījies"
 
-    Release 2026.06 replaces the array of tables with one table per provider, named after the
-    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+    Laidiens 2026.06 aizstāj tabulu masīvu ar vienu tabulu katram nodrošinātājam, nosauktu pēc
+    nodrošinātāja atslēgas. `DIGNA_OIDC_KEY` vairs nav — atslēga tagad ir sadaļas virsraksta daļa.
 
-    Before:
+    Pirms:
 
     ```toml
     [[oidc_clients]]
@@ -1085,7 +1064,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    After:
+    Pēc:
 
     ```toml
     [oidc_clients.microsoft]
@@ -1095,73 +1074,73 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Repeat the section for every provider, and keep each key matching the `key` in
-    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
-    old form is still in place. Only installations that use single sign-on are affected.
+    Atkārtojiet sadaļu katram nodrošinātājam un saglabājiet katru atslēgu tādu pašu kā `key` failā
+    `dashboard_config.toml`. `digna config check` ziņo par `oidc_clients` kā FAILED, kamēr
+    saglabājas vecā forma. Tas skar tikai instalācijas, kas izmanto vienoto pieteikšanos.
 
-#### Step 5: Reload the Web Server
+#### 5. solis: Pārlādēt tīmekļa serveri
 
-The dashboard is a set of static files, so your web server — and the browser — may still be
-serving the previous version. Reload or restart whichever web server hosts the `dashboard`
-folder, then reload the page with a hard refresh (++cmd+shift+r++).
+Panelis ir statisku failu kopums, tāpēc jūsu tīmekļa serveris — un pārlūkprogramma — joprojām var
+pasniegt iepriekšējo versiju. Pārlādējiet vai restartējiet tīmekļa serveri, kurā mitināta mape `dashboard`,
+un pēc tam pārlādējiet lapu ar pilnu atsvaidzināšanu (++cmd+shift+r++).
 
-#### Step 6: Validate the Configuration
+#### 6. solis: Pārbaudiet konfigurāciju
 
-Confirm that the updated `config.toml` is complete before touching the repository:
+Pirms pieskarties repozitorijam pārliecinieties, ka atjauninātais `config.toml` ir pilnīgs:
 
 ```bash
 ./digna config check
 ```
 
-Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+Katrai sadaļai jāziņo OK. Izlabojiet visu, kas ziņots kā FAILED, un pirms turpināšanas palaidiet komandu vēlreiz.
 
-#### Step 7: Replace the License File
+#### 7. solis: Aizstāt licences failu
 
-Each release is licensed separately. Copy the `license.toml` that the digna team provided for
-this release into the installation directory, replacing the old one:
+Katram laidienam ir atsevišķa licence. Nokopējiet `license.toml`, ko digna komanda nodrošināja
+šim laidienam, instalācijas direktorijā, aizstājot veco:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
-!!! warning "Do not keep the previous license"
+!!! warning "Nepaturiet iepriekšējo licenci"
 
-    A `license.toml` issued for an earlier release does not cover this one, and every command
-    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
-    repository when the check fails. Verify it before going further:
+    Agrākam laidienam izsniegts `license.toml` neattiecas uz šo laidienu, un katra komanda,
+    kas pārbauda licenci — `user`, `inspection`, `repo` —, tiek pārtraukta pirms pieskaršanās
+    repozitorijam, ja pārbaude neizdodas. Pārbaudiet licenci, pirms turpināt:
 
     ```bash
     ./digna license check
     ```
 
-#### Step 8: Upgrade the Repository Schema
+#### 8. solis: Jaunināt repozitorija shēmu
 
-Navigate to your digna installation directory and run:
+Pārejiet uz jūsu digna instalācijas direktoriju un palaidiet:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Tas atjauninās PostgreSQL shēmu uz jaunāko versiju, saglabājot visus esošos datus.
 
-#### Step 9: Restart Services
+#### 9. solis: Restartēt servisus
 
-If running as a background service:
+Ja darbināt kā fona servisu:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Ja darbināt manuāli, restartējiet serveri:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Ja izmantojat nginx vai Apache, restartējiet attiecīgo tīmekļa serveri:
 
 ```bash
 brew services restart nginx
@@ -1170,10 +1149,10 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 10: Verify the Upgrade
+#### 10. solis: Pārbaudīt jaunināšanu
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-4. Change every connection that did not already use ODBC over to ODBC, then test all connections
-   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection)
+1. Piekļūstiet digna panelim
+2. Pārbaudiet, vai saskarne ielādējas pareizi
+3. Pārskatiet servera žurnālus, vai nav kļūdu
+4. Pārceliet uz ODBC katru savienojumu, kas vēl neizmantoja ODBC, un pēc tam pārbaudiet visus savienojumus
+   — skatiet [Savienojuma pārbaude](../../../databases/overview.md#testing-a-connection)

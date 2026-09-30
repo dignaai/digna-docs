@@ -1,63 +1,53 @@
-# Source Connector for Teradata
+# موصل المصدر لـ Teradata
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+يشرح هذا الدليل كيفية تهيئة *digna* للاتصال بـ Teradata عبر **ODBC**، باستخدام سلسلة اتصال **بدون DSN**.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
+جانب *digna* من الإعداد متطابق لكل التقنيات — أين تُنشأ الاتصالات، وكيف تُشفَّر قيم الخصائص، وكيف يُختبر الاتصال، وما معنى أوضاع التنميط (profiling). وهو موضح في [نظرة عامة على اتصالات قواعد البيانات](overview.md). تغطي هذه الصفحة ما هو خاص بـ Teradata.
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. تثبيت برنامج تشغيل ODBC {: #1-install-the-odbc-driver }
 
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
+ثبّت **ODBC Driver for Teradata** على الجهاز الذي يشغّل الواجهة الخلفية لـ *digna*، باتباع دليل التثبيت الرسمي من المورّد.
 
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+يسجّل برنامج التشغيل نفسه مع رقم الإصدار في اسمه، على سبيل المثال **Teradata Database ODBC Driver 20.00**. اقرأ الاسم المسجَّل بدقة على مضيفك كما هو موضح في [تثبيت برنامج تشغيل ODBC على مضيف digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. خصائص ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "مثال، وليس مواصفة"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+    المجموعة أدناه هي تركيبة واحدة معروف أنها تعمل. الخصائص تابعة لبرنامج تشغيل Teradata ODBC، لذا تختلف أسماؤها وقيمها الافتراضية والقيم المقبولة بين إصدارات برنامج التشغيل — فالإصدار جزء من اسم برنامج التشغيل نفسه — وبين الأنظمة الأساسية. استخدم هذه المجموعة كنقطة بداية وراجع وثائق إصدار برنامج التشغيل الذي ثبّته.
 
-Add the following properties in the **Add DB Connection** screen:
+أضف الخصائص التالية في شاشة **Add DB Connection**:
 
-| Key | Example value | Notes |
+| المفتاح | قيمة مثال | ملاحظات |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | يجب أن يطابق اسم برنامج التشغيل المسجَّل على مضيف *digna* |
+| `DBCNAME` | `teradata.example.com` | اسم الخادم أو عنوان IP. وهو الاسم الذي يستخدمه Teradata لخاصية المضيف |
+| `UID` | `digna_source_user` | مستخدم قاعدة البيانات |
+| `PWD` | `<password>` | فعّل **Encrypted** |
 
-The resulting connection string looks like this:
+تبدو سلسلة الاتصال الناتجة كما يلي:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+خصائص إضافية مفيدة:
 
-| Key | Example value | Notes |
+| المفتاح | قيمة مثال | ملاحظات |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | آلية تسجيل الدخول. `TD2` هي الافتراضية في Teradata؛ استخدم `LDAP` للمصادقة عبر الدليل (directory) |
+| `DefaultDatabase` | `dad` | قاعدة البيانات التي تبدأ فيها الجلسة |
+| `CharacterSet` | `UTF8` | اضبطها حيث قد تُفسد مجموعة أحرف الجلسة الافتراضية البيانات غير ASCII |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. تهيئة *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+في شاشة **Add DB Connection**، قدّم ما يلي:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +58,27 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. ملاحظات حول Teradata {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **قاعدة بيانات Teradata هي كتالوج، وليست مخططًا.** يعرض *digna* قواعد البيانات التي يُسمح للمستخدم برؤيتها (من `DBC.DatabasesV`) ككتالوجات، ولا ينطبق مستوى المخطط. عند إضافة مصدر بيانات، اختر قاعدة البيانات ككتالوج؛ ويُعرض المخطط على أنه *غير منطبق* (not applicable).
+- **يصل الاتصال الواحد إلى كل قاعدة بيانات مسموح بها**، لذا يمكن لاتصال واحد أن يخدم مصادر عبر عدة قواعد بيانات — على عكس التقنيات التي يكون فيها الاتصال مثبّتًا على قاعدة بيانات واحدة.
+- **Work Schema هو قاعدة بيانات.** للتنميط *Permanent*، حدّد قاعدة بيانات Teradata التي تحتوي على جداول العمل، وامنح المستخدم صلاحيات `CREATE TABLE` إضافةً إلى تخصيص مساحة `PERM` فيها — فقاعدة البيانات ذات مساحة perm صفرية لا يمكنها استيعاب جدول.
+- **أوضاع التنميط.** ينشئ *Permanent* الجداول في **Work Schema**. يستخدم *Session* جدولًا من نوع `VOLATILE`، يحتاج إلى مساحة `SPOOL` لكنه لا يحتاج إلى مساحة perm ولا إلى أي صلاحيات في **Work Schema**. يحتاج *Standard* إلى صلاحية القراءة فقط.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. التحقق من برنامج التشغيل (اختياري) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+تهيئة مصدر بيانات ODBC ليست مطلوبة لاتصال بدون DSN، لكن نافذة برنامج التشغيل نفسه طريقة مريحة للتأكد من أن برنامج التشغيل وبيانات اعتمادك تعمل قبل إدخالها في *digna*.
 
-#### Step 1
+#### الخطوة 1
 ![Step 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+الحقل **Name or IP address** هنا هو الخاصية `DBCNAME` في [القسم 2](#2-odbc-properties).
 
-Click the **Test** button.
+انقر الزر **Test**.
 
-#### Step 2
+#### الخطوة 2
 ![Step 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+أدخل اسم المستخدم وكلمة المرور، ثم انقر الزر **OK**. تؤكد شاشة النجاح أن برنامج التشغيل وبيانات الاعتماد تعمل.

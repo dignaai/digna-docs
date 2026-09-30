@@ -1,92 +1,92 @@
-# Source Connector for Azure Synapse Analytics
+# Lähtekonnektor Azure Synapse Analyticsi jaoks
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+See juhend kirjeldab, kuidas konfigureerida *digna* ühenduma Azure Synapse Analyticsiga
+**ODBC** kaudu, kasutades **DSN-ita** ühendusstringi. Toetatud on nii serverless- kui ka
+dedicated SQL-kogumid.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+Seadistuse *digna* pool on iga tehnoloogia puhul sama — kus ühendused luuakse, kuidas
+atribuutide väärtused krüpteeritakse, kuidas ühendust testitakse ja mida profileerimisrežiimid
+tähendavad. Seda kirjeldatakse lehel [Andmebaasiühenduste ülevaade](overview.md). See leht
+käsitleb Azure Synapse'i eripärasid.
 
-!!! note "Technology"
+!!! note "Tehnoloogia"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Synapse kasutab SQL Serveri dialekti, seega luuakse ühendus sättega **Technology:
+    SQL Server**. Kohapealse serveri jaoks vt [MS SQL Server](sqlserver_connector_guide.md).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC draiveri paigaldamine {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Paigaldage **ODBC Driver 18 for SQL Server** masinale, kus töötab *digna* backend, järgides
+[Microsofti paigaldusjuhendit](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+ja lugege oma hostist välja täpne registreeritud draiveri nimi, nagu on kirjeldatud jaotises
+[ODBC draiveri paigaldamine digna hostile](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. ODBC atribuudid {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Näide, mitte spetsifikatsioon"
+
+    Allolev komplekt on üks kombinatsioon, mis teadaolevalt töötab. Atribuudid kuuluvad
+    Microsofti ODBC draiverile, seega erinevad nende nimed, vaikeväärtused ja aktsepteeritavad
+    väärtused draiveri versioonide ja platvormide vahel ning see, mida tööruum nõuab, sõltub
+    selle konfiguratsioonist — kogumi tüübist, autentimismeetodist, tulemüürist. Kasutage seda
+    lähtepunktina ja kontrollige paigaldatud draiveriversiooni dokumentatsiooni.
+
+Lisage kuval **Add DB Connection** järgmised atribuudid:
+
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Peab vastama *digna* hostis registreeritud draiveri nimele |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Tööruumi nimi pluss lõpp-punkti järelliide — vt allpool |
+| `DATABASE` | `dignadata` | Andmebaas, mis sisaldab lähteskeeme. See on ainus andmebaas, mida see ühendus saab profileerida |
+| `UID` | `sqladminuser` | SQL-sisselogimine |
+| `PWD` | `<password>` | Märkige **Encrypted** |
 
-The resulting connection string looks like this:
+Tulemuseks olev ühendusstring näeb välja selline:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### Väärtus `SERVER`
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Võtke Synapse'i tööruumi nimi ja lisage sellele lõpp-punkti järelliide:
 
-| Pool | `SERVER` |
+| Kogum | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "Osa `-ondemand` on kerge märkamata jätta"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Ilma selleta lahendatakse nimi dedicated-lõpp-punktiks ning ühendus kas ebaõnnestub või
+    jõuab vaikselt teise kogumini, kui kavatsetud. Mõlemat lõpp-punkti näidatakse Azure'i
+    portaalis tööruumi ülevaatelehel.
 
-### Firewall
+### Tulemüür
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Synapse'i tööruumi tulemüür peab lubama *digna* hosti väljuva aadressi. Lisage see tööruumis
+jaotises **Networking** enne ühenduse testimist — blokeeritud aadress ilmneb ühenduse
+ajalõpuna, mitte autentimisveana.
 
-### Microsoft Entra ID authentication
+### Microsoft Entra ID autentimine
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+SQL-sisselogimise asemel saab draiver autentida Entra ID vastu. Asendage `UID`/`PWD`
+autentimismeetodiga, mida teie tööruum ootab, näiteks:
 
-| Key | Example value | Notes |
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` võtab siis rakenduse (kliendi) ID ja `PWD` kliendi saladuse |
+| `Authentication` | `ActiveDirectoryMSI` | *digna* hosti hallatud identiteet, mandaate pole vaja |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguratsioon {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Sisestage kuval **Add DB Connection** järgmine:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -98,63 +98,65 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Märkused Azure Synapse'i kohta {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **Serverless-kogumid toetavad ainult *Standard* profileerimist.** Serverless SQL-kogum ei
+  saa andmebaasis tabeleid luua, seega ei saa käivitada ei *Permanent* ega *Session*
+  profileerimist. *Standard* arvutab mõõdikud otse allikal, mis on ka odavam valik, sest
+  serverless-kogumit arveldatakse töödeldud andmete mahu järgi.
+- **Üks ühendus näeb üht andmebaasi.** *digna* pakub atribuudis `DATABASE` nimetatud
+  andmebaasi skeeme, sest Synapse, nagu SQL Server, teatab kataloogina ainult praegusest
+  andmebaasist.
+- **Krüpteerimine on vaikimisi sees** draiveris Driver 18 ja Synapse'i lõpp-punktid esitavad
+  kehtivad avalikud sertifikaadid, seega pole atribuute `Encrypt` ega `TrustServerCertificate`
+  vaja.
+- **Serverless-lõpp-punkt võib esimesel ühendumisel jõudeolekust ärgata.** Kui ühenduse test
+  aegub kogumi puhul, mida pole mõnda aega kasutatud, proovige uuesti.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Draiveri kontrollimine (valikuline) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+DSN-ita ühenduse jaoks pole ODBC andmeallika konfigureerimine vajalik, kuid draiveri enda
+viisard on mugav viis veenduda, et draiver töötab ja tööruum aktsepteerib teie mandaate, enne
+kui need *dignasse* sisestate.
 
-#### Step 1
-![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
+#### Samm 1
+![Samm 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Täitke väli "Server".
+Kasutage Synapse'i tööruumi nime ja lisage sellele ".sql.azuresynapse.net".  
+**Tähelepanu**: kui soovite ühenduda serverless SQL-kogumiga, lisage kindlasti
+"-ondemand", nagu ülaltoodud ekraanipildil näidatud.
 
-Click the **Next >** button.
+Klõpsake nuppu **Next >**.
 
-#### Step 2
-![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
+#### Samm 2
+![Samm 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Valige autentimismeetod (nt kasutajanimi ja parool)
+ja sisestage vajalikud andmed.
 
-Click the **Next >** button.
+Klõpsake nuppu **Next >**.
 
-#### Step 3
-![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
+#### Samm 3
+![Samm 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Valige ANSI-ühilduvad sätted ja klõpsake seejärel nuppu **Next >**.
 
-#### Step 4
-![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
+#### Samm 4
+![Samm 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Võite jätta vaikesätted või valida vajalikud valikud
+ja klõpsata nuppu **Finish**.
 
-#### Step 5
-![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
+#### Samm 5
+![Samm 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Nüüd klõpsake nuppu **Test datasource**.
 
-#### Step 6
-![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
+#### Samm 6
+![Samm 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Eduekraan kinnitab, et draiver, lõpp-punkt ja mandaadid töötavad. Sisestatud väärtused on
+täpselt need väärtused, mida võtavad [jaotise 2](#2-odbc-properties) atribuudid.

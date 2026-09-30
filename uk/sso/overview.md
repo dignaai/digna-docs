@@ -1,88 +1,88 @@
-# Single Sign-On Overview
+# Огляд єдиного входу
 
 ---
 
-## Table of Contents
+## Зміст
 
-1. [Introduction and Overview](#introduction-and-overview)
-2. [Provider Guides](#provider-guides)
-3. [Configuration Steps](#configuration-steps)
-4. [Dashboard Configuration](#dashboard-configuration)
-5. [Backend Configuration](#backend-configuration)
-6. [Testing Login](#testing-login)
-7. [Troubleshooting](#troubleshooting)
-8. [Supported Providers](#supported-providers)
-
----
-
-## Introduction and Overview {: #introduction-and-overview }
-
-This guide provides step-by-step instructions for integrating Single Sign-On (SSO) with the digna platform using **OpenID Connect (OIDC)**.
-
-### What is SSO?
-
-Single Sign-On allows users to log in to digna securely using their enterprise credentials through external identity providers. Users can authenticate with their corporate credentials instead of managing separate digna passwords.
-
-### How It Works
-
-SSO in digna is implemented using the OIDC protocol. Multiple identity providers can be configured in parallel by adjusting two key configuration files:
-
-- **`dashboard_config.toml`** — Controls the frontend login interface
-- **`config.toml`** — Configures the backend OIDC connections
-
-### Supported Providers {: #supported-providers-overview }
-
-Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
+1. [Вступ і огляд](#introduction-and-overview)
+2. [Посібники для постачальників](#provider-guides)
+3. [Кроки налаштування](#configuration-steps)
+4. [Налаштування дашборду](#dashboard-configuration)
+5. [Налаштування бекенду](#backend-configuration)
+6. [Тестування входу](#testing-login)
+7. [Усунення несправностей](#troubleshooting)
+8. [Підтримувані постачальники](#supported-providers)
 
 ---
 
-## Provider Guides {: #provider-guides }
+## Вступ і огляд {: #introduction-and-overview }
 
-Every provider needs the same four values — a client ID, a client secret, a redirect URI and a discovery URL — but each one puts them in a different place in its admin console, and several have a provider-specific step that the others do not. The guides below cover that half of the work; this page covers the digna half, which is identical for all of them.
+У цьому посібнику наведено покрокові інструкції з інтеграції єдиного входу (SSO) з платформою digna за допомогою **OpenID Connect (OIDC)**.
 
-| Provider | Guide | Worth knowing |
+### Що таке SSO?
+
+Єдиний вхід дозволяє користувачам безпечно входити в digna з корпоративними обліковими даними через зовнішніх постачальників ідентичності. Користувачі можуть автентифікуватися за допомогою корпоративних облікових даних, а не керувати окремими паролями digna.
+
+### Як це працює
+
+SSO у digna реалізовано за допомогою протоколу OIDC. Кілька постачальників ідентичності можна налаштувати паралельно, змінивши два ключові файли конфігурації:
+
+- **`dashboard_config.toml`** — керує інтерфейсом входу у фронтенді
+- **`config.toml`** — налаштовує підключення OIDC у бекенді
+
+### Підтримувані постачальники {: #supported-providers-overview }
+
+У прикладах цього посібника використано **Microsoft** і **Google**, але **будь-якого постачальника, сумісного з OIDC**, можна інтегрувати за тією самою схемою.
+
+---
+
+## Посібники для постачальників {: #provider-guides }
+
+Кожному постачальнику потрібні ті самі чотири значення — ідентифікатор клієнта, секрет клієнта, URI перенаправлення та URL виявлення (discovery URL), — але кожен розміщує їх у різних місцях своєї консолі адміністратора, а в кількох є специфічний крок, якого немає в інших. Наведені нижче посібники охоплюють цю половину роботи; ця сторінка описує половину на боці digna, яка однакова для всіх.
+
+| Постачальник | Посібник | Варто знати |
 |---|---|---|
-| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
-| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
-| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
-| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
-| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
-| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
-| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
-| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+| **AD FS** | [Налаштування SSO з AD FS](adfs_sso_guide.md) | Власний хостинг; єдиний постачальник у списку, де ви самі керуєте службою токенів |
+| **Auth0** | [Налаштування SSO з Auth0](auth0_sso_guide.md) | URL виявлення свій для кожного тенанта, і власні домени його змінюють |
+| **Google Workspace** | [Налаштування SSO з Google Workspace](google_workspace_sso_guide.md) | Екран згоди має бути опубліковано, перш ніж зможуть входити користувачі, які не є тестовими |
+| **Keycloak** | [Налаштування SSO з Keycloak](keycloak_sso_guide.md) | Власний хостинг; URL виявлення свій для кожного realm |
+| **Microsoft Entra ID** | [Налаштування SSO з Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Ідентифікатор тенанта входить до URL виявлення; термін дії секретів обмежений |
+| **Okta** | [Налаштування SSO з Okta](okta_sso_guide.md) | Вибір сервера авторизації змінює URL виявлення |
+| **OneLogin** | [Налаштування SSO з OneLogin](onelogin_sso_guide.md) | Тип застосунку OIDC вибирається під час створення і не може бути змінений |
+| **PingOne** | [Налаштування SSO з PingOne](pingone_sso_guide.md) | Ідентифікатор середовища входить до URL виявлення |
 
-Any other OIDC-compliant provider works the same way — see [Other OIDC Providers](#supported-providers).
+Будь-який інший постачальник, сумісний з OIDC, працює так само — див. [Інші постачальники OIDC](#supported-providers).
 
 ---
 
-## Configuration Steps {: #configuration-steps }
+## Кроки налаштування {: #configuration-steps }
 
-SSO configuration requires updates to two files. This section explains how to configure each one.
+Для налаштування SSO потрібно оновити два файли. У цьому розділі пояснюється, як налаштувати кожен із них.
 
-### Overview of Configuration Files
+### Огляд файлів конфігурації
 
-| File | Location | Purpose |
+| Файл | Розташування | Призначення |
 |---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
-| **config.toml** | `/config.toml` | Backend OIDC connections |
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Інтерфейс входу у фронтенді |
+| **config.toml** | `/config.toml` | Підключення OIDC у бекенді |
 
-Both files must be configured for SSO to work properly.
+Щоб SSO працював правильно, необхідно налаштувати обидва файли.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Налаштування дашборду {: #dashboard-configuration }
 
-### File Location
+### Розташування файлу
 
 ```
 dashboard/dashboard_config.toml
 ```
 
-### Step 1: Add OIDC Providers
+### Крок 1: Додайте постачальників OIDC
 
-Add entries under the `[[login.oidc]]` array for each identity provider you want to support.
+Додайте записи в масив `[[login.oidc]]` для кожного постачальника ідентичності, якого ви хочете підтримувати.
 
-**Example with Microsoft and Google:**
+**Приклад з Microsoft і Google:**
 
 ```toml
 [[login.oidc]]
@@ -94,48 +94,48 @@ key = "google"
 label = "Login with Google"
 ```
 
-### Step 2: Configure Login Options
+### Крок 2: Налаштуйте параметри входу
 
-Specify whether password-based login should be allowed:
+Укажіть, чи дозволено вхід за паролем:
 
 ```toml
 [login]
 usePassword = true
 ```
 
-### Configuration Parameters
+### Параметри конфігурації
 
-#### `[[login.oidc]]` Section
+#### Розділ `[[login.oidc]]`
 
-| Parameter | Type | Required | Description |
+| Параметр | Тип | Обов'язковий | Опис |
 |---|---|---|---|
-| `key` | string | Yes | Unique identifier for the OIDC connection (must match key in config.toml) |
-| `label` | string | Yes | Text displayed on the login button (e.g., "Login with Microsoft") |
+| `key` | string | Так | Унікальний ідентифікатор підключення OIDC (має збігатися з ключем у config.toml) |
+| `label` | string | Так | Текст, що відображається на кнопці входу (наприклад, "Login with Microsoft") |
 
-#### `[login]` Section
+#### Розділ `[login]`
 
-| Parameter | Type | Default | Description |
+| Параметр | Тип | За замовчуванням | Опис |
 |---|---|---|---|
-| `usePassword` | boolean | false | Allow password-based login in addition to SSO |
+| `usePassword` | boolean | false | Дозволити вхід за паролем на додачу до SSO |
 
-### Understanding usePassword
+### Як працює usePassword
 
-**If `usePassword = true`:**
-- Login screen shows SSO buttons (e.g., "Login with Microsoft")
-- Login screen also shows username and password fields
-- Users can authenticate with either method
-- Allows hybrid setups where some users use SSO and others use passwords
+**Якщо `usePassword = true`:**
+- Екран входу показує кнопки SSO (наприклад, "Login with Microsoft")
+- Екран входу також показує поля імені користувача та пароля
+- Користувачі можуть автентифікуватися будь-яким із цих способів
+- Можливі гібридні налаштування, коли одні користувачі входять через SSO, а інші — за паролем
 
-**If `usePassword = false` (or omitted):**
-- Login screen shows only SSO buttons
-- No username/password fields
-- Only OIDC authentication is available
+**Якщо `usePassword = false` (або параметр не вказано):**
+- Екран входу показує лише кнопки SSO
+- Полів імені користувача та пароля немає
+- Доступна лише автентифікація OIDC
 
-!!! tip "Tip"
+!!! tip "Порада"
 
-    Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
+    Вхід за паролем доступний лише для користувачів, створених із паролем за допомогою команди `digna user add` або через дашборд.
 
-### Complete Example
+### Повний приклад
 
 ```toml
 [login]
@@ -156,21 +156,21 @@ label = "Login with Okta"
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Налаштування бекенду {: #backend-configuration }
 
-### File Location
+### Розташування файлу
 
 ```
 /config.toml
 ```
 
-(Root digna installation directory)
+(Кореневий каталог інсталяції digna)
 
-### Step 1: Add OIDC Provider Sections
+### Крок 1: Додайте розділи постачальників OIDC
 
-Each provider must have a dedicated `[oidc_clients.<key>]` section. The key must match the `key` defined in `dashboard_config.toml`.
+Кожен постачальник повинен мати окремий розділ `[oidc_clients.<key>]`. Ключ має збігатися зі значенням `key`, визначеним у `dashboard_config.toml`.
 
-### Microsoft Configuration
+### Налаштування Microsoft
 
 ```toml
 [oidc_clients.microsoft]
@@ -180,7 +180,7 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
 ```
 
-### Google Configuration
+### Налаштування Google
 
 ```toml
 [oidc_clients.google]
@@ -190,32 +190,32 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-### Configuration Parameters
+### Параметри конфігурації
 
-| Parameter | Type | Required | Description | Example |
+| Параметр | Тип | Обов'язковий | Опис | Приклад |
 |---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID from identity provider | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret from identity provider | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
+| `DIGNA_OIDC_CLIENT_ID` | string | Так | Ідентифікатор клієнта від постачальника ідентичності | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Так | Секрет клієнта від постачальника ідентичності | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Так | URL зворотного виклику після автентифікації | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Так | Кінцева точка конфігурації OIDC | `https://login.microsoftonline.com/...` |
 
-!!! warning "Important"
+!!! warning "Важливо"
 
-    Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
+    Замініть значення-заповнювачі (`<client_id>`, `<client_secret>`, `<tenant_id>`) на справжні облікові дані з порталу розробника вашого постачальника ідентичності.
 
-### Redirect URI
+### URI перенаправлення
 
-The redirect URI must be the same in your identity provider configuration:
+URI перенаправлення має бути таким самим у конфігурації вашого постачальника ідентичності:
 
 ```
 http://localhost:5173/oidc/callback
 ```
 
-If digna is hosted at a different domain, update accordingly:
-- Local: `http://localhost:5173/oidc/callback`
-- Production: `https://digna.yourdomain.com/oidc/callback`
+Якщо digna розміщено на іншому домені, змініть його відповідно:
+- Локально: `http://localhost:5173/oidc/callback`
+- Робоче середовище: `https://digna.yourdomain.com/oidc/callback`
 
-### Complete Example
+### Повний приклад
 
 ```toml
 [oidc_clients.microsoft]
@@ -233,238 +233,238 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ---
 
-## Testing Login {: #testing-login }
+## Тестування входу {: #testing-login }
 
-After completing the configuration, verify that SSO is working correctly.
+Після завершення налаштування переконайтеся, що SSO працює правильно.
 
-### Pre-Testing Checklist
+### Контрольний список перед тестуванням
 
-Before testing, ensure:
+Перед тестуванням переконайтеся, що:
 
-- [ ] `dashboard_config.toml` has been updated with OIDC providers
-- [ ] `config.toml` has been updated with OIDC credentials
-- [ ] Both files have been saved
-- [ ] Credentials are correct (client ID, client secret)
-- [ ] Redirect URI matches your deployment URL
-- [ ] Identity provider application is configured with the redirect URI
+- [ ] `dashboard_config.toml` оновлено з постачальниками OIDC
+- [ ] `config.toml` оновлено з обліковими даними OIDC
+- [ ] Обидва файли збережено
+- [ ] Облікові дані правильні (ідентифікатор клієнта, секрет клієнта)
+- [ ] URI перенаправлення відповідає URL вашого розгортання
+- [ ] Застосунок у постачальника ідентичності налаштовано з цим URI перенаправлення
 
-### Testing Steps
+### Кроки тестування
 
-#### Step 1: Restart Services
+#### Крок 1: Перезапустіть служби
 
-Restart the digna backend and web server to apply changes.
+Перезапустіть бекенд digna і вебсервер, щоб застосувати зміни.
 
-**If running as a service on Windows:**
+**Якщо digna працює як служба у Windows:**
 ```bash
 cd C:\path\to\digna
 digna windows stop
 digna windows start
 ```
 
-**If running as a service on Linux or macOS:**
+**Якщо digna працює як служба в Linux або macOS:**
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 sudo ./start_service.sh
 ```
 
-**If running manually:**
+**Якщо digna запущено вручну:**
 ```bash
 digna serve --address localhost --port 8082
 ```
 
-**Restart the web server too** — IIS or Tomcat on Windows, nginx or Apache on Linux and macOS.
+**Перезапустіть також вебсервер** — IIS або Tomcat у Windows, nginx або Apache в Linux і macOS.
 
-#### Step 2: Open Dashboard
+#### Крок 2: Відкрийте дашборд
 
-Open the digna dashboard in your browser:
+Відкрийте дашборд digna у браузері:
 
 ```
 http://localhost:5173
 ```
 
-(or your configured dashboard URL)
+(або налаштований вами URL дашборду)
 
-#### Step 3: Verify Login Buttons
+#### Крок 3: Перевірте кнопки входу
 
-Check that login buttons appear for each configured provider:
+Переконайтеся, що для кожного налаштованого постачальника з'являються кнопки входу:
 
-- Should see "Login with Microsoft" button
-- Should see "Login with Google" button
-- (If usePassword = true) Should see username/password fields
+- Має бути кнопка "Login with Microsoft"
+- Має бути кнопка "Login with Google"
+- (Якщо usePassword = true) Мають бути поля імені користувача та пароля
 
-If buttons don't appear:
-- Check that `dashboard_config.toml` was saved
-- Check that dashboard service was restarted
-- Check browser console (F12) for errors
+Якщо кнопки не з'являються:
+- Перевірте, чи збережено `dashboard_config.toml`
+- Перевірте, чи перезапущено службу дашборду
+- Перевірте консоль браузера (F12) на наявність помилок
 
-#### Step 4: Test SSO Login
+#### Крок 4: Перевірте вхід через SSO
 
-Click one of the SSO buttons (e.g., "Login with Microsoft"):
+Натисніть одну з кнопок SSO (наприклад, "Login with Microsoft"):
 
-1. You should be redirected to the identity provider's login page
-2. Log in with your enterprise credentials
-3. You should be redirected back to digna
-4. You should be logged in to digna
+1. Вас має бути перенаправлено на сторінку входу постачальника ідентичності
+2. Увійдіть із корпоративними обліковими даними
+3. Вас має бути перенаправлено назад до digna
+4. Ви маєте увійти в digna
 
-#### Step 5: Verify User Creation
+#### Крок 5: Перевірте створення користувача
 
-After successful SSO login:
+Після успішного входу через SSO:
 
-- User should be automatically created in digna
-- User should be logged in
-- User profile should display your identity provider credentials
-- You should see the digna dashboard
+- Користувача має бути автоматично створено в digna
+- Користувач має бути в системі
+- Профіль користувача має показувати ваші облікові дані від постачальника ідентичності
+- Ви маєте бачити дашборд digna
 
-#### Step 6: Test Password Login (If Enabled)
+#### Крок 6: Перевірте вхід за паролем (якщо ввімкнено)
 
-If `usePassword = true`:
+Якщо `usePassword = true`:
 
-1. Log out of digna
-2. On the login page, enter a username and password
-3. You should be able to log in with password credentials
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Login Buttons Don't Appear
-
-**Symptoms:**
-- OIDC login buttons not visible on login page
-- Only see password fields (if usePassword = true)
-
-**Causes & Solutions:**
-1. Check `dashboard_config.toml` is in `dashboard/` directory
-2. Verify `[[login.oidc]]` sections are present with correct syntax
-3. Restart dashboard service
-4. Clear browser cache (Ctrl+Shift+Delete or Cmd+Shift+Delete)
-5. Check browser console (F12 → Console tab) for errors
+1. Вийдіть із digna
+2. На сторінці входу введіть ім'я користувача та пароль
+3. Ви маєте змогу увійти з обліковими даними за паролем
 
 ---
 
-### Redirect URI Mismatch Error
+## Усунення несправностей {: #troubleshooting }
 
-**Symptoms:**
-- After clicking SSO button, error about "redirect_uri mismatch"
-- "The redirect URI is not registered" error
+### Кнопки входу не з'являються
 
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_REDIRECT_URI` in `config.toml` is correct
-2. Verify redirect URI is registered in identity provider settings
-3. Ensure both use identical URLs (including protocol, domain, path)
-4. Check for typos in the redirect URI
-5. If using HTTPS, ensure certificate is valid
+**Симптоми:**
+- Кнопки входу OIDC не видно на сторінці входу
+- Видно лише поля пароля (якщо usePassword = true)
 
----
-
-### Invalid Client Credentials Error
-
-**Symptoms:**
-- "Invalid client ID or secret" error
-- Authentication fails with credentials error
-
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_CLIENT_ID` and `DIGNA_OIDC_CLIENT_SECRET` are correct
-2. Ensure no extra spaces or special characters
-3. Check credentials haven't expired or been revoked
-4. Restart backend service after updating config
-5. Check identity provider console to confirm credentials are active
+**Причини та рішення:**
+1. Перевірте, чи `dashboard_config.toml` знаходиться в каталозі `dashboard/`
+2. Переконайтеся, що розділи `[[login.oidc]]` присутні та мають правильний синтаксис
+3. Перезапустіть службу дашборду
+4. Очистіть кеш браузера (Ctrl+Shift+Delete або Cmd+Shift+Delete)
+5. Перевірте консоль браузера (F12 → вкладка Console) на наявність помилок
 
 ---
 
-### Login Hangs or Times Out
+### Помилка невідповідності URI перенаправлення
 
-**Symptoms:**
-- Clicking SSO button does nothing
-- Timeout after several seconds
-- Browser shows "Failed to connect" or similar
+**Симптоми:**
+- Після натискання кнопки SSO з'являється помилка "redirect_uri mismatch"
+- Помилка "The redirect URI is not registered"
 
-**Causes & Solutions:**
-1. Verify digna backend is running: `digna repo check`
-2. Check network connectivity to identity provider
-3. Verify `DIGNA_OIDC_CONFIGURATION_URL` is accessible
-4. Check firewall rules allow outbound HTTPS connections
-5. Verify backend and dashboard can reach each other
-
----
-
-### Users Not Automatically Created
-
-**Symptoms:**
-- SSO login succeeds but user not created in digna
-- Get permission error after SSO login
-
-**Causes & Solutions:**
-1. Verify OIDC configuration is correct
-2. Check user permissions are set up
-3. Review digna logs for error messages
-4. Restart backend service
-5. Contact support@digna.ai if issue persists
+**Причини та рішення:**
+1. Перевірте, чи правильний `DIGNA_OIDC_REDIRECT_URI` у `config.toml`
+2. Перевірте, чи зареєстровано URI перенаправлення в налаштуваннях постачальника ідентичності
+3. Переконайтеся, що обидва місця використовують ідентичні URL (включно з протоколом, доменом і шляхом)
+4. Перевірте URI перенаправлення на наявність друкарських помилок
+5. Якщо використовується HTTPS, переконайтеся, що сертифікат дійсний
 
 ---
 
-## Supported Providers {: #supported-providers }
+### Помилка недійсних облікових даних клієнта
 
-### Tested & Supported
+**Симптоми:**
+- Помилка "Invalid client ID or secret"
+- Автентифікація не вдається з помилкою облікових даних
 
-The following OIDC providers have been tested and are known to work:
+**Причини та рішення:**
+1. Перевірте, чи правильні `DIGNA_OIDC_CLIENT_ID` і `DIGNA_OIDC_CLIENT_SECRET`
+2. Переконайтеся, що немає зайвих пробілів або спеціальних символів
+3. Перевірте, чи не минув термін дії облікових даних і чи їх не відкликано
+4. Перезапустіть службу бекенду після оновлення конфігурації
+5. Перевірте в консолі постачальника ідентичності, що облікові дані активні
 
-| Provider | Configuration URL | Setup Guide |
+---
+
+### Вхід зависає або завершується за тайм-аутом
+
+**Симптоми:**
+- Натискання кнопки SSO нічого не робить
+- Тайм-аут через кілька секунд
+- Браузер показує "Failed to connect" або подібне повідомлення
+
+**Причини та рішення:**
+1. Перевірте, чи працює бекенд digna: `digna repo check`
+2. Перевірте мережеве з'єднання з постачальником ідентичності
+3. Перевірте доступність `DIGNA_OIDC_CONFIGURATION_URL`
+4. Переконайтеся, що правила брандмауера дозволяють вихідні підключення HTTPS
+5. Переконайтеся, що бекенд і дашборд можуть зв'язатися один з одним
+
+---
+
+### Користувачі не створюються автоматично
+
+**Симптоми:**
+- Вхід через SSO успішний, але користувача в digna не створено
+- Після входу через SSO з'являється помилка дозволів
+
+**Причини та рішення:**
+1. Перевірте правильність конфігурації OIDC
+2. Перевірте, чи налаштовано дозволи користувачів
+3. Перегляньте журнали digna на наявність повідомлень про помилки
+4. Перезапустіть службу бекенду
+5. Якщо проблема не зникає, зверніться на support@digna.ai
+
+---
+
+## Підтримувані постачальники {: #supported-providers }
+
+### Протестовані та підтримувані
+
+Наведених нижче постачальників OIDC протестовано, і вони гарантовано працюють:
+
+| Постачальник | URL конфігурації | Посібник з налаштування |
 |---|---|---|
-| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
-| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
-| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
-| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
-| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Налаштування SSO з AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Налаштування SSO з Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Налаштування SSO з Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Налаштування SSO з Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Налаштування SSO з Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Налаштування SSO з Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Налаштування SSO з OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Налаштування SSO з PingOne](pingone_sso_guide.md) |
 
-### Other OIDC Providers
+### Інші постачальники OIDC
 
-Any provider that supports OpenID Connect can be integrated. Required information:
+Можна інтегрувати будь-якого постачальника, що підтримує OpenID Connect. Потрібна інформація:
 
-- Client ID
-- Client secret
-- OpenID configuration URL (usually at `/.well-known/openid-configuration`)
-- Supported scopes (typically `openid profile email`)
+- Ідентифікатор клієнта (Client ID)
+- Секрет клієнта (Client secret)
+- URL конфігурації OpenID (зазвичай за адресою `/.well-known/openid-configuration`)
+- Підтримувані області (scopes) (зазвичай `openid profile email`)
 
-Contact support@digna.ai if you need help integrating a specific provider.
-
----
-
-## Best Practices
-
-**DO:**
-- Use HTTPS in production (not HTTP)
-- Store client secrets securely (use environment variables if possible)
-- Rotate secrets periodically
-- Test in a non-production environment first
-- Document which providers are configured
-- Monitor login logs for unusual activity
-- Keep identity provider configuration in sync with digna config
-
-**DON'T:**
-- Store client secrets in version control
-- Use HTTP redirect URIs in production
-- Configure multiple providers with the same key
-- Leave default/test credentials in production
-- Expose config files containing secrets
-- Mix development and production credentials
+Якщо вам потрібна допомога з інтеграцією певного постачальника, зверніться на support@digna.ai.
 
 ---
 
-## Support
+## Найкращі практики
 
-Need help with SSO configuration?
+**РОБІТЬ:**
+- Використовуйте HTTPS у робочому середовищі (а не HTTP)
+- Зберігайте секрети клієнта в безпечному місці (за можливості використовуйте змінні середовища)
+- Періодично змінюйте секрети
+- Спочатку тестуйте в неробочому середовищі
+- Документуйте, які постачальники налаштовано
+- Відстежуйте журнали входу на предмет незвичної активності
+- Підтримуйте конфігурацію постачальника ідентичності синхронізованою з конфігурацією digna
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**НЕ РОБІТЬ:**
+- Не зберігайте секрети клієнта в системі керування версіями
+- Не використовуйте URI перенаправлення HTTP у робочому середовищі
+- Не налаштовуйте кількох постачальників з однаковим ключем
+- Не залишайте стандартні або тестові облікові дані в робочому середовищі
+- Не відкривайте доступ до файлів конфігурації, що містять секрети
+- Не змішуйте облікові дані середовищ розробки та робочого середовища
 
 ---
 
-**Last Updated:** August 30, 2026  
-**Release:** 2026.04  
+## Підтримка
+
+Потрібна допомога з налаштуванням SSO?
+
+- **Електронна пошта:** support@digna.ai
+- **Документація:** https://docs.digna.ai
+- **Вебсайт:** https://www.digna.ai
+
+---
+
+**Останнє оновлення:** 30 серпня 2026 р.  
+**Випуск:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

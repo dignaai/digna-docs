@@ -1,61 +1,62 @@
-# Source Connector for Netezza
+# Netezza šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Netezza per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Netezza.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite **NetezzaSQL** ODBC tvarkyklę (IBM Netezza kliento įrankių dalį) kompiuteryje, kuriame
+veikia *digna* backend, laikydamiesi oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Nuskaitykite tikslų užregistruotos tvarkyklės pavadinimą savo serveryje, kaip aprašyta skyriuje
+[ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    NetezzaSQL tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp kliento versijų ir platformų, o TLS apsaugotam įrenginiui (appliance) reikia
+    daugiau savybių nei čia parodyta. Naudokite tai kaip atspirties tašką ir patikrinkite
+    įdiegtos kliento versijos dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje. Riestiniai skliaustai yra įprastas šio pavadinimo rašymo būdas |
+| `SERVER` | `netezza.example.com` | Serverio pavadinimas arba IP adresas |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Duomenų bazė, kurioje pradedamas seansas |
+| `UID` | `ADMIN` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Priklausomai nuo tvarkyklės versijos, nustatymo ir saugumo reikalavimų, gali prireikti papildomų
+savybių — pavyzdžiui, `SecurityLevel` ir `CaCertFile` TLS apsaugotam įrenginiui. Kiekvieną
+parinktį, kurią siūlo tvarkyklės dialogo langai *Advanced*, *SSL* ir *Driver*, galima pridėti
+kaip savybę.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -66,37 +67,37 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Pastabos apie Netezza {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Taikomi ir katalogai, ir schemos.** *digna* duomenų bazes, kurias vartotojas gali matyti (iš
+  `_V_DATABASE`), išvardija kaip katalogus, o jų schemas (iš `_V_SCHEMA`) — po jais, todėl vienas
+  ryšys gali aptarnauti šaltinius daugiau nei vienoje duomenų bazėje. `DATABASE` nulemia tik tai,
+  kur pradedamas seansas.
+- **Identifikatoriai rašomi didžiosiomis raidėmis**, nebent jie buvo sukurti kabutėse, todėl
+  aukščiau pateiktuose pavyzdžiuose naudojami `TEST` ir `ADMIN`.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  vartotojui ten reikia teisės `CREATE TABLE`. *Session* naudoja `CREATE TEMPORARY TABLE` ir
+  **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė ir jūsų prisijungimo duomenys veikia, prieš
+įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/netezza/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+Laukai skirtuke **DSN Options** vienas prie vieno atitinka savybes iš
+[2 skyriaus](#2-odbc-properties). Priklausomai nuo jūsų Netezza tvarkyklės, nustatymo ir saugumo
+reikalavimų, gali prireikti duomenų ir skirtukuose **Advanced DSN Options**, **SSL DSN Options**
+arba **Driver Options**; paprasčiausiam nustatymui pakanka **DSN Options**.
 
-Click the **Test Connection** button.
+Spustelėkite mygtuką **Test Connection**.
 
-#### Step 2
-![Step 2](images/netezza/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Kai pamatote sėkmės ekraną, tvarkyklė veikia, o reikšmės yra teisingos.

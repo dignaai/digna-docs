@@ -1,110 +1,110 @@
-# Set up SSO with OneLogin
+# Configurați SSO cu OneLogin
 
-OneLogin is OIDC-compliant. Its distinguishing feature is that the connector type is chosen from a catalogue when the app is created and cannot be changed afterwards.
+OneLogin este compatibil OIDC. Particularitatea sa este că tipul de conector se alege dintr-un catalog la crearea aplicației și nu mai poate fi schimbat ulterior.
 
-This guide covers the **OneLogin side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Acest ghid acoperă **partea OneLogin**: crearea aplicației și colectarea valorilor de care digna are nevoie. Partea digna — `dashboard_config.toml`, testarea și depanarea — este aceeași pentru orice furnizor și este descrisă în [Prezentarea Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Înainte de a începe
 
-| Requirement | Notes |
+| Cerință | Note |
 |---|---|
-| **OneLogin role** | Account owner or an administrator permitted to add applications |
-| **Subdomain** | e.g. `yourcompany.onelogin.com` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **OneLogin role** | Proprietarul contului sau un administrator cu permisiunea de a adăuga aplicații |
+| **Subdomain** | ex. `yourcompany.onelogin.com` |
+| **digna redirect URI** | URL-ul la care utilizatorii revin după autentificare, ex. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the OIDC Application
+## Pasul 1: Creați aplicația OIDC
 
-1. Sign in to the OneLogin Admin portal
-2. Go to **Applications → Applications**
-3. Click **Add App**
-4. Search for `OpenId Connect` and select the **OpenId Connect (OIDC)** connector
-5. Set the **Display Name** to `digna`
-6. Click **Save**
+1. Conectați-vă la portalul OneLogin Admin
+2. Accesați **Applications → Applications**
+3. Faceți clic pe **Add App**
+4. Căutați `OpenId Connect` și selectați conectorul **OpenId Connect (OIDC)**
+5. Setați **Display Name** la `digna`
+6. Faceți clic pe **Save**
 
-!!! warning "The Connector Type Is Fixed at Creation"
+!!! warning "Tipul conectorului este fixat la creare"
 
-    OneLogin has separate catalogue entries for SAML and OIDC, and an application cannot be converted from one to the other. If you pick a SAML connector by mistake, delete the app and add it again — there is no setting to switch protocols.
+    OneLogin are intrări separate în catalog pentru SAML și OIDC, iar o aplicație nu poate fi convertită de la una la alta. Dacă alegeți din greșeală un conector SAML, ștergeți aplicația și adăugați-o din nou — nu există nicio setare pentru schimbarea protocolului.
 
 ---
 
-## Step 2: Configure the Redirect URI
+## Pasul 2: Configurați redirect URI-ul
 
-1. Open the **Configuration** tab
-2. In **Redirect URI's**, enter your digna callback URL:
+1. Deschideți fila **Configuration**
+2. În **Redirect URI's**, introduceți URL-ul callback digna:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Post Logout Redirect URIs** to your dashboard URL
-4. Click **Save**
+3. Opțional, setați **Post Logout Redirect URIs** la URL-ul dashboard-ului
+4. Faceți clic pe **Save**
 
-!!! note "One URI per Line"
+!!! note "Un URI pe linie"
 
-    Unlike providers that expect a comma-separated list, OneLogin's **Redirect URI's** field takes one URI per line.
-
----
-
-## Step 3: Set the Application Type and Authentication Method
-
-1. Open the **SSO** tab
-2. Confirm **Application Type** is *Web*
-3. Set **Token Endpoint → Authentication Method** to *POST* (`client_secret_post`) or *Basic* (`client_secret_basic`)
-
-!!! warning "Do Not Choose None"
-
-    Setting the authentication method to *None* makes the application a public client with no secret, and digna's backend code exchange will be rejected. Either POST or Basic works.
+    Spre deosebire de furnizorii care așteaptă o listă separată prin virgule, câmpul **Redirect URI's** din OneLogin acceptă câte un URI pe fiecare linie.
 
 ---
 
-## Step 4: Collect the Credentials
+## Pasul 3: Setați tipul aplicației și metoda de autentificare
 
-Still on the **SSO** tab:
+1. Deschideți fila **SSO**
+2. Confirmați că **Application Type** este *Web*
+3. Setați **Token Endpoint → Authentication Method** la *POST* (`client_secret_post`) sau *Basic* (`client_secret_basic`)
 
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click **Show client secret**)
+!!! warning "Nu alegeți None"
 
-The page also shows the **Issuer URL**, which confirms the discovery URL in the next step.
-
----
-
-## Step 5: Assign Users
-
-1. Open the **Access** tab
-2. Add the roles or groups whose members may use digna
-3. Click **Save**
-
-!!! note "Unassigned Users Are Refused After Login"
-
-    As with most providers, OneLogin authenticates the user first and checks entitlement second. An unassigned user signs in successfully and is then refused, which looks like a digna error rather than an access-control decision.
+    Setarea metodei de autentificare la *None* transformă aplicația într-un client public fără secret, iar schimbul de cod de la backend-ul digna va fi respins. Funcționează atât POST, cât și Basic.
 
 ---
 
-## Step 6: Build the Discovery URL
+## Pasul 4: Colectați acreditările
 
-Substitute your OneLogin subdomain:
+Tot în fila **SSO**:
+
+- **Client ID** → devine `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → devine `DIGNA_OIDC_CLIENT_SECRET` (faceți clic pe **Show client secret**)
+
+Pagina afișează și **Issuer URL**, care confirmă URL-ul de discovery de la pasul următor.
+
+---
+
+## Pasul 5: Atribuiți utilizatorii
+
+1. Deschideți fila **Access**
+2. Adăugați rolurile sau grupurile ai căror membri pot folosi digna
+3. Faceți clic pe **Save**
+
+!!! note "Utilizatorii neatribuiți sunt refuzați după autentificare"
+
+    Ca la majoritatea furnizorilor, OneLogin autentifică mai întâi utilizatorul și abia apoi verifică dreptul de acces. Un utilizator neatribuit se autentifică cu succes și este apoi refuzat, ceea ce pare o eroare digna, nu o decizie de control al accesului.
+
+---
+
+## Pasul 6: Construiți URL-ul de discovery
+
+Înlocuiți cu subdomeniul dvs. OneLogin:
 
 ```
 https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration
 ```
 
-For example:
+De exemplu:
 
 ```
 https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration
 ```
 
-!!! tip "The /2 Is the API Version"
+!!! tip "/2 este versiunea API"
 
-    OneLogin's current OIDC implementation lives under `/oidc/2/`. Older documentation shows `/oidc/` without a version, which points at the retired first version. Check the **Issuer URL** on the SSO tab if in doubt — the discovery URL is the issuer plus `/.well-known/openid-configuration`.
+    Implementarea OIDC actuală a OneLogin se află sub `/oidc/2/`. Documentația mai veche arată `/oidc/` fără versiune, ceea ce indică prima versiune, retrasă. Dacă aveți dubii, verificați **Issuer URL** din fila SSO — URL-ul de discovery este issuer-ul plus `/.well-known/openid-configuration`.
 
 ---
 
-## Step 7: Configure digna
+## Pasul 7: Configurați digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -127,37 +127,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.onelogin.com/oidc/2/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `onelogin` here.
+Cheia (`key`) din ambele fișiere trebuie să se potrivească — `onelogin` aici.
 
 ---
 
-## Step 8: Test
+## Pasul 8: Testați
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Reporniți backend-ul și serverul web, apoi deschideți dashboard-ul. Consultați [Testarea autentificării](overview.md#testing-login) pentru lista completă de verificări.
 
 ---
 
-## Troubleshooting OneLogin
+## Depanarea OneLogin
 
 ### redirect_uri did not match
 
-The callback URL is missing from **Configuration → Redirect URI's**, or the entries were separated by commas rather than newlines.
+URL-ul callback lipsește din **Configuration → Redirect URI's**, sau intrările au fost separate prin virgule în loc de linii noi.
 
-### invalid_client at the Token Step
+### invalid_client la pasul Token
 
-**Token Endpoint → Authentication Method** is set to *None*, or the client secret in `config.toml` is stale. Reveal the secret on the **SSO** tab and compare.
+**Token Endpoint → Authentication Method** este setat la *None*, sau client secret-ul din `config.toml` este învechit. Afișați secretul în fila **SSO** și comparați.
 
-### The App Does Not Appear for Users
+### Aplicația nu apare pentru utilizatori
 
-No role or group has been granted access on the **Access** tab.
+Niciunui rol sau grup nu i s-a acordat acces în fila **Access**.
 
-### 404 on the Discovery URL
+### 404 la URL-ul de discovery
 
-The subdomain is wrong, or the URL omits `/oidc/2/`. Compare against the **Issuer URL** shown on the SSO tab.
+Subdomeniul este greșit sau URL-ul omite `/oidc/2/`. Comparați cu **Issuer URL** afișat în fila SSO.
 
 ---
 
-## See Also
+## Vezi și
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Prezentarea Single Sign-On](overview.md) — referință de configurare, testare și depanare generală
 - [OneLogin: OpenID Connect](https://developers.onelogin.com/openid-connect)

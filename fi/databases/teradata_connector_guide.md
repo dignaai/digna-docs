@@ -1,63 +1,63 @@
-# Source Connector for Teradata
+# Lähdeliitin Teradatalle
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Tämä ohje kuvaa, miten *digna* määritetään yhdistämään Teradataan **ODBC:n** kautta
+**DSN-vapaalla** yhteysmerkkijonolla.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Määrityksen *dignan* puoli on sama jokaiselle teknologialle — missä yhteydet luodaan, miten
+ominaisuuksien arvot salataan, miten yhteys testataan ja mitä profilointitilat tarkoittavat.
+Se on kuvattu sivulla [Tietokantayhteyksien yleiskatsaus](overview.md). Tämä sivu kattaa sen,
+mikä on Teradatalle ominaista.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Asenna ODBC-ajuri {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Asenna **ODBC Driver for Teradata** koneelle, jolla *dignan* backend toimii, toimittajan
+virallisen asennusohjeen mukaisesti.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+Ajuri rekisteröityy nimellä, joka sisältää sen version, esimerkiksi
+**Teradata Database ODBC Driver 20.00**. Lue tarkka rekisteröity nimi palvelimeltasi, kuten on
+kuvattu kohdassa [Asenna ODBC-ajuri digna-palvelimelle](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC-ominaisuudet {: #2-odbc-properties }
+
+!!! important "Esimerkki, ei määrittely"
+
+    Alla oleva joukko on yksi toimivaksi todettu yhdistelmä. Ominaisuudet kuuluvat Teradatan
+    ODBC-ajurille, joten niiden nimet, oletusarvot ja hyväksytyt arvot vaihtelevat
+    ajuriversioiden välillä — versio on osa itse ajurin nimeä — sekä alustojen välillä. Käytä
+    tätä lähtökohtana ja tarkista asentamasi ajuriversion dokumentaatio.
+
+Lisää seuraavat ominaisuudet **Add DB Connection** -näkymässä:
+
+| Avain | Esimerkkiarvo | Huomiot |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Täytyy vastata *digna*-palvelimelle rekisteröityä ajurin nimeä |
+| `DBCNAME` | `teradata.example.com` | Palvelimen nimi tai IP-osoite. Teradatan oma nimi isäntäominaisuudelle |
+| `UID` | `digna_source_user` | Tietokantakäyttäjä |
+| `PWD` | `<password>` | Valitse **Encrypted** |
 
-The resulting connection string looks like this:
+Tuloksena oleva yhteysmerkkijono näyttää tältä:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Hyödyllisiä lisäominaisuuksia:
 
-| Key | Example value | Notes |
+| Avain | Esimerkkiarvo | Huomiot |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Kirjautumismekanismi. `TD2` on Teradatan oletus; käytä hakemistotodennukseen arvoa `LDAP` |
+| `DefaultDatabase` | `dad` | Tietokanta, josta istunto alkaa |
+| `CharacterSet` | `UTF8` | Aseta tämä, jos istunnon oletusmerkistö turmelisi muun kuin ASCII-datan |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna*-määritys {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Anna **Add DB Connection** -näkymässä seuraavat tiedot:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +68,39 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Huomioita Teradatasta {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Teradata-tietokanta on katalogi, ei skeema.** *digna* listaa tietokannat, jotka käyttäjä saa
+  nähdä (näkymästä `DBC.DatabasesV`), katalogeina, eikä skeemataso ole käytössä. Kun lisäät
+  tietolähteen, valitse tietokanta katalogiksi; skeema ilmoitetaan arvolla *not applicable*.
+- **Yksi yhteys tavoittaa jokaisen sallitun tietokannan**, joten yksi yhteys voi palvella
+  lähteitä useissa tietokannoissa — toisin kuin teknologiat, joissa yhteys on sidottu yhteen
+  tietokantaan.
+- **Work Schema on tietokanta.** *Permanent*-profilointia varten nimeä Teradata-tietokanta, joka
+  sisältää työtaulut, ja anna käyttäjälle siihen `CREATE TABLE` -oikeudet sekä `PERM`-tilan
+  varaus — tietokanta, jonka perm-tila on nolla, ei voi sisältää taulua.
+- **Profilointitilat.** *Permanent* luo taulut **Work Schemaan**. *Session* käyttää
+  `VOLATILE`-taulua, joka tarvitsee `SPOOL`-tilaa mutta ei perm-tilaa eikä oikeuksia
+  **Work Schemaan**. *Standard* tarvitsee vain lukuoikeuden.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Ajurin tarkistaminen (valinnainen) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+ODBC-tietolähteen määrittäminen ei ole tarpeen DSN-vapaassa yhteydessä, mutta ajurin oma
+ikkuna on kätevä tapa varmistaa, että ajuri ja tunnistetietosi toimivat, ennen kuin syötät ne
+*dignaan*.
 
-#### Step 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+#### Vaihe 1
+![Vaihe 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Tämän ikkunan **Name or IP address** -kenttä on [kohdan 2](#2-odbc-properties)
+`DBCNAME`-ominaisuus.
 
-Click the **Test** button.
+Klikkaa **Test**-painiketta.
 
-#### Step 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+#### Vaihe 2
+![Vaihe 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Anna käyttäjätunnus ja salasana ja klikkaa sitten **OK**-painiketta. Onnistumisnäkymä
+vahvistaa, että ajuri ja tunnistetiedot toimivat.

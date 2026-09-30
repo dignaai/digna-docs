@@ -4169,6 +4169,7 @@ Le tableau suivant récapitule ce que chaque catégorie de commandes charge avan
 | `license check` | non | c'*est* la vérification |
 | `crypt` | oui | non |
 | `serve` | oui | non |
+| `windows` | non (le service le lit au démarrage) | non |
 | `project` | oui | non |
 | `user` | oui | oui |
 | `inspection` | oui | oui |
@@ -4333,6 +4334,56 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+La commande `repo prune` supprime les lignes qui ont survécu au projet ou à la source de données auxquels elles appartenaient. La suppression d'un projet ou d'une source de données supprime l'objet lui-même, mais laisse derrière elle ses profils, prédictions, statuts et nombres de lignes — un compromis délibéré, puisqu'une suppression qui nettoierait aussi ces tables ferait attendre l'utilisateur. `repo prune` est la passe de nettoyage qui les efface, et elle peut être exécutée sans risque à tout moment : elle ne supprime jamais que des lignes dont le projet ou la source de données n'existe plus.
+
+Les lignes écrites par le backend Python dans des tables que la release actuelle n'utilise plus sont laissées intactes.
+
+#### Utilisation de la commande
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Options
+- `--dry-run` : Indique ce qui serait supprimé, sans rien supprimer.
+
+Seules les tables contenant des lignes orphelines sont listées. S'il n'y en a aucune, la commande affiche `No orphaned rows found.` et se termine.
+
+#### Exemple
+```bash
+digna repo prune
+```
+
+#### Exemple de sortie
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Pour obtenir le même rapport sans rien supprimer :
+```bash
+digna repo prune --dry-run
+```
+
+Les nombres de lignes sont identiques ; seule la dernière ligne diffère :
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -4644,6 +4695,69 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+La commande `project cleanup` supprime les résultats d'inspection qu'un projet a accumulés sur une plage de dates — profils, prédictions, nombres de lignes et tous les statuts de contrôle, d'attribut, de jeu de données et de source de données. Elle supprime exactement ce qu'une inspection de ces dates a écrit, de sorte que la plage peut ensuite être réinspectée pour la reconstruire.
+
+L'historique de Timeliness et du Schema Tracker n'est **pas** supprimé : il enregistre ce que digna a observé un jour donné, et non un résultat qui en est dérivé ; le nettoyage d'une plage de dates passée le laisse donc intact.
+
+Chaque source de données est nettoyée dans sa propre transaction, de sorte qu'une exécution interrompue laisse des sources de données complètes plutôt qu'une source à moitié nettoyée.
+
+#### Utilisation de la commande
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Arguments
+- **PROJECT_NAME** : Projet à nettoyer (obligatoire). Un seul projet par appel.
+- **FROM_DATE** : Première date dont les résultats doivent être supprimés, au format `YYYY-MM-DD` (obligatoire).
+- **TO_DATE** : Dernière date dont les résultats doivent être supprimés, incluse, au format `YYYY-MM-DD` (obligatoire).
+
+#### Options
+- `--table-name`, `-n` : Limite le nettoyage à ces sources de données. Plusieurs noms peuvent être indiqués, séparés par des espaces.
+- `--table-filter` : Limite le nettoyage aux sources de données dont le nom contient cette sous-chaîne.
+- `--dry-run` : Liste les sources de données qui seraient nettoyées, sans rien supprimer.
+- `--timing` : Affiche la durée du nettoyage.
+
+`--table-name` et `--table-filter` se combinent par un OU : une source de données est nettoyée si elle est nommée ou si la sous-chaîne correspond. La commande échoue si aucune source de données ne correspond, plutôt que de signaler la réussite d'un nettoyage qui n'a rien fait.
+
+#### Exemple
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Limité à une seule source de données :
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Exemple de sortie
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Pour voir quelles sources de données seraient nettoyées sans rien supprimer :
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Chaque ligne est marquée, de sorte qu'une exécution à blanc ne peut pas être confondue avec une exécution réelle :
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Gestion des inspections
 
 ---
@@ -4817,6 +4931,88 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Gestion du service Windows
+
+Disponible uniquement sous Windows. Ces commandes enregistrent le backend ***digna*** auprès du gestionnaire de services Windows et le pilotent ; le service lui-même exécute `serve` en arrière-plan. Chaque commande doit être exécutée depuis une invite de commandes élevée (administrateur), et chacune accepte `--name` afin de pouvoir cibler un service enregistré sous un nom autre que celui par défaut.
+
+---
+
+### windows install
+
+La commande `windows install` enregistre ***digna*** en tant que service Windows.
+
+L'adresse et le port indiqués ici sont inscrits dans l'enregistrement du service et sont ceux sur lesquels le service se lie — ils ne sont pas lus depuis `config.toml`. Pour les modifier ultérieurement, désinstallez le service puis réinstallez-le.
+
+#### Utilisation de la commande
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Options
+- `--name` : Nom sous lequel enregistrer le service (par défaut : `digna`).
+- `--display-name` : Nom affiché dans services.msc (par défaut : `digna`).
+- `--description` : Description affichée dans services.msc (par défaut : `digna data quality backend`).
+- `--address` : Adresse sur laquelle le service lie son API (par défaut : `127.0.0.1`).
+- `--port` : Port sur lequel le service lie son API (par défaut : `8000`).
+- `--working-dir` : Répertoire contenant `config.toml` et `license.toml`, dont le service fait son répertoire de travail (par défaut : le répertoire de l'exécutable `digna`).
+- `--start-type` : Moment où le service démarre — `auto` avec Windows, `manual` uniquement sur demande, `disabled` enregistré mais refusant de démarrer (par défaut : `auto`).
+- `--account` : Compte sous lequel exécuter le service, par exemple `DOMAIN\user` ou `.\user` (par défaut : `LocalSystem`).
+- `--password` : Mot de passe du compte indiqué par `--account`.
+
+#### Exemple
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Pour l'enregistrer sous un second nom, en l'exécutant sous un compte de domaine :
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+La commande `windows start` démarre un service enregistré.
+
+#### Utilisation de la commande
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Options
+- `--name` : Nom sous lequel le service est enregistré (par défaut : `digna`).
+
+---
+
+### windows stop
+
+La commande `windows stop` arrête un service en cours d'exécution. Arrêtez le service avant de remplacer tout fichier de l'application.
+
+#### Utilisation de la commande
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Options
+- `--name` : Nom sous lequel le service est enregistré (par défaut : `digna`).
+
+---
+
+### windows uninstall
+
+La commande `windows uninstall` désenregistre le service. Arrêtez-le d'abord.
+
+#### Utilisation de la commande
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Options
+- `--name` : Nom sous lequel le service est enregistré (par défaut : `digna`).
 
 ---
 
@@ -7213,8 +7409,10 @@ Puis collez les instructions à l'invite `postgres=#` et tapez `\q` pour quitter
 3. Après extraction, vous devriez voir les éléments suivants :
    - `dashboard/` — interface du tableau de bord Web
    - `digna` — exécutable principal (backend + CLI combinés)
-   - `config.toml` — fichier de configuration
-   - `license.toml` — fichier de licence (copiez le vôtre ici)
+
+!!! info "Les fichiers de configuration et de licence ne font pas partie du paquet"
+
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont livrés avec l'installation — vous créez les deux vous-même, dans [Configuration du backend](#backend-configuration) et [Configuration du tableau de bord](#dashboard-configuration). `license.toml` n'est pas livré non plus ; digna le fournit séparément, comme le décrit l'étape 3.
 
 Pour extraire depuis le shell :
 
@@ -7534,9 +7732,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Étape 1 : Déployer le tableau de bord sur le serveur Web
 
-Le tableau de bord digna possède son propre fichier `config.toml` séparé situé dans le répertoire `dashboard/`. Cette configuration est déjà fournie et ne nécessite pas de modification lors de l'installation initiale. Vous ne devez la modifier que si vous voulez personnaliser la connexion au backend.
+Le tableau de bord digna lit sa propre configuration dans `dashboard/dashboard_config.toml`. Ce fichier n'est pas livré avec l'installation — vous le créez dans le répertoire `dashboard/`, à côté des fichiers du tableau de bord.
 
-Si vous devez modifier la configuration du tableau de bord (par ex. pour des déploiements multi‑instance), reportez-vous à la documentation du tableau de bord.
+Son contenu est décrit sous [Authentification unique (SSO)](../../../sso/overview.md), là où le fichier est également nécessaire : il contient les options de connexion proposées par le tableau de bord et, pour les déploiements multi‑instance, la connexion au backend.
 
 Choisissez votre serveur web et suivez les étapes de déploiement correspondantes.
 
@@ -7871,7 +8069,7 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Important"
 
-    Le fichier `config.toml` **n'est jamais** inclus dans le ZIP d'installation. Votre configuration existante reste en sécurité.
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont jamais inclus dans le ZIP d'installation — l'équipe digna ne livre jamais aucun de ces deux fichiers. Votre configuration existante n'est donc pas touchée par la mise à niveau, et les copies se trouvant dans les dossiers renommés `*_old` sont les seules dont vous disposez.
 
 #### Étape 4 : Restaurer vos fichiers de configuration
 
@@ -7923,7 +8121,11 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Répétez la section pour chaque fournisseur, et gardez chaque clé identique au `key` défini dans `dashboard_config.toml`. `digna config check` signale `oidc_clients` comme FAILED tant que l'ancienne forme subsiste. Seules les installations qui utilisent l'authentification unique sont concernées.
 
-#### Étape 5 : Vérifier la configuration
+#### Étape 5 : Recharger le serveur Web
+
+Le tableau de bord est un ensemble de fichiers statiques ; votre serveur Web — ainsi que le navigateur — peut donc encore servir la version précédente. Rechargez ou redémarrez le serveur Web qui héberge le dossier `dashboard`, puis rechargez la page en forçant l'actualisation (++ctrl+f5++).
+
+#### Étape 6 : Vérifier la configuration
 
 Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au référentiel :
 
@@ -7933,7 +8135,23 @@ Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au r�
 
 Chaque section doit être signalée OK. Corrigez tout ce qui est signalé comme FAILED et relancez la commande avant de continuer.
 
-#### Étape 6 : Mettre à niveau le schéma du repository
+#### Étape 7 : Remplacer le fichier de licence
+
+Chaque release fait l'objet d'une licence distincte. Copiez le `license.toml` fourni par l'équipe digna pour cette release dans le répertoire d'installation, en remplaçant l'ancien :
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ne conservez pas la licence précédente"
+
+    Un `license.toml` émis pour une release antérieure ne couvre pas celle-ci, et chaque commande qui vérifie la licence — `user`, `inspection`, `repo` — s'interrompt avant de toucher au référentiel lorsque la vérification échoue. Vérifiez-la avant d'aller plus loin :
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Étape 8 : Mettre à niveau le schéma du repository
 
 Placez-vous dans votre répertoire d'installation digna et exécutez :
 
@@ -7944,7 +8162,7 @@ cd /opt/digna
 
 Cela met à jour le schéma PostgreSQL vers la dernière version tout en préservant toutes les données existantes.
 
-#### Étape 7 : Redémarrer les services
+#### Étape 9 : Redémarrer les services
 
 Si vous l'exécutez en tant que service systemd :
 
@@ -7975,7 +8193,7 @@ Sur la famille RHEL, réappliquez l'étiquetage SELinux si le répertoire `dashb
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Étape 8 : Vérifier la mise à niveau
+#### Étape 10 : Vérifier la mise à niveau
 
 1. Accédez au tableau de bord digna
 2. Vérifiez que l'interface se charge correctement
@@ -8270,8 +8488,10 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Après extraction, vous devriez voir les éléments suivants :
    - `dashboard/` — Interface web du tableau de bord
    - `digna` — Exécutable principal (backend + CLI combinés)
-   - `config.toml` — Fichier de configuration
-   - `license.toml` — Fichier de licence (copiez le vôtre ici)
+
+!!! info "Les fichiers de configuration et de licence ne font pas partie du paquet"
+
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont livrés avec l'installation — vous créez les deux vous-même, dans [Configuration du backend](#backend-configuration) et [Configuration du tableau de bord](#dashboard-configuration). `license.toml` n'est pas livré non plus ; digna le fournit séparément, comme le décrit l'étape 3.
 
 ### Étape 3 : Installer le fichier de licence
 
@@ -8511,9 +8731,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Étape 1 : Déployer le dashboard sur le serveur web
 
-Le dashboard digna possède son propre fichier `config.toml` séparé situé dans le répertoire `dashboard/`. Cette configuration est fournie et ne nécessite pas de modifications lors de l'installation initiale. Vous ne devez la modifier que si vous devez personnaliser la connexion au backend.
+Le dashboard digna lit sa propre configuration dans `dashboard/dashboard_config.toml`. Ce fichier n'est pas livré avec l'installation — vous le créez dans le répertoire `dashboard/`, à côté des fichiers du dashboard.
 
-Si vous devez modifier la configuration du dashboard (par ex., pour des déploiements multi-instance), référez-vous à la documentation du dashboard.
+Son contenu est décrit sous [Authentification unique (SSO)](../../../sso/overview.md), là où le fichier est également nécessaire : il contient les options de connexion proposées par le dashboard et, pour les déploiements multi-instance, la connexion au backend.
 
 Choisissez votre serveur web et suivez les étapes de déploiement correspondantes.
 
@@ -8568,19 +8788,22 @@ Exécuter le backend digna en tant que service Windows garantit qu'il :
 - Redémarre automatiquement en cas de crash
 - Peut être géré via les Services Windows
 
-### Fichiers de gestion du service
+### Les commandes `windows`
 
-Tous les fichiers nécessaires se trouvent dans le répertoire d'installation de digna sous : `bin/`
+Le service est géré par l'exécutable `digna` lui-même, au moyen des sous-commandes `digna windows`. Il n'y a aucun fichier batch à exécuter.
 
-Les fichiers batch suivants sont disponibles :
-- `install_service.bat` — Enregistre digna en tant que service Windows
-- `uninstall_service.bat` — Désenregistre le service
-- `start_service.bat` — Démarre le service
-- `stop_service.bat` — Arrête le service
+| Commande | Rôle |
+|---|---|
+| `digna windows install` | Enregistre digna en tant que service Windows |
+| `digna windows start` | Démarre le service enregistré |
+| `digna windows stop` | Arrête le service en cours d'exécution |
+| `digna windows uninstall` | Désenregistre le service |
 
 !!! warning "Administrateur requis"
 
-    Tous les fichiers batch doivent être exécutés avec des privilèges Administrateur.
+    Les quatre commandes doivent être exécutées depuis une Invite de commandes ouverte en tant qu'administrateur.
+
+Chaque commande accepte `--name` pour cibler un service enregistré sous un nom autre que celui par défaut. La liste complète des options figure dans la [référence CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Installation du service
 
@@ -8588,37 +8811,59 @@ Les fichiers batch suivants sont disponibles :
    - Clic droit sur Invite de commandes
    - Sélectionnez "Exécuter en tant qu'administrateur"
 
-2. **Se placer dans le dossier bin**
+2. **Se placer dans votre répertoire d'installation digna**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Exécuter le script d'installation**
+3. **Enregistrer le service**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Le serveur digna est maintenant enregistré comme service Windows avec démarrage **automatique** activé. Le service ne démarre pas immédiatement — voir la section suivante pour le démarrer.
+!!! important "Indiquez l'adresse et le port, sauf si les valeurs par défaut vous conviennent"
+
+    `install` inscrit l'adresse et le port dans l'enregistrement du service, et le service se lie exactement à ce qui a été inscrit. Les valeurs par défaut sont `127.0.0.1` et `8000`, qui n'acceptent que les connexions provenant de la machine elle-même. Un dashboard situé sur un autre hôte ne peut pas l'atteindre ; indiquez donc l'adresse sur laquelle le backend doit écouter :
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Ces valeurs ne sont pas lues depuis `config.toml`. Pour les modifier ultérieurement, désinstallez le service puis réinstallez-le avec les nouvelles valeurs.
+
+Le service est enregistré avec démarrage **automatique** ; il démarrera donc avec Windows. Il ne démarre pas immédiatement — voir la section suivante.
+
+#### Options d'installation
+
+| Option | Valeur par défaut | Rôle |
+|---|---|---|
+| `--name` | `digna` | Nom sous lequel enregistrer le service |
+| `--display-name` | `digna` | Nom affiché dans services.msc |
+| `--description` | `digna data quality backend` | Description affichée dans services.msc |
+| `--address` | `127.0.0.1` | Adresse sur laquelle le service lie son API |
+| `--port` | `8000` | Port sur lequel le service lie son API |
+| `--working-dir` | le répertoire de l'exécutable `digna` | Répertoire contenant `config.toml` et `license.toml`, dont le service fait son répertoire de travail |
+| `--start-type` | `auto` | `auto` démarre avec Windows, `manual` démarre uniquement sur demande, `disabled` enregistre le service mais refuse de le démarrer |
+| `--account` | `LocalSystem` | Compte sous lequel exécuter le service, par exemple `DOMAIN\user` ou `.\user` |
+| `--password` | | Mot de passe du compte indiqué par `--account` |
+
+!!! tip "Exécution sous un compte de domaine"
+
+    `LocalSystem` n'a pas d'identité réseau : l'authentification Windows auprès de SQL Server et tout accès à un partage réseau échoueront donc. Installez le service avec `--account` et `--password` lorsqu'il doit accéder à des ressources en tant qu'utilisateur spécifique.
 
 ### Démarrer et arrêter le service
 
 #### Pour démarrer le service
 
-1. Ouvrez l'Invite de commandes en tant qu'administrateur
-2. Placez-vous dans `digna\bin`
-3. Exécutez :
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Pour arrêter le service
 
-1. Ouvrez l'Invite de commandes en tant qu'administrateur
-2. Placez-vous dans `digna\bin`
-3. Exécutez :
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Astuce"
 
@@ -8628,37 +8873,40 @@ Le serveur digna est maintenant enregistré comme service Windows avec démarrag
 
 Si vous devez déplacer l'installation digna :
 
-1. **Désinstaller le service actuel**
+1. **Arrêter et désenregistrer le service actuel**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Déplacer les fichiers de l'application**
    - Déplacez l'ensemble du dossier d'installation digna vers le nouvel emplacement
 
-3. **Réinstaller le service**
+3. **Enregistrer à nouveau le service depuis le nouvel emplacement**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Reprenez les valeurs `--address`, `--port` ou `--account` que vous aviez utilisées la première fois — l'enregistrement précédent n'existe plus.
 
 4. **Démarrer le service**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Désinstaller le service
 
 1. **Arrêter le service en cours d'exécution**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Désinstaller le service**
+2. **Désenregistrer le service**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Le serveur digna est maintenant désenregistré en tant que service Windows.
@@ -8696,14 +8944,26 @@ Avant de mettre à niveau digna, sauvegardez votre repository (PostgreSQL) pour 
 
 ### Processus de mise à niveau
 
-#### Étape 1 : Arrêter le service digna
+#### Étape 1 : Arrêter et désenregistrer l'ancien service
 
-Si digna s'exécute en tant que service Windows, arrêtez-le d'abord :
+Si digna s'exécute en tant que service Windows, arrêtez-le à l'aide des **fichiers batch de votre installation actuelle** — les commandes `digna windows` appartiennent à la nouvelle version et ne sont pas encore disponibles :
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Désenregistrez ensuite le service, là encore avec l'ancien fichier batch. L'enregistrement pointe vers l'ancien exécutable et ses scripts, que cette mise à niveau remplace tous deux ; il ne peut donc pas être réutilisé :
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Désenregistrez le service avant de renommer quoi que ce soit"
+
+    `uninstall_service.bat` se trouve dans le dossier `bin` que vous êtes sur le point de renommer, et c'est le seul moyen de supprimer l'enregistrement qu'il a créé. Exécutez-le tant que l'ancienne installation est encore en place. Si le dossier a déjà été renommé, redonnez-lui son nom d'origine, désenregistrez le service, puis continuez.
+
+    Notez le compte sous lequel le service s'exécutait, ainsi que l'adresse et le port sur lesquels il servait — vous en aurez besoin à l'étape 9.
 
 #### Étape 2 : Sauvegarder l'installation actuelle
 
@@ -8724,7 +8984,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend et dignacli ne sont plus utilisés"
 
-    À partir de la version 2026.06, `dignabackend` et `dignacli` sont remplacés par l'exécutable unique `digna`, qui réunit le backend et la CLI. Ne conservez `dignabackend_old` et `dignacli_old` que jusqu'à la vérification de la mise à niveau — vous pourrez ensuite supprimer les deux dossiers. Conservez `dashboard_old` jusqu'à ce que vous en ayez restauré vos fichiers de configuration (voir l'étape 4).
+    À partir de la version 2026.06, `dignabackend` et `dignacli` sont remplacés par l'exécutable unique `digna`, qui réunit le backend et la CLI. Ne conservez `dignabackend_old` et `dignacli_old` que jusqu'à la vérification de la mise à niveau — vous pourrez ensuite supprimer les deux dossiers. Conservez `dashboard_old` jusqu'à ce que vous en ayez restauré vos fichiers de configuration (voir l'étape 4). Le dossier `bin` disparaît également : ses fichiers batch pilotaient l'ancien service et la version 2026.06 ne les livre plus ; une fois le service désenregistré à l'étape 1, ils ne servent plus qu'à induire en erreur.
 
 #### Étape 3 : Extraire et déployer la nouvelle version
 
@@ -8734,7 +8994,7 @@ ren dashboard dashboard_old
 
 !!! warning "Important"
 
-    Le fichier `config.toml` n'est **jamais** inclus dans le ZIP d'installation. Votre configuration existante reste intacte.
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont jamais inclus dans le ZIP d'installation — l'équipe digna ne livre jamais aucun de ces deux fichiers. Votre configuration existante n'est donc pas touchée par la mise à niveau, et les copies se trouvant dans les dossiers renommés `*_old` sont les seules dont vous disposez.
 
 #### Étape 4 : Restaurer vos fichiers de configuration
 
@@ -8785,7 +9045,11 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Répétez la section pour chaque fournisseur, et gardez chaque clé identique au `key` défini dans `dashboard_config.toml`. `digna config check` signale `oidc_clients` comme FAILED tant que l'ancienne forme subsiste. Seules les installations qui utilisent l'authentification unique sont concernées.
 
-#### Étape 5 : Vérifier la configuration
+#### Étape 5 : Recharger le serveur web
+
+Le dashboard est un ensemble de fichiers statiques ; votre serveur web — ainsi que le navigateur — peut donc encore servir la version précédente. Rechargez ou redémarrez le serveur web qui héberge le dossier `dashboard`, puis rechargez la page en forçant l'actualisation (++ctrl+f5++).
+
+#### Étape 6 : Vérifier la configuration
 
 Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au référentiel :
 
@@ -8795,7 +9059,23 @@ digna config check
 
 Chaque section doit être signalée OK. Corrigez tout ce qui est signalé comme FAILED et relancez la commande avant de continuer.
 
-#### Étape 6 : Mettre à niveau le schéma du repository
+#### Étape 7 : Remplacer le fichier de licence
+
+Chaque version fait l'objet d'une licence distincte. Copiez le `license.toml` fourni par l'équipe digna pour cette version dans le répertoire d'installation, en remplaçant l'ancien :
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Ne conservez pas la licence précédente"
+
+    Un `license.toml` émis pour une version antérieure ne couvre pas celle-ci, et chaque commande qui vérifie la licence — `user`, `inspection`, `repo` — s'interrompt avant de toucher au référentiel lorsque la vérification échoue. Vérifiez-la avant d'aller plus loin :
+
+    ```bash
+    digna license check
+    ```
+
+#### Étape 8 : Mettre à niveau le schéma du repository
 
 Placez-vous dans le répertoire d'installation de digna et exécutez :
 
@@ -8805,14 +9085,17 @@ digna repo upgrade
 
 Cela met à jour le schéma PostgreSQL vers la version la plus récente tout en conservant toutes les données existantes.
 
-#### Étape 7 : Redémarrer les services
+#### Étape 9 : Enregistrer et démarrer le service
 
-Si vous exécutez digna en tant que service Windows :
+L'ancien enregistrement a été supprimé à l'étape 1 ; le service est donc enregistré à nouveau — cette fois avec l'exécutable `digna`, qui n'a pas de fichiers batch :
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Donnez à `--address` et `--port` les valeurs sur lesquelles servait l'ancien service, sauf si vous souhaitez les nouvelles valeurs par défaut `127.0.0.1` et `8000` ; elles sont inscrites dans l'enregistrement et ne sont plus lues depuis `config.toml`. Ajoutez `--account` et `--password` si l'ancien service s'exécutait sous un compte de domaine. Voir [Exécuter digna en tant que service Windows](#running-digna-as-a-windows-service) pour la liste complète des options.
 
 Si vous exécutez manuellement, redémarrez le serveur :
 
@@ -8823,7 +9106,7 @@ digna serve --address <address> --port <port>
 
 Si vous utilisez IIS ou Tomcat, redémarrez le serveur web correspondant.
 
-#### Étape 8 : Vérifier la mise à niveau
+#### Étape 10 : Vérifier la mise à niveau
 
 1. Accédez au dashboard digna
 2. Vérifiez que l'interface se charge correctement
@@ -9268,8 +9551,10 @@ Puis collez les instructions à l'invite `postgres=#` et tapez `\q` pour sortir.
 3. Après extraction, vous devriez voir les éléments suivants :
    - `dashboard/` — Interface Web du tableau de bord
    - `digna` — Exécutable principal (backend + CLI combinés)
-   - `config.toml` — Fichier de configuration
-   - `license.toml` — Fichier de licence (copiez le vôtre ici)
+
+!!! info "Les fichiers de configuration et de licence ne font pas partie du paquet"
+
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont livrés avec l'installation — vous créez les deux vous-même, dans [Configuration du backend](#backend-configuration) et [Configuration du tableau de bord](#dashboard-configuration). `license.toml` n'est pas livré non plus ; digna le fournit séparément, comme le décrit l'étape 3.
 
 Pour extraire depuis le Terminal :
 
@@ -9570,9 +9855,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Étape 1 : Déployer le tableau de bord sur le serveur Web
 
-Le tableau de bord digna possède son propre fichier `config.toml` situé dans le répertoire `dashboard/`. Cette configuration est déjà fournie et ne nécessite pas de modifications lors de l'installation initiale. Vous n'avez besoin de la modifier que si vous devez personnaliser la connexion au backend.
+Le tableau de bord digna lit sa propre configuration dans `dashboard/dashboard_config.toml`. Ce fichier n'est pas livré avec l'installation — vous le créez dans le répertoire `dashboard/`, à côté des fichiers du tableau de bord.
 
-Si vous devez ajuster la configuration du tableau de bord (par ex., pour des déploiements multi-instance), consultez la documentation du tableau de bord.
+Son contenu est décrit sous [Authentification unique (SSO)](../../../sso/overview.md), là où le fichier est également nécessaire : il contient les options de connexion proposées par le tableau de bord et, pour les déploiements multi‑instance, la connexion au backend.
 
 Choisissez votre serveur Web et suivez les étapes de déploiement correspondantes.
 
@@ -9851,7 +10136,7 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Important"
 
-    Le fichier `config.toml` **n'est jamais** inclus dans le ZIP d'installation. Votre configuration existante reste protégée.
+    Ni `config.toml` ni `dashboard/dashboard_config.toml` ne sont jamais inclus dans le ZIP d'installation — l'équipe digna ne livre jamais aucun de ces deux fichiers. Votre configuration existante n'est donc pas touchée par la mise à niveau, et les copies se trouvant dans les dossiers renommés `*_old` sont les seules dont vous disposez.
 
 #### Étape 4 : Restaurer vos fichiers de configuration
 
@@ -9903,7 +10188,11 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Répétez la section pour chaque fournisseur, et gardez chaque clé identique au `key` défini dans `dashboard_config.toml`. `digna config check` signale `oidc_clients` comme FAILED tant que l'ancienne forme subsiste. Seules les installations qui utilisent l'authentification unique sont concernées.
 
-#### Étape 5 : Vérifier la configuration
+#### Étape 5 : Recharger le serveur Web
+
+Le tableau de bord est un ensemble de fichiers statiques ; votre serveur Web — ainsi que le navigateur — peut donc encore servir la version précédente. Rechargez ou redémarrez le serveur Web qui héberge le dossier `dashboard`, puis rechargez la page en forçant l'actualisation (++cmd+shift+r++).
+
+#### Étape 6 : Vérifier la configuration
 
 Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au référentiel :
 
@@ -9913,7 +10202,23 @@ Assurez-vous que le `config.toml` mis à jour est complet avant de toucher au r�
 
 Chaque section doit être signalée OK. Corrigez tout ce qui est signalé comme FAILED et relancez la commande avant de continuer.
 
-#### Étape 6 : Mettre à niveau le schéma du dépôt
+#### Étape 7 : Remplacer le fichier de licence
+
+Chaque release fait l'objet d'une licence distincte. Copiez le `license.toml` fourni par l'équipe digna pour cette release dans le répertoire d'installation, en remplaçant l'ancien :
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ne conservez pas la licence précédente"
+
+    Un `license.toml` émis pour une release antérieure ne couvre pas celle-ci, et chaque commande qui vérifie la licence — `user`, `inspection`, `repo` — s'interrompt avant de toucher au référentiel lorsque la vérification échoue. Vérifiez-la avant d'aller plus loin :
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Étape 8 : Mettre à niveau le schéma du dépôt
 
 Allez dans votre répertoire d'installation digna et exécutez :
 
@@ -9924,7 +10229,7 @@ cd /opt/digna
 
 Cela met à jour le schéma PostgreSQL vers la dernière version tout en conservant toutes les données existantes.
 
-#### Étape 7 : Redémarrer les services
+#### Étape 9 : Redémarrer les services
 
 Si vous exécutez digna en tant que service d'arrière-plan :
 
@@ -9949,7 +10254,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Étape 8 : Vérifier la mise à niveau
+#### Étape 10 : Vérifier la mise à niveau
 
 1. Accédez au tableau de bord digna
 2. Vérifiez que l'interface se charge correctement
@@ -11327,7 +11632,7 @@ Ce guide couvre le **côté Keycloak** : création du client et collecte des val
 
 | Exigence | Remarques |
 |---|---|
-| **Version de Keycloak** | 17 ou plus pour les chemins d'URL utilisés ici — voir la note à l'étape 4 |
+| **Version de Keycloak** | 17 ou plus pour les chemins d'URL utilisés ici — voir la note à l'étape 5 |
 | **Rôle Keycloak** | `realm-admin` sur le realm ciblé, ou un administrateur serveur |
 | **Realm** | Le realm auquel appartiennent vos utilisateurs digna, pas nécessairement `master` |
 | **URI de redirection digna** | L'URL vers laquelle les utilisateurs reviennent après la connexion, ex. `https://digna.yourdomain.com/oidc/callback` |

@@ -1,84 +1,84 @@
-# Source Connector for Snowflake
+# Conector sursă pentru Snowflake
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+Acest ghid descrie cum să configurați *digna* pentru a se conecta la Snowflake prin **ODBC**,
+folosind un șir de conexiune **fără DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Partea *digna* a configurării este aceeași pentru orice tehnologie — unde se creează conexiunile,
+cum sunt criptate valorile proprietăților, cum se testează o conexiune și ce înseamnă modurile de
+profilare. Aceasta este descrisă în [Prezentarea conexiunilor la baze de date](overview.md). Această
+pagină acoperă ceea ce este specific Snowflake.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Instalați driverul ODBC {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Instalați **Snowflake ODBC Driver** pe mașina care rulează backend-ul *digna*, urmând
+[ghidul de instalare Snowflake](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-!!! important "An example, not a specification"
+Driverul se înregistrează ca **SnowflakeDSIIDriver**. Citiți numele exact înregistrat de pe gazda
+dvs., așa cum este descris în [Instalați driverul ODBC pe gazda digna](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. Proprietăți ODBC {: #2-odbc-properties }
+
+Snowflake este accesat cu un **programmatic access token (PAT)** — calea de autentificare pe care
+este verificată *digna* și cea pe care Snowflake o impune pentru conturile pe care autentificarea
+doar cu parolă este blocată.
+
+!!! important "Un exemplu, nu o specificație"
+
+    Setul de mai jos este o combinație despre care se știe că funcționează. Proprietățile aparțin
+    driverului Snowflake ODBC, astfel încât numele, valorile implicite și valorile acceptate diferă
+    între versiunile de driver și platforme, iar opțiunile de autentificare permise de contul dvs.
+    sunt stabilite de politica de securitate a contului. Folosiți-l ca punct de plecare și
+    consultați documentația versiunii de driver pe care ați instalat-o.
+
+| Cheie | Valoare exemplu | Note |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Trebuie să corespundă numelui driverului înregistrat pe gazda *digna* |
+| `Server` | `<account>.snowflakecomputing.com` | Identificatorul contului plus sufixul, de ex. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Utilizatorul Snowflake căruia îi aparține token-ul |
+| `Database` | `TEST` | Baza de date care conține schemele sursă. Este singura bază de date pe care această conexiune o poate profila |
+| `Schema` | `PUBLIC` | Schema implicită a sesiunii |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selectează autentificarea cu token |
+| `token` | `<programmatic access token>` | Bifați **Encrypted** |
 
-The resulting connection string looks like this:
+Șirul de conexiune rezultat arată astfel:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Warehouse și rol
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+Interogările au nevoie de un warehouse. Dacă utilizatorul *digna* are un warehouse implicit și un
+rol implicit, sesiunea le preia și nu trebuie configurat nimic. În caz contrar, adăugați:
 
-| Key | Example value | Notes |
+| Cheie | Valoare exemplu | Note |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | Warehouse-ul care rulează interogările de profilare |
+| `Role` | `DIGNA_READER` | Rolul ale cărui permisiuni le folosește sesiunea |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Oferiți digna propriul warehouse"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Un warehouse separat, mic, cu suspendare automată, menține vizibil costul profilării și
+    împiedică *digna* să concureze cu utilizatorii interactivi pentru resursele de calcul.
 
-### Password authentication
+### Autentificare cu parolă
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Acolo unde contul încă o permite, o parolă funcționează în locul token-ului — eliminați
+`authenticator` și `token` și adăugați:
 
-| Key | Example value | Notes |
+| Cheie | Valoare exemplu | Note |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Bifați **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Configurația *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+În ecranul **Add DB Connection**, furnizați următoarele:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -89,40 +89,41 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Note despre Snowflake {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **Token-urile expiră.** Un programmatic access token este emis cu o durată de valabilitate, iar
+  profilarea se oprește în ziua în care acesta expiră. Notați data de expirare când îl creați și
+  reintroduceți noul token în proprietatea `token` — valorile criptate pot fi înlocuite, dar nu pot
+  fi citite înapoi.
+- **O conexiune vede o singură bază de date.** *digna* oferă schemele bazei de date numite în
+  `Database`, deoarece Snowflake raportează ca și catalog doar baza de date curentă. Tabelele sursă
+  dintr-o altă bază de date au nevoie de propria conexiune.
+- **Identificatorii sunt scriși cu majuscule**, cu excepția cazului în care au fost creați între
+  ghilimele. *digna* folosește numele așa cum le raportează Snowflake.
+- **Moduri de profilare.** *Permanent* creează tabelele de lucru în **Work Schema**, deci rolul are
+  nevoie de `CREATE TABLE` acolo. *Session* folosește `CREATE TEMPORARY TABLE` și nu atinge
+  **Work Schema**. *Standard* necesită doar acces de citire — și nicio permisiune de scriere.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Verificarea driverului (opțional) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+Configurarea unei surse de date ODBC nu este necesară pentru o conexiune fără DSN, dar dialogul
+propriu al driverului este o modalitate comodă de a confirma că driverul, URL-ul contului și
+acreditările funcționează înainte de a le introduce în *digna*.
 
-#### Step 1
+#### Pasul 1
 ![Step 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Note:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
+- Valoarea pentru **Server** constă din identificatorul contului Snowflake urmat de
   `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- **Database**, **Schema** și **Warehouse** introduse aici corespund proprietăților `Database`,
+  `Schema` și `Warehouse` din [secțiunea 2](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### Pasul 2 – Testați conexiunea
 
-Click the **TEST** button. A successful connection should look like this:
+Faceți clic pe butonul **TEST**. O conexiune reușită ar trebui să arate astfel:
 
 ![Step 2](images/snowflake/create_odbc_data_source_step2.png)

@@ -1,95 +1,95 @@
-# Set up SSO with Auth0
+# Auth0 ile SSO Kurulumu
 
-Auth0 is OIDC-compliant and exposes a discovery endpoint per tenant. The main thing to get right is the tenant domain, which appears in the discovery URL and changes if you enable a custom domain.
+Auth0 OIDC uyumludur ve her kiracı için bir keşif uç noktası sunar. Doğru yapılması gereken asıl şey, keşif URL'sinde yer alan ve özel bir alan adı etkinleştirirseniz değişen kiracı alan adıdır.
 
-This guide covers the **Auth0 side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Bu kılavuz **Auth0 tarafını** kapsar: uygulamayı oluşturma ve digna'nın ihtiyaç duyduğu değerleri toplama. digna tarafı (`dashboard_config.toml`, test ve sorun giderme) her sağlayıcı için aynıdır ve [Çoklu Oturum Açma Genel Bakış](overview.md) sayfasında açıklanmıştır.
 
 ---
 
-## Before You Start
+## Başlamadan Önce
 
-| Requirement | Notes |
+| Gereksinim | Notlar |
 |---|---|
-| **Auth0 role** | Admin on the tenant |
-| **Tenant domain** | e.g. `yourcompany.eu.auth0.com` — the region segment matters |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Auth0 rolü** | Kiracıda yönetici |
+| **Kiracı alan adı** | ör. `yourcompany.eu.auth0.com`; bölge kısmı önemlidir |
+| **digna yönlendirme URI'si** | Kullanıcıların oturum açtıktan sonra döndüğü URL, ör. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application
+## Adım 1: Uygulamayı Oluşturun
 
-1. Sign in to the [Auth0 Dashboard](https://manage.auth0.com)
-2. Go to **Applications → Applications**
-3. Click **Create Application**
-4. Name it `digna` and choose **Regular Web Applications**
-5. Click **Create**
+1. [Auth0 Dashboard](https://manage.auth0.com)'da oturum açın
+2. **Applications → Applications** bölümüne gidin
+3. **Create Application**'a tıklayın
+4. Uygulamaya `digna` adını verin ve **Regular Web Applications**'ı seçin
+5. **Create**'e tıklayın
 
-!!! warning "Choose Regular Web Applications"
+!!! warning "Regular Web Applications'ı Seçin"
 
-    *Single Page Application* and *Native* create public clients with no secret. digna performs the code exchange from its backend and needs a confidential client, so **Regular Web Applications** is the correct type. Unlike some providers, Auth0 does let you change the type later under **Settings → Application Type**.
+    *Single Page Application* ve *Native*, gizli anahtarı olmayan genel istemciler oluşturur. digna kod değişimini arka ucundan gerçekleştirir ve gizli (confidential) bir istemciye ihtiyaç duyar; bu nedenle doğru tür **Regular Web Applications**'dır. Bazı sağlayıcıların aksine Auth0, türü daha sonra **Settings → Application Type** altından değiştirmenize izin verir.
 
 ---
 
-## Step 2: Add the Callback URL
+## Adım 2: Geri Çağırma URL'sini Ekleyin
 
-On the application's **Settings** tab:
+Uygulamanın **Settings** sekmesinde:
 
-1. Find **Allowed Callback URLs**
-2. Enter your digna callback URL:
+1. **Allowed Callback URLs** alanını bulun
+2. digna geri çağırma URL'nizi girin:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-3. Optionally set **Allowed Logout URLs** to your dashboard URL
-4. Scroll to the bottom and click **Save Changes**
+3. İsteğe bağlı olarak **Allowed Logout URLs** alanını dashboard URL'niz olarak ayarlayın
+4. Sayfanın en altına kaydırın ve **Save Changes**'a tıklayın
 
-!!! note "Comma-Separated, Not Newline-Separated"
+!!! note "Satır Sonuyla Değil, Virgülle Ayrılmış"
 
-    Auth0 accepts several callback URLs in this field, separated by commas. A list separated only by newlines is read as one malformed URL and silently matches nothing.
-
----
-
-## Step 3: Collect the Credentials
-
-Still on **Settings**, in the **Basic Information** panel:
-
-- **Domain** → goes into the discovery URL
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click to reveal)
+    Auth0 bu alanda virgülle ayrılmış birden fazla geri çağırma URL'sini kabul eder. Yalnızca satır sonlarıyla ayrılmış bir liste tek bir hatalı URL olarak okunur ve fark edilmeden hiçbir şeyle eşleşmez.
 
 ---
 
-## Step 4: Confirm the Grant Type
+## Adım 3: Kimlik Bilgilerini Toplayın
 
-1. Go to **Settings → Advanced Settings → Grant Types**
-2. Confirm **Authorization Code** is ticked
+Yine **Settings** sekmesinde, **Basic Information** panelinde:
 
-It is enabled by default for Regular Web Applications. If it has been unticked, digna's login fails with `unauthorized_client`.
+- **Domain** → keşif URL'sine girer
+- **Client ID** → `DIGNA_OIDC_CLIENT_ID` olur
+- **Client Secret** → `DIGNA_OIDC_CLIENT_SECRET` olur (görmek için tıklayın)
 
 ---
 
-## Step 5: Build the Discovery URL
+## Adım 4: İzin Türünü Doğrulayın
 
-Substitute the **Domain** from Step 3:
+1. **Settings → Advanced Settings → Grant Types** bölümüne gidin
+2. **Authorization Code** seçeneğinin işaretli olduğunu doğrulayın
+
+Bu, Regular Web Applications için varsayılan olarak etkindir. İşareti kaldırılmışsa digna'da oturum açma `unauthorized_client` hatasıyla başarısız olur.
+
+---
+
+## Adım 5: Keşif URL'sini Oluşturun
+
+Adım 3'teki **Domain** değerini yerine koyun:
 
 ```
 https://<your_tenant_domain>/.well-known/openid-configuration
 ```
 
-For example:
+Örneğin:
 
 ```
 https://yourcompany.eu.auth0.com/.well-known/openid-configuration
 ```
 
-!!! warning "Custom Domains Change the Issuer"
+!!! warning "Özel Alan Adları Yayıncıyı (Issuer) Değiştirir"
 
-    If your tenant uses a custom domain such as `login.yourcompany.com`, use that domain in the discovery URL. Mixing the two — the canonical domain in the discovery URL, the custom one in the browser — produces an issuer mismatch, and the token is rejected after an otherwise successful login.
+    Kiracınız `login.yourcompany.com` gibi özel bir alan adı kullanıyorsa keşif URL'sinde o alan adını kullanın. İkisini karıştırmak (keşif URL'sinde standart alan adı, tarayıcıda özel alan adı) bir issuer uyuşmazlığına yol açar ve token, aksi halde başarılı olan bir oturum açmanın ardından reddedilir.
 
 ---
 
-## Step 6: Configure digna
+## Adım 6: digna'yı Yapılandırın
 
 ### `dashboard/dashboard_config.toml`
 
@@ -112,37 +112,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.eu.auth0.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `auth0` here.
+Her iki dosyadaki `key` eşleşmelidir; burada `auth0`.
 
 ---
 
-## Step 7: Test
+## Adım 7: Test Edin
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Arka ucu ve web sunucusunu yeniden başlatın, ardından dashboard'u açın. Tam kontrol listesi için bkz. [Oturum Açmayı Test Etme](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Auth0
+## Auth0 Sorunlarını Giderme
 
-### Callback URL Mismatch
+### Geri Çağırma URL'si Uyuşmazlığı
 
-Auth0's error page names the URL it received. Add it to **Allowed Callback URLs**, checking that entries are comma-separated.
+Auth0'ın hata sayfası aldığı URL'yi belirtir. Girişlerin virgülle ayrıldığını kontrol ederek bu URL'yi **Allowed Callback URLs** alanına ekleyin.
 
 ### unauthorized_client
 
-**Authorization Code** is not enabled under **Advanced Settings → Grant Types**, or the application type is not Regular Web Applications.
+**Advanced Settings → Grant Types** altında **Authorization Code** etkin değil veya uygulama türü Regular Web Applications değil.
 
-### Access Denied After a Successful Login
+### Başarılı Oturum Açmanın Ardından Erişim Reddediliyor
 
-A Rule, Action or Post-Login trigger in the tenant is rejecting the user. Check **Actions → Flows → Login** and the tenant logs under **Monitoring → Logs**, which show the exact reason.
+Kiracıdaki bir Rule, Action veya Post-Login tetikleyicisi kullanıcıyı reddediyor. **Actions → Flows → Login** bölümünü ve tam nedeni gösteren **Monitoring → Logs** altındaki kiracı günlüklerini kontrol edin.
 
-### Issuer Mismatch
+### Issuer Uyuşmazlığı
 
-The discovery URL and the domain the browser was sent to differ — usually the canonical tenant domain versus a custom domain. Use one consistently.
+Keşif URL'si ile tarayıcının yönlendirildiği alan adı farklı; genellikle standart kiracı alan adı ile özel alan adı arasındaki fark. Tutarlı bir şekilde birini kullanın.
 
 ---
 
-## See Also
+## Ayrıca Bakınız
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Çoklu Oturum Açma Genel Bakış](overview.md): yapılandırma başvurusu, test ve genel sorun giderme
 - [Auth0: OpenID Connect Discovery](https://auth0.com/docs/get-started/applications/configure-applications-with-oidc-discovery)

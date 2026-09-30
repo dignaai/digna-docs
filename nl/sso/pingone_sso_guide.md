@@ -1,119 +1,119 @@
-# Set up SSO with PingOne
+# SSO instellen met PingOne
 
-PingOne is OIDC-compliant. Two of its values need care: the **environment ID**, which appears in every endpoint URL, and the **regional domain**, which differs between the North American, European, Canadian, Asia-Pacific and Australian tenants.
+PingOne is OIDC-conform. Twee waarden vragen extra aandacht: de **environment-ID**, die in elke endpoint-URL staat, en het **regionale domein**, dat verschilt tussen Noord-Amerikaanse, Europese, Canadese, Aziatisch-Pacifische en Australische tenants.
 
-This guide covers the **PingOne side**: creating the application and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Deze gids behandelt de **PingOne-kant**: het aanmaken van de applicatie en het verzamelen van de waarden die digna nodig heeft. De digna-kant — `dashboard_config.toml`, testen en oplossen van problemen — is voor elke provider hetzelfde en wordt beschreven in het [Overzicht Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Voordat je begint
 
-| Requirement | Notes |
+| Vereiste | Opmerkingen |
 |---|---|
-| **PingOne role** | Environment Admin or Identity Data Admin on the target environment |
-| **Environment** | The PingOne environment your digna users belong to |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **PingOne-rol** | Environment Admin of Identity Data Admin op de doelomgeving |
+| **Omgeving** | De PingOne-omgeving waartoe je digna-gebruikers behoren |
+| **digna redirect URI** | De URL waar gebruikers na het inloggen naar terugkeren, bijv. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the Application
+## Stap 1: Maak de applicatie aan
 
-1. Sign in to the PingOne admin console and select your environment
-2. Go to **Applications → Applications**
-3. Click the **+** button
-4. Enter `digna` as the **Application Name**
-5. Select **OIDC Web App**
-6. Click **Save**
+1. Log in op de PingOne-beheerconsole en selecteer je omgeving
+2. Ga naar **Applications → Applications**
+3. Klik op de knop **+**
+4. Voer `digna` in als **Application Name**
+5. Selecteer **OIDC Web App**
+6. Klik **Save**
 
-!!! warning "Pick OIDC Web App, Not Single-Page App"
+!!! warning "Kies OIDC Web App, niet Single-Page App"
 
-    *Single-Page App* and *Native App* create public clients that cannot hold a secret. digna exchanges the authorization code from its backend and needs the confidential **OIDC Web App** type.
+    *Single-Page App* en *Native App* maken public clients aan die geen secret kunnen bewaren. digna wisselt de autorisatiecode uit vanuit zijn backend en heeft het confidential type **OIDC Web App** nodig.
 
 ---
 
-## Step 2: Configure the Redirect URI
+## Stap 2: Configureer de redirect URI
 
-1. Open the application's **Configuration** tab
-2. Click the pencil icon to edit
-3. Confirm **Response Type** is *Code* and **Grant Type** is *Authorization Code*
-4. Under **Redirect URIs**, enter your digna callback URL:
+1. Open het tabblad **Configuration** van de applicatie
+2. Klik op het potloodpictogram om te bewerken
+3. Controleer of **Response Type** op *Code* staat en **Grant Type** op *Authorization Code*
+4. Voer onder **Redirect URIs** je digna callback-URL in:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-5. Set **Token Endpoint Authentication Method** to *Client Secret Post* or *Client Secret Basic*
-6. Click **Save**
+5. Stel **Token Endpoint Authentication Method** in op *Client Secret Post* of *Client Secret Basic*
+6. Klik **Save**
 
 ---
 
-## Step 3: Enable the Application
+## Stap 3: Schakel de applicatie in
 
-On the application's row or detail panel, switch the toggle to **enabled**.
+Zet in de rij of het detailpaneel van de applicatie de schakelaar op **enabled**.
 
-!!! warning "New Applications Start Disabled"
+!!! warning "Nieuwe applicaties starten uitgeschakeld"
 
-    PingOne creates applications in a disabled state. A disabled application produces an error at the authorization step that does not mention the toggle, so this is worth confirming before debugging anything else.
-
----
-
-## Step 4: Grant the Scopes
-
-1. Open the **Resources** tab
-2. Confirm that `openid` is granted, and add `profile` and `email` from the **OpenID Connect** resource
-3. Click **Save**
+    PingOne maakt applicaties aan in uitgeschakelde toestand. Een uitgeschakelde applicatie geeft bij de autorisatiestap een fout die de schakelaar niet noemt, dus het loont om dit te controleren voordat je iets anders gaat debuggen.
 
 ---
 
-## Step 5: Assign Users
+## Stap 4: Ken de scopes toe
 
-1. Open the **Access** tab
-2. Add the population or groups whose members may use digna
-3. Click **Save**
-
----
-
-## Step 6: Collect the Credentials and Environment ID
-
-On the **Configuration** tab, expand **General**:
-
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client Secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon)
-- **Environment ID** → goes into the discovery URL
-
-The same tab lists the ready-made **OIDC Discovery Endpoint**, which you can copy directly instead of assembling it by hand.
+1. Open het tabblad **Resources**
+2. Controleer of `openid` is toegekend, en voeg `profile` en `email` toe uit de resource **OpenID Connect**
+3. Klik **Save**
 
 ---
 
-## Step 7: Build the Discovery URL
+## Stap 5: Wijs gebruikers toe
 
-Substitute the environment ID and the domain for your region:
+1. Open het tabblad **Access**
+2. Voeg de population of groepen toe waarvan de leden digna mogen gebruiken
+3. Klik **Save**
+
+---
+
+## Stap 6: Verzamel de gegevens en de environment-ID
+
+Klap op het tabblad **Configuration** het onderdeel **General** uit:
+
+- **Client ID** → wordt `DIGNA_OIDC_CLIENT_ID`
+- **Client Secret** → wordt `DIGNA_OIDC_CLIENT_SECRET` (klik op het oogpictogram)
+- **Environment ID** → gaat in de discovery-URL
+
+Hetzelfde tabblad toont ook het kant-en-klare **OIDC Discovery Endpoint**, dat je direct kunt kopiëren in plaats van het zelf samen te stellen.
+
+---
+
+## Stap 7: Bouw de discovery-URL
+
+Vul de environment-ID en het domein voor je regio in:
 
 ```
 https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration
 ```
 
-| Region | Domain |
+| Regio | Domein |
 |---|---|
-| North America | `auth.pingone.com` |
-| Europe | `auth.pingone.eu` |
+| Noord-Amerika | `auth.pingone.com` |
+| Europa | `auth.pingone.eu` |
 | Canada | `auth.pingone.ca` |
-| Asia-Pacific | `auth.pingone.asia` |
-| Australia | `auth.pingone.com.au` |
+| Azië-Pacific | `auth.pingone.asia` |
+| Australië | `auth.pingone.com.au` |
 
-For a European environment:
+Voor een Europese omgeving:
 
 ```
 https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration
 ```
 
-!!! tip "Copy It Rather Than Type It"
+!!! tip "Kopieer hem in plaats van hem te typen"
 
-    The regional domain is the single most common mistake in a PingOne integration, and a wrong region gives a 404 rather than a helpful message. Use the **OIDC Discovery Endpoint** value from Step 6.
+    Het regionale domein is veruit de meest gemaakte fout bij een PingOne-integratie, en een verkeerde regio geeft een 404 in plaats van een behulpzame melding. Gebruik de waarde **OIDC Discovery Endpoint** uit Stap 6.
 
 ---
 
-## Step 8: Configure digna
+## Stap 8: Configureer digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -136,41 +136,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://auth.pingone.eu/12345678-1234-1234-1234-123456789012/as/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `pingone` here.
+De `key` moet in beide bestanden overeenkomen — hier `pingone`.
 
 ---
 
-## Step 9: Test
+## Stap 9: Test
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
-
----
-
-## Troubleshooting PingOne
-
-### 404 on the Discovery URL
-
-The regional domain or the environment ID is wrong. Compare with the **OIDC Discovery Endpoint** shown on the application's Configuration tab.
-
-### NOT_FOUND or Application Disabled
-
-The application toggle from Step 3 is still off.
-
-### Redirect URI Mismatch
-
-PingOne matches the full string. Check **Configuration → Redirect URIs** for a trailing slash or a scheme difference.
-
-### Login Succeeds but No Email Claim Reaches digna
-
-The `email` and `profile` scopes have not been granted on the **Resources** tab.
-
-### The User Cannot See the Application
-
-No population or group has been granted access on the **Access** tab.
+Herstart de backend en de webserver, en open daarna het dashboard. Zie [Inloggen testen](overview.md#testing-login) voor de volledige checklist.
 
 ---
 
-## See Also
+## Problemen oplossen met PingOne
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+### 404 op de discovery-URL
+
+Het regionale domein of de environment-ID is onjuist. Vergelijk met het **OIDC Discovery Endpoint** op het tabblad Configuration van de applicatie.
+
+### NOT_FOUND of applicatie uitgeschakeld
+
+De schakelaar van de applicatie uit Stap 3 staat nog uit.
+
+### Redirect URI komt niet overeen
+
+PingOne vergelijkt de volledige string. Controleer **Configuration → Redirect URIs** op een afsluitende slash of een verschil in schema.
+
+### Inloggen slaagt, maar er komt geen e-mailclaim bij digna aan
+
+De scopes `email` en `profile` zijn niet toegekend op het tabblad **Resources**.
+
+### De gebruiker ziet de applicatie niet
+
+Er is geen population of groep toegang verleend op het tabblad **Access**.
+
+---
+
+## Zie ook
+
+- [Overzicht Single Sign-On](overview.md) — configuratiereferentie, testen en algemene probleemoplossing
 - [PingOne: OIDC application configuration](https://docs.pingidentity.com/pingone/)

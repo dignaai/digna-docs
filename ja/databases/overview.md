@@ -1,262 +1,243 @@
-# Database Connections Overview
+# データベース接続の概要
 
 ---
 
-## Table of Contents
+## 目次
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [接続の仕組み](#how-connections-work)
+2. [テクノロジー別ガイド](#technology-guides)
+3. [前提条件: digna ホストに ODBC ドライバーをインストールする](#install-the-driver)
+4. [データベース接続を作成する](#create-a-database-connection)
+5. [ODBC プロパティ](#odbc-properties)
+6. [プロパティ値の暗号化](#encrypting-property-values)
+7. [接続のテスト](#testing-a-connection)
+8. [接続から見えるデータベース](#which-database-the-connection-sees)
+9. [プロファイリングモードとワークスキーマ](#profiling-mode-and-work-schema)
+10. [代わりに DSN を使用する](#using-a-dsn-instead)
+11. [トラブルシューティング](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## 接続の仕組み {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+*digna* はすべてのソーステクノロジーに **ODBC** 経由で接続します。接続とは、キーと値のペアとして入力する ODBC
+プロパティのリストです。*digna* が接続を開くとき、それらのペアを接続文字列に結合し（`Key=Value` を `;` で区切り、
+入力した順序のまま）、*digna* ホスト上の ODBC ドライバーマネージャーに渡します。
 
-!!! important "The property sets in the guides are examples"
+プロパティを自分で入力することで、セットアップは **DSN レス** になります。接続にはドライバーが必要とするすべての情報が
+含まれているため、ホスト上に ODBC データソース (DSN) を登録する必要はありません。接続の定義がすべて *digna* の中にあり、
+*digna* と一緒に移行できるため、これが *digna* の推奨される設定方法です。
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### ODBC を採用する理由 {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+以前のリリースでは、テクノロジー専用のドライバーと ODBC のどちらかを **Use ODBC** スイッチで選択できました。
+Release 2026.06 以降、*digna* は ODBC のみに基づいています。単一の標準インターフェースは、個別に作り込んだドライバー群
+よりも多くの利点をもたらします。
+
+- **認証** — 認証は ODBC の一部であるため、接続ではドライバーがサポートする任意の方式を利用できます。パスワード、
+  トークンと PAT、Kerberos と Active Directory、MFA とブラウザーベースのシングルサインオン、クラウド ID、
+  クライアント証明書と TLS などです。新しい方式は *digna* のリリースを待たずに、ドライバーの更新とともに利用可能になります。
+- **データベースベンダーが保守するドライバー** — ベンダー自身のドライバーは新しいサーバーバージョンやセキュリティ修正に
+  追従しており、*digna* とは独立して、ご自身のスケジュールで更新できます。
+- **すべてを同じ方法で設定** — ソースごとに異なる入力フィールドを使うのではなく、すべてのテクノロジーがキーと値の
+  プロパティのリストで表され、同じインターフェース、同じ機密値の暗号化、同じトラブルシューティングが適用されます。
+- **チューニングと適用範囲** — タイムアウト、TLS 設定、プロキシ、フェッチサイズなどのドライバーレベルのオプションを
+  すべてのソースで使用でき、準拠した ODBC ドライバーがあるテクノロジーであれば、*digna* が専用ガイドを公開していない
+  ものも含めて接続できます。
+
+!!! note "インターフェースの変更点"
+
+    **Use ODBC** スイッチと、ホスト、ポート、データベース、ユーザー、パスワードの個別フィールドは廃止されました。
+    まだ ODBC を使用していない接続は、ODBC プロパティを入力するまで再び動作しません。
+    [データベース接続を作成する](#create-a-database-connection) を参照してください。
+
+---
+
+## テクノロジー別ガイド {: #technology-guides }
+
+プロパティ名はドライバーごとに異なり、各テクノロジーには他にはない細かな点が 1～2 個あります。以下のガイドはその部分を
+扱います。このページは、すべてのテクノロジーで共通の *digna* 側の設定を説明します。
+
+!!! important "ガイドのプロパティセットは例です"
+
+    各ガイドは、動作が確認されている組み合わせ（*digna* のテストで使用しているもの）を 1 つ示しています。
+    これは出発点であり、仕様ではありません。プロパティは ODBC ドライバーに属するものであり、どのプロパティが存在し、
+    どのような名前で、どの値を受け付けるかは、ドライバーのバージョンやベンダー、Windows・Linux・macOS の違い、
+    そしてソースサーバーの構成（認証方式、TLS、ゲートウェイ、ポート）によって異なります。値を 1～2 個調整する
+    必要があると考え、インストールしたドライバーバージョンのドキュメントを正としてください。
+
+| テクノロジー | ガイド | 知っておくべきこと |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | サーバーレスプールではホスト名に `-ondemand` が必要で、*Standard* プロファイリングのみサポート |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | トークン認証: `UID=token`、`PWD` に PAT |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | カタログはクエリではなくドライバーから取得される |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | ドライバー名は波括弧で囲む: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` には完全な接続記述子または `tnsnames.ora` のエイリアスを指定 |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` はサーバーの要求と一致させる必要がある |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | テスト済みの認証方式はプログラムによるアクセストークン |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` によって *digna* が参照できるスキーマが決まる |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | ホストは `DBCNAME` に指定。データベースはスキーマとして扱われる |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## 前提条件: digna ホストに ODBC ドライバーをインストールする {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+*digna* はソース接続をブラウザーからではなく、**digna バックエンドを実行しているサーバー** から開きます。そのため、
+ODBC ドライバーはそのマシンにインストールされ、その名前がローカルのドライバーマネージャーに登録されている必要があります。
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    ベンダーの 64 ビットドライバーをインストールし、**ODBC Data Source Administrator (64-bit)** を開いて
+    **Drivers** タブに切り替えます。そこに表示される名前が、`Driver` プロパティに使用できる値そのものです。
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    **unixODBC** とベンダーのドライバーをインストールし、登録済みのドライバー名を一覧表示します。
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    角括弧内に表示される名前が、`Driver` プロパティに使用できる値です。これらは `/etc/odbcinst.ini`
+    （または `odbcinst -j` が示すファイル）から読み込まれます。
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    **unixODBC**（例えば `brew install unixodbc` で）とベンダーのドライバーをインストールし、
+    登録済みのドライバー名を一覧表示します。
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "ドライバー名は 1 文字ずつ正確に一致している必要があります"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    `Driver` はそのままドライバーマネージャーに渡されます。ドライバーマネージャーにとって
+    `Simba Spark ODBC Driver` と `Simba Spark ODBC Driver 64` は別のドライバーであり、登録されていない名前を
+    指定すると、DSN を使っていないにもかかわらず *data source name not found* エラーになります。
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+登録名の代わりに、一般的なドライバーマネージャーはいずれもドライバーライブラリへのフルパスも受け付けます。例:
+`Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`。これはドライバーがインストールされているものの登録されていない
+場合に便利です。
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## データベース接続を作成する {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+**Admin Panel** を開き、**Database Connections** タブに移動して **Add DB Connection** をクリックします。
+画面では次の 5 項目を入力します。
 
-| Field | Description |
+| フィールド | 説明 |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | 接続の名前。他の画面で接続を参照する際に使用されます。 |
+| **Technology** | Postgres、Oracle、SQL Server、Databricks、Teradata、Netezza、Snowflake、Hive のいずれか。*digna* が生成する SQL の方言を決めるため、ドライバーではなくソースに一致させる必要があります。Azure Synapse Analytics は **SQL Server** 接続です。 |
+| **ODBC Properties** | [ODBC プロパティ](#odbc-properties) で説明するキーと値のペア。 |
+| **Profiling Mode** | *Standard*、*Permanent*、*Session* のいずれか。[プロファイリングモードとワークスキーマ](#profiling-mode-and-work-schema) を参照してください。 |
+| **Work Schema** | *Permanent* プロファイリング用のワークテーブルを保持するスキーマ。 |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+接続は一元管理され、1 つ以上のプロジェクトに割り当てられるため、同じ接続を複数のプロジェクトで利用できます。
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## ODBC プロパティ {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+プロパティごとに **Add Property** をクリックし、**Key** と **Value** を入力します。シークレットの場合は
+**Encrypted** チェックボックスもオンにします。各テクノロジー別ガイドにはそのテクノロジー用のプロパティセットの例が
+掲載されているので、ドライバーのバージョンとサーバーに合わせて調整してください。[上記の注記](#technology-guides) を
+参照してください。
 
-!!! tip "Tip"
+ドライバーが何であれ、プロパティセットは次の 4 つを扱います。
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — [上記](#install-the-driver) で説明した、登録済みのドライバー名。
+- **サーバーのアドレス** — キーはドライバーごとに異なります: `SERVER`、`HOST`、`DBCNAME`、`Server`、
+  Oracle の場合は `DBQ` 接続記述子。
+- **認証情報** — 通常は `UID` と `PWD`。Snowflake は `UID` と `token` を使用し、Databricks はリテラルのユーザー
+  `token` と、`PWD` に個人用アクセストークンを使用します。
+- **作業対象のデータベースまたはカタログ**（テクノロジーにその概念がある場合）—
+  [接続から見えるデータベース](#which-database-the-connection-sees) を参照してください。
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+ドライバーのドキュメントに記載されているその他の項目も、同じ方法で追加できます。接続プーリング、ソケットタイムアウト、
+Kerberos 設定、プロキシ設定などです。*digna* はプロパティを解釈せず、そのまま渡すだけです。
+
+!!! warning "値はエスケープされません — セミコロンを含むものは波括弧で囲んでください"
+
+    プロパティは `;` で結合されるため、値自体に `;` が含まれていると、接続文字列が誤った位置で分割されます。
+    そのような値は波括弧で囲んでください: `PWD={p@ss;word}`。`=` や先頭の空白を含む値も同様です。
+    これが、`{NetezzaSQL}` や `{SnowflakeDSIIDriver}` のように、一部のドライバーを慣例的に波括弧付きで記述する
+    理由でもあります。
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## プロパティ値の暗号化 {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+シークレットを保持するすべてのプロパティ（`PWD`、`token`、クライアントシークレット）で **Encrypted** をオンにします。
+値は *digna* リポジトリに保存される前に暗号化され、画面上ではマスクされ、接続文字列を組み立てるときにのみ復号されます。
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "ヒント"
+
+    暗号化された値は、UI からも API からも読み戻すことはできず、置き換えることしかできません。
+    シークレットはご自身のパスワードマネージャーにも保管してください。
+
+ドライバー名、ホスト、ポート、データベースなど機密でないプロパティは、後で接続を保守する人が読めるよう、
+暗号化しないでおくことをお勧めします。
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## 接続のテスト {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+保存する **前に**、*Add DB Connection* ダイアログで **Test** をクリックします。テストはフォームに現在入力されている値を
+使って実際に接続するため、インスペクションで発生するのとまったく同じ問題（誤ったドライバー名、拒否されたパスワード、
+到達できないホスト）を報告します。何も保存されず、テスト接続は成功しても失敗してもロールバックされます。
 
-| Technology | Catalogs offered |
+既存の接続については、**Database Connections** タブでその行にカーソルを合わせ、**プラグ** アイコンをクリックすると
+再テストできます。パスワードの変更やファイアウォールの変更の後に、ソースに到達できるかを確認する最も手早い方法です。
+
+---
+
+## 接続から見えるデータベース {: #which-database-the-connection-sees }
+
+データソースを追加するとき、*digna* は接続から到達できるカタログ、スキーマ、テーブルを提示します。その範囲は
+テクノロジーによって異なります。
+
+| テクノロジー | 提示されるカタログ |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | 接続の **現在の** データベースのみ |
+| **Teradata**, **Netezza**, **Databricks** | ユーザーが参照を許可されているすべてのデータベースまたはカタログ |
+| **Hive**, **Impala** | ドライバーが報告するもの |
 
-!!! important "One connection, one database"
+!!! important "1 つの接続に 1 つのデータベース"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    PostgreSQL、SQL Server、Oracle、Snowflake では、プロパティがソーススキーマを保持するデータベースを指している
+    必要があります。`DATABASE=…`、`Database=…`、または Oracle の `DBQ` 内のサービス名です。別のデータベースの
+    テーブルにはその接続では到達できないため、そのための 2 つ目の接続を追加してください。
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## プロファイリングモードとワークスキーマ {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+プロファイリングモードは、*digna* がデータを処理しメトリクスを計算する方法を決定します。
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** データをコピーせず、ソーステーブル上で直接メトリクスを計算します。
+- **Permanent:** インスペクション対象日のデータを永続テーブルにコピーし、コピーしたデータでメトリクスを計算します。
+- **Session:** データをセッションテーブルまたは一時テーブルにコピーし、この一時データでメトリクスを計算します。
 
-The mode decides what the connection user must be allowed to do:
+モードによって、接続ユーザーに必要な権限が決まります。
 
-| Mode | Writes | Rights the connection user needs |
+| モード | 書き込み内容 | 接続ユーザーに必要な権限 |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | なし | ソーステーブルの読み取り |
+| **Permanent** | **Work Schema** 内にデータソースごとに 1 つのテーブル | **Work Schema** でのテーブルの作成と削除 |
+| **Session** | セッション終了時にデータベースが削除する一時テーブル | 一時テーブルの作成 — **Work Schema** は使用されません |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+*Standard* は読み取りのみを行うため、*digna* に読み取り専用のアクセス権が付与されている場合に選ぶべきモードです。
+**Work Schema** は *Permanent* の場合にのみ参照されますが、後でモードを変更しても接続が動作し続けるよう、入力しておく
+価値があります。
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## 代わりに DSN を使用する {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+DSN も引き続き使用できます。`DSN` は単なるプロパティの 1 つです。
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -264,129 +245,122 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+DSN は *digna* ホスト上で、*digna* バックエンドを実行するのと同じユーザーアカウントに対して登録されている必要があり、
+*digna* がサービスとして実行される場合は **System DSN** として登録する必要があります。DSN で設定されている項目は、
+プロパティとして追加することで上書きすることもできます。
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
+DSN レスがドキュメント上の標準であるのは、このようなホスト側の状態を避けられるためです。接続は *digna* の中で完全に
+記述され、新しい *digna* ホストにはドライバーのインストールだけが必要で、それ以外の設定は不要です。
 
 ---
 
-## Troubleshooting {: #troubleshooting }
+## トラブルシューティング {: #troubleshooting }
 
 ### Data source name not found / no default driver specified
 
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
+**症状:**
+- セットアップが DSN レスであるにもかかわらず、**Test** ボタンで *data source name not found* を含むエラーが報告される
 
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
-
----
-
-### The connection test times out
-
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
-
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**原因と対処法:**
+1. `Driver` の値が登録済みのドライバー名と一致していない — *ODBC Data Source Administrator (64-bit)* の **Drivers**
+   タブ、または `odbcinst -q -d` の出力と比較してください
+2. ドライバーがご自身のワークステーションにはインストールされているが、*digna* ホストにはインストールされていない
+3. ドライバーが 32 ビットで *digna* が 64 ビットである — 64 ビットドライバーをインストールしてください
+4. `Driver` プロパティがまったくなく、`DSN` も指定されていない
+5. Linux と macOS で、ドライバーはインストールされているが登録されていない — 代わりにドライバーライブラリへの
+   フルパスを指定するか、`odbcinst.ini` に登録してください
 
 ---
 
-### Authentication fails although the credentials are correct
+### 接続テストがタイムアウトする
 
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
+**症状:**
+- **Test** が応答しなくなり、約 30 秒後に失敗する
 
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
-
----
-
-### The data source screen does not offer the expected database or schema
-
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
-
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
+**原因と対処法:**
+1. *digna* ホストからホストまたはポートに到達できない — ファイアウォールを確認し、クラウドソースの場合は
+   IP 許可リストも確認してください
+2. ホスト名は正しいが、ポートが別のサービスのものである
+3. ソースが接続を受け付けるのに既定の 30 秒以上かかる — `config.toml` の `[base]` セクションで
+   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` を引き上げ（`0` は無期限に待機）、バックエンドを再起動してください
+4. サーバーレスのエンドポイントがアイドル状態から再開中である — 再試行し、これが日常的に起こる場合は上記のとおり
+   ログインタイムアウトを引き上げてください
 
 ---
 
-### Profiling fails while the connection test succeeds
+### 認証情報が正しいのに認証に失敗する
 
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
+**症状:**
+- ドライバーが無効な認証情報を報告するが、同じユーザーが別の SQL クライアントでは使用できる
 
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
+**原因と対処法:**
+1. パスワードに `;` が含まれている — 値を波括弧で囲んでください: `{p@ss;word}`
+2. 値の末尾に空白がコピーされている
+3. ドライバーが特定の認証メカニズムを要求している — 例えば Hive と Databricks のドライバーでは `AuthMech`、
+   Snowflake では `authenticator`
+4. 値が暗号化して保存された後に編集された — 暗号化された値は読み戻せないため、シークレットを最初から入力し直してください
+5. トークンの有効期限が切れている — 個人用アクセストークンとプログラムによるアクセストークンには有効期限があります
 
 ---
 
-## Best Practices
+### データソース画面に想定したデータベースやスキーマが表示されない
 
-**DO:**
+**症状:**
+- データソースを追加するときに、カタログ、スキーマ、またはテーブルが表示されない
 
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**原因と対処法:**
+1. 接続が別のデータベースを指している —
+   [接続から見えるデータベース](#which-database-the-connection-sees) を参照してください
+2. 接続ユーザーにスキーマまたはデータディクショナリの読み取り権限がない
+3. **Technology** がソースと一致しておらず、*digna* が誤ったデータディクショナリを照会している
+4. Snowflake で、ユーザーに既定のウェアハウスが割り当てられておらず、`Warehouse` プロパティも指定されていないため、
+   メタデータクエリを実行できない
 
 ---
 
-## Support
+### 接続テストは成功するがプロファイリングが失敗する
 
-Need help with a database connection?
+**症状:**
+- **Test** は成功するが、ワークテーブルの作成時にインスペクションが失敗する
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**原因と対処法:**
+1. *Permanent* プロファイリングが選択されており、接続ユーザーが **Work Schema** にテーブルを作成できない —
+   権限を付与するか、*Session* または *Standard* に切り替えてください
+2. *Permanent* プロファイリングが選択されているのに、**Work Schema** が空であるか、存在しないスキーマを指定している
+3. *Session* プロファイリングが選択されており、接続ユーザーが一時テーブルを作成できない
+4. 長時間実行されるプロファイリングクエリがクエリタイムアウトに達している — `config.toml` の `[base]` セクションで
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` を引き上げてください（既定値は 3600 秒、`0` でタイムアウトを無効化）
+
+---
+
+## ベストプラクティス
+
+**推奨:**
+
+- 接続を設定する前に、*digna* ホストにドライバーをインストールして登録する
+- すべてのパスワードとトークンで **Encrypted** をオンにする
+- 保存する前に **Test** をクリックし、パスワードの変更後にも再テストする
+- 接続にはソースと環境にちなんだ名前を付ける（例: `sales_dwh_prod`）
+- *digna* には専用のデータベースユーザーを割り当て、*Standard* プロファイリングで十分な場合は読み取り専用にする
+- ソースデータベースごとに 1 つの接続を保ち、既存の接続を切り替えるのではなく 2 つ目の接続を追加する
+
+**非推奨:**
+
+- シークレットを暗号化せずに保存する、または 1 つのデータベースユーザーを *digna* と他のツールで共有する
+- 64 ビットの *digna* インストールで 32 ビットのドライバーを使用する
+- *digna* がサービスとして実行されているときに User DSN に頼る — 参照できません
+- `;` を含む値を波括弧なしでプロパティに入力する
+- **Work Schema** にソースデータを保持するスキーマを指定する
+
+---
+
+## サポート
+
+データベース接続についてサポートが必要ですか?
+
+- **メール:** support@digna.ai
+- **ドキュメント:** https://docs.digna.ai
+- **ウェブサイト:** https://www.digna.ai
 
 ---
 

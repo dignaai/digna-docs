@@ -1,88 +1,88 @@
-# Single Sign-On Overview
+# Çoklu Oturum Açma Genel Bakış
 
 ---
 
-## Table of Contents
+## İçindekiler
 
-1. [Introduction and Overview](#introduction-and-overview)
-2. [Provider Guides](#provider-guides)
-3. [Configuration Steps](#configuration-steps)
-4. [Dashboard Configuration](#dashboard-configuration)
-5. [Backend Configuration](#backend-configuration)
-6. [Testing Login](#testing-login)
-7. [Troubleshooting](#troubleshooting)
-8. [Supported Providers](#supported-providers)
-
----
-
-## Introduction and Overview {: #introduction-and-overview }
-
-This guide provides step-by-step instructions for integrating Single Sign-On (SSO) with the digna platform using **OpenID Connect (OIDC)**.
-
-### What is SSO?
-
-Single Sign-On allows users to log in to digna securely using their enterprise credentials through external identity providers. Users can authenticate with their corporate credentials instead of managing separate digna passwords.
-
-### How It Works
-
-SSO in digna is implemented using the OIDC protocol. Multiple identity providers can be configured in parallel by adjusting two key configuration files:
-
-- **`dashboard_config.toml`** — Controls the frontend login interface
-- **`config.toml`** — Configures the backend OIDC connections
-
-### Supported Providers {: #supported-providers-overview }
-
-Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
+1. [Giriş ve Genel Bakış](#introduction-and-overview)
+2. [Sağlayıcı Kılavuzları](#provider-guides)
+3. [Yapılandırma Adımları](#configuration-steps)
+4. [Dashboard Yapılandırması](#dashboard-configuration)
+5. [Arka Uç Yapılandırması](#backend-configuration)
+6. [Oturum Açmayı Test Etme](#testing-login)
+7. [Sorun Giderme](#troubleshooting)
+8. [Desteklenen Sağlayıcılar](#supported-providers)
 
 ---
 
-## Provider Guides {: #provider-guides }
+## Giriş ve Genel Bakış {: #introduction-and-overview }
 
-Every provider needs the same four values — a client ID, a client secret, a redirect URI and a discovery URL — but each one puts them in a different place in its admin console, and several have a provider-specific step that the others do not. The guides below cover that half of the work; this page covers the digna half, which is identical for all of them.
+Bu kılavuz, **OpenID Connect (OIDC)** kullanarak çoklu oturum açmayı (SSO) digna platformuyla entegre etmek için adım adım talimatlar sunar.
 
-| Provider | Guide | Worth knowing |
+### SSO Nedir?
+
+Çoklu oturum açma, kullanıcıların harici kimlik sağlayıcılar aracılığıyla kurumsal kimlik bilgilerini kullanarak digna'da güvenli bir şekilde oturum açmasını sağlar. Kullanıcılar ayrı digna parolaları yönetmek yerine kurumsal kimlik bilgileriyle kimlik doğrulaması yapabilir.
+
+### Nasıl Çalışır
+
+digna'da SSO, OIDC protokolü kullanılarak uygulanır. İki temel yapılandırma dosyası ayarlanarak birden fazla kimlik sağlayıcı paralel olarak yapılandırılabilir:
+
+- **`dashboard_config.toml`**: Ön uç oturum açma arayüzünü kontrol eder
+- **`config.toml`**: Arka uç OIDC bağlantılarını yapılandırır
+
+### Desteklenen Sağlayıcılar {: #supported-providers-overview }
+
+Bu kılavuzdaki örnekler **Microsoft** ve **Google** kullanır, ancak **OIDC uyumlu her sağlayıcı** aynı yapı izlenerek entegre edilebilir.
+
+---
+
+## Sağlayıcı Kılavuzları {: #provider-guides }
+
+Her sağlayıcı aynı dört değere ihtiyaç duyar (bir istemci kimliği, bir istemci gizli anahtarı, bir yönlendirme URI'si ve bir keşif URL'si), ancak her biri bunları yönetim konsolunda farklı bir yere koyar ve birçoğunun diğerlerinde bulunmayan sağlayıcıya özel bir adımı vardır. Aşağıdaki kılavuzlar işin bu yarısını kapsar; bu sayfa ise hepsi için aynı olan digna yarısını ele alır.
+
+| Sağlayıcı | Kılavuz | Bilinmesi gerekenler |
 |---|---|---|
-| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
-| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
-| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
-| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
-| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
-| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
-| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
-| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+| **AD FS** | [AD FS ile SSO kurulumu](adfs_sso_guide.md) | Kendi sunucunuzda barındırılır; token hizmetini sizin kontrol ettiğiniz tek sağlayıcıdır |
+| **Auth0** | [Auth0 ile SSO kurulumu](auth0_sso_guide.md) | Keşif URL'si kiracıya özeldir ve özel alan adları onu değiştirir |
+| **Google Workspace** | [Google Workspace ile SSO kurulumu](google_workspace_sso_guide.md) | Test kullanıcısı olmayanların oturum açabilmesi için onay ekranı yayımlanmalıdır |
+| **Keycloak** | [Keycloak ile SSO kurulumu](keycloak_sso_guide.md) | Kendi sunucunuzda barındırılır; keşif URL'si realm'e özeldir |
+| **Microsoft Entra ID** | [Microsoft Entra ID ile SSO kurulumu](microsoft_entra_id_sso_guide.md) | Kiracı kimliği keşif URL'sinde yer alır; gizli anahtarların süresi dolar |
+| **Okta** | [Okta ile SSO kurulumu](okta_sso_guide.md) | Yetkilendirme sunucusu seçimi keşif URL'sini değiştirir |
+| **OneLogin** | [OneLogin ile SSO kurulumu](onelogin_sso_guide.md) | OIDC uygulama türü oluşturma sırasında seçilmelidir ve sonradan değiştirilemez |
+| **PingOne** | [PingOne ile SSO kurulumu](pingone_sso_guide.md) | Ortam kimliği keşif URL'sinde yer alır |
 
-Any other OIDC-compliant provider works the same way — see [Other OIDC Providers](#supported-providers).
+OIDC uyumlu diğer tüm sağlayıcılar da aynı şekilde çalışır; bkz. [Diğer OIDC Sağlayıcıları](#supported-providers).
 
 ---
 
-## Configuration Steps {: #configuration-steps }
+## Yapılandırma Adımları {: #configuration-steps }
 
-SSO configuration requires updates to two files. This section explains how to configure each one.
+SSO yapılandırması iki dosyada güncelleme gerektirir. Bu bölüm her birinin nasıl yapılandırılacağını açıklar.
 
-### Overview of Configuration Files
+### Yapılandırma Dosyalarına Genel Bakış
 
-| File | Location | Purpose |
+| Dosya | Konum | Amaç |
 |---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
-| **config.toml** | `/config.toml` | Backend OIDC connections |
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Ön uç oturum açma arayüzü |
+| **config.toml** | `/config.toml` | Arka uç OIDC bağlantıları |
 
-Both files must be configured for SSO to work properly.
+SSO'nun düzgün çalışması için her iki dosyanın da yapılandırılması gerekir.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboard Yapılandırması {: #dashboard-configuration }
 
-### File Location
+### Dosya Konumu
 
 ```
 dashboard/dashboard_config.toml
 ```
 
-### Step 1: Add OIDC Providers
+### Adım 1: OIDC Sağlayıcılarını Ekleyin
 
-Add entries under the `[[login.oidc]]` array for each identity provider you want to support.
+Desteklemek istediğiniz her kimlik sağlayıcı için `[[login.oidc]]` dizisi altına girişler ekleyin.
 
-**Example with Microsoft and Google:**
+**Microsoft ve Google ile örnek:**
 
 ```toml
 [[login.oidc]]
@@ -94,48 +94,48 @@ key = "google"
 label = "Login with Google"
 ```
 
-### Step 2: Configure Login Options
+### Adım 2: Oturum Açma Seçeneklerini Yapılandırın
 
-Specify whether password-based login should be allowed:
+Parola tabanlı oturum açmaya izin verilip verilmeyeceğini belirtin:
 
 ```toml
 [login]
 usePassword = true
 ```
 
-### Configuration Parameters
+### Yapılandırma Parametreleri
 
-#### `[[login.oidc]]` Section
+#### `[[login.oidc]]` Bölümü
 
-| Parameter | Type | Required | Description |
+| Parametre | Tür | Zorunlu | Açıklama |
 |---|---|---|---|
-| `key` | string | Yes | Unique identifier for the OIDC connection (must match key in config.toml) |
-| `label` | string | Yes | Text displayed on the login button (e.g., "Login with Microsoft") |
+| `key` | string | Evet | OIDC bağlantısı için benzersiz tanımlayıcı (config.toml içindeki key ile eşleşmelidir) |
+| `label` | string | Evet | Oturum açma düğmesinde görüntülenen metin (ör. "Login with Microsoft") |
 
-#### `[login]` Section
+#### `[login]` Bölümü
 
-| Parameter | Type | Default | Description |
+| Parametre | Tür | Varsayılan | Açıklama |
 |---|---|---|---|
-| `usePassword` | boolean | false | Allow password-based login in addition to SSO |
+| `usePassword` | boolean | false | SSO'ya ek olarak parola tabanlı oturum açmaya izin verir |
 
-### Understanding usePassword
+### usePassword'ü Anlamak
 
-**If `usePassword = true`:**
-- Login screen shows SSO buttons (e.g., "Login with Microsoft")
-- Login screen also shows username and password fields
-- Users can authenticate with either method
-- Allows hybrid setups where some users use SSO and others use passwords
+**`usePassword = true` ise:**
+- Oturum açma ekranı SSO düğmelerini gösterir (ör. "Login with Microsoft")
+- Oturum açma ekranı ayrıca kullanıcı adı ve parola alanlarını da gösterir
+- Kullanıcılar her iki yöntemle de kimlik doğrulaması yapabilir
+- Bazı kullanıcıların SSO, diğerlerinin parola kullandığı karma kurulumlara olanak tanır
 
-**If `usePassword = false` (or omitted):**
-- Login screen shows only SSO buttons
-- No username/password fields
-- Only OIDC authentication is available
+**`usePassword = false` ise (veya belirtilmemişse):**
+- Oturum açma ekranı yalnızca SSO düğmelerini gösterir
+- Kullanıcı adı/parola alanları yoktur
+- Yalnızca OIDC kimlik doğrulaması kullanılabilir
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
+    Parola tabanlı oturum açma yalnızca `digna user add` komutuyla veya dashboard üzerinden parolayla oluşturulmuş kullanıcılar için kullanılabilir.
 
-### Complete Example
+### Tam Örnek
 
 ```toml
 [login]
@@ -156,21 +156,21 @@ label = "Login with Okta"
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Arka Uç Yapılandırması {: #backend-configuration }
 
-### File Location
+### Dosya Konumu
 
 ```
 /config.toml
 ```
 
-(Root digna installation directory)
+(digna kurulumunun kök dizini)
 
-### Step 1: Add OIDC Provider Sections
+### Adım 1: OIDC Sağlayıcı Bölümlerini Ekleyin
 
-Each provider must have a dedicated `[oidc_clients.<key>]` section. The key must match the `key` defined in `dashboard_config.toml`.
+Her sağlayıcının kendine ayrılmış bir `[oidc_clients.<key>]` bölümü olmalıdır. Anahtar, `dashboard_config.toml` içinde tanımlanan `key` ile eşleşmelidir.
 
-### Microsoft Configuration
+### Microsoft Yapılandırması
 
 ```toml
 [oidc_clients.microsoft]
@@ -180,7 +180,7 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
 ```
 
-### Google Configuration
+### Google Yapılandırması
 
 ```toml
 [oidc_clients.google]
@@ -190,32 +190,32 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-### Configuration Parameters
+### Yapılandırma Parametreleri
 
-| Parameter | Type | Required | Description | Example |
+| Parametre | Tür | Zorunlu | Açıklama | Örnek |
 |---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID from identity provider | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret from identity provider | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
+| `DIGNA_OIDC_CLIENT_ID` | string | Evet | Kimlik sağlayıcıdan alınan istemci kimliği | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Evet | Kimlik sağlayıcıdan alınan istemci gizli anahtarı | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Evet | Kimlik doğrulamadan sonraki geri çağırma URL'si | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Evet | OIDC yapılandırma uç noktası | `https://login.microsoftonline.com/...` |
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
+    Yer tutucu değerleri (`<client_id>`, `<client_secret>`, `<tenant_id>`) kimlik sağlayıcınızın geliştirici portalından alınan gerçek kimlik bilgileriyle değiştirin.
 
-### Redirect URI
+### Yönlendirme URI'si
 
-The redirect URI must be the same in your identity provider configuration:
+Yönlendirme URI'si, kimlik sağlayıcı yapılandırmanızdakiyle aynı olmalıdır:
 
 ```
 http://localhost:5173/oidc/callback
 ```
 
-If digna is hosted at a different domain, update accordingly:
-- Local: `http://localhost:5173/oidc/callback`
-- Production: `https://digna.yourdomain.com/oidc/callback`
+digna farklı bir alan adında barındırılıyorsa buna göre güncelleyin:
+- Yerel: `http://localhost:5173/oidc/callback`
+- Üretim: `https://digna.yourdomain.com/oidc/callback`
 
-### Complete Example
+### Tam Örnek
 
 ```toml
 [oidc_clients.microsoft]
@@ -233,238 +233,238 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ---
 
-## Testing Login {: #testing-login }
+## Oturum Açmayı Test Etme {: #testing-login }
 
-After completing the configuration, verify that SSO is working correctly.
+Yapılandırmayı tamamladıktan sonra SSO'nun doğru çalıştığını doğrulayın.
 
-### Pre-Testing Checklist
+### Test Öncesi Kontrol Listesi
 
-Before testing, ensure:
+Test etmeden önce şunlardan emin olun:
 
-- [ ] `dashboard_config.toml` has been updated with OIDC providers
-- [ ] `config.toml` has been updated with OIDC credentials
-- [ ] Both files have been saved
-- [ ] Credentials are correct (client ID, client secret)
-- [ ] Redirect URI matches your deployment URL
-- [ ] Identity provider application is configured with the redirect URI
+- [ ] `dashboard_config.toml` OIDC sağlayıcılarıyla güncellendi
+- [ ] `config.toml` OIDC kimlik bilgileriyle güncellendi
+- [ ] Her iki dosya da kaydedildi
+- [ ] Kimlik bilgileri doğru (istemci kimliği, istemci gizli anahtarı)
+- [ ] Yönlendirme URI'si dağıtım URL'nizle eşleşiyor
+- [ ] Kimlik sağlayıcı uygulaması yönlendirme URI'siyle yapılandırıldı
 
-### Testing Steps
+### Test Adımları
 
-#### Step 1: Restart Services
+#### Adım 1: Hizmetleri Yeniden Başlatın
 
-Restart the digna backend and web server to apply changes.
+Değişiklikleri uygulamak için digna arka ucunu ve web sunucusunu yeniden başlatın.
 
-**If running as a service on Windows:**
+**Windows'ta hizmet olarak çalışıyorsa:**
 ```bash
 cd C:\path\to\digna
 digna windows stop
 digna windows start
 ```
 
-**If running as a service on Linux or macOS:**
+**Linux veya macOS'ta hizmet olarak çalışıyorsa:**
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 sudo ./start_service.sh
 ```
 
-**If running manually:**
+**Elle çalıştırılıyorsa:**
 ```bash
 digna serve --address localhost --port 8082
 ```
 
-**Restart the web server too** — IIS or Tomcat on Windows, nginx or Apache on Linux and macOS.
+**Web sunucusunu da yeniden başlatın**: Windows'ta IIS veya Tomcat, Linux ve macOS'ta nginx veya Apache.
 
-#### Step 2: Open Dashboard
+#### Adım 2: Dashboard'u Açın
 
-Open the digna dashboard in your browser:
+digna dashboard'unu tarayıcınızda açın:
 
 ```
 http://localhost:5173
 ```
 
-(or your configured dashboard URL)
+(veya yapılandırdığınız dashboard URL'si)
 
-#### Step 3: Verify Login Buttons
+#### Adım 3: Oturum Açma Düğmelerini Doğrulayın
 
-Check that login buttons appear for each configured provider:
+Yapılandırılan her sağlayıcı için oturum açma düğmelerinin göründüğünü kontrol edin:
 
-- Should see "Login with Microsoft" button
-- Should see "Login with Google" button
-- (If usePassword = true) Should see username/password fields
+- "Login with Microsoft" düğmesini görmelisiniz
+- "Login with Google" düğmesini görmelisiniz
+- (usePassword = true ise) Kullanıcı adı/parola alanlarını görmelisiniz
 
-If buttons don't appear:
-- Check that `dashboard_config.toml` was saved
-- Check that dashboard service was restarted
-- Check browser console (F12) for errors
+Düğmeler görünmüyorsa:
+- `dashboard_config.toml` dosyasının kaydedildiğini kontrol edin
+- Dashboard hizmetinin yeniden başlatıldığını kontrol edin
+- Hatalar için tarayıcı konsolunu (F12) kontrol edin
 
-#### Step 4: Test SSO Login
+#### Adım 4: SSO ile Oturum Açmayı Test Edin
 
-Click one of the SSO buttons (e.g., "Login with Microsoft"):
+SSO düğmelerinden birine tıklayın (ör. "Login with Microsoft"):
 
-1. You should be redirected to the identity provider's login page
-2. Log in with your enterprise credentials
-3. You should be redirected back to digna
-4. You should be logged in to digna
+1. Kimlik sağlayıcının oturum açma sayfasına yönlendirilmelisiniz
+2. Kurumsal kimlik bilgilerinizle oturum açın
+3. digna'ya geri yönlendirilmelisiniz
+4. digna'da oturum açmış olmalısınız
 
-#### Step 5: Verify User Creation
+#### Adım 5: Kullanıcı Oluşturulmasını Doğrulayın
 
-After successful SSO login:
+Başarılı bir SSO oturum açma işleminden sonra:
 
-- User should be automatically created in digna
-- User should be logged in
-- User profile should display your identity provider credentials
-- You should see the digna dashboard
+- Kullanıcı digna'da otomatik olarak oluşturulmuş olmalıdır
+- Kullanıcı oturum açmış olmalıdır
+- Kullanıcı profili, kimlik sağlayıcınızdaki kimlik bilgilerini göstermelidir
+- digna dashboard'unu görmelisiniz
 
-#### Step 6: Test Password Login (If Enabled)
+#### Adım 6: Parola ile Oturum Açmayı Test Edin (Etkinse)
 
-If `usePassword = true`:
+`usePassword = true` ise:
 
-1. Log out of digna
-2. On the login page, enter a username and password
-3. You should be able to log in with password credentials
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Login Buttons Don't Appear
-
-**Symptoms:**
-- OIDC login buttons not visible on login page
-- Only see password fields (if usePassword = true)
-
-**Causes & Solutions:**
-1. Check `dashboard_config.toml` is in `dashboard/` directory
-2. Verify `[[login.oidc]]` sections are present with correct syntax
-3. Restart dashboard service
-4. Clear browser cache (Ctrl+Shift+Delete or Cmd+Shift+Delete)
-5. Check browser console (F12 → Console tab) for errors
+1. digna'dan oturumu kapatın
+2. Oturum açma sayfasında bir kullanıcı adı ve parola girin
+3. Parola kimlik bilgileriyle oturum açabilmelisiniz
 
 ---
 
-### Redirect URI Mismatch Error
+## Sorun Giderme {: #troubleshooting }
 
-**Symptoms:**
-- After clicking SSO button, error about "redirect_uri mismatch"
-- "The redirect URI is not registered" error
+### Oturum Açma Düğmeleri Görünmüyor
 
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_REDIRECT_URI` in `config.toml` is correct
-2. Verify redirect URI is registered in identity provider settings
-3. Ensure both use identical URLs (including protocol, domain, path)
-4. Check for typos in the redirect URI
-5. If using HTTPS, ensure certificate is valid
+**Belirtiler:**
+- OIDC oturum açma düğmeleri oturum açma sayfasında görünmüyor
+- Yalnızca parola alanları görünüyor (usePassword = true ise)
 
----
-
-### Invalid Client Credentials Error
-
-**Symptoms:**
-- "Invalid client ID or secret" error
-- Authentication fails with credentials error
-
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_CLIENT_ID` and `DIGNA_OIDC_CLIENT_SECRET` are correct
-2. Ensure no extra spaces or special characters
-3. Check credentials haven't expired or been revoked
-4. Restart backend service after updating config
-5. Check identity provider console to confirm credentials are active
+**Nedenler ve Çözümler:**
+1. `dashboard_config.toml` dosyasının `dashboard/` dizininde olduğunu kontrol edin
+2. `[[login.oidc]]` bölümlerinin doğru sözdizimiyle mevcut olduğunu doğrulayın
+3. Dashboard hizmetini yeniden başlatın
+4. Tarayıcı önbelleğini temizleyin (Ctrl+Shift+Delete veya Cmd+Shift+Delete)
+5. Hatalar için tarayıcı konsolunu (F12 → Console sekmesi) kontrol edin
 
 ---
 
-### Login Hangs or Times Out
+### Yönlendirme URI'si Uyuşmazlığı Hatası
 
-**Symptoms:**
-- Clicking SSO button does nothing
-- Timeout after several seconds
-- Browser shows "Failed to connect" or similar
+**Belirtiler:**
+- SSO düğmesine tıkladıktan sonra "redirect_uri mismatch" ile ilgili bir hata
+- "The redirect URI is not registered" hatası
 
-**Causes & Solutions:**
-1. Verify digna backend is running: `digna repo check`
-2. Check network connectivity to identity provider
-3. Verify `DIGNA_OIDC_CONFIGURATION_URL` is accessible
-4. Check firewall rules allow outbound HTTPS connections
-5. Verify backend and dashboard can reach each other
-
----
-
-### Users Not Automatically Created
-
-**Symptoms:**
-- SSO login succeeds but user not created in digna
-- Get permission error after SSO login
-
-**Causes & Solutions:**
-1. Verify OIDC configuration is correct
-2. Check user permissions are set up
-3. Review digna logs for error messages
-4. Restart backend service
-5. Contact support@digna.ai if issue persists
+**Nedenler ve Çözümler:**
+1. `config.toml` içindeki `DIGNA_OIDC_REDIRECT_URI` değerinin doğru olduğunu doğrulayın
+2. Yönlendirme URI'sinin kimlik sağlayıcı ayarlarında kayıtlı olduğunu doğrulayın
+3. Her ikisinin de birebir aynı URL'yi (protokol, alan adı ve yol dahil) kullandığından emin olun
+4. Yönlendirme URI'sinde yazım hatası olup olmadığını kontrol edin
+5. HTTPS kullanıyorsanız sertifikanın geçerli olduğundan emin olun
 
 ---
 
-## Supported Providers {: #supported-providers }
+### Geçersiz İstemci Kimlik Bilgileri Hatası
 
-### Tested & Supported
+**Belirtiler:**
+- "Invalid client ID or secret" hatası
+- Kimlik doğrulama bir kimlik bilgisi hatasıyla başarısız oluyor
 
-The following OIDC providers have been tested and are known to work:
+**Nedenler ve Çözümler:**
+1. `DIGNA_OIDC_CLIENT_ID` ve `DIGNA_OIDC_CLIENT_SECRET` değerlerinin doğru olduğunu doğrulayın
+2. Fazladan boşluk veya özel karakter olmadığından emin olun
+3. Kimlik bilgilerinin süresinin dolmadığını veya iptal edilmediğini kontrol edin
+4. Yapılandırmayı güncelledikten sonra arka uç hizmetini yeniden başlatın
+5. Kimlik bilgilerinin etkin olduğunu doğrulamak için kimlik sağlayıcı konsolunu kontrol edin
 
-| Provider | Configuration URL | Setup Guide |
+---
+
+### Oturum Açma Takılıyor veya Zaman Aşımına Uğruyor
+
+**Belirtiler:**
+- SSO düğmesine tıklamak hiçbir şey yapmıyor
+- Birkaç saniye sonra zaman aşımı
+- Tarayıcı "Failed to connect" veya benzeri bir mesaj gösteriyor
+
+**Nedenler ve Çözümler:**
+1. digna arka ucunun çalıştığını doğrulayın: `digna repo check`
+2. Kimlik sağlayıcıya ağ bağlantısını kontrol edin
+3. `DIGNA_OIDC_CONFIGURATION_URL` adresine erişilebildiğini doğrulayın
+4. Güvenlik duvarı kurallarının giden HTTPS bağlantılarına izin verdiğini kontrol edin
+5. Arka uç ile dashboard'un birbirine erişebildiğini doğrulayın
+
+---
+
+### Kullanıcılar Otomatik Olarak Oluşturulmuyor
+
+**Belirtiler:**
+- SSO ile oturum açma başarılı ancak kullanıcı digna'da oluşturulmuyor
+- SSO ile oturum açtıktan sonra yetki hatası alınıyor
+
+**Nedenler ve Çözümler:**
+1. OIDC yapılandırmasının doğru olduğunu doğrulayın
+2. Kullanıcı yetkilerinin ayarlandığını kontrol edin
+3. Hata mesajları için digna günlüklerini inceleyin
+4. Arka uç hizmetini yeniden başlatın
+5. Sorun devam ederse support@digna.ai ile iletişime geçin
+
+---
+
+## Desteklenen Sağlayıcılar {: #supported-providers }
+
+### Test Edilmiş ve Desteklenen
+
+Aşağıdaki OIDC sağlayıcıları test edilmiştir ve çalıştıkları bilinmektedir:
+
+| Sağlayıcı | Yapılandırma URL'si | Kurulum Kılavuzu |
 |---|---|---|
-| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
-| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
-| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
-| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
-| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [AD FS ile SSO kurulumu](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Auth0 ile SSO kurulumu](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Google Workspace ile SSO kurulumu](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Keycloak ile SSO kurulumu](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Microsoft Entra ID ile SSO kurulumu](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Okta ile SSO kurulumu](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [OneLogin ile SSO kurulumu](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [PingOne ile SSO kurulumu](pingone_sso_guide.md) |
 
-### Other OIDC Providers
+### Diğer OIDC Sağlayıcıları
 
-Any provider that supports OpenID Connect can be integrated. Required information:
+OpenID Connect'i destekleyen her sağlayıcı entegre edilebilir. Gerekli bilgiler:
 
-- Client ID
-- Client secret
-- OpenID configuration URL (usually at `/.well-known/openid-configuration`)
-- Supported scopes (typically `openid profile email`)
+- İstemci kimliği
+- İstemci gizli anahtarı
+- OpenID yapılandırma URL'si (genellikle `/.well-known/openid-configuration` adresinde)
+- Desteklenen kapsamlar (genellikle `openid profile email`)
 
-Contact support@digna.ai if you need help integrating a specific provider.
-
----
-
-## Best Practices
-
-**DO:**
-- Use HTTPS in production (not HTTP)
-- Store client secrets securely (use environment variables if possible)
-- Rotate secrets periodically
-- Test in a non-production environment first
-- Document which providers are configured
-- Monitor login logs for unusual activity
-- Keep identity provider configuration in sync with digna config
-
-**DON'T:**
-- Store client secrets in version control
-- Use HTTP redirect URIs in production
-- Configure multiple providers with the same key
-- Leave default/test credentials in production
-- Expose config files containing secrets
-- Mix development and production credentials
+Belirli bir sağlayıcıyı entegre etmek için yardıma ihtiyacınız varsa support@digna.ai ile iletişime geçin.
 
 ---
 
-## Support
+## En İyi Uygulamalar
 
-Need help with SSO configuration?
+**YAPIN:**
+- Üretimde HTTPS kullanın (HTTP değil)
+- İstemci gizli anahtarlarını güvenli bir şekilde saklayın (mümkünse ortam değişkenleri kullanın)
+- Gizli anahtarları düzenli aralıklarla yenileyin
+- Önce üretim dışı bir ortamda test edin
+- Hangi sağlayıcıların yapılandırıldığını belgeleyin
+- Olağandışı etkinlikler için oturum açma günlüklerini izleyin
+- Kimlik sağlayıcı yapılandırmasını digna yapılandırmasıyla eşit tutun
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**YAPMAYIN:**
+- İstemci gizli anahtarlarını sürüm kontrolünde saklamayın
+- Üretimde HTTP yönlendirme URI'leri kullanmayın
+- Birden fazla sağlayıcıyı aynı anahtarla yapılandırmayın
+- Üretimde varsayılan/test kimlik bilgilerini bırakmayın
+- Gizli bilgiler içeren yapılandırma dosyalarını açığa çıkarmayın
+- Geliştirme ve üretim kimlik bilgilerini karıştırmayın
 
 ---
 
-**Last Updated:** August 30, 2026  
-**Release:** 2026.04  
+## Destek
+
+SSO yapılandırması konusunda yardıma mı ihtiyacınız var?
+
+- **E-posta:** support@digna.ai
+- **Dokümantasyon:** https://docs.digna.ai
+- **Web sitesi:** https://www.digna.ai
+
+---
+
+**Son Güncelleme:** 30 Ağustos 2026  
+**Sürüm:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

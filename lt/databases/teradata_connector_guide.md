@@ -1,63 +1,64 @@
-# Source Connector for Teradata
+# Teradata šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Teradata per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Teradata.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Įdiekite **ODBC Driver for Teradata** kompiuteryje, kuriame veikia *digna* backend, laikydamiesi
+oficialaus gamintojo diegimo vadovo.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+Tvarkyklė užsiregistruoja su versija pavadinime, pavyzdžiui,
+**Teradata Database ODBC Driver 20.00**. Nuskaitykite tikslų užregistruotą pavadinimą savo
+serveryje, kaip aprašyta skyriuje [ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Teradata ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų — versija yra paties tvarkyklės pavadinimo dalis — ir tarp
+    platformų. Naudokite tai kaip atspirties tašką ir patikrinkite įdiegtos tvarkyklės versijos
+    dokumentaciją.
+
+Ekrane **Add DB Connection** pridėkite šias savybes:
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `DBCNAME` | `teradata.example.com` | Serverio pavadinimas arba IP adresas. Taip Teradata vadina serverio savybę |
+| `UID` | `digna_source_user` | Duomenų bazės vartotojas |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Naudingos papildomos savybės:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Prisijungimo mechanizmas. `TD2` yra Teradata numatytasis; katalogo tarnybos (directory) autentifikacijai naudokite `LDAP` |
+| `DefaultDatabase` | `dad` | Duomenų bazė, kurioje pradedamas seansas |
+| `CharacterSet` | `UTF8` | Nustatykite, kai numatytasis seanso simbolių rinkinys sugadintų ne ASCII duomenis |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +69,40 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Pastabos apie Teradata {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Teradata duomenų bazė yra katalogas, o ne schema.** *digna* duomenų bazes, kurias vartotojas
+  gali matyti (iš `DBC.DatabasesV`), išvardija kaip katalogus, o schemos lygmuo netaikomas.
+  Pridėdami duomenų šaltinį, pasirinkite duomenų bazę kaip katalogą; schema pažymima kaip
+  *netaikoma* (not applicable).
+- **Vienas ryšys pasiekia kiekvieną leidžiamą duomenų bazę**, todėl vienas ryšys gali aptarnauti
+  šaltinius keliose duomenų bazėse — skirtingai nei technologijose, kuriose ryšys susietas su
+  viena duomenų baze.
+- **Work Schema yra duomenų bazė.** *Permanent* profiliavimui nurodykite Teradata duomenų bazę,
+  kurioje laikomos darbinės lentelės, ir suteikite vartotojui teisę `CREATE TABLE` bei `PERM`
+  vietos skyrimą joje — duomenų bazė su nuline perm vieta negali turėti lentelės.
+- **Profiliavimo režimai.** *Permanent* kuria lenteles schemoje **Work Schema**. *Session*
+  naudoja `VOLATILE` lentelę, kuriai reikia `SPOOL` vietos, bet nereikia perm vietos ir teisių
+  **Work Schema**. *Standard* reikia tik skaitymo prieigos.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė ir jūsų prisijungimo duomenys veikia, prieš
+įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Čia esantis laukas **Name or IP address** atitinka savybę `DBCNAME` iš
+[2 skyriaus](#2-odbc-properties).
 
-Click the **Test** button.
+Spustelėkite mygtuką **Test**.
 
-#### Step 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+#### 2 žingsnis
+![2 žingsnis](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Įveskite vartotojo vardą ir slaptažodį, tada spustelėkite mygtuką **OK**. Sėkmės ekranas
+patvirtina, kad tvarkyklė ir prisijungimo duomenys veikia.

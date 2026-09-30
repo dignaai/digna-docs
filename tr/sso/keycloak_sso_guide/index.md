@@ -1,108 +1,108 @@
-# Set up SSO with Keycloak
+# Keycloak ile SSO Kurulumu
 
-Keycloak is a self-hosted, fully OIDC-compliant identity provider. Because you run it yourself, the discovery URL is built from your own host name and realm rather than a vendor domain.
+Keycloak, kendi sunucunuzda barındırılan ve OIDC ile tam uyumlu bir kimlik sağlayıcıdır. Onu kendiniz çalıştırdığınız için keşif URL'si bir üretici alan adından değil, kendi ana makine adınızdan ve realm'inizden oluşturulur.
 
-This guide covers the **Keycloak side**: creating the client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Bu kılavuz **Keycloak tarafını** kapsar: istemciyi oluşturma ve digna'nın ihtiyaç duyduğu değerleri toplama. digna tarafı (`dashboard_config.toml`, test ve sorun giderme) her sağlayıcı için aynıdır ve [Çoklu Oturum Açma Genel Bakış](overview.md) sayfasında açıklanmıştır.
 
 ---
 
-## Before You Start
+## Başlamadan Önce
 
-| Requirement | Notes |
+| Gereksinim | Notlar |
 |---|---|
-| **Keycloak version** | 17 or later for the URL paths used here — see the note in Step 4 |
-| **Keycloak role** | `realm-admin` on the target realm, or a server administrator |
-| **Realm** | The realm your digna users belong to, not necessarily `master` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Keycloak sürümü** | Burada kullanılan URL yolları için 17 veya üzeri; Adım 5'teki nota bakın |
+| **Keycloak rolü** | Hedef realm'de `realm-admin` veya bir sunucu yöneticisi |
+| **Realm** | digna kullanıcılarınızın ait olduğu realm; mutlaka `master` olması gerekmez |
+| **digna yönlendirme URI'si** | Kullanıcıların oturum açtıktan sonra döndüğü URL, ör. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Select the Realm
+## Adım 1: Realm'i Seçin
 
-1. Open the Keycloak admin console
-2. Use the realm selector in the top-left to switch to the realm your users are in
+1. Keycloak yönetim konsolunu açın
+2. Kullanıcılarınızın bulunduğu realm'e geçmek için sol üstteki realm seçicisini kullanın
 
-!!! warning "Do Not Use the master Realm"
+!!! warning "master Realm'ini Kullanmayın"
 
-    The `master` realm is intended for administering Keycloak itself. Application clients belong in a dedicated realm; putting digna in `master` gives its users a route into the Keycloak administration console.
+    `master` realm'i Keycloak'ın kendisini yönetmek için tasarlanmıştır. Uygulama istemcileri ayrılmış bir realm'e aittir; digna'yı `master` içine koymak, kullanıcılarına Keycloak yönetim konsoluna giden bir yol açar.
 
 ---
 
-## Step 2: Create the Client
+## Adım 2: İstemciyi Oluşturun
 
-1. Go to **Clients** and click **Create client**
-2. Configure:
+1. **Clients** bölümüne gidin ve **Create client**'a tıklayın
+2. Şunları yapılandırın:
    - **Client type**: *OpenID Connect*
-   - **Client ID**: `digna` — this becomes `DIGNA_OIDC_CLIENT_ID`
-3. Click **Next**
-4. On the **Capability config** step, turn **Client authentication** **On**
-5. Leave **Standard flow** enabled; the other flows are not needed
-6. Click **Next**
+   - **Client ID**: `digna`; bu değer `DIGNA_OIDC_CLIENT_ID` olur
+3. **Next**'e tıklayın
+4. **Capability config** adımında **Client authentication** seçeneğini **On** konumuna getirin
+5. **Standard flow**'u etkin bırakın; diğer akışlara gerek yoktur
+6. **Next**'e tıklayın
 
-!!! warning "Client Authentication Must Be On"
+!!! warning "Client Authentication Açık Olmalıdır"
 
-    With **Client authentication** off, Keycloak creates a *public* client, which has no credentials at all — the **Credentials** tab in Step 4 will not exist. digna needs a confidential client. This toggle can be changed after creation if you get it wrong.
+    **Client authentication** kapalıyken Keycloak, hiçbir kimlik bilgisi olmayan *genel* bir istemci oluşturur; Adım 4'teki **Credentials** sekmesi mevcut olmaz. digna gizli (confidential) bir istemciye ihtiyaç duyar. Yanlış ayarladıysanız bu anahtar oluşturmadan sonra değiştirilebilir.
 
 ---
 
-## Step 3: Set the Redirect URI
+## Adım 3: Yönlendirme URI'sini Ayarlayın
 
-On the **Login settings** step (or the **Settings** tab afterwards):
+**Login settings** adımında (veya daha sonra **Settings** sekmesinde):
 
-1. **Valid redirect URIs**: enter your digna callback URL:
+1. **Valid redirect URIs**: digna geri çağırma URL'nizi girin:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-2. **Web origins**: leave empty, or set to `+` to mirror the redirect URIs
-3. Click **Save**
+2. **Web origins**: boş bırakın veya yönlendirme URI'lerini yansıtmak için `+` olarak ayarlayın
+3. **Save**'e tıklayın
 
-!!! tip "Avoid Wildcards"
+!!! tip "Joker Karakterlerden Kaçının"
 
-    Keycloak accepts patterns such as `https://digna.yourdomain.com/*`. A wildcard lets any path on that host receive an authorization code, so prefer the exact callback URL.
-
----
-
-## Step 4: Collect the Client Secret
-
-1. Open the **Credentials** tab
-2. Confirm **Client Authenticator** is *Client Id and Secret*
-3. Copy the **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
-
-The secret stays retrievable here and can be regenerated with **Regenerate**.
+    Keycloak, `https://digna.yourdomain.com/*` gibi kalıpları kabul eder. Joker karakter, o ana makinedeki herhangi bir yolun yetkilendirme kodu almasına izin verir; bu nedenle tam geri çağırma URL'sini tercih edin.
 
 ---
 
-## Step 5: Build the Discovery URL
+## Adım 4: İstemci Gizli Anahtarını Alın
 
-Substitute your Keycloak host and realm name:
+1. **Credentials** sekmesini açın
+2. **Client Authenticator** değerinin *Client Id and Secret* olduğunu doğrulayın
+3. **Client secret** değerini kopyalayın → `DIGNA_OIDC_CLIENT_SECRET` olur
+
+Gizli anahtar burada tekrar alınabilir durumda kalır ve **Regenerate** ile yeniden oluşturulabilir.
+
+---
+
+## Adım 5: Keşif URL'sini Oluşturun
+
+Keycloak ana makinenizi ve realm adınızı yerine koyun:
 
 ```
 https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
 ```
 
-For example:
+Örneğin:
 
 ```
 https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
 ```
 
-!!! note "Keycloak 16 and Earlier Include /auth"
+!!! note "Keycloak 16 ve Öncesi /auth İçerir"
 
-    Before Keycloak 17, every endpoint sat under an `/auth` prefix:
+    Keycloak 17'den önce her uç nokta bir `/auth` önekinin altında bulunuyordu:
 
     ```
     https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
     ```
 
-    Distributions that set `KC_HTTP_RELATIVE_PATH=/auth` keep the old layout on current versions too. If the URL without `/auth` returns 404, try it with.
+    `KC_HTTP_RELATIVE_PATH=/auth` ayarını yapan dağıtımlar güncel sürümlerde de eski düzeni korur. `/auth` içermeyen URL 404 döndürüyorsa `/auth` ile deneyin.
 
-Open the URL in a browser before continuing. A JSON document confirms the host and realm are right.
+Devam etmeden önce URL'yi bir tarayıcıda açın. Bir JSON belgesi, ana makinenin ve realm'in doğru olduğunu doğrular.
 
 ---
 
-## Step 6: Configure digna
+## Adım 6: digna'yı Yapılandırın
 
 ### `dashboard/dashboard_config.toml`
 
@@ -125,41 +125,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `keycloak` here. Note that it does not have to equal the Keycloak **Client ID**, though keeping them the same is easier to follow.
+Her iki dosyadaki `key` eşleşmelidir; burada `keycloak`. Bunun Keycloak **Client ID** değerine eşit olması gerekmediğini unutmayın, ancak ikisini aynı tutmak takibi kolaylaştırır.
 
 ---
 
-## Step 7: Test
+## Adım 7: Test Edin
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Arka ucu ve web sunucusunu yeniden başlatın, ardından dashboard'u açın. Tam kontrol listesi için bkz. [Oturum Açmayı Test Etme](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Keycloak
+## Keycloak Sorunlarını Giderme
 
 ### Invalid parameter: redirect_uri
 
-The callback URL is not covered by **Valid redirect URIs**. Keycloak logs the URI it received in the server log, which is the quickest way to see the exact mismatch.
+Geri çağırma URL'si **Valid redirect URIs** kapsamında değil. Keycloak aldığı URI'yi sunucu günlüğüne kaydeder; tam uyuşmazlığı görmenin en hızlı yolu budur.
 
-### The Credentials Tab Is Missing
+### Credentials Sekmesi Eksik
 
-The client is public. Turn **Client authentication** on under **Settings → Capability config**.
+İstemci genel (public). **Settings → Capability config** altında **Client authentication** seçeneğini açın.
 
-### 404 on the Discovery URL
+### Keşif URL'sinde 404
 
-Either the realm name is wrong, or the deployment uses the `/auth` prefix. Check the realm list in the admin console and try both URL forms.
+Ya realm adı yanlış ya da dağıtım `/auth` önekini kullanıyor. Yönetim konsolundaki realm listesini kontrol edin ve her iki URL biçimini de deneyin.
 
-### unauthorized_client or invalid_client
+### unauthorized_client veya invalid_client
 
-**Standard flow** is disabled under **Capability config**, or the secret was regenerated in Keycloak without updating `config.toml`.
+**Capability config** altında **Standard flow** devre dışı ya da gizli anahtar Keycloak'ta `config.toml` güncellenmeden yeniden oluşturulmuş.
 
-### Certificate Errors from the Backend
+### Arka Uçtan Gelen Sertifika Hataları
 
-A self-hosted Keycloak behind a private or self-signed certificate will fail digna's outbound HTTPS call to the discovery URL. Install the issuing CA into the trust store of the machine running the digna backend.
+Özel veya kendinden imzalı bir sertifikanın arkasındaki, kendi sunucunuzda barındırılan bir Keycloak, digna'nın keşif URL'sine yaptığı giden HTTPS çağrısının başarısız olmasına neden olur. Sertifikayı veren CA'yı digna arka ucunu çalıştıran makinenin güven deposuna kurun.
 
 ---
 
-## See Also
+## Ayrıca Bakınız
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Çoklu Oturum Açma Genel Bakış](overview.md): yapılandırma başvurusu, test ve genel sorun giderme
 - [Keycloak: Securing applications](https://www.keycloak.org/docs/latest/securing_apps/)

@@ -1,92 +1,95 @@
-# Source Connector for Azure Synapse Analytics
+# Forráskonnektor Azure Synapse Analytics-hez
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Ez az útmutató leírja, hogyan konfigurálhatja a *digna*-t az Azure Synapse Analytics-hez való
+csatlakozásra **ODBC**-n keresztül, **DSN nélküli** kapcsolati karakterlánccal. Serverless és
+dedicated SQL poolok egyaránt támogatottak.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+A beállítás *digna*-oldali része minden technológiánál ugyanaz — hol jönnek létre a
+kapcsolatok, hogyan titkosíthatók a tulajdonságértékek, hogyan tesztelhető egy kapcsolat és mit
+jelentenek a profilozási módok. Ezt az [Adatbázis-kapcsolatok áttekintése](overview.md) írja
+le. Ez az oldal azt tárgyalja, ami az Azure Synapse-ra jellemző.
 
-!!! note "Technology"
+!!! note "Technológia"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    A Synapse az SQL Server dialektust beszéli, ezért a kapcsolatot **Technology:
+    SQL Server** beállítással kell létrehozni. On-premises szerverhez lásd az
+    [MS SQL Server](sqlserver_connector_guide.md) útmutatót.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Az ODBC illesztőprogram telepítése {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Telepítse az **ODBC Driver 18 for SQL Server** illesztőprogramot arra a gépre, amely a *digna*
+backendet futtatja, a [Microsoft telepítési útmutatója](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)
+szerint, és olvassa le a pontos regisztrált illesztőprogram-nevet a gépén, ahogyan az
+[Az ODBC illesztőprogram telepítése a digna gépre](overview.md#install-the-driver) részben le
+van írva.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. ODBC tulajdonságok {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Példa, nem specifikáció"
+
+    Az alábbi készlet egy olyan kombináció, amelyről ismert, hogy működik. A tulajdonságok a
+    Microsoft ODBC illesztőprogramhoz tartoznak, így nevük, alapértelmezett értékeik és az
+    elfogadott értékek illesztőprogram-verziónként és platformonként eltérnek, és hogy a
+    workspace mit követel meg, az a konfigurációjától függ — pool típusa, hitelesítési mód,
+    tűzfal. Használja ezt kiindulópontként, és nézze meg a telepített illesztőprogram-verzió
+    dokumentációját.
+
+Adja hozzá a következő tulajdonságokat az **Add DB Connection** képernyőn:
+
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Egyeznie kell a *digna* gépen regisztrált illesztőprogram-névvel |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | A workspace neve plusz a végpont utótagja — lásd lent |
+| `DATABASE` | `dignadata` | A forrássémákat tartalmazó adatbázis. Ez az egyetlen adatbázis, amelyet ez a kapcsolat profilozni tud |
 | `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Jelölje be az **Encrypted** opciót |
 
-The resulting connection string looks like this:
+Az így kapott kapcsolati karakterlánc így néz ki:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### A `SERVER` érték
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Vegye a Synapse workspace nevét, és fűzze hozzá a végpont utótagját:
 
 | Pool | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "A `-ondemand` részt könnyű kihagyni"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Nélküle a név a dedicated végpontra oldódik fel, és a kapcsolat vagy sikertelen lesz, vagy
+    csendben egy másik poolhoz csatlakozik, mint amit szándékozott. Mindkét végpont látható az
+    Azure portal workspace-áttekintő oldalán.
 
-### Firewall
+### Tűzfal
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+A Synapse workspace tűzfalának engedélyeznie kell a *digna* gép kimenő címét. Adja hozzá a
+workspace **Networking** részében, mielőtt tesztelné a kapcsolatot — egy blokkolt cím
+kapcsolati időtúllépésként jelenik meg, nem hitelesítési hibaként.
 
-### Microsoft Entra ID authentication
+### Microsoft Entra ID hitelesítés
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+SQL login helyett az illesztőprogram Entra ID-val is tud hitelesíteni. Cserélje le a
+`UID`/`PWD` párt arra a hitelesítési módra, amelyet a workspace elvár, például:
 
-| Key | Example value | Notes |
+| Kulcs | Példaérték | Megjegyzések |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | Ekkor a `UID` az alkalmazás (client) ID-t, a `PWD` pedig a client secretet kapja |
+| `Authentication` | `ActiveDirectoryMSI` | A *digna* gép managed identity-je, nincs szükség hitelesítő adatokra |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguráció {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Az **Add DB Connection** képernyőn adja meg a következőket:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -98,63 +101,69 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Megjegyzések az Azure Synapse-hoz {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **A serverless poolok csak a *Standard* profilozást támogatják.** Egy serverless SQL pool nem
+  tud táblákat létrehozni egy adatbázisban, így sem a *Permanent*, sem a *Session* profilozás
+  nem futhat. A *Standard* a metrikákat közvetlenül a forráson számítja ki, ami egyben az
+  olcsóbb megoldás is, mivel a serverless a feldolgozott adatmennyiség alapján kerül
+  számlázásra.
+- **Egy kapcsolat egy adatbázist lát.** A *digna* a `DATABASE`-ben megnevezett adatbázis
+  sémáit kínálja fel, mert a Synapse — az SQL Serverhez hasonlóan — csak az aktuális
+  adatbázist jelenti katalógusként.
+- **A titkosítás alapértelmezetten be van kapcsolva** a Driver 18-ban, és a Synapse végpontok
+  érvényes nyilvános tanúsítványokat mutatnak be, így nincs szükség `Encrypt` vagy
+  `TrustServerCertificate` tulajdonságra.
+- **Egy serverless végpont az első kapcsolódáskor tétlen állapotból ébredhet.** Ha a
+  kapcsolatteszt időtúllépéssel leáll egy olyan poolon, amelyet egy ideje nem használtak,
+  próbálja újra.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Az illesztőprogram ellenőrzése (opcionális) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+ODBC adatforrás konfigurálása nem szükséges egy DSN nélküli kapcsolathoz, de az
+illesztőprogram saját varázslója kényelmes módja annak, hogy megbizonyosodjon arról, hogy az
+illesztőprogram működik, és a workspace elfogadja a hitelesítő adatait, mielőtt megadná őket a
+*digna*-ban.
 
-#### Step 1
+#### 1. lépés
 ![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Töltse ki a "Server" mezőt.
+Használja a Synapse workspace nevét, és egészítse ki a ".sql.azuresynapse.net" utótaggal.  
+**Figyelem**, ha serverless SQL poolon keresztül szeretne csatlakozni, feltétlenül adja hozzá a
+"-ondemand" részt, ahogyan a fenti képernyőképen látható.
 
-Click the **Next >** button.
+Kattintson a **Next >** gombra.
 
-#### Step 2
+#### 2. lépés
 ![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Válassza ki a hitelesítési módot (pl. felhasználónév és jelszó),
+és adja meg a szükséges adatokat.
 
-Click the **Next >** button.
+Kattintson a **Next >** gombra.
 
-#### Step 3
+#### 3. lépés
 ![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Válassza az ANSI-kompatibilis beállításokat, majd kattintson a **Next >** gombra.
 
-#### Step 4
+#### 4. lépés
 ![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Meghagyhatja az alapértelmezett beállításokat, vagy szükség szerint választhat opciókat,
+majd kattintson a **Finish** gombra.
 
-#### Step 5
+#### 5. lépés
 ![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Most kattintson a **Test datasource** gombra.
 
-#### Step 6
+#### 6. lépés
 ![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Egy sikert jelző képernyő megerősíti, hogy az illesztőprogram, a végpont és a hitelesítő adatok
+működnek. A megadott értékek pontosan azok, amelyeket a [2. szakasz](#2-odbc-properties)
+tulajdonságai kapnak.

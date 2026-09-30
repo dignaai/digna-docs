@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# Ghid de instalare pe macOS pentru digna Release 2026.06
 
 **Release:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Ultima actualizare:** 5 septembrie 2026
 
 
 ---
 
-## Table of Contents
+## Cuprins
 
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
-
----
-
-## Introduction {: #introduction }
-
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows or Linux?
-
-This guide covers macOS. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+1. [Introducere](#introduction)
+2. [Cerințe de sistem](#system-requirements)
+3. [Pregătirea înainte de instalare](#pre-installation-setup)
+4. [Configurarea serverului PostgreSQL](#postgresql-server-setup)
+5. [Configurarea web serverului](#web-server-configuration)
+6. [Instalarea inițială](#initial-installation)
+7. [Configurarea backend-ului](#backend-configuration)
+8. [Configurarea dashboard-ului](#dashboard-configuration)
+9. [Rularea digna ca serviciu în fundal](#running-digna-as-a-background-service)
+10. [Actualizarea la o versiune nouă](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Introducere {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### Despre digna
 
-| Requirement | Specification |
+digna este o platformă completă, bazată pe AI, concepută pentru a optimiza gestionarea calității datelor în diverse medii de date, cum ar fi data warehouses, data lakes și lakehouses. Construită pentru scalabilitate și adaptabilitate ridicate, digna abordează provocările moderne ale datelor prin automatizare, monitorizare în timp real și detectarea anomaliilor.
+
+digna este alcătuită din două componente principale:
+
+- **digna**: nucleul aplicației, responsabil de prelucrarea datelor și de efectuarea verificărilor de calitate. Reunește backend-ul și interfața în linie de comandă într-un singur executabil, înlocuind programele separate `dignabackend` și `dignacli` din versiunile anterioare.
+- **dignadashboard**: o interfață web găzduită pe un web server, care oferă o modalitate prietenoasă de a interacționa cu platforma digna și de a vizualiza metricile de calitate a datelor.
+
+### Noutăți în Release 2026.06
+
+Această versiune aduce capabilitățile de observabilitate a datelor direct în codul dumneavoastră, permițând dezvoltatorilor să monitorizeze calitatea datelor la sursă. Consultați [notele de lansare](http://docs.digna.ai/changelog/Release_202606/) pentru detalii complete.
+
+### Căutați Windows sau Linux?
+
+Acest ghid acoperă macOS. Pentru alte platforme, consultați [Ghidul de instalare Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) sau [Ghidul de instalare Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Cerințe de sistem {: #system-requirements }
+
+Înainte de a începe instalarea, asigurați-vă că sistemul dumneavoastră îndeplinește următoarele cerințe minime:
+
+| Cerință | Specificație |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **Sistem de operare** | macOS 13 (Ventura) sau mai nou |
+| **Arhitectură** | Apple Silicon (arm64) sau Intel (x86_64) |
+| **Memorie (configurație minimă)** | 16 GB RAM |
+| **Spațiu pe disc** | 10 GB spațiu de stocare disponibil |
+| **Bază de date** | PostgreSQL Server 12 sau o versiune superioară |
+| **Web server** | nginx, Apache httpd sau echivalent |
+| **Instrumente de linie de comandă** | Xcode Command Line Tools (necesare pentru Homebrew) |
 
-### Database Installation Options
+### Opțiuni de instalare a bazei de date
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Dacă PostgreSQL este deja instalat:**
+Puteți adăuga o bază de date nouă pentru digna pe serverul PostgreSQL existent.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Dacă instalați PostgreSQL pe aceeași mașină cu digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Specificații recomandate"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Memorie**: 32 GB RAM (în loc de 16 GB)
+    - **Spațiu pe disc**: 50 GB spațiu de stocare disponibil (în loc de 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Aceste specificații mai mari permit rularea simultană a digna și a bazei de date PostgreSQL.
 
-### Checking Your Architecture
+### Verificarea arhitecturii
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Mai multe căi din acest ghid diferă între Mac-urile cu Apple Silicon și cele cu Intel. Pentru a verifica ce aveți, deschideți **Terminal** și rulați:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew se instalează în `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew se instalează în `/usr/local`.
 
-!!! tip "Tip"
+!!! tip "Sfat"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    În loc să fixeze una dintre căi, acest ghid folosește `$(brew --prefix)`, care se extinde la locația corectă pe ambele arhitecturi. Puteți copia comenzile exact așa cum sunt.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Pregătirea înainte de instalare {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Înainte de a instala digna, asigurați-vă că sunt pregătite trei cerințe preliminare esențiale:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – managerul de pachete folosit pentru a instala componentele de mai jos
+2. **Serverul PostgreSQL** – pentru stocarea metricilor calculate și a datelor de performanță
+3. **Web serverul** – pentru găzduirea digna Dashboard
 
-If these components are not already set up, follow the sections below to install and configure them.
+Dacă aceste componente nu sunt deja configurate, urmați secțiunile de mai jos pentru a le instala și configura.
 
-### Installing Homebrew
+### Instalarea Homebrew
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew este managerul de pachete standard pentru macOS și este folosit în tot acest ghid pentru a instala PostgreSQL și nginx.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### Pasul 1: Verificați dacă Homebrew este deja instalat
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Deschideți **Terminal** (apăsați `Cmd + Space`, tastați `Terminal`, apăsați Enter) și rulați:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Dacă se afișează un număr de versiune, treceți direct la secțiunea [Configurarea serverului PostgreSQL](#postgresql-server-setup).
 
-#### Step 2: Install Homebrew
+#### Pasul 2: Instalați Homebrew
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Dacă comanda nu a fost găsită, instalați Homebrew urmând instrucțiunile de pe [site-ul oficial Homebrew](https://brew.sh). Programul de instalare instalează și Xcode Command Line Tools, dacă acestea nu sunt deja prezente.
 
-#### Step 3: Add Homebrew to Your PATH
+#### Pasul 3: Adăugați Homebrew în PATH
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Pe Apple Silicon, programul de instalare afișează două comenzi pentru a adăuga Homebrew în mediul shell-ului. Rulați-le conform instrucțiunilor, apoi confirmați:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Ar trebui să se afișeze `/opt/homebrew` pe Apple Silicon sau `/usr/local` pe Intel.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Configurarea serverului PostgreSQL {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Dacă aveți deja PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Dacă PostgreSQL este deja instalat și rulează pe mașina locală sau dacă folosiți un server PostgreSQL gestionat, la distanță, puteți trece direct la [secțiunea următoare](#web-server-configuration).
 
-### Installation Options
+### Opțiuni de instalare
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS oferă două moduri simple de a instala PostgreSQL. Alegeți **unul**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — instalare din linia de comandă, recomandată pentru implementările pe server
+- [Postgres.app](#postgresql-app) — instalare grafică, comodă pentru evaluarea locală
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Instalarea PostgreSQL cu Homebrew {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### Pasul 1: Instalați formula PostgreSQL
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### Pasul 2: Adăugați PostgreSQL în PATH
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+Formulele PostgreSQL cu versiune sunt *keg-only*, ceea ce înseamnă că Homebrew nu leagă automat comenzile lor în PATH. Adăugați-le dumneavoastră:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Notă"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Aceasta presupune shell-ul implicit `zsh` folosit de macOS. Dacă folosiți `bash`, adăugați aceeași linie în `~/.bash_profile`.
 
-#### Step 3: Start the PostgreSQL Service
+#### Pasul 3: Porniți serviciul PostgreSQL
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+Aceasta pornește imediat PostgreSQL și îl configurează să pornească din nou automat la autentificare.
 
-#### Step 4: Verify the Installation
+#### Pasul 4: Verificați instalarea
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Dacă instalarea a reușit, ar trebui să vedeți versiunea PostgreSQL.
 
-#### Step 5: Connect to the Server
+#### Pasul 5: Conectați-vă la server
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Important — aici macOS diferă de Windows"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Programul de instalare pentru Windows vă cere să creați un superutilizator `postgres` și o parolă. Homebrew nu face acest lucru. În schimb, creează un superutilizator denumit după **contul dumneavoastră macOS**, fără parolă, accesibil doar de pe mașina locală.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    Aceasta înseamnă că o instalare Homebrew proaspătă nu are un rol `postgres`. Folosiți numele propriului cont atunci când aveți nevoie de un superutilizator și creați un utilizator digna explicit, așa cum este descris în [Instalarea inițială](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### Pasul 6: Confirmați portul
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Portul implicit PostgreSQL este `5432`. Pentru a confirma portul pe care ascultă serverul:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Notați valoarea — veți avea nevoie de ea la configurarea backend-ului digna.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Instalarea PostgreSQL cu Postgres.app {: #postgresql-app }
 
-If you prefer a graphical installation:
+Dacă preferați o instalare grafică:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Descărcați [Postgres.app](https://postgresapp.com) și trageți-o în folderul **Applications**
+2. Deschideți aplicația și faceți clic pe **Initialize** pentru a crea un server nou
+3. Urmați instrucțiunile aplicației pentru a adăuga instrumentele sale de linie de comandă în PATH
+4. Verificați instalarea:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Și Postgres.app creează un superutilizator denumit după contul dumneavoastră macOS.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Configurarea web serverului {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna necesită un web server pentru a găzdui dashboard-ul. Alegeți una dintre următoarele opțiuni:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — instalat prin Homebrew, recomandat
+- [Apache httpd](#apache-setup) — inclus în macOS
 
-You only need to install and configure **one** of these servers.
+Trebuie să instalați și să configurați **doar unul** dintre aceste servere.
 
-Both sections configure two things the dashboard depends on:
+Ambele secțiuni configurează două lucruri de care depinde dashboard-ul:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **O rută de rezervă pentru aplicația single-page**, astfel încât reîmprospătarea unui URL al dashboard-ului să nu returneze 404
+- **Un tip MIME pentru `.md`**, astfel încât fișierele Markdown să fie servite corect
 
-### nginx Setup {: #nginx-setup }
+### Configurarea nginx {: #nginx-setup }
 
-#### Overview
+#### Prezentare generală
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx este un web server ușor și performant, foarte potrivit pentru servirea dashboard-ului static digna.
 
-#### Installation
+#### Instalare
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### Pornirea nginx
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Verificați instalarea
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Deschideți browserul
+2. Accesați `http://localhost:8080`
+3. Ar trebui să vedeți pagina de bun venit nginx
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Notă — portul implicit este 8080, nu 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew configurează nginx să asculte pe portul `8080`, astfel încât să poată rula fără privilegii de administrator. Pe macOS, legarea la portul `80` sau la orice alt port sub 1024 necesită root.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    Pentru a servi dashboard-ul pe portul 80, schimbați `listen 8080;` în `listen 80;` în configurația de mai jos și porniți nginx cu `sudo brew services start nginx`.
 
-#### Configuring a Site for the Dashboard
+#### Configurarea unui site pentru dashboard
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Configurația nginx din Homebrew include fiecare fișier din directorul său `servers`. Creați acolo un fișier de configurare dedicat pentru digna:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Lipiți următorul conținut, înlocuind `/path/to/digna/dashboard` cu calea reală către folderul `dashboard` extras:
 
 ```nginx
 server {
@@ -294,11 +294,11 @@ server {
 
 !!! warning "Important"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Fără directiva `try_files`, reîncărcarea oricărei pagini a dashboard-ului în afară de URL-ul rădăcină returnează 404. Acesta este echivalentul nginx al modulului URL Rewrite cerut de IIS pe Windows.
 
-#### Apply the Configuration
+#### Aplicați configurația
 
-Test the configuration for syntax errors, then reload nginx:
+Testați configurația pentru erori de sintaxă, apoi reîncărcați nginx:
 
 ```bash
 nginx -t
@@ -307,55 +307,55 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Configurarea Apache httpd {: #apache-setup }
 
-#### Overview
+#### Prezentare generală
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS include Apache httpd, așa că nu este necesară nicio instalare. Este dezactivat implicit.
 
-#### Starting Apache
+#### Pornirea Apache
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Verificați instalarea
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Deschideți browserul
+2. Accesați `http://localhost`
+3. Ar trebui să vedeți mesajul "It works!"
 
-#### Required: Enable mod_rewrite
+#### Obligatoriu: activați mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+Dashboard-ul necesită rescrierea URL-urilor. Deschideți configurația Apache:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Găsiți linia următoare și eliminați `#` de la început pentru a o decomenta:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Obligatoriu: permiteți suprascrierile .htaccess
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+În același fișier, găsiți blocul `<Directory "/Library/WebServer/Documents">` și modificați:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+în:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Obligatoriu: tipul MIME pentru fișierele Markdown
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Tot în `httpd.conf`, adăugați linia următoare, astfel încât fișierele Markdown să fie servite corect:
 
 ```apache
 AddType text/markdown .md
@@ -363,11 +363,11 @@ AddType text/markdown .md
 
 !!! warning "Important"
 
-    Without this setting, `.md` files may not be served properly.
+    Fără această setare, fișierele `.md` s-ar putea să nu fie servite corect.
 
-#### Apply the Configuration
+#### Aplicați configurația
 
-Check the configuration for syntax errors, then restart Apache:
+Verificați configurația pentru erori de sintaxă, apoi reporniți Apache:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Instalarea inițială {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Pasul 1: Configurați repository-ul digna
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Repository-ul digna stochează toate metricile calculate de digna. Acesta funcționează ca bază de date centrală pentru datele analitice și de performanță.
 
-#### Create Repository Schema and User
+#### Creați schema repository-ului și utilizatorul
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Deschideți clientul PostgreSQL (psql, pgAdmin sau similar) și executați următoarele comenzi SQL:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Înlocuiți următorii substituenți:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — numele dorit pentru schemă (de ex. `dignarepo`)
+- `<digna_repo_user>` — numele de utilizator dorit (de ex. `digna_user`)
+- `<digna_repo_password>` — o parolă sigură pentru acest utilizator
 
-**Example:**
+**Exemplu:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,77 +410,77 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+Pentru a le rula din Terminal într-un singur pas:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Apoi lipiți instrucțiunile la promptul `postgres=#` și tastați `\q` pentru a ieși.
 
-!!! tip "Best Practice"
+!!! tip "Practică recomandată"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Folosiți parole puternice și complexe pentru utilizatorii bazei de date. Evitați credențialele ușor de ghicit.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Pasul 2: Extrageți pachetul de instalare digna
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
+1. Găsiți fișierul ZIP de instalare digna care v-a fost furnizat
+2. Extrageți-l în locația de instalare dorită — de exemplu `/opt/digna` sau `~/digna`
+3. După extragere, ar trebui să vedeți următoarele elemente:
+   - `dashboard/` — interfața web a dashboard-ului
+   - `digna` — executabilul principal (backend + CLI combinate)
 
-!!! info "The configuration and licence files are not in the package"
+!!! info "Fișierele de configurare și de licență nu se află în pachet"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
-    create both yourself, in [Backend Configuration](#backend-configuration) and
-    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
-    digna supplies it separately, as Step 3 describes.
+    Nici `config.toml`, nici `dashboard/dashboard_config.toml` nu sunt livrate cu instalarea — le
+    creați pe amândouă dumneavoastră, în [Configurarea backend-ului](#backend-configuration) și
+    [Configurarea dashboard-ului](#dashboard-configuration). Nici `license.toml` nu este livrat;
+    digna îl furnizează separat, așa cum descrie Pasul 3.
 
-To extract from the Terminal:
+Pentru extragerea din Terminal:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Faceți executabilul rulabil
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+În funcție de modul în care a fost transferată arhiva, bitul de execuție s-ar putea să nu se păstreze la extragere. Setați-l explicit:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Dacă macOS blochează aplicația
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Fișierele descărcate printr-un browser sau un client de e-mail sunt marcate cu un atribut de carantină. Dacă macOS raportează că aplicația *"nu poate fi deschisă deoarece dezvoltatorul nu poate fi verificat"*, eliminați atributul din directorul de instalare:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Alternativ, deschideți **System Settings → Privacy & Security**, găsiți elementul blocat în partea de jos a paginii și faceți clic pe **Open Anyway**.
 
-!!! note "Note"
+!!! note "Notă"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Acest pas este necesar doar dacă macOS blochează efectiv executabilul. Pachetele transferate prin SSH sau din partajări interne de fișiere nu sunt de obicei puse în carantină.
 
-### Step 3: Install the License File
+### Pasul 3: Instalați fișierul de licență
 
 !!! warning "Important"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Fișierul de licență **nu** este inclus în pachetul de instalare și va fi furnizat separat de digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Găsiți fișierul `license.toml` care v-a fost furnizat
+2. Copiați-l în directorul rădăcină al instalării digna (unde se află `config.toml` și executabilul `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**De ce este important:**
+Fișierul de licență conține informațiile dumneavoastră de client, data de expirare a licenței și semnătura digitală. **Nu modificați acest fișier** — orice modificare îl invalidează.
 
-**Directory structure after setup:**
+**Structura directorului după configurare:**
 
 ```
 /opt/digna/
@@ -494,24 +494,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Configurarea backend-ului {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Pasul 1: Creați și editați fișierul de configurare
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+Fișierul `config_template.toml` este furnizat în directorul de instalare digna. Trebuie doar să-l redenumiți în `config.toml`.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Locație:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Deschideți `config.toml` într-un editor de text și configurați fiecare secțiune de mai jos.
 
-#### [app] Section
+#### Secțiunea [app]
 
-This section configures the digna backend application settings:
+Această secțiune configurează setările aplicației backend digna:
 
 ```toml
 [app]
@@ -521,20 +521,20 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parametru | Valoare | Observații |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL-ul frontend-ului | Dacă dashboard-ul se află pe alt server, includeți URL-ul acestuia |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Necesar pentru CORS cu credențiale |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Permite toate metodele HTTP |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Permite toate antetele |
 
-!!! note "Note"
+!!! note "Notă"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Dacă serviți dashboard-ul din nginx-ul Homebrew pe portul său implicit, originea care trebuie permisă este `http://localhost:8080`.
 
-#### [repo] Section
+#### Secțiunea [repo]
 
-This section configures the connection to the PostgreSQL database:
+Această secțiune configurează conexiunea la baza de date PostgreSQL:
 
 ```toml
 [repo]
@@ -546,18 +546,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parametru | Valoare | Observații |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` sau IP | Numele de gazdă/IP-ul serverului PostgreSQL |
+| `digna_REPO_PORT` | `5432` (implicit) | Portul PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Numele bazei de date |
+| `digna_REPO_SCHEMA` | `dignarepo` | Schema creată anterior |
+| `digna_REPO_USER` | `digna_user` | Utilizatorul creat la configurarea PostgreSQL |
+| `digna_REPO_PASSWORD` | Parola dumneavoastră | Parola setată la crearea schemei |
 
-#### [base] Section
+#### Secțiunea [base]
 
-This section contains security and cookie settings:
+Această secțiune conține setările de securitate și pentru cookie-uri:
 
 ```toml
 [base]
@@ -572,44 +572,44 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Parametru | Valoare | Observații |
 |---|---|---|
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
-| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
+| `digna_COOKIE_DOMAIN` | `localhost` | Trebuie să corespundă domeniului frontend-ului |
+| `digna_COOKIE_SECURE` | `false` (local) / `true` (producție) | Folosiți `true` pentru conexiuni HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | Întotdeauna activat, pentru securitate |
+| `digna_COOKIE_SAME_SITE` | `lax` | Previne atacurile CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 de ore) | Durata sesiunii, în secunde |
+| `digna_MAX_WORKERS` | Numărul de nuclee CPU - 1 | Numărul de sarcini de inspecție paralele |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Întârzierea maximă, în secunde, pe care planificatorul o poate adăuga înainte de a porni o sarcină scadentă |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Ora din zi (format de 24 de ore `HH:MM`) la care începe curățarea zilnică |
 
-!!! tip "Tip"
+!!! tip "Sfat"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Pentru a afla numărul de nuclee CPU disponibile pe Mac, rulați `sysctl -n hw.ncpu`.
 
-#### [encryption] Section
+#### Secțiunea [encryption]
 
-This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+Această secțiune conține cheia folosită pentru a cripta valorile sensibile stocate în repository. Este **obligatorie** — `config check` raportează secțiunea `[encryption]` ca FAILED dacă lipsește cheia.
 
 ```toml
 [encryption]
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Parametru | Valoare | Observații |
 |---|---|---|
-| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+| `DIGNA_ENCRYPTION_KEY` | Cheie codificată Base64 | Criptează valorile sensibile stocate în repository-ul digna |
 
-!!! warning "Protect config.toml"
+!!! warning "Protejați config.toml"
 
-    This key is a fixed value, identical across all digna installations, and it is what decrypts
-    the sensitive values in your repository. Restrict `config.toml` to the account that runs
-    digna, keep it out of source control and off shared drives, and exclude it from any backup
-    that is stored less securely than the repository itself.
+    Această cheie este o valoare fixă, identică în toate instalările digna, și tocmai ea decriptează
+    valorile sensibile din repository-ul dumneavoastră. Restricționați `config.toml` la contul care
+    rulează digna, țineți fișierul în afara controlului versiunilor și a unităților partajate și
+    excludeți-l din orice copie de siguranță păstrată mai puțin sigur decât repository-ul însuși.
 
-#### [logging] Section
+#### Secțiunea [logging]
 
-This section configures logging behavior:
+Această secțiune configurează comportamentul de logging:
 
 ```toml
 [logging]
@@ -617,22 +617,22 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parametru | Valoare | Observații |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` sau `DEBUG` | `INFO` pentru producție, `DEBUG` pentru depanare |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Numărul de copii zilnice ale logurilor păstrate |
 
 ---
 
-### Step 2: Validate the Configuration
+### Pasul 2: Validați configurația
 
-Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+Înainte de a inițializa repository-ul, verificați dacă `config.toml` este complet și corect alcătuit. În directorul de instalare digna, rulați:
 
 ```bash
 ./digna config check
 ```
 
-Every section is validated on its own, so a single mistake does not hide the state of the rest:
+Fiecare secțiune este validată separat, astfel încât o singură greșeală nu ascunde starea celorlalte:
 
 ```text
 Configuration validation report (source: config.toml):
@@ -646,77 +646,77 @@ Configuration validation report (source: config.toml):
 Overall: OK
 ```
 
-Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+Corectați tot ce este raportat ca FAILED și rulați comanda din nou înainte de a continua. Lista completă a opțiunilor se află în [referința CLI](../../../cli/Command_Line_Interface_202606.md).
 
-### Step 3: Initialize the Repository
+### Pasul 3: Inițializați repository-ul
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Deschideți **Terminal**
+2. Accesați directorul de instalare digna (unde se află `config.toml` și executabilul `digna`)
+3. Rulați testul de conexiune:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Ar trebui să vedeți o confirmare că conexiunea este stabilită (repository-ul în sine nu a fost încă inițializat).
 
-!!! note "Note"
+!!! note "Notă"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    Pe macOS, comenzile din directorul curent nu se află în PATH, așa că executabilul este apelat ca `./digna`, nu ca `digna`. Pentru a folosi peste tot forma scurtă, adăugați directorul de instalare în PATH:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 4: Install the Repository Schema
+### Pasul 4: Instalați schema repository-ului
 
-In the same directory, run:
+În același director, rulați:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Această comandă instalează tabelele și schema necesare în baza de date PostgreSQL.
 
-### Step 5: Create an Admin User
+### Pasul 5: Creați un utilizator administrator
 
-The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+Utilizatorul administrator este creat direct în schema repository-ului, astfel încât serverul nu trebuie să ruleze încă. În directorul de instalare digna, rulați:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
 ```
 
-**Example:**
+**Exemplu:**
 
 ```bash
 ./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with email `admin@example.com` and full administrative privileges.
+Aceasta creează un utilizator cu adresa de e-mail `admin@example.com` și privilegii administrative complete.
 
-!!! tip "Tip"
+!!! tip "Sfat"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Puneți parola între ghilimele simple. `zsh` tratează în mod special caractere precum `!`, `$` și `*`, iar o parolă fără ghilimele care le conține nu va fi transmisă așa cum a fost tastată.
 
-!!! tip "Best Practice"
+!!! tip "Practică recomandată"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Folosiți o parolă puternică, cu o combinație de majuscule, minuscule, cifre și caractere speciale.
 
-### Step 6: Start the digna Server
+### Pasul 6: Porniți serverul digna
 
-In the digna installation directory, start the server with:
+În directorul de instalare digna, porniți serverul cu:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Parametri:**
+- `--address` — numele de gazdă/IP-ul serverului
+- `--port` — portul serverului
 
-You should see startup messages confirming the server is running:
+Ar trebui să vedeți mesajele de pornire care confirmă că serverul rulează:
 
 ```
 INFO:     Started server process [1234]
@@ -725,66 +725,66 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Sfat"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    La prima pornire a serverului, macOS vă poate întreba dacă doriți ca aplicația să accepte conexiuni de rețea de intrare. Faceți clic pe **Allow**; în caz contrar, dashboard-ul nu va putea accesa backend-ul.
 
-!!! note "The server holds the terminal"
+!!! note "Serverul ocupă terminalul"
 
-    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a Background Service](#running-digna-as-a-background-service) to start it automatically at boot instead.
+    `serve` rulează în prim-plan și continuă până când îl opriți cu ++ctrl+c++. Lăsați-l să ruleze cât timp finalizați configurarea; pentru a-l porni automat la pornirea sistemului, consultați [Rularea digna ca serviciu în fundal](#running-digna-as-a-background-service).
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Configurarea dashboard-ului {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Pasul 1: Implementați dashboard-ul pe web server
 
-The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
+Dashboard-ul digna își citește propria configurație din `dashboard/dashboard_config.toml`. Acest fișier nu este livrat cu instalarea — îl creați în directorul `dashboard/`, alături de fișierele dashboard-ului.
 
-Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
+Conținutul său este descris în [Single Sign-On](../../../sso/overview.md), unde este de altfel și nevoie de fișier: acesta conține opțiunile de autentificare oferite de dashboard și, pentru implementările cu mai multe instanțe, conexiunea la backend.
 
-Choose your web server and follow the corresponding deployment steps.
+Alegeți web serverul și urmați pașii de implementare corespunzători.
 
-#### Deploying to nginx
+#### Implementarea pe nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Dacă ați urmat secțiunea [Configurarea nginx](#nginx-setup), blocul server indică deja folderul `dashboard` și nu este necesară nicio copiere.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Confirmați calea**
+   - Deschideți `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Verificați că `root` indică folderul `dashboard` extras
 
-2. **Ensure the folder is readable**
+2. **Asigurați-vă că folderul poate fi citit**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Reîncărcați nginx**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Testați instalarea**
+   - Deschideți browserul
+   - Accesați `http://localhost:8080` (sau URL-ul configurat)
+   - Ar trebui să vedeți pagina de autentificare a dashboard-ului digna
 
-#### Deploying to Apache httpd
+#### Implementarea pe Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Copiați dashboard-ul în document root**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Adăugați regulile de rescriere**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Creați un fișier `.htaccess` în folderul implementat, astfel încât rutele dashboard-ului să reziste la reîmprospătarea browserului:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Lipiți următorul conținut:
 
    ```apache
    RewriteEngine On
@@ -799,219 +799,219 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Reporniți Apache**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Accesați dashboard-ul**
+   - Deschideți browserul
+   - Accesați `http://localhost/digna`
+   - Ar trebui să vedeți pagina de autentificare a dashboard-ului digna
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## Rularea digna ca serviciu în fundal {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### De ce să rulați digna ca serviciu?
 
-Running the digna backend as a background service ensures it:
+Rularea backend-ului digna ca serviciu în fundal asigură că acesta:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Pornește automat la pornirea mașinii
+- Rulează în fundal, fără o fereastră Terminal deschisă
+- Repornește automat dacă se blochează
+- Poate fi gestionat prin `launchctl`, managerul de servicii din macOS
 
-### Service Management Files
+### Fișierele de gestionare a serviciului
 
-All necessary files are located in the digna installation directory under: `bin/`
+Toate fișierele necesare se află în directorul de instalare digna, în: `bin/`
 
-The following shell scripts are available:
+Sunt disponibile următoarele scripturi shell:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — înregistrează digna în launchd
+- `uninstall_service.sh` — anulează înregistrarea serviciului
+- `start_service.sh` — pornește serviciul înregistrat
+- `stop_service.sh` — oprește serviciul aflat în execuție
 
-!!! warning "Administrator Required"
+!!! warning "Sunt necesare drepturi de administrator"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Toate scripturile trebuie executate cu `sudo`, deoarece înregistrarea unui serviciu care pornește la pornirea sistemului scrie în `/Library/LaunchDaemons`.
 
-### Making the Scripts Executable
+### Facerea scripturilor executabile
 
-Extraction may not preserve the executable bit. Before first use:
+Este posibil ca extragerea să nu păstreze bitul de execuție. Înainte de prima utilizare:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### Instalarea serviciului
 
-1. **Open Terminal**
+1. **Deschideți Terminal**
 
-2. **Navigate to the bin Folder**
+2. **Accesați folderul bin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Rulați scriptul de instalare**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Serverul digna este acum înregistrat în launchd, cu **pornire automată** activată. Serviciul nu pornește imediat — consultați secțiunea următoare pentru a-l porni.
 
-### Starting and Stopping the Service
+### Pornirea și oprirea serviciului
 
-#### To Start the Service
+#### Pentru a porni serviciul
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Deschideți Terminal
+2. Accesați `/opt/digna/bin`
+3. Rulați:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Pentru a opri serviciul
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Deschideți Terminal
+2. Accesați `/opt/digna/bin`
+3. Rulați:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Sfat"
 
-    Always stop the service before updating application files.
+    Opriți întotdeauna serviciul înainte de a actualiza fișierele aplicației.
 
-### Verifying the Service
+### Verificarea serviciului
 
-To confirm that the service is registered and running:
+Pentru a confirma că serviciul este înregistrat și rulează:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+O linie care începe cu un ID de proces indică faptul că serviciul rulează. Un `-` în prima coloană înseamnă că este înregistrat, dar oprit.
 
-### Moving the Service to a New Directory
+### Mutarea serviciului într-un director nou
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd stochează calea absolută către executabil, așa că mutarea instalării necesită reînregistrarea serviciului:
 
-1. **Uninstall the Current Service**
+1. **Dezinstalați serviciul curent**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Mutați fișierele aplicației**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Reinstalați serviciul**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Porniți serviciul**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Dezinstalarea serviciului
 
-1. **Stop the Running Service**
+1. **Opriți serviciul aflat în execuție**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Dezinstalați serviciul**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+Serverul digna nu mai este acum înregistrat în launchd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Actualizarea la o versiune nouă {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Înainte de actualizare
 
-**Verify All Database Connections First**
+**Verificați mai întâi toate conexiunile la baze de date**
 
-From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
-offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
-The digna team decided to build on ODBC alone, because a single, standard interface gives you
-more than a set of bespoke drivers can:
+Începând cu Release 2026.06, digna accesează fiecare tehnologie sursă prin **ODBC**. Versiunile anterioare
+ofereau alegerea între un driver specific fiecărei tehnologii și ODBC, selectată prin comutatorul **Use ODBC**.
+Echipa digna a decis să se bazeze exclusiv pe ODBC, deoarece o singură interfață standard vă oferă
+mai mult decât un set de drivere făcute la comandă:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
-  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
-  update, rather than waiting for a digna release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of digna.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones digna does not publish a dedicated guide for.
+- **Autentificare** — autentificarea face parte din ODBC, așa că o conexiune poate folosi tot ce acceptă
+  driverul său: parole, token-uri și PAT-uri, Kerberos și Active Directory, MFA și autentificare unică din browser,
+  identități în cloud, certificate de client și TLS. Metodele noi vin odată cu o actualizare a driverului,
+  fără a aștepta o versiune digna.
+- **Drivere întreținute de producătorii bazelor de date** — driverul propriu al producătorului urmărește noile versiuni
+  de server și corecțiile de securitate, iar dumneavoastră îl puteți actualiza după propriul calendar, independent de digna.
+- **Un singur mod de a configura totul** — fiecare tehnologie este o listă de proprietăți cheie/valoare, cu
+  aceeași interfață, aceeași criptare a valorilor sensibile și aceeași depanare,
+  în locul unui set diferit de câmpuri pentru fiecare sursă.
+- **Reglare și acoperire** — opțiunile driverului, precum timpii de expirare, setările TLS, proxy-urile și dimensiunile
+  de citire, sunt disponibile pentru fiecare sursă, iar orice tehnologie cu un driver ODBC conform poate fi
+  conectată, inclusiv cele pentru care digna nu publică un ghid dedicat.
 
-In practice this means the **Use ODBC** switch and the separate host, port, database, user and
-password fields no longer exist. **Every connection that does not already use ODBC must be
-changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+În practică, aceasta înseamnă că comutatorul **Use ODBC** și câmpurile separate pentru gazdă, port, bază de date, utilizator și
+parolă nu mai există. **Fiecare conexiune care nu folosește deja ODBC trebuie trecută
+pe ODBC** — nu există conversie automată, așa că planificați acest lucru înainte de actualizare:
 
-1. Review every database connection defined in your installation and list the ones that are not
-   yet using ODBC — each of these has to be reconfigured.
-2. Install the matching ODBC driver on the digna host — connections are opened from the server
-   that runs the digna backend, not from the browser. See
-   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
-3. Have the ODBC properties ready for each affected connection. The
-   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
-   property set per source.
+1. Parcurgeți fiecare conexiune la baze de date definită în instalarea dumneavoastră și notați-le pe cele care nu
+   folosesc încă ODBC — fiecare dintre ele va trebui reconfigurată.
+2. Instalați driverul ODBC corespunzător pe gazda digna — conexiunile sunt deschise de pe serverul
+   care rulează backend-ul digna, nu din browser. Consultați
+   [Instalarea driverului ODBC pe gazda digna](../../../databases/overview.md#install-the-driver).
+3. Pregătiți proprietățile ODBC pentru fiecare conexiune afectată.
+   [Ghidurile pe tehnologii](../../../databases/overview.md#technology-guides) prezintă, pentru fiecare sursă,
+   un set de proprietăți verificat.
 
-After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
-see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
-and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+După actualizare, treceți fiecare conexiune afectată pe ODBC și testați-o din dashboard —
+consultați [Crearea unei conexiuni la baza de date](../../../databases/overview.md#create-a-database-connection)
+și [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection).
 
-!!! warning "Databricks Legacy connections"
+!!! warning "Conexiuni Databricks Legacy"
 
-    The Databricks Legacy connector has been removed in this release. Migrate those connections
-    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+    Conectorul Databricks Legacy a fost eliminat în această versiune. Migrați aceste conexiuni
+    către conectorul [Databricks](../../../databases/databricks_connector_guide.md).
 
-**Creating a digna Repository Backup is Mandatory**
+**Crearea unei copii de siguranță a repository-ului digna este obligatorie**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Înainte de a actualiza digna, faceți o copie de siguranță a repository-ului (PostgreSQL) pentru a vă proteja împotriva pierderii de date.
+O copie de siguranță vă permite recuperarea dacă actualizarea întâmpină probleme neașteptate.
 
-To create a backup from the Terminal:
+Pentru a crea o copie de siguranță din Terminal:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Procesul de actualizare
 
-#### Step 1: Stop the digna Service
+#### Pasul 1: Opriți serviciul digna
 
-If digna is running as a background service, stop it first:
+Dacă digna rulează ca serviciu în fundal, opriți-l mai întâi:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Dacă digna rulează în prim-plan, apăsați `Ctrl + C` în fereastra sa Terminal.
 
-#### Step 2: Backup Current Installation
+#### Pasul 2: Faceți o copie de siguranță a instalării curente
 
-In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
+În directorul de instalare digna, redenumiți folderele instalării curente, astfel încât noua versiune să poată fi implementată alături de ele:
 
 ```bash
 cd /opt/digna
@@ -1024,15 +1024,15 @@ mv dignacli dignacli_old
 mv dashboard dashboard_old
 ```
 
-!!! info "dignabackend and dignacli are no longer used"
+!!! info "dignabackend și dignacli nu mai sunt folosite"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Începând cu Release 2026.06, `dignabackend` și `dignacli` sunt înlocuite de executabilul unic `digna`, care reunește backend-ul și CLI-ul. Păstrați `dignabackend_old` și `dignacli_old` doar până când ați verificat actualizarea — apoi puteți șterge ambele foldere. Păstrați `dashboard_old` până când v-ați restaurat din el fișierele de configurare (consultați Pasul 4).
 
-#### Step 3: Extract and Deploy New Version
+#### Pasul 3: Extrageți și implementați noua versiune
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Extrageți noul fișier ZIP de instalare digna
+2. Copiați noul executabil `digna` și folderul `dashboard` în directorul de instalare
+3. Restabiliți bitul de execuție și, dacă este necesar, eliminați atributul de carantină:
 
 ```bash
 chmod +x /opt/digna/digna
@@ -1041,20 +1041,20 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Important"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
-    installation ZIP — the digna team never ships either file. Your existing configuration is
-    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
-    only ones you have.
+    Nici `config.toml`, nici `dashboard/dashboard_config.toml` nu sunt incluse vreodată în
+    ZIP-ul de instalare — echipa digna nu livrează niciodată aceste fișiere. Configurația existentă
+    rămâne, prin urmare, neatinsă de actualizare, iar copiile din folderele `*_old` redenumite sunt
+    singurele pe care le aveți.
 
-#### Step 4: Restore Your Configuration Files
+#### Pasul 4: Restaurați fișierele de configurare
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-!!! warning "Release 2026.06 changes config.toml"
+!!! warning "Release 2026.06 modifică config.toml"
 
-    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Trei setări sunt noi și obligatorii, iar trei nu mai sunt folosite. Un `config.toml` preluat dintr-o versiune anterioară nu conține setările noi, iar digna nu va porni cât timp acestea lipsesc. Adăugați următoarele în `config.toml` existent:
 
     ```toml
     [base]
@@ -1065,16 +1065,16 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
+    Adăugați cele două chei `[base]` în secțiunea `[base]` existentă și adăugați `[encryption]` ca secțiune nouă. Apoi eliminați setările care nu mai sunt folosite: **`digna_FERNET_KEY`** din `[base]`, precum și **`digna_APP_HOST`** și **`digna_APP_PORT`** din `[app]` — serverul își preia acum adresa și portul din `digna serve`.
 
-    See [Backend Configuration](#backend-configuration) for what each setting does.
+    Ce face fiecare setare este descris în [Configurarea backend-ului](#backend-configuration).
 
-!!! warning "Single sign-on: the [oidc_clients] format has changed"
+!!! warning "Autentificare unică: formatul [oidc_clients] s-a schimbat"
 
-    Release 2026.06 replaces the array of tables with one table per provider, named after the
-    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+    Release 2026.06 înlocuiește matricea de tabele cu câte un tabel pentru fiecare furnizor, denumit după
+    cheia furnizorului. `DIGNA_OIDC_KEY` dispare — cheia face acum parte din antetul secțiunii.
 
-    Before:
+    Înainte:
 
     ```toml
     [[oidc_clients]]
@@ -1085,7 +1085,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    After:
+    După:
 
     ```toml
     [oidc_clients.microsoft]
@@ -1095,73 +1095,73 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Repeat the section for every provider, and keep each key matching the `key` in
-    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
-    old form is still in place. Only installations that use single sign-on are affected.
+    Repetați secțiunea pentru fiecare furnizor și păstrați fiecare cheie identică cu `key` din
+    `dashboard_config.toml`. `digna config check` raportează `oidc_clients` ca FAILED cât timp
+    forma veche este încă prezentă. Sunt afectate doar instalările care folosesc autentificarea unică.
 
-#### Step 5: Reload the Web Server
+#### Pasul 5: Reîncărcați web serverul
 
-The dashboard is a set of static files, so your web server — and the browser — may still be
-serving the previous version. Reload or restart whichever web server hosts the `dashboard`
-folder, then reload the page with a hard refresh (++cmd+shift+r++).
+Dashboard-ul este un set de fișiere statice, așa că web serverul — și browserul — pot servi în continuare
+versiunea anterioară. Reîncărcați sau reporniți web serverul care găzduiește folderul `dashboard`,
+apoi reîncărcați pagina forțat (++cmd+shift+r++).
 
-#### Step 6: Validate the Configuration
+#### Pasul 6: Validați configurația
 
-Confirm that the updated `config.toml` is complete before touching the repository:
+Confirmați că `config.toml` actualizat este complet înainte de a atinge repository-ul:
 
 ```bash
 ./digna config check
 ```
 
-Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+Fiecare secțiune trebuie să raporteze OK. Corectați tot ce este raportat ca FAILED și rulați comanda din nou înainte de a continua.
 
-#### Step 7: Replace the License File
+#### Pasul 7: Înlocuiți fișierul de licență
 
-Each release is licensed separately. Copy the `license.toml` that the digna team provided for
-this release into the installation directory, replacing the old one:
+Fiecare versiune este licențiată separat. Copiați fișierul `license.toml` furnizat de echipa digna pentru
+această versiune în directorul de instalare, înlocuindu-l pe cel vechi:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
-!!! warning "Do not keep the previous license"
+!!! warning "Nu păstrați licența anterioară"
 
-    A `license.toml` issued for an earlier release does not cover this one, and every command
-    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
-    repository when the check fails. Verify it before going further:
+    Un `license.toml` emis pentru o versiune anterioară nu o acoperă pe aceasta, iar fiecare comandă
+    care verifică licența — `user`, `inspection`, `repo` — se oprește înainte de a atinge
+    repository-ul atunci când verificarea eșuează. Verificați-o înainte de a merge mai departe:
 
     ```bash
     ./digna license check
     ```
 
-#### Step 8: Upgrade the Repository Schema
+#### Pasul 8: Actualizați schema repository-ului
 
-Navigate to your digna installation directory and run:
+Accesați directorul de instalare digna și rulați:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Aceasta actualizează schema PostgreSQL la cea mai recentă versiune, păstrând toate datele existente.
 
-#### Step 9: Restart Services
+#### Pasul 9: Reporniți serviciile
 
-If running as a background service:
+Dacă rulați ca serviciu în fundal:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Dacă rulați manual, reporniți serverul:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Dacă folosiți nginx sau Apache, reporniți web serverul respectiv:
 
 ```bash
 brew services restart nginx
@@ -1170,10 +1170,10 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 10: Verify the Upgrade
+#### Pasul 10: Verificați actualizarea
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-4. Change every connection that did not already use ODBC over to ODBC, then test all connections
-   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection)
+1. Accesați dashboard-ul digna
+2. Verificați că interfața se încarcă corect
+3. Verificați logurile serverului pentru eventuale erori
+4. Treceți pe ODBC fiecare conexiune care nu îl folosea încă, apoi testați toate conexiunile
+   — consultați [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection)

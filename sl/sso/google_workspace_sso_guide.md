@@ -1,74 +1,74 @@
-# Set up SSO with Google Workspace
+# Nastavite SSO z Google Workspace
 
-Google's identity platform is OIDC-compliant and uses a single, well-known discovery URL for every customer, so the only per-organization values are the client ID and secret.
+Googlova platforma za identiteto je združljiva z OIDC in za vse stranke uporablja en sam, dobro znan discovery URL, zato sta edini vrednosti, specifični za organizacijo, ID odjemalca in skrivnost.
 
-This guide covers the **Google side**: creating the OAuth client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Ta vodič zajema **Google stran**: ustvarjanje odjemalca OAuth in zbiranje vrednosti, ki jih potrebuje digna. Digna stran — `dashboard_config.toml`, testiranje in odpravljanje težav — je enaka za vse ponudnike in je opisana v [Pregled Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Preden začnete
 
-| Requirement | Notes |
+| Zahteva | Opombe |
 |---|---|
-| **Google Cloud project** | Any project in the same organization as your Workspace domain |
-| **Role** | Editor or Owner on the project |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Projekt Google Cloud** | Kateri koli projekt v isti organizaciji kot vaša domena Workspace |
+| **Vloga** | Editor ali Owner na projektu |
+| **digna redirect URI** | URL, na katerega se uporabniki vrnejo po prijavi, npr. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Configure the OAuth Consent Screen
+## 1. korak: Konfigurirajte zaslon za soglasje OAuth
 
-Google will not issue credentials until the consent screen exists.
+Google ne bo izdal poverilnic, dokler zaslon za soglasje ne obstaja.
 
-1. Open the [Google Cloud Console](https://console.cloud.google.com) and select your project
-2. Go to **APIs & Services → OAuth consent screen**
-3. Choose the user type:
-   - **Internal** — only accounts in your Workspace domain can log in. Recommended.
-   - **External** — any Google account can attempt to log in.
-4. Fill in the app name, user support email and developer contact email
-5. On the **Scopes** step, add `openid`, `.../auth/userinfo.email` and `.../auth/userinfo.profile`
-6. Save
+1. Odprite [Google Cloud Console](https://console.cloud.google.com) in izberite svoj projekt
+2. Pojdite na **APIs & Services → OAuth consent screen**
+3. Izberite tip uporabnika:
+   - **Internal** — prijavijo se lahko samo računi v vaši domeni Workspace. Priporočeno.
+   - **External** — prijavo lahko poskusi kateri koli Google račun.
+4. Izpolnite ime aplikacije, e-pošto za podporo uporabnikom in kontaktno e-pošto razvijalca
+5. V koraku **Scopes** dodajte `openid`, `.../auth/userinfo.email` in `.../auth/userinfo.profile`
+6. Shranite
 
-!!! warning "External Apps Must Be Published"
+!!! warning "Zunanje aplikacije morajo biti objavljene"
 
-    An **External** consent screen starts in *Testing* status, where only accounts explicitly added to the test-user list can complete a login. Everyone else sees "digna has not completed the Google verification process". Either switch the app to **In production** under **Publishing status**, or use **Internal** — which has no such restriction and is the right choice for a Workspace-only deployment.
+    Zaslon za soglasje **External** se začne v stanju *Testing*, v katerem lahko prijavo dokončajo samo računi, ki so izrecno dodani na seznam testnih uporabnikov. Vsi ostali vidijo sporočilo "digna has not completed the Google verification process". Aplikacijo pod **Publishing status** preklopite na **In production** ali pa uporabite **Internal** — ki takšne omejitve nima in je prava izbira za namestitev samo za Workspace.
 
 ---
 
-## Step 2: Create the OAuth Client
+## 2. korak: Ustvarite odjemalca OAuth
 
-1. Go to **APIs & Services → Credentials**
-2. Click **Create Credentials → OAuth client ID**
-3. Set **Application type** to **Web application**
-4. Give it a name, e.g. `digna`
-5. Under **Authorized redirect URIs**, click **Add URI** and enter:
+1. Pojdite na **APIs & Services → Credentials**
+2. Kliknite **Create Credentials → OAuth client ID**
+3. **Application type** nastavite na **Web application**
+4. Poimenujte ga, npr. `digna`
+5. Pod **Authorized redirect URIs** kliknite **Add URI** in vnesite:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-6. Click **Create**
+6. Kliknite **Create**
 
-!!! note "Authorized JavaScript Origins Are Not Needed"
+!!! note "Authorized JavaScript origins niso potrebni"
 
-    digna exchanges the authorization code from the backend, not the browser, so the **Authorized JavaScript origins** field can be left empty. Only the redirect URI matters.
-
----
-
-## Step 3: Collect the Credentials
-
-The dialog that appears after creation shows:
-
-- **Client ID** — ends in `.apps.googleusercontent.com` → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
-
-Both remain retrievable later from the credential's detail page, unlike most other providers.
+    digna izmenja avtorizacijsko kodo v zaledju, ne v brskalniku, zato lahko polje **Authorized JavaScript origins** ostane prazno. Pomemben je samo redirect URI.
 
 ---
 
-## Step 4: The Discovery URL
+## 3. korak: Zberite poverilnice
 
-Google uses one discovery URL for all customers — there is nothing to substitute:
+Pogovorno okno, ki se prikaže po ustvarjanju, prikazuje:
+
+- **Client ID** — konča se z `.apps.googleusercontent.com` → postane `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → postane `DIGNA_OIDC_CLIENT_SECRET`
+
+Za razliko od večine drugih ponudnikov lahko obe vrednosti pozneje znova pridobite na strani s podrobnostmi poverilnice.
+
+---
+
+## 4. korak: Discovery URL
+
+Google za vse stranke uporablja en discovery URL — ničesar ni treba zamenjati:
 
 ```
 https://accounts.google.com/.well-known/openid-configuration
@@ -76,7 +76,7 @@ https://accounts.google.com/.well-known/openid-configuration
 
 ---
 
-## Step 5: Configure digna
+## 5. korak: Konfigurirajte digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -99,37 +99,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `google` here.
+Vrednost `key` se mora v obeh datotekah ujemati — tukaj `google`.
 
 ---
 
-## Step 6: Test
+## 6. korak: Testirajte
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Znova zaženite zaledje in spletni strežnik, nato odprite nadzorno ploščo. Za celoten kontrolni seznam si oglejte [Testiranje prijave](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Google Workspace
+## Odpravljanje težav z Google Workspace
 
 ### Error 400: redirect_uri_mismatch
 
-The URI in `DIGNA_OIDC_REDIRECT_URI` is not in the **Authorized redirect URIs** list, or differs by a trailing slash or scheme. Google's error page shows the URI it received — compare it character for character with the registered one.
+URI v `DIGNA_OIDC_REDIRECT_URI` ni na seznamu **Authorized redirect URIs** ali pa se razlikuje po poševnici na koncu ali shemi. Googlova stran z napako prikaže URI, ki ga je prejela — primerjajte ga znak za znakom z registriranim.
 
 ### This App Is Blocked / Has Not Completed Verification
 
-The consent screen is **External** and still in *Testing*. Publish it, or switch the app to **Internal**.
+Zaslon za soglasje je **External** in je še vedno v stanju *Testing*. Objavite ga ali pa aplikacijo preklopite na **Internal**.
 
 ### Access Blocked: Authorization Error
 
-The account attempting to log in is outside your Workspace domain while the consent screen is **Internal**. This is the intended behaviour — Internal apps accept only accounts in the organization.
+Račun, ki se poskuša prijaviti, je zunaj vaše domene Workspace, zaslon za soglasje pa je **Internal**. To je predvideno vedenje — aplikacije Internal sprejemajo samo račune v organizaciji.
 
-### Changes Take Several Minutes
+### Spremembe trajajo nekaj minut
 
-Google propagates credential and consent-screen changes asynchronously. A newly added redirect URI can take a few minutes to take effect; if a change looks ignored, wait and retry before investigating further.
+Google spremembe poverilnic in zaslona za soglasje razširja asinhrono. Novo dodan redirect URI lahko začne delovati šele po nekaj minutah; če se zdi, da je bila sprememba prezrta, počakajte in poskusite znova, preden začnete z nadaljnjim raziskovanjem.
 
 ---
 
-## See Also
+## Povezane vsebine
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Pregled Single Sign-On](overview.md) — referenca konfiguracije, testiranje in splošno odpravljanje težav
 - [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)

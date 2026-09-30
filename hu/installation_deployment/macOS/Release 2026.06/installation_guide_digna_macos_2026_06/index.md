@@ -431,8 +431,13 @@ Majd illessze be a fenti utasításokat a `postgres=#` promptnál, és írja be 
 3. A kicsomagolás után a következő elemeket kell látnia:
    - `dashboard/` — Web dashboard felület
    - `digna` — Fő futtatható állomány (backend + CLI egyben)
-   - `config.toml` — Konfigurációs fájl
-   - `license.toml` — Licenc fájl (másolja ide a sajátját)
+
+!!! info "A konfigurációs és a licencfájl nincs benne a csomagban"
+
+    Sem a `config.toml`, sem a `dashboard/dashboard_config.toml` nem része a telepítésnek — mindkettőt
+    Önnek kell létrehoznia, a [Backend konfiguráció](#backend-configuration) és a
+    [Dashboard konfiguráció](#dashboard-configuration) szakaszban leírtak szerint. A `license.toml` sem
+    része a csomagnak; a digna külön biztosítja, ahogyan a 3. lépés leírja.
 
 A Terminalból történő kicsomagoláshoz:
 
@@ -621,7 +626,7 @@ digna_LOGGING_BACKUP_COUNT = 10
 A tároló inicializálása előtt ellenőrizze, hogy a `config.toml` teljes és helyesen felépített. A digna telepítési könyvtárában futtassa:
 
 ```bash
-digna config check
+./digna config check
 ```
 
 Minden szekció külön kerül ellenőrzésre, így egyetlen hiba nem takarja el a többi állapotát:
@@ -733,9 +738,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1. lépés: Telepítse a dashboardot a webszerverre
 
-A digna dashboardnak van egy külön `config.toml` fájlja a `dashboard/` könyvtárban. Ez a konfiguráció már biztosítva van, és az első beállításkor általában nem kell módosítani. Csak akkor kell szerkesztenie, ha testreszabni szeretné a backend kapcsolódást.
+A digna dashboard a saját konfigurációját a `dashboard/dashboard_config.toml` fájlból olvassa. Ez a fájl nem része a telepítésnek — Önnek kell létrehoznia a `dashboard/` könyvtárban, a dashboard fájljai mellett.
 
-Ha módosítania kell a dashboard konfigurációját (pl. több példányos telepítésekhez), kövesse a dashboard dokumentációját.
+A tartalmát az [Egyszeri bejelentkezés (SSO)](../../../sso/overview.md) oldal írja le, és ott is van rá szükség: ez tartalmazza a dashboard által kínált bejelentkezési lehetőségeket, valamint több példányos telepítéseknél a backend kapcsolatot.
 
 Válassza ki a webszervert és kövesse a megfelelő telepítési lépéseket.
 
@@ -1013,7 +1018,10 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Fontos"
 
-    A `config.toml` fájl SOHA nem része a telepítési ZIP-nek. A meglévő konfigurációja biztonságban marad.
+    Sem a `config.toml`, sem a `dashboard/dashboard_config.toml` **soha** nem része a
+    telepítési ZIP-nek — a digna csapat egyik fájlt sem szállítja. A meglévő konfigurációját
+    ezért a frissítés nem érinti, és az átnevezett `*_old` mappákban lévő példányok az
+    egyetlenek, amelyekkel rendelkezik.
 
 #### 4. lépés: Állítsa vissza a konfigurációs fájlokat
 
@@ -1065,7 +1073,13 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Ismételje meg a szakaszt minden szolgáltatóhoz, és tartsa minden kulcsot azonosnak a `dashboard_config.toml` fájlban lévő `key` értékkel. A `digna config check` FAILED állapotúnak jelenti az `oidc_clients` szakaszt mindaddig, amíg a régi forma megmarad. Ez csak az egyszeri bejelentkezést használó telepítéseket érinti.
 
-#### 5. lépés: Ellenőrizze a konfigurációt
+#### 5. lépés: Töltse újra a webszervert
+
+A dashboard statikus fájlok összessége, ezért előfordulhat, hogy a webszerver — és a böngésző — még
+az előző verziót szolgálja ki. Töltse újra vagy indítsa újra azt a webszervert, amely a `dashboard`
+mappát kiszolgálja, majd töltse be újra az oldalt kényszerített frissítéssel (++cmd+shift+r++).
+
+#### 6. lépés: Ellenőrizze a konfigurációt
 
 Mielőtt hozzányúlna a tárolóhoz, győződjön meg róla, hogy a frissített `config.toml` teljes:
 
@@ -1075,7 +1089,26 @@ Mielőtt hozzányúlna a tárolóhoz, győződjön meg róla, hogy a frissített
 
 Minden szekciónak OK állapotot kell jelentenie. Javítson ki mindent, amit FAILED állapotúként jelent, és a folytatás előtt futtassa újra a parancsot.
 
-#### 6. lépés: Frissítse a repository sémát
+#### 7. lépés: Cserélje le a licencfájlt
+
+Minden kiadás külön licencet kap. Másolja a digna csapat által ehhez a kiadáshoz biztosított
+`license.toml` fájlt a telepítési könyvtárba, felülírva a régit:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ne tartsa meg a korábbi licencet"
+
+    Egy korábbi kiadáshoz kiállított `license.toml` nem érvényes erre a kiadásra, és minden
+    parancs, amely ellenőrzi a licencet — `user`, `inspection`, `repo` — megszakad, mielőtt
+    a repóhoz nyúlna, ha az ellenőrzés sikertelen. Ellenőrizze a licencet, mielőtt továbblép:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### 8. lépés: Frissítse a repository sémát
 
 Navigáljon a digna telepítési könyvtárába és futtassa:
 
@@ -1086,7 +1119,7 @@ cd /opt/digna
 
 Ez frissíti a PostgreSQL sémát a legújabb verzióra, miközben megőrzi a meglévő adatokat.
 
-#### 7. lépés: Indítsa újra a szolgáltatásokat
+#### 9. lépés: Indítsa újra a szolgáltatásokat
 
 Ha háttérszolgáltatásként fut:
 
@@ -1111,7 +1144,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### 8. lépés: Ellenőrizze a frissítést
+#### 10. lépés: Ellenőrizze a frissítést
 
 1. Nyissa meg a digna dashboardot
 2. Ellenőrizze, hogy a felület helyesen töltődik-e

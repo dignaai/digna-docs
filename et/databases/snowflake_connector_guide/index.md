@@ -1,84 +1,85 @@
-# Source Connector for Snowflake
+# Lähtekonnektor Snowflake'i jaoks
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+See juhend kirjeldab, kuidas konfigureerida *digna* ühenduma Snowflake'iga **ODBC** kaudu,
+kasutades **DSN-ita** ühendusstringi.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Seadistuse *digna* pool on iga tehnoloogia puhul sama — kus ühendused luuakse, kuidas
+atribuutide väärtused krüpteeritakse, kuidas ühendust testitakse ja mida profileerimisrežiimid
+tähendavad. Seda kirjeldatakse lehel [Andmebaasiühenduste ülevaade](overview.md). See leht
+käsitleb Snowflake'i eripärasid.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC draiveri paigaldamine {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Paigaldage **Snowflake ODBC Driver** masinale, kus töötab *digna* backend, järgides
+[Snowflake'i paigaldusjuhendit](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-!!! important "An example, not a specification"
+Draiver registreerib end nime all **SnowflakeDSIIDriver**. Lugege täpne registreeritud nimi
+oma hostist välja, nagu on kirjeldatud jaotises
+[ODBC draiveri paigaldamine digna hostile](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. ODBC atribuudid {: #2-odbc-properties }
+
+Snowflake'iga ühendutakse **programmaatilise juurdepääsu tokeniga (PAT)** — see on
+autentimisviis, mille vastu *dignat* on kontrollitud, ja see, mida Snowflake nõuab kontodel,
+kus ainult parooliga sisselogimine on blokeeritud.
+
+!!! important "Näide, mitte spetsifikatsioon"
+
+    Allolev komplekt on üks kombinatsioon, mis teadaolevalt töötab. Atribuudid kuuluvad
+    Snowflake'i ODBC draiverile, seega erinevad nende nimed, vaikeväärtused ja
+    aktsepteeritavad väärtused draiveri versioonide ja platvormide vahel ning see, milliseid
+    autentimisvalikuid teie konto lubab, määrab konto turvapoliitika. Kasutage seda
+    lähtepunktina ja kontrollige paigaldatud draiveriversiooni dokumentatsiooni.
+
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Peab vastama *digna* hostis registreeritud draiveri nimele |
+| `Server` | `<account>.snowflakecomputing.com` | Konto identifikaator pluss järelliide, nt `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake'i kasutaja, kellele token kuulub |
+| `Database` | `TEST` | Andmebaas, mis sisaldab lähteskeeme. See on ainus andmebaas, mida see ühendus saab profileerida |
+| `Schema` | `PUBLIC` | Seansi vaikeskeem |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Valib tokeniga autentimise |
+| `token` | `<programmatic access token>` | Märkige **Encrypted** |
 
-The resulting connection string looks like this:
+Tulemuseks olev ühendusstring näeb välja selline:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Warehouse ja roll
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+Päringud vajavad warehouse'i. Kui *digna* kasutajal on vaikimisi warehouse ja vaikeroll,
+võtab seanss need kasutusele ja midagi pole vaja konfigureerida. Vastasel juhul lisage:
 
-| Key | Example value | Notes |
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | Warehouse, mis käitab profileerimispäringuid |
+| `Role` | `DIGNA_READER` | Roll, mille õigusi seanss kasutab |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Andke dignale oma warehouse"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Eraldi väike, automaatselt peatuv warehouse hoiab profileerimise kulud nähtaval ja takistab
+    *dignal* interaktiivsete kasutajatega arvutusressursi pärast konkureerimast.
 
-### Password authentication
+### Parooliga autentimine
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Kui konto seda veel lubab, töötab tokeni asemel parool — eemaldage `authenticator` ja `token`
+ning lisage:
 
-| Key | Example value | Notes |
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Märkige **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguratsioon {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Sisestage kuval **Add DB Connection** järgmine:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -89,40 +90,42 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Märkused Snowflake'i kohta {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **Tokenid aeguvad.** Programmaatilise juurdepääsu token väljastatakse kindla elueaga ja
+  profileerimine peatub päeval, mil see aegub. Pange token luues aegumiskuupäev kirja ja
+  sisestage uus token atribuuti `token` — krüpteeritud väärtusi saab asendada, kuid mitte
+  tagasi lugeda.
+- **Üks ühendus näeb üht andmebaasi.** *digna* pakub atribuudis `Database` nimetatud
+  andmebaasi skeeme, sest Snowflake teatab kataloogina ainult praegusest andmebaasist. Teises
+  andmebaasis olevad lähtetabelid vajavad oma ühendust.
+- **Identifikaatorid on suurtähtedega**, välja arvatud juhul, kui need loodi jutumärkides.
+  *digna* kasutab nimesid nii, nagu Snowflake neist teatab.
+- **Profileerimisrežiimid.** *Permanent* loob töötabelid skeemi **Work Schema**, seega vajab
+  roll seal õigust `CREATE TABLE`. *Session* kasutab `CREATE TEMPORARY TABLE` ega puuduta
+  skeemi **Work Schema**. *Standard* vajab ainult lugemisõigust — ja üldse mitte
+  kirjutusõigusi.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Draiveri kontrollimine (valikuline) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+DSN-ita ühenduse jaoks pole ODBC andmeallika konfigureerimine vajalik, kuid draiveri enda
+dialoog on mugav viis veenduda, et draiver, konto URL ja teie mandaadid töötavad, enne kui need
+*dignasse* sisestate.
 
-#### Step 1
-![Step 1](images/snowflake/create_odbc_data_source_step1.png)
+#### Samm 1
+![Samm 1](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Märkused:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
+- Välja **Server** väärtus koosneb teie Snowflake'i konto identifikaatorist, millele järgneb
   `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- Siin sisestatud **Database**, **Schema** ja **Warehouse** vastavad
+  [jaotise 2](#2-odbc-properties) atribuutidele `Database`, `Schema` ja `Warehouse`.
 
-#### Step 2 – Test the connection
+#### Samm 2 – ühenduse testimine
 
-Click the **TEST** button. A successful connection should look like this:
+Klõpsake nuppu **TEST**. Õnnestunud ühendus peaks välja nägema selline:
 
-![Step 2](images/snowflake/create_odbc_data_source_step2.png)
+![Samm 2](images/snowflake/create_odbc_data_source_step2.png)

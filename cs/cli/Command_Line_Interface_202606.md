@@ -53,6 +53,7 @@ Následující tabulka zaznamenává, co každá kategorie příkazů načte, ne
 | `license check` | ne | *je* tou kontrolou |
 | `crypt` | ano | ne |
 | `serve` | ano | ne |
+| `windows` | ne (služba jej načte při svém spuštění) | ne |
 | `project` | ano | ne |
 | `user` | ano | ano |
 | `inspection` | ano | ano |
@@ -217,6 +218,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Příkaz `repo prune` odstraňuje řádky, které přežily projekt nebo zdroj dat, ke kterému patřily.
+Smazání projektu nebo zdroje dat odstraní samotný objekt, ale ponechá jeho profily, predikce,
+stavy a počty řádků — jde o záměrný kompromis, protože mazání, které by vyčistilo i tyto tabulky,
+by nechalo uživatele čekat. `repo prune` je úklidový průchod, který je odstraní, a lze jej bezpečně
+spustit kdykoli: odstraňuje pouze řádky, jejichž projekt nebo zdroj dat již neexistuje.
+
+Řádky, které backend v Pythonu zapsal do tabulek, jež aktuální verze již nepoužívá, zůstávají nedotčeny.
+
+#### Použití příkazu
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Volby
+- `--dry-run`: Vypíše, co by bylo odstraněno, aniž by cokoli odstranil.
+
+Uvedeny jsou pouze tabulky s osiřelými řádky. Pokud žádné nejsou, příkaz vypíše
+`No orphaned rows found.` a skončí.
+
+#### Příklad
+```bash
+digna repo prune
+```
+
+#### Ukázkový výstup
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Zobrazení stejné zprávy bez odstranění čehokoli:
+```bash
+digna repo prune --dry-run
+```
+
+Počty řádků jsou totožné; liší se pouze závěrečný řádek:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -528,6 +584,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Příkaz `project cleanup` odstraní výsledky inspekcí, které projekt nashromáždil za určité období
+— profily, predikce, počty řádků a všechny stavy kontrol, atributů, datových sad a zdrojů dat.
+Odstraní přesně to, co zapsala inspekce těchto dat, takže období lze poté znovu podrobit inspekci
+a výsledky obnovit.
+
+Historie Timeliness a Schema Tracker se **neodstraňuje**: zaznamenává, co digna v daný den
+zjistila, nikoli výsledek z toho odvozený, takže vyčištění minulého období ji ponechá
+nedotčenou.
+
+Každý zdroj dat se čistí ve vlastní transakci, takže přerušený běh zanechá celé zdroje dat,
+nikoli napůl vyčištěný zdroj.
+
+#### Použití příkazu
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Projekt, který se má vyčistit (povinné). Jeden projekt na jedno spuštění.
+- **FROM_DATE**: První datum, pro které se výsledky odstraní, `YYYY-MM-DD` (povinné).
+- **TO_DATE**: Poslední datum, pro které se výsledky odstraní, včetně, `YYYY-MM-DD` (povinné).
+
+#### Volby
+- `--table-name`, `-n`: Omezí vyčištění na tyto zdroje dat. Lze zadat více názvů
+  oddělených mezerami.
+- `--table-filter`: Omezí vyčištění na zdroje dat, jejichž název obsahuje tento podřetězec.
+- `--dry-run`: Vypíše zdroje dat, které by byly vyčištěny, aniž by cokoli odstranil.
+- `--timing`: Zobrazí, jak dlouho vyčištění trvalo.
+
+`--table-name` a `--table-filter` se kombinují jako OR — zdroj dat se vyčistí, pokud je uveden
+jménem nebo pokud odpovídá podřetězec. Pokud žádný zdroj dat neodpovídá, příkaz selže, místo
+aby hlásil úspěch u vyčištění, které nic neudělalo.
+
+#### Příklad
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Omezení na jeden zdroj dat:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Ukázkový výstup
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Zobrazení zdrojů dat, které by byly vyčištěny, bez odstranění čehokoli:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Každý řádek je označen, takže zkušební běh nelze zaměnit se skutečným:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Správa inspekcí
 
 ---
@@ -701,3 +829,92 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Správa služby Windows
+
+K dispozici pouze ve Windows. Příkazy registrují backend ***digna*** ve správci služeb Windows
+a ovládají jej; samotná služba spouští `serve` na pozadí. Každý příkaz musí být spuštěn
+z Příkazového řádku se zvýšenými oprávněními a každý přijímá `--name`, aby bylo možné pracovat
+se službou registrovanou pod jiným než výchozím názvem.
+
+---
+
+### windows install
+
+Příkaz `windows install` registruje ***digna*** jako službu Windows.
+
+Zde zadaná adresa a port se zaznamenají do registrace služby a služba se na ně naváže — nenačítají
+se z `config.toml`. Chcete-li je později změnit, službu odinstalujte a nainstalujte znovu.
+
+#### Použití příkazu
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým se služba registruje (výchozí: `digna`).
+- `--display-name`: Název zobrazený v services.msc (výchozí: `digna`).
+- `--description`: Popis zobrazený v services.msc (výchozí: `digna data quality backend`).
+- `--address`: Adresa, na kterou služba naváže své API (výchozí: `127.0.0.1`).
+- `--port`: Port, na který služba naváže své API (výchozí: `8000`).
+- `--working-dir`: Adresář obsahující `config.toml` a `license.toml`, který služba použije jako
+  svůj pracovní adresář (výchozí: adresář spustitelného souboru `digna`).
+- `--start-type`: Kdy se služba spouští — `auto` spolu s Windows, `manual` pouze na vyžádání,
+  `disabled` je registrována, ale odmítne se spustit (výchozí: `auto`).
+- `--account`: Účet, pod kterým služba běží, např. `DOMAIN\user` nebo `.\user` (výchozí: `LocalSystem`).
+- `--password`: Heslo účtu `--account`.
+
+#### Příklad
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registrace pod druhým názvem se spuštěním pod doménovým účtem:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Příkaz `windows start` spustí registrovanou službu.
+
+#### Použití příkazu
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým je služba registrována (výchozí: `digna`).
+
+---
+
+### windows stop
+
+Příkaz `windows stop` zastaví běžící službu. Před nahrazením jakéhokoli souboru aplikace
+službu zastavte.
+
+#### Použití příkazu
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým je služba registrována (výchozí: `digna`).
+
+---
+
+### windows uninstall
+
+Příkaz `windows uninstall` odregistruje službu. Nejprve ji zastavte.
+
+#### Použití příkazu
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým je služba registrována (výchozí: `digna`).

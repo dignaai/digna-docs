@@ -1,88 +1,88 @@
-# Single Sign-On Overview
+# Översikt över Single Sign-On
 
 ---
 
-## Table of Contents
+## Innehållsförteckning
 
-1. [Introduction and Overview](#introduction-and-overview)
-2. [Provider Guides](#provider-guides)
-3. [Configuration Steps](#configuration-steps)
-4. [Dashboard Configuration](#dashboard-configuration)
-5. [Backend Configuration](#backend-configuration)
-6. [Testing Login](#testing-login)
-7. [Troubleshooting](#troubleshooting)
-8. [Supported Providers](#supported-providers)
-
----
-
-## Introduction and Overview {: #introduction-and-overview }
-
-This guide provides step-by-step instructions for integrating Single Sign-On (SSO) with the digna platform using **OpenID Connect (OIDC)**.
-
-### What is SSO?
-
-Single Sign-On allows users to log in to digna securely using their enterprise credentials through external identity providers. Users can authenticate with their corporate credentials instead of managing separate digna passwords.
-
-### How It Works
-
-SSO in digna is implemented using the OIDC protocol. Multiple identity providers can be configured in parallel by adjusting two key configuration files:
-
-- **`dashboard_config.toml`** — Controls the frontend login interface
-- **`config.toml`** — Configures the backend OIDC connections
-
-### Supported Providers {: #supported-providers-overview }
-
-Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
+1. [Introduktion och översikt](#introduction-and-overview)
+2. [Guider per leverantör](#provider-guides)
+3. [Konfigurationssteg](#configuration-steps)
+4. [Konfiguration av dashboarden](#dashboard-configuration)
+5. [Konfiguration av backenden](#backend-configuration)
+6. [Testa inloggningen](#testing-login)
+7. [Felsökning](#troubleshooting)
+8. [Leverantörer som stöds](#supported-providers)
 
 ---
 
-## Provider Guides {: #provider-guides }
+## Introduktion och översikt {: #introduction-and-overview }
 
-Every provider needs the same four values — a client ID, a client secret, a redirect URI and a discovery URL — but each one puts them in a different place in its admin console, and several have a provider-specific step that the others do not. The guides below cover that half of the work; this page covers the digna half, which is identical for all of them.
+Denna guide ger steg-för-steg-instruktioner för att integrera Single Sign-On (SSO) med digna-plattformen via **OpenID Connect (OIDC)**.
 
-| Provider | Guide | Worth knowing |
+### Vad är SSO?
+
+Single Sign-On låter användare logga in säkert i digna med sina företagsuppgifter via externa identitetsleverantörer. Användarna kan autentisera sig med sina företagsinloggningar i stället för att hantera separata lösenord för digna.
+
+### Så fungerar det
+
+SSO i digna är implementerat med OIDC-protokollet. Flera identitetsleverantörer kan konfigureras parallellt genom att justera två centrala konfigurationsfiler:
+
+- **`dashboard_config.toml`** — styr inloggningsgränssnittet i frontend
+- **`config.toml`** — konfigurerar OIDC-anslutningarna i backend
+
+### Leverantörer som stöds {: #supported-providers-overview }
+
+Exemplen i denna guide använder **Microsoft** och **Google**, men **alla leverantörer som följer OIDC-standarden** kan integreras enligt samma struktur.
+
+---
+
+## Guider per leverantör {: #provider-guides }
+
+Varje leverantör behöver samma fyra värden — ett klient-ID, en klienthemlighet, en redirect URI och en discovery-URL — men var och en placerar dem på olika ställen i sin administrationskonsol, och flera har ett leverantörsspecifikt steg som de andra saknar. Guiderna nedan täcker den delen av arbetet; denna sida täcker digna-delen, som är identisk för alla.
+
+| Leverantör | Guide | Bra att veta |
 |---|---|---|
-| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
-| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
-| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
-| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
-| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
-| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
-| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
-| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+| **AD FS** | [Ställ in SSO med AD FS](adfs_sso_guide.md) | Egenhostad; den enda leverantören här där du själv kontrollerar tokentjänsten |
+| **Auth0** | [Ställ in SSO med Auth0](auth0_sso_guide.md) | Discovery-URL:en är per tenant, och anpassade domäner ändrar den |
+| **Google Workspace** | [Ställ in SSO med Google Workspace](google_workspace_sso_guide.md) | Samtyckesskärmen måste publiceras innan andra än testanvändare kan logga in |
+| **Keycloak** | [Ställ in SSO med Keycloak](keycloak_sso_guide.md) | Egenhostad; discovery-URL:en är per realm |
+| **Microsoft Entra ID** | [Ställ in SSO med Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant-ID:t ingår i discovery-URL:en; hemligheter går ut |
+| **Okta** | [Ställ in SSO med Okta](okta_sso_guide.md) | Valet av auktoriseringsserver ändrar discovery-URL:en |
+| **OneLogin** | [Ställ in SSO med OneLogin](onelogin_sso_guide.md) | OIDC-apptypen måste väljas när appen skapas och kan inte ändras |
+| **PingOne** | [Ställ in SSO med PingOne](pingone_sso_guide.md) | Miljö-ID:t ingår i discovery-URL:en |
 
-Any other OIDC-compliant provider works the same way — see [Other OIDC Providers](#supported-providers).
+Alla andra leverantörer som följer OIDC-standarden fungerar på samma sätt — se [Andra OIDC-leverantörer](#supported-providers).
 
 ---
 
-## Configuration Steps {: #configuration-steps }
+## Konfigurationssteg {: #configuration-steps }
 
-SSO configuration requires updates to two files. This section explains how to configure each one.
+SSO-konfigurationen kräver ändringar i två filer. Detta avsnitt förklarar hur var och en konfigureras.
 
-### Overview of Configuration Files
+### Översikt över konfigurationsfilerna
 
-| File | Location | Purpose |
+| Fil | Plats | Syfte |
 |---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
-| **config.toml** | `/config.toml` | Backend OIDC connections |
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Inloggningsgränssnitt i frontend |
+| **config.toml** | `/config.toml` | OIDC-anslutningar i backend |
 
-Both files must be configured for SSO to work properly.
+Båda filerna måste konfigureras för att SSO ska fungera korrekt.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Konfiguration av dashboarden {: #dashboard-configuration }
 
-### File Location
+### Filens plats
 
 ```
 dashboard/dashboard_config.toml
 ```
 
-### Step 1: Add OIDC Providers
+### Steg 1: Lägg till OIDC-leverantörer
 
-Add entries under the `[[login.oidc]]` array for each identity provider you want to support.
+Lägg till poster under arrayen `[[login.oidc]]` för varje identitetsleverantör som du vill stödja.
 
-**Example with Microsoft and Google:**
+**Exempel med Microsoft och Google:**
 
 ```toml
 [[login.oidc]]
@@ -94,48 +94,48 @@ key = "google"
 label = "Login with Google"
 ```
 
-### Step 2: Configure Login Options
+### Steg 2: Konfigurera inloggningsalternativ
 
-Specify whether password-based login should be allowed:
+Ange om lösenordsbaserad inloggning ska tillåtas:
 
 ```toml
 [login]
 usePassword = true
 ```
 
-### Configuration Parameters
+### Konfigurationsparametrar
 
-#### `[[login.oidc]]` Section
+#### Avsnittet `[[login.oidc]]`
 
-| Parameter | Type | Required | Description |
+| Parameter | Typ | Obligatorisk | Beskrivning |
 |---|---|---|---|
-| `key` | string | Yes | Unique identifier for the OIDC connection (must match key in config.toml) |
-| `label` | string | Yes | Text displayed on the login button (e.g., "Login with Microsoft") |
+| `key` | string | Ja | Unik identifierare för OIDC-anslutningen (måste matcha key i config.toml) |
+| `label` | string | Ja | Text som visas på inloggningsknappen (t.ex. "Login with Microsoft") |
 
-#### `[login]` Section
+#### Avsnittet `[login]`
 
-| Parameter | Type | Default | Description |
+| Parameter | Typ | Standard | Beskrivning |
 |---|---|---|---|
-| `usePassword` | boolean | false | Allow password-based login in addition to SSO |
+| `usePassword` | boolean | false | Tillåt lösenordsbaserad inloggning utöver SSO |
 
-### Understanding usePassword
+### Förstå usePassword
 
-**If `usePassword = true`:**
-- Login screen shows SSO buttons (e.g., "Login with Microsoft")
-- Login screen also shows username and password fields
-- Users can authenticate with either method
-- Allows hybrid setups where some users use SSO and others use passwords
+**Om `usePassword = true`:**
+- Inloggningsskärmen visar SSO-knappar (t.ex. "Login with Microsoft")
+- Inloggningsskärmen visar även fält för användarnamn och lösenord
+- Användarna kan autentisera sig med vilken metod som helst
+- Möjliggör hybridupplägg där vissa användare använder SSO och andra lösenord
 
-**If `usePassword = false` (or omitted):**
-- Login screen shows only SSO buttons
-- No username/password fields
-- Only OIDC authentication is available
+**Om `usePassword = false` (eller utelämnat):**
+- Inloggningsskärmen visar endast SSO-knappar
+- Inga fält för användarnamn/lösenord
+- Endast OIDC-autentisering är tillgänglig
 
-!!! tip "Tip"
+!!! tip "Tips"
 
-    Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
+    Lösenordsbaserad inloggning är endast tillgänglig för användare som skapats med lösenord via kommandot `digna user add` eller via dashboarden.
 
-### Complete Example
+### Fullständigt exempel
 
 ```toml
 [login]
@@ -156,21 +156,21 @@ label = "Login with Okta"
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Konfiguration av backenden {: #backend-configuration }
 
-### File Location
+### Filens plats
 
 ```
 /config.toml
 ```
 
-(Root digna installation directory)
+(Rotkatalogen för digna-installationen)
 
-### Step 1: Add OIDC Provider Sections
+### Steg 1: Lägg till avsnitt för OIDC-leverantörer
 
-Each provider must have a dedicated `[oidc_clients.<key>]` section. The key must match the `key` defined in `dashboard_config.toml`.
+Varje leverantör måste ha ett eget avsnitt `[oidc_clients.<key>]`. Nyckeln måste matcha den `key` som definierats i `dashboard_config.toml`.
 
-### Microsoft Configuration
+### Konfiguration för Microsoft
 
 ```toml
 [oidc_clients.microsoft]
@@ -180,7 +180,7 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
 ```
 
-### Google Configuration
+### Konfiguration för Google
 
 ```toml
 [oidc_clients.google]
@@ -190,32 +190,32 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-### Configuration Parameters
+### Konfigurationsparametrar
 
-| Parameter | Type | Required | Description | Example |
+| Parameter | Typ | Obligatorisk | Beskrivning | Exempel |
 |---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID from identity provider | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret from identity provider | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
+| `DIGNA_OIDC_CLIENT_ID` | string | Ja | Klient-ID från identitetsleverantören | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Ja | Klienthemlighet från identitetsleverantören | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL efter autentisering | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-konfigurationsendpoint | `https://login.microsoftonline.com/...` |
 
-!!! warning "Important"
+!!! warning "Viktigt"
 
-    Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
+    Ersätt platshållarvärdena (`<client_id>`, `<client_secret>`, `<tenant_id>`) med de faktiska uppgifterna från din identitetsleverantörs utvecklarportal.
 
 ### Redirect URI
 
-The redirect URI must be the same in your identity provider configuration:
+Redirect URI:n måste vara densamma i konfigurationen hos din identitetsleverantör:
 
 ```
 http://localhost:5173/oidc/callback
 ```
 
-If digna is hosted at a different domain, update accordingly:
-- Local: `http://localhost:5173/oidc/callback`
-- Production: `https://digna.yourdomain.com/oidc/callback`
+Om digna körs på en annan domän, uppdatera därefter:
+- Lokalt: `http://localhost:5173/oidc/callback`
+- Produktion: `https://digna.yourdomain.com/oidc/callback`
 
-### Complete Example
+### Fullständigt exempel
 
 ```toml
 [oidc_clients.microsoft]
@@ -233,238 +233,238 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ---
 
-## Testing Login {: #testing-login }
+## Testa inloggningen {: #testing-login }
 
-After completing the configuration, verify that SSO is working correctly.
+När konfigurationen är klar, kontrollera att SSO fungerar korrekt.
 
-### Pre-Testing Checklist
+### Checklista före testning
 
-Before testing, ensure:
+Säkerställ före testningen att:
 
-- [ ] `dashboard_config.toml` has been updated with OIDC providers
-- [ ] `config.toml` has been updated with OIDC credentials
-- [ ] Both files have been saved
-- [ ] Credentials are correct (client ID, client secret)
-- [ ] Redirect URI matches your deployment URL
-- [ ] Identity provider application is configured with the redirect URI
+- [ ] `dashboard_config.toml` har uppdaterats med OIDC-leverantörer
+- [ ] `config.toml` har uppdaterats med OIDC-uppgifter
+- [ ] Båda filerna har sparats
+- [ ] Uppgifterna är korrekta (klient-ID, klienthemlighet)
+- [ ] Redirect URI:n matchar din installations-URL
+- [ ] Applikationen hos identitetsleverantören är konfigurerad med redirect URI:n
 
-### Testing Steps
+### Teststeg
 
-#### Step 1: Restart Services
+#### Steg 1: Starta om tjänsterna
 
-Restart the digna backend and web server to apply changes.
+Starta om digna-backenden och webbservern för att tillämpa ändringarna.
 
-**If running as a service on Windows:**
+**Om digna körs som en tjänst på Windows:**
 ```bash
 cd C:\path\to\digna
 digna windows stop
 digna windows start
 ```
 
-**If running as a service on Linux or macOS:**
+**Om digna körs som en tjänst på Linux eller macOS:**
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 sudo ./start_service.sh
 ```
 
-**If running manually:**
+**Om digna körs manuellt:**
 ```bash
 digna serve --address localhost --port 8082
 ```
 
-**Restart the web server too** — IIS or Tomcat on Windows, nginx or Apache on Linux and macOS.
+**Starta även om webbservern** — IIS eller Tomcat på Windows, nginx eller Apache på Linux och macOS.
 
-#### Step 2: Open Dashboard
+#### Steg 2: Öppna dashboarden
 
-Open the digna dashboard in your browser:
+Öppna digna-dashboarden i din webbläsare:
 
 ```
 http://localhost:5173
 ```
 
-(or your configured dashboard URL)
+(eller din konfigurerade dashboard-URL)
 
-#### Step 3: Verify Login Buttons
+#### Steg 3: Kontrollera inloggningsknapparna
 
-Check that login buttons appear for each configured provider:
+Kontrollera att inloggningsknappar visas för varje konfigurerad leverantör:
 
-- Should see "Login with Microsoft" button
-- Should see "Login with Google" button
-- (If usePassword = true) Should see username/password fields
+- Knappen "Login with Microsoft" ska visas
+- Knappen "Login with Google" ska visas
+- (Om usePassword = true) Fält för användarnamn/lösenord ska visas
 
-If buttons don't appear:
-- Check that `dashboard_config.toml` was saved
-- Check that dashboard service was restarted
-- Check browser console (F12) for errors
+Om knapparna inte visas:
+- Kontrollera att `dashboard_config.toml` har sparats
+- Kontrollera att dashboard-tjänsten har startats om
+- Kontrollera webbläsarens konsol (F12) efter fel
 
-#### Step 4: Test SSO Login
+#### Steg 4: Testa SSO-inloggning
 
-Click one of the SSO buttons (e.g., "Login with Microsoft"):
+Klicka på en av SSO-knapparna (t.ex. "Login with Microsoft"):
 
-1. You should be redirected to the identity provider's login page
-2. Log in with your enterprise credentials
-3. You should be redirected back to digna
-4. You should be logged in to digna
+1. Du ska omdirigeras till identitetsleverantörens inloggningssida
+2. Logga in med dina företagsuppgifter
+3. Du ska omdirigeras tillbaka till digna
+4. Du ska vara inloggad i digna
 
-#### Step 5: Verify User Creation
+#### Steg 5: Kontrollera att användaren skapats
 
-After successful SSO login:
+Efter en lyckad SSO-inloggning:
 
-- User should be automatically created in digna
-- User should be logged in
-- User profile should display your identity provider credentials
-- You should see the digna dashboard
+- Användaren ska ha skapats automatiskt i digna
+- Användaren ska vara inloggad
+- Användarprofilen ska visa uppgifterna från din identitetsleverantör
+- Du ska se digna-dashboarden
 
-#### Step 6: Test Password Login (If Enabled)
+#### Steg 6: Testa lösenordsinloggning (om aktiverad)
 
-If `usePassword = true`:
+Om `usePassword = true`:
 
-1. Log out of digna
-2. On the login page, enter a username and password
-3. You should be able to log in with password credentials
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Login Buttons Don't Appear
-
-**Symptoms:**
-- OIDC login buttons not visible on login page
-- Only see password fields (if usePassword = true)
-
-**Causes & Solutions:**
-1. Check `dashboard_config.toml` is in `dashboard/` directory
-2. Verify `[[login.oidc]]` sections are present with correct syntax
-3. Restart dashboard service
-4. Clear browser cache (Ctrl+Shift+Delete or Cmd+Shift+Delete)
-5. Check browser console (F12 → Console tab) for errors
+1. Logga ut från digna
+2. Ange ett användarnamn och lösenord på inloggningssidan
+3. Du ska kunna logga in med lösenordsuppgifterna
 
 ---
 
-### Redirect URI Mismatch Error
+## Felsökning {: #troubleshooting }
 
-**Symptoms:**
-- After clicking SSO button, error about "redirect_uri mismatch"
-- "The redirect URI is not registered" error
+### Inloggningsknapparna visas inte
 
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_REDIRECT_URI` in `config.toml` is correct
-2. Verify redirect URI is registered in identity provider settings
-3. Ensure both use identical URLs (including protocol, domain, path)
-4. Check for typos in the redirect URI
-5. If using HTTPS, ensure certificate is valid
+**Symtom:**
+- OIDC-inloggningsknapparna syns inte på inloggningssidan
+- Endast lösenordsfälten visas (om usePassword = true)
 
----
-
-### Invalid Client Credentials Error
-
-**Symptoms:**
-- "Invalid client ID or secret" error
-- Authentication fails with credentials error
-
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_CLIENT_ID` and `DIGNA_OIDC_CLIENT_SECRET` are correct
-2. Ensure no extra spaces or special characters
-3. Check credentials haven't expired or been revoked
-4. Restart backend service after updating config
-5. Check identity provider console to confirm credentials are active
+**Orsaker och lösningar:**
+1. Kontrollera att `dashboard_config.toml` ligger i katalogen `dashboard/`
+2. Kontrollera att avsnitten `[[login.oidc]]` finns och har korrekt syntax
+3. Starta om dashboard-tjänsten
+4. Rensa webbläsarens cache (Ctrl+Shift+Delete eller Cmd+Shift+Delete)
+5. Kontrollera webbläsarens konsol (F12 → fliken Console) efter fel
 
 ---
 
-### Login Hangs or Times Out
+### Fel om redirect URI mismatch
 
-**Symptoms:**
-- Clicking SSO button does nothing
-- Timeout after several seconds
-- Browser shows "Failed to connect" or similar
+**Symtom:**
+- Efter klick på SSO-knappen visas ett fel om "redirect_uri mismatch"
+- Felet "The redirect URI is not registered"
 
-**Causes & Solutions:**
-1. Verify digna backend is running: `digna repo check`
-2. Check network connectivity to identity provider
-3. Verify `DIGNA_OIDC_CONFIGURATION_URL` is accessible
-4. Check firewall rules allow outbound HTTPS connections
-5. Verify backend and dashboard can reach each other
-
----
-
-### Users Not Automatically Created
-
-**Symptoms:**
-- SSO login succeeds but user not created in digna
-- Get permission error after SSO login
-
-**Causes & Solutions:**
-1. Verify OIDC configuration is correct
-2. Check user permissions are set up
-3. Review digna logs for error messages
-4. Restart backend service
-5. Contact support@digna.ai if issue persists
+**Orsaker och lösningar:**
+1. Kontrollera att `DIGNA_OIDC_REDIRECT_URI` i `config.toml` är korrekt
+2. Kontrollera att redirect URI:n är registrerad i identitetsleverantörens inställningar
+3. Säkerställ att båda använder identiska URL:er (inklusive protokoll, domän och sökväg)
+4. Kontrollera om det finns stavfel i redirect URI:n
+5. Om du använder HTTPS, säkerställ att certifikatet är giltigt
 
 ---
 
-## Supported Providers {: #supported-providers }
+### Fel om ogiltiga klientuppgifter
 
-### Tested & Supported
+**Symtom:**
+- Felet "Invalid client ID or secret"
+- Autentiseringen misslyckas med ett fel om inloggningsuppgifter
 
-The following OIDC providers have been tested and are known to work:
+**Orsaker och lösningar:**
+1. Kontrollera att `DIGNA_OIDC_CLIENT_ID` och `DIGNA_OIDC_CLIENT_SECRET` är korrekta
+2. Säkerställ att det inte finns extra mellanslag eller specialtecken
+3. Kontrollera att uppgifterna inte har gått ut eller återkallats
+4. Starta om backend-tjänsten efter att konfigurationen uppdaterats
+5. Kontrollera i identitetsleverantörens konsol att uppgifterna är aktiva
 
-| Provider | Configuration URL | Setup Guide |
+---
+
+### Inloggningen hänger sig eller får timeout
+
+**Symtom:**
+- Ett klick på SSO-knappen gör ingenting
+- Timeout efter flera sekunder
+- Webbläsaren visar "Failed to connect" eller liknande
+
+**Orsaker och lösningar:**
+1. Kontrollera att digna-backenden körs: `digna repo check`
+2. Kontrollera nätverksanslutningen till identitetsleverantören
+3. Kontrollera att `DIGNA_OIDC_CONFIGURATION_URL` är nåbar
+4. Kontrollera att brandväggsreglerna tillåter utgående HTTPS-anslutningar
+5. Kontrollera att backend och dashboard kan nå varandra
+
+---
+
+### Användare skapas inte automatiskt
+
+**Symtom:**
+- SSO-inloggningen lyckas men användaren skapas inte i digna
+- Ett behörighetsfel visas efter SSO-inloggningen
+
+**Orsaker och lösningar:**
+1. Kontrollera att OIDC-konfigurationen är korrekt
+2. Kontrollera att användarbehörigheterna är konfigurerade
+3. Gå igenom digna-loggarna efter felmeddelanden
+4. Starta om backend-tjänsten
+5. Kontakta support@digna.ai om problemet kvarstår
+
+---
+
+## Leverantörer som stöds {: #supported-providers }
+
+### Testade och stödda
+
+Följande OIDC-leverantörer har testats och är kända för att fungera:
+
+| Leverantör | Konfigurations-URL | Installationsguide |
 |---|---|---|
-| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
-| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
-| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
-| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
-| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Ställ in SSO med AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Ställ in SSO med Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Ställ in SSO med Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Ställ in SSO med Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Ställ in SSO med Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Ställ in SSO med Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Ställ in SSO med OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Ställ in SSO med PingOne](pingone_sso_guide.md) |
 
-### Other OIDC Providers
+### Andra OIDC-leverantörer
 
-Any provider that supports OpenID Connect can be integrated. Required information:
+Alla leverantörer som stöder OpenID Connect kan integreras. Nödvändig information:
 
-- Client ID
-- Client secret
-- OpenID configuration URL (usually at `/.well-known/openid-configuration`)
-- Supported scopes (typically `openid profile email`)
+- Klient-ID
+- Klienthemlighet
+- OpenID-konfigurations-URL (oftast under `/.well-known/openid-configuration`)
+- Scopes som stöds (vanligtvis `openid profile email`)
 
-Contact support@digna.ai if you need help integrating a specific provider.
+Kontakta support@digna.ai om du behöver hjälp att integrera en viss leverantör.
 
 ---
 
-## Best Practices
+## Bästa praxis
 
-**DO:**
-- Use HTTPS in production (not HTTP)
-- Store client secrets securely (use environment variables if possible)
-- Rotate secrets periodically
-- Test in a non-production environment first
-- Document which providers are configured
-- Monitor login logs for unusual activity
-- Keep identity provider configuration in sync with digna config
+**GÖR:**
+- Använd HTTPS i produktion (inte HTTP)
+- Förvara klienthemligheter säkert (använd miljövariabler om möjligt)
+- Rotera hemligheter regelbundet
+- Testa först i en miljö som inte är produktion
+- Dokumentera vilka leverantörer som är konfigurerade
+- Övervaka inloggningsloggarna efter ovanlig aktivitet
+- Håll konfigurationen hos identitetsleverantören synkroniserad med digna-konfigurationen
 
-**DON'T:**
-- Store client secrets in version control
-- Use HTTP redirect URIs in production
-- Configure multiple providers with the same key
-- Leave default/test credentials in production
-- Expose config files containing secrets
-- Mix development and production credentials
+**GÖR INTE:**
+- Lagra klienthemligheter i versionshantering
+- Använda HTTP-redirect-URI:er i produktion
+- Konfigurera flera leverantörer med samma key
+- Lämna standard- eller testuppgifter kvar i produktion
+- Exponera konfigurationsfiler som innehåller hemligheter
+- Blanda uppgifter för utveckling och produktion
 
 ---
 
 ## Support
 
-Need help with SSO configuration?
+Behöver du hjälp med SSO-konfigurationen?
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+- **E-post:** support@digna.ai
+- **Dokumentation:** https://docs.digna.ai
+- **Webbplats:** https://www.digna.ai
 
 ---
 
-**Last Updated:** August 30, 2026  
+**Senast uppdaterad:** 30 augusti 2026  
 **Release:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

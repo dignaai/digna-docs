@@ -1,86 +1,89 @@
-# Source Connector for MS SQL Server
+# MS SQL Server için Kaynak Bağlayıcısı
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Bu kılavuz, *digna*'nın **DSN'siz** bir bağlantı dizesi kullanarak **ODBC** üzerinden
+Microsoft SQL Server'a bağlanacak şekilde nasıl yapılandırılacağını açıklar.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+Kurulumun *digna* tarafı her teknoloji için aynıdır: bağlantıların nerede oluşturulduğu,
+özellik değerlerinin nasıl şifrelendiği, bir bağlantının nasıl test edildiği ve profil oluşturma
+modlarının ne anlama geldiği. Bunlar [Veritabanı Bağlantılarına Genel Bakış](overview.md)
+sayfasında açıklanmıştır. Bu sayfa SQL Server'a özgü konuları ele alır.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Synapse da farklı bir ana makine adı ve birkaç ek husus ile bir SQL Server bağlantısı olarak
+    yapılandırılır; bkz. [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. ODBC Sürücüsünü Kurun {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+[Microsoft'un kurulum kılavuzunu](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)
+izleyerek *digna* arka ucunu çalıştıran makineye **ODBC Driver 18 for SQL Server**'ı kurun.
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Windows ile birlikte yalnızca **SQL Server** adıyla gelen sürücü de çalışır, ancak uzun
+zamandır yerini yenilerine bırakmıştır ve ne modern TLS ayarlarını ne de Azure kimlik
+doğrulamasını destekler. Bunu yalnızca güncel sürücüyü kurmanın mümkün olmadığı durumlarda
+kullanın.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Kayıtlı sürücü adının tamamını
+[ODBC Sürücüsünü digna Ana Makinesine Kurun](overview.md#install-the-driver) bölümünde
+açıklandığı şekilde ana makinenizden okuyun.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. ODBC Özellikleri {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Bir örnek, bir şartname değil"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Aşağıdaki küme, çalıştığı bilinen bir kombinasyondur. Özellikler Microsoft ODBC sürücüsüne
+    aittir; bu nedenle adları, varsayılan değerleri ve kabul edilen değerleri sürücü
+    sürümlerine (örneğin Driver 18, Driver 17'nin aksine varsayılan olarak şifreleme yapar) ve
+    platformlara göre farklılık gösterir. Bunu bir başlangıç noktası olarak kullanın ve
+    kurduğunuz sürücü sürümünün dokümantasyonunu kontrol edin.
 
-Add the following properties in the **Add DB Connection** screen:
+**Add DB Connection** ekranında aşağıdaki özellikleri ekleyin:
 
-| Key | Example value | Notes |
+| Anahtar | Örnek değer | Notlar |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | *digna* ana makinesinde kayıtlı sürücü adıyla eşleşmelidir |
+| `SERVER` | `sql.example.com` | Sunucu adı veya IP adresi. Adlandırılmış örnekler: `host\instance`; varsayılan olmayan bir port: `host,1433` |
+| `PORT` | `1433` | Port zaten `SERVER` içinde yer alıyorsa kullanmayın |
+| `DATABASE` | `digna_source_db` | Kaynak şemaları barındıran veritabanı. Bu bağlantının profilini oluşturabileceği tek veritabanıdır |
+| `UID` | `digna_source_user` | Veritabanı kullanıcısı |
+| `PWD` | `<password>` | **Encrypted** seçeneğini işaretleyin |
 
-The resulting connection string looks like this:
+Ortaya çıkan bağlantı dizesi şöyle görünür:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### ODBC Driver 18 ile şifreleme
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 bağlantıları varsayılan olarak şifreler ve sunucu sertifikasını doğrular. *digna*
+ana makinenizin güvenmediği bir sertifikaya (genellikle kendinden imzalı bir sertifika) sahip
+bir sunucuya bağlanırken bağlantı bir sertifika zinciri hatasıyla başarısız olur. Şunları
+ekleyin:
 
-| Key | Example value | Notes |
+| Anahtar | Örnek değer | Notlar |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Driver 18'de varsayılandır; yalnızca sunucu TLS kullanamıyorsa `no` olarak ayarlayın |
+| `TrustServerCertificate` | `yes` | Sertifika doğrulamasını atlar. Test ortamlarında pratiktir; üretimde sertifikayı kurmayı tercih edin |
 
-### Windows Authentication
+### Windows Kimlik Doğrulaması
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Bir SQL oturum açma bilgisi yerine *digna* hizmetini çalıştıran hesapla bağlanmak için `UID`
+ve `PWD` özelliklerini kaldırın ve şunu ekleyin:
 
-| Key | Example value | Notes |
+| Anahtar | Örnek değer | Notlar |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | *digna* hizmet hesabının veritabanı haklarına ihtiyacı vardır |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* Yapılandırması {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** ekranında aşağıdakileri girin:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +94,57 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. MS SQL Server ile İlgili Notlar {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Bir bağlantı bir veritabanını görür.** *digna*, `DATABASE` içinde adı verilen veritabanının
+  şemalarını sunar, çünkü SQL Server katalog olarak yalnızca geçerli veritabanını bildirir.
+  Başka bir veritabanındaki kaynak tablolar için ayrı bir bağlantı gerekir.
+- **Profil oluşturma modları.** *Permanent* çalışma tablolarını **Work Schema** içinde
+  oluşturur, bu nedenle kullanıcının orada `CREATE TABLE` yetkisine ihtiyacı vardır. *Session*
+  `tempdb` içinde yerel geçici tablolar (`#wt_…`) kullanır ve **Work Schema**'ya dokunmaz.
+  *Standard* yalnızca okuma erişimi gerektirir.
+- **`SERVER` örneği ve portu taşır.** Adlandırılmış bir örnekte `host\instance`, SQL Server
+  Browser hizmetine erişilebilmesini gerektirir; `host,port` bu gereksinimi ortadan kaldırır.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Sürücüyü Doğrulama (isteğe bağlı) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+DSN'siz bir bağlantı için bir ODBC veri kaynağı yapılandırmak gerekli değildir; ancak sürücünün
+kendi sihirbazı, bunları *digna*'ya girmeden önce sürücünün çalıştığını ve sunucunun kimlik
+bilgilerinizi kabul ettiğini doğrulamanın pratik bir yoludur.
 
-#### Step 1
-![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+#### Adım 1
+![Adım 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+**Next >** düğmesine tıklayın.
 
-#### Step 2
-![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+#### Adım 2
+![Adım 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Kimlik doğrulama yöntemini seçin (ör. kullanıcı adı ve parola)
+ve gerekli bilgileri girin.
 
-Click the **Next >** button.
+**Next >** düğmesine tıklayın.
 
-#### Step 3
-![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+#### Adım 3
+![Adım 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+ANSI uyumlu ayarları seçin ve ardından **Next >** düğmesine tıklayın.
 
-#### Step 4
-![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+#### Adım 4
+![Adım 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Varsayılan ayarları bırakabilir veya gerektiği gibi günlük kaydı seçeneklerini
+belirleyebilirsiniz; ardından **Finish** düğmesine tıklayın.
 
-#### Step 5
-![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+#### Adım 5
+![Adım 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Şimdi **Test datasource** düğmesine tıklayın.
 
-#### Step 6
-![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+#### Adım 6
+![Adım 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Bir başarı ekranı, sürücünün ve kimlik bilgilerinin çalıştığını doğrular. Girdiğiniz değerler,
+[bölüm 2](#2-odbc-properties) içindeki özelliklerin aldığı değerlerin tam olarak aynısıdır.

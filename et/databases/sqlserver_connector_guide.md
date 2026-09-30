@@ -1,86 +1,86 @@
-# Source Connector for MS SQL Server
+# Lähtekonnektor MS SQL Serveri jaoks
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+See juhend kirjeldab, kuidas konfigureerida *digna* ühenduma Microsoft SQL Serveriga **ODBC**
+kaudu, kasutades **DSN-ita** ühendusstringi.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+Seadistuse *digna* pool on iga tehnoloogia puhul sama — kus ühendused luuakse, kuidas
+atribuutide väärtused krüpteeritakse, kuidas ühendust testitakse ja mida profileerimisrežiimid
+tähendavad. Seda kirjeldatakse lehel [Andmebaasiühenduste ülevaade](overview.md). See leht
+käsitleb SQL Serveri eripärasid.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Ka Synapse konfigureeritakse SQL Serveri ühendusena, erineva hostinime ja mõne lisakaalutlusega
+    — vt [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. ODBC draiveri paigaldamine {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Paigaldage **ODBC Driver 18 for SQL Server** masinale, kus töötab *digna* backend, järgides
+[Microsofti paigaldusjuhendit](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Windowsiga kaasas olev draiver lihtsa nimega **SQL Server** töötab samuti, kuid see on ammu
+aegunud ega toeta ei kaasaegseid TLS-i sätteid ega Azure'i autentimist. Kasutage seda ainult
+siis, kui praeguse draiveri paigaldamine pole võimalik.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Lugege oma hostist välja täpne registreeritud draiveri nimi, nagu on kirjeldatud jaotises
+[ODBC draiveri paigaldamine digna hostile](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. ODBC atribuudid {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Näide, mitte spetsifikatsioon"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Allolev komplekt on üks kombinatsioon, mis teadaolevalt töötab. Atribuudid kuuluvad
+    Microsofti ODBC draiverile, seega erinevad nende nimed, vaikeväärtused ja aktsepteeritavad
+    väärtused draiveri versioonide vahel — näiteks Driver 18 krüpteerib vaikimisi, Driver 17
+    mitte — ning platvormide vahel. Kasutage seda lähtepunktina ja kontrollige paigaldatud
+    draiveriversiooni dokumentatsiooni.
 
-Add the following properties in the **Add DB Connection** screen:
+Lisage kuval **Add DB Connection** järgmised atribuudid:
 
-| Key | Example value | Notes |
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Peab vastama *digna* hostis registreeritud draiveri nimele |
+| `SERVER` | `sql.example.com` | Serveri nimi või IP-aadress. Nimega eksemplarid: `host\instance`; mittevaikimisi port: `host,1433` |
+| `PORT` | `1433` | Jätke ära, kui port on juba osa väärtusest `SERVER` |
+| `DATABASE` | `digna_source_db` | Andmebaas, mis sisaldab lähteskeeme. See on ainus andmebaas, mida see ühendus saab profileerida |
+| `UID` | `digna_source_user` | Andmebaasi kasutaja |
+| `PWD` | `<password>` | Märkige **Encrypted** |
 
-The resulting connection string looks like this:
+Tulemuseks olev ühendusstring näeb välja selline:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Krüpteerimine draiveriga ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 krüpteerib ühendused vaikimisi ja valideerib serveri sertifikaadi. Serveri puhul,
+mille sertifikaati teie *digna* host ei usalda — tavaliselt iseallkirjastatud sertifikaat —,
+ebaõnnestub ühendumine sertifikaadiahela veaga. Lisage:
 
-| Key | Example value | Notes |
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Driver 18 vaikeväärtus; määrake `no` ainult siis, kui server ei toeta TLS-i |
+| `TrustServerCertificate` | `yes` | Jätab sertifikaadi valideerimise vahele. Mugav testkeskkondades; tootmises eelistage sertifikaadi paigaldamist |
 
-### Windows Authentication
+### Windowsi autentimine
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Et ühenduda SQL-sisselogimise asemel kontona, mis käitab *digna* teenust, eemaldage `UID` ja
+`PWD` ning lisage:
 
-| Key | Example value | Notes |
+| Võti | Näidisväärtus | Märkused |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | *digna* teenusekontol peavad olema andmebaasiõigused |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfiguratsioon {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Sisestage kuval **Add DB Connection** järgmine:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +91,57 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Märkused MS SQL Serveri kohta {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Üks ühendus näeb üht andmebaasi.** *digna* pakub atribuudis `DATABASE` nimetatud
+  andmebaasi skeeme, sest SQL Server teatab kataloogina ainult praegusest andmebaasist. Teises
+  andmebaasis olevad lähtetabelid vajavad oma ühendust.
+- **Profileerimisrežiimid.** *Permanent* loob töötabelid skeemi **Work Schema**, seega vajab
+  kasutaja seal õigust `CREATE TABLE`. *Session* kasutab kohalikke ajutisi tabeleid (`#wt_…`)
+  andmebaasis `tempdb` ega puuduta skeemi **Work Schema**. *Standard* vajab ainult
+  lugemisõigust.
+- **`SERVER` sisaldab eksemplari ja porti.** Nimega eksemplari puhul (`host\instance`) peab
+  teenus SQL Server Browser olema kättesaadav; `host,port` väldib seda.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Draiveri kontrollimine (valikuline) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+DSN-ita ühenduse jaoks pole ODBC andmeallika konfigureerimine vajalik, kuid draiveri enda
+viisard on mugav viis veenduda, et draiver töötab ja server aktsepteerib teie mandaate, enne
+kui need *dignasse* sisestate.
 
-#### Step 1
-![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+#### Samm 1
+![Samm 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Klõpsake nuppu **Next >**.
 
-#### Step 2
-![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+#### Samm 2
+![Samm 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Valige autentimismeetod (nt kasutajanimi ja parool)
+ja sisestage vajalikud andmed.
 
-Click the **Next >** button.
+Klõpsake nuppu **Next >**.
 
-#### Step 3
-![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+#### Samm 3
+![Samm 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Valige ANSI-ühilduvad sätted ja klõpsake seejärel nuppu **Next >**.
 
-#### Step 4
-![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+#### Samm 4
+![Samm 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Võite jätta vaikesätted või valida vajalikud logimisvalikud
+ja klõpsata nuppu **Finish**.
 
-#### Step 5
-![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+#### Samm 5
+![Samm 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Nüüd klõpsake nuppu **Test datasource**.
 
-#### Step 6
-![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+#### Samm 6
+![Samm 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Eduekraan kinnitab, et draiver ja mandaadid töötavad. Sisestatud väärtused on täpselt need
+väärtused, mida võtavad [jaotise 2](#2-odbc-properties) atribuudid.

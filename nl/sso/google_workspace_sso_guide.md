@@ -1,74 +1,74 @@
-# Set up SSO with Google Workspace
+# SSO instellen met Google Workspace
 
-Google's identity platform is OIDC-compliant and uses a single, well-known discovery URL for every customer, so the only per-organization values are the client ID and secret.
+Het identiteitsplatform van Google is OIDC-conform en gebruikt voor elke klant één en dezelfde, bekende discovery-URL, dus de enige waarden per organisatie zijn de client ID en het secret.
 
-This guide covers the **Google side**: creating the OAuth client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Deze gids behandelt de **Google-kant**: het aanmaken van de OAuth-client en het verzamelen van de waarden die digna nodig heeft. De digna-kant — `dashboard_config.toml`, testen en oplossen van problemen — is voor elke provider hetzelfde en wordt beschreven in het [Overzicht Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Voordat je begint
 
-| Requirement | Notes |
+| Vereiste | Opmerkingen |
 |---|---|
-| **Google Cloud project** | Any project in the same organization as your Workspace domain |
-| **Role** | Editor or Owner on the project |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Google Cloud-project** | Elk project in dezelfde organisatie als je Workspace-domein |
+| **Rol** | Editor of Owner op het project |
+| **digna redirect URI** | De URL waar gebruikers na het inloggen naar terugkeren, bijv. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Configure the OAuth Consent Screen
+## Stap 1: Configureer het OAuth-toestemmingsscherm
 
-Google will not issue credentials until the consent screen exists.
+Google geeft geen credentials uit zolang het toestemmingsscherm niet bestaat.
 
-1. Open the [Google Cloud Console](https://console.cloud.google.com) and select your project
-2. Go to **APIs & Services → OAuth consent screen**
-3. Choose the user type:
-   - **Internal** — only accounts in your Workspace domain can log in. Recommended.
-   - **External** — any Google account can attempt to log in.
-4. Fill in the app name, user support email and developer contact email
-5. On the **Scopes** step, add `openid`, `.../auth/userinfo.email` and `.../auth/userinfo.profile`
-6. Save
+1. Open de [Google Cloud Console](https://console.cloud.google.com) en selecteer je project
+2. Ga naar **APIs & Services → OAuth consent screen**
+3. Kies het gebruikerstype:
+   - **Internal** — alleen accounts in je Workspace-domein kunnen inloggen. Aanbevolen.
+   - **External** — elk Google-account kan proberen in te loggen.
+4. Vul de appnaam, het e-mailadres voor gebruikersondersteuning en het contactadres van de ontwikkelaar in
+5. Voeg bij de stap **Scopes** `openid`, `.../auth/userinfo.email` en `.../auth/userinfo.profile` toe
+6. Sla op
 
-!!! warning "External Apps Must Be Published"
+!!! warning "External-apps moeten gepubliceerd zijn"
 
-    An **External** consent screen starts in *Testing* status, where only accounts explicitly added to the test-user list can complete a login. Everyone else sees "digna has not completed the Google verification process". Either switch the app to **In production** under **Publishing status**, or use **Internal** — which has no such restriction and is the right choice for a Workspace-only deployment.
+    Een toestemmingsscherm van het type **External** start met de status *Testing*, waarin alleen accounts die expliciet aan de lijst met testgebruikers zijn toegevoegd een login kunnen voltooien. Alle anderen zien "digna has not completed the Google verification process". Zet de app onder **Publishing status** op **In production**, of gebruik **Internal** — dat kent die beperking niet en is de juiste keuze voor een deployment die alleen voor Workspace bedoeld is.
 
 ---
 
-## Step 2: Create the OAuth Client
+## Stap 2: Maak de OAuth-client aan
 
-1. Go to **APIs & Services → Credentials**
-2. Click **Create Credentials → OAuth client ID**
-3. Set **Application type** to **Web application**
-4. Give it a name, e.g. `digna`
-5. Under **Authorized redirect URIs**, click **Add URI** and enter:
+1. Ga naar **APIs & Services → Credentials**
+2. Klik **Create Credentials → OAuth client ID**
+3. Stel **Application type** in op **Web application**
+4. Geef hem een naam, bijv. `digna`
+5. Klik onder **Authorized redirect URIs** op **Add URI** en voer in:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-6. Click **Create**
+6. Klik **Create**
 
-!!! note "Authorized JavaScript Origins Are Not Needed"
+!!! note "Authorized JavaScript origins zijn niet nodig"
 
-    digna exchanges the authorization code from the backend, not the browser, so the **Authorized JavaScript origins** field can be left empty. Only the redirect URI matters.
-
----
-
-## Step 3: Collect the Credentials
-
-The dialog that appears after creation shows:
-
-- **Client ID** — ends in `.apps.googleusercontent.com` → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
-
-Both remain retrievable later from the credential's detail page, unlike most other providers.
+    digna wisselt de autorisatiecode uit vanuit de backend, niet vanuit de browser, dus het veld **Authorized JavaScript origins** kan leeg blijven. Alleen de redirect URI telt.
 
 ---
 
-## Step 4: The Discovery URL
+## Stap 3: Verzamel de gegevens
 
-Google uses one discovery URL for all customers — there is nothing to substitute:
+Het dialoogvenster dat na het aanmaken verschijnt, toont:
+
+- **Client ID** — eindigt op `.apps.googleusercontent.com` → wordt `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → wordt `DIGNA_OIDC_CLIENT_SECRET`
+
+Anders dan bij de meeste andere providers blijven beide later op te vragen via de detailpagina van de credential.
+
+---
+
+## Stap 4: De discovery-URL
+
+Google gebruikt één discovery-URL voor alle klanten — er hoeft niets te worden ingevuld:
 
 ```
 https://accounts.google.com/.well-known/openid-configuration
@@ -76,7 +76,7 @@ https://accounts.google.com/.well-known/openid-configuration
 
 ---
 
-## Step 5: Configure digna
+## Stap 5: Configureer digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -99,37 +99,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `google` here.
+De `key` moet in beide bestanden overeenkomen — hier `google`.
 
 ---
 
-## Step 6: Test
+## Stap 6: Test
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Herstart de backend en de webserver, en open daarna het dashboard. Zie [Inloggen testen](overview.md#testing-login) voor de volledige checklist.
 
 ---
 
-## Troubleshooting Google Workspace
+## Problemen oplossen met Google Workspace
 
 ### Error 400: redirect_uri_mismatch
 
-The URI in `DIGNA_OIDC_REDIRECT_URI` is not in the **Authorized redirect URIs** list, or differs by a trailing slash or scheme. Google's error page shows the URI it received — compare it character for character with the registered one.
+De URI in `DIGNA_OIDC_REDIRECT_URI` staat niet in de lijst **Authorized redirect URIs**, of wijkt af door een afsluitende slash of het schema. De foutpagina van Google toont de ontvangen URI — vergelijk die teken voor teken met de geregistreerde.
 
-### This App Is Blocked / Has Not Completed Verification
+### Deze app is geblokkeerd / heeft de verificatie niet voltooid
 
-The consent screen is **External** and still in *Testing*. Publish it, or switch the app to **Internal**.
+Het toestemmingsscherm is **External** en staat nog op *Testing*. Publiceer het, of zet de app op **Internal**.
 
 ### Access Blocked: Authorization Error
 
-The account attempting to log in is outside your Workspace domain while the consent screen is **Internal**. This is the intended behaviour — Internal apps accept only accounts in the organization.
+Het account dat probeert in te loggen valt buiten je Workspace-domein, terwijl het toestemmingsscherm **Internal** is. Dit is het bedoelde gedrag — Internal-apps accepteren alleen accounts binnen de organisatie.
 
-### Changes Take Several Minutes
+### Wijzigingen duren enkele minuten
 
-Google propagates credential and consent-screen changes asynchronously. A newly added redirect URI can take a few minutes to take effect; if a change looks ignored, wait and retry before investigating further.
+Google verwerkt wijzigingen aan credentials en het toestemmingsscherm asynchroon. Een nieuw toegevoegde redirect URI kan een paar minuten nodig hebben om actief te worden; als een wijziging genegeerd lijkt, wacht dan even en probeer het opnieuw voordat je verder zoekt.
 
 ---
 
-## See Also
+## Zie ook
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Overzicht Single Sign-On](overview.md) — configuratiereferentie, testen en algemene probleemoplossing
 - [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)

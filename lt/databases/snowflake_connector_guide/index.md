@@ -1,84 +1,84 @@
-# Source Connector for Snowflake
+# Snowflake šaltinio jungtis
 
-This guide describes how to configure *digna* to connect to Snowflake over **ODBC**, using a
-**DSN-less** connection string.
+Šiame vadove aprašyta, kaip sukonfigūruoti *digna* prisijungimą prie Snowflake per **ODBC**,
+naudojant ryšio eilutę **be DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Snowflake.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **Snowflake ODBC Driver** on the machine that runs the *digna* backend, following
-[Snowflake's installation guide](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
-
-The driver registers itself as **SnowflakeDSIIDriver**. Read the exact registered name off your
-host as described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna* pusės nustatymas yra vienodas visoms technologijoms — kur kuriami ryšiai, kaip
+šifruojamos savybių reikšmės, kaip testuojamas ryšys ir ką reiškia profiliavimo režimai. Tai
+aprašyta [Duomenų bazių ryšių apžvalgoje](overview.md). Šiame puslapyje aprašoma tai, kas būdinga
+Snowflake.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Įdiekite ODBC tvarkyklę {: #1-install-the-odbc-driver }
 
-Snowflake is reached with a **programmatic access token (PAT)** — the authentication path
-*digna* is verified against, and the one Snowflake requires for accounts on which
-password-only sign-in is blocked.
+Įdiekite **Snowflake ODBC Driver** kompiuteryje, kuriame veikia *digna* backend, laikydamiesi
+[Snowflake diegimo vadovo](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
 
-!!! important "An example, not a specification"
+Tvarkyklė užsiregistruoja kaip **SnowflakeDSIIDriver**. Nuskaitykite tikslų užregistruotą
+pavadinimą savo serveryje, kaip aprašyta skyriuje [ODBC tvarkyklės diegimas digna serveryje](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Snowflake ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and which authentication options your account permits is decided by
-    the account's security policy. Use this as a starting point and check the documentation of
-    the driver version you installed.
+---
 
-| Key | Example value | Notes |
+## 2. ODBC savybės {: #2-odbc-properties }
+
+Prie Snowflake jungiamasi naudojant **programinės prieigos žetoną (PAT, programmatic access
+token)** — tai autentifikacijos būdas, su kuriuo *digna* patikrinta, ir būdas, kurio Snowflake
+reikalauja paskyrose, kuriose prisijungimas vien slaptažodžiu užblokuotas.
+
+!!! important "Pavyzdys, o ne specifikacija"
+
+    Toliau pateiktas rinkinys yra vienas žinomai veikiantis derinys. Savybės priklauso
+    Snowflake ODBC tvarkyklei, todėl jų pavadinimai, numatytosios reikšmės ir priimamos reikšmės
+    skiriasi tarp tvarkyklės versijų ir platformų, o tai, kokias autentifikacijos parinktis
+    leidžia jūsų paskyra, nulemia paskyros saugumo politika. Naudokite tai kaip atspirties tašką
+    ir patikrinkite įdiegtos tvarkyklės versijos dokumentaciją.
+
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Driver` | `{SnowflakeDSIIDriver}` | Must match the driver name registered on the *digna* host |
-| `Server` | `<account>.snowflakecomputing.com` | Account identifier plus the suffix, e.g. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
-| `UID` | `digna` | Snowflake user the token belongs to |
-| `Database` | `TEST` | Database that holds the source schemas. It is the only database this connection can profile |
-| `Schema` | `PUBLIC` | Default schema of the session |
-| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Selects token authentication |
-| `token` | `<programmatic access token>` | Tick **Encrypted** |
+| `Driver` | `{SnowflakeDSIIDriver}` | Turi sutapti su tvarkyklės pavadinimu, užregistruotu *digna* serveryje |
+| `Server` | `<account>.snowflakecomputing.com` | Paskyros identifikatorius ir priesaga, pvz. `rx42698.switzerland-north.azure.snowflakecomputing.com` |
+| `UID` | `digna` | Snowflake vartotojas, kuriam priklauso žetonas |
+| `Database` | `TEST` | Duomenų bazė, kurioje yra šaltinio schemos. Tai vienintelė duomenų bazė, kurią šis ryšys gali profiliuoti |
+| `Schema` | `PUBLIC` | Numatytoji seanso schema |
+| `authenticator` | `PROGRAMMATIC_ACCESS_TOKEN` | Pasirenka autentifikaciją žetonu |
+| `token` | `<programmatic access token>` | Pažymėkite **Encrypted** |
 
-The resulting connection string looks like this:
+Gauta ryšio eilutė atrodo taip:
 
 ```
 Driver={SnowflakeDSIIDriver};Server=<account>.snowflakecomputing.com;UID=digna;Database=TEST;Schema=PUBLIC;authenticator=PROGRAMMATIC_ACCESS_TOKEN;token=<programmatic access token>
 ```
 
-### Warehouse and role
+### Warehouse ir rolė
 
-Queries need a warehouse. If the *digna* user has a default warehouse and a default role, the
-session picks them up and nothing has to be configured. Otherwise add:
+Užklausoms reikia warehouse. Jei *digna* vartotojas turi numatytąjį warehouse ir numatytąją rolę,
+seansas juos perima, ir nieko konfigūruoti nereikia. Priešingu atveju pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `Warehouse` | `DIGNA_WH` | Warehouse that runs the profiling queries |
-| `Role` | `DIGNA_READER` | Role whose grants the session uses |
+| `Warehouse` | `DIGNA_WH` | Warehouse, kuriame vykdomos profiliavimo užklausos |
+| `Role` | `DIGNA_READER` | Rolė, kurios teises naudoja seansas |
 
-!!! tip "Give digna its own warehouse"
+!!! tip "Skirkite digna atskirą warehouse"
 
-    A separate, small, auto-suspending warehouse keeps profiling cost visible and prevents
-    *digna* from competing with interactive users for compute.
+    Atskiras, mažas, automatiškai sustabdomas warehouse leidžia matyti profiliavimo kainą ir
+    neleidžia *digna* konkuruoti dėl skaičiavimo išteklių su interaktyviais vartotojais.
 
-### Password authentication
+### Autentifikacija slaptažodžiu
 
-Where the account still allows it, a password works in place of the token — drop `authenticator`
-and `token` and add:
+Kai paskyra tai dar leidžia, vietoje žetono galima naudoti slaptažodį — pašalinkite
+`authenticator` ir `token` ir pridėkite:
 
-| Key | Example value | Notes |
+| Raktas | Pavyzdinė reikšmė | Pastabos |
 |---|---|---|
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `PWD` | `<password>` | Pažymėkite **Encrypted** |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* konfigūracija {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Ekrane **Add DB Connection** nurodykite:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -89,40 +89,41 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "P
 
 ---
 
-## 4. Notes on Snowflake {: #4-notes-on-snowflake }
+## 4. Pastabos apie Snowflake {: #4-notes-on-snowflake }
 
-- **Tokens expire.** A programmatic access token is issued with a lifetime, and profiling stops
-  the day it lapses. Note the expiry date when you create it, and re-enter the new token in the
-  `token` property — encrypted values can be replaced but not read back.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `Database`, because Snowflake reports only the current database as a catalog. Source tables in
-  another database need their own connection.
-- **Identifiers are upper case** unless they were created quoted. *digna* uses the names as
-  Snowflake reports them.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the role needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only — and no write grants at all.
+- **Žetonų galiojimas baigiasi.** Programinės prieigos žetonas išduodamas su galiojimo trukme, ir
+  profiliavimas sustoja tą dieną, kai jis nustoja galioti. Kurdami žetoną užsirašykite galiojimo
+  pabaigos datą ir įveskite naują žetoną savybėje `token` — užšifruotas reikšmes galima pakeisti,
+  bet ne perskaityti atgal.
+- **Vienas ryšys mato vieną duomenų bazę.** *digna* siūlo `Database` nurodytos duomenų bazės
+  schemas, nes Snowflake kaip katalogą praneša tik dabartinę duomenų bazę. Šaltinio lentelėms
+  kitoje duomenų bazėje reikia atskiro ryšio.
+- **Identifikatoriai rašomi didžiosiomis raidėmis**, nebent jie buvo sukurti kabutėse. *digna*
+  naudoja pavadinimus taip, kaip juos praneša Snowflake.
+- **Profiliavimo režimai.** *Permanent* kuria darbines lenteles schemoje **Work Schema**, todėl
+  rolei ten reikia teisės `CREATE TABLE`. *Session* naudoja `CREATE TEMPORARY TABLE` ir
+  **Work Schema** neliečia. *Standard* reikia tik skaitymo prieigos — ir jokių rašymo teisių.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Tvarkyklės patikrinimas (neprivaloma) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the account URL and your
-credentials work before you enter them in *digna*.
+Ryšiui be DSN ODBC duomenų šaltinio konfigūruoti nereikia, tačiau pačios tvarkyklės dialogo
+langas yra patogus būdas patvirtinti, kad tvarkyklė, paskyros URL ir jūsų prisijungimo duomenys
+veikia, prieš įvedant juos į *digna*.
 
-#### Step 1
-![Step 1](images/snowflake/create_odbc_data_source_step1.png)
+#### 1 žingsnis
+![1 žingsnis](images/snowflake/create_odbc_data_source_step1.png)
 
-Notes:
+Pastabos:
 
-- The value for **Server** consists of your Snowflake account identifier followed by
+- Lauko **Server** reikšmę sudaro jūsų Snowflake paskyros identifikatorius, po kurio eina
   `.snowflakecomputing.com`.
-- **Database**, **Schema** and **Warehouse** entered here correspond to the `Database`,
-  `Schema` and `Warehouse` properties in [section 2](#2-odbc-properties).
+- Čia įvesti **Database**, **Schema** ir **Warehouse** atitinka savybes `Database`,
+  `Schema` ir `Warehouse` iš [2 skyriaus](#2-odbc-properties).
 
-#### Step 2 – Test the connection
+#### 2 žingsnis – Išbandykite ryšį
 
-Click the **TEST** button. A successful connection should look like this:
+Spustelėkite mygtuką **TEST**. Sėkmingas ryšys turėtų atrodyti taip:
 
-![Step 2](images/snowflake/create_odbc_data_source_step2.png)
+![2 žingsnis](images/snowflake/create_odbc_data_source_step2.png)

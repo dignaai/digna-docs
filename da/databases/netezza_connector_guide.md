@@ -1,61 +1,62 @@
-# Source Connector for Netezza
+# Kildeconnector til Netezza
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Denne vejledning beskriver, hvordan du konfigurerer *digna* til at oprette forbindelse til
+Netezza over **ODBC** med en **DSN-løs** forbindelsesstreng.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+*digna*-delen af opsætningen er den samme for alle teknologier — hvor forbindelser oprettes,
+hvordan egenskabsværdier krypteres, hvordan en forbindelse testes, og hvad profileringstilstandene
+betyder. Den er beskrevet i [Oversigt over databaseforbindelser](overview.md). Denne side dækker
+det, der er specifikt for Netezza.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Installer ODBC-driveren {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Installer **NetezzaSQL**-ODBC-driveren (en del af IBM Netezza-klientværktøjerne) på den maskine,
+der kører *digna*-backend, efter leverandørens officielle installationsvejledning.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Aflæs det nøjagtige registrerede drivernavn på din vært som beskrevet i
+[Installer ODBC-driveren på digna-værten](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC-egenskaber {: #2-odbc-properties }
+
+!!! important "Et eksempel, ikke en specifikation"
+
+    Sættet nedenfor er én kombination, der vides at virke. Egenskaberne tilhører
+    NetezzaSQL-driveren, så deres navne, standardværdier og accepterede værdier varierer mellem
+    klientversioner og platforme, og en TLS-sikret appliance kræver mere end de egenskaber, der
+    vises her. Brug dette som udgangspunkt, og tjek dokumentationen for den klientversion, du
+    har installeret.
+
+Tilføj følgende egenskaber på skærmen **Add DB Connection**:
+
+| Nøgle | Eksempelværdi | Bemærkninger |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | Skal matche det drivernavn, der er registreret på *digna*-værten. De krøllede parenteser er den sædvanlige måde at skrive dette navn på |
+| `SERVER` | `netezza.example.com` | Servernavn eller IP-adresse |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Databasen, som sessionen starter i |
+| `UID` | `ADMIN` | Databasebruger |
+| `PWD` | `<password>` | Sæt flueben i **Encrypted** |
 
-The resulting connection string looks like this:
+Den resulterende forbindelsesstreng ser sådan ud:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Afhængigt af din driverversion, opsætning og dine sikkerhedskrav kan der være brug for flere
+egenskaber — for eksempel `SecurityLevel` og `CaCertFile` for en TLS-sikret appliance. Alle
+indstillinger, som driverens dialoger *Advanced*, *SSL* og *Driver* tilbyder, kan tilføjes som
+en egenskab.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna*-konfiguration {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Angiv følgende på skærmen **Add DB Connection**:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -66,37 +67,37 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Bemærkninger om Netezza {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Både kataloger og skemaer gælder.** *digna* viser de databaser, brugeren må se (fra
+  `_V_DATABASE`), som kataloger og deres skemaer (fra `_V_SCHEMA`) under dem, så én forbindelse
+  kan betjene kilder i mere end én database. `DATABASE` afgør kun, hvor sessionen starter.
+- **Identifikatorer skrives med store bogstaver**, medmindre de er oprettet i anførselstegn,
+  hvilket er grunden til, at eksemplerne ovenfor bruger `TEST` og `ADMIN`.
+- **Profileringstilstande.** *Permanent* opretter arbejdstabellerne i **Work Schema**, så
+  brugeren skal have `CREATE TABLE` der. *Session* bruger `CREATE TEMPORARY TABLE` og rører ikke
+  **Work Schema**. *Standard* kræver kun læseadgang.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Verificering af driveren (valgfrit) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Det er ikke nødvendigt at konfigurere en ODBC-datakilde for en DSN-løs forbindelse, men
+driverens egen dialog er en bekvem måde at bekræfte, at driveren og dine
+legitimationsoplysninger virker, før du indtaster dem i *digna*.
 
-#### Step 1
-![Step 1](images/netezza/create_odbc_data_source_step1.png)
+#### Trin 1
+![Trin 1](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+Felterne i **DSN Options** svarer én til én til egenskaberne i
+[afsnit 2](#2-odbc-properties). Afhængigt af din Netezza-driver, opsætning og dine
+sikkerhedskrav kan du også få brug for at udfylde fanerne **Advanced DSN Options**,
+**SSL DSN Options** eller **Driver Options**; til den enkleste opsætning er **DSN Options**
+tilstrækkelig.
 
-Click the **Test Connection** button.
+Klik på knappen **Test Connection**.
 
-#### Step 2
-![Step 2](images/netezza/create_odbc_data_source_step2.png)
+#### Trin 2
+![Trin 2](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Når du får bekræftelsesskærmen, virker driveren, og værdierne er korrekte.

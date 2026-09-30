@@ -1,88 +1,88 @@
-# Single Sign-On Overview
+# Overzicht Single Sign-On
 
 ---
 
-## Table of Contents
+## Inhoudsopgave
 
-1. [Introduction and Overview](#introduction-and-overview)
-2. [Provider Guides](#provider-guides)
-3. [Configuration Steps](#configuration-steps)
-4. [Dashboard Configuration](#dashboard-configuration)
-5. [Backend Configuration](#backend-configuration)
-6. [Testing Login](#testing-login)
-7. [Troubleshooting](#troubleshooting)
-8. [Supported Providers](#supported-providers)
-
----
-
-## Introduction and Overview {: #introduction-and-overview }
-
-This guide provides step-by-step instructions for integrating Single Sign-On (SSO) with the digna platform using **OpenID Connect (OIDC)**.
-
-### What is SSO?
-
-Single Sign-On allows users to log in to digna securely using their enterprise credentials through external identity providers. Users can authenticate with their corporate credentials instead of managing separate digna passwords.
-
-### How It Works
-
-SSO in digna is implemented using the OIDC protocol. Multiple identity providers can be configured in parallel by adjusting two key configuration files:
-
-- **`dashboard_config.toml`** — Controls the frontend login interface
-- **`config.toml`** — Configures the backend OIDC connections
-
-### Supported Providers {: #supported-providers-overview }
-
-Examples in this guide use **Microsoft** and **Google**, but **any OIDC-compliant provider** can be integrated following the same structure.
+1. [Introductie en overzicht](#introduction-and-overview)
+2. [Gidsen per provider](#provider-guides)
+3. [Configuratiestappen](#configuration-steps)
+4. [Dashboardconfiguratie](#dashboard-configuration)
+5. [Backendconfiguratie](#backend-configuration)
+6. [Inloggen testen](#testing-login)
+7. [Problemen oplossen](#troubleshooting)
+8. [Ondersteunde providers](#supported-providers)
 
 ---
 
-## Provider Guides {: #provider-guides }
+## Introductie en overzicht {: #introduction-and-overview }
 
-Every provider needs the same four values — a client ID, a client secret, a redirect URI and a discovery URL — but each one puts them in a different place in its admin console, and several have a provider-specific step that the others do not. The guides below cover that half of the work; this page covers the digna half, which is identical for all of them.
+Deze gids geeft stapsgewijze instructies voor het integreren van Single Sign-On (SSO) met het digna-platform via **OpenID Connect (OIDC)**.
 
-| Provider | Guide | Worth knowing |
+### Wat is SSO?
+
+Met Single Sign-On kunnen gebruikers veilig inloggen bij digna met hun zakelijke inloggegevens via externe identiteitsproviders. Gebruikers authenticeren zich met hun bedrijfsaccount in plaats van aparte digna-wachtwoorden te beheren.
+
+### Hoe het werkt
+
+SSO in digna is geïmplementeerd met het OIDC-protocol. Meerdere identiteitsproviders kunnen parallel worden geconfigureerd door twee belangrijke configuratiebestanden aan te passen:
+
+- **`dashboard_config.toml`** — bepaalt de inloginterface van de frontend
+- **`config.toml`** — configureert de OIDC-verbindingen van de backend
+
+### Ondersteunde providers {: #supported-providers-overview }
+
+De voorbeelden in deze gids gebruiken **Microsoft** en **Google**, maar **elke OIDC-conforme provider** kan volgens dezelfde structuur worden geïntegreerd.
+
+---
+
+## Gidsen per provider {: #provider-guides }
+
+Elke provider heeft dezelfde vier waarden nodig — een client ID, een client secret, een redirect URI en een discovery-URL — maar elke provider zet ze op een andere plek in zijn beheerconsole, en een aantal heeft een providerspecifieke stap die de andere niet hebben. De onderstaande gidsen behandelen die helft van het werk; deze pagina behandelt de digna-helft, die voor alle providers identiek is.
+
+| Provider | Gids | Goed om te weten |
 |---|---|---|
-| **AD FS** | [Set up SSO with AD FS](adfs_sso_guide.md) | Self-hosted; the only provider here where you control the token service |
-| **Auth0** | [Set up SSO with Auth0](auth0_sso_guide.md) | Discovery URL is per-tenant, and custom domains change it |
-| **Google Workspace** | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) | Consent screen must be published before non-test users can log in |
-| **Keycloak** | [Set up SSO with Keycloak](keycloak_sso_guide.md) | Self-hosted; discovery URL is per-realm |
-| **Microsoft Entra ID** | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | Tenant ID appears in the discovery URL; secrets expire |
-| **Okta** | [Set up SSO with Okta](okta_sso_guide.md) | Authorization server choice changes the discovery URL |
-| **OneLogin** | [Set up SSO with OneLogin](onelogin_sso_guide.md) | The OIDC app type must be chosen at creation and cannot be changed |
-| **PingOne** | [Set up SSO with PingOne](pingone_sso_guide.md) | Environment ID appears in the discovery URL |
+| **AD FS** | [SSO instellen met AD FS](adfs_sso_guide.md) | Zelfgehost; de enige provider hier waarbij je zelf de tokenservice beheert |
+| **Auth0** | [SSO instellen met Auth0](auth0_sso_guide.md) | De discovery-URL is per tenant, en custom domains veranderen hem |
+| **Google Workspace** | [SSO instellen met Google Workspace](google_workspace_sso_guide.md) | Het toestemmingsscherm moet gepubliceerd zijn voordat niet-testgebruikers kunnen inloggen |
+| **Keycloak** | [SSO instellen met Keycloak](keycloak_sso_guide.md) | Zelfgehost; de discovery-URL is per realm |
+| **Microsoft Entra ID** | [SSO instellen met Microsoft Entra ID](microsoft_entra_id_sso_guide.md) | De tenant-ID staat in de discovery-URL; secrets verlopen |
+| **Okta** | [SSO instellen met Okta](okta_sso_guide.md) | De keuze van de authorization server verandert de discovery-URL |
+| **OneLogin** | [SSO instellen met OneLogin](onelogin_sso_guide.md) | Het type OIDC-app moet bij het aanmaken worden gekozen en kan niet worden gewijzigd |
+| **PingOne** | [SSO instellen met PingOne](pingone_sso_guide.md) | De environment-ID staat in de discovery-URL |
 
-Any other OIDC-compliant provider works the same way — see [Other OIDC Providers](#supported-providers).
+Elke andere OIDC-conforme provider werkt op dezelfde manier — zie [Andere OIDC-providers](#supported-providers).
 
 ---
 
-## Configuration Steps {: #configuration-steps }
+## Configuratiestappen {: #configuration-steps }
 
-SSO configuration requires updates to two files. This section explains how to configure each one.
+Voor de SSO-configuratie moeten twee bestanden worden bijgewerkt. Dit gedeelte legt uit hoe je elk bestand configureert.
 
-### Overview of Configuration Files
+### Overzicht van de configuratiebestanden
 
-| File | Location | Purpose |
+| Bestand | Locatie | Doel |
 |---|---|---|
-| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Frontend login interface |
-| **config.toml** | `/config.toml` | Backend OIDC connections |
+| **dashboard_config.toml** | `dashboard/dashboard_config.toml` | Inloginterface van de frontend |
+| **config.toml** | `/config.toml` | OIDC-verbindingen van de backend |
 
-Both files must be configured for SSO to work properly.
+Beide bestanden moeten geconfigureerd zijn om SSO correct te laten werken.
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboardconfiguratie {: #dashboard-configuration }
 
-### File Location
+### Bestandslocatie
 
 ```
 dashboard/dashboard_config.toml
 ```
 
-### Step 1: Add OIDC Providers
+### Stap 1: OIDC-providers toevoegen
 
-Add entries under the `[[login.oidc]]` array for each identity provider you want to support.
+Voeg onder de array `[[login.oidc]]` een item toe voor elke identiteitsprovider die je wilt ondersteunen.
 
-**Example with Microsoft and Google:**
+**Voorbeeld met Microsoft en Google:**
 
 ```toml
 [[login.oidc]]
@@ -94,48 +94,48 @@ key = "google"
 label = "Login with Google"
 ```
 
-### Step 2: Configure Login Options
+### Stap 2: Inlogopties configureren
 
-Specify whether password-based login should be allowed:
+Geef aan of inloggen met een wachtwoord is toegestaan:
 
 ```toml
 [login]
 usePassword = true
 ```
 
-### Configuration Parameters
+### Configuratieparameters
 
-#### `[[login.oidc]]` Section
+#### Sectie `[[login.oidc]]`
 
-| Parameter | Type | Required | Description |
+| Parameter | Type | Verplicht | Beschrijving |
 |---|---|---|---|
-| `key` | string | Yes | Unique identifier for the OIDC connection (must match key in config.toml) |
-| `label` | string | Yes | Text displayed on the login button (e.g., "Login with Microsoft") |
+| `key` | string | Ja | Unieke identificatie van de OIDC-verbinding (moet overeenkomen met de key in config.toml) |
+| `label` | string | Ja | Tekst op de inlogknop (bijv. "Login with Microsoft") |
 
-#### `[login]` Section
+#### Sectie `[login]`
 
-| Parameter | Type | Default | Description |
+| Parameter | Type | Standaard | Beschrijving |
 |---|---|---|---|
-| `usePassword` | boolean | false | Allow password-based login in addition to SSO |
+| `usePassword` | boolean | false | Inloggen met wachtwoord toestaan naast SSO |
 
-### Understanding usePassword
+### usePassword begrijpen
 
-**If `usePassword = true`:**
-- Login screen shows SSO buttons (e.g., "Login with Microsoft")
-- Login screen also shows username and password fields
-- Users can authenticate with either method
-- Allows hybrid setups where some users use SSO and others use passwords
+**Als `usePassword = true`:**
+- Het inlogscherm toont SSO-knoppen (bijv. "Login with Microsoft")
+- Het inlogscherm toont ook velden voor gebruikersnaam en wachtwoord
+- Gebruikers kunnen zich met beide methoden authenticeren
+- Maakt hybride opstellingen mogelijk waarin sommige gebruikers SSO gebruiken en andere een wachtwoord
 
-**If `usePassword = false` (or omitted):**
-- Login screen shows only SSO buttons
-- No username/password fields
-- Only OIDC authentication is available
+**Als `usePassword = false` (of weggelaten):**
+- Het inlogscherm toont alleen SSO-knoppen
+- Geen velden voor gebruikersnaam/wachtwoord
+- Alleen OIDC-authenticatie is beschikbaar
 
 !!! tip "Tip"
 
-    Password-based login is only available for users who were created with passwords using the `digna user add` command or via the dashboard.
+    Inloggen met een wachtwoord is alleen mogelijk voor gebruikers die met een wachtwoord zijn aangemaakt via het commando `digna user add` of via het dashboard.
 
-### Complete Example
+### Volledig voorbeeld
 
 ```toml
 [login]
@@ -156,21 +156,21 @@ label = "Login with Okta"
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backendconfiguratie {: #backend-configuration }
 
-### File Location
+### Bestandslocatie
 
 ```
 /config.toml
 ```
 
-(Root digna installation directory)
+(Hoofdmap van de digna-installatie)
 
-### Step 1: Add OIDC Provider Sections
+### Stap 1: OIDC-providersecties toevoegen
 
-Each provider must have a dedicated `[oidc_clients.<key>]` section. The key must match the `key` defined in `dashboard_config.toml`.
+Elke provider moet een eigen sectie `[oidc_clients.<key>]` hebben. De key moet overeenkomen met de `key` die in `dashboard_config.toml` is gedefinieerd.
 
-### Microsoft Configuration
+### Microsoft-configuratie
 
 ```toml
 [oidc_clients.microsoft]
@@ -180,7 +180,7 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration"
 ```
 
-### Google Configuration
+### Google-configuratie
 
 ```toml
 [oidc_clients.google]
@@ -190,32 +190,32 @@ DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-### Configuration Parameters
+### Configuratieparameters
 
-| Parameter | Type | Required | Description | Example |
+| Parameter | Type | Verplicht | Beschrijving | Voorbeeld |
 |---|---|---|---|---|
-| `DIGNA_OIDC_CLIENT_ID` | string | Yes | Client ID from identity provider | `abc123xyz789` |
-| `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | Client secret from identity provider | `secret_xyz789abc123` |
-| `DIGNA_OIDC_REDIRECT_URI` | string | Yes | Callback URL after authentication | `http://localhost:5173/oidc/callback` |
-| `DIGNA_OIDC_CONFIGURATION_URL` | string | Yes | OIDC configuration endpoint | `https://login.microsoftonline.com/...` |
+| `DIGNA_OIDC_CLIENT_ID` | string | Ja | Client ID van de identiteitsprovider | `abc123xyz789` |
+| `DIGNA_OIDC_CLIENT_SECRET` | string | Ja | Client secret van de identiteitsprovider | `secret_xyz789abc123` |
+| `DIGNA_OIDC_REDIRECT_URI` | string | Ja | Callback-URL na authenticatie | `http://localhost:5173/oidc/callback` |
+| `DIGNA_OIDC_CONFIGURATION_URL` | string | Ja | OIDC-configuratie-endpoint | `https://login.microsoftonline.com/...` |
 
-!!! warning "Important"
+!!! warning "Belangrijk"
 
-    Replace placeholder values (`<client_id>`, `<client_secret>`, `<tenant_id>`) with actual credentials from your identity provider's developer portal.
+    Vervang de placeholders (`<client_id>`, `<client_secret>`, `<tenant_id>`) door de echte gegevens uit het ontwikkelaarsportaal van je identiteitsprovider.
 
 ### Redirect URI
 
-The redirect URI must be the same in your identity provider configuration:
+De redirect URI moet identiek zijn aan die in de configuratie van je identiteitsprovider:
 
 ```
 http://localhost:5173/oidc/callback
 ```
 
-If digna is hosted at a different domain, update accordingly:
-- Local: `http://localhost:5173/oidc/callback`
-- Production: `https://digna.yourdomain.com/oidc/callback`
+Als digna op een ander domein wordt gehost, pas je dit overeenkomstig aan:
+- Lokaal: `http://localhost:5173/oidc/callback`
+- Productie: `https://digna.yourdomain.com/oidc/callback`
 
-### Complete Example
+### Volledig voorbeeld
 
 ```toml
 [oidc_clients.microsoft]
@@ -233,238 +233,238 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 ---
 
-## Testing Login {: #testing-login }
+## Inloggen testen {: #testing-login }
 
-After completing the configuration, verify that SSO is working correctly.
+Controleer na het afronden van de configuratie of SSO correct werkt.
 
-### Pre-Testing Checklist
+### Checklist vóór het testen
 
-Before testing, ensure:
+Zorg vóór het testen dat:
 
-- [ ] `dashboard_config.toml` has been updated with OIDC providers
-- [ ] `config.toml` has been updated with OIDC credentials
-- [ ] Both files have been saved
-- [ ] Credentials are correct (client ID, client secret)
-- [ ] Redirect URI matches your deployment URL
-- [ ] Identity provider application is configured with the redirect URI
+- [ ] `dashboard_config.toml` is bijgewerkt met de OIDC-providers
+- [ ] `config.toml` is bijgewerkt met de OIDC-gegevens
+- [ ] beide bestanden zijn opgeslagen
+- [ ] de gegevens kloppen (client ID, client secret)
+- [ ] de redirect URI overeenkomt met de URL van je deployment
+- [ ] de applicatie bij de identiteitsprovider is geconfigureerd met de redirect URI
 
-### Testing Steps
+### Teststappen
 
-#### Step 1: Restart Services
+#### Stap 1: Services herstarten
 
-Restart the digna backend and web server to apply changes.
+Herstart de digna-backend en de webserver om de wijzigingen toe te passen.
 
-**If running as a service on Windows:**
+**Als digna als service op Windows draait:**
 ```bash
 cd C:\path\to\digna
 digna windows stop
 digna windows start
 ```
 
-**If running as a service on Linux or macOS:**
+**Als digna als service op Linux of macOS draait:**
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 sudo ./start_service.sh
 ```
 
-**If running manually:**
+**Als digna handmatig wordt gestart:**
 ```bash
 digna serve --address localhost --port 8082
 ```
 
-**Restart the web server too** — IIS or Tomcat on Windows, nginx or Apache on Linux and macOS.
+**Herstart ook de webserver** — IIS of Tomcat op Windows, nginx of Apache op Linux en macOS.
 
-#### Step 2: Open Dashboard
+#### Stap 2: Dashboard openen
 
-Open the digna dashboard in your browser:
+Open het digna-dashboard in je browser:
 
 ```
 http://localhost:5173
 ```
 
-(or your configured dashboard URL)
+(of de URL van je geconfigureerde dashboard)
 
-#### Step 3: Verify Login Buttons
+#### Stap 3: Inlogknoppen controleren
 
-Check that login buttons appear for each configured provider:
+Controleer of er voor elke geconfigureerde provider een inlogknop verschijnt:
 
-- Should see "Login with Microsoft" button
-- Should see "Login with Google" button
-- (If usePassword = true) Should see username/password fields
+- De knop "Login with Microsoft" moet zichtbaar zijn
+- De knop "Login with Google" moet zichtbaar zijn
+- (Als usePassword = true) Velden voor gebruikersnaam/wachtwoord moeten zichtbaar zijn
 
-If buttons don't appear:
-- Check that `dashboard_config.toml` was saved
-- Check that dashboard service was restarted
-- Check browser console (F12) for errors
+Als de knoppen niet verschijnen:
+- Controleer of `dashboard_config.toml` is opgeslagen
+- Controleer of de dashboardservice is herstart
+- Controleer de browserconsole (F12) op fouten
 
-#### Step 4: Test SSO Login
+#### Stap 4: SSO-login testen
 
-Click one of the SSO buttons (e.g., "Login with Microsoft"):
+Klik op een van de SSO-knoppen (bijv. "Login with Microsoft"):
 
-1. You should be redirected to the identity provider's login page
-2. Log in with your enterprise credentials
-3. You should be redirected back to digna
-4. You should be logged in to digna
+1. Je wordt doorgestuurd naar de inlogpagina van de identiteitsprovider
+2. Log in met je zakelijke inloggegevens
+3. Je wordt teruggestuurd naar digna
+4. Je bent ingelogd bij digna
 
-#### Step 5: Verify User Creation
+#### Stap 5: Aanmaken van de gebruiker controleren
 
-After successful SSO login:
+Na een geslaagde SSO-login:
 
-- User should be automatically created in digna
-- User should be logged in
-- User profile should display your identity provider credentials
-- You should see the digna dashboard
+- De gebruiker wordt automatisch in digna aangemaakt
+- De gebruiker is ingelogd
+- Het gebruikersprofiel toont de gegevens van je identiteitsprovider
+- Je ziet het digna-dashboard
 
-#### Step 6: Test Password Login (If Enabled)
+#### Stap 6: Inloggen met wachtwoord testen (indien ingeschakeld)
 
-If `usePassword = true`:
+Als `usePassword = true`:
 
-1. Log out of digna
-2. On the login page, enter a username and password
-3. You should be able to log in with password credentials
-
----
-
-## Troubleshooting {: #troubleshooting }
-
-### Login Buttons Don't Appear
-
-**Symptoms:**
-- OIDC login buttons not visible on login page
-- Only see password fields (if usePassword = true)
-
-**Causes & Solutions:**
-1. Check `dashboard_config.toml` is in `dashboard/` directory
-2. Verify `[[login.oidc]]` sections are present with correct syntax
-3. Restart dashboard service
-4. Clear browser cache (Ctrl+Shift+Delete or Cmd+Shift+Delete)
-5. Check browser console (F12 → Console tab) for errors
+1. Log uit bij digna
+2. Voer op de inlogpagina een gebruikersnaam en wachtwoord in
+3. Je moet kunnen inloggen met je wachtwoordgegevens
 
 ---
 
-### Redirect URI Mismatch Error
+## Problemen oplossen {: #troubleshooting }
 
-**Symptoms:**
-- After clicking SSO button, error about "redirect_uri mismatch"
-- "The redirect URI is not registered" error
+### Inlogknoppen verschijnen niet
 
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_REDIRECT_URI` in `config.toml` is correct
-2. Verify redirect URI is registered in identity provider settings
-3. Ensure both use identical URLs (including protocol, domain, path)
-4. Check for typos in the redirect URI
-5. If using HTTPS, ensure certificate is valid
+**Symptomen:**
+- OIDC-inlogknoppen zijn niet zichtbaar op de inlogpagina
+- Alleen wachtwoordvelden zichtbaar (als usePassword = true)
 
----
-
-### Invalid Client Credentials Error
-
-**Symptoms:**
-- "Invalid client ID or secret" error
-- Authentication fails with credentials error
-
-**Causes & Solutions:**
-1. Verify `DIGNA_OIDC_CLIENT_ID` and `DIGNA_OIDC_CLIENT_SECRET` are correct
-2. Ensure no extra spaces or special characters
-3. Check credentials haven't expired or been revoked
-4. Restart backend service after updating config
-5. Check identity provider console to confirm credentials are active
+**Oorzaken en oplossingen:**
+1. Controleer of `dashboard_config.toml` in de map `dashboard/` staat
+2. Controleer of de secties `[[login.oidc]]` aanwezig zijn en de syntaxis klopt
+3. Herstart de dashboardservice
+4. Wis de browsercache (Ctrl+Shift+Delete of Cmd+Shift+Delete)
+5. Controleer de browserconsole (F12 → tabblad Console) op fouten
 
 ---
 
-### Login Hangs or Times Out
+### Fout: redirect URI komt niet overeen
 
-**Symptoms:**
-- Clicking SSO button does nothing
-- Timeout after several seconds
-- Browser shows "Failed to connect" or similar
+**Symptomen:**
+- Na een klik op de SSO-knop verschijnt een fout over "redirect_uri mismatch"
+- Foutmelding "The redirect URI is not registered"
 
-**Causes & Solutions:**
-1. Verify digna backend is running: `digna repo check`
-2. Check network connectivity to identity provider
-3. Verify `DIGNA_OIDC_CONFIGURATION_URL` is accessible
-4. Check firewall rules allow outbound HTTPS connections
-5. Verify backend and dashboard can reach each other
-
----
-
-### Users Not Automatically Created
-
-**Symptoms:**
-- SSO login succeeds but user not created in digna
-- Get permission error after SSO login
-
-**Causes & Solutions:**
-1. Verify OIDC configuration is correct
-2. Check user permissions are set up
-3. Review digna logs for error messages
-4. Restart backend service
-5. Contact support@digna.ai if issue persists
+**Oorzaken en oplossingen:**
+1. Controleer of `DIGNA_OIDC_REDIRECT_URI` in `config.toml` klopt
+2. Controleer of de redirect URI is geregistreerd in de instellingen van de identiteitsprovider
+3. Zorg dat beide exact dezelfde URL gebruiken (inclusief protocol, domein en pad)
+4. Controleer de redirect URI op typefouten
+5. Als je HTTPS gebruikt, zorg dan dat het certificaat geldig is
 
 ---
 
-## Supported Providers {: #supported-providers }
+### Fout: ongeldige clientgegevens
 
-### Tested & Supported
+**Symptomen:**
+- Foutmelding "Invalid client ID or secret"
+- Authenticatie mislukt met een fout over de inloggegevens
 
-The following OIDC providers have been tested and are known to work:
+**Oorzaken en oplossingen:**
+1. Controleer of `DIGNA_OIDC_CLIENT_ID` en `DIGNA_OIDC_CLIENT_SECRET` kloppen
+2. Zorg dat er geen extra spaties of speciale tekens in staan
+3. Controleer of de gegevens niet verlopen of ingetrokken zijn
+4. Herstart de backendservice na het bijwerken van de configuratie
+5. Controleer in de console van de identiteitsprovider of de gegevens actief zijn
 
-| Provider | Configuration URL | Setup Guide |
+---
+
+### Inloggen blijft hangen of loopt af op een time-out
+
+**Symptomen:**
+- Klikken op de SSO-knop doet niets
+- Time-out na enkele seconden
+- De browser toont "Failed to connect" of iets vergelijkbaars
+
+**Oorzaken en oplossingen:**
+1. Controleer of de digna-backend draait: `digna repo check`
+2. Controleer de netwerkverbinding met de identiteitsprovider
+3. Controleer of `DIGNA_OIDC_CONFIGURATION_URL` bereikbaar is
+4. Controleer of de firewallregels uitgaande HTTPS-verbindingen toestaan
+5. Controleer of backend en dashboard elkaar kunnen bereiken
+
+---
+
+### Gebruikers worden niet automatisch aangemaakt
+
+**Symptomen:**
+- SSO-login slaagt, maar de gebruiker wordt niet in digna aangemaakt
+- Een toegangsfout na de SSO-login
+
+**Oorzaken en oplossingen:**
+1. Controleer of de OIDC-configuratie klopt
+2. Controleer of de gebruikersrechten zijn ingesteld
+3. Bekijk de digna-logs op foutmeldingen
+4. Herstart de backendservice
+5. Neem contact op met support@digna.ai als het probleem aanhoudt
+
+---
+
+## Ondersteunde providers {: #supported-providers }
+
+### Getest en ondersteund
+
+De volgende OIDC-providers zijn getest en werken aantoonbaar:
+
+| Provider | Configuratie-URL | Installatiegids |
 |---|---|---|
-| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [Set up SSO with AD FS](adfs_sso_guide.md) |
-| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [Set up SSO with Auth0](auth0_sso_guide.md) |
-| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [Set up SSO with Google Workspace](google_workspace_sso_guide.md) |
-| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [Set up SSO with Keycloak](keycloak_sso_guide.md) |
-| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [Set up SSO with Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
-| **Okta** | `https://<domain>/.well-known/openid-configuration` | [Set up SSO with Okta](okta_sso_guide.md) |
-| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [Set up SSO with OneLogin](onelogin_sso_guide.md) |
-| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [Set up SSO with PingOne](pingone_sso_guide.md) |
+| **AD FS** | `https://<adfs_host>/adfs/.well-known/openid-configuration` | [SSO instellen met AD FS](adfs_sso_guide.md) |
+| **Auth0** | `https://<tenant>.<region>.auth0.com/.well-known/openid-configuration` | [SSO instellen met Auth0](auth0_sso_guide.md) |
+| **Google Workspace** | `https://accounts.google.com/.well-known/openid-configuration` | [SSO instellen met Google Workspace](google_workspace_sso_guide.md) |
+| **Keycloak** | `https://<host>/realms/<realm>/.well-known/openid-configuration` | [SSO instellen met Keycloak](keycloak_sso_guide.md) |
+| **Microsoft Entra ID (Azure AD)** | `https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration` | [SSO instellen met Microsoft Entra ID](microsoft_entra_id_sso_guide.md) |
+| **Okta** | `https://<domain>/.well-known/openid-configuration` | [SSO instellen met Okta](okta_sso_guide.md) |
+| **OneLogin** | `https://<subdomain>.onelogin.com/oidc/2/.well-known/openid-configuration` | [SSO instellen met OneLogin](onelogin_sso_guide.md) |
+| **PingOne** | `https://auth.pingone.com/<environment_id>/as/.well-known/openid-configuration` | [SSO instellen met PingOne](pingone_sso_guide.md) |
 
-### Other OIDC Providers
+### Andere OIDC-providers
 
-Any provider that supports OpenID Connect can be integrated. Required information:
+Elke provider die OpenID Connect ondersteunt, kan worden geïntegreerd. Benodigde gegevens:
 
 - Client ID
 - Client secret
-- OpenID configuration URL (usually at `/.well-known/openid-configuration`)
-- Supported scopes (typically `openid profile email`)
+- OpenID-configuratie-URL (meestal op `/.well-known/openid-configuration`)
+- Ondersteunde scopes (meestal `openid profile email`)
 
-Contact support@digna.ai if you need help integrating a specific provider.
-
----
-
-## Best Practices
-
-**DO:**
-- Use HTTPS in production (not HTTP)
-- Store client secrets securely (use environment variables if possible)
-- Rotate secrets periodically
-- Test in a non-production environment first
-- Document which providers are configured
-- Monitor login logs for unusual activity
-- Keep identity provider configuration in sync with digna config
-
-**DON'T:**
-- Store client secrets in version control
-- Use HTTP redirect URIs in production
-- Configure multiple providers with the same key
-- Leave default/test credentials in production
-- Expose config files containing secrets
-- Mix development and production credentials
+Neem contact op met support@digna.ai als je hulp nodig hebt bij het integreren van een specifieke provider.
 
 ---
 
-## Support
+## Best practices
 
-Need help with SSO configuration?
+**WEL:**
+- Gebruik HTTPS in productie (geen HTTP)
+- Bewaar client secrets veilig (gebruik indien mogelijk omgevingsvariabelen)
+- Vernieuw secrets regelmatig
+- Test eerst in een niet-productieomgeving
+- Documenteer welke providers geconfigureerd zijn
+- Houd de inloglogs in de gaten op ongebruikelijke activiteit
+- Houd de configuratie van de identiteitsprovider in sync met de digna-configuratie
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
+**NIET:**
+- Client secrets in versiebeheer opslaan
+- HTTP-redirect-URI's in productie gebruiken
+- Meerdere providers met dezelfde key configureren
+- Standaard- of testgegevens in productie laten staan
+- Configuratiebestanden met secrets openbaar maken
+- Ontwikkel- en productiegegevens door elkaar gebruiken
+
+---
+
+## Ondersteuning
+
+Hulp nodig bij de SSO-configuratie?
+
+- **E-mail:** support@digna.ai
+- **Documentatie:** https://docs.digna.ai
 - **Website:** https://www.digna.ai
 
 ---
 
-**Last Updated:** August 30, 2026  
+**Laatst bijgewerkt:** 30 augustus 2026  
 **Release:** 2026.04  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

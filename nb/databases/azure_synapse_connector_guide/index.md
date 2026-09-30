@@ -1,92 +1,92 @@
-# Source Connector for Azure Synapse Analytics
+# Kildeconnector for Azure Synapse Analytics
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Denne veiledningen beskriver hvordan du konfigurerer *digna* til å koble til Azure Synapse Analytics over
+**ODBC**, med en **DSN-løs** tilkoblingsstreng. Både serverless og dedikerte SQL-pooler
+støttes.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+*digna*-siden av oppsettet er den samme for alle teknologier — hvor tilkoblinger opprettes,
+hvordan egenskapsverdier krypteres, hvordan en tilkobling testes og hva profileringsmodusene
+betyr. Den er beskrevet i [Oversikt over databasetilkoblinger](overview.md). Denne siden dekker det
+som er spesifikt for Azure Synapse.
 
-!!! note "Technology"
+!!! note "Teknologi"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Synapse bruker SQL Server-dialekten, så tilkoblingen opprettes med **Technology:
+    SQL Server**. Se [MS SQL Server](sqlserver_connector_guide.md) for en lokal server (on-premises).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Installer ODBC-driveren {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Installer **ODBC Driver 18 for SQL Server** på maskinen som kjører *digna*-backend,
+i henhold til [Microsofts installasjonsveiledning](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
+og les av det nøyaktige registrerte drivernavnet på verten din som beskrevet i
+[Installer ODBC-driveren på digna-verten](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. ODBC-egenskaper {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Et eksempel, ikke en spesifikasjon"
+
+    Settet nedenfor er én kombinasjon som er kjent for å fungere. Egenskapene tilhører
+    Microsofts ODBC-driver, så navnene, standardverdiene og de godtatte verdiene varierer mellom
+    driverversjoner og plattformer, og hva arbeidsområdet krever, avhenger av hvordan det er konfigurert —
+    pooltype, autentiseringsmetode, brannmur. Bruk dette som et utgangspunkt og sjekk
+    dokumentasjonen for driverversjonen du har installert.
+
+Legg til følgende egenskaper i skjermbildet **Add DB Connection**:
+
+| Key | Eksempelverdi | Merknader |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Må samsvare med drivernavnet som er registrert på *digna*-verten |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Navnet på arbeidsområdet pluss endepunktsuffikset — se nedenfor |
+| `DATABASE` | `dignadata` | Databasen som inneholder kildeskjemaene. Det er den eneste databasen denne tilkoblingen kan profilere |
+| `UID` | `sqladminuser` | SQL-pålogging |
+| `PWD` | `<password>` | Kryss av for **Encrypted** |
 
-The resulting connection string looks like this:
+Den resulterende tilkoblingsstrengen ser slik ut:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### Verdien for `SERVER`
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Ta navnet på Synapse-arbeidsområdet og legg til endepunktsuffikset:
 
 | Pool | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "Delen `-ondemand` er lett å overse"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Uten den peker navnet på det dedikerte endepunktet, og tilkoblingen feiler enten eller
+    når i stillhet en annen pool enn tiltenkt. Begge endepunktene vises på oversiktssiden
+    for arbeidsområdet i Azure-portalen.
 
-### Firewall
+### Brannmur
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Brannmuren for Synapse-arbeidsområdet må tillate den utgående adressen til *digna*-verten. Legg den til
+under **Networking** i arbeidsområdet før du tester tilkoblingen — en blokkert adresse viser seg
+som et tidsavbrudd for tilkoblingen, ikke som en autentiseringsfeil.
 
-### Microsoft Entra ID authentication
+### Microsoft Entra ID-autentisering
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+I stedet for en SQL-pålogging kan driveren autentisere mot Entra ID. Erstatt `UID`/`PWD` med
+autentiseringsmetoden arbeidsområdet ditt forventer, for eksempel:
 
-| Key | Example value | Notes |
+| Key | Eksempelverdi | Merknader |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` tar da applikasjons-ID-en (klient-ID) og `PWD` client secret |
+| `Authentication` | `ActiveDirectoryMSI` | Administrert identitet (managed identity) for *digna*-verten, ingen legitimasjon nødvendig |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna*-konfigurasjon {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+I skjermbildet **Add DB Connection** oppgir du følgende:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -98,63 +98,63 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Merknader om Azure Synapse {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **Serverless pooler støtter bare *Standard*-profilering.** En serverless SQL pool kan ikke opprette
+  tabeller i en database, så verken *Permanent*- eller *Session*-profilering kan kjøres. *Standard*
+  beregner metrikkene direkte på kilden, noe som også er det billigste alternativet, siden
+  serverless faktureres per mengde behandlede data.
+- **Én tilkobling ser én database.** *digna* tilbyr skjemaene i databasen som er angitt i
+  `DATABASE`, fordi Synapse, i likhet med SQL Server, bare rapporterer den gjeldende databasen som en katalog.
+- **Kryptering er slått på som standard** i Driver 18, og Synapse-endepunkter presenterer gyldige offentlige
+  sertifikater, så ingen `Encrypt`- eller `TrustServerCertificate`-egenskap er nødvendig.
+- **Et serverless-endepunkt kan våkne fra inaktiv tilstand** ved første tilkobling. Hvis tilkoblingstesten
+  får tidsavbrudd mot en pool som ikke har vært brukt på en stund, prøv igjen.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Verifisere driveren (valgfritt) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+Det er ikke nødvendig å konfigurere en ODBC-datakilde for en DSN-løs tilkobling, men driverens
+egen veiviser er en praktisk måte å bekrefte at driveren fungerer og at arbeidsområdet godtar
+legitimasjonen din, før du legger den inn i *digna*.
 
-#### Step 1
-![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
+#### Trinn 1
+![Trinn 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Fyll ut feltet "Server".
+Bruk navnet på Synapse-arbeidsområdet og legg til ".sql.azuresynapse.net".  
+**Obs:** Hvis du vil koble til via en serverless SQL pool, må du passe på å ta med
+"-ondemand" som vist i skjermbildet ovenfor.
 
-Click the **Next >** button.
+Klikk på knappen **Next >**.
 
-#### Step 2
-![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
+#### Trinn 2
+![Trinn 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Velg autentiseringsmetode (f.eks. brukernavn og passord)
+og oppgi de nødvendige opplysningene.
 
-Click the **Next >** button.
+Klikk på knappen **Next >**.
 
-#### Step 3
-![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
+#### Trinn 3
+![Trinn 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Velg de ANSI-kompatible innstillingene, og klikk deretter på knappen **Next >**.
 
-#### Step 4
-![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
+#### Trinn 4
+![Trinn 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Du kan beholde standardinnstillingene eller velge alternativer etter behov,
+og klikke på knappen **Finish**.
 
-#### Step 5
-![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
+#### Trinn 5
+![Trinn 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Klikk nå på knappen **Test datasource**.
 
-#### Step 6
-![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
+#### Trinn 6
+![Trinn 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Et bekreftelsesskjermbilde viser at driveren, endepunktet og legitimasjonen fungerer. Verdiene
+du la inn, er nøyaktig de verdiene egenskapene i [avsnitt 2](#2-odbc-properties) skal ha.

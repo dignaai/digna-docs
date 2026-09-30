@@ -10,7 +10,7 @@ Ten przewodnik obejmuje **stronę Keycloak**: tworzenie klienta i zebranie warto
 
 | Wymóg | Uwagi |
 |---|---|
-| **Wersja Keycloak** | 17 lub nowsza dla ścieżek URL używanych tutaj — zobacz uwagę w Kroku 4 |
+| **Wersja Keycloak** | 17 lub nowsza dla ścieżek URL używanych tutaj — zobacz uwagę w Kroku 5 |
 | **Rola w Keycloak** | `realm-admin` w docelowym realm, lub administrator serwera |
 | **Realm** | Realm, do którego należą użytkownicy digna, niekoniecznie `master` |
 | **URI przekierowania digna** | URL, na który użytkownicy wracają po logowaniu, np. `https://digna.yourdomain.com/oidc/callback` |

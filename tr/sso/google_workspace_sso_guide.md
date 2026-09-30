@@ -1,74 +1,74 @@
-# Set up SSO with Google Workspace
+# Google Workspace ile SSO Kurulumu
 
-Google's identity platform is OIDC-compliant and uses a single, well-known discovery URL for every customer, so the only per-organization values are the client ID and secret.
+Google'ın kimlik platformu OIDC uyumludur ve her müşteri için tek, iyi bilinen bir keşif URL'si kullanır; bu nedenle kuruluşa özel değerler yalnızca istemci kimliği ve gizli anahtardır.
 
-This guide covers the **Google side**: creating the OAuth client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Bu kılavuz **Google tarafını** kapsar: OAuth istemcisini oluşturma ve digna'nın ihtiyaç duyduğu değerleri toplama. digna tarafı (`dashboard_config.toml`, test ve sorun giderme) her sağlayıcı için aynıdır ve [Çoklu Oturum Açma Genel Bakış](overview.md) sayfasında açıklanmıştır.
 
 ---
 
-## Before You Start
+## Başlamadan Önce
 
-| Requirement | Notes |
+| Gereksinim | Notlar |
 |---|---|
-| **Google Cloud project** | Any project in the same organization as your Workspace domain |
-| **Role** | Editor or Owner on the project |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Google Cloud projesi** | Workspace alan adınızla aynı kuruluştaki herhangi bir proje |
+| **Rol** | Projede Editor veya Owner |
+| **digna yönlendirme URI'si** | Kullanıcıların oturum açtıktan sonra döndüğü URL, ör. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Configure the OAuth Consent Screen
+## Adım 1: OAuth Onay Ekranını Yapılandırın
 
-Google will not issue credentials until the consent screen exists.
+Google, onay ekranı oluşturulmadan kimlik bilgisi vermez.
 
-1. Open the [Google Cloud Console](https://console.cloud.google.com) and select your project
-2. Go to **APIs & Services → OAuth consent screen**
-3. Choose the user type:
-   - **Internal** — only accounts in your Workspace domain can log in. Recommended.
-   - **External** — any Google account can attempt to log in.
-4. Fill in the app name, user support email and developer contact email
-5. On the **Scopes** step, add `openid`, `.../auth/userinfo.email` and `.../auth/userinfo.profile`
-6. Save
+1. [Google Cloud Console](https://console.cloud.google.com)'u açın ve projenizi seçin
+2. **APIs & Services → OAuth consent screen** bölümüne gidin
+3. Kullanıcı türünü seçin:
+   - **Internal**: yalnızca Workspace alan adınızdaki hesaplar oturum açabilir. Önerilir.
+   - **External**: herhangi bir Google hesabı oturum açmayı deneyebilir.
+4. Uygulama adını, kullanıcı destek e-postasını ve geliştirici iletişim e-postasını doldurun
+5. **Scopes** adımında `openid`, `.../auth/userinfo.email` ve `.../auth/userinfo.profile` kapsamlarını ekleyin
+6. Kaydedin
 
-!!! warning "External Apps Must Be Published"
+!!! warning "External Uygulamalar Yayımlanmalıdır"
 
-    An **External** consent screen starts in *Testing* status, where only accounts explicitly added to the test-user list can complete a login. Everyone else sees "digna has not completed the Google verification process". Either switch the app to **In production** under **Publishing status**, or use **Internal** — which has no such restriction and is the right choice for a Workspace-only deployment.
+    **External** bir onay ekranı *Testing* durumunda başlar; bu durumda yalnızca test kullanıcısı listesine açıkça eklenmiş hesaplar oturum açmayı tamamlayabilir. Diğer herkes "digna has not completed the Google verification process" mesajını görür. Uygulamayı **Publishing status** altında **In production** durumuna geçirin ya da böyle bir kısıtlaması olmayan ve yalnızca Workspace'e yönelik bir dağıtım için doğru seçim olan **Internal**'ı kullanın.
 
 ---
 
-## Step 2: Create the OAuth Client
+## Adım 2: OAuth İstemcisini Oluşturun
 
-1. Go to **APIs & Services → Credentials**
-2. Click **Create Credentials → OAuth client ID**
-3. Set **Application type** to **Web application**
-4. Give it a name, e.g. `digna`
-5. Under **Authorized redirect URIs**, click **Add URI** and enter:
+1. **APIs & Services → Credentials** bölümüne gidin
+2. **Create Credentials → OAuth client ID**'ye tıklayın
+3. **Application type** değerini **Web application** olarak ayarlayın
+4. Bir ad verin, ör. `digna`
+5. **Authorized redirect URIs** altında **Add URI**'ye tıklayın ve şunu girin:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-6. Click **Create**
+6. **Create**'e tıklayın
 
-!!! note "Authorized JavaScript Origins Are Not Needed"
+!!! note "Authorized JavaScript Origins Gerekli Değildir"
 
-    digna exchanges the authorization code from the backend, not the browser, so the **Authorized JavaScript origins** field can be left empty. Only the redirect URI matters.
-
----
-
-## Step 3: Collect the Credentials
-
-The dialog that appears after creation shows:
-
-- **Client ID** — ends in `.apps.googleusercontent.com` → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
-
-Both remain retrievable later from the credential's detail page, unlike most other providers.
+    digna yetkilendirme kodunu tarayıcıdan değil arka uçtan değiştirir, bu nedenle **Authorized JavaScript origins** alanı boş bırakılabilir. Yalnızca yönlendirme URI'si önemlidir.
 
 ---
 
-## Step 4: The Discovery URL
+## Adım 3: Kimlik Bilgilerini Toplayın
 
-Google uses one discovery URL for all customers — there is nothing to substitute:
+Oluşturmanın ardından açılan iletişim kutusunda şunlar gösterilir:
+
+- **Client ID**: `.apps.googleusercontent.com` ile biter → `DIGNA_OIDC_CLIENT_ID` olur
+- **Client secret** → `DIGNA_OIDC_CLIENT_SECRET` olur
+
+Diğer çoğu sağlayıcının aksine, her ikisi de daha sonra kimlik bilgisinin ayrıntı sayfasından tekrar alınabilir.
+
+---
+
+## Adım 4: Keşif URL'si
+
+Google tüm müşteriler için tek bir keşif URL'si kullanır; yerine konacak bir şey yoktur:
 
 ```
 https://accounts.google.com/.well-known/openid-configuration
@@ -76,7 +76,7 @@ https://accounts.google.com/.well-known/openid-configuration
 
 ---
 
-## Step 5: Configure digna
+## Adım 5: digna'yı Yapılandırın
 
 ### `dashboard/dashboard_config.toml`
 
@@ -99,37 +99,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `google` here.
+Her iki dosyadaki `key` eşleşmelidir; burada `google`.
 
 ---
 
-## Step 6: Test
+## Adım 6: Test Edin
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Arka ucu ve web sunucusunu yeniden başlatın, ardından dashboard'u açın. Tam kontrol listesi için bkz. [Oturum Açmayı Test Etme](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Google Workspace
+## Google Workspace Sorunlarını Giderme
 
 ### Error 400: redirect_uri_mismatch
 
-The URI in `DIGNA_OIDC_REDIRECT_URI` is not in the **Authorized redirect URIs** list, or differs by a trailing slash or scheme. Google's error page shows the URI it received — compare it character for character with the registered one.
+`DIGNA_OIDC_REDIRECT_URI` içindeki URI **Authorized redirect URIs** listesinde değil veya sondaki bir eğik çizgi ya da şema nedeniyle farklı. Google'ın hata sayfası aldığı URI'yi gösterir; bunu kayıtlı URI ile karakteri karakterine karşılaştırın.
 
-### This App Is Blocked / Has Not Completed Verification
+### Bu Uygulama Engellendi / Doğrulamayı Tamamlamadı
 
-The consent screen is **External** and still in *Testing*. Publish it, or switch the app to **Internal**.
+Onay ekranı **External** ve hâlâ *Testing* durumunda. Yayımlayın veya uygulamayı **Internal**'a geçirin.
 
-### Access Blocked: Authorization Error
+### Erişim Engellendi: Yetkilendirme Hatası
 
-The account attempting to log in is outside your Workspace domain while the consent screen is **Internal**. This is the intended behaviour — Internal apps accept only accounts in the organization.
+Onay ekranı **Internal** iken oturum açmaya çalışan hesap Workspace alan adınızın dışında. Bu amaçlanan davranıştır; Internal uygulamalar yalnızca kuruluştaki hesapları kabul eder.
 
-### Changes Take Several Minutes
+### Değişikliklerin Etkinleşmesi Birkaç Dakika Sürer
 
-Google propagates credential and consent-screen changes asynchronously. A newly added redirect URI can take a few minutes to take effect; if a change looks ignored, wait and retry before investigating further.
+Google, kimlik bilgisi ve onay ekranı değişikliklerini eşzamansız olarak yayar. Yeni eklenen bir yönlendirme URI'sinin etkinleşmesi birkaç dakika sürebilir; bir değişiklik dikkate alınmamış gibi görünüyorsa daha fazla araştırmadan önce bekleyin ve yeniden deneyin.
 
 ---
 
-## See Also
+## Ayrıca Bakınız
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Çoklu Oturum Açma Genel Bakış](overview.md): yapılandırma başvurusu, test ve genel sorun giderme
 - [Google: OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)

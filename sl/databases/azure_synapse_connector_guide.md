@@ -1,92 +1,93 @@
-# Source Connector for Azure Synapse Analytics
+# Izvorni konektor za Azure Synapse Analytics
 
-This guide describes how to configure *digna* to connect to Azure Synapse Analytics over
-**ODBC**, using a **DSN-less** connection string. Both serverless and dedicated SQL pools are
-supported.
+Ta vodič opisuje, kako konfigurirati *digna* za povezavo z Azure Synapse Analytics prek
+**ODBC** z nizom za povezavo **brez DSN** (DSN-less). Podprti so tako serverless kot namenski
+(dedicated) bazeni SQL.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Azure Synapse.
+Stran nastavitve *digna* je enaka za vse tehnologije — kje se ustvarjajo povezave, kako se
+šifrirajo vrednosti lastnosti, kako se povezava testira in kaj pomenijo načini profiliranja.
+Opisana je v [Pregled povezav z bazami podatkov](overview.md). Ta stran zajema, kar je
+specifično za Azure Synapse.
 
-!!! note "Technology"
+!!! note "Tehnologija"
 
-    Synapse speaks the SQL Server dialect, so the connection is created with **Technology:
-    SQL Server**. See [MS SQL Server](sqlserver_connector_guide.md) for an on-premises server.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server),
-and read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+    Synapse uporablja narečje SQL Server, zato se povezava ustvari s **Technology:
+    SQL Server**. Za lokalni strežnik glejte [MS SQL Server](sqlserver_connector_guide.md).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Namestite gonilnik ODBC {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Na računalnik, na katerem teče zaledje *digna*, namestite **ODBC Driver 18 for SQL Server** po
+[Microsoftovih navodilih za namestitev](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)
+in na svojem gostitelju preberite natančno registrirano ime gonilnika, kot je opisano v
+[Namestite gonilnik ODBC na gostitelja digna](overview.md#install-the-driver).
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions and platforms, and what the workspace requires depends on how it is configured —
-    pool type, authentication method, firewall. Use this as a starting point and check the
-    documentation of the driver version you installed.
+---
 
-Add the following properties in the **Add DB Connection** screen:
+## 2. Lastnosti ODBC {: #2-odbc-properties }
 
-| Key | Example value | Notes |
+!!! important "Primer, ne specifikacija"
+
+    Spodnji nabor je ena kombinacija, za katero je znano, da deluje. Lastnosti pripadajo
+    Microsoftovemu gonilniku ODBC, zato se njihova imena, privzete vrednosti in sprejete
+    vrednosti razlikujejo med različicami gonilnika in platformami, kaj zahteva delovni prostor
+    (workspace), pa je odvisno od njegove konfiguracije — tip bazena, metoda avtentikacije,
+    požarni zid. Uporabite to kot izhodišče in preverite dokumentacijo različice gonilnika, ki ste
+    jo namestili.
+
+Na zaslonu **Add DB Connection** dodajte naslednje lastnosti:
+
+| Ključ | Primer vrednosti | Opombe |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Workspace name plus the endpoint suffix — see below |
-| `DATABASE` | `dignadata` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `sqladminuser` | SQL login |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Mora se ujemati z imenom gonilnika, registriranim na gostitelju *digna* |
+| `SERVER` | `<workspace>-ondemand.sql.azuresynapse.net` | Ime delovnega prostora in pripona končne točke — glejte spodaj |
+| `DATABASE` | `dignadata` | Baza podatkov, ki vsebuje izvorne sheme. To je edina baza podatkov, ki jo ta povezava lahko profilira |
+| `UID` | `sqladminuser` | Prijava SQL |
+| `PWD` | `<password>` | Označite **Encrypted** |
 
-The resulting connection string looks like this:
+Nastali niz za povezavo je videti takole:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=<workspace>-ondemand.sql.azuresynapse.net;DATABASE=dignadata;UID=sqladminuser;PWD=<password>
 ```
 
-### The `SERVER` value
+### Vrednost `SERVER`
 
-Take the name of the Synapse workspace and append the endpoint suffix:
+Vzemite ime delovnega prostora Synapse in dodajte pripono končne točke:
 
-| Pool | `SERVER` |
+| Bazen | `SERVER` |
 |---|---|
 | **Serverless SQL pool** | `<workspace>-ondemand.sql.azuresynapse.net` |
 | **Dedicated SQL pool** | `<workspace>.sql.azuresynapse.net` |
 
-!!! warning "The `-ondemand` part is easy to miss"
+!!! warning "Del `-ondemand` je lahko spregledati"
 
-    Without it, the name resolves to the dedicated endpoint, and the connection either fails or
-    silently reaches a different pool than intended. Both endpoints are shown on the workspace
-    overview page in the Azure portal.
+    Brez njega se ime razreši v namensko končno točko, povezava pa bodisi ne uspe bodisi brez
+    opozorila doseže drug bazen, kot je bil predviden. Obe končni točki sta prikazani na strani s
+    pregledom delovnega prostora v portalu Azure.
 
-### Firewall
+### Požarni zid
 
-The Synapse workspace firewall must allow the outbound address of the *digna* host. Add it
-under **Networking** in the workspace before testing the connection — a blocked address shows
-up as a connection timeout rather than an authentication error.
+Požarni zid delovnega prostora Synapse mora dovoliti odhodni naslov gostitelja *digna*. Dodajte
+ga pod **Networking** v delovnem prostoru, preden testirate povezavo — blokiran naslov se pokaže
+kot potek časa povezave in ne kot napaka avtentikacije.
 
-### Microsoft Entra ID authentication
+### Avtentikacija z Microsoft Entra ID
 
-Instead of a SQL login, the driver can authenticate against Entra ID. Replace `UID`/`PWD` with
-the authentication method your workspace expects, for example:
+Namesto prijave SQL se lahko gonilnik avtenticira z Entra ID. `UID`/`PWD` zamenjajte z metodo
+avtentikacije, ki jo pričakuje vaš delovni prostor, na primer:
 
-| Key | Example value | Notes |
+| Ključ | Primer vrednosti | Opombe |
 |---|---|---|
-| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` then takes the application (client) ID and `PWD` the client secret |
-| `Authentication` | `ActiveDirectoryMSI` | Managed identity of the *digna* host, no credentials needed |
+| `Authentication` | `ActiveDirectoryServicePrincipal` | `UID` nato sprejme ID aplikacije (odjemalca), `PWD` pa skrivnost odjemalca |
+| `Authentication` | `ActiveDirectoryMSI` | Upravljana identiteta (managed identity) gostitelja *digna*, poverilnice niso potrebne |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Konfiguracija *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Na zaslonu **Add DB Connection** vnesite naslednje:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -98,63 +99,63 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on Azure Synapse {: #4-notes-on-azure-synapse }
+## 4. Opombe o Azure Synapse {: #4-notes-on-azure-synapse }
 
-- **Serverless pools support only *Standard* profiling.** A serverless SQL pool cannot create
-  tables in a database, so neither *Permanent* nor *Session* profiling can run. *Standard*
-  calculates the metrics directly on the source, which is also the cheaper option, since
-  serverless is billed per data processed.
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because Synapse, like SQL Server, reports only the current database as a catalog.
-- **Encryption is on by default** in Driver 18 and Synapse endpoints present valid public
-  certificates, so no `Encrypt` or `TrustServerCertificate` property is needed.
-- **A serverless endpoint may resume from idle** on the first connect. If the connection test
-  times out on a pool that has been unused for a while, retry it.
+- **Serverless bazeni podpirajo samo profiliranje *Standard*.** Serverless SQL pool ne more
+  ustvarjati tabel v bazi podatkov, zato ni mogoče izvajati niti profiliranja *Permanent* niti
+  *Session*. *Standard* izračuna metrike neposredno na viru, kar je tudi cenejša možnost, saj
+  se serverless obračunava po količini obdelanih podatkov.
+- **Ena povezava vidi eno bazo podatkov.** *digna* ponudi sheme baze podatkov, navedene v
+  `DATABASE`, ker Synapse, tako kot SQL Server, kot katalog sporoči samo trenutno bazo podatkov.
+- **Šifriranje je privzeto vklopljeno** v Driver 18, končne točke Synapse pa predstavijo
+  veljavne javne certifikate, zato lastnost `Encrypt` ali `TrustServerCertificate` ni potrebna.
+- **Serverless končna točka se lahko ob prvi povezavi prebuja iz mirovanja.** Če test povezave
+  poteče pri bazenu, ki nekaj časa ni bil uporabljen, poskusite znova.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Preverjanje gonilnika (neobvezno) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the workspace accepts
-your credentials before you enter them in *digna*.
+Konfiguriranje vira podatkov ODBC za povezavo brez DSN ni potrebno, vendar je gonilnikov lastni
+čarovnik priročen način, da preverite, ali gonilnik deluje in ali delovni prostor sprejme vaše
+poverilnice, preden jih vnesete v *digna*.
 
-#### Step 1
+#### 1. korak
 ![Step 1](images/azure_synapse/create_odbc_data_source_step1.png)
 
-Fill out the "Server" field.
-Use the name of the Synapse workspace and extend it with ".sql.azuresynapse.net".  
-**Attention**, if you want to connect using a serverless SQL pool, make sure to include
-"-ondemand" as shown in the screenshot above.
+Izpolnite polje "Server".
+Uporabite ime delovnega prostora Synapse in ga razširite z ".sql.azuresynapse.net".  
+**Pozor**, če se želite povezati prek serverless SQL pool, ne pozabite vključiti
+"-ondemand", kot je prikazano na zgornjem posnetku zaslona.
 
-Click the **Next >** button.
+Kliknite gumb **Next >**.
 
-#### Step 2
+#### 2. korak
 ![Step 2](images/azure_synapse/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Izberite metodo avtentikacije (npr. uporabniško ime in geslo)
+in vnesite zahtevane podatke.
 
-Click the **Next >** button.
+Kliknite gumb **Next >**.
 
-#### Step 3
+#### 3. korak
 ![Step 3](images/azure_synapse/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Izberite nastavitve, skladne z ANSI, nato kliknite gumb **Next >**.
 
-#### Step 4
+#### 4. korak
 ![Step 4](images/azure_synapse/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose options as needed 
-and click the **Finish** button. 
+Lahko pustite privzete nastavitve ali izberete možnosti po potrebi
+in kliknete gumb **Finish**.
 
-#### Step 5
+#### 5. korak
 ![Step 5](images/azure_synapse/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Zdaj kliknite gumb **Test datasource**.
 
-#### Step 6
+#### 6. korak
 ![Step 6](images/azure_synapse/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver, the endpoint and the credentials work. The values
-you entered are exactly the values the properties in [section 2](#2-odbc-properties) take.
+Zaslon o uspehu potrdi, da gonilnik, končna točka in poverilnice delujejo. Vrednosti, ki ste jih
+vnesli, so natanko vrednosti, ki jih sprejmejo lastnosti v [razdelku 2](#2-odbc-properties).

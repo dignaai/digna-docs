@@ -1,95 +1,95 @@
-# Set up SSO with Okta
+# Iestatīt SSO ar Okta
 
-Okta is OIDC-compliant, with one wrinkle that catches most first-time integrations: an Okta org exposes more than one authorization server, and each has its own discovery URL.
+Okta atbilst OIDC standartam, taču ar vienu īpatnību, kas pārsteidz lielāko daļu pirmreizējo integrāciju: Okta organizācijai (org) ir vairāk nekā viens autorizācijas serveris, un katram no tiem ir savs atklāšanas (discovery) URL.
 
-This guide covers the **Okta side**: creating the app integration and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Šis ceļvedis aptver **Okta pusi**: lietotnes integrācijas izveidi un vērtību vākšanu, kas nepieciešamas digna. digna puse — `dashboard_config.toml`, testēšana un problēmu novēršana — ir vienāda visiem pakalpojumu sniedzējiem un aprakstīta [Single Sign-On pārskatā](overview.md).
 
 ---
 
-## Before You Start
+## Pirms sākat
 
-| Requirement | Notes |
+| Prasība | Piezīmes |
 |---|---|
-| **Okta role** | Super Administrator, or an admin role permitted to create app integrations |
-| **Okta domain** | e.g. `yourcompany.okta.com`, or a custom domain if configured |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Okta loma** | Super Administrator vai administratora loma, kurai atļauts izveidot lietotņu integrācijas |
+| **Okta domēns** | piem. `yourcompany.okta.com` vai pielāgots domēns, ja tāds ir konfigurēts |
+| **digna redirect URI** | URL, uz kuru lietotāji atgriežas pēc pieteikšanās, piem. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the App Integration
+## 1. solis: Izveidot lietotnes integrāciju
 
-1. Sign in to the Okta Admin Console
-2. Go to **Applications → Applications**
-3. Click **Create App Integration**
-4. Select:
+1. Piesakieties Okta Admin Console
+2. Dodieties uz **Applications → Applications**
+3. Noklikšķiniet **Create App Integration**
+4. Atlasiet:
    - **Sign-in method**: *OIDC - OpenID Connect*
    - **Application type**: *Web Application*
-5. Click **Next**
+5. Noklikšķiniet **Next**
 
-!!! warning "Application Type Cannot Be Changed"
+!!! warning "Lietotnes tipu nevar mainīt"
 
-    Choosing *Single-Page Application* instead of *Web Application* creates a public client with no secret, and digna's backend code exchange will fail with `invalid_client`. The type is fixed at creation — a wrong choice means deleting the app and starting again.
+    Ja *Web Application* vietā izvēlaties *Single-Page Application*, tiek izveidots publisks klients bez slepenās atslēgas (secret), un digna backend koda apmaiņa neizdosies ar kļūdu `invalid_client`. Tips tiek noteikts izveides brīdī — nepareiza izvēle nozīmē, ka lietotne jādzēš un jāsāk no jauna.
 
 ---
 
-## Step 2: Configure the Integration
+## 2. solis: Konfigurēt integrāciju
 
 1. **App integration name**: `digna`
-2. **Grant type**: leave *Authorization Code* selected
-3. **Sign-in redirect URIs**: enter your digna callback URL:
+2. **Grant type**: atstājiet atlasītu *Authorization Code*
+3. **Sign-in redirect URIs**: ievadiet savu digna callback URL:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-4. **Sign-out redirect URIs**: optional
-5. Under **Assignments**, choose who may use the integration — a specific group is safer than *Allow everyone in your organization to access*
-6. Click **Save**
+4. **Sign-out redirect URIs**: nav obligāti
+5. Sadaļā **Assignments** izvēlieties, kas drīkst izmantot integrāciju — konkrēta grupa ir drošāka nekā *Allow everyone in your organization to access*
+6. Noklikšķiniet **Save**
 
-!!! note "Assignment Is Required"
+!!! note "Piešķiršana ir obligāta"
 
-    Okta authenticates the user and then checks whether they are assigned to the application. An unassigned user reaches the Okta login page, signs in successfully, and is refused at the redirect back. If login works for you but not for colleagues, assignment is the first thing to check.
-
----
-
-## Step 3: Collect the Credentials
-
-On the application's **General** tab, under **Client Credentials**:
-
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon to reveal)
+    Okta autentificē lietotāju un pēc tam pārbauda, vai viņš ir piešķirts lietotnei. Nepiešķirts lietotājs nonāk Okta pieteikšanās lapā, veiksmīgi piesakās, bet tiek atraidīts, kad notiek pāradresācija atpakaļ. Ja pieteikšanās darbojas jums, bet ne kolēģiem, vispirms pārbaudiet piešķiršanu.
 
 ---
 
-## Step 4: Choose the Authorization Server
+## 3. solis: Savākt akreditācijas datus
 
-This is the step that determines your discovery URL. Go to **Security → API** to see the authorization servers in your org.
+Lietotnes cilnē **General**, sadaļā **Client Credentials**:
 
-**Org authorization server** — issues tokens for the Okta org itself:
+- **Client ID** → kļūst par `DIGNA_OIDC_CLIENT_ID`
+- **Client secret** → kļūst par `DIGNA_OIDC_CLIENT_SECRET` (noklikšķiniet uz acs ikonas, lai to parādītu)
+
+---
+
+## 4. solis: Izvēlēties autorizācijas serveri
+
+Šis solis nosaka jūsu discovery URL. Dodieties uz **Security → API**, lai redzētu jūsu organizācijas autorizācijas serverus.
+
+**Org autorizācijas serveris** — izsniedz tokenus pašai Okta organizācijai:
 
 ```
 https://<your_okta_domain>/.well-known/openid-configuration
 ```
 
-**Custom authorization server** — including the one Okta creates called `default`:
+**Pielāgots autorizācijas serveris** — ieskaitot to, ko Okta izveido ar nosaukumu `default`:
 
 ```
 https://<your_okta_domain>/oauth2/<auth_server_id>/.well-known/openid-configuration
 ```
 
-For the built-in server, `<auth_server_id>` is literally `default`:
+Iebūvētajam serverim `<auth_server_id>` burtiski ir `default`:
 
 ```
 https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration
 ```
 
-!!! tip "Which One?"
+!!! tip "Kuru izvēlēties?"
 
-    Use the **org** authorization server unless your organization already standardizes on a custom one for API access policies. Okta Developer accounts default to `default`; many enterprise orgs disable it. Open both URLs in a browser — the one that returns JSON rather than an error is the one available to you.
+    Izmantojiet **org** autorizācijas serveri, ja vien jūsu organizācija jau nav standartizējusi pielāgotu serveri API piekļuves politikām. Okta Developer kontos noklusējums ir `default`; daudzas uzņēmumu organizācijas to atspējo. Atveriet abus URL pārlūkā — tas, kas atgriež JSON, nevis kļūdu, ir jums pieejamais.
 
 ---
 
-## Step 5: Configure digna
+## 5. solis: Konfigurēt digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -112,37 +112,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `okta` here.
+Abos failos `key` vērtībai jāsakrīt — šeit `okta`.
 
 ---
 
-## Step 6: Test
+## 6. solis: Testēt
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Restartējiet backend un web serveri, pēc tam atveriet dashboard. Pilnu pārbaudes sarakstu skatiet sadaļā [Pieteikšanās testēšana](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Okta
+## Okta problēmu novēršana
 
-### The redirect URI Is Not Registered
+### Redirect URI nav reģistrēts
 
-Okta names the offending URI in the error. Compare it with **General → Sign-in redirect URIs**; Okta matches the full string including any trailing slash.
+Okta kļūdas ziņojumā norāda problemātisko URI. Salīdziniet to ar **General → Sign-in redirect URIs**; Okta salīdzina pilnu virkni, ieskaitot jebkuru beigu slīpsvītru.
 
-### User Is Not Assigned to the Client Application
+### Lietotājs nav piešķirts klienta lietotnei
 
-The account is not in the application's assignment list. Add the user or their group under **Assignments**.
+Konts nav lietotnes piešķīrumu sarakstā. Pievienojiet lietotāju vai viņa grupu sadaļā **Assignments**.
 
 ### 400 Bad Request: Invalid Authorization Server
 
-The `<auth_server_id>` in the discovery URL does not exist, most often `default` on an org where it has been removed. Check **Security → API** for the servers actually available.
+`<auth_server_id>` discovery URL neeksistē — visbiežāk tas ir `default` organizācijā, kurā tas ir noņemts. Pārbaudiet **Security → API**, lai redzētu faktiski pieejamos serverus.
 
-### invalid_client at the Token Step
+### invalid_client tokena solī
 
-The integration was created as a Single-Page Application and has no client secret. Recreate it as a Web Application.
+Integrācija tika izveidota kā Single-Page Application, un tai nav klienta slepenās atslēgas. Izveidojiet to no jauna kā Web Application.
 
 ---
 
-## See Also
+## Skatīt arī
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Single Sign-On pārskats](overview.md) — konfigurācijas atsauce, testēšana un vispārīga problēmu novēršana
 - [Okta: OpenID Connect & OAuth 2.0](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)

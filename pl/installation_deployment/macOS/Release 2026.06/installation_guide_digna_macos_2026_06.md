@@ -1,275 +1,275 @@
-# macOS Installation Guide for digna Release 2026.06
+# Przewodnik instalacji digna Release 2026.06 dla macOS
 
-**Release:** 2026.06
+**Wydanie:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Ostatnia aktualizacja:** 5 września 2026
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a Background Service](#running-digna-as-a-background-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Spis treści
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows or Linux?
-
-This guide covers macOS. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [Linux Installation Guide](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+1. [Wprowadzenie](#introduction)
+2. [Wymagania systemowe](#system-requirements)
+3. [Przygotowanie przed instalacją](#pre-installation-setup)
+4. [Konfiguracja serwera PostgreSQL](#postgresql-server-setup)
+5. [Konfiguracja serwera WWW](#web-server-configuration)
+6. [Instalacja początkowa](#initial-installation)
+7. [Konfiguracja backendu](#backend-configuration)
+8. [Konfiguracja dashboardu](#dashboard-configuration)
+9. [Uruchamianie digna jako usługi w tle](#running-digna-as-a-background-service)
+10. [Aktualizacja do nowego wydania](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Wprowadzenie {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### O digna
 
-| Requirement | Specification |
+digna to kompleksowa platforma napędzana sztuczną inteligencją, zaprojektowana do optymalizacji zarządzania jakością danych w różnych środowiskach danych, takich jak hurtownie, data lake i lakehouse. Zbudowana z myślą o dużej skalowalności i elastyczności, digna rozwiązuje współczesne wyzwania związane z danymi dzięki automatyzacji, monitorowaniu w czasie rzeczywistym i wykrywaniu anomalii.
+
+digna składa się z dwóch głównych komponentów:
+
+- **digna**: rdzeń aplikacji, odpowiedzialny za przetwarzanie danych i wykonywanie kontroli jakości. Łączy backend i interfejs wiersza poleceń w jednym pliku wykonywalnym, zastępując osobne programy `dignabackend` i `dignacli` z wcześniejszych wydań.
+- **dignadashboard**: interfejs webowy hostowany na serwerze WWW, zapewniający przyjazny sposób interakcji z platformą digna oraz wizualizację wskaźników jakości danych.
+
+### Co nowego w wydaniu 2026.06
+
+To wydanie wprowadza możliwości obserwowalności danych bezpośrednio w kodzie, umożliwiając deweloperom monitorowanie jakości danych u źródła. Zobacz [notatki o wydaniu](http://docs.digna.ai/changelog/Release_202606/) po pełne szczegóły.
+
+### Szukasz Windows lub Linux?
+
+Ten przewodnik dotyczy macOS. Dla innych platform zobacz [Przewodnik instalacji dla Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) lub [Przewodnik instalacji dla Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+
+---
+
+## Wymagania systemowe {: #system-requirements }
+
+Zanim rozpoczniesz instalację, upewnij się, że system spełnia następujące minimalne wymagania:
+
+| Wymaganie | Specyfikacja |
 |---|---|
-| **Operating System** | macOS 13 (Ventura) or later |
-| **Architecture** | Apple Silicon (arm64) or Intel (x86_64) |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
-| **Command Line Tools** | Xcode Command Line Tools (required by Homebrew) |
+| **System operacyjny** | macOS 13 (Ventura) lub nowszy |
+| **Architektura** | Apple Silicon (arm64) lub Intel (x86_64) |
+| **Pamięć (Minimalna konfiguracja)** | 16 GB RAM |
+| **Miejsce na dysku** | 10 GB dostępnego miejsca |
+| **Baza danych** | PostgreSQL Server 12 lub nowszy |
+| **Serwer WWW** | nginx, Apache httpd lub równoważny |
+| **Narzędzia wiersza poleceń** | Xcode Command Line Tools (wymagane przez Homebrew) |
 
-### Database Installation Options
+### Opcje instalacji bazy danych
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Jeśli PostgreSQL jest już zainstalowany:**
+Możesz dodać nową bazę danych dla digna do istniejącego serwera PostgreSQL.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Jeśli instalujesz PostgreSQL na tej samej maszynie co digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Zalecane specyfikacje"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Pamięć**: 32 GB RAM (zamiast 16 GB)
+    - **Miejsce na dysku**: 50 GB dostępnego miejsca (zamiast 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Te wyższe specyfikacje uwzględniają równoczesne uruchomienie digna i bazy PostgreSQL.
 
-### Checking Your Architecture
+### Sprawdzanie architektury
 
-Several paths in this guide differ between Apple Silicon and Intel Macs. To check which you have, open **Terminal** and run:
+Kilka ścieżek w tym przewodniku różni się między komputerami Mac z Apple Silicon i z procesorem Intel. Aby sprawdzić, który masz, otwórz **Terminal** i uruchom:
 
 ```bash
 uname -m
 ```
 
-- `arm64` — Apple Silicon. Homebrew installs to `/opt/homebrew`.
-- `x86_64` — Intel. Homebrew installs to `/usr/local`.
+- `arm64` — Apple Silicon. Homebrew instaluje się w `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew instaluje się w `/usr/local`.
 
-!!! tip "Tip"
+!!! tip "Wskazówka"
 
-    Rather than hard-coding either path, this guide uses `$(brew --prefix)`, which expands to the correct location on both architectures. You can copy the commands verbatim.
+    Zamiast wpisywać na sztywno którąkolwiek ze ścieżek, ten przewodnik używa `$(brew --prefix)`, co rozwija się do właściwej lokalizacji na obu architekturach. Polecenia możesz kopiować bez zmian.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Przygotowanie przed instalacją {: #pre-installation-setup }
 
-Before installing digna, ensure that three key prerequisites are in place:
+Przed instalacją digna upewnij się, że są spełnione trzy kluczowe warunki wstępne:
 
-1. **Homebrew** – the package manager used to install the components below
-2. **PostgreSQL Server** – for storing calculated metrics and performance data
-3. **Web Server** – for hosting the digna Dashboard
+1. **Homebrew** – menedżer pakietów używany do instalacji poniższych komponentów
+2. **Serwer PostgreSQL** – do przechowywania wyliczonych metryk i danych wydajnościowych
+3. **Serwer WWW** – do hostowania Dashboardu digna
 
-If these components are not already set up, follow the sections below to install and configure them.
+Jeśli te komponenty nie są jeszcze skonfigurowane, postępuj zgodnie z poniższymi sekcjami, aby je zainstalować i skonfigurować.
 
-### Installing Homebrew
+### Instalacja Homebrew
 
-Homebrew is the standard package manager for macOS and is used throughout this guide to install PostgreSQL and nginx.
+Homebrew to standardowy menedżer pakietów dla macOS, używany w całym przewodniku do instalacji PostgreSQL i nginx.
 
-#### Step 1: Check Whether Homebrew Is Already Installed
+#### Krok 1: Sprawdź, czy Homebrew jest już zainstalowany
 
-Open **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter) and run:
+Otwórz **Terminal** (naciśnij `Cmd + Space`, wpisz `Terminal` i naciśnij Enter) i uruchom:
 
 ```bash
 brew --version
 ```
 
-If a version number is returned, skip to the [PostgreSQL Server Setup](#postgresql-server-setup) section.
+Jeśli zostanie zwrócony numer wersji, przejdź do sekcji [Konfiguracja serwera PostgreSQL](#postgresql-server-setup).
 
-#### Step 2: Install Homebrew
+#### Krok 2: Zainstaluj Homebrew
 
-If the command was not found, install Homebrew by following the instructions on the [official Homebrew site](https://brew.sh). The installer also installs the Xcode Command Line Tools if they are not already present.
+Jeśli polecenie nie zostało znalezione, zainstaluj Homebrew zgodnie z instrukcjami na [oficjalnej stronie Homebrew](https://brew.sh). Instalator instaluje również Xcode Command Line Tools, jeśli nie są jeszcze obecne.
 
-#### Step 3: Add Homebrew to Your PATH
+#### Krok 3: Dodaj Homebrew do zmiennej PATH
 
-On Apple Silicon, the installer prints two commands to add Homebrew to your shell environment. Run them as instructed, then confirm:
+Na komputerach z Apple Silicon instalator wypisuje dwa polecenia, które dodają Homebrew do środowiska powłoki. Uruchom je zgodnie z instrukcją, a następnie sprawdź:
 
 ```bash
 brew --prefix
 ```
 
-This should print `/opt/homebrew` on Apple Silicon or `/usr/local` on Intel.
+Powinno zostać wypisane `/opt/homebrew` na Apple Silicon lub `/usr/local` na komputerach z procesorem Intel.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Konfiguracja serwera PostgreSQL {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Jeśli masz już PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Jeśli PostgreSQL jest już zainstalowany i działa lokalnie lub jeśli używasz zarządzanego zdalnego serwera PostgreSQL, możesz przejść do [następnej sekcji](#web-server-configuration).
 
-### Installation Options
+### Opcje instalacji
 
-macOS offers two straightforward ways to install PostgreSQL. Choose **one**:
+macOS oferuje dwa proste sposoby instalacji PostgreSQL. Wybierz **jeden**:
 
-- [Homebrew](#postgresql-homebrew) — command-line installation, recommended for server deployments
-- [Postgres.app](#postgresql-app) — graphical installation, convenient for local evaluation
+- [Homebrew](#postgresql-homebrew) — instalacja z wiersza poleceń, zalecana dla wdrożeń serwerowych
+- [Postgres.app](#postgresql-app) — instalacja graficzna, wygodna do lokalnej oceny
 
-### Installing PostgreSQL with Homebrew {: #postgresql-homebrew }
+### Instalacja PostgreSQL za pomocą Homebrew {: #postgresql-homebrew }
 
-#### Step 1: Install the PostgreSQL Formula
+#### Krok 1: Zainstaluj formułę PostgreSQL
 
 ```bash
 brew install postgresql@16
 ```
 
-#### Step 2: Add PostgreSQL to Your PATH
+#### Krok 2: Dodaj PostgreSQL do zmiennej PATH
 
-Versioned PostgreSQL formulas are *keg-only*, which means Homebrew does not link their commands into your PATH automatically. Add them yourself:
+Wersjonowane formuły PostgreSQL są typu *keg-only*, co oznacza, że Homebrew nie dołącza automatycznie ich poleceń do zmiennej PATH. Dodaj je samodzielnie:
 
 ```bash
 echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-!!! note "Note"
+!!! note "Uwaga"
 
-    This assumes the default `zsh` shell used by macOS. If you use `bash`, append the same line to `~/.bash_profile` instead.
+    Zakłada to domyślną powłokę `zsh` używaną przez macOS. Jeśli używasz `bash`, dopisz ten sam wiersz do `~/.bash_profile`.
 
-#### Step 3: Start the PostgreSQL Service
+#### Krok 3: Uruchom usługę PostgreSQL
 
 ```bash
 brew services start postgresql@16
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically when you log in.
+To polecenie natychmiast uruchamia PostgreSQL i konfiguruje go tak, aby automatycznie uruchamiał się ponownie po zalogowaniu.
 
-#### Step 4: Verify the Installation
+#### Krok 4: Zweryfikuj instalację
 
 ```bash
 psql --version
 ```
 
-You should see the PostgreSQL version if the installation was successful.
+Jeśli instalacja się powiodła, powinieneś zobaczyć wersję PostgreSQL.
 
-#### Step 5: Connect to the Server
+#### Krok 5: Połącz się z serwerem
 
 ```bash
 psql postgres
 ```
 
-!!! warning "Important — macOS Differs From Windows Here"
+!!! warning "Ważne — tutaj macOS różni się od Windows"
 
-    The Windows installer prompts you to create a `postgres` superuser and password. Homebrew does not. Instead it creates a superuser named after your **macOS account**, with no password, reachable only from the local machine.
+    Instalator dla Windows prosi o utworzenie superużytkownika `postgres` i hasła. Homebrew tego nie robi. Zamiast tego tworzy superużytkownika o nazwie Twojego **konta macOS**, bez hasła, dostępnego wyłącznie z lokalnej maszyny.
 
-    This means there is no `postgres` role on a fresh Homebrew installation. Use your own account name when you need a superuser, and create an explicit digna user as described in [Initial Installation](#initial-installation).
+    Oznacza to, że w świeżej instalacji Homebrew nie ma roli `postgres`. Gdy potrzebujesz superużytkownika, użyj nazwy własnego konta, a dedykowanego użytkownika digna utwórz zgodnie z opisem w sekcji [Instalacja początkowa](#initial-installation).
 
-#### Step 6: Confirm the Port
+#### Krok 6: Potwierdź port
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Domyślny port PostgreSQL to `5432`. Aby potwierdzić port, na którym nasłuchuje Twój serwer:
 
 ```bash
 psql postgres -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Zanotuj tę wartość — będzie potrzebna podczas konfigurowania backendu digna.
 
-### Installing PostgreSQL with Postgres.app {: #postgresql-app }
+### Instalacja PostgreSQL za pomocą Postgres.app {: #postgresql-app }
 
-If you prefer a graphical installation:
+Jeśli wolisz instalację graficzną:
 
-1. Download [Postgres.app](https://postgresapp.com) and drag it into your **Applications** folder
-2. Open the app and click **Initialize** to create a new server
-3. Follow the app's instructions to add its command-line tools to your PATH
-4. Verify the installation:
+1. Pobierz [Postgres.app](https://postgresapp.com) i przeciągnij aplikację do folderu **Applications**
+2. Otwórz aplikację i kliknij **Initialize**, aby utworzyć nowy serwer
+3. Postępuj zgodnie z instrukcjami aplikacji, aby dodać jej narzędzia wiersza poleceń do zmiennej PATH
+4. Zweryfikuj instalację:
 
 ```bash
 psql --version
 ```
 
-Postgres.app also creates a superuser named after your macOS account.
+Postgres.app również tworzy superużytkownika o nazwie Twojego konta macOS.
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Konfiguracja serwera WWW {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna wymaga serwera WWW do hostowania dashboardu. Wybierz jedną z poniższych opcji:
 
-- [nginx](#nginx-setup) — installed via Homebrew, recommended
-- [Apache httpd](#apache-setup) — included with macOS
+- [nginx](#nginx-setup) — instalowany przez Homebrew, zalecany
+- [Apache httpd](#apache-setup) — dołączony do macOS
 
-You only need to install and configure **one** of these servers.
+Wystarczy zainstalować i skonfigurować **jeden** z tych serwerów.
 
-Both sections configure two things the dashboard depends on:
+Obie sekcje konfigurują dwie rzeczy, od których zależy dashboard:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Mechanizm awaryjny dla aplikacji jednostronicowej (SPA)**, aby odświeżenie adresu URL dashboardu nie zwracało błędu 404
+- **Typ MIME dla `.md`**, aby pliki Markdown były serwowane poprawnie
 
-### nginx Setup {: #nginx-setup }
+### Konfiguracja nginx {: #nginx-setup }
 
-#### Overview
+#### Przegląd
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx to lekki, wydajny serwer WWW, dobrze nadający się do serwowania statycznego dashboardu digna.
 
-#### Installation
+#### Instalacja
 
 ```bash
 brew install nginx
 ```
 
-#### Starting nginx
+#### Uruchamianie nginx
 
 ```bash
 brew services start nginx
 ```
 
-#### Verify the Installation
+#### Zweryfikuj instalację
 
-1. Open your browser
-2. Navigate to `http://localhost:8080`
-3. You should see the nginx welcome page
+1. Otwórz przeglądarkę
+2. Przejdź do `http://localhost:8080`
+3. Powinieneś zobaczyć stronę powitalną nginx
 
-!!! note "Note — Default Port Is 8080, Not 80"
+!!! note "Uwaga — domyślny port to 8080, a nie 80"
 
-    Homebrew configures nginx to listen on port `8080` so that it can run without administrator privileges. On macOS, binding to port `80` or any other port below 1024 requires root.
+    Homebrew konfiguruje nginx do nasłuchiwania na porcie `8080`, aby mógł działać bez uprawnień administratora. W macOS powiązanie z portem `80` lub dowolnym innym portem poniżej 1024 wymaga uprawnień root.
 
-    To serve the dashboard on port 80, change `listen 8080;` to `listen 80;` in the configuration below and start nginx with `sudo brew services start nginx` instead.
+    Aby serwować dashboard na porcie 80, zmień `listen 8080;` na `listen 80;` w poniższej konfiguracji i uruchom nginx poleceniem `sudo brew services start nginx`.
 
-#### Configuring a Site for the Dashboard
+#### Konfigurowanie witryny dla dashboardu
 
-Homebrew's nginx configuration includes every file in its `servers` directory. Create a dedicated configuration file for digna there:
+Konfiguracja nginx z Homebrew dołącza każdy plik ze swojego katalogu `servers`. Utwórz tam dedykowany plik konfiguracyjny dla digna:
 
 ```bash
 nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Paste the following, replacing `/path/to/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Wklej poniższą treść, zastępując `/path/to/digna/dashboard` rzeczywistą ścieżką do rozpakowanego folderu `dashboard`:
 
 ```nginx
 server {
@@ -292,13 +292,13 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Ważne"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Bez dyrektywy `try_files` przeładowanie dowolnej strony dashboardu innej niż główny adres URL zwraca błąd 404. Jest to odpowiednik modułu URL Rewrite wymaganego przez IIS w systemie Windows.
 
-#### Apply the Configuration
+#### Zastosuj konfigurację
 
-Test the configuration for syntax errors, then reload nginx:
+Sprawdź konfigurację pod kątem błędów składni, a następnie przeładuj nginx:
 
 ```bash
 nginx -t
@@ -307,67 +307,67 @@ brew services restart nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Konfiguracja Apache httpd {: #apache-setup }
 
-#### Overview
+#### Przegląd
 
-macOS includes Apache httpd, so no installation is required. It is disabled by default.
+macOS zawiera Apache httpd, więc instalacja nie jest potrzebna. Domyślnie jest on wyłączony.
 
-#### Starting Apache
+#### Uruchamianie Apache
 
 ```bash
 sudo apachectl start
 ```
 
-#### Verify the Installation
+#### Zweryfikuj instalację
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the message "It works!"
+1. Otwórz przeglądarkę
+2. Przejdź do `http://localhost`
+3. Powinieneś zobaczyć komunikat "It works!"
 
-#### Required: Enable mod_rewrite
+#### Wymagane: włącz mod_rewrite
 
-The dashboard requires URL rewriting. Open the Apache configuration:
+Dashboard wymaga przepisywania adresów URL. Otwórz konfigurację Apache:
 
 ```bash
 sudo nano /etc/apache2/httpd.conf
 ```
 
-Find the following line and remove the leading `#` to uncomment it:
+Znajdź następujący wiersz i usuń początkowy znak `#`, aby go odkomentować:
 
 ```apache
 LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Wymagane: zezwól na nadpisywanie przez .htaccess
 
-In the same file, locate the `<Directory "/Library/WebServer/Documents">` block and change:
+W tym samym pliku znajdź blok `<Directory "/Library/WebServer/Documents">` i zmień:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+na:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Wymagane: typ MIME dla plików Markdown
 
-Still in `httpd.conf`, add the following line so that Markdown files are served correctly:
+Nadal w `httpd.conf` dodaj następujący wiersz, aby pliki Markdown były serwowane poprawnie:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Ważne"
 
-    Without this setting, `.md` files may not be served properly.
+    Bez tego ustawienia pliki `.md` mogą nie być serwowane poprawnie.
 
-#### Apply the Configuration
+#### Zastosuj konfigurację
 
-Check the configuration for syntax errors, then restart Apache:
+Sprawdź konfigurację pod kątem błędów składni, a następnie zrestartuj Apache:
 
 ```bash
 sudo apachectl configtest
@@ -376,15 +376,15 @@ sudo apachectl restart
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Instalacja początkowa {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Krok 1: Skonfiguruj repozytorium digna
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Repozytorium digna przechowuje wszystkie metryki wyliczane przez digna. Działa jako centralna baza danych dla danych analitycznych i wydajnościowych.
 
-#### Create Repository Schema and User
+#### Utwórz schemat repozytorium i użytkownika
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Otwórz klienta PostgreSQL (psql, pgAdmin lub podobny) i wykonaj poniższe polecenia SQL:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -394,13 +394,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Zastąp następujące zmienne:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — Wybrana nazwa schematu (np. `dignarepo`)
+- `<digna_repo_user>` — Wybrana nazwa użytkownika (np. `digna_user`)
+- `<digna_repo_password>` — Bezpieczne hasło dla tego użytkownika
 
-**Example:**
+**Przykład:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -410,108 +410,108 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the Terminal in a single step:
+Aby wykonać je z Terminala w jednym kroku:
 
 ```bash
 psql postgres
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Następnie wklej polecenia w wierszu zachęty `postgres=#` i wpisz `\q`, aby zakończyć.
 
-!!! tip "Best Practice"
+!!! tip "Dobra praktyka"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Używaj silnych, złożonych haseł dla użytkowników bazy danych. Unikaj łatwych do odgadnięcia danych uwierzytelniających.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Krok 2: Rozpakuj pakiet instalacyjny digna
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna` or `~/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
+1. Znajdź plik ZIP instalacji digna dostarczony Ci
+2. Rozpakuj go do wybranej lokalizacji instalacyjnej — na przykład `/opt/digna` lub `~/digna`
+3. Po rozpakowaniu powinieneś zobaczyć następujące elementy:
+   - `dashboard/` — interfejs webowy
+   - `digna` — główny plik wykonywalny (backend + CLI w jednym)
 
-!!! info "The configuration and licence files are not in the package"
+!!! info "Plików konfiguracyjnych i pliku licencji nie ma w pakiecie"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
-    create both yourself, in [Backend Configuration](#backend-configuration) and
-    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
-    digna supplies it separately, as Step 3 describes.
+    Ani `config.toml`, ani `dashboard/dashboard_config.toml` nie są dostarczane z instalacją — oba
+    tworzysz samodzielnie, w sekcjach [Konfiguracja backendu](#backend-configuration) i
+    [Konfiguracja dashboardu](#dashboard-configuration). `license.toml` również nie jest dołączany;
+    digna dostarcza go osobno, zgodnie z opisem w kroku 3.
 
-To extract from the Terminal:
+Aby rozpakować archiwum z Terminala:
 
 ```bash
 unzip digna-2026.06-macos.zip -d /opt/digna
 ```
 
-#### Make the Executable Runnable
+#### Nadaj plikowi wykonywalnemu prawo do uruchamiania
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+W zależności od sposobu przesłania archiwum bit wykonywalności może nie zachować się po rozpakowaniu. Ustaw go jawnie:
 
 ```bash
 cd /opt/digna
 chmod +x digna
 ```
 
-#### If macOS Blocks the Application
+#### Jeśli macOS blokuje aplikację
 
-Files downloaded through a browser or mail client are tagged with a quarantine attribute. If macOS reports that the app *"cannot be opened because the developer cannot be verified"*, clear the attribute from the installation directory:
+Pliki pobrane przez przeglądarkę lub klienta poczty są oznaczane atrybutem kwarantanny. Jeśli macOS zgłasza, że aplikacji *"nie można otworzyć, ponieważ nie można zweryfikować dewelopera"*, usuń ten atrybut z katalogu instalacyjnego:
 
 ```bash
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-Alternatively, open **System Settings → Privacy & Security**, find the blocked item near the bottom of the page, and click **Open Anyway**.
+Możesz też otworzyć **Ustawienia systemowe → Prywatność i ochrona**, znaleźć zablokowany element u dołu strony i kliknąć **Otwórz mimo to**.
 
-!!! note "Note"
+!!! note "Uwaga"
 
-    This step is only needed if macOS actually blocks the executable. Packages transferred over SSH or from internal file shares are usually not quarantined.
+    Ten krok jest potrzebny tylko wtedy, gdy macOS faktycznie blokuje plik wykonywalny. Pakiety przesłane przez SSH lub z wewnętrznych udziałów plików zwykle nie są objęte kwarantanną.
 
-### Step 3: Install the License File
+### Krok 3: Zainstaluj plik licencji
 
-!!! warning "Important"
+!!! warning "Ważne"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Plik licencji **nie jest** dołączony do pakietu instalacyjnego i zostanie dostarczony oddzielnie przez digna.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Znajdź plik `license.toml` dostarczony Ci
+2. Skopiuj go do katalogu głównego instalacji digna (tam, gdzie znajdują się `config.toml` i plik wykonywalny `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Dlaczego to ważne:**
+Plik licencji zawiera informacje o kliencie, datę wygaśnięcia licencji i podpis cyfrowy. **Nie modyfikuj tego pliku** — jakiekolwiek zmiany unieważnią licencję.
 
-**Directory structure after setup:**
+**Struktura katalogów po konfiguracji:**
 
 ```
 /opt/digna/
-├── config.toml         (configuration file)
-├── license.toml        (YOUR LICENSE FILE - copy here)
-├── digna               (main executable)
-├── bin/                (service management scripts)
-└── dashboard/          (web interface)
-    └── (dashboard files)
+├── config.toml         (plik konfiguracyjny)
+├── license.toml        (TWÓJ PLIK LICENCYJNY - skopiuj tutaj)
+├── digna               (główny plik wykonywalny)
+├── bin/                (skrypty zarządzania usługą)
+└── dashboard/          (interfejs webowy)
+    └── (pliki dashboardu)
 ```
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Konfiguracja backendu {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Krok 1: Utwórz i edytuj plik konfiguracyjny
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+Plik `config_template.toml` jest dostarczony w katalogu instalacyjnym digna. Wystarczy zmienić jego nazwę na `config.toml`.
 
 ```bash
 cd /opt/digna
 mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Lokalizacja:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Otwórz `config.toml` w edytorze tekstu i skonfiguruj każdą z poniższych sekcji.
 
-#### [app] Section
+#### Sekcja [app]
 
-This section configures the digna backend application settings:
+Ta sekcja konfiguruje ustawienia aplikacji backend digna:
 
 ```toml
 [app]
@@ -521,20 +521,20 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parametr | Wartość | Uwagi |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontendu | Jeśli dashboard jest na innym serwerze, dodaj jego URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Wymagane dla CORS z poświadczeniami |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Zezwalaj na wszystkie metody HTTP |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Zezwalaj na wszystkie nagłówki |
 
-!!! note "Note"
+!!! note "Uwaga"
 
-    If you serve the dashboard from Homebrew's nginx on its default port, the origin to allow is `http://localhost:8080`.
+    Jeśli serwujesz dashboard z nginx z Homebrew na jego domyślnym porcie, dozwolonym originem jest `http://localhost:8080`.
 
-#### [repo] Section
+#### Sekcja [repo]
 
-This section configures the connection to the PostgreSQL database:
+Ta sekcja konfiguruje połączenie z bazą danych PostgreSQL:
 
 ```toml
 [repo]
@@ -546,18 +546,18 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parametr | Wartość | Uwagi |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` lub adres IP | Nazwa hosta/IP serwera PostgreSQL |
+| `digna_REPO_PORT` | `5432` (domyślnie) | Port PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Nazwa bazy danych |
+| `digna_REPO_SCHEMA` | `dignarepo` | Schemat utworzony wcześniej |
+| `digna_REPO_USER` | `digna_user` | Użytkownik utworzony w konfiguracji PostgreSQL |
+| `digna_REPO_PASSWORD` | Twoje hasło | Hasło ustawione podczas tworzenia schematu |
 
-#### [base] Section
+#### Sekcja [base]
 
-This section contains security and cookie settings:
+Ta sekcja zawiera ustawienia bezpieczeństwa i ciasteczek:
 
 ```toml
 [base]
@@ -572,44 +572,44 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Parametr | Wartość | Uwagi |
 |---|---|---|
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
-| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
+| `digna_COOKIE_DOMAIN` | `localhost` | Dopasuj do domeny frontendu |
+| `digna_COOKIE_SECURE` | `false` (lokalnie) / `true` (produkcja) | Ustaw `true` dla połączeń HTTPS |
+| `digna_COOKIE_HTTPONLY` | `true` | Zawsze włączone dla bezpieczeństwa |
+| `digna_COOKIE_SAME_SITE` | `lax` | Zapobiega atakom CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 godziny) | Czas wygasania sesji w sekundach |
+| `digna_MAX_WORKERS` | Liczba rdzeni CPU - 1 | Liczba równoległych zadań inspekcji |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maksymalne opóźnienie w sekundach, jakie harmonogram może dodać przed uruchomieniem zaległego zadania |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Godzina (format 24-godzinny `HH:MM`), o której rozpoczyna się codzienne czyszczenie |
 
-!!! tip "Tip"
+!!! tip "Wskazówka"
 
-    To find the number of CPU cores available on your Mac, run `sysctl -n hw.ncpu`.
+    Aby sprawdzić liczbę rdzeni CPU dostępnych na Twoim komputerze Mac, uruchom `sysctl -n hw.ncpu`.
 
-#### [encryption] Section
+#### Sekcja [encryption]
 
-This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+Ta sekcja zawiera klucz służący do szyfrowania wrażliwych wartości przechowywanych w repozytorium. Jest **wymagana** — `config check` zgłasza sekcję `[encryption]` jako FAILED, jeśli klucza brakuje.
 
 ```toml
 [encryption]
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Parametr | Wartość | Uwagi |
 |---|---|---|
-| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+| `DIGNA_ENCRYPTION_KEY` | Klucz zakodowany w Base64 | Szyfruje wrażliwe wartości przechowywane w repozytorium digna |
 
-!!! warning "Protect config.toml"
+!!! warning "Chroń plik config.toml"
 
-    This key is a fixed value, identical across all digna installations, and it is what decrypts
-    the sensitive values in your repository. Restrict `config.toml` to the account that runs
-    digna, keep it out of source control and off shared drives, and exclude it from any backup
-    that is stored less securely than the repository itself.
+    Ten klucz jest wartością stałą, identyczną we wszystkich instalacjach digna, i to on odszyfrowuje
+    wrażliwe wartości w Twoim repozytorium. Ogranicz dostęp do `config.toml` do konta, na którym działa
+    digna, trzymaj plik poza systemem kontroli wersji i dyskami współdzielonymi oraz wyłącz go z każdej kopii
+    zapasowej przechowywanej mniej bezpiecznie niż samo repozytorium.
 
-#### [logging] Section
+#### Sekcja [logging]
 
-This section configures logging behavior:
+Ta sekcja konfiguruje zachowanie logowania:
 
 ```toml
 [logging]
@@ -617,22 +617,22 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parametr | Wartość | Uwagi |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` lub `DEBUG` | `INFO` dla produkcji, `DEBUG` do rozwiązywania problemów |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Liczba codziennych kopii zapasowych logów do przechowania |
 
 ---
 
-### Step 2: Validate the Configuration
+### Krok 2: Sprawdź konfigurację
 
-Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+Przed zainicjowaniem repozytorium sprawdź, czy `config.toml` jest kompletny i poprawnie zbudowany. W katalogu instalacyjnym digna uruchom:
 
 ```bash
 ./digna config check
 ```
 
-Every section is validated on its own, so a single mistake does not hide the state of the rest:
+Każda sekcja jest sprawdzana osobno, więc pojedynczy błąd nie zasłania stanu pozostałych:
 
 ```text
 Configuration validation report (source: config.toml):
@@ -646,77 +646,77 @@ Configuration validation report (source: config.toml):
 Overall: OK
 ```
 
-Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+Popraw wszystko, co zostało zgłoszone jako FAILED, i uruchom polecenie ponownie przed kontynuowaniem. Pełną listę opcji znajdziesz w [dokumentacji CLI](../../../cli/Command_Line_Interface_202606.md).
 
-### Step 3: Initialize the Repository
+### Krok 3: Zainicjuj repozytorium
 
-1. Open **Terminal**
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Otwórz **Terminal**
+2. Przejdź do katalogu instalacji digna (tam, gdzie znajdują się `config.toml` i plik wykonywalny `digna`)
+3. Uruchom test połączenia:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Powinieneś zobaczyć potwierdzenie, że połączenie zostało nawiązane (repozytorium samo w sobie nie zostało jeszcze zainicjowane).
 
-!!! note "Note"
+!!! note "Uwaga"
 
-    On macOS, commands in the current directory are not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add the installation directory to your PATH:
+    W macOS polecenia z bieżącego katalogu nie znajdują się w zmiennej PATH, dlatego plik wykonywalny wywołuje się jako `./digna`, a nie `digna`. Aby wszędzie używać krótszej formy, dodaj katalog instalacyjny do zmiennej PATH:
 
     ```bash
     echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
     source ~/.zshrc
     ```
 
-### Step 4: Install the Repository Schema
+### Krok 4: Zainstaluj schemat repozytorium
 
-In the same directory, run:
+W tym samym katalogu uruchom:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+To polecenie instaluje niezbędne tabele i schemat w Twojej bazie PostgreSQL.
 
-### Step 5: Create an Admin User
+### Krok 5: Utwórz użytkownika administratora
 
-The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+Użytkownik administratora jest tworzony bezpośrednio w schemacie repozytorium, więc serwer nie musi jeszcze działać. W katalogu instalacji digna uruchom:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
 ```
 
-**Example:**
+**Przykład:**
 
 ```bash
 ./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with email `admin@example.com` and full administrative privileges.
+To tworzy użytkownika o adresie e-mail `admin@example.com` z pełnymi uprawnieniami administracyjnymi.
 
-!!! tip "Tip"
+!!! tip "Wskazówka"
 
-    Wrap the password in single quotes. `zsh` treats characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Umieść hasło w pojedynczych cudzysłowach. `zsh` traktuje znaki takie jak `!`, `$` i `*` w szczególny sposób, a hasło zawierające je bez cudzysłowów nie zostanie przekazane w takiej postaci, w jakiej je wpisano.
 
-!!! tip "Best Practice"
+!!! tip "Dobra praktyka"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Używaj silnego hasła zawierającego wielkie i małe litery, cyfry oraz znaki specjalne.
 
-### Step 6: Start the digna Server
+### Krok 6: Uruchom serwer digna
 
-In the digna installation directory, start the server with:
+W katalogu instalacyjnym digna uruchom serwer poleceniem:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Parametry:**
+- `--address` — nazwa hosta/IP serwera
+- `--port` — port serwera
 
-You should see startup messages confirming the server is running:
+Powinieneś zobaczyć komunikaty startowe potwierdzające uruchomienie serwera:
 
 ```
 INFO:     Started server process [1234]
@@ -725,66 +725,66 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Wskazówka"
 
-    The first time you start the server, macOS may ask whether you want the application to accept incoming network connections. Click **Allow**, otherwise the dashboard will not be able to reach the backend.
+    Przy pierwszym uruchomieniu serwera macOS może zapytać, czy aplikacja ma przyjmować przychodzące połączenia sieciowe. Kliknij **Zezwalaj**, w przeciwnym razie dashboard nie będzie mógł połączyć się z backendem.
 
-!!! note "The server holds the terminal"
+!!! note "Serwer zajmuje terminal"
 
-    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a Background Service](#running-digna-as-a-background-service) to start it automatically at boot instead.
+    `serve` działa na pierwszym planie i pracuje, dopóki nie zatrzymasz go skrótem ++ctrl+c++. Zostaw go uruchomionego, dopóki nie dokończysz konfiguracji; aby zamiast tego uruchamiał się automatycznie przy starcie systemu, zobacz [Uruchamianie digna jako usługi w tle](#running-digna-as-a-background-service).
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Konfiguracja dashboardu {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Krok 1: Wdróż dashboard na serwerze WWW
 
-The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
+Dashboard digna odczytuje własną konfigurację z pliku `dashboard/dashboard_config.toml`. Ten plik nie jest dostarczany z instalacją — tworzysz go w katalogu `dashboard/`, obok plików dashboardu.
 
-Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
+Jego zawartość opisano w sekcji [Logowanie jednokrotne (SSO)](../../../sso/overview.md), bo właśnie tam ten plik jest potrzebny: zawiera opcje logowania oferowane przez dashboard oraz, w przypadku wdrożeń wieloinstancyjnych, połączenie z backendem.
 
-Choose your web server and follow the corresponding deployment steps.
+Wybierz serwer WWW i postępuj zgodnie z odpowiednimi krokami wdrożeniowymi.
 
-#### Deploying to nginx
+#### Wdrażanie w nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Jeśli wykonano kroki z sekcji [Konfiguracja nginx](#nginx-setup), blok server wskazuje już na folder `dashboard` i kopiowanie nie jest potrzebne.
 
-1. **Confirm the path**
-   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Potwierdź ścieżkę**
+   - Otwórz `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Sprawdź, czy `root` wskazuje na rozpakowany folder `dashboard`
 
-2. **Ensure the folder is readable**
+2. **Upewnij się, że folder jest czytelny**
    ```bash
    chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Przeładuj nginx**
    ```bash
    nginx -t
    brew services restart nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost:8080` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Przetestuj instalację**
+   - Otwórz przeglądarkę
+   - Przejdź do `http://localhost:8080` (lub skonfigurowanego adresu URL)
+   - Powinieneś zobaczyć stronę logowania dashboardu digna
 
-#### Deploying to Apache httpd
+#### Wdrażanie w Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Skopiuj dashboard do katalogu głównego dokumentów**
    ```bash
    sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Dodaj reguły przepisywania**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Utwórz plik `.htaccess` we wdrożonym folderze, aby trasy dashboardu działały po odświeżeniu przeglądarki:
 
    ```bash
    sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
-   Paste the following:
+   Wklej poniższą treść:
 
    ```apache
    RewriteEngine On
@@ -799,219 +799,219 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Zrestartuj Apache**
    ```bash
    sudo apachectl restart
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Otwórz dashboard**
+   - Otwórz przeglądarkę
+   - Przejdź do `http://localhost/digna`
+   - Powinieneś zobaczyć stronę logowania dashboardu digna
 
 ---
 
-## Running digna as a Background Service {: #running-digna-as-a-background-service }
+## Uruchamianie digna jako usługi w tle {: #running-digna-as-a-background-service }
 
-### Why Run digna as a Service?
+### Dlaczego uruchamiać digna jako usługę?
 
-Running the digna backend as a background service ensures it:
+Uruchomienie backendu digna jako usługi w tle zapewnia, że:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open Terminal window
-- Restarts automatically if it crashes
-- Can be managed through `launchctl`, macOS's service manager
+- Uruchamia się automatycznie podczas startu maszyny
+- Działa w tle bez otwartego okna Terminala
+- Automatycznie się restartuje w razie awarii
+- Można nim zarządzać za pomocą `launchctl`, menedżera usług systemu macOS
 
-### Service Management Files
+### Pliki zarządzania usługą
 
-All necessary files are located in the digna installation directory under: `bin/`
+Wszystkie niezbędne pliki znajdują się w katalogu instalacji digna w: `bin/`
 
-The following shell scripts are available:
+Dostępne skrypty powłoki:
 
-- `install_service.sh` — Registers digna with launchd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — rejestruje digna w launchd
+- `uninstall_service.sh` — usuwa rejestrację usługi
+- `start_service.sh` — uruchamia zarejestrowaną usługę
+- `stop_service.sh` — zatrzymuje działającą usługę
 
-!!! warning "Administrator Required"
+!!! warning "Wymagane uprawnienia administratora"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes to `/Library/LaunchDaemons`.
+    Wszystkie skrypty muszą być uruchamiane przez `sudo`, ponieważ rejestracja usługi uruchamianej przy starcie systemu zapisuje dane w `/Library/LaunchDaemons`.
 
-### Making the Scripts Executable
+### Nadawanie skryptom prawa do uruchamiania
 
-Extraction may not preserve the executable bit. Before first use:
+Rozpakowanie może nie zachować bitu wykonywalności. Przed pierwszym użyciem wykonaj:
 
 ```bash
 cd /opt/digna/bin
 chmod +x *.sh
 ```
 
-### Installing the Service
+### Instalacja usługi
 
-1. **Open Terminal**
+1. **Otwórz Terminal**
 
-2. **Navigate to the bin Folder**
+2. **Przejdź do folderu bin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Uruchom skrypt instalacyjny**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with launchd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Serwer digna jest teraz zarejestrowany w launchd z włączonym **automatycznym uruchamianiem**. Usługa nie uruchamia się od razu — zobacz następną sekcję, aby ją uruchomić.
 
-### Starting and Stopping the Service
+### Uruchamianie i zatrzymywanie usługi
 
-#### To Start the Service
+#### Aby uruchomić usługę
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Otwórz Terminal
+2. Przejdź do `/opt/digna/bin`
+3. Uruchom:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Aby zatrzymać usługę
 
-1. Open Terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Otwórz Terminal
+2. Przejdź do `/opt/digna/bin`
+3. Uruchom:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Wskazówka"
 
-    Always stop the service before updating application files.
+    Zawsze zatrzymuj usługę przed aktualizacją plików aplikacji.
 
-### Verifying the Service
+### Weryfikacja usługi
 
-To confirm that the service is registered and running:
+Aby potwierdzić, że usługa jest zarejestrowana i działa:
 
 ```bash
 sudo launchctl list | grep digna
 ```
 
-A line beginning with a process ID indicates the service is running. A `-` in the first column means it is registered but stopped.
+Wiersz zaczynający się od identyfikatora procesu oznacza, że usługa działa. Znak `-` w pierwszej kolumnie oznacza, że usługa jest zarejestrowana, ale zatrzymana.
 
-### Moving the Service to a New Directory
+### Przenoszenie usługi do nowego katalogu
 
-launchd stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+launchd przechowuje bezwzględną ścieżkę do pliku wykonywalnego, więc przeniesienie instalacji wymaga ponownej rejestracji usługi:
 
-1. **Uninstall the Current Service**
+1. **Odinstaluj aktualną usługę**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Przenieś pliki aplikacji**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Zainstaluj usługę ponownie**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Uruchom usługę**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Odinstalowywanie usługi
 
-1. **Stop the Running Service**
+1. **Zatrzymaj działającą usługę**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Odinstaluj usługę**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from launchd.
+Serwer digna jest teraz wyrejestrowany z launchd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Aktualizacja do nowego wydania {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Przed aktualizacją
 
-**Verify All Database Connections First**
+**Najpierw zweryfikuj wszystkie połączenia z bazami danych**
 
-From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
-offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
-The digna team decided to build on ODBC alone, because a single, standard interface gives you
-more than a set of bespoke drivers can:
+Od wydania 2026.06 digna łączy się z każdą technologią źródłową przez **ODBC**. Wcześniejsze wydania
+dawały wybór między sterownikiem właściwym dla danej technologii a ODBC, wskazywany przełącznikiem **Use ODBC**.
+Zespół digna zdecydował się oprzeć wyłącznie na ODBC, ponieważ jeden standardowy interfejs daje więcej
+niż zestaw sterowników pisanych na miarę:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
-  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
-  update, rather than waiting for a digna release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of digna.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones digna does not publish a dedicated guide for.
+- **Uwierzytelnianie** — uwierzytelnianie jest częścią ODBC, więc połączenie może korzystać ze wszystkiego, co obsługuje
+  jego sterownik: haseł, tokenów i PAT-ów, Kerberosa i Active Directory, MFA i logowania jednokrotnego przez
+  przeglądarkę, tożsamości chmurowych, certyfikatów klienta i TLS. Nowe metody pojawiają się wraz z aktualizacją
+  sterownika, a nie po oczekiwaniu na wydanie digna.
+- **Sterowniki utrzymywane przez dostawców baz danych** — sterownik producenta nadąża za nowymi wersjami serwera
+  i poprawkami bezpieczeństwa, a Ty możesz aktualizować go we własnym tempie, niezależnie od digna.
+- **Jeden sposób konfigurowania wszystkiego** — każda technologia to lista właściwości klucz–wartość, z tym samym
+  interfejsem, tym samym szyfrowaniem wartości wrażliwych i tą samą diagnostyką, zamiast innego zestawu pól
+  dla każdego źródła.
+- **Strojenie i zasięg** — opcje sterownika, takie jak limity czasu, ustawienia TLS, serwery proxy i rozmiary
+  pobierania, są dostępne dla każdego źródła, a podłączyć można każdą technologię ze zgodnym sterownikiem ODBC,
+  również taką, dla której digna nie publikuje osobnego przewodnika.
 
-In practice this means the **Use ODBC** switch and the separate host, port, database, user and
-password fields no longer exist. **Every connection that does not already use ODBC must be
-changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+W praktyce oznacza to, że przełącznik **Use ODBC** oraz osobne pola hosta, portu, bazy danych, użytkownika
+i hasła już nie istnieją. **Każde połączenie, które nie korzysta jeszcze z ODBC, musi zostać przestawione
+na ODBC** — nie ma automatycznej konwersji, więc zaplanuj to przed aktualizacją:
 
-1. Review every database connection defined in your installation and list the ones that are not
-   yet using ODBC — each of these has to be reconfigured.
-2. Install the matching ODBC driver on the digna host — connections are opened from the server
-   that runs the digna backend, not from the browser. See
-   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
-3. Have the ODBC properties ready for each affected connection. The
-   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
-   property set per source.
+1. Przejrzyj każde połączenie z bazą danych zdefiniowane w Twojej instalacji i wypisz te, które nie używają
+   jeszcze ODBC — każde z nich trzeba skonfigurować od nowa.
+2. Zainstaluj odpowiedni sterownik ODBC na hoście digna — połączenia otwierane są z serwera, na którym działa
+   backend digna, a nie z przeglądarki. Zobacz
+   [Instalacja sterownika ODBC na hoście digna](../../../databases/overview.md#install-the-driver).
+3. Przygotuj właściwości ODBC dla każdego objętego zmianą połączenia.
+   [Przewodniki technologiczne](../../../databases/overview.md#technology-guides) podają dla każdego źródła
+   sprawdzony zestaw właściwości.
 
-After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
-see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
-and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+Po aktualizacji przestaw każde objęte zmianą połączenie na ODBC i przetestuj je z poziomu pulpitu —
+zobacz [Tworzenie połączenia z bazą danych](../../../databases/overview.md#create-a-database-connection)
+oraz [Testowanie połączenia](../../../databases/overview.md#testing-a-connection).
 
-!!! warning "Databricks Legacy connections"
+!!! warning "Połączenia Databricks Legacy"
 
-    The Databricks Legacy connector has been removed in this release. Migrate those connections
-    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+    Łącznik Databricks Legacy został usunięty w tym wydaniu. Przenieś te połączenia
+    na łącznik [Databricks](../../../databases/databricks_connector_guide.md).
 
-**Creating a digna Repository Backup is Mandatory**
+**Utworzenie kopii zapasowej repozytorium digna jest obowiązkowe**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Przed aktualizacją digna wykonaj kopię zapasową repozytorium (PostgreSQL), aby zabezpieczyć się przed utratą danych.
+Kopia zapasowa pozwoli przywrócić stan w razie napotkania problemów podczas aktualizacji.
 
-To create a backup from the Terminal:
+Aby utworzyć kopię zapasową z Terminala:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Proces aktualizacji
 
-#### Step 1: Stop the digna Service
+#### Krok 1: Zatrzymaj usługę digna
 
-If digna is running as a background service, stop it first:
+Jeśli digna działa jako usługa w tle, najpierw ją zatrzymaj:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its Terminal window.
+Jeśli digna działa na pierwszym planie, naciśnij `Ctrl + C` w jej oknie Terminala.
 
-#### Step 2: Backup Current Installation
+#### Krok 2: Wykonaj kopię bieżącej instalacji
 
-In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
+W katalogu instalacyjnym digna zmień nazwy folderów bieżącej instalacji, aby nowe wydanie mogło zostać wdrożone obok nich:
 
 ```bash
 cd /opt/digna
@@ -1024,37 +1024,37 @@ mv dignacli dignacli_old
 mv dashboard dashboard_old
 ```
 
-!!! info "dignabackend and dignacli are no longer used"
+!!! info "dignabackend i dignacli nie są już używane"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Od wydania 2026.06 `dignabackend` i `dignacli` są zastąpione pojedynczym plikiem wykonywalnym `digna`, który łączy backend i CLI. Zachowaj `dignabackend_old` i `dignacli_old` tylko do czasu zweryfikowania aktualizacji — potem możesz usunąć oba foldery. Zachowaj `dashboard_old`, dopóki nie odtworzysz z niego swoich plików konfiguracyjnych (patrz krok 4).
 
-#### Step 3: Extract and Deploy New Version
+#### Krok 3: Rozpakuj i wdróż nową wersję
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and, if necessary, clear the quarantine attribute:
+1. Rozpakuj nowy plik ZIP instalacji digna
+2. Skopiuj nowy plik wykonywalny `digna` oraz folder `dashboard` do katalogu instalacyjnego
+3. Przywróć bit wykonywalności i w razie potrzeby usuń atrybut kwarantanny:
 
 ```bash
 chmod +x /opt/digna/digna
 xattr -dr com.apple.quarantine /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Ważne"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
-    installation ZIP — the digna team never ships either file. Your existing configuration is
-    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
-    only ones you have.
+    Ani `config.toml`, ani `dashboard/dashboard_config.toml` nigdy nie są dołączane do pliku ZIP
+    instalacji — zespół digna nigdy nie dostarcza żadnego z tych plików. Aktualizacja nie narusza więc
+    Twojej istniejącej konfiguracji, a kopie w folderach `*_old` o zmienionych nazwach są
+    jedynymi, jakie posiadasz.
 
-#### Step 4: Restore Your Configuration Files
+#### Krok 4: Przywróć pliki konfiguracyjne
 
 ```bash
 cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-!!! warning "Release 2026.06 changes config.toml"
+!!! warning "Wydanie 2026.06 zmienia plik config.toml"
 
-    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Trzy ustawienia są nowe i wymagane, a trzy nie są już używane. Plik `config.toml` przeniesiony z wcześniejszego wydania nie zawiera nowych ustawień, a digna nie uruchomi się, dopóki ich brakuje. Dodaj do istniejącego `config.toml` następujące wpisy:
 
     ```toml
     [base]
@@ -1065,16 +1065,16 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
+    Dodaj dwa klucze `[base]` do istniejącej sekcji `[base]` i dodaj `[encryption]` jako nową sekcję. Następnie usuń ustawienia, które nie są już używane: **`digna_FERNET_KEY`** z sekcji `[base]` oraz **`digna_APP_HOST`** i **`digna_APP_PORT`** z sekcji `[app]` — adres i port serwer pobiera teraz z `digna serve`.
 
-    See [Backend Configuration](#backend-configuration) for what each setting does.
+    Znaczenie poszczególnych ustawień opisano w [Konfiguracji backendu](#backend-configuration).
 
-!!! warning "Single sign-on: the [oidc_clients] format has changed"
+!!! warning "Logowanie jednokrotne: format [oidc_clients] uległ zmianie"
 
-    Release 2026.06 replaces the array of tables with one table per provider, named after the
-    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+    Wydanie 2026.06 zastępuje tablicę tabel pojedynczą tabelą dla każdego dostawcy, nazwaną kluczem
+    dostawcy. `DIGNA_OIDC_KEY` znika — klucz jest teraz częścią nagłówka sekcji.
 
-    Before:
+    Przed:
 
     ```toml
     [[oidc_clients]]
@@ -1085,7 +1085,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    After:
+    Po:
 
     ```toml
     [oidc_clients.microsoft]
@@ -1095,73 +1095,73 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Repeat the section for every provider, and keep each key matching the `key` in
-    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
-    old form is still in place. Only installations that use single sign-on are affected.
+    Powtórz sekcję dla każdego dostawcy i zadbaj, aby każdy klucz odpowiadał wartości `key` z
+    `dashboard_config.toml`. `digna config check` zgłasza `oidc_clients` jako FAILED, dopóki
+    stara forma pozostaje na miejscu. Dotyczy to wyłącznie instalacji korzystających z logowania jednokrotnego.
 
-#### Step 5: Reload the Web Server
+#### Krok 5: Przeładuj serwer WWW
 
-The dashboard is a set of static files, so your web server — and the browser — may still be
-serving the previous version. Reload or restart whichever web server hosts the `dashboard`
-folder, then reload the page with a hard refresh (++cmd+shift+r++).
+Dashboard to zestaw plików statycznych, więc serwer WWW — i przeglądarka — mogą nadal
+serwować poprzednią wersję. Przeładuj lub zrestartuj serwer WWW, który udostępnia folder `dashboard`,
+a następnie przeładuj stronę z wymuszonym odświeżeniem (++cmd+shift+r++).
 
-#### Step 6: Validate the Configuration
+#### Krok 6: Sprawdź konfigurację
 
-Confirm that the updated `config.toml` is complete before touching the repository:
+Upewnij się, że zaktualizowany `config.toml` jest kompletny, zanim dotkniesz repozytorium:
 
 ```bash
 ./digna config check
 ```
 
-Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+Każda sekcja musi zgłosić OK. Popraw wszystko, co zostało zgłoszone jako FAILED, i uruchom polecenie ponownie przed kontynuowaniem.
 
-#### Step 7: Replace the License File
+#### Krok 7: Wymień plik licencji
 
-Each release is licensed separately. Copy the `license.toml` that the digna team provided for
-this release into the installation directory, replacing the old one:
+Każde wydanie jest licencjonowane osobno. Skopiuj plik `license.toml` dostarczony przez zespół digna dla
+tego wydania do katalogu instalacyjnego, zastępując stary:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
-!!! warning "Do not keep the previous license"
+!!! warning "Nie zachowuj poprzedniej licencji"
 
-    A `license.toml` issued for an earlier release does not cover this one, and every command
-    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
-    repository when the check fails. Verify it before going further:
+    Plik `license.toml` wystawiony dla wcześniejszego wydania nie obejmuje obecnego, a każde polecenie,
+    które sprawdza licencję — `user`, `inspection`, `repo` — przerywa działanie, zanim dotknie
+    repozytorium, jeśli kontrola się nie powiedzie. Sprawdź licencję, zanim przejdziesz dalej:
 
     ```bash
     ./digna license check
     ```
 
-#### Step 8: Upgrade the Repository Schema
+#### Krok 8: Zaktualizuj schemat repozytorium
 
-Navigate to your digna installation directory and run:
+Przejdź do katalogu instalacyjnego digna i uruchom:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+To zaktualizuje schemat PostgreSQL do najnowszej wersji, zachowując wszystkie istniejące dane.
 
-#### Step 9: Restart Services
+#### Krok 9: Uruchom ponownie usługi
 
-If running as a background service:
+Jeśli digna działa jako usługa w tle:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Jeśli uruchamiasz ręcznie, zrestartuj serwer:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, restart the respective web server:
+Jeśli korzystasz z nginx lub Apache, zrestartuj odpowiedni serwer WWW:
 
 ```bash
 brew services restart nginx
@@ -1170,10 +1170,10 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Step 10: Verify the Upgrade
+#### Krok 10: Zweryfikuj aktualizację
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-4. Change every connection that did not already use ODBC over to ODBC, then test all connections
-   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection)
+1. Uzyskaj dostęp do dashboardu digna
+2. Sprawdź, czy interfejs ładuje się poprawnie
+3. Sprawdź logi serwera pod kątem ewentualnych błędów
+4. Przestaw na ODBC każde połączenie, które jeszcze z niego nie korzystało, a następnie przetestuj wszystkie połączenia
+   — zobacz [Testowanie połączenia](../../../databases/overview.md#testing-a-connection)

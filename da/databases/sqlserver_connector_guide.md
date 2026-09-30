@@ -1,86 +1,86 @@
-# Source Connector for MS SQL Server
+# Kildeconnector til MS SQL Server
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Denne vejledning beskriver, hvordan du konfigurerer *digna* til at oprette forbindelse til
+Microsoft SQL Server over **ODBC** med en **DSN-løs** forbindelsesstreng.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+*digna*-delen af opsætningen er den samme for alle teknologier — hvor forbindelser oprettes,
+hvordan egenskabsværdier krypteres, hvordan en forbindelse testes, og hvad profileringstilstandene
+betyder. Den er beskrevet i [Oversigt over databaseforbindelser](overview.md). Denne side dækker
+det, der er specifikt for SQL Server.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Synapse konfigureres også som en SQL Server-forbindelse, med et andet værtsnavn og nogle få
+    ekstra forhold at tage højde for — se [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Installer ODBC-driveren {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Installer **ODBC Driver 18 for SQL Server** på den maskine, der kører *digna*-backend, efter
+[Microsofts installationsvejledning](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Den driver, der følger med Windows under det enkle navn **SQL Server**, virker også, men den er
+for længst afløst og understøtter hverken moderne TLS-indstillinger eller Azure-autentificering.
+Brug den kun, hvor det ikke er muligt at installere den aktuelle driver.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Aflæs det nøjagtige registrerede drivernavn på din vært som beskrevet i
+[Installer ODBC-driveren på digna-værten](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. ODBC-egenskaber {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Et eksempel, ikke en specifikation"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Sættet nedenfor er én kombination, der vides at virke. Egenskaberne tilhører Microsofts
+    ODBC-driver, så deres navne, standardværdier og accepterede værdier varierer mellem
+    driverversioner — Driver 18 krypterer for eksempel som standard, hvilket Driver 17 ikke
+    gjorde — og mellem platforme. Brug dette som udgangspunkt, og tjek dokumentationen for den
+    driverversion, du har installeret.
 
-Add the following properties in the **Add DB Connection** screen:
+Tilføj følgende egenskaber på skærmen **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Nøgle | Eksempelværdi | Bemærkninger |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Skal matche det drivernavn, der er registreret på *digna*-værten |
+| `SERVER` | `sql.example.com` | Servernavn eller IP-adresse. Navngivne instanser: `host\instance`; en ikke-standardport: `host,1433` |
+| `PORT` | `1433` | Udelades, når porten allerede indgår i `SERVER` |
+| `DATABASE` | `digna_source_db` | Databasen, der indeholder kildeskemaerne. Det er den eneste database, denne forbindelse kan profilere |
+| `UID` | `digna_source_user` | Databasebruger |
+| `PWD` | `<password>` | Sæt flueben i **Encrypted** |
 
-The resulting connection string looks like this:
+Den resulterende forbindelsesstreng ser sådan ud:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Kryptering med ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 krypterer forbindelser som standard og validerer servercertifikatet. Mod en server med
+et certifikat, som din *digna*-vært ikke har tillid til — typisk et selvsigneret certifikat —
+fejler forbindelsen med en fejl i certifikatkæden. Tilføj:
 
-| Key | Example value | Notes |
+| Nøgle | Eksempelværdi | Bemærkninger |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Standard i Driver 18; sæt kun til `no`, hvis serveren ikke kan håndtere TLS |
+| `TrustServerCertificate` | `yes` | Springer certifikatvalideringen over. Praktisk i testmiljøer; installer hellere certifikatet i produktion |
 
-### Windows Authentication
+### Windows-godkendelse
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+For at oprette forbindelse som den konto, der kører *digna*-tjenesten, i stedet for med et
+SQL-login skal du fjerne `UID` og `PWD` og tilføje:
 
-| Key | Example value | Notes |
+| Nøgle | Eksempelværdi | Bemærkninger |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | *digna*-tjenestekontoen skal have databaserettighederne |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna*-konfiguration {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Angiv følgende på skærmen **Add DB Connection**:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +91,56 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Bemærkninger om MS SQL Server {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **Én forbindelse ser én database.** *digna* tilbyder skemaerne i den database, der er angivet i
+  `DATABASE`, fordi SQL Server kun rapporterer den aktuelle database som katalog. Kildetabeller i
+  en anden database kræver deres egen forbindelse.
+- **Profileringstilstande.** *Permanent* opretter arbejdstabellerne i **Work Schema**, så
+  brugeren skal have `CREATE TABLE` der. *Session* bruger lokale midlertidige tabeller (`#wt_…`)
+  i `tempdb` og rører ikke **Work Schema**. *Standard* kræver kun læseadgang.
+- **`SERVER` indeholder instans og port.** Med en navngivet instans kræver `host\instance`, at
+  tjenesten SQL Server Browser kan nås; `host,port` undgår det.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Verificering af driveren (valgfrit) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+Det er ikke nødvendigt at konfigurere en ODBC-datakilde for en DSN-løs forbindelse, men
+driverens egen guide er en bekvem måde at bekræfte, at driveren virker, og at serveren
+accepterer dine legitimationsoplysninger, før du indtaster dem i *digna*.
 
-#### Step 1
-![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
+#### Trin 1
+![Trin 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Klik på knappen **Next >**.
 
-#### Step 2
-![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
+#### Trin 2
+![Trin 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Vælg autentificeringsmetoden (f.eks. brugernavn og adgangskode),
+og angiv de nødvendige oplysninger.
 
-Click the **Next >** button.
+Klik på knappen **Next >**.
 
-#### Step 3
-![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
+#### Trin 3
+![Trin 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Vælg de ANSI-kompatible indstillinger, og klik derefter på knappen **Next >**.
 
-#### Step 4
-![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
+#### Trin 4
+![Trin 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Du kan beholde standardindstillingerne eller vælge logningsindstillinger efter behov
+og klikke på knappen **Finish**.
 
-#### Step 5
-![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
+#### Trin 5
+![Trin 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Klik nu på knappen **Test datasource**.
 
-#### Step 6
-![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
+#### Trin 6
+![Trin 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+En bekræftelsesskærm viser, at driveren og legitimationsoplysningerne virker. De værdier, du
+indtastede, er præcis de værdier, egenskaberne i [afsnit 2](#2-odbc-properties) skal have.

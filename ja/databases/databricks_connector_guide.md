@@ -1,106 +1,101 @@
-# Source Connector for Databricks
+# Databricks 用ソースコネクター
 
-This guide describes how to configure *digna* to connect to Databricks over **ODBC**, using a
-**DSN-less** connection string.
+このガイドでは、**DSN レス** の接続文字列を使用して、**ODBC** 経由で Databricks に接続するよう *digna* を設定する方法を
+説明します。
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Databricks.
+セットアップの *digna* 側（接続を作成する場所、プロパティ値の暗号化方法、接続のテスト方法、プロファイリングモードの意味）は
+すべてのテクノロジーで共通であり、[データベース接続の概要](overview.md) で説明しています。このページでは Databricks
+固有の内容を扱います。
 
-!!! note "Unity Catalog is required"
+!!! note "Unity Catalog が必要です"
 
-    *digna* reads the available catalogs from `system.information_schema.catalogs`, so the
-    workspace must be Unity Catalog enabled. Earlier *digna* releases offered a separate
-    "Databricks Legacy" technology for workspaces without Unity Catalog; it is no longer
-    available.
+    *digna* は利用可能なカタログを `system.information_schema.catalogs` から読み取るため、ワークスペースで
+    Unity Catalog が有効になっている必要があります。以前の *digna* リリースでは、Unity Catalog のないワークスペース向けに
+    別のテクノロジー「Databricks Legacy」が用意されていましたが、現在は利用できません。
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. ODBC ドライバーをインストールする {: #1-install-the-odbc-driver }
 
-Install the **Databricks ODBC Driver** on the machine that runs the *digna* backend, following
-[Databricks' installation guide](https://docs.databricks.com/aws/en/integrations/odbc/).
+[Databricks のインストールガイド](https://docs.databricks.com/aws/en/integrations/odbc/) に従って、*digna* バックエンドを
+実行するマシンに **Databricks ODBC Driver** をインストールします。
 
-Depending on the version, the driver registers itself as **Simba Spark ODBC Driver** or as
-**Databricks ODBC Driver**. Read the exact registered name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+バージョンによって、ドライバーは **Simba Spark ODBC Driver** または **Databricks ODBC Driver** として登録されます。
+[digna ホストに ODBC ドライバーをインストールする](overview.md#install-the-driver) の説明に従って、ホスト上で登録されている
+正確な名前を確認してください。
 
 ---
 
-## 2. Gather the Connection Details {: #2-gather-the-connection-details }
+## 2. 接続情報を収集する {: #2-gather-the-connection-details }
 
-All values come from the SQL warehouse (or cluster) you want *digna* to use. Open it in the
-Databricks workspace and go to **Connection details**:
+すべての値は、*digna* に使用させたい SQL ウェアハウス（またはクラスター）から取得します。Databricks ワークスペースで
+それを開き、**Connection details** に移動します。
 
-| Databricks field | Used as |
+| Databricks のフィールド | 用途 |
 |---|---|
 | **Server hostname** | `Host` |
-| **Port** | `Port`, normally `443` |
+| **Port** | `Port`、通常は `443` |
 | **HTTP path** | `HTTPPath` |
 
-For authentication, create a **personal access token** — see
-[Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat).
-Tokens belong to a user or service principal, and that principal needs `USE CATALOG`,
-`USE SCHEMA` and `SELECT` on the source data.
+認証には **個人用アクセストークン** を作成します。
+[Databricks personal access token authentication](https://docs.databricks.com/aws/en/dev-tools/auth/pat) を参照してください。
+トークンはユーザーまたはサービスプリンシパルに属し、そのプリンシパルにはソースデータに対する `USE CATALOG`、
+`USE SCHEMA`、`SELECT` 権限が必要です。
 
 ---
 
-## 3. ODBC Properties {: #3-odbc-properties }
+## 3. ODBC プロパティ {: #3-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "これは例であり、仕様ではありません"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Databricks/Simba driver, so their names, defaults and accepted values differ between driver
-    versions — the driver has been renamed and its authentication options extended more than
-    once — and between platforms. Use this as a starting point and check the documentation of
-    the driver version you installed.
+    以下のセットは、動作が確認されている組み合わせの 1 つです。プロパティは Databricks/Simba ドライバーに属するため、
+    その名前、既定値、受け付ける値はドライバーのバージョン（ドライバーは何度か名称変更され、認証オプションも拡張されて
+    きました）やプラットフォームによって異なります。これを出発点として使用し、インストールしたドライバーバージョンの
+    ドキュメントを確認してください。
 
-Add the following properties in the **Add DB Connection** screen:
+**Add DB Connection** 画面で次のプロパティを追加します。
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
-| `Driver` | `Simba Spark ODBC Driver` | Must match the driver name registered on the *digna* host |
-| `Host` | `<workspace>.cloud.databricks.com` | Server hostname of the warehouse, e.g. `adb-1234567890123456.12.azuredatabricks.net` |
+| `Driver` | `Simba Spark ODBC Driver` | *digna* ホストに登録されているドライバー名と一致している必要があります |
+| `Host` | `<workspace>.cloud.databricks.com` | ウェアハウスのサーバーホスト名。例: `adb-1234567890123456.12.azuredatabricks.net` |
 | `Port` | `443` | |
-| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | HTTP path of the warehouse or cluster |
-| `SSL` | `1` | Databricks endpoints are TLS-only |
-| `ThriftTransport` | `2` | HTTP transport, which is what the SQL endpoints speak |
-| `AuthMech` | `3` | Token authentication |
-| `UID` | `token` | The literal word `token`, not a user name |
-| `PWD` | `dapi…` | The personal access token. Tick **Encrypted** |
-| `UseNativeQuery` | `1` | Passes *digna*'s SQL through unchanged — see below |
+| `HTTPPath` | `/sql/1.0/warehouses/<warehouse-id>` | ウェアハウスまたはクラスターの HTTP パス |
+| `SSL` | `1` | Databricks のエンドポイントは TLS 専用です |
+| `ThriftTransport` | `2` | HTTP トランスポート。SQL エンドポイントが使用する方式です |
+| `AuthMech` | `3` | トークン認証 |
+| `UID` | `token` | ユーザー名ではなく、文字どおりの単語 `token` |
+| `PWD` | `dapi…` | 個人用アクセストークン。**Encrypted** をオンにします |
+| `UseNativeQuery` | `1` | *digna* の SQL を変更せずにそのまま渡します — 下記を参照 |
 
-The resulting connection string looks like this:
+生成される接続文字列は次のようになります。
 
 ```
 Driver=Simba Spark ODBC Driver;Host=<workspace>.cloud.databricks.com;Port=443;HTTPPath=/sql/1.0/warehouses/<warehouse-id>;SSL=1;ThriftTransport=2;AuthMech=3;UID=token;PWD=dapi…;UseNativeQuery=1
 ```
 
-!!! important "Keep `UseNativeQuery=1`"
+!!! important "`UseNativeQuery=1` を維持してください"
 
-    With `UseNativeQuery=0` — the driver's default — the driver rewrites incoming SQL into what
-    it believes is portable ODBC syntax. *digna* already generates Databricks SQL, so the
-    rewrite can change backtick quoting and date literals, and profiling then fails on
-    statements that are valid as written.
+    ドライバーの既定値である `UseNativeQuery=0` では、ドライバーは受け取った SQL を、移植性のある ODBC 構文と
+    みなす形に書き換えます。*digna* はすでに Databricks SQL を生成しているため、この書き換えによってバッククォートの
+    引用符や日付リテラルが変わる可能性があり、記述どおりであれば有効なステートメントでプロファイリングが失敗します。
 
-### OAuth instead of a token
+### トークンの代わりに OAuth を使用する
 
-For a service principal with OAuth machine-to-machine authentication, replace `AuthMech`,
-`UID` and `PWD` with:
+OAuth のマシン間 (M2M) 認証を使用するサービスプリンシパルの場合は、`AuthMech`、`UID`、`PWD` を次のものに置き換えます。
 
-| Key | Example value | Notes |
+| キー | 値の例 | 備考 |
 |---|---|---|
 | `AuthMech` | `11` | OAuth |
-| `Auth_Flow` | `1` | Client credentials |
-| `Auth_Client_ID` | `<application id>` | Service principal |
-| `Auth_Client_Secret` | `<client secret>` | Tick **Encrypted** |
+| `Auth_Flow` | `1` | クライアント資格情報 |
+| `Auth_Client_ID` | `<application id>` | サービスプリンシパル |
+| `Auth_Client_Secret` | `<client secret>` | **Encrypted** をオンにします |
 
 ---
 
-## 4. *digna* Configuration {: #4-digna-configuration }
+## 4. *digna* の設定 {: #4-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** 画面で、次の内容を入力します。
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -111,45 +106,42 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 5. Notes on Databricks {: #5-notes-on-databricks }
+## 5. Databricks に関する注意事項 {: #5-notes-on-databricks }
 
-- **The warehouse must be running**, or able to start, when *digna* connects. A warehouse that
-  resumes from a stopped state can take longer than the connection timeout — if the test fails
-  on the first attempt after an idle period, retry it.
-- **Catalogs come from the workspace.** Unlike most technologies, one Databricks connection
-  reaches every catalog the principal is allowed to see, so a single connection can serve
-  sources across catalogs.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema** inside the
-  source's catalog, so the principal needs `CREATE TABLE` there. *Session* uses
-  `CREATE TEMPORARY TABLE` and does not touch **Work Schema**. *Standard* needs read access
-  only.
-- **Serverless warehouses work** the same way; only `HTTPPath` differs.
+- *digna* が接続するとき、**ウェアハウスが実行中であるか、起動可能である必要があります。** 停止状態から再開する
+  ウェアハウスは、接続タイムアウトより長くかかることがあります。アイドル期間の後の最初の試行でテストが失敗した場合は、
+  再試行してください。
+- **カタログはワークスペースから取得されます。** ほとんどのテクノロジーとは異なり、1 つの Databricks 接続から
+  プリンシパルが参照を許可されているすべてのカタログに到達できるため、1 つの接続で複数のカタログにまたがるソースを
+  扱えます。
+- **プロファイリングモード。** *Permanent* はソースのカタログ内の **Work Schema** にワークテーブルを作成するため、
+  プリンシパルにはそこでの `CREATE TABLE` 権限が必要です。*Session* は `CREATE TEMPORARY TABLE` を使用し、
+  **Work Schema** には触れません。*Standard* に必要なのは読み取りアクセスのみです。
+- **サーバーレスウェアハウスも** 同じように動作します。異なるのは `HTTPPath` だけです。
 
 ---
 
-## 6. Verifying the Driver (optional) {: #6-verifying-the-driver-optional }
+## 6. ドライバーの動作確認（任意） {: #6-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver, the warehouse and the token work
-before you enter them in *digna*.
+DSN レス接続では ODBC データソースの設定は必要ありませんが、ドライバー自体のダイアログを使うと、*digna* に入力する前に、
+ドライバー、ウェアハウス、トークンが動作することを手軽に確認できます。
 
-#### Step 1
+#### ステップ 1
 ![Step 1](images/databricks/create_odbc_data_source_step1.png)
 
-#### Step 2
+#### ステップ 2
 ![Step 2](images/databricks/create_odbc_data_source_step2.png)
 
-#### Step 3
+#### ステップ 3
 ![Step 3](images/databricks/create_odbc_data_source_step3.png)
 
-#### Step 4
+#### ステップ 4
 ![Step 4](images/databricks/create_odbc_data_source_step4.png)
 
-#### Step 5 – Test the connection
+#### ステップ 5 – 接続をテストする
 
-Click the **TEST** button. A successful connection should look like this:
+**TEST** ボタンをクリックします。接続に成功すると、次のように表示されます。
 
 ![Step 5](images/databricks/create_odbc_data_source_step5.png)
 
-The host, HTTP path and token entered here are exactly the values the properties in
-[section 3](#3-odbc-properties) take.
+ここで入力したホスト、HTTP パス、トークンは、[セクション 3](#3-odbc-properties) のプロパティに指定する値そのものです。

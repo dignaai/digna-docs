@@ -1,112 +1,112 @@
-# Linux Installation Guide for digna Release 2026.06
+# digna Sürüm 2026.06 için Linux Kurulum Kılavuzu
 
-**Release:** 2026.06
+**Sürüm:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Son Güncelleme:** 5 Eylül 2026
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a systemd Service](#running-digna-as-a-systemd-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## İçindekiler
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows or macOS?
-
-This guide covers Linux. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
-
-### Which Distribution Does This Guide Cover?
-
-The instructions are written for the two most common server families. Where the two differ, both commands are given:
-
-- **Debian family** — Debian, Ubuntu. Package manager: `apt`.
-- **RHEL family** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Package manager: `dnf`.
-
-Any modern distribution with `systemd` will work; only the package names and a few configuration paths change.
+1. [Giriş](#introduction)
+2. [Sistem Gereksinimleri](#system-requirements)
+3. [Kurulum Öncesi Hazırlık](#pre-installation-setup)
+4. [PostgreSQL Sunucu Kurulumu](#postgresql-server-setup)
+5. [Web Sunucusu Yapılandırması](#web-server-configuration)
+6. [İlk Kurulum](#initial-installation)
+7. [Backend Yapılandırması](#backend-configuration)
+8. [Dashboard Yapılandırması](#dashboard-configuration)
+9. [digna'yı systemd Hizmeti Olarak Çalıştırma](#running-digna-as-a-systemd-service)
+10. [Yeni Bir Sürüme Yükseltme](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Giriş {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### digna Hakkında
 
-| Requirement | Specification |
+digna, veri ambarları, veri gölleri ve lakehouse'lar gibi çeşitli veri ortamlarında veri kalitesi yönetimini optimize etmek için tasarlanmış kapsamlı, yapay zekâ destekli bir platformdur. Yüksek ölçeklenebilirlik ve uyarlanabilirlik göz önünde bulundurularak geliştirilen digna, otomasyon, gerçek zamanlı izleme ve anomali tespiti ile modern veri zorluklarına yanıt verir.
+
+digna iki ana bileşenden oluşur:
+
+- **digna**: uygulamanın çekirdeği; verileri işlemekten ve kalite denetimlerini yürütmekten sorumludur. Arka ucu ve komut satırı arayüzünü tek bir çalıştırılabilir dosyada birleştirir ve önceki sürümlerdeki ayrı `dignabackend` ile `dignacli` programlarının yerini alır.
+- **dignadashboard**: Bir web sunucusunda barındırılan, digna platformuyla etkileşim kurmayı ve veri kalite metriklerini görselleştirmeyi sağlayan web tabanlı arayüz.
+
+### 2026.06 Sürümünde Yenilikler
+
+Bu sürüm, veri gözlemlenebilirliğini doğrudan kodunuza getirerek geliştiricilerin kaynakta veri kalitesini izlemesini sağlar. Tam ayrıntılar için [sürüm notlarına](http://docs.digna.ai/changelog/Release_202606/) bakın.
+
+### Windows veya macOS mu arıyorsunuz?
+
+Bu kılavuz Linux içindir. Diğer platformlar için [Windows Kurulum Kılavuzu](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) veya [macOS Kurulum Kılavuzu](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) belgelerine bakın.
+
+### Bu Kılavuz Hangi Dağıtımları Kapsar?
+
+Yönergeler en yaygın iki sunucu ailesi için yazılmıştır. İkisinin farklılaştığı yerlerde her iki komut da verilir:
+
+- **Debian ailesi** — Debian, Ubuntu. Paket yöneticisi: `apt`.
+- **RHEL ailesi** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Paket yöneticisi: `dnf`.
+
+`systemd` kullanan her modern dağıtım çalışır; yalnızca paket adları ve birkaç yapılandırma yolu değişir.
+
+---
+
+## Sistem Gereksinimleri {: #system-requirements }
+
+Kuruluma başlamadan önce sisteminizin aşağıdaki minimum gereksinimleri karşıladığından emin olun:
+
+| Gereksinim | Özellik |
 |---|---|
-| **Operating System** | Ubuntu 22.04 LTS or later, Debian 12 or later, RHEL 9 / Rocky 9 / AlmaLinux 9 or later |
-| **Architecture** | x86_64 (amd64) or arm64 |
-| **Init System** | systemd |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
+| **İşletim Sistemi** | Ubuntu 22.04 LTS veya üzeri, Debian 12 veya üzeri, RHEL 9 / Rocky 9 / AlmaLinux 9 veya üzeri |
+| **Mimari** | x86_64 (amd64) veya arm64 |
+| **Init Sistemi** | systemd |
+| **Bellek (Minimum Kurulum)** | 16 GB RAM |
+| **Disk Alanı** | 10 GB kullanılabilir depolama |
+| **Veritabanı** | PostgreSQL Server 12 veya üzeri |
+| **Web Sunucusu** | nginx, Apache httpd veya eşdeğeri |
 
-### Database Installation Options
+### Veritabanı Kurulum Seçenekleri
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**PostgreSQL zaten kuruluysa:**
+Mevcut PostgreSQL sunucunuza digna için yeni bir veritabanı ekleyebilirsiniz.
 
-**If installing PostgreSQL on the same machine as digna:**
+**PostgreSQL'i digna ile aynı makineye kuruyorsanız:**
 
-!!! info "Recommended Specifications"
+!!! info "Önerilen Özellikler"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Bellek**: 32 GB RAM (16 GB yerine)
+    - **Disk Alanı**: 50 GB kullanılabilir depolama (10 GB yerine)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Bu daha yüksek özellikler, digna ile PostgreSQL veritabanının aynı anda çalışmasını rahatlıkla karşılayacak şekilde önerilir.
 
-### Checking Your Distribution and Architecture
+### Dağıtımınızı ve Mimarinizi Denetleme
 
-Several commands in this guide differ between the Debian and RHEL families. To check which you are on, run:
+Bu kılavuzdaki birkaç komut Debian ve RHEL aileleri arasında farklılık gösterir. Hangisini kullandığınızı öğrenmek için şunu çalıştırın:
 
 ```bash
 cat /etc/os-release
 uname -m
 ```
 
-- `ID=ubuntu` or `ID=debian` — use the `apt` commands.
-- `ID=rhel`, `rocky`, `almalinux` or `fedora` — use the `dnf` commands.
-- `x86_64` or `aarch64` — the architecture of the installation package you need.
+- `ID=ubuntu` veya `ID=debian` — `apt` komutlarını kullanın.
+- `ID=rhel`, `rocky`, `almalinux` veya `fedora` — `dnf` komutlarını kullanın.
+- `x86_64` veya `aarch64` — ihtiyacınız olan kurulum paketinin mimarisi.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Kurulum Öncesi Hazırlık {: #pre-installation-setup }
 
-Before installing digna, ensure that two key prerequisites are in place:
+digna'yı kurmadan önce iki temel önkoşulun yerinde olduğundan emin olun:
 
-1. **PostgreSQL Server** – for storing calculated metrics and performance data
-2. **Web Server** – for hosting the digna Dashboard
+1. **PostgreSQL Server** – hesaplanmış metrikler ve performans verileri için depolama
+2. **Web Server** – digna Dashboard'u barındırmak için
 
-If these components are not already set up, follow the sections below to install and configure them.
+Bu bileşenler henüz kurulu değilse, aşağıdaki bölümlerde bunları kurup yapılandırma adımlarını izleyin.
 
-### Refreshing the Package Index
+### Paket Dizinini Yenileme
 
-Update your package lists before installing anything:
+Herhangi bir şey kurmadan önce paket listelerinizi güncelleyin:
 
 ```bash
 sudo apt update
@@ -115,21 +115,21 @@ sudo apt update
 sudo dnf check-update
 ```
 
-!!! note "Note"
+!!! note "Not"
 
-    Throughout this guide, the first command in a pair is for the **Debian family** and the second for the **RHEL family**. Run only the one that matches your system.
+    Bu kılavuz boyunca, bir komut çiftindeki ilk komut **Debian ailesi**, ikincisi ise **RHEL ailesi** içindir. Yalnızca sisteminize uyanı çalıştırın.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## PostgreSQL Sunucu Kurulumu {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### PostgreSQL Zaten Kuruluysa
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+PostgreSQL yerel makinenizde zaten kurulu ve çalışıyorsa veya yönetilen uzak bir PostgreSQL sunucusu kullanıyorsanız, [bir sonraki bölüme](#web-server-configuration) geçebilirsiniz.
 
-### Installing PostgreSQL
+### PostgreSQL Kurulumu
 
-#### Step 1: Install the Server Package
+#### Adım 1: Sunucu Paketini Kurun
 
 ```bash
 sudo apt install -y postgresql postgresql-contrib
@@ -138,72 +138,72 @@ sudo apt install -y postgresql postgresql-contrib
 sudo dnf install -y postgresql-server postgresql-contrib
 ```
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    Distribution packages may lag behind the current PostgreSQL release. If you need a specific newer version, use the official [PostgreSQL apt or yum repository](https://www.postgresql.org/download/linux/) instead.
+    Dağıtım paketleri güncel PostgreSQL sürümünün gerisinde kalabilir. Belirli bir yeni sürüme ihtiyacınız varsa bunun yerine resmi [PostgreSQL apt veya yum deposunu](https://www.postgresql.org/download/linux/) kullanın.
 
-#### Step 2: Initialize the Database Cluster
+#### Adım 2: Veritabanı Kümesini Başlatın
 
-On the **Debian family**, the package creates and starts a cluster automatically — skip to the next step.
+**Debian ailesinde** paket bir kümeyi otomatik olarak oluşturur ve başlatır — bir sonraki adıma geçin.
 
-On the **RHEL family**, the cluster must be created explicitly:
+**RHEL ailesinde** küme açıkça oluşturulmalıdır:
 
 ```bash
 sudo postgresql-setup --initdb
 ```
 
-#### Step 3: Start and Enable the Service
+#### Adım 3: Hizmeti Başlatın ve Etkinleştirin
 
 ```bash
 sudo systemctl enable --now postgresql
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically at boot.
+Bu komut PostgreSQL'i hemen başlatır ve sistem açılışında otomatik olarak yeniden başlayacak şekilde yapılandırır.
 
-#### Step 4: Verify the Installation
+#### Adım 4: Kurulumu Doğrulayın
 
 ```bash
 psql --version
 sudo systemctl status postgresql
 ```
 
-You should see the PostgreSQL version and an `active (running)` service.
+PostgreSQL sürümünü ve `active (running)` durumundaki bir hizmeti görmelisiniz.
 
-#### Step 5: Connect to the Server
+#### Adım 5: Sunucuya Bağlanın
 
-A Linux PostgreSQL package creates a `postgres` system account that owns the cluster. Connect through it:
+Linux PostgreSQL paketi, kümenin sahibi olan bir `postgres` sistem hesabı oluşturur. Bu hesap üzerinden bağlanın:
 
 ```bash
 sudo -u postgres psql
 ```
 
-!!! note "Note — Linux Differs From Windows Here"
+!!! note "Not — Linux Burada Windows'tan Farklıdır"
 
-    The Windows installer prompts you to set a password for the `postgres` superuser during setup. Linux packages do not. Instead, local connections are authenticated by **peer authentication**: the `postgres` operating-system user is allowed to connect as the `postgres` database user without a password.
+    Windows yükleyicisi, kurulum sırasında `postgres` süper kullanıcısı için bir parola belirlemenizi ister. Linux paketleri bunu yapmaz. Bunun yerine yerel bağlantılar **peer kimlik doğrulaması** ile doğrulanır: `postgres` işletim sistemi kullanıcısının, parola olmadan `postgres` veritabanı kullanıcısı olarak bağlanmasına izin verilir.
 
-    This is why the command above uses `sudo -u postgres`. The digna backend connects over TCP with a username and password, so you will create an explicit digna user in [Initial Installation](#initial-installation).
+    Yukarıdaki komutun `sudo -u postgres` kullanmasının nedeni budur. digna backend'i TCP üzerinden bir kullanıcı adı ve parolayla bağlanır; bu nedenle [İlk Kurulum](#initial-installation) bölümünde açık bir digna kullanıcısı oluşturacaksınız.
 
-#### Step 6: Confirm the Port
+#### Adım 6: Portu Doğrulayın
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Varsayılan PostgreSQL portu `5432`'dir. Sunucunuzun dinlediği portu doğrulamak için:
 
 ```bash
 sudo -u postgres psql -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Değeri not edin — digna backend'ini yapılandırırken ihtiyacınız olacak.
 
-#### Step 7: Enable Password Authentication for the digna User
+#### Adım 7: digna Kullanıcısı için Parola Kimlik Doğrulamasını Etkinleştirin
 
-digna connects to PostgreSQL over TCP as `digna_user`, which requires password authentication rather than peer authentication. Check that your `pg_hba.conf` permits it.
+digna, PostgreSQL'e TCP üzerinden `digna_user` olarak bağlanır; bu da peer kimlik doğrulaması yerine parola kimlik doğrulaması gerektirir. `pg_hba.conf` dosyanızın buna izin verdiğini denetleyin.
 
-Locate the file:
+Dosyanın yerini bulun:
 
 ```bash
 sudo -u postgres psql -c "SHOW hba_file;"
 ```
 
-Open it in an editor and confirm that the local TCP lines use `scram-sha-256` (or `md5` on older servers) rather than `ident`:
+Dosyayı bir düzenleyicide açın ve yerel TCP satırlarının `ident` yerine `scram-sha-256` (eski sunucularda `md5`) kullandığını doğrulayın:
 
 ```
 # TYPE  DATABASE  USER  ADDRESS         METHOD
@@ -211,25 +211,25 @@ host    all       all   127.0.0.1/32    scram-sha-256
 host    all       all   ::1/128         scram-sha-256
 ```
 
-Reload PostgreSQL after any change:
+Herhangi bir değişiklikten sonra PostgreSQL'i yeniden yükleyin:
 
 ```bash
 sudo systemctl reload postgresql
 ```
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    If digna reports `FATAL: Ident authentication failed for user "digna_user"`, this setting is the cause.
+    digna `FATAL: Ident authentication failed for user "digna_user"` bildiriyorsa nedeni bu ayardır.
 
-#### Step 8: If PostgreSQL Runs on Another Machine
+#### Adım 8: PostgreSQL Başka Bir Makinede Çalışıyorsa
 
-To accept connections from a different host, set `listen_addresses` in `postgresql.conf` and add a matching `host` line for your network in `pg_hba.conf`:
+Farklı bir ana bilgisayardan gelen bağlantıları kabul etmek için `postgresql.conf` içinde `listen_addresses` değerini ayarlayın ve `pg_hba.conf` dosyasına ağınız için uygun bir `host` satırı ekleyin:
 
 ```
 listen_addresses = '*'
 ```
 
-Then open the port in the firewall and restart the service:
+Ardından güvenlik duvarında portu açın ve hizmeti yeniden başlatın:
 
 ```bash
 sudo ufw allow 5432/tcp
@@ -243,27 +243,27 @@ sudo systemctl restart postgresql
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Web Sunucusu Yapılandırması {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna dashboard'unu barındırmak için bir web sunucusuna ihtiyaç vardır. Aşağıdaki seçeneklerden birini seçin:
 
-- [nginx](#nginx-setup) — lightweight and recommended
-- [Apache httpd](#apache-setup) — widely deployed alternative
+- [nginx](#nginx-setup) — hafif ve önerilen
+- [Apache httpd](#apache-setup) — yaygın olarak kullanılan alternatif
 
-You only need to install and configure **one** of these servers.
+Bu sunuculardan yalnızca **birini** kurmanız ve yapılandırmanız yeterlidir.
 
-Both sections configure two things the dashboard depends on:
+Her iki bölüm de dashboard'un bağlı olduğu iki şeyi yapılandırır:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Tek sayfalı uygulama (SPA) geri dönüşü**; böylece bir dashboard URL'sini yenilemek 404 döndürmez
+- **`.md` MIME türü**; böylece Markdown dosyaları doğru şekilde sunulur
 
-### nginx Setup {: #nginx-setup }
+### nginx Kurulumu {: #nginx-setup }
 
-#### Overview
+#### Genel Bakış
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx, statik digna dashboard'unu sunmaya çok uygun, hafif ve yüksek performanslı bir web sunucusudur.
 
-#### Installation
+#### Kurulum
 
 ```bash
 sudo apt install -y nginx
@@ -272,21 +272,21 @@ sudo apt install -y nginx
 sudo dnf install -y nginx
 ```
 
-#### Starting nginx
+#### nginx'i Başlatma
 
 ```bash
 sudo systemctl enable --now nginx
 ```
 
-#### Verify the Installation
+#### Kurulumu Doğrulayın
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the nginx welcome page
+1. Tarayıcınızı açın
+2. `http://localhost` adresine gidin
+3. nginx karşılama sayfasını görmelisiniz
 
-#### Opening the Firewall
+#### Güvenlik Duvarını Açma
 
-If the server is reached from other machines, allow HTTP traffic:
+Sunucuya başka makinelerden erişiliyorsa HTTP trafiğine izin verin:
 
 ```bash
 sudo ufw allow 'Nginx Full'
@@ -295,15 +295,15 @@ sudo ufw allow 'Nginx Full'
 sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
 ```
 
-#### Configuring a Site for the Dashboard
+#### Dashboard için Bir Site Yapılandırma
 
-nginx includes every file in its `conf.d` directory on both distribution families. Create a dedicated configuration file for digna there:
+nginx, her iki dağıtım ailesinde de `conf.d` dizinindeki tüm dosyaları dahil eder. Orada digna için ayrı bir yapılandırma dosyası oluşturun:
 
 ```bash
 sudo nano /etc/nginx/conf.d/digna.conf
 ```
 
-Paste the following, replacing `/opt/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Aşağıdakini yapıştırın ve `/opt/digna/dashboard` yolunu, çıkardığınız `dashboard` klasörünün gerçek yoluyla değiştirin:
 
 ```nginx
 server {
@@ -327,23 +327,23 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    `try_files` yönergesi olmadan, kök URL dışındaki herhangi bir dashboard sayfasını yeniden yüklemek 404 döndürür. Bu, Windows'ta IIS için gereken URL Rewrite modülünün nginx karşılığıdır.
 
-#### Disable the Default Site
+#### Varsayılan Siteyi Devre Dışı Bırakın
 
-Only one server block may be the `default_server` for a port. On the **Debian family**, remove the packaged default so it does not conflict:
+Bir port için yalnızca bir server bloğu `default_server` olabilir. **Debian ailesinde**, çakışmaması için paketle gelen varsayılan siteyi kaldırın:
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
-On the **RHEL family**, comment out or delete the `server { ... }` block inside `/etc/nginx/nginx.conf`.
+**RHEL ailesinde**, `/etc/nginx/nginx.conf` içindeki `server { ... }` bloğunu yorum satırına alın veya silin.
 
-#### Apply the Configuration
+#### Yapılandırmayı Uygulayın
 
-Test the configuration for syntax errors, then reload nginx:
+Yapılandırmada söz dizimi hatası olup olmadığını test edin, ardından nginx'i yeniden yükleyin:
 
 ```bash
 sudo nginx -t
@@ -352,13 +352,13 @@ sudo systemctl reload nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Apache httpd Kurulumu {: #apache-setup }
 
-#### Overview
+#### Genel Bakış
 
-Apache httpd is available in the default repositories of every supported distribution. The package is named `apache2` on the Debian family and `httpd` on the RHEL family.
+Apache httpd, desteklenen her dağıtımın varsayılan depolarında bulunur. Paketin adı Debian ailesinde `apache2`, RHEL ailesinde `httpd`'dir.
 
-#### Installation
+#### Kurulum
 
 ```bash
 sudo apt install -y apache2
@@ -367,7 +367,7 @@ sudo apt install -y apache2
 sudo dnf install -y httpd
 ```
 
-#### Starting Apache
+#### Apache'yi Başlatma
 
 ```bash
 sudo systemctl enable --now apache2
@@ -376,32 +376,32 @@ sudo systemctl enable --now apache2
 sudo systemctl enable --now httpd
 ```
 
-#### Verify the Installation
+#### Kurulumu Doğrulayın
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the distribution's default Apache page
+1. Tarayıcınızı açın
+2. `http://localhost` adresine gidin
+3. Dağıtımın varsayılan Apache sayfasını görmelisiniz
 
-#### Required: Enable mod_rewrite
+#### Gerekli: mod_rewrite'ı Etkinleştirin
 
-The dashboard requires URL rewriting.
+Dashboard, URL yeniden yazmayı gerektirir.
 
-On the **Debian family**, enable the module and restart:
+**Debian ailesinde** modülü etkinleştirin ve yeniden başlatın:
 
 ```bash
 sudo a2enmod rewrite
 sudo systemctl restart apache2
 ```
 
-On the **RHEL family**, `mod_rewrite` is loaded by default. Confirm it:
+**RHEL ailesinde** `mod_rewrite` varsayılan olarak yüklüdür. Bunu doğrulayın:
 
 ```bash
 httpd -M | grep rewrite
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Gerekli: .htaccess Geçersiz Kılmalarına İzin Verin
 
-Open the configuration file for your document root:
+Belge kökünüz için yapılandırma dosyasını açın:
 
 ```bash
 sudo nano /etc/apache2/apache2.conf
@@ -410,33 +410,33 @@ sudo nano /etc/apache2/apache2.conf
 sudo nano /etc/httpd/conf/httpd.conf
 ```
 
-Locate the `<Directory>` block covering your document root (`/var/www/html` on both families) and change:
+Belge kökünüzü kapsayan `<Directory>` bloğunu bulun (her iki ailede de `/var/www/html`) ve şunu:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+şununla değiştirin:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Gerekli: Markdown Dosyaları için MIME Türü
 
-In the same file, add the following line so that Markdown files are served correctly:
+Markdown dosyalarının doğru şekilde sunulması için aynı dosyaya şu satırı ekleyin:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    Without this setting, `.md` files may not be served properly.
+    Bu ayar olmadan `.md` dosyaları doğru şekilde servis edilmeyebilir.
 
-#### Apply the Configuration
+#### Yapılandırmayı Uygulayın
 
-Check the configuration for syntax errors, then restart Apache:
+Yapılandırmada söz dizimi hatası olup olmadığını denetleyin, ardından Apache'yi yeniden başlatın:
 
 ```bash
 sudo apachectl configtest
@@ -449,15 +449,15 @@ sudo systemctl restart httpd
 
 ---
 
-## Initial Installation {: #initial-installation }
+## İlk Kurulum {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Adım 1: digna Repository'sini Oluşturun
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+digna repository'si, digna tarafından hesaplanan tüm metrikleri saklar. Analitik ve performans verileri için merkezi veritabanı görevi görür.
 
-#### Create Repository Schema and User
+#### Repository Şeması ve Kullanıcısı Oluşturma
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+PostgreSQL istemcinizi (psql, pgAdmin veya benzeri) açın ve aşağıdaki SQL komutlarını çalıştırın:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -467,13 +467,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Aşağıdaki yer tutucuları değiştirin:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — İstediğiniz şema adı (ör. `dignarepo`)
+- `<digna_repo_user>` — İstediğiniz kullanıcı adı (ör. `digna_user`)
+- `<digna_repo_password>` — Bu kullanıcı için güvenli bir parola
 
-**Example:**
+**Örnek:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -483,81 +483,81 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the shell in a single step:
+Bunları kabuktan tek adımda çalıştırmak için:
 
 ```bash
 sudo -u postgres psql
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Ardından ifadeleri `postgres=#` isteminde yapıştırın ve çıkmak için `\q` yazın.
 
-!!! tip "Best Practice"
+!!! tip "En İyi Uygulama"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Veritabanı kullanıcıları için güçlü, karmaşık parolalar kullanın. Kolay tahmin edilebilir kimlik bilgilerini kullanmaktan kaçının.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Adım 2: digna Kurulum Paketini Çıkarın
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
+1. Size sağlanan digna kurulum ZIP dosyasını bulun
+2. İstediğiniz kurulum konumuna çıkarın — örneğin `/opt/digna`
+3. Çıkarma sonrası aşağıdaki öğeleri görmelisiniz:
+   - `dashboard/` — Web dashboard arayüzü
+   - `digna` — Ana yürütülebilir dosya (backend + CLI birleşik)
 
-!!! info "The configuration and licence files are not in the package"
+!!! info "Yapılandırma ve lisans dosyaları pakette yer almaz"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
-    create both yourself, in [Backend Configuration](#backend-configuration) and
-    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
-    digna supplies it separately, as Step 3 describes.
+    Ne `config.toml` ne de `dashboard/dashboard_config.toml` kurulumla birlikte gelir — ikisini de
+    kendiniz, [Backend Yapılandırması](#backend-configuration) ve
+    [Dashboard Yapılandırması](#dashboard-configuration) bölümlerinde oluşturursunuz. `license.toml` da pakete dahil değildir;
+    Adım 3'te açıklandığı gibi digna tarafından ayrı olarak sağlanır.
 
-To extract from the shell:
+Kabuktan çıkarmak için:
 
 ```bash
 sudo mkdir -p /opt/digna
 sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
 ```
 
-!!! note "Note"
+!!! note "Not"
 
-    If `unzip` is not installed, add it with `sudo apt install -y unzip` or `sudo dnf install -y unzip`.
+    `unzip` kurulu değilse `sudo apt install -y unzip` veya `sudo dnf install -y unzip` ile ekleyin.
 
-#### Make the Executable Runnable
+#### Yürütülebilir Dosyayı Çalıştırılabilir Yapın
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+Arşivin nasıl aktarıldığına bağlı olarak, çalıştırma izni biti çıkarma sırasında korunmayabilir. Bunu açıkça ayarlayın:
 
 ```bash
 cd /opt/digna
 sudo chmod +x digna
 ```
 
-#### Create a Service Account
+#### Bir Hizmet Hesabı Oluşturun
 
-Running the backend as a dedicated unprivileged user is recommended for production deployments:
+Üretim dağıtımları için backend'in ayrı, ayrıcalıksız bir kullanıcı olarak çalıştırılması önerilir:
 
 ```bash
 sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
 sudo chown -R digna:digna /opt/digna
 ```
 
-!!! note "Note"
+!!! note "Not"
 
-    On the RHEL family the equivalent shell path is `/sbin/nologin`.
+    RHEL ailesinde eşdeğer kabuk yolu `/sbin/nologin`'dir.
 
-### Step 3: Install the License File
+### Adım 3: Lisans Dosyasını Yükleyin
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Lisans dosyası kurulum paketine **dahil değildir** ve digna tarafından ayrı olarak sağlanacaktır.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Size sağlanan `license.toml` dosyasını bulun
+2. Bunu digna kurulum dizininin köküne kopyalayın (`config.toml` ve `digna` yürütülebilir dosyasının bulunduğu dizin)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Neden önemli:**
+Lisans dosyası müşteri bilgilerini, lisans bitiş tarihini ve dijital imzayı içerir. **Bu dosyayı değiştirmeyin** — herhangi bir değişiklik lisansın geçersiz olmasına neden olur.
 
-**Directory structure after setup:**
+**Kurulum sonrası dizin yapısı:**
 
 ```
 /opt/digna/
@@ -571,24 +571,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Backend Yapılandırması {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Adım 1: Yapılandırma Dosyasını Oluşturun ve Düzenleyin
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+`config_template.toml` dosyası digna kurulum dizininde sağlanır. Bunu `config.toml` olarak yeniden adlandırmanız yeterlidir.
 
 ```bash
 cd /opt/digna
 sudo mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Konum:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+`config.toml` dosyasını bir metin düzenleyici ile açın ve aşağıdaki bölümleri yapılandırın.
 
-#### [app] Section
+#### [app] Bölümü
 
-This section configures the digna backend application settings:
+Bu bölüm digna backend uygulama ayarlarını yapılandırır:
 
 ```toml
 [app]
@@ -598,20 +598,20 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parametre | Değer | Notlar |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL'si | Dashboard farklı bir sunucuda ise onun URL'sini ekleyin |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Kimlik bilgileri ile CORS için gerekli |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Tüm HTTP yöntemlerine izin ver |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Tüm başlıklara izin ver |
 
-!!! note "Note"
+!!! note "Not"
 
-    If you serve the dashboard from nginx or Apache on the default HTTP port, the origin to allow is `http://localhost` — or the server's public URL when the dashboard is reached from other machines.
+    Dashboard'u nginx veya Apache üzerinden varsayılan HTTP portunda sunuyorsanız izin verilecek kaynak `http://localhost`'tur — dashboard'a başka makinelerden erişiliyorsa sunucunun genel URL'sidir.
 
-#### [repo] Section
+#### [repo] Bölümü
 
-This section configures the connection to the PostgreSQL database:
+Bu bölüm PostgreSQL veritabanı bağlantısını yapılandırır:
 
 ```toml
 [repo]
@@ -623,27 +623,27 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parametre | Değer | Notlar |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` veya IP | PostgreSQL sunucu hostname/IP |
+| `digna_REPO_PORT` | `5432` (varsayılan) | PostgreSQL portu |
+| `digna_REPO_DB` | `postgres` | Veritabanı adı |
+| `digna_REPO_SCHEMA` | `dignarepo` | Daha önce oluşturduğunuz şema |
+| `digna_REPO_USER` | `digna_user` | PostgreSQL kurulumu sırasında oluşturduğunuz kullanıcı |
+| `digna_REPO_PASSWORD` | Parolanız | Şema oluşturma sırasında belirlenen parola |
 
-!!! tip "Best Practice"
+!!! tip "En İyi Uygulama"
 
-    `config.toml` contains a database password in plain text. Restrict its permissions so that only the service account can read it:
+    `config.toml`, bir veritabanı parolasını düz metin olarak içerir. İzinlerini, dosyayı yalnızca hizmet hesabı okuyabilecek şekilde kısıtlayın:
 
     ```bash
     sudo chown digna:digna /opt/digna/config.toml
     sudo chmod 600 /opt/digna/config.toml
     ```
 
-#### [base] Section
+#### [base] Bölümü
 
-This section contains security and cookie settings:
+Bu bölüm güvenlik ve çerez (cookie) ayarlarını içerir:
 
 ```toml
 [base]
@@ -658,44 +658,41 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Parametre | Değer | Notlar |
 |---|---|---|
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
-| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
+| `digna_COOKIE_DOMAIN` | `localhost` | Frontend domain'i ile eşleşsin |
+| `digna_COOKIE_SECURE` | `false` (yerel) / `true` (üretim) | HTTPS bağlantıları için `true` kullanın |
+| `digna_COOKIE_HTTPONLY` | `true` | Güvenlik için her zaman etkin |
+| `digna_COOKIE_SAME_SITE` | `lax` | CSRF saldırılarını önlemeye yardımcı olur |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 saat) | Oturum zaman aşımı (saniye cinsinden) |
+| `digna_MAX_WORKERS` | CPU çekirdeği sayısı - 1 | Paralel denetim görevlerinin sayısı |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Zamanlayıcının, vadesi gelmiş bir işi başlatmadan önce ekleyebileceği saniye cinsinden azami gecikme |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Günlük temizliğin başladığı saat (24 saat biçiminde `HH:MM`) |
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    To find the number of CPU cores available on your server, run `nproc`.
+    Sunucunuzda kullanılabilir CPU çekirdeği sayısını öğrenmek için `nproc` komutunu çalıştırın.
 
-#### [encryption] Section
+#### [encryption] Bölümü
 
-This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+Bu bölüm, depoda saklanan hassas değerleri şifrelemek için kullanılan anahtarı içerir. **Zorunludur** — anahtar eksikse `config check`, `[encryption]` bölümünü FAILED olarak bildirir.
 
 ```toml
 [encryption]
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Parametre | Değer | Notlar |
 |---|---|---|
-| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+| `DIGNA_ENCRYPTION_KEY` | Base64 kodlu anahtar | digna deposunda saklanan hassas değerleri şifreler |
 
-!!! warning "Protect config.toml"
+!!! warning "config.toml dosyasını koruyun"
 
-    This key is a fixed value, identical across all digna installations, and it is what decrypts
-    the sensitive values in your repository. Restrict `config.toml` to the account that runs
-    digna, keep it out of source control and off shared drives, and exclude it from any backup
-    that is stored less securely than the repository itself.
+    Bu anahtar sabit bir değerdir, tüm digna kurulumlarında aynıdır ve deponuzdaki hassas değerlerin şifresini çözen şey odur. `config.toml` erişimini digna'nın çalıştığı hesapla sınırlayın, dosyayı sürüm denetiminin ve paylaşılan sürücülerin dışında tutun ve deponun kendisinden daha az güvenli saklanan her yedeğin dışında bırakın.
 
-#### [logging] Section
+#### [logging] Bölümü
 
-This section configures logging behavior:
+Bu bölüm günlükleme davranışını yapılandırır:
 
 ```toml
 [logging]
@@ -703,22 +700,22 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parametre | Değer | Notlar |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` veya `DEBUG` | Üretim için `INFO`, sorun giderme için `DEBUG` |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Saklanacak günlük yedek sayısı (günlük bazda) |
 
 ---
 
-### Step 2: Validate the Configuration
+### Adım 2: Yapılandırmayı Doğrulayın
 
-Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+Depoyu başlatmadan önce `config.toml` dosyasının eksiksiz ve doğru kurulmuş olduğunu denetleyin. digna kurulum dizininizde şunu çalıştırın:
 
 ```bash
 ./digna config check
 ```
 
-Every section is validated on its own, so a single mistake does not hide the state of the rest:
+Her bölüm ayrı ayrı doğrulanır, böylece tek bir hata diğerlerinin durumunu gizlemez:
 
 ```text
 Configuration validation report (source: config.toml):
@@ -732,76 +729,76 @@ Configuration validation report (source: config.toml):
 Overall: OK
 ```
 
-Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+FAILED olarak bildirilen her şeyi düzeltin ve devam etmeden önce komutu yeniden çalıştırın. Seçeneklerin tam listesi [CLI başvurusunda](../../../cli/Command_Line_Interface_202606.md) yer alır.
 
-### Step 3: Initialize the Repository
+### Adım 3: Repository'yi Başlatın
 
-1. Open a terminal
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Bir terminal açın
+2. digna kurulum dizinine gidin (`config.toml` ve `digna` yürütülebilir dosyasının bulunduğu dizin)
+3. Bağlantı testini çalıştırın:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Bağlantının kurulduğuna dair bir onay görmelisiniz (repository henüz başlatılmamıştır).
 
-!!! note "Note"
+!!! note "Not"
 
-    On Linux, the current directory is not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add a symbolic link:
+    Linux'ta geçerli dizin PATH'inizde bulunmaz; bu nedenle yürütülebilir dosya `digna` yerine `./digna` olarak çağrılır. Kısa biçimi her yerde kullanmak için bir sembolik bağlantı ekleyin:
 
     ```bash
     sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
-### Step 4: Install the Repository Schema
+### Adım 4: Repository Şemasını Kurun
 
-In the same directory, run:
+Aynı dizinde şu komutu çalıştırın:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Bu komut PostgreSQL veritabanınıza gerekli tabloları ve şemayı yükler.
 
-### Step 5: Create an Admin User
+### Adım 5: Yönetici (Admin) Kullanıcısı Oluşturun
 
-The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+Yönetici kullanıcısı doğrudan repository şemasında oluşturulur; bu nedenle sunucunun henüz çalışıyor olması gerekmez. digna kurulum dizininde şunu çalıştırın:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
 ```
 
-**Example:**
+**Örnek:**
 
 ```bash
 ./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with email `admin@example.com` and full administrative privileges.
+Bu komut, `admin@example.com` e-posta adresine ve tam idari ayrıcalıklara sahip bir kullanıcı oluşturur.
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    Wrap the password in single quotes. `bash` and `zsh` treat characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Parolayı tek tırnak içine alın. `bash` ve `zsh`, `!`, `$` ve `*` gibi karakterleri özel olarak ele alır ve bu karakterleri içeren tırnaksız bir parola yazıldığı gibi aktarılmaz.
 
-!!! tip "Best Practice"
+!!! tip "En İyi Uygulama"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Büyük küçük harf, sayı ve özel karakter içeren güçlü bir parola kullanın.
 
-### Step 6: Start the digna Server
+### Adım 6: digna Sunucusunu Başlatın
 
-In the digna installation directory, start the server with:
+digna kurulum dizininde sunucuyu başlatın:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Parametreler:**
+- `--address` — Sunucu hostname/IP
+- `--port` — Sunucu portu
 
-You should see startup messages confirming the server is running:
+Sunucunun çalıştığını doğrulayan başlangıç mesajları görmelisiniz:
 
 ```
 INFO:     Started server process [1234]
@@ -810,9 +807,9 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    If the dashboard is served from a different machine than the backend, open the API port in the firewall as well:
+    Dashboard backend'den farklı bir makineden sunuluyorsa API portunu da güvenlik duvarında açın:
 
     ```bash
     sudo ufw allow 8082/tcp
@@ -821,62 +818,62 @@ INFO:     Uvicorn running on http://localhost:8082
     sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
     ```
 
-!!! note "The server holds the terminal"
+!!! note "Sunucu terminali meşgul eder"
 
-    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a systemd Service](#running-digna-as-a-systemd-service) to start it automatically at boot instead.
+    `serve` ön planda çalışır ve siz ++ctrl+c++ ile durdurana kadar çalışmayı sürdürür. Kurulumu tamamlarken çalışır durumda bırakın; bunun yerine sistem açılışında otomatik başlatmak için bkz. [digna'yı systemd Hizmeti Olarak Çalıştırma](#running-digna-as-a-systemd-service).
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Dashboard Yapılandırması {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Adım 1: Dashboard'u Web Sunucusuna Dağıtın
 
-The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
+digna dashboard'u kendi yapılandırmasını `dashboard/dashboard_config.toml` dosyasından okur. Bu dosya kurulumla birlikte gelmez — onu `dashboard/` dizininde, dashboard dosyalarının yanında siz oluşturursunuz.
 
-Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
+Dosyanın içeriği [Çoklu Oturum Açma (Single Sign-On)](../../../sso/overview.md) bölümünde açıklanmıştır; dosyaya ihtiyaç duyulan yer de burasıdır: dashboard'un sunduğu oturum açma seçeneklerini ve çoklu örnek dağıtımlarında backend bağlantısını içerir.
 
-Choose your web server and follow the corresponding deployment steps.
+Web sunucunuzu seçin ve ilgili dağıtım adımlarını izleyin.
 
-#### Deploying to nginx
+#### nginx'e Dağıtım
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+[nginx Kurulumu](#nginx-setup) bölümünü izlediyseniz server bloğu zaten `dashboard` klasörünüzü gösterir ve herhangi bir kopyalama gerekmez.
 
-1. **Confirm the path**
-   - Open `/etc/nginx/conf.d/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Yolu doğrulayın**
+   - `/etc/nginx/conf.d/digna.conf` dosyasını açın
+   - `root` değerinin çıkardığınız `dashboard` klasörünü gösterdiğini doğrulayın
 
-2. **Ensure the folder is readable**
+2. **Klasörün okunabilir olduğundan emin olun**
    ```bash
    sudo chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **nginx'i yeniden yükleyin**
    ```bash
    sudo nginx -t
    sudo systemctl reload nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Kurulumu Test Edin**
+   - Tarayıcınızı açın
+   - `http://localhost` (veya yapılandırdığınız URL) adresine gidin
+   - digna dashboard giriş sayfasını görmelisiniz
 
-#### Deploying to Apache httpd
+#### Apache httpd'ye Dağıtım
 
-1. **Copy the Dashboard to the Document Root**
+1. **Dashboard'u Belge Köküne Kopyalayın**
    ```bash
    sudo cp -R /opt/digna/dashboard /var/www/html/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Yeniden Yazma Kurallarını Ekleyin**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   Dashboard rotalarının tarayıcı yenilemesinden sonra da çalışması için dağıtılan klasörün içinde bir `.htaccess` dosyası oluşturun:
 
    ```bash
    sudo nano /var/www/html/digna/.htaccess
    ```
 
-   Paste the following:
+   Aşağıdakini yapıştırın:
 
    ```apache
    RewriteEngine On
@@ -891,7 +888,7 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Apache'yi Yeniden Başlatın**
    ```bash
    sudo systemctl restart apache2
    ```
@@ -899,114 +896,114 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    sudo systemctl restart httpd
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Dashboard'a Erişim**
+   - Tarayıcınızı açın
+   - `http://localhost/digna` adresine gidin
+   - digna dashboard giriş sayfasını görmelisiniz
 
-### Step 2: SELinux (RHEL Family Only)
+### Adım 2: SELinux (Yalnızca RHEL Ailesi)
 
-On RHEL, Rocky, AlmaLinux and Fedora, SELinux is enforcing by default and will block the web server from reading files outside its expected locations. Check whether it is active:
+RHEL, Rocky, AlmaLinux ve Fedora'da SELinux varsayılan olarak zorlayıcı (enforcing) moddadır ve web sunucusunun beklenen konumlarının dışındaki dosyaları okumasını engeller. Etkin olup olmadığını denetleyin:
 
 ```bash
 getenforce
 ```
 
-If the result is `Enforcing` and you are serving the dashboard from `/opt/digna/dashboard`, label the directory so the web server may read it:
+Sonuç `Enforcing` ise ve dashboard'u `/opt/digna/dashboard` konumundan sunuyorsanız, web sunucusunun okuyabilmesi için dizini etiketleyin:
 
 ```bash
 sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-!!! note "Note"
+!!! note "Not"
 
-    If `semanage` is not found, install it with `sudo dnf install -y policycoreutils-python-utils`.
+    `semanage` bulunamazsa `sudo dnf install -y policycoreutils-python-utils` ile kurun.
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    A dashboard that returns **403 Forbidden** on a freshly configured RHEL server is almost always an SELinux labelling problem rather than a file-permission one. Confirm with `sudo ausearch -m avc -ts recent`.
+    Yeni yapılandırılmış bir RHEL sunucusunda **403 Forbidden** döndüren bir dashboard, neredeyse her zaman dosya izni sorunu değil, bir SELinux etiketleme sorunudur. `sudo ausearch -m avc -ts recent` ile doğrulayın.
 
 ---
 
-## Running digna as a systemd Service {: #running-digna-as-a-systemd-service }
+## digna'yı systemd Hizmeti Olarak Çalıştırma {: #running-digna-as-a-systemd-service }
 
-### Why Run digna as a Service?
+### Neden digna'yı Hizmet Olarak Çalıştırmalı?
 
-Running the digna backend as a systemd service ensures it:
+digna backend'ini systemd hizmeti olarak çalıştırmak şu avantajları sağlar:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open terminal window
-- Restarts automatically if it crashes
-- Can be managed through `systemctl`, the standard Linux service manager
+- Makine açıldığında otomatik olarak başlar
+- Açık bir terminal penceresi olmadan arka planda çalışır
+- Çöktüğünde otomatik olarak yeniden başlar
+- Standart Linux hizmet yöneticisi olan `systemctl` üzerinden yönetilebilir
 
-### Service Management Files
+### Hizmet Yönetim Dosyaları
 
-All necessary files are located in the digna installation directory under: `bin/`
+Gerekli tüm dosyalar digna kurulum dizininin altında: `bin/` dizininde bulunur.
 
-The following shell scripts are available:
+Mevcut kabuk betikleri:
 
-- `install_service.sh` — Registers digna with systemd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — digna'yı systemd'ye kaydeder
+- `uninstall_service.sh` — hizmet kaydını kaldırır
+- `start_service.sh` — kayıtlı hizmeti başlatır
+- `stop_service.sh` — çalışan hizmeti durdurur
 
-!!! warning "Root Privileges Required"
+!!! warning "Root Ayrıcalıkları Gereklidir"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes a unit file to `/etc/systemd/system`.
+    Sistem açılışında başlayan bir hizmeti kaydetmek `/etc/systemd/system` dizinine bir unit dosyası yazdığından, tüm betikler `sudo` ile çalıştırılmalıdır.
 
-### Making the Scripts Executable
+### Betikleri Çalıştırılabilir Yapma
 
-Extraction may not preserve the executable bit. Before first use:
+Çıkarma işlemi çalıştırma izni bitini korumayabilir. İlk kullanımdan önce:
 
 ```bash
 cd /opt/digna/bin
 sudo chmod +x *.sh
 ```
 
-### Installing the Service
+### Hizmeti Yükleme
 
-1. **Open a terminal**
+1. **Bir terminal açın**
 
-2. **Navigate to the bin Folder**
+2. **bin Klasörüne Gidin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Kurulum Betiğini Çalıştırın**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with systemd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+digna sunucusu artık **otomatik başlatma** etkinleştirilmiş şekilde systemd'ye kayıtlıdır. Hizmet hemen başlamaz — başlatmak için bir sonraki bölüme bakın.
 
-### Starting and Stopping the Service
+### Hizmeti Başlatma ve Durdurma
 
-#### To Start the Service
+#### Hizmeti Başlatmak İçin
 
-1. Open a terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Bir terminal açın
+2. `/opt/digna/bin` dizinine gidin
+3. Şunu çalıştırın:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Hizmeti Durdurmak İçin
 
-1. Open a terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Bir terminal açın
+2. `/opt/digna/bin` dizinine gidin
+3. Şunu çalıştırın:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    Always stop the service before updating application files.
+    Uygulama dosyalarını güncellemeden önce hizmeti her zaman durdurun.
 
-### Managing the Service with systemctl
+### Hizmeti systemctl ile Yönetme
 
-Once registered, the service can also be controlled with the standard systemd commands from any directory:
+Kaydedildikten sonra hizmet, herhangi bir dizinden standart systemd komutlarıyla da denetlenebilir:
 
 ```bash
 sudo systemctl start digna
@@ -1015,151 +1012,130 @@ sudo systemctl restart digna
 sudo systemctl status digna
 ```
 
-### Verifying the Service
+### Hizmeti Doğrulama
 
-To confirm that the service is registered and running:
+Hizmetin kayıtlı olduğunu ve çalıştığını doğrulamak için:
 
 ```bash
 systemctl is-enabled digna
 systemctl is-active digna
 ```
 
-`enabled` means the service starts at boot; `active` means it is running now.
+`enabled`, hizmetin sistem açılışında başladığı; `active` ise şu anda çalıştığı anlamına gelir.
 
-### Viewing the Service Logs
+### Hizmet Günlüklerini Görüntüleme
 
-systemd captures everything the backend writes to the console. To read it:
+systemd, backend'in konsola yazdığı her şeyi yakalar. Okumak için:
 
 ```bash
 sudo journalctl -u digna -n 100
 ```
 
-To follow the log live while reproducing a problem:
+Bir sorunu yeniden oluştururken günlüğü canlı izlemek için:
 
 ```bash
 sudo journalctl -u digna -f
 ```
 
-!!! tip "Tip"
+!!! tip "İpucu"
 
-    This is the fastest way to diagnose a service that starts and immediately stops. A repository connection failure or a missing `license.toml` is reported here.
+    Başlayıp hemen duran bir hizmeti teşhis etmenin en hızlı yolu budur. Repository bağlantı hatası veya eksik bir `license.toml` burada bildirilir.
 
-### Moving the Service to a New Directory
+### Hizmeti Yeni Bir Dizine Taşıma
 
-The unit file stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+Unit dosyası yürütülebilir dosyanın mutlak yolunu sakladığından, kurulumun yerini değiştirmek hizmetin yeniden kaydedilmesini gerektirir:
 
-1. **Uninstall the Current Service**
+1. **Mevcut Hizmeti Kaldırın**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Uygulama Dosyalarını Taşıyın**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Hizmeti Yeniden Kurun**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Hizmeti Başlatın**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Hizmeti Kaldırma
 
-1. **Stop the Running Service**
+1. **Çalışan Hizmeti Durdurun**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Hizmeti Kaldırın**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from systemd.
+digna sunucusunun systemd kaydı artık kaldırılmıştır.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Yeni Bir Sürüme Yükseltme {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Yükseltme Öncesi
 
-**Verify All Database Connections First**
+**Önce Tüm Veritabanı Bağlantılarını Doğrulayın**
 
-From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
-offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
-The digna team decided to build on ODBC alone, because a single, standard interface gives you
-more than a set of bespoke drivers can:
+2026.06 sürümünden itibaren digna, her kaynak teknolojisine **ODBC** üzerinden erişir. Önceki sürümler, **Use ODBC** anahtarıyla seçilen, teknolojiye özgü sürücü ile ODBC arasında bir seçim sunuyordu. digna ekibi yalnızca ODBC üzerine inşa etmeye karar verdi; çünkü tek ve standart bir arayüz, ısmarlama sürücülerden oluşan bir kümeden daha fazlasını sağlar:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
-  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
-  update, rather than waiting for a digna release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of digna.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones digna does not publish a dedicated guide for.
+- **Kimlik doğrulama** — kimlik doğrulama ODBC'nin bir parçasıdır; dolayısıyla bir bağlantı, sürücüsünün desteklediği her şeyi kullanabilir: parolalar, belirteçler ve PAT'ler, Kerberos ve Active Directory, MFA ve tarayıcı tabanlı çoklu oturum açma, bulut kimlikleri, istemci sertifikaları ve TLS. Yeni yöntemler, bir digna sürümünü beklemek yerine sürücü güncellemesiyle gelir.
+- **Veritabanı üreticilerince bakımı yapılan sürücüler** — üreticinin kendi sürücüsü yeni sunucu sürümlerini ve güvenlik düzeltmelerini izler; siz de onu digna'dan bağımsız olarak kendi takviminize göre güncelleyebilirsiniz.
+- **Her şeyi yapılandırmanın tek yolu** — her teknoloji, aynı arayüz, hassas değerlerin aynı şifrelenmesi ve aynı sorun giderme ile anahtar/değer özelliklerinden oluşan bir listedir; kaynak başına farklı alan kümeleri yoktur.
+- **İnce ayar ve kapsam** — zaman aşımları, TLS ayarları, vekil sunucular ve getirme boyutları gibi sürücü düzeyindeki seçenekler her kaynak için kullanılabilir ve uyumlu bir ODBC sürücüsü bulunan her teknoloji, digna'nın ayrı bir kılavuz yayımlamadıkları da dahil olmak üzere bağlanabilir.
 
-In practice this means the **Use ODBC** switch and the separate host, port, database, user and
-password fields no longer exist. **Every connection that does not already use ODBC must be
-changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+Uygulamada bu, **Use ODBC** anahtarının ve ayrı ana bilgisayar, bağlantı noktası, veritabanı, kullanıcı ve parola alanlarının artık bulunmadığı anlamına gelir. **Halihazırda ODBC kullanmayan her bağlantı ODBC'ye taşınmalıdır** — otomatik dönüştürme yoktur, bu nedenle bunu yükseltmeden önce planlayın:
 
-1. Review every database connection defined in your installation and list the ones that are not
-   yet using ODBC — each of these has to be reconfigured.
-2. Install the matching ODBC driver on the digna host — connections are opened from the server
-   that runs the digna backend, not from the browser. See
-   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
-3. Have the ODBC properties ready for each affected connection. The
-   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
-   property set per source.
+1. Kurulumunuzda tanımlı her veritabanı bağlantısını gözden geçirin ve henüz ODBC kullanmayanları not edin — her biri yeniden yapılandırılmalıdır.
+2. İlgili ODBC sürücüsünü digna ana bilgisayarına kurun — bağlantılar, tarayıcıdan değil, digna arka ucunu çalıştıran sunucudan açılır. Bkz. [ODBC Sürücüsünü digna Ana Bilgisayarına Kurma](../../../databases/overview.md#install-the-driver).
+3. Etkilenen her bağlantı için ODBC özelliklerini hazır bulundurun. [Teknoloji kılavuzları](../../../databases/overview.md#technology-guides) her kaynak için denenmiş bir özellik kümesi listeler.
 
-After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
-see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
-and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+Yükseltmeden sonra etkilenen her bağlantıyı ODBC'ye taşıyın ve dashboard'dan sınayın — bkz. [Veritabanı Bağlantısı Oluşturma](../../../databases/overview.md#create-a-database-connection) ve [Bağlantıyı Sınama](../../../databases/overview.md#testing-a-connection).
 
-!!! warning "Databricks Legacy connections"
+!!! warning "Databricks Legacy bağlantıları"
 
-    The Databricks Legacy connector has been removed in this release. Migrate those connections
-    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+    Databricks Legacy bağlayıcısı bu sürümde kaldırıldı. Bu bağlantıları [Databricks](../../../databases/databricks_connector_guide.md) bağlayıcısına taşıyın.
 
-**Creating a digna Repository Backup is Mandatory**
+**digna Repository Yedeği Almak Zorunludur**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+digna'yı yükseltmeden önce veri kaybını önlemek için repository'nizin (PostgreSQL) yedeğini alın.
+Bir yedek, yükseltme sırasında beklenmeyen sorunlar çıkarsa geri dönüş yapabilmenizi sağlar.
 
-To create a backup from the shell:
+Kabuktan yedek almak için:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Yükseltme Süreci
 
-#### Step 1: Stop the digna Service
+#### Adım 1: digna Hizmetini Durdurun
 
-If digna is running as a systemd service, stop it first:
+digna bir systemd hizmeti olarak çalışıyorsa, önce durdurun:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its terminal window.
+digna ön planda çalışıyorsa, terminal penceresinde `Ctrl + C` tuşlarına basın.
 
-#### Step 2: Backup Current Installation
+#### Adım 2: Mevcut Kurulumu Yedekleyin
 
-In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
+digna kurulum dizininizde, yeni sürümün yanlarına dağıtılabilmesi için mevcut kurulumunuzun klasörlerini yeniden adlandırın:
 
 ```bash
 cd /opt/digna
@@ -1172,37 +1148,37 @@ sudo mv dignacli dignacli_old
 sudo mv dashboard dashboard_old
 ```
 
-!!! info "dignabackend and dignacli are no longer used"
+!!! info "dignabackend ve dignacli artık kullanılmıyor"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    2026.06 sürümünden itibaren `dignabackend` ve `dignacli`, arka uç ile CLI'yi birleştiren tek `digna` çalıştırılabilir dosyasıyla değiştirilmiştir. `dignabackend_old` ve `dignacli_old` klasörlerini yalnızca yükseltmeyi doğrulayana kadar saklayın — sonrasında her ikisini de silebilirsiniz. `dashboard_old` klasörünü, yapılandırma dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. adım 4).
 
-#### Step 3: Extract and Deploy New Version
+#### Adım 3: Yeni Sürümü Çıkarın ve Dağıtın
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and the ownership of the service account:
+1. Yeni digna kurulum ZIP dosyasını çıkarın
+2. Yeni `digna` yürütülebilir dosyasını ve `dashboard` klasörünü kurulum dizinine kopyalayın
+3. Çalıştırma izni bitini ve hizmet hesabının sahipliğini geri yükleyin:
 
 ```bash
 sudo chmod +x /opt/digna/digna
 sudo chown -R digna:digna /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Önemli"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
-    installation ZIP — the digna team never ships either file. Your existing configuration is
-    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
-    only ones you have.
+    Ne `config.toml` ne de `dashboard/dashboard_config.toml` hiçbir zaman kurulum ZIP'ine
+    dahil edilmez — digna ekibi bu dosyaların hiçbirini göndermez. Bu nedenle mevcut yapılandırmanız
+    yükseltmeden etkilenmez ve yeniden adlandırılan `*_old` klasörlerindeki kopyalar elinizdeki
+    tek kopyalardır.
 
-#### Step 4: Restore Your Configuration Files
+#### Adım 4: Yapılandırma Dosyalarınızı Geri Yükleyin
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-!!! warning "Release 2026.06 changes config.toml"
+!!! warning "2026.06 sürümü config.toml dosyasını değiştiriyor"
 
-    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Üç ayar yeni ve zorunludur, üçü ise artık kullanılmamaktadır. Önceki bir sürümden devralınan `config.toml` yeni ayarları içermez ve bunlar eksik olduğu sürece digna başlatılmaz. Mevcut `config.toml` dosyanıza şunları ekleyin:
 
     ```toml
     [base]
@@ -1213,16 +1189,15 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
+    İki `[base]` anahtarını mevcut `[base]` bölümünüze ekleyin ve `[encryption]` bölümünü yeni bir bölüm olarak ekleyin. Ardından artık kullanılmayan ayarları kaldırın: `[base]` bölümünden **`digna_FERNET_KEY`**, `[app]` bölümünden ise **`digna_APP_HOST`** ve **`digna_APP_PORT`** — sunucu adresini ve bağlantı noktasını artık `digna serve` komutundan alır.
 
-    See [Backend Configuration](#backend-configuration) for what each setting does.
+    Her ayarın ne yaptığı şurada açıklanmıştır: [Backend Yapılandırması](#backend-configuration).
 
-!!! warning "Single sign-on: the [oidc_clients] format has changed"
+!!! warning "Çoklu oturum açma: [oidc_clients] biçimi değişti"
 
-    Release 2026.06 replaces the array of tables with one table per provider, named after the
-    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+    2026.06 sürümü, tablo dizisini her sağlayıcı için birer tabloyla değiştirir; tablolar sağlayıcı anahtarıyla adlandırılır. `DIGNA_OIDC_KEY` kaldırıldı — anahtar artık bölüm başlığının bir parçasıdır.
 
-    Before:
+    Önce:
 
     ```toml
     [[oidc_clients]]
@@ -1233,7 +1208,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    After:
+    Sonra:
 
     ```toml
     [oidc_clients.microsoft]
@@ -1243,73 +1218,71 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Repeat the section for every provider, and keep each key matching the `key` in
-    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
-    old form is still in place. Only installations that use single sign-on are affected.
+    Bölümü her sağlayıcı için yineleyin ve her anahtarı `dashboard_config.toml` içindeki `key` ile aynı tutun. Eski biçim yerinde kaldığı sürece `digna config check`, `oidc_clients` bölümünü FAILED olarak bildirir. Yalnızca çoklu oturum açma kullanan kurulumlar etkilenir.
 
-#### Step 5: Reload the Web Server
+#### Adım 5: Web Sunucusunu Yeniden Yükleyin
 
-The dashboard is a set of static files, so your web server — and the browser — may still be
-serving the previous version. Reload or restart whichever web server hosts the `dashboard`
-folder, then reload the page with a hard refresh (++ctrl+f5++).
+Dashboard bir statik dosyalar kümesidir; bu nedenle web sunucunuz — ve tarayıcı — hâlâ önceki
+sürümü sunuyor olabilir. `dashboard` klasörünü barındıran web sunucusunu yeniden yükleyin veya yeniden başlatın,
+ardından sayfayı zorla yenileyin (++ctrl+f5++).
 
-#### Step 6: Validate the Configuration
+#### Adım 6: Yapılandırmayı Doğrulayın
 
-Confirm that the updated `config.toml` is complete before touching the repository:
+Depoya dokunmadan önce güncellenmiş `config.toml` dosyasının eksiksiz olduğunu doğrulayın:
 
 ```bash
 ./digna config check
 ```
 
-Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+Her bölüm OK bildirmelidir. FAILED olarak bildirilen her şeyi düzeltin ve devam etmeden önce komutu yeniden çalıştırın.
 
-#### Step 7: Replace the License File
+#### Adım 7: Lisans Dosyasını Değiştirin
 
-Each release is licensed separately. Copy the `license.toml` that the digna team provided for
-this release into the installation directory, replacing the old one:
+Her sürüm ayrı olarak lisanslanır. digna ekibinin bu sürüm için sağladığı `license.toml` dosyasını
+kurulum dizinine kopyalayarak eskisinin yerine koyun:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
-!!! warning "Do not keep the previous license"
+!!! warning "Önceki lisansı saklamayın"
 
-    A `license.toml` issued for an earlier release does not cover this one, and every command
-    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
-    repository when the check fails. Verify it before going further:
+    Önceki bir sürüm için verilmiş bir `license.toml` bu sürümü kapsamaz ve lisansı denetleyen
+    her komut — `user`, `inspection`, `repo` — denetim başarısız olduğunda depoya dokunmadan önce
+    sonlanır. Devam etmeden önce lisansı doğrulayın:
 
     ```bash
     ./digna license check
     ```
 
-#### Step 8: Upgrade the Repository Schema
+#### Adım 8: Repository Şemasını Yükseltin
 
-Navigate to your digna installation directory and run:
+digna kurulum dizinine gidin ve şu komutu çalıştırın:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+Bu komut PostgreSQL şemasını en son sürüme günceller ve mevcut tüm verileri korur.
 
-#### Step 9: Restart Services
+#### Adım 9: Hizmetleri Yeniden Başlatın
 
-If running as a systemd service:
+systemd hizmeti olarak çalışıyorsa:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Manuel olarak çalıştırıyorsanız, sunucuyu yeniden başlatın:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, reload the respective web server:
+nginx veya Apache kullanıyorsanız ilgili web sunucusunu yeniden yükleyin:
 
 ```bash
 sudo systemctl reload nginx
@@ -1318,19 +1291,19 @@ sudo systemctl reload nginx
 sudo systemctl restart apache2
 ```
 
-On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory was replaced:
+RHEL ailesinde, `dashboard` dizini değiştirildiyse SELinux etiketlemesini yeniden uygulayın:
 
 ```bash
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Step 10: Verify the Upgrade
+#### Adım 10: Yükseltmeyi Doğrulayın
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-4. Change every connection that did not already use ODBC over to ODBC, then test all connections
-   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection):
+1. digna dashboard'a erişin
+2. Arayüzün düzgün yüklendiğini doğrulayın
+3. Sunucu günlüklerini herhangi bir hata için kontrol edin
+4. Henüz ODBC kullanmayan her bağlantıyı ODBC'ye taşıyın, ardından tüm bağlantıları sınayın
+   — bkz. [Bağlantıyı Sınama](../../../databases/overview.md#testing-a-connection):
 
 ```bash
 sudo journalctl -u digna -n 100

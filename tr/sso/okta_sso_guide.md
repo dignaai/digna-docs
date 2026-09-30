@@ -1,95 +1,95 @@
-# Set up SSO with Okta
+# Okta ile SSO Kurulumu
 
-Okta is OIDC-compliant, with one wrinkle that catches most first-time integrations: an Okta org exposes more than one authorization server, and each has its own discovery URL.
+Okta OIDC uyumludur, ancak ilk kez yapılan entegrasyonların çoğunu zorlayan bir ayrıntısı vardır: bir Okta org'u birden fazla yetkilendirme sunucusu sunar ve her birinin kendi keşif URL'si vardır.
 
-This guide covers the **Okta side**: creating the app integration and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Bu kılavuz **Okta tarafını** kapsar: uygulama entegrasyonunu oluşturma ve digna'nın ihtiyaç duyduğu değerleri toplama. digna tarafı (`dashboard_config.toml`, test ve sorun giderme) her sağlayıcı için aynıdır ve [Çoklu Oturum Açma Genel Bakış](overview.md) sayfasında açıklanmıştır.
 
 ---
 
-## Before You Start
+## Başlamadan Önce
 
-| Requirement | Notes |
+| Gereksinim | Notlar |
 |---|---|
-| **Okta role** | Super Administrator, or an admin role permitted to create app integrations |
-| **Okta domain** | e.g. `yourcompany.okta.com`, or a custom domain if configured |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Okta rolü** | Super Administrator veya uygulama entegrasyonu oluşturma yetkisi olan bir yönetici rolü |
+| **Okta alan adı** | ör. `yourcompany.okta.com` veya yapılandırılmışsa özel bir alan adı |
+| **digna yönlendirme URI'si** | Kullanıcıların oturum açtıktan sonra döndüğü URL, ör. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Create the App Integration
+## Adım 1: Uygulama Entegrasyonunu Oluşturun
 
-1. Sign in to the Okta Admin Console
-2. Go to **Applications → Applications**
-3. Click **Create App Integration**
-4. Select:
+1. Okta Admin Console'da oturum açın
+2. **Applications → Applications** bölümüne gidin
+3. **Create App Integration**'a tıklayın
+4. Şunları seçin:
    - **Sign-in method**: *OIDC - OpenID Connect*
    - **Application type**: *Web Application*
-5. Click **Next**
+5. **Next**'e tıklayın
 
-!!! warning "Application Type Cannot Be Changed"
+!!! warning "Uygulama Türü Değiştirilemez"
 
-    Choosing *Single-Page Application* instead of *Web Application* creates a public client with no secret, and digna's backend code exchange will fail with `invalid_client`. The type is fixed at creation — a wrong choice means deleting the app and starting again.
+    *Web Application* yerine *Single-Page Application* seçmek, gizli anahtarı olmayan genel bir istemci oluşturur ve digna arka ucunun kod değişimi `invalid_client` hatasıyla başarısız olur. Tür oluşturma sırasında sabitlenir; yanlış bir seçim, uygulamayı silip baştan başlamak anlamına gelir.
 
 ---
 
-## Step 2: Configure the Integration
+## Adım 2: Entegrasyonu Yapılandırın
 
 1. **App integration name**: `digna`
-2. **Grant type**: leave *Authorization Code* selected
-3. **Sign-in redirect URIs**: enter your digna callback URL:
+2. **Grant type**: *Authorization Code* seçili bırakın
+3. **Sign-in redirect URIs**: digna geri çağırma URL'nizi girin:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-4. **Sign-out redirect URIs**: optional
-5. Under **Assignments**, choose who may use the integration — a specific group is safer than *Allow everyone in your organization to access*
-6. Click **Save**
+4. **Sign-out redirect URIs**: isteğe bağlı
+5. **Assignments** altında entegrasyonu kimlerin kullanabileceğini seçin; belirli bir grup, *Allow everyone in your organization to access* seçeneğinden daha güvenlidir
+6. **Save**'e tıklayın
 
-!!! note "Assignment Is Required"
+!!! note "Atama Gereklidir"
 
-    Okta authenticates the user and then checks whether they are assigned to the application. An unassigned user reaches the Okta login page, signs in successfully, and is refused at the redirect back. If login works for you but not for colleagues, assignment is the first thing to check.
-
----
-
-## Step 3: Collect the Credentials
-
-On the application's **General** tab, under **Client Credentials**:
-
-- **Client ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET` (click the eye icon to reveal)
+    Okta kullanıcının kimliğini doğrular ve ardından kullanıcının uygulamaya atanıp atanmadığını kontrol eder. Atanmamış bir kullanıcı Okta oturum açma sayfasına ulaşır, başarıyla oturum açar ve geri yönlendirme sırasında reddedilir. Oturum açma sizin için çalışıyor ancak iş arkadaşlarınız için çalışmıyorsa ilk kontrol etmeniz gereken şey atamadır.
 
 ---
 
-## Step 4: Choose the Authorization Server
+## Adım 3: Kimlik Bilgilerini Toplayın
 
-This is the step that determines your discovery URL. Go to **Security → API** to see the authorization servers in your org.
+Uygulamanın **General** sekmesinde, **Client Credentials** altında:
 
-**Org authorization server** — issues tokens for the Okta org itself:
+- **Client ID** → `DIGNA_OIDC_CLIENT_ID` olur
+- **Client secret** → `DIGNA_OIDC_CLIENT_SECRET` olur (görmek için göz simgesine tıklayın)
+
+---
+
+## Adım 4: Yetkilendirme Sunucusunu Seçin
+
+Keşif URL'nizi belirleyen adım budur. Org'unuzdaki yetkilendirme sunucularını görmek için **Security → API** bölümüne gidin.
+
+**Org yetkilendirme sunucusu**: Okta org'unun kendisi için token verir:
 
 ```
 https://<your_okta_domain>/.well-known/openid-configuration
 ```
 
-**Custom authorization server** — including the one Okta creates called `default`:
+**Özel yetkilendirme sunucusu**: Okta'nın oluşturduğu `default` adlı sunucu dahil:
 
 ```
 https://<your_okta_domain>/oauth2/<auth_server_id>/.well-known/openid-configuration
 ```
 
-For the built-in server, `<auth_server_id>` is literally `default`:
+Yerleşik sunucu için `<auth_server_id>` harfi harfine `default` değeridir:
 
 ```
 https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration
 ```
 
-!!! tip "Which One?"
+!!! tip "Hangisi?"
 
-    Use the **org** authorization server unless your organization already standardizes on a custom one for API access policies. Okta Developer accounts default to `default`; many enterprise orgs disable it. Open both URLs in a browser — the one that returns JSON rather than an error is the one available to you.
+    Kuruluşunuz API erişim politikaları için zaten özel bir sunucuyu standart olarak kullanmıyorsa **org** yetkilendirme sunucusunu kullanın. Okta Developer hesapları varsayılan olarak `default` kullanır; birçok kurumsal org ise bunu devre dışı bırakır. Her iki URL'yi de bir tarayıcıda açın; hata yerine JSON döndüren, sizin kullanabileceğiniz sunucudur.
 
 ---
 
-## Step 5: Configure digna
+## Adım 5: digna'yı Yapılandırın
 
 ### `dashboard/dashboard_config.toml`
 
@@ -112,37 +112,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://yourcompany.okta.com/oauth2/default/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `okta` here.
+Her iki dosyadaki `key` eşleşmelidir; burada `okta`.
 
 ---
 
-## Step 6: Test
+## Adım 6: Test Edin
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
-
----
-
-## Troubleshooting Okta
-
-### The redirect URI Is Not Registered
-
-Okta names the offending URI in the error. Compare it with **General → Sign-in redirect URIs**; Okta matches the full string including any trailing slash.
-
-### User Is Not Assigned to the Client Application
-
-The account is not in the application's assignment list. Add the user or their group under **Assignments**.
-
-### 400 Bad Request: Invalid Authorization Server
-
-The `<auth_server_id>` in the discovery URL does not exist, most often `default` on an org where it has been removed. Check **Security → API** for the servers actually available.
-
-### invalid_client at the Token Step
-
-The integration was created as a Single-Page Application and has no client secret. Recreate it as a Web Application.
+Arka ucu ve web sunucusunu yeniden başlatın, ardından dashboard'u açın. Tam kontrol listesi için bkz. [Oturum Açmayı Test Etme](overview.md#testing-login).
 
 ---
 
-## See Also
+## Okta Sorunlarını Giderme
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+### Yönlendirme URI'si Kayıtlı Değil
+
+Okta, sorunlu URI'yi hata mesajında belirtir. Bunu **General → Sign-in redirect URIs** ile karşılaştırın; Okta, sondaki eğik çizgi dahil dizenin tamamını eşleştirir.
+
+### Kullanıcı İstemci Uygulamasına Atanmamış
+
+Hesap, uygulamanın atama listesinde değil. Kullanıcıyı veya grubunu **Assignments** altına ekleyin.
+
+### 400 Bad Request: Geçersiz Yetkilendirme Sunucusu
+
+Keşif URL'sindeki `<auth_server_id>` mevcut değil; çoğunlukla kaldırılmış olduğu bir org'da `default`. Gerçekte kullanılabilen sunucular için **Security → API** bölümünü kontrol edin.
+
+### Token Adımında invalid_client
+
+Entegrasyon bir Single-Page Application olarak oluşturulmuş ve istemci gizli anahtarı yok. Bunu bir Web Application olarak yeniden oluşturun.
+
+---
+
+## Ayrıca Bakınız
+
+- [Çoklu Oturum Açma Genel Bakış](overview.md): yapılandırma başvurusu, test ve genel sorun giderme
 - [Okta: OpenID Connect & OAuth 2.0](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)

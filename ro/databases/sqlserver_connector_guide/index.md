@@ -1,86 +1,86 @@
-# Source Connector for MS SQL Server
+# Conector sursă pentru MS SQL Server
 
-This guide describes how to configure *digna* to connect to Microsoft SQL Server over **ODBC**,
-using a **DSN-less** connection string.
+Acest ghid descrie cum să configurați *digna* pentru a se conecta la Microsoft SQL Server prin
+**ODBC**, folosind un șir de conexiune **fără DSN** (DSN-less).
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to SQL Server.
+Partea *digna* a configurării este aceeași pentru orice tehnologie — unde se creează conexiunile,
+cum sunt criptate valorile proprietăților, cum se testează o conexiune și ce înseamnă modurile de
+profilare. Aceasta este descrisă în [Prezentarea conexiunilor la baze de date](overview.md). Această
+pagină acoperă ceea ce este specific SQL Server.
 
 !!! note "Azure Synapse Analytics"
 
-    Synapse is configured as a SQL Server connection as well, with a different host name and a
-    few extra considerations — see [Azure Synapse](azure_synapse_connector_guide.md).
+    Și Synapse se configurează ca o conexiune SQL Server, cu un alt nume de gazdă și câteva
+    aspecte suplimentare — consultați [Azure Synapse](azure_synapse_connector_guide.md).
 
 ---
 
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
+## 1. Instalați driverul ODBC {: #1-install-the-odbc-driver }
 
-Install **ODBC Driver 18 for SQL Server** on the machine that runs the *digna* backend,
-following [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
+Instalați **ODBC Driver 18 for SQL Server** pe mașina care rulează backend-ul *digna*, urmând
+[ghidul de instalare Microsoft](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server).
 
-The driver that ships with Windows under the plain name **SQL Server** also works, but it is
-long superseded and supports neither modern TLS settings nor Azure authentication. Use it only
-where installing the current driver is not an option.
+Driverul livrat cu Windows sub numele simplu **SQL Server** funcționează și el, dar este de mult
+depășit și nu acceptă nici setările TLS moderne, nici autentificarea Azure. Folosiți-l doar acolo
+unde instalarea driverului actual nu este posibilă.
 
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Citiți numele exact al driverului înregistrat de pe gazda dvs., așa cum este descris în
+[Instalați driverul ODBC pe gazda digna](overview.md#install-the-driver).
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 2. Proprietăți ODBC {: #2-odbc-properties }
 
-!!! important "An example, not a specification"
+!!! important "Un exemplu, nu o specificație"
 
-    The set below is one combination that is known to work. The properties belong to the
-    Microsoft ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — Driver 18 encrypts by default where Driver 17 did not, for one — and between
-    platforms. Use this as a starting point and check the documentation of the driver version
-    you installed.
+    Setul de mai jos este o combinație despre care se știe că funcționează. Proprietățile aparțin
+    driverului ODBC Microsoft, astfel încât numele, valorile implicite și valorile acceptate diferă
+    între versiunile de driver — de exemplu, Driver 18 criptează implicit, spre deosebire de
+    Driver 17 — și între platforme. Folosiți-l ca punct de plecare și consultați documentația
+    versiunii de driver pe care ați instalat-o.
 
-Add the following properties in the **Add DB Connection** screen:
+Adăugați următoarele proprietăți în ecranul **Add DB Connection**:
 
-| Key | Example value | Notes |
+| Cheie | Valoare exemplu | Note |
 |---|---|---|
-| `DRIVER` | `ODBC Driver 18 for SQL Server` | Must match the driver name registered on the *digna* host |
-| `SERVER` | `sql.example.com` | Server name or IP address. Named instances: `host\instance`; a non-default port: `host,1433` |
-| `PORT` | `1433` | Omit when the port is already part of `SERVER` |
-| `DATABASE` | `digna_source_db` | Database that holds the source schemas. It is the only database this connection can profile |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `ODBC Driver 18 for SQL Server` | Trebuie să corespundă numelui driverului înregistrat pe gazda *digna* |
+| `SERVER` | `sql.example.com` | Numele serverului sau adresa IP. Instanțe cu nume: `host\instance`; un port non-implicit: `host,1433` |
+| `PORT` | `1433` | Omiteți atunci când portul face deja parte din `SERVER` |
+| `DATABASE` | `digna_source_db` | Baza de date care conține schemele sursă. Este singura bază de date pe care această conexiune o poate profila |
+| `UID` | `digna_source_user` | Utilizatorul bazei de date |
+| `PWD` | `<password>` | Bifați **Encrypted** |
 
-The resulting connection string looks like this:
+Șirul de conexiune rezultat arată astfel:
 
 ```
 DRIVER=ODBC Driver 18 for SQL Server;SERVER=sql.example.com;PORT=1433;DATABASE=digna_source_db;UID=digna_source_user;PWD=<password>
 ```
 
-### Encryption with ODBC Driver 18
+### Criptarea cu ODBC Driver 18
 
-Driver 18 encrypts connections by default and validates the server certificate. Against a
-server with a certificate that your *digna* host does not trust — a self-signed certificate,
-typically — the connect fails with a certificate-chain error. Add:
+Driver 18 criptează implicit conexiunile și validează certificatul serverului. Pentru un server cu
+un certificat în care gazda *digna* nu are încredere — de obicei un certificat autosemnat —
+conectarea eșuează cu o eroare de lanț de certificate. Adăugați:
 
-| Key | Example value | Notes |
+| Cheie | Valoare exemplu | Note |
 |---|---|---|
-| `Encrypt` | `yes` | Default in Driver 18; set to `no` only if the server cannot do TLS |
-| `TrustServerCertificate` | `yes` | Skips certificate validation. Convenient in test environments; prefer installing the certificate in production |
+| `Encrypt` | `yes` | Implicit în Driver 18; setați `no` doar dacă serverul nu poate folosi TLS |
+| `TrustServerCertificate` | `yes` | Omite validarea certificatului. Comod în mediile de test; în producție preferați instalarea certificatului |
 
-### Windows Authentication
+### Autentificare Windows
 
-To connect as the account that runs the *digna* service instead of with a SQL login, drop
-`UID` and `PWD` and add:
+Pentru a vă conecta cu contul care rulează serviciul *digna* în loc de un login SQL, eliminați
+`UID` și `PWD` și adăugați:
 
-| Key | Example value | Notes |
+| Cheie | Valoare exemplu | Note |
 |---|---|---|
-| `Trusted_Connection` | `yes` | The *digna* service account needs the database rights |
+| `Trusted_Connection` | `yes` | Contul de serviciu *digna* are nevoie de drepturile pe baza de date |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. Configurația *digna* {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+În ecranul **Add DB Connection**, furnizați următoarele:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -91,56 +91,56 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "d
 
 ---
 
-## 4. Notes on MS SQL Server {: #4-notes-on-ms-sql-server }
+## 4. Note despre MS SQL Server {: #4-notes-on-ms-sql-server }
 
-- **One connection sees one database.** *digna* offers the schemas of the database named in
-  `DATABASE`, because SQL Server reports only the current database as a catalog. Source tables
-  in another database need their own connection.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user
-  needs `CREATE TABLE` there. *Session* uses local temporary tables (`#wt_…`) in `tempdb` and
-  does not touch **Work Schema**. *Standard* needs read access only.
-- **`SERVER` carries the instance and port.** With a named instance, `host\instance` needs the
-  SQL Server Browser service to be reachable; `host,port` avoids that.
+- **O conexiune vede o singură bază de date.** *digna* oferă schemele bazei de date numite în
+  `DATABASE`, deoarece SQL Server raportează ca și catalog doar baza de date curentă. Tabelele
+  sursă dintr-o altă bază de date au nevoie de propria conexiune.
+- **Moduri de profilare.** *Permanent* creează tabelele de lucru în **Work Schema**, deci
+  utilizatorul are nevoie de `CREATE TABLE` acolo. *Session* folosește tabele temporare locale
+  (`#wt_…`) în `tempdb` și nu atinge **Work Schema**. *Standard* necesită doar acces de citire.
+- **`SERVER` conține instanța și portul.** Cu o instanță cu nume, `host\instance` necesită ca
+  serviciul SQL Server Browser să fie accesibil; `host,port` evită acest lucru.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Verificarea driverului (opțional) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own wizard is a convenient way to confirm that the driver works and that the server accepts
-your credentials before you enter them in *digna*.
+Configurarea unei surse de date ODBC nu este necesară pentru o conexiune fără DSN, dar asistentul
+propriu al driverului este o modalitate comodă de a confirma că driverul funcționează și că
+serverul acceptă acreditările înainte de a le introduce în *digna*.
 
-#### Step 1
+#### Pasul 1
 ![Step 1](images/sqlserver/create_odbc_data_source_step1.png)
 
-Click the **Next >** button.
+Faceți clic pe butonul **Next >**.
 
-#### Step 2
+#### Pasul 2
 ![Step 2](images/sqlserver/create_odbc_data_source_step2.png)
 
-Choose the authentication method (e.g. username and password)
-and provide the required data.
+Alegeți metoda de autentificare (de ex. nume de utilizator și parolă)
+și furnizați datele necesare.
 
-Click the **Next >** button.
+Faceți clic pe butonul **Next >**.
 
-#### Step 3
+#### Pasul 3
 ![Step 3](images/sqlserver/create_odbc_data_source_step3.png)
 
-Choose the ANSI compliant settings then click the **Next >** button.
+Alegeți setările conforme ANSI, apoi faceți clic pe butonul **Next >**.
 
-#### Step 4
+#### Pasul 4
 ![Step 4](images/sqlserver/create_odbc_data_source_step4.png)
 
-You can leave the default settings or choose logging options as needed 
-and click the **Finish** button. 
+Puteți păstra setările implicite sau alege opțiunile de logging necesare
+și faceți clic pe butonul **Finish**.
 
-#### Step 5
+#### Pasul 5
 ![Step 5](images/sqlserver/create_odbc_data_source_step5.png)
 
-Now click the **Test datasource** button.
+Acum faceți clic pe butonul **Test datasource**.
 
-#### Step 6
+#### Pasul 6
 ![Step 6](images/sqlserver/create_odbc_data_source_step6.png)
 
-A success screen confirms that the driver and the credentials work. The values you entered are
-exactly the values the properties in [section 2](#2-odbc-properties) take.
+Un ecran de succes confirmă că driverul și acreditările funcționează. Valorile introduse sunt
+exact valorile pe care le iau proprietățile din [secțiunea 2](#2-odbc-properties).

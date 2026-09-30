@@ -10,7 +10,7 @@
 
 | Απαίτηση | Σημειώσεις |
 |---|---|
-| **Keycloak version** | 17 ή νεότερη για τα URL paths που χρησιμοποιούνται εδώ — δείτε τη σημείωση στο Βήμα 4 |
+| **Keycloak version** | 17 ή νεότερη για τα URL paths που χρησιμοποιούνται εδώ — δείτε τη σημείωση στο Βήμα 5 |
 | **Keycloak role** | `realm-admin` στο στοχευόμενο realm, ή διαχειριστής του server |
 | **Realm** | Το realm στο οποίο ανήκουν οι χρήστες του digna, όχι απαραίτητα το `master` |
 | **digna redirect URI** | Το URL στο οποίο επιστρέφουν οι χρήστες μετά την είσοδο, π.χ. `https://digna.yourdomain.com/oidc/callback` |

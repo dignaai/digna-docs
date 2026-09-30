@@ -1,63 +1,64 @@
-# Source Connector for Teradata
+# Bronconnector voor Teradata
 
-This guide describes how to configure *digna* to connect to Teradata over **ODBC**, using a
-**DSN-less** connection string.
+Deze gids beschrijft hoe je *digna* configureert om via **ODBC** verbinding te maken met
+Teradata, met een **DSN-loze** connection string.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Teradata.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **ODBC Driver for Teradata** on the machine that runs the *digna* backend,
-following the vendor's official installation guide.
-
-The driver registers itself with its version in the name, for example
-**Teradata Database ODBC Driver 20.00**. Read the exact registered name off your host as
-described in [Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+De *digna*-kant van de configuratie is voor elke technologie hetzelfde — waar verbindingen worden
+aangemaakt, hoe property-waarden worden versleuteld, hoe een verbinding wordt getest en wat de
+profiling modes betekenen. Dat wordt beschreven in het
+[Overzicht databaseverbindingen](overview.md). Deze pagina behandelt wat specifiek is voor
+Teradata.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. Installeer de ODBC-driver {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Installeer de **ODBC Driver for Teradata** op de machine waarop de *digna*-backend draait, volgens
+de officiële installatiegids van de leverancier.
 
-    The set below is one combination that is known to work. The properties belong to the
-    Teradata ODBC driver, so their names, defaults and accepted values differ between driver
-    versions — the version is part of the driver name itself — and between platforms. Use this
-    as a starting point and check the documentation of the driver version you installed.
+De driver registreert zich met zijn versie in de naam, bijvoorbeeld
+**Teradata Database ODBC Driver 20.00**. Lees de exacte geregistreerde naam op je host af zoals
+beschreven in [Installeer de ODBC-driver op de digna-host](overview.md#install-the-driver).
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC-properties {: #2-odbc-properties }
+
+!!! important "Een voorbeeld, geen specificatie"
+
+    De onderstaande set is één combinatie waarvan bekend is dat ze werkt. De properties horen bij
+    de Teradata ODBC-driver, dus hun namen, standaardwaarden en toegestane waarden verschillen per
+    driverversie — de versie maakt zelfs deel uit van de drivernaam — en per platform. Gebruik dit
+    als startpunt en raadpleeg de documentatie van de geïnstalleerde driverversie.
+
+Voeg de volgende properties toe in het scherm **Add DB Connection**:
+
+| Key | Voorbeeldwaarde | Opmerkingen |
 |---|---|---|
-| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Must match the driver name registered on the *digna* host |
-| `DBCNAME` | `teradata.example.com` | Server name or IP address. Teradata's own name for the host property |
-| `UID` | `digna_source_user` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DRIVER` | `Teradata Database ODBC Driver 20.00` | Moet overeenkomen met de drivernaam die op de *digna*-host is geregistreerd |
+| `DBCNAME` | `teradata.example.com` | Servernaam of IP-adres. De eigen naam van Teradata voor de host-property |
+| `UID` | `digna_source_user` | Databasegebruiker |
+| `PWD` | `<password>` | Vink **Encrypted** aan |
 
-The resulting connection string looks like this:
+De resulterende connection string ziet er zo uit:
 
 ```
 DRIVER=Teradata Database ODBC Driver 20.00;DBCNAME=teradata.example.com;UID=digna_source_user;PWD=<password>
 ```
 
-Useful additional properties:
+Nuttige extra properties:
 
-| Key | Example value | Notes |
+| Key | Voorbeeldwaarde | Opmerkingen |
 |---|---|---|
-| `MechanismName` | `TD2` | Logon mechanism. `TD2` is the Teradata default; use `LDAP` for directory authentication |
-| `DefaultDatabase` | `dad` | Database the session starts in |
-| `CharacterSet` | `UTF8` | Set this where the default session character set would mangle non-ASCII data |
+| `MechanismName` | `TD2` | Logonmechanisme. `TD2` is de standaard van Teradata; gebruik `LDAP` voor authenticatie via een directory |
+| `DefaultDatabase` | `dad` | Database waarin de sessie start |
+| `CharacterSet` | `UTF8` | Stel dit in als de standaard tekenset van de sessie niet-ASCII-data zou verminken |
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna*-configuratie {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+Geef in het scherm **Add DB Connection** het volgende op:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -68,38 +69,40 @@ Work Schema:        Database for the work tables of "Permanent" profiling, e.g. 
 
 ---
 
-## 4. Notes on Teradata {: #4-notes-on-teradata }
+## 4. Opmerkingen over Teradata {: #4-notes-on-teradata }
 
-- **A Teradata database is a catalog, not a schema.** *digna* lists the databases the user may
-  see (from `DBC.DatabasesV`) as catalogs, and the schema level does not apply. When you add a
-  data source, pick the database as the catalog; the schema is reported as *not applicable*.
-- **One connection reaches every permitted database**, so a single connection can serve sources
-  across databases — unlike the technologies where the connection is pinned to one database.
-- **Work Schema is a database.** For *Permanent* profiling, name the Teradata database that
-  holds the work tables, and give the user `CREATE TABLE` rights plus a `PERM` space allocation
-  in it — a database with zero perm space cannot hold a table.
-- **Profiling modes.** *Permanent* creates tables in **Work Schema**. *Session* uses a
-  `VOLATILE` table, which needs `SPOOL` space but no perm space and no rights in **Work
-  Schema**. *Standard* needs read access only.
+- **Een Teradata-database is een catalog, geen schema.** *digna* toont de databases die de
+  gebruiker mag zien (uit `DBC.DatabasesV`) als catalogs, en het schemaniveau is niet van
+  toepassing. Kies bij het toevoegen van een databron de database als catalog; het schema wordt
+  gemeld als *not applicable*.
+- **Eén verbinding bereikt elke toegestane database**, dus één verbinding kan bronnen in meerdere
+  databases bedienen — anders dan bij de technologieën waarbij de verbinding aan één database is
+  gekoppeld.
+- **Work Schema is een database.** Geef voor *Permanent* profiling de Teradata-database op die de
+  werktabellen bevat, en geef de gebruiker daarin `CREATE TABLE`-rechten plus een toewijzing van
+  `PERM`-ruimte — een database zonder perm space kan geen tabel bevatten.
+- **Profiling modes.** *Permanent* maakt tabellen aan in **Work Schema**. *Session* gebruikt een
+  `VOLATILE`-tabel, die `SPOOL`-ruimte nodig heeft, maar geen perm space en geen rechten in
+  **Work Schema**. *Standard* heeft alleen leesrechten nodig.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. De driver controleren (optioneel) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+Voor een DSN-loze verbinding hoef je geen ODBC-databron te configureren, maar het eigen
+dialoogvenster van de driver is een handige manier om te bevestigen dat de driver en je
+inloggegevens werken, voordat je ze in *digna* invoert.
 
-#### Step 1
-![Step 1](images/teradata/create_odbc_data_source_step1.png)
+#### Stap 1
+![Stap 1](images/teradata/create_odbc_data_source_step1.png)
 
-The **Name or IP address** field here is the `DBCNAME` property in
-[section 2](#2-odbc-properties).
+Het veld **Name or IP address** hier is de property `DBCNAME` in
+[sectie 2](#2-odbc-properties).
 
-Click the **Test** button.
+Klik op de knop **Test**.
 
-#### Step 2
-![Step 2](images/teradata/create_odbc_data_source_step2.png)
+#### Stap 2
+![Stap 2](images/teradata/create_odbc_data_source_step2.png)
 
-Provide username and password, then click the **OK** button. A success screen confirms that
-the driver and the credentials work.
+Geef gebruikersnaam en wachtwoord op en klik daarna op de knop **OK**. Een succesmelding bevestigt
+dat de driver en de inloggegevens werken.

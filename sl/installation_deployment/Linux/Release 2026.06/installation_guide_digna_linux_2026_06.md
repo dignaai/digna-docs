@@ -1,112 +1,112 @@
-# Linux Installation Guide for digna Release 2026.06
+# Navodila za namestitev na Linux za digna izdajo 2026.06
 
-**Release:** 2026.06
+**Izdaja:** 2026.06
 
-**Last Updated:** September 5, 2026
+**Zadnja posodobitev:** 5. september 2026
 
-
----
-
-## Table of Contents
-
-1. [Introduction](#introduction)
-2. [System Requirements](#system-requirements)
-3. [Pre-Installation Setup](#pre-installation-setup)
-4. [PostgreSQL Server Setup](#postgresql-server-setup)
-5. [Web Server Configuration](#web-server-configuration)
-6. [Initial Installation](#initial-installation)
-7. [Backend Configuration](#backend-configuration)
-8. [Dashboard Configuration](#dashboard-configuration)
-9. [Running digna as a systemd Service](#running-digna-as-a-systemd-service)
-10. [Upgrading to a New Release](#upgrading-to-a-new-release)
 
 ---
 
-## Introduction {: #introduction }
+## Kazalo
 
-### About digna
-
-digna is a comprehensive AI-driven platform designed to optimize data quality management across various data environments such as warehouses, lakes, and lakehouses. Built to be highly scalable and adaptable, digna addresses modern data challenges through automation, real-time monitoring, and anomaly detection.
-
-digna consists of two main components:
-
-- **digna**: The core engine of the application, responsible for processing data and performing quality checks. It combines the backend and the command line interface in a single executable, replacing the separate `dignabackend` and `dignacli` of earlier releases.
-- **dignadashboard**: A web-based interface hosted on a web server, providing a user-friendly way to interact with the digna platform and visualize data quality metrics.
-
-### What's New in Release 2026.06
-
-This release brings data observability capabilities directly into your code, enabling developers to monitor data quality at the source. See the [release notes](http://docs.digna.ai/changelog/Release_202606/) for complete details.
-
-### Looking for Windows or macOS?
-
-This guide covers Linux. For other platforms, see the [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) or the [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
-
-### Which Distribution Does This Guide Cover?
-
-The instructions are written for the two most common server families. Where the two differ, both commands are given:
-
-- **Debian family** — Debian, Ubuntu. Package manager: `apt`.
-- **RHEL family** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Package manager: `dnf`.
-
-Any modern distribution with `systemd` will work; only the package names and a few configuration paths change.
+1. [Uvod](#introduction)
+2. [Sistemske zahteve](#system-requirements)
+3. [Prednamestitvena priprava](#pre-installation-setup)
+4. [Nastavitev PostgreSQL strežnika](#postgresql-server-setup)
+5. [Konfiguracija spletnega strežnika](#web-server-configuration)
+6. [Začetna namestitev](#initial-installation)
+7. [Konfiguracija backend‑a](#backend-configuration)
+8. [Konfiguracija nadzorne plošče](#dashboard-configuration)
+9. [Zagon digna kot storitve systemd](#running-digna-as-a-systemd-service)
+10. [Nadgradnja na novo izdajo](#upgrading-to-a-new-release)
 
 ---
 
-## System Requirements {: #system-requirements }
+## Uvod {: #introduction }
 
-Before you begin the installation, ensure that your system meets the following minimum requirements:
+### O digna
 
-| Requirement | Specification |
+digna je celovita platforma, vodena z umetno inteligenco, namenjena optimizaciji upravljanja kakovosti podatkov v različnih podatkovnih okoljih, kot so podatkovna skladišča, podatkovna jezera in lakehouse‑i. Zasnovana je za visoko skalabilnost in prilagodljivost ter rešuje sodobne izzive podatkov s pomočjo avtomatizacije, spremljanja v realnem času in odkrivanja anomalij.
+
+digna sestavljata dve glavni komponenti:
+
+- **digna**: jedro aplikacije, odgovorno za obdelavo podatkov in izvajanje preverjanj kakovosti. Združuje backend in vmesnik ukazne vrstice v eno samo izvršljivo datoteko ter nadomešča ločena programa `dignabackend` in `dignacli` iz prejšnjih izdaj.
+- **dignadashboard**: spletni vmesnik, gostovan na spletnem strežniku, ki omogoča enostavno interakcijo s platformo digna in vizualizacijo meritev kakovosti podatkov.
+
+### Novosti v izdaji 2026.06
+
+Ta izdaja prinaša zmogljivosti opazovanja podatkov neposredno v vašo kodo, kar razvijalcem omogoča spremljanje kakovosti podatkov pri izvoru. Za popolne podrobnosti si oglejte [opombe ob izdaji](http://docs.digna.ai/changelog/Release_202606/).
+
+### Iščete Windows ali macOS?
+
+Ta vodič pokriva Linux. Za druge platforme si oglejte [navodila za namestitev na Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) ali [navodila za namestitev na macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
+
+### Katere distribucije pokriva ta vodič?
+
+Navodila so napisana za dve najpogostejši družini strežniških distribucij. Kjer se razlikujeta, sta navedena oba ukaza:
+
+- **Družina Debian** — Debian, Ubuntu. Upravljalnik paketov: `apt`.
+- **Družina RHEL** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Upravljalnik paketov: `dnf`.
+
+Deluje vsaka sodobna distribucija s `systemd`; spremenijo se le imena paketov in nekatere konfiguracijske poti.
+
+---
+
+## Sistemske zahteve {: #system-requirements }
+
+Preden začnete z namestitvijo, se prepričajte, da vaš sistem izpolnjuje naslednje minimalne zahteve:
+
+| Zahteva | Specifikacija |
 |---|---|
-| **Operating System** | Ubuntu 22.04 LTS or later, Debian 12 or later, RHEL 9 / Rocky 9 / AlmaLinux 9 or later |
-| **Architecture** | x86_64 (amd64) or arm64 |
-| **Init System** | systemd |
-| **Memory (Minimal Setup)** | 16 GB RAM |
-| **Disk Space** | 10 GB available storage |
-| **Database** | PostgreSQL Server 12 or higher |
-| **Web Server** | nginx, Apache httpd, or equivalent |
+| **Operacijski sistem** | Ubuntu 22.04 LTS ali novejši, Debian 12 ali novejši, RHEL 9 / Rocky 9 / AlmaLinux 9 ali novejši |
+| **Arhitektura** | x86_64 (amd64) ali arm64 |
+| **Sistem init** | systemd |
+| **Pomnilnik (minimalna namestitev)** | 16 GB RAM |
+| **Prostor na disku** | 10 GB razpoložljivega prostora |
+| **Baza podatkov** | PostgreSQL Server 12 ali novejši |
+| **Spletni strežnik** | nginx, Apache httpd ali ekvivalent |
 
-### Database Installation Options
+### Možnosti namestitve baze podatkov
 
-**If PostgreSQL is already installed:**
-You can add a new database for digna to your existing PostgreSQL Server.
+**Če je PostgreSQL že nameščen:**
+V obstoječi PostgreSQL strežnik lahko dodate novo bazo podatkov za digna.
 
-**If installing PostgreSQL on the same machine as digna:**
+**Če nameščate PostgreSQL na isti stroj kot digna:**
 
-!!! info "Recommended Specifications"
+!!! info "Priporočene specifikacije"
 
-    - **Memory**: 32 GB RAM (instead of 16 GB)
-    - **Disk Space**: 50 GB available storage (instead of 10 GB)
+    - **Pomnilnik**: 32 GB RAM (namesto 16 GB)
+    - **Prostor na disku**: 50 GB razpoložljivega prostora (namesto 10 GB)
 
-    These higher specifications accommodate both digna and the PostgreSQL database running simultaneously.
+    Te višje specifikacije omogočajo hkratno delovanje digna in PostgreSQL baze podatkov.
 
-### Checking Your Distribution and Architecture
+### Preverjanje distribucije in arhitekture
 
-Several commands in this guide differ between the Debian and RHEL families. To check which you are on, run:
+Nekateri ukazi v tem vodiču se razlikujejo med družinama Debian in RHEL. Da preverite, katero uporabljate, zaženite:
 
 ```bash
 cat /etc/os-release
 uname -m
 ```
 
-- `ID=ubuntu` or `ID=debian` — use the `apt` commands.
-- `ID=rhel`, `rocky`, `almalinux` or `fedora` — use the `dnf` commands.
-- `x86_64` or `aarch64` — the architecture of the installation package you need.
+- `ID=ubuntu` ali `ID=debian` — uporabite ukaze `apt`.
+- `ID=rhel`, `rocky`, `almalinux` ali `fedora` — uporabite ukaze `dnf`.
+- `x86_64` ali `aarch64` — arhitektura namestitvenega paketa, ki ga potrebujete.
 
 ---
 
-## Pre-Installation Setup {: #pre-installation-setup }
+## Prednamestitvena priprava {: #pre-installation-setup }
 
-Before installing digna, ensure that two key prerequisites are in place:
+Pred namestitvijo digna poskrbite, da sta izpolnjena dva ključna predpogoja:
 
-1. **PostgreSQL Server** – for storing calculated metrics and performance data
-2. **Web Server** – for hosting the digna Dashboard
+1. **PostgreSQL Server** – za shranjevanje izračunanih metrik in podatkov o zmogljivosti
+2. **Spletni strežnik** – za gostovanje nadzorne plošče digna
 
-If these components are not already set up, follow the sections below to install and configure them.
+Če ti komponenti še nista nastavljeni, sledite spodnjim razdelkom za namestitev in konfiguracijo.
 
-### Refreshing the Package Index
+### Osvežitev indeksa paketov
 
-Update your package lists before installing anything:
+Pred kakršno koli namestitvijo posodobite sezname paketov:
 
 ```bash
 sudo apt update
@@ -115,21 +115,21 @@ sudo apt update
 sudo dnf check-update
 ```
 
-!!! note "Note"
+!!! note "Opomba"
 
-    Throughout this guide, the first command in a pair is for the **Debian family** and the second for the **RHEL family**. Run only the one that matches your system.
+    V celotnem vodiču je prvi ukaz v paru namenjen **družini Debian**, drugi pa **družini RHEL**. Zaženite samo tistega, ki ustreza vašemu sistemu.
 
 ---
 
-## PostgreSQL Server Setup {: #postgresql-server-setup }
+## Nastavitev PostgreSQL strežnika {: #postgresql-server-setup }
 
-### If You Already Have PostgreSQL
+### Če že imate PostgreSQL
 
-If PostgreSQL is already installed and running on your local machine or if you are using a managed remote PostgreSQL server, you can skip to the [next section](#web-server-configuration).
+Če je PostgreSQL že nameščen in teče na lokalnem stroju ali če uporabljate upravljan oddaljeni PostgreSQL strežnik, lahko preskočite na [naslednji razdelek](#web-server-configuration).
 
-### Installing PostgreSQL
+### Namestitev PostgreSQL
 
-#### Step 1: Install the Server Package
+#### Korak 1: Namestite strežniški paket
 
 ```bash
 sudo apt install -y postgresql postgresql-contrib
@@ -138,72 +138,72 @@ sudo apt install -y postgresql postgresql-contrib
 sudo dnf install -y postgresql-server postgresql-contrib
 ```
 
-!!! tip "Tip"
+!!! tip "Namig"
 
-    Distribution packages may lag behind the current PostgreSQL release. If you need a specific newer version, use the official [PostgreSQL apt or yum repository](https://www.postgresql.org/download/linux/) instead.
+    Paketi distribucij lahko zaostajajo za trenutno izdajo PostgreSQL. Če potrebujete določeno novejšo različico, namesto tega uporabite uradni [repozitorij PostgreSQL apt ali yum](https://www.postgresql.org/download/linux/).
 
-#### Step 2: Initialize the Database Cluster
+#### Korak 2: Inicializirajte gručo baze podatkov
 
-On the **Debian family**, the package creates and starts a cluster automatically — skip to the next step.
+Pri **družini Debian** paket gručo ustvari in zažene samodejno — preskočite na naslednji korak.
 
-On the **RHEL family**, the cluster must be created explicitly:
+Pri **družini RHEL** je treba gručo ustvariti izrecno:
 
 ```bash
 sudo postgresql-setup --initdb
 ```
 
-#### Step 3: Start and Enable the Service
+#### Korak 3: Zaženite in omogočite storitev
 
 ```bash
 sudo systemctl enable --now postgresql
 ```
 
-This starts PostgreSQL immediately and configures it to start again automatically at boot.
+To takoj zažene PostgreSQL in ga nastavi, da se ob zagonu sistema znova samodejno zažene.
 
-#### Step 4: Verify the Installation
+#### Korak 4: Preverite namestitev
 
 ```bash
 psql --version
 sudo systemctl status postgresql
 ```
 
-You should see the PostgreSQL version and an `active (running)` service.
+Videti bi morali različico PostgreSQL in storitev v stanju `active (running)`.
 
-#### Step 5: Connect to the Server
+#### Korak 5: Povežite se s strežnikom
 
-A Linux PostgreSQL package creates a `postgres` system account that owns the cluster. Connect through it:
+Paket PostgreSQL za Linux ustvari sistemski račun `postgres`, ki je lastnik gruče. Povežite se prek njega:
 
 ```bash
 sudo -u postgres psql
 ```
 
-!!! note "Note — Linux Differs From Windows Here"
+!!! note "Opomba — Linux se tu razlikuje od Windows"
 
-    The Windows installer prompts you to set a password for the `postgres` superuser during setup. Linux packages do not. Instead, local connections are authenticated by **peer authentication**: the `postgres` operating-system user is allowed to connect as the `postgres` database user without a password.
+    Namestitveni program za Windows vas med namestitvijo pozove, da nastavite geslo za superuporabnika `postgres`. Paketi za Linux tega ne storijo. Namesto tega se lokalne povezave preverjajo s **peer authentication**: uporabnik operacijskega sistema `postgres` se lahko brez gesla poveže kot uporabnik baze podatkov `postgres`.
 
-    This is why the command above uses `sudo -u postgres`. The digna backend connects over TCP with a username and password, so you will create an explicit digna user in [Initial Installation](#initial-installation).
+    Zato zgornji ukaz uporablja `sudo -u postgres`. Backend digna se povezuje prek TCP z uporabniškim imenom in geslom, zato boste v razdelku [Začetna namestitev](#initial-installation) ustvarili izrecnega uporabnika za digna.
 
-#### Step 6: Confirm the Port
+#### Korak 6: Potrdite vrata
 
-The default PostgreSQL port is `5432`. To confirm the port your server is listening on:
+Privzeta vrata PostgreSQL so `5432`. Za potrditev, na katerih vratih posluša vaš strežnik:
 
 ```bash
 sudo -u postgres psql -c "SHOW port;"
 ```
 
-Note the value — you will need it when configuring the digna backend.
+Zabeležite vrednost — potrebovali jo boste pri konfiguraciji backend‑a digna.
 
-#### Step 7: Enable Password Authentication for the digna User
+#### Korak 7: Omogočite preverjanje z geslom za uporabnika digna
 
-digna connects to PostgreSQL over TCP as `digna_user`, which requires password authentication rather than peer authentication. Check that your `pg_hba.conf` permits it.
+digna se s PostgreSQL povezuje prek TCP kot `digna_user`, kar zahteva preverjanje z geslom namesto peer authentication. Preverite, ali to vaša datoteka `pg_hba.conf` dovoljuje.
 
-Locate the file:
+Poiščite datoteko:
 
 ```bash
 sudo -u postgres psql -c "SHOW hba_file;"
 ```
 
-Open it in an editor and confirm that the local TCP lines use `scram-sha-256` (or `md5` on older servers) rather than `ident`:
+Odprite jo v urejevalniku in potrdite, da lokalne vrstice TCP uporabljajo `scram-sha-256` (ali `md5` na starejših strežnikih) namesto `ident`:
 
 ```
 # TYPE  DATABASE  USER  ADDRESS         METHOD
@@ -211,25 +211,25 @@ host    all       all   127.0.0.1/32    scram-sha-256
 host    all       all   ::1/128         scram-sha-256
 ```
 
-Reload PostgreSQL after any change:
+Po vsaki spremembi ponovno naložite PostgreSQL:
 
 ```bash
 sudo systemctl reload postgresql
 ```
 
-!!! warning "Important"
+!!! warning "Pomembno"
 
-    If digna reports `FATAL: Ident authentication failed for user "digna_user"`, this setting is the cause.
+    Če digna javi `FATAL: Ident authentication failed for user "digna_user"`, je vzrok ta nastavitev.
 
-#### Step 8: If PostgreSQL Runs on Another Machine
+#### Korak 8: Če PostgreSQL teče na drugem stroju
 
-To accept connections from a different host, set `listen_addresses` in `postgresql.conf` and add a matching `host` line for your network in `pg_hba.conf`:
+Za sprejemanje povezav z drugega gostitelja nastavite `listen_addresses` v `postgresql.conf` in v `pg_hba.conf` dodajte ustrezno vrstico `host` za vaše omrežje:
 
 ```
 listen_addresses = '*'
 ```
 
-Then open the port in the firewall and restart the service:
+Nato odprite vrata v požarnem zidu in znova zaženite storitev:
 
 ```bash
 sudo ufw allow 5432/tcp
@@ -243,27 +243,27 @@ sudo systemctl restart postgresql
 
 ---
 
-## Web Server Configuration {: #web-server-configuration }
+## Konfiguracija spletnega strežnika {: #web-server-configuration }
 
-digna requires a web server to host the dashboard. Choose one of the following options:
+digna zahteva spletni strežnik za gostovanje nadzorne plošče. Izberite eno od naslednjih možnosti:
 
-- [nginx](#nginx-setup) — lightweight and recommended
-- [Apache httpd](#apache-setup) — widely deployed alternative
+- [nginx](#nginx-setup) — lahek in priporočen
+- [Apache httpd](#apache-setup) — široko razširjena alternativa
 
-You only need to install and configure **one** of these servers.
+Namestiti in konfigurirati morate le **enega** od teh strežnikov.
 
-Both sections configure two things the dashboard depends on:
+Oba razdelka konfigurirata dve stvari, od katerih je odvisna nadzorna plošča:
 
-- **A single-page-application fallback**, so that refreshing a dashboard URL does not return a 404
-- **A `.md` MIME type**, so that Markdown files are served correctly
+- **Nadomestno pot za enostransko aplikacijo (SPA fallback)**, tako da osvežitev URL‑ja nadzorne plošče ne vrne 404
+- **MIME tip za `.md`**, da se Markdown datoteke strežejo pravilno
 
-### nginx Setup {: #nginx-setup }
+### Nastavitev nginx {: #nginx-setup }
 
-#### Overview
+#### Pregled
 
-nginx is a lightweight, high-performance web server well suited to serving the static digna dashboard.
+nginx je lahek, zmogljiv spletni strežnik, ki je primeren za streženje statične nadzorne plošče digna.
 
-#### Installation
+#### Namestitev
 
 ```bash
 sudo apt install -y nginx
@@ -272,21 +272,21 @@ sudo apt install -y nginx
 sudo dnf install -y nginx
 ```
 
-#### Starting nginx
+#### Zagon nginx
 
 ```bash
 sudo systemctl enable --now nginx
 ```
 
-#### Verify the Installation
+#### Preverjanje namestitve
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the nginx welcome page
+1. Odprite brskalnik
+2. Pojdite na `http://localhost`
+3. Videti bi morali pozdravno stran nginx
 
-#### Opening the Firewall
+#### Odpiranje požarnega zidu
 
-If the server is reached from other machines, allow HTTP traffic:
+Če do strežnika dostopajo drugi stroji, dovolite promet HTTP:
 
 ```bash
 sudo ufw allow 'Nginx Full'
@@ -295,15 +295,15 @@ sudo ufw allow 'Nginx Full'
 sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
 ```
 
-#### Configuring a Site for the Dashboard
+#### Konfiguracija mesta za nadzorno ploščo
 
-nginx includes every file in its `conf.d` directory on both distribution families. Create a dedicated configuration file for digna there:
+nginx v obeh družinah distribucij vključi vse datoteke v svojem imeniku `conf.d`. Tam ustvarite namensko konfiguracijsko datoteko za digna:
 
 ```bash
 sudo nano /etc/nginx/conf.d/digna.conf
 ```
 
-Paste the following, replacing `/opt/digna/dashboard` with the actual path to your extracted `dashboard` folder:
+Prilepite naslednje in zamenjajte `/opt/digna/dashboard` z dejansko potjo do razpakirane mape `dashboard`:
 
 ```nginx
 server {
@@ -327,23 +327,23 @@ server {
 }
 ```
 
-!!! warning "Important"
+!!! warning "Pomembno"
 
-    Without the `try_files` directive, reloading any dashboard page other than the root URL returns a 404. This is the nginx equivalent of the URL Rewrite module required by IIS on Windows.
+    Brez direktive `try_files` osvežitev katere koli strani nadzorne plošče, razen korenskega URL‑ja, vrne 404. To je ekvivalent modula URL Rewrite, ki ga zahteva IIS v sistemu Windows.
 
-#### Disable the Default Site
+#### Onemogočite privzeto mesto
 
-Only one server block may be the `default_server` for a port. On the **Debian family**, remove the packaged default so it does not conflict:
+Za posamezna vrata je lahko `default_server` le en strežniški blok. Pri **družini Debian** odstranite privzeto mesto iz paketa, da ne pride do konflikta:
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
-On the **RHEL family**, comment out or delete the `server { ... }` block inside `/etc/nginx/nginx.conf`.
+Pri **družini RHEL** zakomentirajte ali izbrišite blok `server { ... }` v datoteki `/etc/nginx/nginx.conf`.
 
-#### Apply the Configuration
+#### Uveljavitev konfiguracije
 
-Test the configuration for syntax errors, then reload nginx:
+Preverite konfiguracijo za sintaktične napake, nato ponovno naložite nginx:
 
 ```bash
 sudo nginx -t
@@ -352,13 +352,13 @@ sudo systemctl reload nginx
 
 ---
 
-### Apache httpd Setup {: #apache-setup }
+### Nastavitev Apache httpd {: #apache-setup }
 
-#### Overview
+#### Pregled
 
-Apache httpd is available in the default repositories of every supported distribution. The package is named `apache2` on the Debian family and `httpd` on the RHEL family.
+Apache httpd je na voljo v privzetih repozitorijih vseh podprtih distribucij. Paket se v družini Debian imenuje `apache2`, v družini RHEL pa `httpd`.
 
-#### Installation
+#### Namestitev
 
 ```bash
 sudo apt install -y apache2
@@ -367,7 +367,7 @@ sudo apt install -y apache2
 sudo dnf install -y httpd
 ```
 
-#### Starting Apache
+#### Zagon Apache
 
 ```bash
 sudo systemctl enable --now apache2
@@ -376,32 +376,32 @@ sudo systemctl enable --now apache2
 sudo systemctl enable --now httpd
 ```
 
-#### Verify the Installation
+#### Preverjanje namestitve
 
-1. Open your browser
-2. Navigate to `http://localhost`
-3. You should see the distribution's default Apache page
+1. Odprite brskalnik
+2. Pojdite na `http://localhost`
+3. Videti bi morali privzeto stran Apache vaše distribucije
 
-#### Required: Enable mod_rewrite
+#### Obvezno: omogočite mod_rewrite
 
-The dashboard requires URL rewriting.
+Nadzorna plošča zahteva prepisovanje URL‑jev.
 
-On the **Debian family**, enable the module and restart:
+Pri **družini Debian** omogočite modul in znova zaženite strežnik:
 
 ```bash
 sudo a2enmod rewrite
 sudo systemctl restart apache2
 ```
 
-On the **RHEL family**, `mod_rewrite` is loaded by default. Confirm it:
+Pri **družini RHEL** je `mod_rewrite` naložen privzeto. Potrdite to:
 
 ```bash
 httpd -M | grep rewrite
 ```
 
-#### Required: Allow .htaccess Overrides
+#### Obvezno: dovolite preglasitve .htaccess
 
-Open the configuration file for your document root:
+Odprite konfiguracijsko datoteko za svoj korenski imenik dokumentov:
 
 ```bash
 sudo nano /etc/apache2/apache2.conf
@@ -410,33 +410,33 @@ sudo nano /etc/apache2/apache2.conf
 sudo nano /etc/httpd/conf/httpd.conf
 ```
 
-Locate the `<Directory>` block covering your document root (`/var/www/html` on both families) and change:
+Poiščite blok `<Directory>`, ki pokriva vaš korenski imenik dokumentov (`/var/www/html` v obeh družinah), in spremenite:
 
 ```apache
 AllowOverride None
 ```
 
-to:
+v:
 
 ```apache
 AllowOverride All
 ```
 
-#### Required: MIME Type for Markdown Files
+#### Obvezno: MIME tip za Markdown datoteke
 
-In the same file, add the following line so that Markdown files are served correctly:
+V isto datoteko dodajte naslednjo vrstico, da se Markdown datoteke strežejo pravilno:
 
 ```apache
 AddType text/markdown .md
 ```
 
-!!! warning "Important"
+!!! warning "Pomembno"
 
-    Without this setting, `.md` files may not be served properly.
+    Brez te nastavitve se datoteke `.md` morda ne bodo stregle pravilno.
 
-#### Apply the Configuration
+#### Uveljavitev konfiguracije
 
-Check the configuration for syntax errors, then restart Apache:
+Preverite konfiguracijo za sintaktične napake, nato znova zaženite Apache:
 
 ```bash
 sudo apachectl configtest
@@ -449,15 +449,15 @@ sudo systemctl restart httpd
 
 ---
 
-## Initial Installation {: #initial-installation }
+## Začetna namestitev {: #initial-installation }
 
-### Step 1: Set Up the digna Repository
+### Korak 1: Nastavite repozitorij digna
 
-The digna repository stores all metrics calculated by digna. It acts as the central database for analytical and performance data.
+Repozitorij digna hrani vse metrike, ki jih izračuna digna. Deluje kot osrednja baza podatkov za analitične podatke in podatke o zmogljivosti.
 
-#### Create Repository Schema and User
+#### Ustvarite shemo repozitorija in uporabnika
 
-Open your PostgreSQL client (psql, pgAdmin, or similar) and execute the following SQL commands:
+Odprite svoj PostgreSQL odjemalec (psql, pgAdmin ali podoben) in izvedite naslednje ukaze SQL:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -467,13 +467,13 @@ CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
 GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
 ```
 
-**Replace the following placeholders:**
+**Zamenjajte naslednje nadomestne vrednosti:**
 
-- `<digna_repo_schema>` — Your desired schema name (e.g., `dignarepo`)
-- `<digna_repo_user>` — Your desired username (e.g., `digna_user`)
-- `<digna_repo_password>` — A secure password for this user
+- `<digna_repo_schema>` — želeno ime sheme (npr. `dignarepo`)
+- `<digna_repo_user>` — želeno uporabniško ime (npr. `digna_user`)
+- `<digna_repo_password>` — varno geslo za tega uporabnika
 
-**Example:**
+**Primer:**
 
 ```sql
 CREATE SCHEMA dignarepo;
@@ -483,81 +483,81 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-To run these from the shell in a single step:
+Za izvedbo teh ukazov iz lupine v enem koraku:
 
 ```bash
 sudo -u postgres psql
 ```
 
-Then paste the statements at the `postgres=#` prompt and type `\q` to exit.
+Nato prilepite stavke na poziv `postgres=#` in vtipkajte `\q`, da zapustite program.
 
-!!! tip "Best Practice"
+!!! tip "Najboljša praksa"
 
-    Use strong, complex passwords for database users. Avoid easily guessable credentials.
+    Za uporabnike baze podatkov uporabljajte močna, kompleksna gesla. Izogibajte se poverilnicam, ki jih je lahko uganiti.
 
 ---
 
-### Step 2: Extract the digna Installation Package
+### Korak 2: Razpakirajte namestitveni paket digna
 
-1. Locate the digna installation ZIP file provided to you
-2. Extract it to your desired installation location — for example `/opt/digna`
-3. After extraction, you should see the following items:
-   - `dashboard/` — Web dashboard interface
-   - `digna` — Main executable (backend + CLI combined)
+1. Poiščite ZIP datoteko namestitvenega paketa digna, ki vam je bila posredovana
+2. Razpakirajte jo na želeno lokacijo namestitve — na primer `/opt/digna`
+3. Po razpakiranju bi morali videti naslednje elemente:
+   - `dashboard/` — spletni vmesnik nadzorne plošče
+   - `digna` — glavna izvršljiva datoteka (backend + CLI skupaj)
 
-!!! info "The configuration and licence files are not in the package"
+!!! info "Konfiguracijskih in licenčnih datotek ni v paketu"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` ships with the installation — you
-    create both yourself, in [Backend Configuration](#backend-configuration) and
-    [Dashboard Configuration](#dashboard-configuration). `license.toml` does not ship either;
-    digna supplies it separately, as Step 3 describes.
+    Niti `config.toml` niti `dashboard/dashboard_config.toml` nista priložena namestitvi — obe
+    ustvarite sami, v razdelkih [Konfiguracija backend‑a](#backend-configuration) in
+    [Konfiguracija nadzorne plošče](#dashboard-configuration). Tudi `license.toml` ni priložena;
+    digna jo posreduje ločeno, kot opisuje Korak 3.
 
-To extract from the shell:
+Za razpakiranje iz lupine:
 
 ```bash
 sudo mkdir -p /opt/digna
 sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
 ```
 
-!!! note "Note"
+!!! note "Opomba"
 
-    If `unzip` is not installed, add it with `sudo apt install -y unzip` or `sudo dnf install -y unzip`.
+    Če `unzip` ni nameščen, ga dodajte z `sudo apt install -y unzip` ali `sudo dnf install -y unzip`.
 
-#### Make the Executable Runnable
+#### Omogočite zagon izvršljive datoteke
 
-Depending on how the archive was transferred, the executable bit may not survive extraction. Set it explicitly:
+Glede na način prenosa arhiva se bit za izvajanje ob razpakiranju morda ne ohrani. Nastavite ga izrecno:
 
 ```bash
 cd /opt/digna
 sudo chmod +x digna
 ```
 
-#### Create a Service Account
+#### Ustvarite storitveni račun
 
-Running the backend as a dedicated unprivileged user is recommended for production deployments:
+Za produkcijske namestitve je priporočljivo, da backend teče pod namenskim uporabnikom brez posebnih pravic:
 
 ```bash
 sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
 sudo chown -R digna:digna /opt/digna
 ```
 
-!!! note "Note"
+!!! note "Opomba"
 
-    On the RHEL family the equivalent shell path is `/sbin/nologin`.
+    V družini RHEL je ustrezna pot lupine `/sbin/nologin`.
 
-### Step 3: Install the License File
+### Korak 3: Namestite licenčno datoteko
 
-!!! warning "Important"
+!!! warning "Pomembno"
 
-    The license file is **not** included in the installation package and will be provided separately by digna.
+    Licenčna datoteka **ni** vključena v namestitveni paket in vam jo bo digna posredovala ločeno.
 
-1. Locate the `license.toml` file provided to you
-2. Copy it into the root digna installation directory (where `config.toml` and the `digna` executable are located)
+1. Poiščite datoteko `license.toml`, ki vam je bila posredovana
+2. Kopirajte jo v korenski imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
 
-**Why this matters:**
-The license file contains your customer information, license expiration date, and digital signature. **Do not modify this file** — any changes will invalidate it.
+**Zakaj je to pomembno:**
+Licenčna datoteka vsebuje podatke o stranki, datum poteka licence in digitalni podpis. **Ne spreminjajte te datoteke** — vsaka sprememba jo razveljavi.
 
-**Directory structure after setup:**
+**Struktura imenika po nastavitvi:**
 
 ```
 /opt/digna/
@@ -571,24 +571,24 @@ The license file contains your customer information, license expiration date, an
 
 ---
 
-## Backend Configuration {: #backend-configuration }
+## Konfiguracija backend‑a {: #backend-configuration }
 
-### Step 1: Create and Edit the Configuration File
+### Korak 1: Ustvarite in uredite konfiguracijsko datoteko
 
-The `config_template.toml` file is provided in your digna installation directory. You only need to rename it to `config.toml`.
+V namestitvenem imeniku digna je priložena datoteka `config_template.toml`. Preimenovati jo morate le v `config.toml`.
 
 ```bash
 cd /opt/digna
 sudo mv config_template.toml config.toml
 ```
 
-**Location:** `/opt/digna/config.toml`
+**Lokacija:** `/opt/digna/config.toml`
 
-Open `config.toml` in a text editor and configure each section below.
+Odprite `config.toml` v urejevalniku besedil in konfigurirajte vsako od spodnjih sekcij.
 
-#### [app] Section
+#### Sekcija [app]
 
-This section configures the digna backend application settings:
+Ta sekcija konfigurira nastavitve aplikacije backend digna:
 
 ```toml
 [app]
@@ -598,20 +598,20 @@ digna_APP_CORS_ALLOW_METHODS = ["*"]
 digna_APP_CORS_ALLOW_HEADERS = ["*"]
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_APP_CORS_ALLOW_ORIGINS` | Frontend URL | If dashboard is on different server, include its URL |
-| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Required for CORS with credentials |
-| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Allow all HTTP methods |
-| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Allow all headers |
+| `digna_APP_CORS_ALLOW_ORIGINS` | URL frontenda | Če je nadzorna plošča na drugem strežniku, vključite njen URL |
+| `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Zahtevano za CORS s poverilnicami |
+| `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Dovoli vse metode HTTP |
+| `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Dovoli vse glave |
 
-!!! note "Note"
+!!! note "Opomba"
 
-    If you serve the dashboard from nginx or Apache on the default HTTP port, the origin to allow is `http://localhost` — or the server's public URL when the dashboard is reached from other machines.
+    Če nadzorno ploščo strežete prek nginx ali Apache na privzetih vratih HTTP, je izvor, ki ga je treba dovoliti, `http://localhost` — ali javni URL strežnika, kadar do nadzorne plošče dostopajo drugi stroji.
 
-#### [repo] Section
+#### Sekcija [repo]
 
-This section configures the connection to the PostgreSQL database:
+Ta sekcija konfigurira povezavo s PostgreSQL bazo podatkov:
 
 ```toml
 [repo]
@@ -623,27 +623,27 @@ digna_REPO_USER = "digna_user"
 digna_REPO_PASSWORD = "YourSecurePassword123!"
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_REPO_HOST` | `localhost` or IP | PostgreSQL server hostname/IP |
-| `digna_REPO_PORT` | `5432` (default) | PostgreSQL port |
-| `digna_REPO_DB` | `postgres` | Database name |
-| `digna_REPO_SCHEMA` | `dignarepo` | Schema created earlier |
-| `digna_REPO_USER` | `digna_user` | User created in PostgreSQL setup |
-| `digna_REPO_PASSWORD` | Your password | Password set during schema creation |
+| `digna_REPO_HOST` | `localhost` ali IP | Ime gostitelja/IP PostgreSQL strežnika |
+| `digna_REPO_PORT` | `5432` (privzeto) | Vrata PostgreSQL |
+| `digna_REPO_DB` | `postgres` | Ime baze podatkov |
+| `digna_REPO_SCHEMA` | `dignarepo` | Prej ustvarjena shema |
+| `digna_REPO_USER` | `digna_user` | Uporabnik, ustvarjen pri nastavitvi PostgreSQL |
+| `digna_REPO_PASSWORD` | Vaše geslo | Geslo, nastavljeno ob ustvarjanju sheme |
 
-!!! tip "Best Practice"
+!!! tip "Najboljša praksa"
 
-    `config.toml` contains a database password in plain text. Restrict its permissions so that only the service account can read it:
+    `config.toml` vsebuje geslo baze podatkov v navadnem besedilu. Omejite njegova dovoljenja, tako da ga lahko bere le storitveni račun:
 
     ```bash
     sudo chown digna:digna /opt/digna/config.toml
     sudo chmod 600 /opt/digna/config.toml
     ```
 
-#### [base] Section
+#### Sekcija [base]
 
-This section contains security and cookie settings:
+Ta sekcija vsebuje varnostne nastavitve in nastavitve piškotkov:
 
 ```toml
 [base]
@@ -658,44 +658,44 @@ DIGNA_SCHEDULER_MAX_DELAY = 100
 DIGNA_CLEANUP_TIME = "12:00"
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_COOKIE_DOMAIN` | `localhost` | Match your frontend domain |
-| `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | Use `true` for HTTPS connections |
-| `digna_COOKIE_HTTPONLY` | `true` | Always enabled for security |
-| `digna_COOKIE_SAME_SITE` | `lax` | Prevents CSRF attacks |
-| `digna_TOKEN_EXPIRES_IN` | `86400` (24 hours) | Session timeout in seconds |
-| `digna_MAX_WORKERS` | Number of CPU cores - 1 | Number of parallel inspection tasks |
-| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Maximum delay, in seconds, that the scheduler may add before starting a due job |
-| `DIGNA_CLEANUP_TIME` | `"12:00"` | Time of day (24-hour `HH:MM`) at which the daily cleanup run starts |
+| `digna_COOKIE_DOMAIN` | `localhost` | Ujemati se mora z domeno vašega frontenda |
+| `digna_COOKIE_SECURE` | `false` (lokalno) / `true` (produkcija) | Za povezave HTTPS uporabite `true` |
+| `digna_COOKIE_HTTPONLY` | `true` | Zaradi varnosti vedno omogočeno |
+| `digna_COOKIE_SAME_SITE` | `lax` | Preprečuje napade CSRF |
+| `digna_TOKEN_EXPIRES_IN` | `86400` (24 ur) | Čas poteka seje v sekundah |
+| `digna_MAX_WORKERS` | Število jeder CPU - 1 | Število vzporednih nalog pregledov |
+| `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Največja zakasnitev v sekundah, ki jo sme razporejevalnik dodati pred zagonom zapadlega opravila |
+| `DIGNA_CLEANUP_TIME` | `"12:00"` | Ura dneva (24-urni zapis `HH:MM`), ob kateri se začne dnevno čiščenje |
 
-!!! tip "Tip"
+!!! tip "Namig"
 
-    To find the number of CPU cores available on your server, run `nproc`.
+    Za ugotovitev števila jeder CPU, ki so na voljo na vašem strežniku, zaženite `nproc`.
 
-#### [encryption] Section
+#### Sekcija [encryption]
 
-This section holds the key used to encrypt sensitive values stored in the repository. It is **required** — `config check` reports the `[encryption]` section as FAILED if the key is missing.
+Ta sekcija vsebuje ključ, s katerim se šifrirajo občutljive vrednosti, shranjene v repozitoriju. Je **obvezna** — `config check` sekcijo `[encryption]` javi kot FAILED, če ključ manjka.
 
 ```toml
 [encryption]
 DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Vrednost | Opombe |
 |---|---|---|
-| `DIGNA_ENCRYPTION_KEY` | Base64-encoded key | Encrypts sensitive values stored in the digna repository |
+| `DIGNA_ENCRYPTION_KEY` | Ključ, kodiran v Base64 | Šifrira občutljive vrednosti, shranjene v repozitoriju digna |
 
-!!! warning "Protect config.toml"
+!!! warning "Zaščitite config.toml"
 
-    This key is a fixed value, identical across all digna installations, and it is what decrypts
-    the sensitive values in your repository. Restrict `config.toml` to the account that runs
-    digna, keep it out of source control and off shared drives, and exclude it from any backup
-    that is stored less securely than the repository itself.
+    Ta ključ je fiksna vrednost, enaka v vseh namestitvah digna, in prav on dešifrira
+    občutljive vrednosti v vašem repozitoriju. Dostop do `config.toml` omejite na račun, pod katerim teče
+    digna, datoteko hranite zunaj sistema za nadzor različic in deljenih diskov ter jo izključite iz vsake varnostne kopije,
+    ki je shranjena manj varno kot repozitorij sam.
 
-#### [logging] Section
+#### Sekcija [logging]
 
-This section configures logging behavior:
+Ta sekcija konfigurira beleženje:
 
 ```toml
 [logging]
@@ -703,22 +703,22 @@ digna_LOGGING_MODE = "INFO"
 digna_LOGGING_BACKUP_COUNT = 10
 ```
 
-| Parameter | Value | Notes |
+| Parameter | Vrednost | Opombe |
 |---|---|---|
-| `digna_LOGGING_MODE` | `INFO` or `DEBUG` | `INFO` for production, `DEBUG` for troubleshooting |
-| `digna_LOGGING_BACKUP_COUNT` | `10` | Number of daily log backups to retain |
+| `digna_LOGGING_MODE` | `INFO` ali `DEBUG` | `INFO` za produkcijo, `DEBUG` za odpravljanje težav |
+| `digna_LOGGING_BACKUP_COUNT` | `10` | Število dnevnih varnostnih kopij dnevnikov, ki se hranijo |
 
 ---
 
-### Step 2: Validate the Configuration
+### Korak 2: Preverite konfiguracijo
 
-Before initializing the repository, check that `config.toml` is complete and well formed. In your digna installation directory, run:
+Pred inicializacijo repozitorija preverite, ali je `config.toml` popoln in pravilno sestavljen. V namestitvenem imeniku digna zaženite:
 
 ```bash
 ./digna config check
 ```
 
-Every section is validated on its own, so a single mistake does not hide the state of the rest:
+Vsaka sekcija se preveri posebej, tako da posamezna napaka ne prikrije stanja ostalih:
 
 ```text
 Configuration validation report (source: config.toml):
@@ -732,76 +732,76 @@ Configuration validation report (source: config.toml):
 Overall: OK
 ```
 
-Fix anything reported as FAILED and run the command again before continuing. See the [CLI reference](../../../cli/Command_Line_Interface_202606.md) for the full list of options.
+Odpravite vse, kar je javljeno kot FAILED, in pred nadaljevanjem ukaz zaženite znova. Celoten seznam možnosti najdete v [referenci CLI](../../../cli/Command_Line_Interface_202606.md).
 
-### Step 3: Initialize the Repository
+### Korak 3: Inicializirajte repozitorij
 
-1. Open a terminal
-2. Navigate to your digna installation directory (where `config.toml` and the `digna` executable are located)
-3. Run the connection test:
+1. Odprite terminal
+2. Pojdite v imenik namestitve digna (kjer sta `config.toml` in izvršljiva datoteka `digna`)
+3. Zaženite test povezave:
 
 ```bash
 cd /opt/digna
 ./digna repo check
 ```
 
-You should see a confirmation that the connection is established (the repository itself hasn't been initialized yet).
+Videti bi morali potrditev, da je povezava vzpostavljena (sam repozitorij še ni inicializiran).
 
-!!! note "Note"
+!!! note "Opomba"
 
-    On Linux, the current directory is not on your PATH, so the executable is invoked as `./digna` rather than `digna`. To use the shorter form everywhere, add a symbolic link:
+    V sistemu Linux trenutni imenik ni v vašem PATH, zato se izvršljiva datoteka kliče kot `./digna` namesto `digna`. Če želite krajšo obliko uporabljati povsod, dodajte simbolno povezavo:
 
     ```bash
     sudo ln -s /opt/digna/digna /usr/local/bin/digna
     ```
 
-### Step 4: Install the Repository Schema
+### Korak 4: Namestite shemo repozitorija
 
-In the same directory, run:
+V istem imeniku zaženite:
 
 ```bash
 ./digna repo install
 ```
 
-This command installs the necessary tables and schema in your PostgreSQL database.
+Ta ukaz namesti potrebne tabele in shemo v vašo PostgreSQL bazo podatkov.
 
-### Step 5: Create an Admin User
+### Korak 5: Ustvarite skrbniškega uporabnika
 
-The admin user is created directly against the repository schema, so the server does not need to be running yet. In the digna installation directory, run:
+Skrbniški uporabnik se ustvari neposredno v shemi repozitorija, zato strežniku še ni treba teči. V imeniku namestitve digna zaženite:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
 ```
 
-**Example:**
+**Primer:**
 
 ```bash
 ./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-This creates a user with email `admin@example.com` and full administrative privileges.
+S tem se ustvari uporabnik z e-poštnim naslovom `admin@example.com` in polnimi skrbniškimi pravicami.
 
-!!! tip "Tip"
+!!! tip "Namig"
 
-    Wrap the password in single quotes. `bash` and `zsh` treat characters such as `!`, `$` and `*` specially, and an unquoted password containing them will not be passed through as typed.
+    Geslo zapišite v enojnih narekovajih. `bash` in `zsh` znake, kot so `!`, `$` in `*`, obravnavata posebej, zato geslo brez narekovajev, ki jih vsebuje, ne bo posredovano tako, kot ste ga vnesli.
 
-!!! tip "Best Practice"
+!!! tip "Najboljša praksa"
 
-    Use a strong password with a mix of uppercase, lowercase, numbers, and special characters.
+    Uporabite močno geslo z mešanico velikih in malih črk, številk in posebnih znakov.
 
-### Step 6: Start the digna Server
+### Korak 6: Zaženite strežnik digna
 
-In the digna installation directory, start the server with:
+V imeniku namestitve digna zaženite strežnik z ukazom:
 
 ```bash
 ./digna serve --address <host> --port <port>
 ```
 
-**Parameters:**
-- `--address` — Server hostname/IP
-- `--port` — Server port
+**Parametri:**
+- `--address` — ime gostitelja/IP strežnika
+- `--port` — vrata strežnika
 
-You should see startup messages confirming the server is running:
+Videti bi morali začetna sporočila, ki potrjujejo, da strežnik teče:
 
 ```
 INFO:     Started server process [1234]
@@ -810,9 +810,9 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
-!!! tip "Tip"
+!!! tip "Namig"
 
-    If the dashboard is served from a different machine than the backend, open the API port in the firewall as well:
+    Če se nadzorna plošča streže z drugega stroja kot backend, v požarnem zidu odprite tudi vrata API:
 
     ```bash
     sudo ufw allow 8082/tcp
@@ -821,62 +821,62 @@ INFO:     Uvicorn running on http://localhost:8082
     sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
     ```
 
-!!! note "The server holds the terminal"
+!!! note "Strežnik zaseda terminal"
 
-    `serve` runs in the foreground and keeps running until you stop it with ++ctrl+c++. Leave it running while you finish the setup, and see [Running digna as a systemd Service](#running-digna-as-a-systemd-service) to start it automatically at boot instead.
+    `serve` teče v ospredju in deluje, dokler ga ne ustavite s ++ctrl+c++. Pustite ga teči, dokler ne dokončate namestitve; če naj se namesto tega samodejno zaganja ob zagonu sistema, glejte [Zagon digna kot storitve systemd](#running-digna-as-a-systemd-service).
 
 ---
 
-## Dashboard Configuration {: #dashboard-configuration }
+## Konfiguracija nadzorne plošče {: #dashboard-configuration }
 
-### Step 1: Deploy Dashboard to Web Server
+### Korak 1: Razmestite nadzorno ploščo na spletni strežnik
 
-The digna dashboard reads its own configuration from `dashboard/dashboard_config.toml`. That file does not ship with the installation — you create it in the `dashboard/` directory alongside the dashboard files.
+Nadzorna plošča digna prebere svojo konfiguracijo iz datoteke `dashboard/dashboard_config.toml`. Ta datoteka ni priložena namestitvi — ustvarite jo v imeniku `dashboard/` poleg datotek nadzorne plošče.
 
-Its contents are described under [Single Sign-On](../../../sso/overview.md), which is also where the file is needed: it carries the login options the dashboard offers and, for multi-instance deployments, the backend connection.
+Njena vsebina je opisana v razdelku [Enotna prijava (SSO)](../../../sso/overview.md), kjer je datoteka tudi potrebna: vsebuje možnosti prijave, ki jih ponuja nadzorna plošča, in pri večinstančnih namestitvah povezavo na backend.
 
-Choose your web server and follow the corresponding deployment steps.
+Izberite spletni strežnik in sledite ustreznim korakom za razmestitev.
 
-#### Deploying to nginx
+#### Razmestitev na nginx
 
-If you followed the [nginx Setup](#nginx-setup) section, the server block already points at your `dashboard` folder and no copying is required.
+Če ste sledili razdelku [Nastavitev nginx](#nginx-setup), strežniški blok že kaže na vašo mapo `dashboard` in kopiranje ni potrebno.
 
-1. **Confirm the path**
-   - Open `/etc/nginx/conf.d/digna.conf`
-   - Verify that `root` points at your extracted `dashboard` folder
+1. **Potrdite pot**
+   - Odprite `/etc/nginx/conf.d/digna.conf`
+   - Preverite, ali `root` kaže na vašo razpakirano mapo `dashboard`
 
-2. **Ensure the folder is readable**
+2. **Poskrbite, da je mapa berljiva**
    ```bash
    sudo chmod -R a+rX /opt/digna/dashboard
    ```
 
-3. **Reload nginx**
+3. **Ponovno naložite nginx**
    ```bash
    sudo nginx -t
    sudo systemctl reload nginx
    ```
 
-4. **Test the Installation**
-   - Open your browser
-   - Navigate to `http://localhost` (or your configured URL)
-   - You should see the digna dashboard login page
+4. **Preizkusite namestitev**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost` (ali vaš konfigurirani URL)
+   - Videti bi morali prijavno stran nadzorne plošče digna
 
-#### Deploying to Apache httpd
+#### Razmestitev na Apache httpd
 
-1. **Copy the Dashboard to the Document Root**
+1. **Kopirajte nadzorno ploščo v korenski imenik dokumentov**
    ```bash
    sudo cp -R /opt/digna/dashboard /var/www/html/digna
    ```
 
-2. **Add the Rewrite Rules**
+2. **Dodajte pravila za prepisovanje**
 
-   Create an `.htaccess` file inside the deployed folder so that dashboard routes survive a browser refresh:
+   V razmeščeni mapi ustvarite datoteko `.htaccess`, da poti nadzorne plošče preživijo osvežitev brskalnika:
 
    ```bash
    sudo nano /var/www/html/digna/.htaccess
    ```
 
-   Paste the following:
+   Prilepite naslednje:
 
    ```apache
    RewriteEngine On
@@ -891,7 +891,7 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    RewriteRule ^ index.html [L]
    ```
 
-3. **Restart Apache**
+3. **Znova zaženite Apache**
    ```bash
    sudo systemctl restart apache2
    ```
@@ -899,114 +899,114 @@ If you followed the [nginx Setup](#nginx-setup) section, the server block alread
    sudo systemctl restart httpd
    ```
 
-4. **Access the Dashboard**
-   - Open your browser
-   - Navigate to `http://localhost/digna`
-   - You should see the digna dashboard login page
+4. **Dostopite do nadzorne plošče**
+   - Odprite brskalnik
+   - Pojdite na `http://localhost/digna`
+   - Videti bi morali prijavno stran nadzorne plošče digna
 
-### Step 2: SELinux (RHEL Family Only)
+### Korak 2: SELinux (samo družina RHEL)
 
-On RHEL, Rocky, AlmaLinux and Fedora, SELinux is enforcing by default and will block the web server from reading files outside its expected locations. Check whether it is active:
+V sistemih RHEL, Rocky, AlmaLinux in Fedora je SELinux privzeto v načinu enforcing in spletnemu strežniku prepreči branje datotek zunaj pričakovanih lokacij. Preverite, ali je aktiven:
 
 ```bash
 getenforce
 ```
 
-If the result is `Enforcing` and you are serving the dashboard from `/opt/digna/dashboard`, label the directory so the web server may read it:
+Če je rezultat `Enforcing` in nadzorno ploščo strežete iz `/opt/digna/dashboard`, imenik označite tako, da ga spletni strežnik sme brati:
 
 ```bash
 sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-!!! note "Note"
+!!! note "Opomba"
 
-    If `semanage` is not found, install it with `sudo dnf install -y policycoreutils-python-utils`.
+    Če `semanage` ni najden, ga namestite z `sudo dnf install -y policycoreutils-python-utils`.
 
-!!! warning "Important"
+!!! warning "Pomembno"
 
-    A dashboard that returns **403 Forbidden** on a freshly configured RHEL server is almost always an SELinux labelling problem rather than a file-permission one. Confirm with `sudo ausearch -m avc -ts recent`.
+    Če nadzorna plošča na sveže konfiguriranem strežniku RHEL vrne **403 Forbidden**, gre skoraj vedno za težavo z oznakami SELinux in ne z dovoljenji datotek. Potrdite to z `sudo ausearch -m avc -ts recent`.
 
 ---
 
-## Running digna as a systemd Service {: #running-digna-as-a-systemd-service }
+## Zagon digna kot storitve systemd {: #running-digna-as-a-systemd-service }
 
-### Why Run digna as a Service?
+### Zakaj zagnati digna kot storitev?
 
-Running the digna backend as a systemd service ensures it:
+Zagon backend‑a digna kot storitve systemd zagotavlja, da se:
 
-- Starts automatically when the machine boots
-- Runs in the background without an open terminal window
-- Restarts automatically if it crashes
-- Can be managed through `systemctl`, the standard Linux service manager
+- samodejno zažene ob zagonu stroja
+- izvaja v ozadju brez odprtega okna terminala
+- samodejno znova zažene v primeru zrušitve
+- upravlja prek `systemctl`, standardnega upravitelja storitev v sistemu Linux
 
-### Service Management Files
+### Datoteke za upravljanje storitve
 
-All necessary files are located in the digna installation directory under: `bin/`
+Vse potrebne datoteke so v imeniku namestitve digna v: `bin/`
 
-The following shell scripts are available:
+Na voljo so naslednji skripti lupine:
 
-- `install_service.sh` — Registers digna with systemd
-- `uninstall_service.sh` — Unregisters the service
-- `start_service.sh` — Starts the registered service
-- `stop_service.sh` — Stops the running service
+- `install_service.sh` — registrira digna pri systemd
+- `uninstall_service.sh` — odstrani registracijo storitve
+- `start_service.sh` — zažene registrirano storitev
+- `stop_service.sh` — ustavi delujočo storitev
 
-!!! warning "Root Privileges Required"
+!!! warning "Zahtevane so pravice root"
 
-    All scripts must be executed with `sudo`, because registering a service that starts at boot writes a unit file to `/etc/systemd/system`.
+    Vse skripte je treba izvajati s `sudo`, ker registracija storitve, ki se zažene ob zagonu sistema, zapiše datoteko enote v `/etc/systemd/system`.
 
-### Making the Scripts Executable
+### Naredite skripte izvršljive
 
-Extraction may not preserve the executable bit. Before first use:
+Razpakiranje morda ne ohrani bita za izvajanje. Pred prvo uporabo:
 
 ```bash
 cd /opt/digna/bin
 sudo chmod +x *.sh
 ```
 
-### Installing the Service
+### Namestitev storitve
 
-1. **Open a terminal**
+1. **Odprite terminal**
 
-2. **Navigate to the bin Folder**
+2. **Pojdite v mapo bin**
    ```bash
    cd /opt/digna/bin
    ```
 
-3. **Run the Installation Script**
+3. **Zaženite namestitveni skript**
    ```bash
    sudo ./install_service.sh
    ```
 
-The digna server is now registered with systemd with **automatic startup** enabled. The service does not start immediately — see the next section to start it.
+Strežnik digna je zdaj registriran pri systemd z omogočenim **samodejnim zagonom**. Storitev se ne zažene takoj — kako jo zaženete, prikazuje naslednji razdelek.
 
-### Starting and Stopping the Service
+### Zagon in ustavitev storitve
 
-#### To Start the Service
+#### Za zagon storitve
 
-1. Open a terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Odprite terminal
+2. Pojdite v `/opt/digna/bin`
+3. Zaženite:
    ```bash
    sudo ./start_service.sh
    ```
 
-#### To Stop the Service
+#### Za ustavitev storitve
 
-1. Open a terminal
-2. Navigate to `/opt/digna/bin`
-3. Run:
+1. Odprite terminal
+2. Pojdite v `/opt/digna/bin`
+3. Zaženite:
    ```bash
    sudo ./stop_service.sh
    ```
 
-!!! tip "Tip"
+!!! tip "Namig"
 
-    Always stop the service before updating application files.
+    Pred posodobitvijo datotek aplikacije storitev vedno ustavite.
 
-### Managing the Service with systemctl
+### Upravljanje storitve s systemctl
 
-Once registered, the service can also be controlled with the standard systemd commands from any directory:
+Ko je storitev registrirana, jo lahko iz katerega koli imenika upravljate tudi s standardnimi ukazi systemd:
 
 ```bash
 sudo systemctl start digna
@@ -1015,151 +1015,151 @@ sudo systemctl restart digna
 sudo systemctl status digna
 ```
 
-### Verifying the Service
+### Preverjanje storitve
 
-To confirm that the service is registered and running:
+Za potrditev, da je storitev registrirana in teče:
 
 ```bash
 systemctl is-enabled digna
 systemctl is-active digna
 ```
 
-`enabled` means the service starts at boot; `active` means it is running now.
+`enabled` pomeni, da se storitev zažene ob zagonu sistema; `active` pomeni, da trenutno teče.
 
-### Viewing the Service Logs
+### Pregledovanje dnevnikov storitve
 
-systemd captures everything the backend writes to the console. To read it:
+systemd zajame vse, kar backend izpiše v konzolo. Za branje:
 
 ```bash
 sudo journalctl -u digna -n 100
 ```
 
-To follow the log live while reproducing a problem:
+Za sprotno spremljanje dnevnika med ponavljanjem težave:
 
 ```bash
 sudo journalctl -u digna -f
 ```
 
-!!! tip "Tip"
+!!! tip "Namig"
 
-    This is the fastest way to diagnose a service that starts and immediately stops. A repository connection failure or a missing `license.toml` is reported here.
+    To je najhitrejši način za diagnosticiranje storitve, ki se zažene in takoj ustavi. Tu je javljena napaka pri povezavi z repozitorijem ali manjkajoča datoteka `license.toml`.
 
-### Moving the Service to a New Directory
+### Premik storitve v nov imenik
 
-The unit file stores the absolute path to the executable, so relocating the installation requires re-registering the service:
+Datoteka enote hrani absolutno pot do izvršljive datoteke, zato premestitev namestitve zahteva ponovno registracijo storitve:
 
-1. **Uninstall the Current Service**
+1. **Odstranite trenutno storitev**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
    ```
 
-2. **Move the Application Files**
+2. **Premaknite datoteke aplikacije**
    ```bash
    sudo mv /old/path/digna /new/path/digna
    ```
 
-3. **Reinstall the Service**
+3. **Znova namestite storitev**
    ```bash
    cd /new/path/digna/bin
    sudo ./install_service.sh
    ```
 
-4. **Start the Service**
+4. **Zaženite storitev**
    ```bash
    sudo ./start_service.sh
    ```
 
-### Uninstalling the Service
+### Odstranitev storitve
 
-1. **Stop the Running Service**
+1. **Ustavite delujočo storitev**
    ```bash
    cd /opt/digna/bin
    sudo ./stop_service.sh
    ```
 
-2. **Uninstall the Service**
+2. **Odstranite storitev**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-The digna server is now unregistered from systemd.
+Strežnik digna zdaj ni več registriran pri systemd.
 
 ---
 
-## Upgrading to a New Release {: #upgrading-to-a-new-release }
+## Nadgradnja na novo izdajo {: #upgrading-to-a-new-release }
 
-### Before You Upgrade
+### Pred nadgradnjo
 
-**Verify All Database Connections First**
+**Najprej preverite vse podatkovne povezave**
 
-From Release 2026.06, digna reaches every source technology over **ODBC**. Earlier releases
-offered a choice between a per-technology driver and ODBC, selected with a **Use ODBC** switch.
-The digna team decided to build on ODBC alone, because a single, standard interface gives you
-more than a set of bespoke drivers can:
+Od izdaje 2026.06 digna do vsake izvorne tehnologije dostopa prek **ODBC**. Prejšnje izdaje
+so ponujale izbiro med gonilnikom za posamezno tehnologijo in ODBC, izbrano s stikalom **Use ODBC**.
+Ekipa digna se je odločila graditi izključno na ODBC, ker en sam standardni vmesnik ponuja
+več kot nabor gonilnikov po meri:
 
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and browser-based
-  single sign-on, cloud identity, client certificates and TLS. New methods arrive with a driver
-  update, rather than waiting for a digna release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of digna.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones digna does not publish a dedicated guide for.
+- **Preverjanje pristnosti** — preverjanje pristnosti je del ODBC, zato lahko povezava uporabi vse, kar
+  podpira njen gonilnik: gesla, žetone in PAT-e, Kerberos in Active Directory, MFA in enotno prijavo
+  prek brskalnika, identitete v oblaku, odjemalska potrdila in TLS. Nove metode pridejo s posodobitvijo
+  gonilnika, namesto da bi čakali na izdajo digna.
+- **Gonilniki, ki jih vzdržujejo proizvajalci podatkovnih baz** — proizvajalčev lastni gonilnik sledi novim
+  različicam strežnika in varnostnim popravkom, vi pa ga lahko posodabljate po svojem urniku, neodvisno od digna.
+- **En sam način nastavljanja vsega** — vsaka tehnologija je seznam lastnosti ključ/vrednost, z
+  istim vmesnikom, istim šifriranjem občutljivih vrednosti in istim odpravljanjem težav,
+  namesto drugačnega nabora polj za vsak vir.
+- **Nastavljanje in doseg** — možnosti na ravni gonilnika, kot so časovne omejitve, nastavitve TLS, posredniški strežniki in velikosti
+  prenosa, so na voljo za vsak vir, priključiti pa je mogoče vsako tehnologijo s skladnim gonilnikom ODBC,
+  tudi takšno, za katero digna ne objavlja lastnega vodnika.
 
-In practice this means the **Use ODBC** switch and the separate host, port, database, user and
-password fields no longer exist. **Every connection that does not already use ODBC must be
-changed to ODBC** — there is no automatic conversion, so plan for this before you upgrade:
+V praksi to pomeni, da stikala **Use ODBC** ter ločenih polj za gostitelja, vrata, bazo, uporabnika in
+geslo ni več. **Vsako povezavo, ki še ne uporablja ODBC, je treba preklopiti
+na ODBC** — samodejne pretvorbe ni, zato to načrtujte pred nadgradnjo:
 
-1. Review every database connection defined in your installation and list the ones that are not
-   yet using ODBC — each of these has to be reconfigured.
-2. Install the matching ODBC driver on the digna host — connections are opened from the server
-   that runs the digna backend, not from the browser. See
-   [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver).
-3. Have the ODBC properties ready for each affected connection. The
-   [technology guides](../../../databases/overview.md#technology-guides) list a known-working
-   property set per source.
+1. Preglejte vsako podatkovno povezavo, opredeljeno v vaši namestitvi, in si zapišite tiste, ki
+   še ne uporabljajo ODBC — vsako od njih bo treba znova nastaviti.
+2. Na gostitelja digna namestite ustrezen gonilnik ODBC — povezave se odpirajo s strežnika,
+   na katerem teče backend digna, in ne iz brskalnika. Glejte
+   [Namestitev gonilnika ODBC na gostitelja digna](../../../databases/overview.md#install-the-driver).
+3. Za vsako prizadeto povezavo pripravite lastnosti ODBC.
+   [Vodniki po tehnologijah](../../../databases/overview.md#technology-guides) za vsak vir navajajo preizkušen
+   nabor lastnosti.
 
-After the upgrade, change each affected connection over to ODBC and test it from the dashboard —
-see [Create a Database Connection](../../../databases/overview.md#create-a-database-connection)
-and [Testing a Connection](../../../databases/overview.md#testing-a-connection).
+Po nadgradnji vsako prizadeto povezavo preklopite na ODBC in jo preizkusite z nadzorne plošče —
+glejte [Ustvarjanje podatkovne povezave](../../../databases/overview.md#create-a-database-connection)
+in [Preizkušanje povezave](../../../databases/overview.md#testing-a-connection).
 
-!!! warning "Databricks Legacy connections"
+!!! warning "Povezave Databricks Legacy"
 
-    The Databricks Legacy connector has been removed in this release. Migrate those connections
-    to the [Databricks](../../../databases/databricks_connector_guide.md) connector.
+    Konektor Databricks Legacy je bil v tej izdaji odstranjen. Te povezave preselite
+    na konektor [Databricks](../../../databases/databricks_connector_guide.md).
 
-**Creating a digna Repository Backup is Mandatory**
+**Varnostna kopija repozitorija digna je obvezna**
 
-Before upgrading digna, back up your repository (PostgreSQL) to protect against data loss.
-A backup ensures you can recover if the upgrade encounters unexpected issues.
+Pred nadgradnjo digna varnostno kopirajte svoj repozitorij (PostgreSQL), da se zaščitite pred izgubo podatkov.
+Varnostna kopija omogoča obnovitev, če pri nadgradnji pride do nepričakovanih težav.
 
-To create a backup from the shell:
+Za ustvarjanje varnostne kopije iz lupine:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
 ```
 
-### Upgrade Process
+### Postopek nadgradnje
 
-#### Step 1: Stop the digna Service
+#### Korak 1: Ustavite storitev digna
 
-If digna is running as a systemd service, stop it first:
+Če digna teče kot storitev systemd, jo najprej ustavite:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-If digna is running in the foreground, press `Ctrl + C` in its terminal window.
+Če digna teče v ospredju, v njegovem oknu terminala pritisnite `Ctrl + C`.
 
-#### Step 2: Backup Current Installation
+#### Korak 2: Varnostno kopirajte trenutno namestitev
 
-In your digna installation directory, rename the folders of your current installation so that the new release can be deployed alongside them:
+V namestitvenem imeniku digna preimenujte mape trenutne namestitve, da bo novo izdajo mogoče namestiti ob njih:
 
 ```bash
 cd /opt/digna
@@ -1172,37 +1172,36 @@ sudo mv dignacli dignacli_old
 sudo mv dashboard dashboard_old
 ```
 
-!!! info "dignabackend and dignacli are no longer used"
+!!! info "dignabackend in dignacli nista več v uporabi"
 
-    Starting with Release 2026.06, `dignabackend` and `dignacli` are replaced by the single `digna` executable, which combines the backend and the CLI. Keep `dignabackend_old` and `dignacli_old` only until you have verified the upgrade — afterwards you can delete both folders. Keep `dashboard_old` until you have restored your configuration files from it (see Step 4).
+    Od izdaje 2026.06 `dignabackend` in `dignacli` nadomešča ena sama izvršljiva datoteka `digna`, ki združuje backend in CLI. Mapi `dignabackend_old` in `dignacli_old` obdržite le, dokler ne preverite nadgradnje — nato ju lahko obe izbrišete. Mapo `dashboard_old` obdržite, dokler iz nje ne obnovite svojih konfiguracijskih datotek (glejte korak 4).
 
-#### Step 3: Extract and Deploy New Version
+#### Korak 3: Razpakirajte in razmestite novo različico
 
-1. Extract the new digna installation ZIP file
-2. Copy the new `digna` executable and `dashboard` folder to your installation directory
-3. Restore the executable bit and the ownership of the service account:
+1. Razpakirajte novo ZIP datoteko namestitve digna
+2. Novo izvršljivo datoteko `digna` in mapo `dashboard` kopirajte v svoj namestitveni imenik
+3. Obnovite bit za izvajanje in lastništvo storitvenega računa:
 
 ```bash
 sudo chmod +x /opt/digna/digna
 sudo chown -R digna:digna /opt/digna
 ```
 
-!!! warning "Important"
+!!! warning "Pomembno"
 
-    Neither `config.toml` nor `dashboard/dashboard_config.toml` is ever included in the
-    installation ZIP — the digna team never ships either file. Your existing configuration is
-    therefore untouched by the upgrade, and the copies in the renamed `*_old` folders are the
-    only ones you have.
+    Niti `config.toml` niti `dashboard/dashboard_config.toml` nista **nikoli** vključena v
+    namestitveni ZIP — ekipa digna nobene od teh datotek nikoli ne dostavi. Nadgradnja vaše obstoječe
+    konfiguracije zato ne spremeni, kopije v preimenovanih mapah `*_old` pa so edine, ki jih imate.
 
-#### Step 4: Restore Your Configuration Files
+#### Korak 4: Obnovite konfiguracijske datoteke
 
 ```bash
 sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
-!!! warning "Release 2026.06 changes config.toml"
+!!! warning "Izdaja 2026.06 spreminja config.toml"
 
-    Three settings are new and required, and three are no longer used. A `config.toml` carried over from an earlier release does not contain the new settings, and digna will not start until they are present. Add the following to your existing `config.toml`:
+    Tri nastavitve so nove in obvezne, tri pa niso več v uporabi. `config.toml`, prenesen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnala, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
 
     ```toml
     [base]
@@ -1213,16 +1212,16 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Add the two `[base]` keys to your existing `[base]` section, and add `[encryption]` as a new section. Then remove the settings that are no longer used: **`digna_FERNET_KEY`** from `[base]`, and **`digna_APP_HOST`** and **`digna_APP_PORT`** from `[app]` — the server now takes its address and port from `digna serve`.
+    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato odstranite nastavitve, ki niso več v uporabi: **`digna_FERNET_KEY`** iz `[base]` ter **`digna_APP_HOST`** in **`digna_APP_PORT`** iz `[app]` — naslov in vrata strežnik zdaj dobi iz `digna serve`.
 
-    See [Backend Configuration](#backend-configuration) for what each setting does.
+    Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija backend‑a](#backend-configuration).
 
-!!! warning "Single sign-on: the [oidc_clients] format has changed"
+!!! warning "Enotna prijava: oblika [oidc_clients] se je spremenila"
 
-    Release 2026.06 replaces the array of tables with one table per provider, named after the
-    provider key. `DIGNA_OIDC_KEY` is gone — the key is now part of the section header.
+    Izdaja 2026.06 nadomesti polje tabel z eno tabelo na ponudnika, poimenovano po
+    ključu ponudnika. `DIGNA_OIDC_KEY` odpade — ključ je zdaj del glave sekcije.
 
-    Before:
+    Prej:
 
     ```toml
     [[oidc_clients]]
@@ -1233,7 +1232,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    After:
+    Potem:
 
     ```toml
     [oidc_clients.microsoft]
@@ -1243,73 +1242,73 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
     ```
 
-    Repeat the section for every provider, and keep each key matching the `key` in
-    `dashboard_config.toml`. `digna config check` reports `oidc_clients` as FAILED while the
-    old form is still in place. Only installations that use single sign-on are affected.
+    Sekcijo ponovite za vsakega ponudnika in vsak ključ ohranite enak vrednosti `key` v
+    datoteki `dashboard_config.toml`. `digna config check` javi `oidc_clients` kot FAILED, dokler
+    ostaja stara oblika. Prizadete so le namestitve, ki uporabljajo enotno prijavo.
 
-#### Step 5: Reload the Web Server
+#### Korak 5: Ponovno naložite spletni strežnik
 
-The dashboard is a set of static files, so your web server — and the browser — may still be
-serving the previous version. Reload or restart whichever web server hosts the `dashboard`
-folder, then reload the page with a hard refresh (++ctrl+f5++).
+Nadzorna plošča je nabor statičnih datotek, zato vaš spletni strežnik — in brskalnik — morda še vedno
+streže prejšnjo različico. Ponovno naložite ali znova zaženite spletni strežnik, ki gosti mapo `dashboard`,
+nato pa stran osvežite s trdim osveževanjem (++ctrl+f5++).
 
-#### Step 6: Validate the Configuration
+#### Korak 6: Preverite konfiguracijo
 
-Confirm that the updated `config.toml` is complete before touching the repository:
+Preden se dotaknete repozitorija, potrdite, da je posodobljeni `config.toml` popoln:
 
 ```bash
 ./digna config check
 ```
 
-Every section must report OK. Fix anything reported as FAILED and run the command again before continuing.
+Vsaka sekcija mora javiti OK. Odpravite vse, kar je javljeno kot FAILED, in pred nadaljevanjem ukaz zaženite znova.
 
-#### Step 7: Replace the License File
+#### Korak 7: Zamenjajte licenčno datoteko
 
-Each release is licensed separately. Copy the `license.toml` that the digna team provided for
-this release into the installation directory, replacing the old one:
+Vsaka izdaja je licencirana ločeno. Datoteko `license.toml`, ki vam jo je ekipa digna posredovala za
+to izdajo, kopirajte v imenik namestitve in z njo zamenjajte staro:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
-!!! warning "Do not keep the previous license"
+!!! warning "Ne obdržite prejšnje licence"
 
-    A `license.toml` issued for an earlier release does not cover this one, and every command
-    that checks the license — `user`, `inspection`, `repo` — aborts before touching the
-    repository when the check fails. Verify it before going further:
+    Datoteka `license.toml`, izdana za prejšnjo izdajo, ne velja za to, in vsak ukaz, ki preverja
+    licenco — `user`, `inspection`, `repo` — se prekine, še preden se dotakne repozitorija, če
+    preverjanje ne uspe. Preden nadaljujete, jo preverite:
 
     ```bash
     ./digna license check
     ```
 
-#### Step 8: Upgrade the Repository Schema
+#### Korak 8: Nadgradite shemo repozitorija
 
-Navigate to your digna installation directory and run:
+Pojdite v imenik namestitve digna in zaženite:
 
 ```bash
 cd /opt/digna
 ./digna repo upgrade
 ```
 
-This updates the PostgreSQL schema to the latest version while preserving all existing data.
+To posodobi PostgreSQL shemo na najnovejšo različico, pri tem pa ohrani vse obstoječe podatke.
 
-#### Step 9: Restart Services
+#### Korak 9: Znova zaženite storitve
 
-If running as a systemd service:
+Če digna teče kot storitev systemd:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-If running manually, restart the server:
+Če digna poganjate ročno, znova zaženite strežnik:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-If using nginx or Apache, reload the respective web server:
+Če uporabljate nginx ali Apache, ponovno naložite ustrezni spletni strežnik:
 
 ```bash
 sudo systemctl reload nginx
@@ -1318,19 +1317,19 @@ sudo systemctl reload nginx
 sudo systemctl restart apache2
 ```
 
-On the RHEL family, re-apply the SELinux labelling if the `dashboard` directory was replaced:
+V družini RHEL znova uveljavite oznake SELinux, če je bil imenik `dashboard` zamenjan:
 
 ```bash
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Step 10: Verify the Upgrade
+#### Korak 10: Preverite nadgradnjo
 
-1. Access the digna dashboard
-2. Verify that the interface loads correctly
-3. Check the server logs for any errors
-4. Change every connection that did not already use ODBC over to ODBC, then test all connections
-   — see [Testing a Connection](../../../databases/overview.md#testing-a-connection):
+1. Dostopite do nadzorne plošče digna
+2. Preverite, ali se vmesnik pravilno naloži
+3. V dnevnikih strežnika preverite, ali so se pojavile napake
+4. Vsako povezavo, ki še ni uporabljala ODBC, preklopite na ODBC, nato preizkusite vse povezave
+   — glejte [Preizkušanje povezave](../../../databases/overview.md#testing-a-connection):
 
 ```bash
 sudo journalctl -u digna -n 100

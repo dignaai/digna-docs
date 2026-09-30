@@ -1,108 +1,108 @@
-# Set up SSO with Keycloak
+# Iestatīt SSO ar Keycloak
 
-Keycloak is a self-hosted, fully OIDC-compliant identity provider. Because you run it yourself, the discovery URL is built from your own host name and realm rather than a vendor domain.
+Keycloak ir pašmitināts (self-hosted) identitātes nodrošinātājs, kas pilnībā atbilst OIDC standartam. Tā kā jūs to darbināt paši, atklāšanas (discovery) URL tiek veidots no jūsu pašu resursdatora nosaukuma un realm, nevis no piegādātāja domēna.
 
-This guide covers the **Keycloak side**: creating the client and collecting the values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Šis ceļvedis aptver **Keycloak pusi**: klienta izveidi un vērtību vākšanu, kas nepieciešamas digna. digna puse — `dashboard_config.toml`, testēšana un problēmu novēršana — ir vienāda visiem pakalpojumu sniedzējiem un aprakstīta [Single Sign-On pārskatā](overview.md).
 
 ---
 
-## Before You Start
+## Pirms sākat
 
-| Requirement | Notes |
+| Prasība | Piezīmes |
 |---|---|
-| **Keycloak version** | 17 or later for the URL paths used here — see the note in Step 4 |
-| **Keycloak role** | `realm-admin` on the target realm, or a server administrator |
-| **Realm** | The realm your digna users belong to, not necessarily `master` |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
+| **Keycloak versija** | 17 vai jaunāka šeit izmantotajiem URL ceļiem — skatiet piezīmi 5. solī |
+| **Keycloak loma** | `realm-admin` mērķa realm vai servera administrators |
+| **Realm** | Realm, kurā atrodas jūsu digna lietotāji, ne obligāti `master` |
+| **digna redirect URI** | URL, uz kuru lietotāji atgriežas pēc pieteikšanās, piem. `https://digna.yourdomain.com/oidc/callback` |
 
 ---
 
-## Step 1: Select the Realm
+## 1. solis: Izvēlēties realm
 
-1. Open the Keycloak admin console
-2. Use the realm selector in the top-left to switch to the realm your users are in
+1. Atveriet Keycloak administrācijas konsoli
+2. Ar realm izvēlni augšējā kreisajā stūrī pārslēdzieties uz realm, kurā atrodas jūsu lietotāji
 
-!!! warning "Do Not Use the master Realm"
+!!! warning "Neizmantojiet master realm"
 
-    The `master` realm is intended for administering Keycloak itself. Application clients belong in a dedicated realm; putting digna in `master` gives its users a route into the Keycloak administration console.
+    `master` realm ir paredzēts pašas Keycloak administrēšanai. Lietotņu klientiem jāatrodas atsevišķā realm; ievietojot digna realm `master`, tās lietotāji iegūst ceļu uz Keycloak administrācijas konsoli.
 
 ---
 
-## Step 2: Create the Client
+## 2. solis: Izveidot klientu
 
-1. Go to **Clients** and click **Create client**
-2. Configure:
+1. Dodieties uz **Clients** un noklikšķiniet **Create client**
+2. Konfigurējiet:
    - **Client type**: *OpenID Connect*
-   - **Client ID**: `digna` — this becomes `DIGNA_OIDC_CLIENT_ID`
-3. Click **Next**
-4. On the **Capability config** step, turn **Client authentication** **On**
-5. Leave **Standard flow** enabled; the other flows are not needed
-6. Click **Next**
+   - **Client ID**: `digna` — tas kļūst par `DIGNA_OIDC_CLIENT_ID`
+3. Noklikšķiniet **Next**
+4. Solī **Capability config** ieslēdziet **Client authentication** stāvoklī **On**
+5. Atstājiet iespējotu **Standard flow**; pārējās plūsmas nav nepieciešamas
+6. Noklikšķiniet **Next**
 
-!!! warning "Client Authentication Must Be On"
+!!! warning "Client authentication jābūt ieslēgtam"
 
-    With **Client authentication** off, Keycloak creates a *public* client, which has no credentials at all — the **Credentials** tab in Step 4 will not exist. digna needs a confidential client. This toggle can be changed after creation if you get it wrong.
+    Ja **Client authentication** ir izslēgts, Keycloak izveido *publisku* klientu, kuram vispār nav akreditācijas datu — cilne **Credentials** 4. solī nepastāvēs. digna nepieciešams konfidenciāls klients. Ja kļūdāties, šo slēdzi var mainīt arī pēc izveides.
 
 ---
 
-## Step 3: Set the Redirect URI
+## 3. solis: Iestatīt redirect URI
 
-On the **Login settings** step (or the **Settings** tab afterwards):
+Solī **Login settings** (vai vēlāk cilnē **Settings**):
 
-1. **Valid redirect URIs**: enter your digna callback URL:
+1. **Valid redirect URIs**: ievadiet savu digna callback URL:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-2. **Web origins**: leave empty, or set to `+` to mirror the redirect URIs
-3. Click **Save**
+2. **Web origins**: atstājiet tukšu vai iestatiet `+`, lai atspoguļotu redirect URI
+3. Noklikšķiniet **Save**
 
-!!! tip "Avoid Wildcards"
+!!! tip "Izvairieties no aizstājējzīmēm"
 
-    Keycloak accepts patterns such as `https://digna.yourdomain.com/*`. A wildcard lets any path on that host receive an authorization code, so prefer the exact callback URL.
-
----
-
-## Step 4: Collect the Client Secret
-
-1. Open the **Credentials** tab
-2. Confirm **Client Authenticator** is *Client Id and Secret*
-3. Copy the **Client secret** → becomes `DIGNA_OIDC_CLIENT_SECRET`
-
-The secret stays retrievable here and can be regenerated with **Regenerate**.
+    Keycloak pieņem šablonus, piemēram, `https://digna.yourdomain.com/*`. Aizstājējzīme ļauj jebkuram ceļam šajā resursdatorā saņemt autorizācijas kodu, tāpēc dodiet priekšroku precīzam callback URL.
 
 ---
 
-## Step 5: Build the Discovery URL
+## 4. solis: Savākt klienta slepeno atslēgu
 
-Substitute your Keycloak host and realm name:
+1. Atveriet cilni **Credentials**
+2. Pārliecinieties, ka **Client Authenticator** ir *Client Id and Secret*
+3. Nokopējiet **Client secret** → kļūst par `DIGNA_OIDC_CLIENT_SECRET`
+
+Slepenā atslēga šeit paliek pieejama, un to var ģenerēt no jauna ar **Regenerate**.
+
+---
+
+## 5. solis: Izveidot discovery URL
+
+Ievietojiet sava Keycloak resursdatora un realm nosaukumu:
 
 ```
 https://<keycloak_host>/realms/<realm>/.well-known/openid-configuration
 ```
 
-For example:
+Piemēram:
 
 ```
 https://sso.yourdomain.com/realms/company/.well-known/openid-configuration
 ```
 
-!!! note "Keycloak 16 and Earlier Include /auth"
+!!! note "Keycloak 16 un vecākās versijās ir /auth"
 
-    Before Keycloak 17, every endpoint sat under an `/auth` prefix:
+    Pirms Keycloak 17 visi gala punkti atradās zem prefiksa `/auth`:
 
     ```
     https://sso.yourdomain.com/auth/realms/company/.well-known/openid-configuration
     ```
 
-    Distributions that set `KC_HTTP_RELATIVE_PATH=/auth` keep the old layout on current versions too. If the URL without `/auth` returns 404, try it with.
+    Distribūcijas, kas iestata `KC_HTTP_RELATIVE_PATH=/auth`, saglabā veco struktūru arī pašreizējās versijās. Ja URL bez `/auth` atgriež 404, mēģiniet ar to.
 
-Open the URL in a browser before continuing. A JSON document confirms the host and realm are right.
+Pirms turpināt, atveriet URL pārlūkā. JSON dokuments apstiprina, ka resursdators un realm ir pareizi.
 
 ---
 
-## Step 6: Configure digna
+## 6. solis: Konfigurēt digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -125,41 +125,41 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://sso.yourdomain.com/realms/company/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `keycloak` here. Note that it does not have to equal the Keycloak **Client ID**, though keeping them the same is easier to follow.
+Abos failos `key` vērtībai jāsakrīt — šeit `keycloak`. Ņemiet vērā, ka tai nav jābūt vienādai ar Keycloak **Client ID**, lai gan vienādas vērtības ir vieglāk pārskatāmas.
 
 ---
 
-## Step 7: Test
+## 7. solis: Testēt
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Restartējiet backend un web serveri, pēc tam atveriet dashboard. Pilnu pārbaudes sarakstu skatiet sadaļā [Pieteikšanās testēšana](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Keycloak
+## Keycloak problēmu novēršana
 
 ### Invalid parameter: redirect_uri
 
-The callback URL is not covered by **Valid redirect URIs**. Keycloak logs the URI it received in the server log, which is the quickest way to see the exact mismatch.
+Callback URL neietilpst **Valid redirect URIs**. Keycloak servera žurnālā reģistrē saņemto URI — tas ir ātrākais veids, kā redzēt precīzu neatbilstību.
 
-### The Credentials Tab Is Missing
+### Nav cilnes Credentials
 
-The client is public. Turn **Client authentication** on under **Settings → Capability config**.
+Klients ir publisks. Ieslēdziet **Client authentication** sadaļā **Settings → Capability config**.
 
-### 404 on the Discovery URL
+### 404 pie discovery URL
 
-Either the realm name is wrong, or the deployment uses the `/auth` prefix. Check the realm list in the admin console and try both URL forms.
+Vai nu realm nosaukums ir nepareizs, vai arī izvietojums izmanto prefiksu `/auth`. Pārbaudiet realm sarakstu administrācijas konsolē un izmēģiniet abas URL formas.
 
-### unauthorized_client or invalid_client
+### unauthorized_client vai invalid_client
 
-**Standard flow** is disabled under **Capability config**, or the secret was regenerated in Keycloak without updating `config.toml`.
+Sadaļā **Capability config** ir atspējots **Standard flow**, vai arī slepenā atslēga Keycloak tika ģenerēta no jauna, neatjauninot `config.toml`.
 
-### Certificate Errors from the Backend
+### Sertifikātu kļūdas no backend
 
-A self-hosted Keycloak behind a private or self-signed certificate will fail digna's outbound HTTPS call to the discovery URL. Install the issuing CA into the trust store of the machine running the digna backend.
+Pašmitināts Keycloak aiz privāta vai pašparakstīta sertifikāta izraisīs digna izejošā HTTPS pieprasījuma uz discovery URL kļūmi. Instalējiet izdevēju CA tā datora uzticamo sertifikātu krātuvē, kurā darbojas digna backend.
 
 ---
 
-## See Also
+## Skatīt arī
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Single Sign-On pārskats](overview.md) — konfigurācijas atsauce, testēšana un vispārīga problēmu novēršana
 - [Keycloak: Securing applications](https://www.keycloak.org/docs/latest/securing_apps/)

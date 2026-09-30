@@ -1,61 +1,63 @@
-# Source Connector for Netezza
+# Netezza için Kaynak Bağlayıcısı
 
-This guide describes how to configure *digna* to connect to Netezza over **ODBC**, using a
-**DSN-less** connection string.
+Bu kılavuz, *digna*'nın **DSN'siz** bir bağlantı dizesi kullanarak **ODBC** üzerinden
+Netezza'ya bağlanacak şekilde nasıl yapılandırılacağını açıklar.
 
-The *digna* side of the setup is the same for every technology — where connections are created,
-how property values are encrypted, how a connection is tested and what the profiling modes
-mean. It is described in [Database Connections Overview](overview.md). This page covers what is
-specific to Netezza.
-
----
-
-## 1. Install the ODBC Driver {: #1-install-the-odbc-driver }
-
-Install the **NetezzaSQL** ODBC driver (part of the IBM Netezza client tools) on the machine
-that runs the *digna* backend, following the vendor's official installation guide.
-
-Read the exact registered driver name off your host as described in
-[Install the ODBC Driver on the digna Host](overview.md#install-the-driver).
+Kurulumun *digna* tarafı her teknoloji için aynıdır: bağlantıların nerede oluşturulduğu,
+özellik değerlerinin nasıl şifrelendiği, bir bağlantının nasıl test edildiği ve profil oluşturma
+modlarının ne anlama geldiği. Bunlar [Veritabanı Bağlantılarına Genel Bakış](overview.md)
+sayfasında açıklanmıştır. Bu sayfa Netezza'ya özgü konuları ele alır.
 
 ---
 
-## 2. ODBC Properties {: #2-odbc-properties }
+## 1. ODBC Sürücüsünü Kurun {: #1-install-the-odbc-driver }
 
-!!! important "An example, not a specification"
+Üreticinin resmi kurulum kılavuzunu izleyerek *digna* arka ucunu çalıştıran makineye
+**NetezzaSQL** ODBC sürücüsünü (IBM Netezza istemci araçlarının bir parçası) kurun.
 
-    The set below is one combination that is known to work. The properties belong to the
-    NetezzaSQL driver, so their names, defaults and accepted values differ between client
-    versions and platforms, and a TLS-secured appliance needs more than the properties shown
-    here. Use this as a starting point and check the documentation of the client version you
-    installed.
+Kayıtlı sürücü adının tamamını
+[ODBC Sürücüsünü digna Ana Makinesine Kurun](overview.md#install-the-driver) bölümünde
+açıklandığı şekilde ana makinenizden okuyun.
 
-Add the following properties in the **Add DB Connection** screen:
+---
 
-| Key | Example value | Notes |
+## 2. ODBC Özellikleri {: #2-odbc-properties }
+
+!!! important "Bir örnek, bir şartname değil"
+
+    Aşağıdaki küme, çalıştığı bilinen bir kombinasyondur. Özellikler NetezzaSQL sürücüsüne
+    aittir; bu nedenle adları, varsayılan değerleri ve kabul edilen değerleri istemci
+    sürümlerine ve platformlara göre farklılık gösterir. TLS ile korunan bir cihaz ise burada
+    gösterilenlerden daha fazla özellik gerektirir. Bunu bir başlangıç noktası olarak kullanın
+    ve kurduğunuz istemci sürümünün dokümantasyonunu kontrol edin.
+
+**Add DB Connection** ekranında aşağıdaki özellikleri ekleyin:
+
+| Anahtar | Örnek değer | Notlar |
 |---|---|---|
-| `DRIVER` | `{NetezzaSQL}` | Must match the driver name registered on the *digna* host. The braces are the usual way to write this name |
-| `SERVER` | `netezza.example.com` | Server name or IP address |
+| `DRIVER` | `{NetezzaSQL}` | *digna* ana makinesinde kayıtlı sürücü adıyla eşleşmelidir. Süslü parantezler bu adın olağan yazılış biçimidir |
+| `SERVER` | `netezza.example.com` | Sunucu adı veya IP adresi |
 | `PORT` | `5480` | |
-| `DATABASE` | `TEST` | Database the session starts in |
-| `UID` | `ADMIN` | Database user |
-| `PWD` | `<password>` | Tick **Encrypted** |
+| `DATABASE` | `TEST` | Oturumun başladığı veritabanı |
+| `UID` | `ADMIN` | Veritabanı kullanıcısı |
+| `PWD` | `<password>` | **Encrypted** seçeneğini işaretleyin |
 
-The resulting connection string looks like this:
+Ortaya çıkan bağlantı dizesi şöyle görünür:
 
 ```
 DRIVER={NetezzaSQL};SERVER=netezza.example.com;PORT=5480;DATABASE=TEST;UID=ADMIN;PWD=<password>
 ```
 
-Depending on your driver version, setup and security requirements, further properties may be
-needed — for example `SecurityLevel` and `CaCertFile` for a TLS-secured appliance. Every option
-the driver's *Advanced*, *SSL* and *Driver* dialogs offer can be added as a property.
+Sürücü sürümünüze, kurulumunuza ve güvenlik gereksinimlerinize bağlı olarak başka özellikler de
+gerekebilir; örneğin TLS ile korunan bir cihaz için `SecurityLevel` ve `CaCertFile`. Sürücünün
+*Advanced*, *SSL* ve *Driver* iletişim kutularının sunduğu her seçenek bir özellik olarak
+eklenebilir.
 
 ---
 
-## 3. *digna* Configuration {: #3-digna-configuration }
+## 3. *digna* Yapılandırması {: #3-digna-configuration }
 
-In the **Add DB Connection** screen, provide the following:
+**Add DB Connection** ekranında aşağıdakileri girin:
 
 ```
 Name:               Name of the connection. This is used for referencing the connection in other screens.
@@ -66,37 +68,38 @@ Work Schema:        Schema for the work tables of "Permanent" profiling, e.g. "D
 
 ---
 
-## 4. Notes on Netezza {: #4-notes-on-netezza }
+## 4. Netezza ile İlgili Notlar {: #4-notes-on-netezza }
 
-- **Catalogs and schemas both apply.** *digna* lists the databases the user may see (from
-  `_V_DATABASE`) as catalogs and their schemas (from `_V_SCHEMA`) below them, so one connection
-  can serve sources in more than one database. `DATABASE` only decides where the session
-  starts.
-- **Identifiers are upper case** unless they were created quoted, which is why the examples
-  above use `TEST` and `ADMIN`.
-- **Profiling modes.** *Permanent* creates the work tables in **Work Schema**, so the user needs
-  `CREATE TABLE` there. *Session* uses `CREATE TEMPORARY TABLE` and does not touch
-  **Work Schema**. *Standard* needs read access only.
+- **Hem kataloglar hem de şemalar geçerlidir.** *digna*, kullanıcının görebildiği veritabanlarını
+  (`_V_DATABASE` üzerinden) katalog olarak ve bunların şemalarını (`_V_SCHEMA` üzerinden)
+  altlarında listeler; böylece tek bir bağlantı birden fazla veritabanındaki kaynaklara hizmet
+  edebilir. `DATABASE` yalnızca oturumun nerede başlayacağını belirler.
+- **Tanımlayıcılar**, tırnak içinde oluşturulmadıkları sürece **büyük harflidir**; yukarıdaki
+  örneklerde `TEST` ve `ADMIN` kullanılmasının nedeni budur.
+- **Profil oluşturma modları.** *Permanent* çalışma tablolarını **Work Schema** içinde
+  oluşturur, bu nedenle kullanıcının orada `CREATE TABLE` yetkisine ihtiyacı vardır. *Session*
+  `CREATE TEMPORARY TABLE` kullanır ve **Work Schema**'ya dokunmaz. *Standard* yalnızca okuma
+  erişimi gerektirir.
 
 ---
 
-## 5. Verifying the Driver (optional) {: #5-verifying-the-driver-optional }
+## 5. Sürücüyü Doğrulama (isteğe bağlı) {: #5-verifying-the-driver-optional }
 
-Configuring an ODBC data source is not required for a DSN-less connection, but the driver's
-own dialog is a convenient way to confirm that the driver and your credentials work before you
-enter them in *digna*.
+DSN'siz bir bağlantı için bir ODBC veri kaynağı yapılandırmak gerekli değildir; ancak sürücünün
+kendi iletişim kutusu, bunları *digna*'ya girmeden önce sürücünün ve kimlik bilgilerinizin
+çalıştığını doğrulamanın pratik bir yoludur.
 
-#### Step 1
-![Step 1](images/netezza/create_odbc_data_source_step1.png)
+#### Adım 1
+![Adım 1](images/netezza/create_odbc_data_source_step1.png)
 
-The fields in **DSN Options** correspond one-to-one to the properties in
-[section 2](#2-odbc-properties). Depending on your Netezza driver, setup and security
-requirements, you may also need data in the **Advanced DSN Options**, **SSL DSN Options** or
-**Driver Options** tabs; for the simplest setup, **DSN Options** is sufficient.
+**DSN Options** içindeki alanlar, [bölüm 2](#2-odbc-properties) içindeki özelliklere birebir
+karşılık gelir. Netezza sürücünüze, kurulumunuza ve güvenlik gereksinimlerinize bağlı olarak
+**Advanced DSN Options**, **SSL DSN Options** veya **Driver Options** sekmelerinde de bilgi
+girmeniz gerekebilir; en basit kurulum için **DSN Options** yeterlidir.
 
-Click the **Test Connection** button.
+**Test Connection** düğmesine tıklayın.
 
-#### Step 2
-![Step 2](images/netezza/create_odbc_data_source_step2.png)
+#### Adım 2
+![Adım 2](images/netezza/create_odbc_data_source_step2.png)
 
-When you receive the success screen, the driver is working and the values are correct.
+Başarı ekranını gördüğünüzde sürücü çalışıyor ve değerler doğru demektir.

@@ -76,16 +76,16 @@
 
 ### データベース
 
-- [Overview](https://docs.digna.ai/ja/databases/overview/): How database connections work in digna. Every source technology is reached over ODBC with a DSN-less connection string built from ODBC properties. Covers driver installation on the digna host, the Add DB Connection screen, property encryption, connection testing, troubleshooting and links to the per-technology guides.
-- [Azure Synapse](https://docs.digna.ai/ja/databases/azure_synapse_connector_guide/): Configure digna to connect to Azure Synapse Analytics over ODBC with a DSN-less connection string. Supports serverless and dedicated SQL pools, with the required ODBC properties and digna-side connection settings.
-- [Databricks](https://docs.digna.ai/ja/databases/databricks_connector_guide/): Configure digna to connect to Databricks with Unity Catalog over ODBC with a DSN-less connection string. Covers the Databricks ODBC driver, personal access tokens, HTTP path and the digna-side connection settings.
-- [Hive](https://docs.digna.ai/ja/databases/hive_connector_guide/): Configure digna to connect to Apache Hive over ODBC with a DSN-less connection string. Covers the Cloudera Hive ODBC driver, authentication mechanisms, transport modes and the digna-side connection settings.
-- [Netezza](https://docs.digna.ai/ja/databases/netezza_connector_guide/): Configure digna to connect to Netezza over ODBC with a DSN-less connection string. Covers the NetezzaSQL driver, the required ODBC properties and the digna-side connection settings.
-- [Oracle](https://docs.digna.ai/ja/databases/oracle_connector_guide/): Configure digna to connect to Oracle over ODBC with a DSN-less connection string. Covers the Oracle ODBC driver, the DBQ connect descriptor, TNS aliases and the digna-side connection settings.
-- [PostgreSQL](https://docs.digna.ai/ja/databases/postgres_connector_guide/): Configure digna to connect to PostgreSQL over ODBC with a DSN-less connection string. Covers the psqlODBC driver, the required ODBC properties, SSL modes and the digna-side connection settings.
-- [Snowflake](https://docs.digna.ai/ja/databases/snowflake_connector_guide/): Configure digna to connect to Snowflake over ODBC with a DSN-less connection string. Covers the Snowflake ODBC driver, programmatic access tokens, warehouse and role selection and the digna-side connection settings.
-- [MS SQL Server](https://docs.digna.ai/ja/databases/sqlserver_connector_guide/): Configure digna to connect to Microsoft SQL Server over ODBC with a DSN-less connection string. Covers the Microsoft ODBC driver, the required ODBC properties, encryption settings and the digna-side connection settings.
-- [Teradata](https://docs.digna.ai/ja/databases/teradata_connector_guide/): Configure digna to connect to Teradata over ODBC with a DSN-less connection string. Covers the Teradata ODBC driver, the DBCNAME property, logon mechanisms and the digna-side connection settings.
+- [Overview](https://docs.digna.ai/ja/databases/overview/): digna におけるデータベース接続の仕組み。すべてのソーステクノロジーには、ODBC プロパティから組み立てた DSN レスの接続文字列を使い、ODBC 経由で接続します。digna ホストへのドライバーのインストール、Add DB Connection 画面、プロパティの暗号化、接続テスト、トラブルシューティング、およびテクノロジー別ガイドへのリンクを含みます。
+- [Azure Synapse](https://docs.digna.ai/ja/databases/azure_synapse_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Azure Synapse Analytics に接続するよう digna を設定します。サーバーレス SQL プールと専用 SQL プールに対応し、必要な ODBC プロパティと digna 側の接続設定を説明します。
+- [Databricks](https://docs.digna.ai/ja/databases/databricks_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Unity Catalog 対応の Databricks に接続するよう digna を設定します。Databricks ODBC ドライバー、個人用アクセストークン、HTTP パス、および digna 側の接続設定を説明します。
+- [Hive](https://docs.digna.ai/ja/databases/hive_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Apache Hive に接続するよう digna を設定します。Cloudera Hive ODBC ドライバー、認証メカニズム、トランスポートモード、および digna 側の接続設定を説明します。
+- [Netezza](https://docs.digna.ai/ja/databases/netezza_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Netezza に接続するよう digna を設定します。NetezzaSQL ドライバー、必要な ODBC プロパティ、および digna 側の接続設定を説明します。
+- [Oracle](https://docs.digna.ai/ja/databases/oracle_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Oracle に接続するよう digna を設定します。Oracle ODBC ドライバー、DBQ 接続記述子、TNS エイリアス、および digna 側の接続設定を説明します。
+- [PostgreSQL](https://docs.digna.ai/ja/databases/postgres_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で PostgreSQL に接続するよう digna を設定します。psqlODBC ドライバー、必要な ODBC プロパティ、SSL モード、および digna 側の接続設定を説明します。
+- [Snowflake](https://docs.digna.ai/ja/databases/snowflake_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Snowflake に接続するよう digna を設定します。Snowflake ODBC ドライバー、プログラムによるアクセストークン、ウェアハウスとロールの選択、および digna 側の接続設定を説明します。
+- [MS SQL Server](https://docs.digna.ai/ja/databases/sqlserver_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Microsoft SQL Server に接続するよう digna を設定します。Microsoft ODBC ドライバー、必要な ODBC プロパティ、暗号化設定、および digna 側の接続設定を説明します。
+- [Teradata](https://docs.digna.ai/ja/databases/teradata_connector_guide/): DSN レスの接続文字列を使い、ODBC 経由で Teradata に接続するよう digna を設定します。Teradata ODBC ドライバー、DBCNAME プロパティ、ログオンメカニズム、および digna 側の接続設定を説明します。
 
 ### Single Sign-On
 

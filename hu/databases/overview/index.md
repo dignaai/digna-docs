@@ -1,262 +1,279 @@
-# Database Connections Overview
+# Adatbázis-kapcsolatok áttekintése
 
 ---
 
-## Table of Contents
+## Tartalomjegyzék
 
-1. [How Connections Work](#how-connections-work)
-2. [Technology Guides](#technology-guides)
-3. [Prerequisite: Install the ODBC Driver on the digna Host](#install-the-driver)
-4. [Create a Database Connection](#create-a-database-connection)
-5. [ODBC Properties](#odbc-properties)
-6. [Encrypting Property Values](#encrypting-property-values)
-7. [Testing a Connection](#testing-a-connection)
-8. [Which Database the Connection Sees](#which-database-the-connection-sees)
-9. [Profiling Mode and Work Schema](#profiling-mode-and-work-schema)
-10. [Using a DSN Instead](#using-a-dsn-instead)
-11. [Troubleshooting](#troubleshooting)
-
----
-
-## How Connections Work {: #how-connections-work }
-
-*digna* reaches every source technology over **ODBC**. A connection is a list of ODBC
-properties that you enter as key/value pairs. When *digna* opens the connection, it joins those
-pairs into a connection string — `Key=Value`, separated by `;`, in the order you listed them —
-and hands it to the ODBC driver manager on the *digna* host.
-
-Entering the properties yourself is what makes the setup **DSN-less**: the connection carries
-everything the driver needs, so no ODBC data source (DSN) has to be registered on the host.
-This is the recommended way to configure *digna*, because the connection definition lives
-entirely in *digna* and moves with it.
-
-### Why ODBC {: #why-odbc }
-
-Earlier releases offered a choice between a per-technology driver and ODBC, selected with a
-**Use ODBC** switch. From Release 2026.06, *digna* builds on ODBC alone. A single, standard
-interface gives you more than a set of bespoke drivers can:
-
-- **Authentication** — authentication is part of ODBC, so a connection can use whatever its
-  driver supports: passwords, tokens and PATs, Kerberos and Active Directory, MFA and
-  browser-based single sign-on, cloud identity, client certificates and TLS. New methods arrive
-  with a driver update, rather than waiting for a *digna* release.
-- **Drivers maintained by the database vendors** — the vendor's own driver tracks new server
-  versions and security fixes, and you can update it on your own schedule, independently of
-  *digna*.
-- **One way to configure everything** — every technology is a list of key/value properties, with
-  the same interface, the same encryption of sensitive values and the same troubleshooting,
-  instead of a different set of fields per source.
-- **Tuning and reach** — driver-level options such as timeouts, TLS settings, proxies and fetch
-  sizes are available for every source, and any technology with a compliant ODBC driver can be
-  connected, including ones *digna* does not publish a dedicated guide for.
-
-!!! note "What changed in the interface"
-
-    The **Use ODBC** switch and the separate host, port, database, user and password fields no
-    longer exist. A connection that does not already use ODBC needs its ODBC properties entered
-    before it will work again — see
-    [Create a Database Connection](#create-a-database-connection).
+1. [Hogyan működnek a kapcsolatok](#how-connections-work)
+2. [Technológiai útmutatók](#technology-guides)
+3. [Előfeltétel: az ODBC illesztőprogram telepítése a digna gépre](#install-the-driver)
+4. [Adatbázis-kapcsolat létrehozása](#create-a-database-connection)
+5. [ODBC tulajdonságok](#odbc-properties)
+6. [Tulajdonságértékek titkosítása](#encrypting-property-values)
+7. [Kapcsolat tesztelése](#testing-a-connection)
+8. [Melyik adatbázist látja a kapcsolat](#which-database-the-connection-sees)
+9. [Profilozási mód és munkaséma](#profiling-mode-and-work-schema)
+10. [DSN használata helyette](#using-a-dsn-instead)
+11. [Hibakeresés](#troubleshooting)
 
 ---
 
-## Technology Guides {: #technology-guides }
+## Hogyan működnek a kapcsolatok {: #how-connections-work }
 
-The property names differ per driver, and each technology has one or two details that the
-others do not have. The guides below cover that part; this page covers the *digna* side, which
-is the same for all of them.
+A *digna* minden forrástechnológiát **ODBC**-n keresztül ér el. Egy kapcsolat ODBC
+tulajdonságok listája, amelyeket kulcs/érték párokként ad meg. Amikor a *digna* megnyitja a
+kapcsolatot, ezeket a párokat kapcsolati karakterlánccá fűzi össze — `Key=Value`, `;`-vel
+elválasztva, abban a sorrendben, ahogyan felsorolta őket —, és átadja a *digna* gépen futó
+ODBC illesztőprogram-kezelőnek.
 
-!!! important "The property sets in the guides are examples"
+Az teszi a beállítást **DSN nélkülivé**, hogy a tulajdonságokat Ön adja meg: a kapcsolat
+mindent tartalmaz, amire az illesztőprogramnak szüksége van, így a gépen nem kell ODBC
+adatforrást (DSN) regisztrálni. Ez a *digna* ajánlott konfigurálási módja, mert a kapcsolat
+definíciója teljes egészében a *digna*-ban található, és együtt mozog vele.
 
-    Each guide shows one combination that is known to work — the one *digna* is tested against.
-    It is a starting point, not a specification: the properties belong to the ODBC driver, and
-    which ones exist, what they are called and which values they accept differs between driver
-    versions and vendors, between Windows, Linux and macOS, and with how the source server is
-    configured — authentication method, TLS, gateway, port. Expect to adjust a value or two,
-    and treat the documentation of the driver version you installed as the authority.
+### Miért ODBC {: #why-odbc }
 
-| Technology | Guide | Worth knowing |
+A korábbi kiadásokban választani lehetett a technológiánkénti illesztőprogram és az ODBC
+között, egy **Use ODBC** kapcsolóval. A Release 2026.06-tól a *digna* kizárólag ODBC-re épül.
+Egyetlen, szabványos interfész többet nyújt, mint egyedi illesztőprogramok gyűjteménye:
+
+- **Hitelesítés** — a hitelesítés az ODBC része, így egy kapcsolat bármit használhat, amit az
+  illesztőprogramja támogat: jelszavakat, tokeneket és PAT-okat, Kerberost és Active
+  Directoryt, MFA-t és böngészőalapú single sign-ont, felhőalapú identitást, kliens-
+  tanúsítványokat és TLS-t. Az új módszerek egy illesztőprogram-frissítéssel érkeznek, nem kell
+  egy *digna* kiadásra várni.
+- **Az adatbázis-gyártók által karbantartott illesztőprogramok** — a gyártó saját
+  illesztőprogramja követi az új szerververziókat és biztonsági javításokat, és Ön a saját
+  ütemezése szerint frissítheti, a *digna*-tól függetlenül.
+- **Egyetlen módja mindennek a konfigurálására** — minden technológia kulcs/érték
+  tulajdonságok listája, ugyanazzal az interfésszel, az érzékeny értékek ugyanolyan
+  titkosításával és ugyanazzal a hibakereséssel, forrásonként eltérő mezőkészletek helyett.
+- **Hangolás és elérés** — az illesztőprogram-szintű beállítások, például időkorlátok,
+  TLS-beállítások, proxyk és lekérési méretek minden forrásnál elérhetők, és bármely olyan
+  technológia csatlakoztatható, amelyhez megfelelő ODBC illesztőprogram létezik, azokat is
+  beleértve, amelyekhez a *digna* nem ad ki külön útmutatót.
+
+!!! note "Mi változott a felületen"
+
+    A **Use ODBC** kapcsoló, valamint a külön host, port, adatbázis, felhasználó és jelszó
+    mezők megszűntek. Egy olyan kapcsolatnál, amely még nem ODBC-t használ, meg kell adni az
+    ODBC tulajdonságokat, mielőtt újra működne — lásd:
+    [Adatbázis-kapcsolat létrehozása](#create-a-database-connection).
+
+---
+
+## Technológiai útmutatók {: #technology-guides }
+
+A tulajdonságok neve illesztőprogramonként eltér, és minden technológiának van egy-két
+sajátossága, amely a többinél nincs meg. Az alábbi útmutatók ezt a részt fedik le; ez az oldal
+a *digna* oldalt írja le, amely mindegyiknél ugyanaz.
+
+!!! important "Az útmutatókban szereplő tulajdonságkészletek példák"
+
+    Minden útmutató egy olyan kombinációt mutat be, amelyről ismert, hogy működik — azt,
+    amellyel a *digna*-t tesztelik. Ez kiindulópont, nem specifikáció: a tulajdonságok az ODBC
+    illesztőprogramhoz tartoznak, és hogy melyek léteznek, hogyan hívják őket és milyen
+    értékeket fogadnak el, az eltér az illesztőprogram-verziók és gyártók között, Windows, Linux
+    és macOS között, valamint attól függően, hogyan van konfigurálva a forrásszerver —
+    hitelesítési mód, TLS, átjáró, port. Számítson rá, hogy egy-két értéket módosítania kell, és
+    a telepített illesztőprogram-verzió dokumentációját tekintse mérvadónak.
+
+| Technológia | Útmutató | Érdemes tudni |
 |---|---|---|
-| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | Serverless pools need `-ondemand` in the host name and support only *Standard* profiling |
-| **Databricks** | [Databricks](databricks_connector_guide.md) | Token authentication: `UID=token`, PAT in `PWD` |
-| **Apache Hive** | [Hive](hive_connector_guide.md) | Catalogs come from the driver, not from a query |
-| **Netezza** | [Netezza](netezza_connector_guide.md) | Driver name is braced: `{NetezzaSQL}` |
-| **Oracle** | [Oracle](oracle_connector_guide.md) | `DBQ` takes either a full connect descriptor or a `tnsnames.ora` alias |
-| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | `SSLMode` must match what the server demands |
-| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | Programmatic access token is the tested authentication path |
-| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | `DATABASE` decides which schemas *digna* can see |
-| **Teradata** | [Teradata](teradata_connector_guide.md) | Host goes into `DBCNAME`; databases act as schemas |
+| **Azure Synapse Analytics** | [Azure Synapse](azure_synapse_connector_guide.md) | A serverless poolokhoz `-ondemand` kell a hostnévben, és csak a *Standard* profilozást támogatják |
+| **Databricks** | [Databricks](databricks_connector_guide.md) | Tokenes hitelesítés: `UID=token`, a PAT a `PWD`-be kerül |
+| **Apache Hive** | [Hive](hive_connector_guide.md) | A katalógusok az illesztőprogramtól származnak, nem lekérdezésből |
+| **Netezza** | [Netezza](netezza_connector_guide.md) | Az illesztőprogram neve kapcsos zárójelben áll: `{NetezzaSQL}` |
+| **Oracle** | [Oracle](oracle_connector_guide.md) | A `DBQ` teljes connect descriptort vagy `tnsnames.ora` aliast fogad el |
+| **PostgreSQL** | [PostgreSQL](postgres_connector_guide.md) | Az `SSLMode`-nak egyeznie kell azzal, amit a szerver megkövetel |
+| **Snowflake** | [Snowflake](snowflake_connector_guide.md) | A programmatic access token a tesztelt hitelesítési mód |
+| **MS SQL Server** | [MS SQL Server](sqlserver_connector_guide.md) | A `DATABASE` dönti el, mely sémákat látja a *digna* |
+| **Teradata** | [Teradata](teradata_connector_guide.md) | A host a `DBCNAME`-be kerül; az adatbázisok sémaként működnek |
 
 ---
 
-## Prerequisite: Install the ODBC Driver on the digna Host {: #install-the-driver }
+## Előfeltétel: az ODBC illesztőprogram telepítése a digna gépre {: #install-the-driver }
 
-*digna* opens source connections from the **server that runs the digna backend**, not from the
-browser. The ODBC driver must therefore be installed on that machine, and its name must be
-registered with the local driver manager.
+A *digna* a forráskapcsolatokat **a digna backendet futtató szerverről** nyitja meg, nem a
+böngészőből. Az ODBC illesztőprogramot ezért erre a gépre kell telepíteni, és a nevét
+regisztrálni kell a helyi illesztőprogram-kezelőben.
 
 === "Windows"
 
-    Install the vendor's 64-bit driver, then open **ODBC Data Source Administrator (64-bit)**
-    and switch to the **Drivers** tab. The names listed there are exactly the values you may
-    use for the `Driver` property.
+    Telepítse a gyártó 64 bites illesztőprogramját, majd nyissa meg az
+    **ODBC Data Source Administrator (64-bit)** alkalmazást, és váltson a **Drivers** fülre.
+    Az ott felsorolt nevek pontosan azok az értékek, amelyeket a `Driver` tulajdonsághoz
+    használhat.
 
 === "Linux"
 
-    Install **unixODBC** and the vendor's driver, then list the registered driver names:
+    Telepítse a **unixODBC**-t és a gyártó illesztőprogramját, majd listázza a regisztrált
+    illesztőprogram-neveket:
 
     ```bash
     odbcinst -q -d
     ```
 
-    The names printed in brackets are the values you may use for the `Driver` property. They
-    come from `/etc/odbcinst.ini` (or the file that `odbcinst -j` reports).
+    A szögletes zárójelben kiírt nevek azok az értékek, amelyeket a `Driver` tulajdonsághoz
+    használhat. Ezek az `/etc/odbcinst.ini` fájlból (vagy abból a fájlból, amelyet az
+    `odbcinst -j` jelez) származnak.
 
 === "macOS"
 
-    Install **unixODBC** (for example with `brew install unixodbc`) and the vendor's driver,
-    then list the registered driver names:
+    Telepítse a **unixODBC**-t (például a `brew install unixodbc` paranccsal) és a gyártó
+    illesztőprogramját, majd listázza a regisztrált illesztőprogram-neveket:
 
     ```bash
     odbcinst -q -d
     ```
 
-!!! warning "The driver name must match character for character"
+!!! warning "Az illesztőprogram nevének karakterre pontosan egyeznie kell"
 
-    `Driver` is passed to the driver manager unchanged. `Simba Spark ODBC Driver` and
-    `Simba Spark ODBC Driver 64` are different drivers as far as the driver manager is
-    concerned, and a name that is not registered produces a *data source name not found*
-    error even though no DSN is involved.
+    A `Driver` változatlanul kerül át az illesztőprogram-kezelőhöz. A `Simba Spark ODBC Driver`
+    és a `Simba Spark ODBC Driver 64` az illesztőprogram-kezelő számára két különböző
+    illesztőprogram, és egy nem regisztrált név *data source name not found* hibát okoz, holott
+    semmilyen DSN nem érintett.
 
-Instead of a registered name, all common driver managers also accept the full path to the
-driver library, for example `Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. That is
-useful when the driver is installed but not registered.
+Regisztrált név helyett minden elterjedt illesztőprogram-kezelő elfogadja az
+illesztőprogram-könyvtár teljes elérési útját is, például
+`Driver=/opt/simba/spark/lib/64/libsparkodbc_sb64.so`. Ez akkor hasznos, ha az
+illesztőprogram telepítve van, de nincs regisztrálva.
 
 ---
 
-## Create a Database Connection {: #create-a-database-connection }
+## Adatbázis-kapcsolat létrehozása {: #create-a-database-connection }
 
-Open the **Admin Panel**, go to the **Database Connections** tab and click
-**Add DB Connection**. The screen asks for five things:
+Nyissa meg az **Admin Panel**-t, lépjen a **Database Connections** fülre, és kattintson az
+**Add DB Connection** gombra. A képernyő öt dolgot kér:
 
-| Field | Description |
+| Mező | Leírás |
 |---|---|
-| **Name** | Name of the connection. This is used for referencing the connection in other screens. |
-| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake or Hive. It selects the SQL dialect *digna* generates, so it must match the source — not the driver. Azure Synapse Analytics is a **SQL Server** connection. |
-| **ODBC Properties** | The key/value pairs described in [ODBC Properties](#odbc-properties). |
-| **Profiling Mode** | *Standard*, *Permanent* or *Session* — see [Profiling Mode and Work Schema](#profiling-mode-and-work-schema). |
-| **Work Schema** | Schema that holds the work tables for *Permanent* profiling. |
+| **Name** | A kapcsolat neve. Ezzel hivatkoznak a kapcsolatra más képernyőkön. |
+| **Technology** | Postgres, Oracle, SQL Server, Databricks, Teradata, Netezza, Snowflake vagy Hive. Ez választja ki, milyen SQL-dialektust generál a *digna*, ezért a forráshoz kell illeszkednie — nem az illesztőprogramhoz. Az Azure Synapse Analytics **SQL Server** kapcsolat. |
+| **ODBC Properties** | Az [ODBC tulajdonságok](#odbc-properties) részben leírt kulcs/érték párok. |
+| **Profiling Mode** | *Standard*, *Permanent* vagy *Session* — lásd: [Profilozási mód és munkaséma](#profiling-mode-and-work-schema). |
+| **Work Schema** | Az a séma, amely a *Permanent* profilozás munkatábláit tartalmazza. |
 
-A connection is administered centrally and then assigned to one or more projects, so the same
-connection can serve several projects.
-
----
-
-## ODBC Properties {: #odbc-properties }
-
-Click **Add Property** for every property, and fill in **Key**, **Value** and, for secrets,
-the **Encrypted** checkbox. Each technology guide lists an example set for that technology,
-which you adapt to your driver version and server — see
-[the note above](#technology-guides).
-
-Whatever the driver, a property set covers the same four things:
-
-- **`Driver`** — the registered driver name, as described [above](#install-the-driver).
-- **The address of the server** — the key differs per driver: `SERVER`, `HOST`, `DBCNAME`,
-  `Server`, or, for Oracle, the `DBQ` connect descriptor.
-- **Credentials** — usually `UID` and `PWD`; Snowflake uses `UID` plus a `token`, and
-  Databricks uses the literal user `token` plus the personal access token in `PWD`.
-- **The database or catalog to work in**, where the technology has one — see
-  [Which Database the Connection Sees](#which-database-the-connection-sees).
-
-Anything else the driver documents can be added the same way — connection pooling, socket
-timeouts, Kerberos settings, proxy settings. *digna* does not interpret the properties; it
-only passes them on.
-
-!!! warning "Values are not escaped — brace anything with a semicolon"
-
-    Because the properties are joined with `;`, a value that itself contains `;` would split the
-    connection string in the wrong place. Wrap such values in braces: `PWD={p@ss;word}`.
-    The same applies to values with `=` or leading spaces. This is also why some drivers are
-    conventionally written braced, as in `{NetezzaSQL}` or `{SnowflakeDSIIDriver}`.
+A kapcsolatot központilag kezelik, majd egy vagy több projekthez rendelik hozzá, így ugyanaz a
+kapcsolat több projektet is kiszolgálhat.
 
 ---
 
-## Encrypting Property Values {: #encrypting-property-values }
+## ODBC tulajdonságok {: #odbc-properties }
 
-Tick **Encrypted** for every property that holds a secret — `PWD`, `token`, a client secret.
-The value is then encrypted before it is stored in the *digna* repository, masked in the
-screen, and decrypted only when the connection string is assembled.
+Minden tulajdonsághoz kattintson az **Add Property** gombra, és töltse ki a **Key** és
+**Value** mezőt, titkos értékeknél pedig jelölje be az **Encrypted** jelölőnégyzetet. Minden
+technológiai útmutató felsorol egy példakészletet az adott technológiához, amelyet az Ön
+illesztőprogram-verziójához és szerveréhez kell igazítani — lásd
+[a fenti megjegyzést](#technology-guides).
 
-!!! tip "Tip"
+Az illesztőprogramtól függetlenül egy tulajdonságkészlet ugyanazt a négy dolgot fedi le:
 
-    An encrypted value cannot be read back, in the UI or through the API — it can only be
-    replaced. Keep secrets in your own password manager as well.
+- **`Driver`** — a regisztrált illesztőprogram-név, ahogyan [fent](#install-the-driver) le van
+  írva.
+- **A szerver címe** — a kulcs illesztőprogramonként eltér: `SERVER`, `HOST`, `DBCNAME`,
+  `Server`, Oracle esetén pedig a `DBQ` connect descriptor.
+- **Hitelesítő adatok** — általában `UID` és `PWD`; a Snowflake `UID`-t és egy `token`-t
+  használ, a Databricks pedig a szó szerinti `token` felhasználót és a personal access tokent a
+  `PWD`-ben.
+- **Az adatbázis vagy katalógus, amelyben dolgozni kell**, ahol a technológiának van ilyen —
+  lásd: [Melyik adatbázist látja a kapcsolat](#which-database-the-connection-sees).
 
-Properties that are not secret — the driver name, host, port, database — are best left
-unencrypted, so they stay readable for whoever maintains the connection later.
+Bármi más, amit az illesztőprogram dokumentál, ugyanígy hozzáadható — kapcsolatkészletezés
+(connection pooling), socket-időkorlátok, Kerberos-beállítások, proxybeállítások. A *digna* nem
+értelmezi a tulajdonságokat; csak továbbadja őket.
+
+!!! warning "Az értékek nincsenek escape-elve — a pontosvesszőt tartalmazó értékeket tegye kapcsos zárójelbe"
+
+    Mivel a tulajdonságok `;`-vel vannak összefűzve, egy olyan érték, amely maga is `;`-t
+    tartalmaz, rossz helyen vágná ketté a kapcsolati karakterláncot. Az ilyen értékeket tegye
+    kapcsos zárójelbe: `PWD={p@ss;word}`. Ugyanez vonatkozik az `=`-t vagy kezdő szóközöket
+    tartalmazó értékekre. Ezért írnak egyes illesztőprogramokat hagyományosan kapcsos
+    zárójelben, mint a `{NetezzaSQL}` vagy a `{SnowflakeDSIIDriver}`.
 
 ---
 
-## Testing a Connection {: #testing-a-connection }
+## Tulajdonságértékek titkosítása {: #encrypting-property-values }
 
-Click **Test** in the *Add DB Connection* dialog **before** saving. The test uses the values
-currently in the form and performs a real connect, so it reports exactly what an inspection
-would hit — a wrong driver name, a rejected password, an unreachable host. Nothing is stored:
-the test connection is rolled back whether it succeeds or fails.
+Jelölje be az **Encrypted** opciót minden olyan tulajdonságnál, amely titkot tartalmaz —
+`PWD`, `token`, egy client secret. Az érték ekkor titkosítva kerül a *digna* repositoryba, a
+képernyőn maszkolva jelenik meg, és csak a kapcsolati karakterlánc összeállításakor kerül
+visszafejtésre.
 
-For a connection that already exists, hover its row in the **Database Connections** tab and
-click the **plug** icon to re-test it. That is the quickest way to check whether a source is
-reachable after a password rotation or a firewall change.
+!!! tip "Tipp"
+
+    Egy titkosított érték nem olvasható vissza, sem a felületen, sem az API-n keresztül — csak
+    lecserélni lehet. A titkokat tárolja a saját jelszókezelőjében is.
+
+A nem titkos tulajdonságokat — az illesztőprogram nevét, a hostot, a portot, az adatbázist —
+érdemes titkosítatlanul hagyni, hogy olvashatók maradjanak annak, aki később a kapcsolatot
+karbantartja.
 
 ---
 
-## Which Database the Connection Sees {: #which-database-the-connection-sees }
+## Kapcsolat tesztelése {: #testing-a-connection }
 
-When you add a data source, *digna* offers the catalogs, schemas and tables that the
-connection can reach. How far that reaches depends on the technology:
+Kattintson a **Test** gombra az *Add DB Connection* párbeszédablakban, **mielőtt** mentene. A
+teszt az űrlapon éppen szereplő értékeket használja, és valódi kapcsolódást hajt végre, így
+pontosan azt jelzi, amibe egy inspection is beleütközne — rossz illesztőprogram-név, elutasított
+jelszó, elérhetetlen host. Semmi sem kerül tárolásra: a tesztkapcsolat visszagörgetésre kerül,
+akár sikeres, akár nem.
 
-| Technology | Catalogs offered |
+Egy már létező kapcsolatnál vigye az egeret a sora fölé a **Database Connections** fülön, és
+kattintson a **dugó** ikonra az újrateszteléshez. Ez a leggyorsabb módja annak ellenőrzésére,
+hogy egy forrás elérhető-e jelszócsere vagy tűzfalmódosítás után.
+
+---
+
+## Melyik adatbázist látja a kapcsolat {: #which-database-the-connection-sees }
+
+Amikor adatforrást ad hozzá, a *digna* felajánlja azokat a katalógusokat, sémákat és táblákat,
+amelyeket a kapcsolat elér. Hogy ez meddig terjed, az a technológiától függ:
+
+| Technológia | Felajánlott katalógusok |
 |---|---|
-| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Only the connection's **current** database |
-| **Teradata**, **Netezza**, **Databricks** | All databases or catalogs the user is allowed to see |
-| **Hive**, **Impala** | Reported by the driver |
+| **PostgreSQL**, **MS SQL Server**, **Oracle**, **Snowflake** | Csak a kapcsolat **aktuális** adatbázisa |
+| **Teradata**, **Netezza**, **Databricks** | Minden adatbázis vagy katalógus, amelyet a felhasználó láthat |
+| **Hive**, **Impala** | Az illesztőprogram jelenti |
 
-!!! important "One connection, one database"
+!!! important "Egy kapcsolat, egy adatbázis"
 
-    For PostgreSQL, SQL Server, Oracle and Snowflake, the properties must point at the database
-    that holds the source schemas — `DATABASE=…`, `Database=…`, or the service name inside
-    Oracle's `DBQ`. Tables in another database are not reachable through that connection; add a
-    second connection for it.
+    PostgreSQL, SQL Server, Oracle és Snowflake esetén a tulajdonságoknak arra az adatbázisra
+    kell mutatniuk, amely a forrássémákat tartalmazza — `DATABASE=…`, `Database=…`, vagy a
+    szolgáltatásnév az Oracle `DBQ`-ján belül. Egy másik adatbázis táblái nem érhetők el azon
+    a kapcsolaton keresztül; ahhoz adjon hozzá egy második kapcsolatot.
 
 ---
 
-## Profiling Mode and Work Schema {: #profiling-mode-and-work-schema }
+## Profilozási mód és munkaséma {: #profiling-mode-and-work-schema }
 
-The profiling mode determines how *digna* processes data and calculates metrics:
+A profilozási mód határozza meg, hogyan dolgozza fel a *digna* az adatokat és számítja ki a
+metrikákat:
 
-- **Standard:** Metrics are calculated directly on the source tables without copying the data.
-- **Permanent:** Data for the inspected day is copied into a permanent table, and metrics are
-  calculated on the copied data.
-- **Session:** Data is copied into a session or temporary table, and metrics are calculated on
-  this temporary data.
+- **Standard:** A metrikák közvetlenül a forrástáblákon kerülnek kiszámításra, az adatok
+  másolása nélkül.
+- **Permanent:** A vizsgált nap adatai egy állandó táblába kerülnek átmásolásra, és a metrikák a
+  másolt adatokon kerülnek kiszámításra.
+- **Session:** Az adatok egy munkamenet- vagy ideiglenes táblába kerülnek átmásolásra, és a
+  metrikák ezeken az ideiglenes adatokon kerülnek kiszámításra.
 
-The mode decides what the connection user must be allowed to do:
+A mód dönti el, mit kell engedélyezni a kapcsolat felhasználójának:
 
-| Mode | Writes | Rights the connection user needs |
+| Mód | Mit ír | A kapcsolat felhasználójának szükséges jogai |
 |---|---|---|
-| **Standard** | nothing | Read on the source tables |
-| **Permanent** | a table per data source in **Work Schema** | Create and drop tables in **Work Schema** |
-| **Session** | a temporary table that the database drops with the session | Create temporary tables — **Work Schema** is not used |
+| **Standard** | semmit | Olvasás a forrástáblákon |
+| **Permanent** | adatforrásonként egy táblát a **Work Schema**-ban | Táblák létrehozása és törlése a **Work Schema**-ban |
+| **Session** | egy ideiglenes táblát, amelyet az adatbázis a munkamenettel együtt töröl | Ideiglenes táblák létrehozása — a **Work Schema** nincs használatban |
 
-*Standard* reads only, which makes it the mode to choose when *digna* is granted read-only
-access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
-connection keeps working if the mode is changed later.
+A *Standard* csak olvas, ezért ezt a módot kell választani, ha a *digna* csak olvasási
+hozzáférést kap. A **Work Schema** csak *Permanent* esetén kerül beolvasásra, de érdemes így is
+kitölteni, hogy a kapcsolat akkor is működjön, ha a módot később megváltoztatják.
 
 ---
 
-## Using a DSN Instead {: #using-a-dsn-instead }
+## DSN használata helyette {: #using-a-dsn-instead }
 
-A DSN still works — `DSN` is just another property:
+A DSN továbbra is működik — a `DSN` csak egy újabb tulajdonság:
 
 ```
 Key: DSN        Value: my_registered_dsn
@@ -264,131 +281,139 @@ Key: UID        Value: <user>
 Key: PWD        Value: <password>        [Encrypted]
 ```
 
-The DSN must be registered on the *digna* host, for the same user account that runs the *digna*
-backend, and as a **System DSN** when *digna* runs as a service. Everything that is configured
-in the DSN can be overridden by adding it as a property as well.
+A DSN-t a *digna* gépen kell regisztrálni, ugyanahhoz a felhasználói fiókhoz, amely a *digna*
+backendet futtatja, és **System DSN**-ként, ha a *digna* szolgáltatásként fut. Minden, ami a
+DSN-ben be van állítva, felülírható, ha tulajdonságként is hozzáadja.
 
-DSN-less is the documented default because it avoids that host-side state: the connection is
-fully described in *digna*, and a new *digna* host needs the driver installed but nothing
-configured.
+A DSN nélküli beállítás a dokumentált alapértelmezés, mert elkerüli ezt a gépen tárolt
+állapotot: a kapcsolat teljes egészében a *digna*-ban van leírva, és egy új *digna* gépre csak
+az illesztőprogramot kell telepíteni, konfigurálni semmit sem kell.
 
 ---
 
-## Troubleshooting {: #troubleshooting }
+## Hibakeresés {: #troubleshooting }
 
 ### Data source name not found / no default driver specified
 
-**Symptoms:**
-- The **Test** button reports an error mentioning *data source name not found*, even though the
-  setup is DSN-less
+**Tünetek:**
+- A **Test** gomb *data source name not found* hibát jelez, holott a beállítás DSN nélküli
 
-**Causes & Solutions:**
-1. The `Driver` value does not match a registered driver name — compare it with the **Drivers**
-   tab of *ODBC Data Source Administrator (64-bit)*, or with `odbcinst -q -d`
-2. The driver is installed on your workstation but not on the *digna* host
-3. The driver is 32-bit while *digna* is 64-bit — install the 64-bit driver
-4. The `Driver` property is missing altogether, and no `DSN` was given either
-5. On Linux and macOS, the driver is installed but not registered — give the full path to the
-   driver library instead, or register it in `odbcinst.ini`
-
----
-
-### The connection test times out
-
-**Symptoms:**
-- **Test** hangs and then fails after roughly half a minute
-
-**Causes & Solutions:**
-1. Host or port unreachable from the *digna* host — check the firewall and, for cloud sources,
-   the IP allow list
-2. The host name is right but the port belongs to a different service
-3. The source needs longer than the default 30 seconds to accept a connection — raise
-   `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` in the `[base]` section of `config.toml` (`0` waits
-   indefinitely) and restart the backend
-4. A serverless endpoint is resuming from idle — retry, and if it happens routinely, raise the
-   login timeout as above
+**Okok és megoldások:**
+1. A `Driver` értéke nem egyezik egyetlen regisztrált illesztőprogram-névvel sem — vesse össze
+   az *ODBC Data Source Administrator (64-bit)* **Drivers** fülével, vagy az `odbcinst -q -d`
+   kimenetével
+2. Az illesztőprogram a munkaállomásán telepítve van, de a *digna* gépen nem
+3. Az illesztőprogram 32 bites, míg a *digna* 64 bites — telepítse a 64 bites illesztőprogramot
+4. A `Driver` tulajdonság teljesen hiányzik, és `DSN` sem lett megadva
+5. Linuxon és macOS-en az illesztőprogram telepítve van, de nincs regisztrálva — adja meg
+   helyette az illesztőprogram-könyvtár teljes elérési útját, vagy regisztrálja az
+   `odbcinst.ini` fájlban
 
 ---
 
-### Authentication fails although the credentials are correct
+### A kapcsolatteszt időtúllépéssel leáll
 
-**Symptoms:**
-- The driver reports invalid credentials, but the same user works in another SQL client
+**Tünetek:**
+- A **Test** elakad, majd nagyjából fél perc után hibával leáll
 
-**Causes & Solutions:**
-1. The password contains `;` — wrap the value in braces: `{p@ss;word}`
-2. A trailing space was copied into the value
-3. The driver expects a specific authentication mechanism — for example `AuthMech` for the
-   Hive and Databricks drivers, or `authenticator` for Snowflake
-4. The value was stored encrypted and then edited — encrypted values cannot be read back, so
-   re-enter the secret in full
-5. A token has expired — personal access tokens and programmatic access tokens are issued with
-   an expiry date
-
----
-
-### The data source screen does not offer the expected database or schema
-
-**Symptoms:**
-- Catalogs, schemas or tables are missing when a data source is added
-
-**Causes & Solutions:**
-1. The connection points at a different database — see
-   [Which Database the Connection Sees](#which-database-the-connection-sees)
-2. The connection user lacks read rights on the schema or on the data dictionary
-3. **Technology** does not match the source, so *digna* queries the wrong data dictionary
-4. For Snowflake, no default warehouse is assigned to the user and no `Warehouse` property was
-   given, so metadata queries cannot run
+**Okok és megoldások:**
+1. A host vagy a port nem érhető el a *digna* gépről — ellenőrizze a tűzfalat, felhőalapú
+   forrásoknál pedig az IP-engedélyezési listát
+2. A hostnév helyes, de a port egy másik szolgáltatáshoz tartozik
+3. A forrásnak az alapértelmezett 30 másodpercnél több idő kell a kapcsolat elfogadásához —
+   növelje a `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` értékét a `config.toml` `[base]` szakaszában
+   (a `0` korlátlan ideig vár), és indítsa újra a backendet
+4. Egy serverless végpont éppen tétlen állapotból ébred — próbálja újra, és ha ez rendszeresen
+   előfordul, növelje a bejelentkezési időkorlátot a fentiek szerint
 
 ---
 
-### Profiling fails while the connection test succeeds
+### A hitelesítés sikertelen, pedig a hitelesítő adatok helyesek
 
-**Symptoms:**
-- **Test** passes, but an inspection fails when work tables are created
+**Tünetek:**
+- Az illesztőprogram érvénytelen hitelesítő adatokat jelez, de ugyanaz a felhasználó egy másik
+  SQL-kliensben működik
 
-**Causes & Solutions:**
-1. *Permanent* profiling is selected and the connection user cannot create tables in
-   **Work Schema** — grant the rights, or switch to *Session* or *Standard*
-2. **Work Schema** is empty or names a schema that does not exist, while *Permanent* profiling
-   is selected
-3. *Session* profiling is selected and the connection user may not create temporary tables
-4. A long-running profiling query hits the query timeout — raise
-   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` in the `[base]` section of `config.toml` (default 3600
-   seconds, `0` disables the timeout)
-
----
-
-## Best Practices
-
-**DO:**
-
-- Install and register the driver on the *digna* host before configuring the connection
-- Tick **Encrypted** for every password and token
-- Click **Test** before saving, and re-test after a password rotation
-- Name connections after the source and environment, for example `sales_dwh_prod`
-- Give *digna* a dedicated database user, read-only where *Standard* profiling is enough
-- Keep one connection per source database, and add a second one rather than switching the first
-
-**DON'T:**
-
-- Store secrets unencrypted, or share one database user between *digna* and other tools
-- Use a 32-bit driver with a 64-bit *digna* installation
-- Rely on a User DSN when *digna* runs as a service — it will not be visible
-- Put a value containing `;` into a property without braces
-- Point **Work Schema** at a schema that holds source data
+**Okok és megoldások:**
+1. A jelszó `;`-t tartalmaz — tegye az értéket kapcsos zárójelbe: `{p@ss;word}`
+2. Egy záró szóköz is bemásolódott az értékbe
+3. Az illesztőprogram egy adott hitelesítési mechanizmust vár — például `AuthMech`-et a Hive és
+   Databricks illesztőprogramoknál, vagy `authenticator`-t a Snowflake-nél
+4. Az értéket titkosítva tárolták, majd szerkesztették — a titkosított értékek nem olvashatók
+   vissza, ezért adja meg újra a teljes titkot
+5. Egy token lejárt — a personal access tokenek és a programmatic access tokenek lejárati
+   dátummal kerülnek kiadásra
 
 ---
 
-## Support
+### Az adatforrás-képernyő nem kínálja fel a várt adatbázist vagy sémát
 
-Need help with a database connection?
+**Tünetek:**
+- Adatforrás hozzáadásakor katalógusok, sémák vagy táblák hiányoznak
 
-- **Email:** support@digna.ai
-- **Documentation:** https://docs.digna.ai
-- **Website:** https://www.digna.ai
+**Okok és megoldások:**
+1. A kapcsolat egy másik adatbázisra mutat — lásd:
+   [Melyik adatbázist látja a kapcsolat](#which-database-the-connection-sees)
+2. A kapcsolat felhasználójának nincs olvasási joga a sémán vagy az adatszótáron
+3. A **Technology** nem egyezik a forrással, ezért a *digna* rossz adatszótárat kérdez le
+4. Snowflake esetén a felhasználóhoz nincs alapértelmezett warehouse rendelve, és `Warehouse`
+   tulajdonság sem lett megadva, így a metaadat-lekérdezések nem futhatnak le
 
 ---
 
-**Release:** 2026.06  
+### A profilozás sikertelen, míg a kapcsolatteszt sikeres
+
+**Tünetek:**
+- A **Test** sikeres, de egy inspection a munkatáblák létrehozásakor meghiúsul
+
+**Okok és megoldások:**
+1. *Permanent* profilozás van kiválasztva, és a kapcsolat felhasználója nem hozhat létre
+   táblákat a **Work Schema**-ban — adja meg a jogokat, vagy váltson *Session* vagy *Standard*
+   módra
+2. A **Work Schema** üres, vagy nem létező sémát nevez meg, miközben *Permanent* profilozás van
+   kiválasztva
+3. *Session* profilozás van kiválasztva, és a kapcsolat felhasználója nem hozhat létre
+   ideiglenes táblákat
+4. Egy hosszan futó profilozási lekérdezés eléri a lekérdezési időkorlátot — növelje a
+   `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` értékét a `config.toml` `[base]` szakaszában
+   (alapértelmezés 3600 másodperc, a `0` kikapcsolja az időkorlátot)
+
+---
+
+## Bevált gyakorlatok
+
+**TEGYE:**
+
+- Telepítse és regisztrálja az illesztőprogramot a *digna* gépen, mielőtt a kapcsolatot
+  konfigurálja
+- Jelölje be az **Encrypted** opciót minden jelszónál és tokennél
+- Kattintson a **Test** gombra mentés előtt, és teszteljen újra jelszócsere után
+- Nevezze el a kapcsolatokat a forrás és a környezet alapján, például `sales_dwh_prod`
+- Adjon a *digna*-nak dedikált adatbázis-felhasználót, csak olvasási joggal, ahol a *Standard*
+  profilozás elegendő
+- Forrásadatbázisonként egy kapcsolatot tartson fenn, és inkább adjon hozzá egy másodikat,
+  mint hogy az elsőt átállítsa
+
+**NE TEGYE:**
+
+- Ne tároljon titkokat titkosítatlanul, és ne használjon közös adatbázis-felhasználót a *digna*
+  és más eszközök között
+- Ne használjon 32 bites illesztőprogramot 64 bites *digna* telepítéssel
+- Ne hagyatkozzon User DSN-re, ha a *digna* szolgáltatásként fut — nem lesz látható
+- Ne adjon meg `;`-t tartalmazó értéket kapcsos zárójelek nélkül egy tulajdonságban
+- Ne állítsa a **Work Schema**-t olyan sémára, amely forrásadatokat tartalmaz
+
+---
+
+## Támogatás
+
+Segítségre van szüksége egy adatbázis-kapcsolattal?
+
+- **E-mail:** support@digna.ai
+- **Dokumentáció:** https://docs.digna.ai
+- **Weboldal:** https://www.digna.ai
+
+---
+
+**Kiadás:** 2026.06  
 **© 2026 digna GmbH — [www.digna.ai](https://www.digna.ai)**

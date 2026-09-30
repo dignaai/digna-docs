@@ -1,96 +1,96 @@
-# Set up SSO with Microsoft Entra ID
+# Настройка SSO с Microsoft Entra ID
 
-Microsoft Entra ID (formerly Azure Active Directory) is a fully OIDC-compliant provider, so digna integrates with it through the standard discovery endpoint.
+Microsoft Entra ID (ранее Azure Active Directory) — провайдер, полностью совместимый с OIDC, поэтому digna интегрируется с ним через стандартный discovery endpoint.
 
-This guide covers the **Entra ID side**: registering the application and collecting the four values digna needs. The digna side — `dashboard_config.toml`, testing and troubleshooting — is the same for every provider and is described in the [Single Sign-On Overview](overview.md).
+Это руководство покрывает **сторону Entra ID**: регистрацию приложения и сбор четырёх значений, необходимых digna. Сторона digna — `dashboard_config.toml`, тестирование и устранение неполадок — одинакова для всех провайдеров и описана в [обзоре Single Sign-On](overview.md).
 
 ---
 
-## Before You Start
+## Прежде чем начать
 
-| Requirement | Notes |
+| Требование | Примечания |
 |---|---|
-| **Entra ID role** | Application Administrator, Cloud Application Administrator, or Global Administrator |
-| **digna redirect URI** | The URL users return to after login, e.g. `https://digna.yourdomain.com/oidc/callback` |
-| **Tenant** | The directory your users sign in to |
+| **Роль в Entra ID** | Application Administrator, Cloud Application Administrator или Global Administrator |
+| **digna redirect URI** | URL, на который пользователи возвращаются после входа, например `https://digna.yourdomain.com/oidc/callback` |
+| **Тенант** | Каталог, в который входят ваши пользователи |
 
 ---
 
-## Step 1: Register the Application
+## Шаг 1: Зарегистрируйте приложение
 
-1. Sign in to the [Microsoft Entra admin center](https://entra.microsoft.com)
-2. Go to **Identity → Applications → App registrations**
-3. Click **New registration**
-4. Configure:
-   - **Name**: `digna` (shown to users on the consent screen)
-   - **Supported account types**: *Accounts in this organizational directory only* for a single-tenant deployment
-5. Under **Redirect URI**, select platform **Web** and enter your digna callback URL:
+1. Войдите в [Microsoft Entra admin center](https://entra.microsoft.com)
+2. Перейдите в **Identity → Applications → App registrations**
+3. Нажмите **New registration**
+4. Настройте:
+   - **Name**: `digna` (показывается пользователям на экране согласия)
+   - **Supported account types**: *Accounts in this organizational directory only* для развёртывания с одним тенантом
+5. В разделе **Redirect URI** выберите платформу **Web** и введите ваш callback URL для digna:
 
 ```
 https://digna.yourdomain.com/oidc/callback
 ```
 
-6. Click **Register**
+6. Нажмите **Register**
 
-!!! warning "Important"
+!!! warning "Важно"
 
-    The platform must be **Web**, not *Single-page application*. digna exchanges the authorization code from the backend using a client secret, which the SPA platform type does not permit.
-
----
-
-## Step 2: Collect the Client and Tenant IDs
-
-On the application's **Overview** page, copy:
-
-- **Application (client) ID** → becomes `DIGNA_OIDC_CLIENT_ID`
-- **Directory (tenant) ID** → goes into the discovery URL
+    Платформа должна быть **Web**, а не *Single-page application*. digna обменивает код авторизации на бэкенде с помощью client secret, а тип платформы SPA этого не допускает.
 
 ---
 
-## Step 3: Create a Client Secret
+## Шаг 2: Скопируйте идентификаторы клиента и тенанта
 
-1. Go to **Certificates & secrets → Client secrets**
-2. Click **New client secret**
-3. Enter a description and choose an expiry
-4. Click **Add**
-5. Copy the **Value** column immediately
+На странице приложения **Overview** скопируйте:
 
-!!! warning "Copy the Value, Not the Secret ID"
-
-    The **Value** is shown only once, on this page, and cannot be retrieved afterwards. The **Secret ID** next to it looks similar but is not the secret — using it produces an `invalid_client` error at login. If you navigate away before copying, delete the secret and create a new one.
-
-!!! tip "Tip"
-
-    Entra ID caps secret lifetime at 24 months, so every SSO integration has an expiry date. Note it somewhere you will see it — an expired secret takes SSO down for every user at once, with no warning on the login page.
+- **Application (client) ID** → становится `DIGNA_OIDC_CLIENT_ID`
+- **Directory (tenant) ID** → используется в discovery URL
 
 ---
 
-## Step 4: Confirm the API Permissions
+## Шаг 3: Создайте client secret
 
-1. Go to **API permissions**
-2. Confirm that **Microsoft Graph → User.Read** (delegated) is present — it is added by default
+1. Перейдите в **Certificates & secrets → Client secrets**
+2. Нажмите **New client secret**
+3. Введите описание и выберите срок действия
+4. Нажмите **Add**
+5. Сразу скопируйте значение из столбца **Value**
 
-The `openid`, `profile` and `email` scopes digna requests are part of the standard OIDC set and need no separate grant. If your tenant requires admin consent for all applications, click **Grant admin consent for &lt;tenant&gt;**.
+!!! warning "Копируйте Value, а не Secret ID"
+
+    **Value** показывается только один раз, на этой странице, и позже его нельзя получить. **Secret ID** рядом с ним выглядит похоже, но секретом не является — при его использовании вход завершается ошибкой `invalid_client`. Если вы ушли со страницы, не скопировав значение, удалите секрет и создайте новый.
+
+!!! tip "Совет"
+
+    Entra ID ограничивает срок действия секрета 24 месяцами, поэтому у каждой интеграции SSO есть дата окончания действия. Запишите её там, где вы её увидите, — просроченный секрет отключает SSO сразу для всех пользователей, без какого-либо предупреждения на странице входа.
 
 ---
 
-## Step 5: Build the Discovery URL
+## Шаг 4: Проверьте разрешения API
 
-Substitute the **Directory (tenant) ID** from Step 2:
+1. Перейдите в **API permissions**
+2. Убедитесь, что присутствует **Microsoft Graph → User.Read** (delegated) — оно добавляется по умолчанию
+
+Scope `openid`, `profile` и `email`, которые запрашивает digna, входят в стандартный набор OIDC и не требуют отдельного предоставления. Если ваш тенант требует согласия администратора для всех приложений, нажмите **Grant admin consent for &lt;tenant&gt;**.
+
+---
+
+## Шаг 5: Сформируйте Discovery URL
+
+Подставьте **Directory (tenant) ID** из Шага 2:
 
 ```
 https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration
 ```
 
-!!! note "Use the v2.0 Endpoint"
+!!! note "Используйте endpoint v2.0"
 
-    The `/v2.0/` segment matters. The v1.0 endpoint at `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` issues tokens in an older format and does not return the standard OIDC claims digna expects.
+    Сегмент `/v2.0/` важен. Endpoint v1.0 по адресу `https://login.microsoftonline.com/<tenant_id>/.well-known/openid-configuration` выдаёт токены в устаревшем формате и не возвращает стандартные claims OIDC, которые ожидает digna.
 
-Open the URL in a browser before continuing. A JSON document confirms the tenant ID is correct.
+Прежде чем продолжить, откройте URL в браузере. Если отображается JSON-документ, идентификатор тенанта указан верно.
 
 ---
 
-## Step 6: Configure digna
+## Шаг 6: Настройте digna
 
 ### `dashboard/dashboard_config.toml`
 
@@ -113,37 +113,37 @@ DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 ```
 
-The `key` in both files must match — `microsoft` here.
+Поле `key` в обоих файлах должно совпадать — здесь это `microsoft`.
 
 ---
 
-## Step 7: Test
+## Шаг 7: Тестирование
 
-Restart the backend and web server, then open the dashboard. See [Testing Login](overview.md#testing-login) for the full checklist.
+Перезапустите бэкенд и веб-сервер, затем откройте панель управления. Полный чеклист см. в разделе [Тестирование входа](overview.md#testing-login).
 
 ---
 
-## Troubleshooting Entra ID
+## Устранение неполадок с Entra ID
 
 ### AADSTS50011: Redirect URI Mismatch
 
-The URI in `DIGNA_OIDC_REDIRECT_URI` differs from the one registered in Step 1. Entra ID compares the full string, so a trailing slash, `http` versus `https`, or a different port all count as a mismatch. Check **Authentication → Web → Redirect URIs**.
+URI в `DIGNA_OIDC_REDIRECT_URI` отличается от зарегистрированного в Шаге 1. Entra ID сравнивает строку целиком, поэтому завершающая косая черта, `http` вместо `https` или другой порт — всё это считается несоответствием. Проверьте **Authentication → Web → Redirect URIs**.
 
 ### AADSTS7000215: Invalid Client Secret
 
-Either the **Secret ID** was copied instead of the **Value**, or the secret has expired. Create a new secret and copy the Value column.
+Либо скопирован **Secret ID** вместо **Value**, либо срок действия секрета истёк. Создайте новый секрет и скопируйте значение из столбца Value.
 
 ### AADSTS650057: Invalid Resource
 
-The application registration was deleted or belongs to a different tenant than the one in the discovery URL. Confirm the Directory (tenant) ID on the Overview page.
+Регистрация приложения удалена или относится к другому тенанту, чем указанный в discovery URL. Проверьте Directory (tenant) ID на странице Overview.
 
-### Users Log In but Nothing Happens
+### Пользователи входят, но ничего не происходит
 
-If the tenant requires admin consent and it has not been granted, the redirect returns without a usable token. Grant admin consent under **API permissions**.
+Если тенант требует согласия администратора, а оно не предоставлено, перенаправление возвращается без пригодного токена. Предоставьте согласие администратора в разделе **API permissions**.
 
 ---
 
-## See Also
+## См. также
 
-- [Single Sign-On Overview](overview.md) — configuration reference, testing and general troubleshooting
+- [Обзор Single Sign-On](overview.md) — справочник по конфигурации, тестированию и общему устранению неполадок
 - [Microsoft: OAuth 2.0 authorization code flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)

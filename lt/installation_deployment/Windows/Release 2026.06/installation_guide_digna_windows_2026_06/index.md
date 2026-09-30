@@ -277,8 +277,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Po išskleidimo turėtumėte matyti šiuos elementus:
    - `dashboard/` — web dashboard sąsaja
    - `digna` — pagrindinis vykdomasis failas (backend + CLI kartu)
-   - `config.toml` — konfigūracijos failas
-   - `license.toml` — licencijos failas (kopijuokite čia savo licenciją)
+
+!!! info "Konfigūracijos ir licencijos failų pakete nėra"
+
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` diegimo pakete nepateikiami — abu
+    failus sukuriate patys, skyriuose [Backend konfigūracija](#backend-configuration) ir
+    [Dashboard konfigūracija](#dashboard-configuration). `license.toml` taip pat nepateikiamas;
+    digna jį pateikia atskirai, kaip aprašyta 3 žingsnyje.
 
 ### 3 žingsnis: Įdiekite licencijos failą
 
@@ -518,9 +523,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1 žingsnis: Patalpinkite dashboard į žiniatinklio serverį
 
-digna dashboard turi atskirą `config.toml` failą, esantį `dashboard/` kataloge. Ši konfigūracija jau pateikta ir pradiniame diegime jos keisti nereikia. Ją reikia keisti tik tuo atveju, jei norite pritaikyti backend prisijungimą.
+digna dashboard savo konfigūraciją skaito iš `dashboard/dashboard_config.toml`. Šis failas diegimo pakete nepateikiamas — jį sukuriate `dashboard/` kataloge šalia dashboard failų.
 
-Jei reikia modifikuoti dashboard konfigūraciją (pvz., daugiaserveriniam diegimui), kreipkitės į dashboard dokumentaciją.
+Jo turinys aprašytas skyriuje [Vienkartinis prisijungimas (SSO)](../../../sso/overview.md), kur šis failas ir reikalingas: jame nurodomos dashboard siūlomos prisijungimo parinktys, o daugiainstanciniams diegimams — ir ryšys su backend.
 
 Pasirinkite žiniatinklio serverį ir atlikite atitinkamus diegimo veiksmus.
 
@@ -575,19 +580,24 @@ digna backend paleidus kaip Windows paslaugą užtikrinama, kad jis:
 - Automatiškai paleidžiamas iš naujo, jei sugestų
 - Gali būti valdomas per Windows Services
 
-### Paslaugos valdymo failai
+### `windows` komandos
 
-Visi reikalingi failai yra digna diegimo kataloge, po: `bin/`
+Paslaugą valdo pats `digna` vykdomasis failas, naudodamas `digna windows`
+subkomandas. Jokių batch failų vykdyti nereikia.
 
-Šie batch failai yra prieinami:
-- `install_service.bat` — registruoja digna kaip Windows paslaugą
-- `uninstall_service.bat` — panaikina paslaugos registraciją
-- `start_service.bat` — paleidžia paslaugą
-- `stop_service.bat` — sustabdo paslaugą
+| Komanda | Paskirtis |
+|---|---|
+| `digna windows install` | Užregistruoja digna kaip Windows paslaugą |
+| `digna windows start` | Paleidžia užregistruotą paslaugą |
+| `digna windows stop` | Sustabdo veikiančią paslaugą |
+| `digna windows uninstall` | Panaikina paslaugos registraciją |
 
 !!! warning "Reikalingos administratoriaus teisės"
 
-    Visi batch failai turi būti vykdomi su Administrator privilegijomis.
+    Visas keturias komandas reikia vykdyti iš Command Prompt, atidaryto kaip administratorius.
+
+Kiekviena komanda priima `--name`, kad būtų galima kreiptis į paslaugą, užregistruotą ne numatytuoju pavadinimu. Visas
+parinkčių sąrašas pateiktas [CLI žinyne](../../../cli/Command_Line_Interface_202606.md).
 
 ### Paslaugos įdiegimas
 
@@ -595,37 +605,66 @@ Visi reikalingi failai yra digna diegimo kataloge, po: `bin/`
    - Dešiniuoju pelės mygtuku spustelėkite Command Prompt
    - Pasirinkite "Run as Administrator"
 
-2. **Nueikite į bin katalogą**
+2. **Nueikite į savo digna diegimo katalogą**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Paleiskite diegimo skriptą**
+3. **Užregistruokite paslaugą**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Digna serveris dabar užregistruotas kaip Windows paslauga su **automatinio paleidimo** nustatymu. Paslauga nebus paleista iš karto — žr. kitą skyrių, kaip ją paleisti.
+!!! important "Nurodykite adresą ir prievadą, nebent numatytosios reikšmės jums tinka"
+
+    `install` įrašo adresą ir prievadą į paslaugos registraciją, o paslauga susiejama būtent
+    su tuo, kas įrašyta. Numatytosios reikšmės yra `127.0.0.1` ir `8000`, kurios priima ryšius
+    tik iš pačios mašinos. Kitame kompiuteryje veikiantis dashboard jų nepasieks, todėl nurodykite
+    adresą, kuriuo backend turi klausytis:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Šios reikšmės neskaitomos iš `config.toml`. Norėdami jas vėliau pakeisti, pašalinkite paslaugą ir
+    įdiekite ją iš naujo su naujomis reikšmėmis.
+
+Paslauga užregistruojama su **automatiniu paleidimu**, todėl ji bus paleidžiama kartu su Windows. Iš karto
+ji nepaleidžiama — žr. kitą skyrių.
+
+#### Diegimo parinktys
+
+| Parinktis | Numatytoji reikšmė | Paskirtis |
+|---|---|---|
+| `--name` | `digna` | Pavadinimas, kuriuo registruojama paslauga |
+| `--display-name` | `digna` | Pavadinimas, rodomas services.msc |
+| `--description` | `digna data quality backend` | Aprašas, rodomas services.msc |
+| `--address` | `127.0.0.1` | Adresas, prie kurio paslauga susieja savo API |
+| `--port` | `8000` | Prievadas, prie kurio paslauga susieja savo API |
+| `--working-dir` | `digna` vykdomojo failo katalogas | Katalogas su `config.toml` ir `license.toml`, kurį paslauga naudoja kaip darbinį katalogą |
+| `--start-type` | `auto` | `auto` paleidžiama kartu su Windows, `manual` paleidžiama tik paprašius, `disabled` užregistruoja paslaugą, bet neleidžia jos paleisti |
+| `--account` | `LocalSystem` | Paskyra, kuria vykdoma paslauga, pvz., `DOMAIN\user` arba `.\user` |
+| `--password` | | `--account` paskyros slaptažodis |
+
+!!! tip "Vykdymas domeno paskyra"
+
+    `LocalSystem` neturi tinklo tapatybės, todėl Windows Authentication prie SQL Server ir bet kokia
+    prieiga prie tinklo bendrinamo aplanko nepavyks. Jei paslaugai reikia pasiekti išteklius kaip konkrečiam naudotojui,
+    įdiekite ją su `--account` ir `--password`.
 
 ### Paslaugos paleidimas ir sustabdymas
 
 #### Paslauga paleidimui
 
-1. Atidarykite Command Prompt kaip administratorius
-2. Nueikite į `digna\bin`
-3. Vykdykite:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Paslauga sustabdymui
 
-1. Atidarykite Command Prompt kaip administratorius
-2. Nueikite į `digna\bin`
-3. Vykdykite:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Patarimas"
 
@@ -635,37 +674,41 @@ Digna serveris dabar užregistruotas kaip Windows paslauga su **automatinio pale
 
 Jei reikia perkelti digna diegimą:
 
-1. **Išjunkite esamą paslaugą**
+1. **Sustabdykite ir išregistruokite esamą paslaugą**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Perkelkite aplikacijos failus**
    - Perkelkite visą digna diegimo aplanką į naują vietą
 
-3. **Įdiekite paslaugą iš naujo**
+3. **Vėl užregistruokite paslaugą iš naujos vietos**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Pakartokite visas `--address`, `--port` ar `--account` reikšmes, kurias naudojote pirmą kartą — ankstesnės
+   registracijos nebėra.
 
 4. **Paleiskite paslaugą**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Paslaugos pašalinimas
 
 1. **Sustabdykite veikiančią paslaugą**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Pašalinkite paslaugą**
+2. **Išregistruokite paslaugą**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Digna serveris dabar atregistruotas kaip Windows paslauga.
@@ -704,14 +747,32 @@ Atsarginė kopija leis atkurti duomenis, jei atnaujinimo metu kils nenumatytų p
 
 ### Atnaujinimo procesas
 
-#### 1 žingsnis: Sustabdykite digna paslaugą
+#### 1 žingsnis: Sustabdykite ir išregistruokite senąją paslaugą
 
-Jei digna veikia kaip Windows paslauga, pirmiausia ją sustabdykite:
+Jei digna veikia kaip Windows paslauga, sustabdykite ją **dabartinio diegimo batch failais**
+— `digna windows` komandos priklauso naujajam leidimui ir dar nėra
+prieinamos:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Tada išregistruokite paslaugą, vėl naudodami senąjį batch failą. Registracija nurodo į senąjį
+vykdomąjį failą ir jo skriptus, kuriuos abu šis atnaujinimas pakeičia, todėl jos panaudoti pakartotinai negalima:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Išregistruokite prieš ką nors pervadindami"
+
+    `uninstall_service.bat` yra `bin` aplanke, kurį netrukus pervadinsite, ir tik jis gali
+    pašalinti savo sukurtą registraciją. Vykdykite jį, kol senasis diegimas dar yra savo vietoje.
+    Jei aplankas jau pervadintas, grąžinkite jam senąjį pavadinimą, išregistruokite paslaugą ir tęskite.
+
+    Užsirašykite paskyrą, kuria veikė paslauga, bei adresą ir prievadą, kuriais ji veikė — jų
+    prireiks 9 žingsnyje.
 
 #### 2 žingsnis: Sukurkite dabartinio diegimo atsarginę kopiją
 
@@ -732,7 +793,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend ir dignacli nebenaudojami"
 
-    Nuo leidimo 2026.06 `dignabackend` ir `dignacli` pakeičia vienas vykdomasis failas `digna`, sujungiantis užkulisinę dalį ir CLI. Aplankus `dignabackend_old` ir `dignacli_old` laikykite tik tol, kol patikrinsite naujinimą — po to abu galite ištrinti. Aplanką `dashboard_old` laikykite, kol iš jo atkursite savo konfigūracijos failus (žiūrėkite 4 žingsnį).
+    Nuo leidimo 2026.06 `dignabackend` ir `dignacli` pakeičia vienas vykdomasis failas `digna`, sujungiantis užkulisinę dalį ir CLI. Aplankus `dignabackend_old` ir `dignacli_old` laikykite tik tol, kol patikrinsite naujinimą — po to abu galite ištrinti. Aplanką `dashboard_old` laikykite, kol iš jo atkursite savo konfigūracijos failus (žiūrėkite 4 žingsnį). Pašalinamas ir `bin` aplankas: jo batch failai valdė senąją paslaugą, o 2026.06 jų nebepateikia, todėl 1 žingsnyje išregistravus paslaugą jie tik klaidintų.
 
 #### 3 žingsnis: Išskleiskite ir naudokite naują versiją
 
@@ -742,7 +803,10 @@ ren dashboard dashboard_old
 
 !!! warning "Svarbu"
 
-    `config.toml` failas **niekada** neįtrauktas į diegimo ZIP. Jūsų esama konfigūracija lieka saugi.
+    Nei `config.toml`, nei `dashboard/dashboard_config.toml` niekada nėra įtraukti į
+    diegimo ZIP — digna komanda niekada nepateikia nė vieno iš šių failų. Todėl atnaujinimas jūsų
+    esamos konfigūracijos nepaliečia, o kopijos pervadintuose `*_old` aplankuose yra
+    vienintelės, kurias turite.
 
 #### 4 žingsnis: Atkurkite konfigūracijos failus
 
@@ -793,7 +857,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Pakartokite skyrių kiekvienam tiekėjui ir kiekvieną raktą išlaikykite tokį pat kaip `key` faile `dashboard_config.toml`. `digna config check` praneša `oidc_clients` kaip FAILED, kol lieka senoji forma. Tai liečia tik diegimus, kurie naudoja vienkartinį prisijungimą.
 
-#### 5 žingsnis: Patikrinkite konfigūraciją
+#### 5 žingsnis: Perkraukite žiniatinklio serverį
+
+Dashboard yra statinių failų rinkinys, todėl jūsų žiniatinklio serveris — ir naršyklė — gali vis dar
+pateikti ankstesnę versiją. Perkraukite arba iš naujo paleiskite žiniatinklio serverį, kuriame talpinamas `dashboard`
+aplankas, tada iš naujo įkelkite puslapį priverstiniu atnaujinimu (++ctrl+f5++).
+
+#### 6 žingsnis: Patikrinkite konfigūraciją
 
 Prieš liesdami saugyklą įsitikinkite, kad atnaujintas `config.toml` yra išsamus:
 
@@ -803,7 +873,26 @@ digna config check
 
 Kiekvienas skyrius turi pranešti OK. Pataisykite viską, kas pranešama kaip FAILED, ir prieš tęsdami paleiskite komandą dar kartą.
 
-#### 6 žingsnis: Atnaujinkite repozitorijos schemą
+#### 7 žingsnis: Pakeiskite licencijos failą
+
+Kiekvienai laidai licencija išduodama atskirai. Nukopijuokite `license.toml`, kurį digna komanda pateikė
+šiai laidai, į diegimo katalogą, pakeisdami senąjį:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Nepalikite ankstesnės licencijos"
+
+    Ankstesnei laidai išduotas `license.toml` šios laidos neapima, o kiekviena komanda,
+    tikrinanti licenciją — `user`, `inspection`, `repo` — nepavykus patikrinimui nutraukiama dar prieš paliečiant
+    saugyklą. Prieš tęsdami ją patikrinkite:
+
+    ```bash
+    digna license check
+    ```
+
+#### 8 žingsnis: Atnaujinkite repozitorijos schemą
 
 Nueikite į savo digna diegimo katalogą ir paleiskite:
 
@@ -813,14 +902,22 @@ digna repo upgrade
 
 Tai atnaujins PostgreSQL schemą į naujausią versiją, išsaugant visus esamus duomenis.
 
-#### 7 žingsnis: Perkraukite paslaugas
+#### 9 žingsnis: Užregistruokite ir paleiskite paslaugą
 
-Jei naudojate Windows paslaugą:
+Senoji registracija buvo pašalinta 1 žingsnyje, todėl paslauga registruojama iš naujo — šį kartą
+naudojant `digna` vykdomąjį failą, kuris neturi batch failų:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Parinktims `--address` ir `--port` nurodykite reikšmes, kuriomis veikė senoji paslauga, nebent norite naujų
+numatytųjų reikšmių `127.0.0.1` ir `8000`; jos įrašomos į registraciją ir nebėra skaitomos
+iš `config.toml`. Jei senoji paslauga veikė domeno paskyra, pridėkite `--account` ir `--password`.
+Visą parinkčių sąrašą rasite skyriuje
+[digna paleidimas kaip Windows paslauga](#running-digna-as-a-windows-service).
 
 Jei paleidžiate rankiniu būdu, paleiskite serverį iš naujo:
 
@@ -831,7 +928,7 @@ digna serve --address <address> --port <port>
 
 Jei naudojate IIS arba Tomcat, perkraukite atitinkamą žiniatinklio serverį.
 
-#### 8 žingsnis: Patikrinkite atnaujinimą
+#### 10 žingsnis: Patikrinkite atnaujinimą
 
 1. Atidarykite digna dashboard
 2. Patikrinkite, ar sąsaja pakraunama teisingai
