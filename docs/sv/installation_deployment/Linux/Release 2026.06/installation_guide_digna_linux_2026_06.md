@@ -511,8 +511,13 @@ Klistra sedan in satserna vid prompten `postgres=#` och skriv `\q` för att avsl
 3. Efter uppackning bör du se följande objekt:
    - `dashboard/` — Webbgränssnittet
    - `digna` — Huvudkörbar fil (backend + CLI i ett)
-   - `config.toml` — Konfigurationsfil
-   - `license.toml` — Licensfil (kopiera din fil hit)
+
+!!! info "Konfigurations- och licensfilerna ingår inte i paketet"
+
+    Varken `config.toml` eller `dashboard/dashboard_config.toml` medföljer installationen — du
+    skapar båda själv, i [Backendkonfiguration](#backend-configuration) och
+    [Dashboardkonfiguration](#dashboard-configuration). Inte heller `license.toml` medföljer;
+    digna levererar den separat, enligt beskrivningen i steg 3.
 
 För att packa upp från shell:
 
@@ -714,7 +719,7 @@ digna_LOGGING_BACKUP_COUNT = 10
 Kontrollera att `config.toml` är fullständig och korrekt uppbyggd innan du initierar repositoryt. Kör i din digna-installationskatalog:
 
 ```bash
-digna config check
+./digna config check
 ```
 
 Varje sektion valideras för sig, så att ett enskilt fel inte döljer tillståndet hos de övriga:
@@ -832,9 +837,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Steg 1: Distribuera dashboarden till webbservern
 
-Digna-dashboarden har en separat `config.toml`-fil i `dashboard/`-katalogen. Denna konfiguration medföljer redan och kräver normalt inga ändringar under initial setup. Du behöver bara ändra den om du vill anpassa backend-anslutningen.
+digna-dashboarden läser sin egen konfiguration från `dashboard/dashboard_config.toml`. Den filen medföljer inte installationen — du skapar den i katalogen `dashboard/` bredvid dashboardfilerna.
 
-Om du behöver modifiera dashboardkonfigurationen (t.ex. för multi-instance-uppsättningar), se dashboardens dokumentation.
+Dess innehåll beskrivs under [Enkel inloggning (SSO)](../../../sso/overview.md), som också är där filen behövs: den innehåller de inloggningsalternativ som dashboarden erbjuder och, vid uppsättningar med flera instanser, backend-anslutningen.
 
 Välj din webbserver och följ motsvarande distributionssteg.
 
@@ -1169,7 +1174,10 @@ sudo chown -R digna:digna /opt/digna
 
 !!! warning "Varning"
 
-    Filen `config.toml` ingår **aldrig** i installations-ZIP:en. Din befintliga konfiguration är säker.
+    Varken `config.toml` eller `dashboard/dashboard_config.toml` ingår någonsin i
+    installations-ZIP:en — digna-teamet levererar aldrig någon av filerna. Din befintliga konfiguration
+    påverkas därför inte av uppgraderingen, och kopiorna i de omdöpta `*_old`-mapparna är de
+    enda du har.
 
 #### Steg 4: Återställ dina konfigurationsfiler
 
@@ -1221,7 +1229,13 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Upprepa sektionen för varje leverantör och håll varje nyckel identisk med `key` i `dashboard_config.toml`. `digna config check` rapporterar `oidc_clients` som FAILED så länge den gamla formen finns kvar. Endast installationer som använder enkel inloggning berörs.
 
-#### Steg 5: Validera konfigurationen
+#### Steg 5: Ladda om webbservern
+
+Dashboarden är en uppsättning statiska filer, så din webbserver — och webbläsaren — kan fortfarande
+leverera den tidigare versionen. Ladda om eller starta om den webbserver som är värd för mappen `dashboard`
+och ladda sedan om sidan med en hård uppdatering (++ctrl+f5++).
+
+#### Steg 6: Validera konfigurationen
 
 Kontrollera att den uppdaterade `config.toml` är fullständig innan du rör repositoryt:
 
@@ -1231,7 +1245,26 @@ Kontrollera att den uppdaterade `config.toml` är fullständig innan du rör rep
 
 Varje sektion måste rapportera OK. Åtgärda allt som rapporteras som FAILED och kör kommandot igen innan du fortsätter.
 
-#### Steg 6: Uppgradera repositoryschemat
+#### Steg 7: Ersätt licensfilen
+
+Varje release licensieras separat. Kopiera den `license.toml` som digna-teamet tillhandahållit för
+denna release till installationskatalogen och ersätt den gamla:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Behåll inte den tidigare licensen"
+
+    En `license.toml` som utfärdats för en tidigare release täcker inte den här, och varje kommando
+    som kontrollerar licensen — `user`, `inspection`, `repo` — avbryts innan det rör
+    repositoryt när kontrollen misslyckas. Verifiera den innan du går vidare:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Steg 8: Uppgradera repositoryschemat
 
 Navigera till din digna-installationskatalog och kör:
 
@@ -1242,7 +1275,7 @@ cd /opt/digna
 
 Detta uppdaterar PostgreSQL-schemat till senaste versionen samtidigt som all befintlig data bevaras.
 
-#### Steg 7: Starta om tjänsterna
+#### Steg 9: Starta om tjänsterna
 
 Om du kör som systemd-tjänst:
 
@@ -1273,7 +1306,7 @@ På RHEL-familjen, återapplicera SELinux-märkningen om `dashboard`-katalogen e
 sudo restorecon -Rv /opt/digna/dashboard
 ```
 
-#### Steg 8: Verifiera uppgraderingen
+#### Steg 10: Verifiera uppgraderingen
 
 1. Gå till digna-dashboarden
 2. Verifiera att gränssnittet laddar korrekt
