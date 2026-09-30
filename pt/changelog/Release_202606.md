@@ -66,19 +66,31 @@ Configure a estratégia de execução de consultas: **Single** ou **Combined** m
 
 ### Modelo de Previsão Configurável
 
-O modelo por trás da detecção de anomalias agora é configurável. Sete parâmetros orientam como a previsão é ajustada:
+O modelo por trás da detecção de anomalias agora pondera explicações concorrentes de cada série — um padrão combinado com uma leitura das observações mais recentes — e combina suas previsões de acordo com o respaldo que cada uma tem. Um único valor extremo não consegue mais contaminar as previsões seguintes.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Duas configurações na nova aba **Model** da fonte de dados o orientam, cada uma de `0.0` a `1.0`, com `0.5` como padrão:
 
-Os valores padrão servem para a grande maioria das séries, e cada parâmetro pode ser restaurado ao seu padrão a qualquer momento.
+- **Break Sensitivity** – a rapidez com que um salto para um novo nível ou uma virada de tendência é aceito, em vez de ser tratado como outliers
+- **Model Complexity** – quanta estrutura o modelo procura, desde efeitos de calendário e uma única mudança de nível até ciclos desconhecidos, efeitos de dia do mês e reinícios mensais
 
-**Impacto:** Dá aos usuários controle sobre o próprio modelo de previsão, ao lado das configurações Sensitivity e Memory já existentes na banda de tolerância. Para orientação sobre quando recorrer a um deles e como configurá-lo, entre em contato com a digna.
+Ambas podem ser restauradas aos seus padrões a qualquer momento. Veja [Configurações do Modelo](../platform/data_anomalies/how_it_works.md#model-settings) para saber como cada uma atua.
+
+**Impacto:** Dá aos usuários controle sobre o próprio modelo de previsão, ao lado das configurações Sensitivity e Memory já existentes na banda de tolerância, agora na aba **Thresholds**.
+
+---
+
+### Controles de Notificação de Anomalias
+
+- Nova aba **Notifications** nas configurações de anomalias da fonte de dados:
+  - **Minimum Alerts** – quantas verificações com falha (não as incertas) uma inspeção precisa ter antes que uma notificação seja enviada (padrão `1`)
+  - **Pause After Notification (Days)** – por quanto tempo uma assinatura fica em silêncio depois de notificar sobre a fonte de dados (padrão `0`, sem pausa)
+- Os assinantes agora são notificados quando uma inspeção falha por completo (**Notify Inspection Errors**)
+- Cada notificação leva diretamente à página a que se refere — as verificações com falha da inspeção, ou as visualizações do Schema Tracker e do Timeliness
+- Chaves de assinatura mais claras: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Como as notificações funcionam:** as notificações são enviadas por **canais de notificação** – Email (via uma conexão SMTP), Slack ou Jira –, que os administradores configuram e podem verificar com **Test Notification Channel**. Uma **assinatura** conecta um canal a um projeto: ela abrange todas as fontes de dados ou apenas as selecionadas, e suas chaves definem o que ela reporta – cada módulo (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker e verificações de volume de dados), inspeções que falham por completo e, opcionalmente, também inspeções aprovadas.
+
+**Impacto:** Menos notificações, e mais acionáveis — desvios isolados e anomalias persistentes não inundam mais o canal.
 
 ---
 

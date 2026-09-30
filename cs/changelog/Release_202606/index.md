@@ -65,19 +65,31 @@ Konfigurujte strategii vykonávání dotazů: **Single** nebo **Combined** reži
 
 ### Konfigurovatelný predikční model
 
-Model, na němž stojí detekce anomálií, je nyní konfigurovatelný. Sedm parametrů řídí, jak se predikce přizpůsobuje:
+Model, na němž stojí detekce anomálií, nyní zvažuje konkurenční vysvětlení každé řady – vzor v kombinaci s vyhodnocením nejnovějších pozorování – a kombinuje jejich předpovědi podle toho, jak silně je každé z nich podložené. Jediná extrémní hodnota již nemůže prosakovat do následujících predikcí.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Řídí jej dvě nastavení na nové záložce **Model** datového zdroje, každé v rozsahu od `0.0` do `1.0` s výchozí hodnotou `0.5`:
 
-Výchozí hodnoty vyhovují naprosté většině řad a každý parametr lze kdykoli vrátit na výchozí hodnotu.
+- **Break Sensitivity** – jak rychle je skok na novou úroveň nebo obrat trendu přijat jako skutečný, místo aby byl považován za odlehlé hodnoty
+- **Model Complexity** – kolik struktury model hledá, od kalendářních efektů a jediného posunu úrovně až po neznámé cykly, efekty dne v měsíci a měsíční resety
 
-**Dopad:** Dává uživatelům kontrolu nad samotným predikčním modelem, vedle stávajících nastavení Sensitivity a Memory pro pásmo tolerance. Pro radu, kdy po kterém parametru sáhnout a jak jej nastavit, kontaktujte digna.
+Obě lze kdykoli vrátit na výchozí hodnoty. Jak každé z nich působí, najdete v části [Nastavení modelu](../platform/data_anomalies/how_it_works.md#model-settings).
+
+**Dopad:** Dává uživatelům kontrolu nad samotným predikčním modelem, vedle stávajících nastavení Sensitivity a Memory pro pásmo tolerance, která jsou nyní na záložce **Thresholds**.
+
+---
+
+### Řízení notifikací o anomáliích
+
+- Nová záložka **Notifications** v nastavení anomálií datového zdroje:
+  - **Minimum Alerts** – kolik neúspěšných kontrol (nikoli nejistých) musí inspekce mít, než je odeslána notifikace (výchozí `1`)
+  - **Pause After Notification (Days)** – jak dlouho odběr po notifikaci o datovém zdroji mlčí (výchozí `0`, bez pauzy)
+- Odběratelé jsou nyní upozorněni, když inspekce zcela selže (**Notify Inspection Errors**)
+- Každá notifikace odkazuje přímo na stránku, které se týká – na neúspěšné kontroly inspekce nebo na zobrazení Schema Tracker a Timeliness
+- Přehlednější přepínače odběru: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Jak notifikace fungují:** notifikace se odesílají prostřednictvím **notifikačních kanálů** – Email (přes SMTP připojení), Slack nebo Jira –, které nastavují administrátoři a mohou je ověřit pomocí **Test Notification Channel**. **Odběr** propojuje kanál s projektem: pokrývá všechny nebo vybrané datové zdroje a jeho přepínače určují, o čem informuje – o každém modulu (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker a kontroly objemu dat), o inspekcích, které zcela selžou, a volitelně také o úspěšných inspekcích.
+
+**Dopad:** Méně notifikací, ale s vyšší vypovídací hodnotou – izolované odchylky a přetrvávající anomálie již nezahlcují kanál.
 
 ---
 

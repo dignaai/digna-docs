@@ -553,19 +553,31 @@ Source: https://docs.digna.ai/ko/changelog/Release_202606/
 
 ### 구성 가능한 예측 모델
 
-이상 탐지의 기반이 되는 모델을 이제 구성할 수 있습니다. 일곱 개의 매개변수가 예측이 적합되는 방식을 조정합니다:
+이상 탐지의 기반이 되는 모델은 이제 각 계열에 대해 경쟁하는 여러 설명(패턴과 최근 관측값에 대한 해석의 조합)을 비교 평가하고, 각 설명이 얼마나 강하게 뒷받침되는지에 따라 예측을 혼합합니다. 단일 극단값이 이후 예측으로 번지는 일은 더 이상 없습니다.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+데이터 소스의 새 **Model** 탭에 있는 두 가지 설정으로 모델을 조정하며, 각 설정의 범위는 `0.0`에서 `1.0`이고 기본값은 `0.5`입니다:
 
-기본값은 대다수 계열에 적합하며, 각 매개변수는 언제든지 기본값으로 되돌릴 수 있습니다.
+- **Break Sensitivity** – 새로운 수준으로의 도약이나 추세 전환을 이상값으로 처리하지 않고 실제 변화로 받아들이는 속도
+- **Model Complexity** – 모델이 찾는 구조의 정도. 달력 효과와 단일 수준 이동부터 알려지지 않은 주기, 월중 일자 효과, 월별 리셋까지
 
-**영향:** 허용 구간에 대한 기존 Sensitivity 및 Memory 설정과 함께, 예측 모델 자체에 대한 제어 권한을 사용자에게 제공합니다. 어떤 매개변수를 언제 사용하고 어떻게 설정할지에 대한 안내는 digna에 문의하십시오.
+두 설정 모두 언제든지 기본값으로 되돌릴 수 있습니다. 각 설정의 작동 방식은 [모델 설정](../platform/data_anomalies/how_it_works.md#model-settings)을 참조하십시오.
+
+**영향:** 허용 구간에 대한 기존 Sensitivity 및 Memory 설정(이제 **Thresholds** 탭에 있음)과 함께, 예측 모델 자체에 대한 제어 권한을 사용자에게 제공합니다.
+
+---
+
+### 이상 알림 제어
+
+- 데이터 소스의 이상 설정에 새 **Notifications** 탭 추가:
+  - **Minimum Alerts** – 알림이 전송되기 전에 한 검사에서 필요한 실패한 체크(불확실한 체크 제외) 수(기본값 `1`)
+  - **Pause After Notification (Days)** – 데이터 소스에 대해 알림을 보낸 후 구독이 알림을 보내지 않는 기간(기본값 `0`, 일시 중지 없음)
+- 이제 검사 자체가 실패하면 구독자에게 알림이 전송됩니다(**Notify Inspection Errors**)
+- 모든 알림은 해당 페이지, 즉 검사의 실패한 체크 또는 Schema Tracker 및 Timeliness 보기로 바로 연결됩니다
+- 더 명확해진 구독 스위치: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**알림 작동 방식:** 알림은 **알림 채널**(Email(SMTP 연결 사용), Slack 또는 Jira)을 통해 전송되며, 알림 채널은 관리자가 설정하고 **Test Notification Channel**로 확인할 수 있습니다. **구독**은 채널을 프로젝트에 연결합니다. 구독은 모든 데이터 소스 또는 선택한 데이터 소스를 대상으로 하며, 스위치로 무엇을 보고할지 선택합니다. 각 모듈(Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker 및 데이터 볼륨 체크), 완전히 실패한 검사, 그리고 선택적으로 통과한 검사까지 포함할 수 있습니다.
+
+**영향:** 알림은 줄고 더 실행 가능해집니다. 고립된 편차와 지속되는 이상이 더 이상 채널을 가득 채우지 않습니다.
 
 ---
 
@@ -12780,25 +12792,24 @@ See [How Profiling Works](../profiling/how_it_works.md) for the mechanics, inclu
 
 Every combination of dataset, column, and statistic is its own time series, and each gets its own model.
 
-The model is a **robust regression** fitted to the history of that series. It always carries an intercept and a level-shift term for each detected structural break; beyond that, it selects its own structure from a set of candidates — a linear trend, the previous one or two observations, weekday effects, within-month and within-year seasonality, and month-boundary spikes.
+The model reads a series the way a person reading its chart would: it holds **several competing explanations** of the history at once and weighs them against each other. Each explanation combines a *pattern* — a level, a trend, weekly, monthly and yearly calendar effects, settled shifts of level, cycles, days of the month that stand out — with a reading of the *most recent observations*: nothing changed and the odd values are outliers, the level jumped, the trend turned, an episode that is now over, a spike that is fading, a level that wanders.
 
-Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a series too short to show seasonality does not get seasonal terms at all.
+Every explanation is scored by how well it accounts for the observations, and the prediction is the blend of their forecasts, each weighted by how strongly it is supported. Explanations are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday effects, and a simple series is not made to look complicated.
 
-Robustness is what keeps a single bad day from poisoning the following ones: a spike is downweighted rather than fitted, so it does not drag the prediction that follows it.
+No explanation predicts from the previous observations directly, which is what keeps a single bad day from poisoning the following ones: a single extreme value stays an outlier, however far off it is, and does not drag the prediction after it.
 
-The model can also absorb a **structural break** — a genuine step change such as a migration, a new source system, or a business change — and predict from the new level instead of averaging across the step indefinitely.
+A **structural break** — a genuine step change such as a migration, a new source system, or a business change — is one of the explanations. Once the evidence for it is strong enough, the model predicts from the new level or slope instead of averaging across the change; until then, it hedges and moves over gradually.
 
-Release 2026.06 opens the model up to configuration. Seven parameters steer how the prediction is fitted:
+### Model Settings {: #model-settings }
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Release 2026.06 opens the model up to configuration. Two settings on the data source's **Model** tab steer the prediction. Both run from `0.0` to `1.0`, and `0.5` is the default the model is tuned at:
 
-The defaults suit the great majority of series, and each parameter can be restored to its default at any time. For guidance on when to reach for one and how to set it, contact digna.
+| Setting | Effect |
+|---|---|
+| **Break Sensitivity** | How quickly a fundamental change — a jump to a new level, or a trend that sets in or turns — is believed rather than treated as outliers. Higher believes a change after fewer observations: a clear change takes about seven observations at `0.0`, about three at `0.5`, and one or two at `1.0`. A smaller change, or a change of slope, takes longer to show. |
+| **Model Complexity** | How much structure the model looks for, from a glance to a careful study. Lower sticks to a level, a trend, the calendar, a single shift of level and the recent observations. Higher also considers rarer explanations — a cycle the calendar does not know, a change of slope, days of the month that stand out, totals that reset monthly, several shifts of level — and each needs less evidence to be believed. Higher settings take longer to compute. |
+
+Both settings act only on how much an explanation is believed, so the prediction changes gradually as either is turned. Every other quantity the model uses is fixed. The defaults suit the great majority of series, and **Restore Defaults** returns both settings to `0.5` at any time.
 
 ---
 
@@ -12808,7 +12819,7 @@ digna does not compare the observation to the prediction directly. It compares i
 
 This is why a genuinely noisy series is not permanently red: its band is wide because its predictions have genuinely been that wrong. A precise series gets a narrow band, and a real deviation on it is caught early.
 
-Two settings on the data source adjust the band:
+Two settings on the data source's **Thresholds** tab adjust the band:
 
 | Setting | Effect |
 |---|---|
@@ -12845,6 +12856,21 @@ The observation is compared against the band and reported as one of three status
 Statuses then roll up — **check → attribute → dataset → data source** — with the worst status winning at each level, alongside the count of checks that passed, were uncertain, and failed.
 
 Checks whose mapping has anomaly detection switched off are excluded from the rollup entirely, which is what makes disabling a noisy statistic effective rather than merely cosmetic.
+
+---
+
+## Notifications
+
+When a data source's anomaly status is **Failed**, digna notifies every subscription that covers the data source through its notification channel (Email, Slack or Jira). The message lists the failed checks and links straight to them on the data source's inspection page.
+
+Two settings on the data source's **Notifications** tab decide when such a notification is sent:
+
+| Setting | Effect | Default |
+|---|---|---|
+| **Minimum Alerts** | How many **Failed** checks an inspection date needs before a notification is sent — **Uncertain** checks do not count. Higher values hold back isolated deviations. At least `1`. | `1` — every failed inspection notifies |
+| **Pause After Notification (Days)** | After a notification, how many inspection dates the same subscription stays silent about this data source, so a persisting anomaly is not reported over and over. | `0` — never pauses |
+
+Both apply to data anomaly notifications only, and **Restore Defaults** returns them to their defaults. Which modules a subscription notifies about, and whether it also reports passed inspections and inspection errors, is set on the subscription itself.
 
 ---
 
@@ -13068,7 +13094,7 @@ deadline  =  expected delivery time  +  alert margin
 The expectation is the bare point prediction. The margin is the slack allowed on top of it before a delivery counts as late.
 
 - In **Rule Based** mode the margin is zero — the rule states its deadline outright.
-- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same **Sensitivity** and **Memory** settings as [anomaly detection](../data_anomalies/how_it_works.md#step-3-the-tolerance-band).
+- In **AI Based** mode the margin is fitted to how late past deliveries actually were, using the same **Sensitivity** and **Memory** settings (the data source's **Thresholds** tab) as [anomaly detection](../data_anomalies/how_it_works.md#step-3-the-tolerance-band).
 
 Keeping the two apart is what stops the deadline from inflating. If each margin were folded into the stored expectation, the next margin would be fitted to deviations from the previous *deadline* rather than from a prediction, and the slack would compound on every delivery.
 

@@ -65,19 +65,31 @@ Stel de query-uitvoeringsstrategie in: **Single** of **Combined** modus
 
 ### Configureerbaar voorspellingsmodel
 
-Het model achter anomaliedetectie is nu configureerbaar. Zeven parameters sturen hoe de voorspelling wordt gefit:
+Het model achter anomaliedetectie weegt nu concurrerende verklaringen van elke reeks tegen elkaar af – een patroon gecombineerd met een interpretatie van de meest recente waarnemingen – en combineert hun voorspellingen naar gelang van hoe sterk elke verklaring wordt ondersteund. Eén extreme waarde kan niet langer doorwerken in de volgende voorspellingen.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Twee instellingen op het nieuwe tabblad **Model** van de datasource sturen het model, elk van `0.0` tot `1.0` met `0.5` als standaard:
 
-De standaardwaarden voldoen voor de overgrote meerderheid van de reeksen, en elke parameter kan op elk moment worden teruggezet naar zijn standaardwaarde.
+- **Break Sensitivity** – hoe snel een sprong naar een nieuw niveau of een kerende trend als echt wordt aangenomen in plaats van als uitschieters te worden behandeld
+- **Model Complexity** – hoeveel structuur het model zoekt, van kalendereffecten en één niveauverschuiving tot onbekende cycli, dag-van-de-maandeffecten en maandelijkse resets
 
-**Impact:** Geeft gebruikers controle over het voorspellingsmodel zelf, naast de bestaande instellingen Sensitivity en Memory op de tolerantieband. Neem contact op met digna voor advies over wanneer u een parameter inzet en hoe u die instelt.
+Beide kunnen op elk moment worden teruggezet naar hun standaardwaarden. Zie [Modelinstellingen](../platform/data_anomalies/how_it_works.md#model-settings) voor hoe elk ervan werkt.
+
+**Impact:** Geeft gebruikers controle over het voorspellingsmodel zelf, naast de bestaande instellingen Sensitivity en Memory op de tolerantieband, die nu op het tabblad **Thresholds** staan.
+
+---
+
+### Meldingsbeheer voor anomalieën
+
+- Nieuw tabblad **Notifications** in de anomalie-instellingen van de datasource:
+  - **Minimum Alerts** – hoeveel mislukte controles (geen onzekere) een inspectie nodig heeft voordat een melding wordt verzonden (standaard `1`)
+  - **Pause After Notification (Days)** – hoe lang een abonnement stil blijft na een melding over de datasource (standaard `0`, geen pauze)
+- Abonnees krijgen nu een melding wanneer een inspectie volledig mislukt (**Notify Inspection Errors**)
+- Elke melding linkt rechtstreeks naar de pagina waar die over gaat – de mislukte controles van de inspectie, of de weergaven van Schema Tracker en Timeliness
+- Duidelijkere abonnementsschakelaars: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Zo werken meldingen:** meldingen worden verzonden via **notificatiekanalen** – Email (via een SMTP-verbinding), Slack of Jira – die beheerders instellen en kunnen controleren met **Test Notification Channel**. Een **abonnement** koppelt een kanaal aan een project: het omvat alle of geselecteerde datasources, en de schakelaars bepalen waarover het rapporteert – elke module (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker en datavolumecontroles), inspecties die volledig mislukken en optioneel ook geslaagde inspecties.
+
+**Impact:** Minder, maar beter bruikbare meldingen – geïsoleerde afwijkingen en aanhoudende anomalieën overspoelen het kanaal niet langer.
 
 ---
 

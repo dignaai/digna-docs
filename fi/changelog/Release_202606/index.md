@@ -65,19 +65,31 @@ Määritä kyselyjen suoritusstrategia: **Single** tai **Combined** -tila
 
 ### Muokattava ennustemalli
 
-Poikkeamien tunnistuksen taustalla oleva malli on nyt muokattavissa. Seitsemän parametria ohjaa sitä, miten ennuste sovitetaan:
+Poikkeamien tunnistuksen taustalla oleva malli punnitsee nyt kunkin sarjan kilpailevia selityksiä – kuvion yhdistettynä tulkintaan viimeisimmistä havainnoista – ja yhdistää niiden ennusteet sen mukaan, kuinka vahvasti kutakin tuetaan. Yksittäinen ääriarvo ei enää voi vuotaa seuraaviin ennusteisiin.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Mallia ohjaa kaksi asetusta tietolähteen uudella **Model**-välilehdellä, kumpikin väliltä `0.0`–`1.0` ja oletuksena `0.5`:
 
-Oletusarvot sopivat valtaosalle sarjoista, ja jokainen parametri voidaan palauttaa oletusarvoonsa milloin tahansa.
+- **Break Sensitivity** – kuinka nopeasti hyppy uudelle tasolle tai kääntyvä trendi hyväksytään sen sijaan, että niitä käsiteltäisiin poikkeavina havaintoina
+- **Model Complexity** – kuinka paljon rakennetta malli etsii, kalenterivaikutuksista ja yksittäisestä tasonmuutoksesta aina tuntemattomiin sykleihin, kuukauden päivään liittyviin vaikutuksiin ja kuukausittaisiin nollautumisiin asti
 
-**Vaikutus:** Antaa käyttäjille hallinnan itse ennustemalliin toleranssikaistan nykyisten Sensitivity- ja Memory-asetusten rinnalla. Kysy dignalta ohjeita siitä, milloin parametriin kannattaa tarttua ja miten se asetetaan.
+Molemmat voidaan palauttaa oletusarvoihinsa milloin tahansa. Katso [Mallin asetukset](../platform/data_anomalies/how_it_works.md#model-settings), miten kumpikin vaikuttaa.
+
+**Vaikutus:** Antaa käyttäjille hallinnan itse ennustemalliin toleranssikaistan nykyisten Sensitivity- ja Memory-asetusten rinnalla, jotka ovat nyt **Thresholds**-välilehdellä.
+
+---
+
+### Poikkeamailmoitusten hallinta
+
+- Uusi **Notifications**-välilehti tietolähteen poikkeama-asetuksissa:
+  - **Minimum Alerts** – kuinka monta epäonnistunutta tarkistusta (ei epävarmoja) tarkastuksessa on oltava ennen kuin ilmoitus lähetetään (oletus `1`)
+  - **Pause After Notification (Days)** – kuinka kauan tilaus pysyy hiljaa ilmoitettuaan tietolähteestä (oletus `0`, ei taukoa)
+- Tilaajat saavat nyt ilmoituksen, kun tarkastus epäonnistuu kokonaan (**Notify Inspection Errors**)
+- Jokainen ilmoitus linkittää suoraan sivulle, jota se koskee – tarkastuksen epäonnistuneisiin tarkistuksiin tai Schema Tracker- ja Timeliness-näkymiin
+- Selkeämmät tilauskytkimet: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Miten ilmoitukset toimivat:** ilmoitukset lähetetään **ilmoituskanavien** kautta – Email (SMTP-yhteyden kautta), Slack tai Jira – jotka ylläpitäjät määrittävät ja voivat tarkistaa **Test Notification Channel** -toiminnolla. **Tilaus** yhdistää kanavan projektiin: se kattaa kaikki tietolähteet tai valitut, ja sen kytkimet määräävät, mistä se raportoi – jokaisesta moduulista (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ja datamäärän tarkistukset), kokonaan epäonnistuvista tarkastuksista ja halutessa myös läpäistyistä tarkastuksista.
+
+**Vaikutus:** Vähemmän ja toimintaan paremmin ohjaavia ilmoituksia – yksittäiset poikkeamat ja pitkittyneet anomaliat eivät enää tulvi kanavaan.
 
 ---
 

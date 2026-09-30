@@ -65,19 +65,31 @@ Configura la estrategia de ejecución de consultas: modo **Single** o **Combined
 
 ### Modelo de predicción configurable
 
-El modelo que sustenta la detección de anomalías ahora es configurable. Siete parámetros dirigen cómo se ajusta la predicción:
+El modelo que sustenta la detección de anomalías ahora sopesa explicaciones alternativas de cada serie – un patrón combinado con una lectura de las observaciones más recientes – y combina sus pronósticos según el respaldo que tenga cada una. Un único valor extremo ya no puede filtrarse en las predicciones siguientes.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Dos ajustes de la nueva pestaña **Model** de la fuente de datos lo controlan, cada uno de `0.0` a `1.0` con `0.5` como valor predeterminado:
 
-Los valores predeterminados sirven para la gran mayoría de las series, y cada parámetro puede restaurarse a su valor predeterminado en cualquier momento.
+- **Break Sensitivity** – con qué rapidez un salto a un nuevo nivel o un cambio de tendencia se acepta como real en lugar de tratarse como valores atípicos
+- **Model Complexity** – cuánta estructura busca el modelo, desde efectos de calendario y un único cambio de nivel hasta ciclos desconocidos, efectos del día del mes y reinicios mensuales
 
-**Impacto:** Da a los usuarios control sobre el propio modelo de predicción, junto a los ajustes Sensitivity y Memory ya existentes en la banda de tolerancia. Para saber cuándo recurrir a uno y cómo configurarlo, póngase en contacto con digna.
+Ambos pueden restaurarse a sus valores predeterminados en cualquier momento. Consulte [Ajustes del modelo](../platform/data_anomalies/how_it_works.md#model-settings) para ver cómo actúa cada uno.
+
+**Impacto:** Da a los usuarios control sobre el propio modelo de predicción, junto a los ajustes Sensitivity y Memory ya existentes en la banda de tolerancia, ahora en la pestaña **Thresholds**.
+
+---
+
+### Control de notificaciones de anomalías
+
+- Nueva pestaña **Notifications** en los ajustes de anomalías de la fuente de datos:
+  - **Minimum Alerts** – cuántas comprobaciones fallidas (no las inciertas) necesita una inspección antes de enviar una notificación (predeterminado `1`)
+  - **Pause After Notification (Days)** – cuánto tiempo permanece en silencio una suscripción después de notificar sobre la fuente de datos (predeterminado `0`, sin pausa)
+- Los suscriptores ahora reciben una notificación cuando una inspección falla por completo (**Notify Inspection Errors**)
+- Cada notificación enlaza directamente con la página a la que se refiere – las comprobaciones fallidas de la inspección, o las vistas de Schema Tracker y Timeliness
+- Interruptores de suscripción más claros: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Cómo funcionan las notificaciones:** las notificaciones se envían a través de **canales de notificación** – Email (mediante una conexión SMTP), Slack o Jira – que los administradores configuran y pueden comprobar con **Test Notification Channel**. Una **suscripción** conecta un canal con un proyecto: abarca todas las fuentes de datos o las seleccionadas, y sus interruptores eligen qué informa – cada módulo (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker y comprobaciones de volumen de datos), las inspecciones que fallan por completo y, opcionalmente, también las inspecciones superadas.
+
+**Impacto:** Menos notificaciones y más útiles – las desviaciones aisladas y las anomalías persistentes ya no saturan el canal.
 
 ---
 

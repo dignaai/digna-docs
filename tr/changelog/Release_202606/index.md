@@ -65,19 +65,31 @@ Etkisi: Kullanıcılara veri kaynağı özelliklerine göre performans, kaynak k
 
 ### Yapılandırılabilir Tahmin Modeli
 
-Anomali tespitinin arkasındaki model artık yapılandırılabilir. Tahminin nasıl uyarlandığını yedi parametre yönlendirir:
+Anomali tespitinin arkasındaki model artık her seri için birbiriyle yarışan açıklamaları tartıyor – en son gözlemlerin bir yorumuyla birleştirilmiş bir örüntü – ve bunların tahminlerini her birinin ne kadar güçlü desteklendiğine göre harmanlıyor. Tek bir uç değer artık sonraki tahminlere sızamaz.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Modeli, veri kaynağının yeni **Model** sekmesindeki iki ayar yönlendirir; her biri `0.0` ile `1.0` arasında değer alır ve varsayılan değer `0.5`'tir:
 
-Varsayılan değerler serilerin büyük çoğunluğu için uygundur ve her parametre istendiği zaman varsayılanına döndürülebilir.
+- **Break Sensitivity** – yeni bir seviyeye sıçramanın veya yön değiştiren bir trendin, aykırı değer olarak ele alınmak yerine ne kadar çabuk gerçek bir değişim olarak kabul edildiği
+- **Model Complexity** – modelin ne kadar yapı aradığı; takvim etkileri ve tek bir seviye kaymasından bilinmeyen döngülere, ayın günlerine bağlı etkilere ve aylık sıfırlamalara kadar
 
-Etkisi: Tolerans bandındaki mevcut Sensitivity ve Memory ayarlarının yanı sıra, kullanıcılara tahmin modelinin kendisi üzerinde denetim verir. Hangi parametreye ne zaman başvurulacağı ve nasıl ayarlanacağı konusunda yönlendirme için digna ile iletişime geçin.
+Her ikisi de istendiği zaman varsayılanlarına döndürülebilir. Her birinin nasıl etki ettiği için [Model Ayarları](../platform/data_anomalies/how_it_works.md#model-settings) bölümüne bakın.
+
+Etkisi: Tolerans bandındaki, artık **Thresholds** sekmesinde bulunan mevcut Sensitivity ve Memory ayarlarının yanı sıra, kullanıcılara tahmin modelinin kendisi üzerinde denetim verir.
+
+---
+
+### Anomali Bildirim Kontrolleri
+
+- Veri kaynağının anomali ayarlarında yeni **Notifications** sekmesi:
+  - **Minimum Alerts** – bir bildirim gönderilmeden önce bir incelemede kaç başarısız kontrol (belirsiz olanlar sayılmaz) bulunması gerektiği (varsayılan `1`)
+  - **Pause After Notification (Days)** – bir aboneliğin veri kaynağı hakkında bildirim gönderdikten sonra ne kadar süre sessiz kaldığı (varsayılan `0`, duraklama yok)
+- Aboneler artık bir inceleme tamamen başarısız olduğunda bilgilendirilir (**Notify Inspection Errors**)
+- Her bildirim doğrudan ilgili olduğu sayfaya bağlantı verir – incelemenin başarısız kontrollerine ya da Schema Tracker ve Timeliness görünümlerine
+- Daha anlaşılır abonelik anahtarları: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Bildirimler nasıl çalışır:** bildirimler, yöneticilerin kurduğu ve **Test Notification Channel** ile sınayabildiği **bildirim kanalları** üzerinden gönderilir – Email (bir SMTP bağlantısı aracılığıyla), Slack veya Jira. Bir **abonelik**, bir kanalı bir projeye bağlar: tüm veri kaynaklarını veya seçilenleri kapsar ve anahtarları neyi raporlayacağını belirler – her modül (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ve veri hacmi kontrolleri), tamamen başarısız olan incelemeler ve isteğe bağlı olarak başarılı incelemeler de.
+
+Etkisi: Daha az ama daha eyleme dönük bildirimler – tekil sapmalar ve süregelen anomaliler artık kanalı doldurmaz.
 
 ---
 

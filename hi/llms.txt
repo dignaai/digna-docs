@@ -16,7 +16,7 @@
 ### digna Data Anomalies
 
 - [परिचय](https://docs.digna.ai/hi/platform/data_anomalies/Introduction/): जानें कि कैसे digna Data Anomalies मैन्युअल नियम लिखे बिना वॉल्यूम ड्रॉप, मिसिंग वैल्यूज़, वितरण परिवर्तन और अनपेक्षित पैटर्न को स्वचालित रूप से पहचानता है। AI-आधारित अनियमितता पहचान के साथ डेटा पाइपलाइनों की डेटा गुणवत्ता और observability में सुधार करें।
-- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [यह कैसे काम करता है](https://docs.digna.ai/hi/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, a prediction per series that weighs competing explanations, a tolerance band derived from recent prediction error, status rollup from check to data source, and anomaly notifications.
 - [उपयोग के मामले](https://docs.digna.ai/hi/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics

@@ -65,19 +65,31 @@
 
 ### 구성 가능한 예측 모델
 
-이상 탐지의 기반이 되는 모델을 이제 구성할 수 있습니다. 일곱 개의 매개변수가 예측이 적합되는 방식을 조정합니다:
+이상 탐지의 기반이 되는 모델은 이제 각 계열에 대해 경쟁하는 여러 설명(패턴과 최근 관측값에 대한 해석의 조합)을 비교 평가하고, 각 설명이 얼마나 강하게 뒷받침되는지에 따라 예측을 혼합합니다. 단일 극단값이 이후 예측으로 번지는 일은 더 이상 없습니다.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+데이터 소스의 새 **Model** 탭에 있는 두 가지 설정으로 모델을 조정하며, 각 설정의 범위는 `0.0`에서 `1.0`이고 기본값은 `0.5`입니다:
 
-기본값은 대다수 계열에 적합하며, 각 매개변수는 언제든지 기본값으로 되돌릴 수 있습니다.
+- **Break Sensitivity** – 새로운 수준으로의 도약이나 추세 전환을 이상값으로 처리하지 않고 실제 변화로 받아들이는 속도
+- **Model Complexity** – 모델이 찾는 구조의 정도. 달력 효과와 단일 수준 이동부터 알려지지 않은 주기, 월중 일자 효과, 월별 리셋까지
 
-**영향:** 허용 구간에 대한 기존 Sensitivity 및 Memory 설정과 함께, 예측 모델 자체에 대한 제어 권한을 사용자에게 제공합니다. 어떤 매개변수를 언제 사용하고 어떻게 설정할지에 대한 안내는 digna에 문의하십시오.
+두 설정 모두 언제든지 기본값으로 되돌릴 수 있습니다. 각 설정의 작동 방식은 [모델 설정](../platform/data_anomalies/how_it_works.md#model-settings)을 참조하십시오.
+
+**영향:** 허용 구간에 대한 기존 Sensitivity 및 Memory 설정(이제 **Thresholds** 탭에 있음)과 함께, 예측 모델 자체에 대한 제어 권한을 사용자에게 제공합니다.
+
+---
+
+### 이상 알림 제어
+
+- 데이터 소스의 이상 설정에 새 **Notifications** 탭 추가:
+  - **Minimum Alerts** – 알림이 전송되기 전에 한 검사에서 필요한 실패한 체크(불확실한 체크 제외) 수(기본값 `1`)
+  - **Pause After Notification (Days)** – 데이터 소스에 대해 알림을 보낸 후 구독이 알림을 보내지 않는 기간(기본값 `0`, 일시 중지 없음)
+- 이제 검사 자체가 실패하면 구독자에게 알림이 전송됩니다(**Notify Inspection Errors**)
+- 모든 알림은 해당 페이지, 즉 검사의 실패한 체크 또는 Schema Tracker 및 Timeliness 보기로 바로 연결됩니다
+- 더 명확해진 구독 스위치: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**알림 작동 방식:** 알림은 **알림 채널**(Email(SMTP 연결 사용), Slack 또는 Jira)을 통해 전송되며, 알림 채널은 관리자가 설정하고 **Test Notification Channel**로 확인할 수 있습니다. **구독**은 채널을 프로젝트에 연결합니다. 구독은 모든 데이터 소스 또는 선택한 데이터 소스를 대상으로 하며, 스위치로 무엇을 보고할지 선택합니다. 각 모듈(Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker 및 데이터 볼륨 체크), 완전히 실패한 검사, 그리고 선택적으로 통과한 검사까지 포함할 수 있습니다.
+
+**영향:** 알림은 줄고 더 실행 가능해집니다. 고립된 편차와 지속되는 이상이 더 이상 채널을 가득 채우지 않습니다.
 
 ---
 

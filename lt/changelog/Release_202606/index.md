@@ -65,19 +65,31 @@ Sukonfigūruokite užklausų vykdymo strategiją: **Single** arba **Combined** r
 
 ### Konfigūruojamas prognozavimo modelis
 
-Anomalijų aptikimo pagrindu esantis modelis dabar yra konfigūruojamas. Septyni parametrai valdo, kaip pritaikoma prognozė:
+Anomalijų aptikimo pagrindu esantis modelis dabar pasveria konkuruojančius kiekvienos eilutės paaiškinimus – dėsningumą kartu su naujausių stebėjimų interpretacija – ir sujungia jų prognozes pagal tai, kiek stipriai kiekvienas iš jų pagrįstas. Viena ekstremali reikšmė nebegali prasiskverbti į tolesnes prognozes.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Jį valdo du nustatymai naujame duomenų šaltinio skirtuke **Model**, kiekvienas nuo `0.0` iki `1.0`, numatytoji reikšmė – `0.5`:
 
-Numatytosios reikšmės tinka didžiajai daugumai eilučių, o kiekvieną parametrą bet kada galima grąžinti į numatytąją reikšmę.
+- **Break Sensitivity** – kaip greitai šuolis į naują lygį ar besikeičianti tendencija priimami kaip tikri, užuot laikius juos išskirtimis
+- **Model Complexity** – kiek struktūros modelis stengiasi aptikti: nuo kalendorinių efektų ir vieno lygio poslinkio iki nežinomų ciklų, mėnesio dienos efektų ir mėnesinių atstatymų
 
-**Poveikis:** Suteikia naudotojams galimybę valdyti patį prognozavimo modelį šalia esamų tolerancijos juostos nuostatų Sensitivity ir Memory. Dėl patarimų, kada kurio parametro imtis ir kaip jį nustatyti, kreipkitės į digna.
+Abu nustatymus bet kada galima grąžinti į numatytąsias reikšmes. Kaip veikia kiekvienas iš jų, žr. [Modelio nustatymai](../platform/data_anomalies/how_it_works.md#model-settings).
+
+**Poveikis:** Suteikia naudotojams galimybę valdyti patį prognozavimo modelį šalia esamų tolerancijos juostos nuostatų Sensitivity ir Memory, kurios dabar yra skirtuke **Thresholds**.
+
+---
+
+### Anomalijų pranešimų valdymas
+
+- Naujas skirtukas **Notifications** duomenų šaltinio anomalijų nustatymuose:
+  - **Minimum Alerts** – kiek nepavykusių patikrų (ne neapibrėžtų) turi surinkti inspekcija, kad būtų išsiųstas pranešimas (numatytoji reikšmė `1`)
+  - **Pause After Notification (Days)** – kiek laiko prenumerata nutyla po pranešimo apie duomenų šaltinį (numatytoji reikšmė `0`, be pauzės)
+- Prenumeratoriai dabar informuojami, kai inspekcija visiškai nepavyksta (**Notify Inspection Errors**)
+- Kiekvienas pranešimas veda tiesiai į puslapį, su kuriuo jis susijęs – į nepavykusias inspekcijos patikras arba į Schema Tracker ir Timeliness rodinius
+- Aiškesni prenumeratos jungikliai: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Kaip veikia pranešimai:** pranešimai siunčiami per **pranešimų kanalus** – Email (per SMTP ryšį), Slack arba Jira, – kuriuos nustato administratoriai ir kuriuos galima patikrinti naudojant **Test Notification Channel**. **Prenumerata** susieja kanalą su projektu: ji apima visus arba pasirinktus duomenų šaltinius, o jos jungikliai nustato, apie ką ji praneša – kiekvieną modulį (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ir duomenų apimties patikras), visiškai nepavykusias inspekcijas ir, pasirinktinai, taip pat sėkmingas inspekcijas.
+
+**Poveikis:** Mažiau, bet naudingesnių pranešimų – pavieniai nuokrypiai ir išliekančios anomalijos nebeužtvindo kanalo.
 
 ---
 

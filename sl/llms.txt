@@ -16,7 +16,7 @@
 ### digna Data Anomalies
 
 - [Uvod](https://docs.digna.ai/sl/platform/data_anomalies/Introduction/): Spoznajte, kako digna Data Anomalies samodejno zaznava padce volumna, manjkajoče vrednosti, premike porazdelitev in nepričakovane vzorce brez ročnega pisanja pravil. Izboljšajte kakovost in observabilnost podatkovnih cevovodov z odkrivanjem anomalij, ki ga poganja AI.
-- [Kako deluje](https://docs.digna.ai/sl/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+- [Kako deluje](https://docs.digna.ai/sl/platform/data_anomalies/how_it_works/): How digna Data Anomalies works end to end — in-database profiling, a prediction per series that weighs competing explanations, a tolerance band derived from recent prediction error, status rollup from check to data source, and anomaly notifications.
 - [Primeri uporabe](https://docs.digna.ai/sl/platform/data_anomalies/use_cases/): Real-world use cases for digna Data Anomalies in banking, healthcare, telecommunications, retail, and the public sector. See how AI-based anomaly detection catches missing loads, distribution drift, swapped columns, and unexpected KPI movements without rules or thresholds.
 
 ### digna Data Analytics

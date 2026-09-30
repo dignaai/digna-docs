@@ -66,19 +66,31 @@ Configurează strategia de execuție a interogărilor: **Single** sau **Combined
 
 ### Model de predicție configurabil
 
-Modelul din spatele detectării anomaliilor este acum configurabil. Șapte parametri controlează modul în care este ajustată predicția:
+Modelul din spatele detectării anomaliilor cântărește acum explicații concurente pentru fiecare serie – un tipar combinat cu o interpretare a celor mai recente observații – și le îmbină prognozele în funcție de cât de puternic este susținută fiecare. O singură valoare extremă nu se mai poate propaga în predicțiile următoare.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Îl controlează două setări din noua filă **Model** a sursei de date, fiecare de la `0.0` la `1.0`, cu `0.5` ca valoare implicită:
 
-Valorile implicite sunt potrivite pentru marea majoritate a seriilor, iar fiecare parametru poate fi readus oricând la valoarea sa implicită.
+- **Break Sensitivity** – cât de repede un salt la un nou nivel sau o tendință care se inversează este acceptat ca schimbare reală, în loc să fie tratat drept valori aberante
+- **Model Complexity** – câtă structură caută modelul, de la efecte calendaristice și o singură schimbare de nivel până la cicluri necunoscute, efecte ale zilelor lunii și resetări lunare
 
-**Impact:** Oferă utilizatorilor control asupra modelului de predicție însuși, alături de setările existente Sensitivity și Memory pentru banda de toleranță. Pentru îndrumare privind momentul potrivit și modul de setare, contactați digna.
+Ambele pot fi readuse oricând la valorile implicite. Consultați [Setările modelului](../platform/data_anomalies/how_it_works.md#model-settings) pentru a vedea cum acționează fiecare.
+
+**Impact:** Oferă utilizatorilor control asupra modelului de predicție însuși, alături de setările existente Sensitivity și Memory pentru banda de toleranță, aflate acum în fila **Thresholds**.
+
+---
+
+### Controlul notificărilor de anomalii
+
+- Filă nouă **Notifications** în setările de anomalii ale sursei de date:
+  - **Minimum Alerts** – de câte verificări eșuate (nu și de cele incerte) are nevoie o inspecție înainte să fie trimisă o notificare (implicit `1`)
+  - **Pause After Notification (Days)** – cât timp rămâne silențios un abonament după ce a trimis o notificare despre sursa de date (implicit `0`, fără pauză)
+- Abonații sunt acum notificați atunci când o inspecție eșuează complet (**Notify Inspection Errors**)
+- Fiecare notificare trimite direct la pagina la care se referă – verificările eșuate ale inspecției sau vizualizările Schema Tracker și Timeliness
+- Comutatoare de abonament mai clare: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Cum funcționează notificările:** notificările sunt trimise prin **canale de notificare** – Email (printr-o conexiune SMTP), Slack sau Jira – pe care administratorii le configurează și le pot verifica cu **Test Notification Channel**. Un **abonament** conectează un canal la un proiect: acoperă toate sursele de date sau doar pe cele selectate, iar comutatoarele sale stabilesc ce raportează – fiecare modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker și verificările volumului de date), inspecțiile care eșuează complet și, opțional, inspecțiile reușite.
+
+**Impact:** Notificări mai puține și mai utile – abaterile izolate și anomaliile persistente nu mai inundă canalul.
 
 ---
 
