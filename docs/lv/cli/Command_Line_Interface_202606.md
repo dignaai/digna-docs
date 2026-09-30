@@ -59,6 +59,7 @@ Nākamajā tabulā ir atspoguļots, ko katra komandu kategorija ielādē, pirms 
 | `license check` | nē | tā *ir* pati pārbaude |
 | `crypt` | jā | nē |
 | `serve` | jā | nē |
+| `windows` | nē (pakalpojums to nolasa, kad tiek startēts) | nē |
 | `project` | jā | nē |
 | `user` | jā | jā |
 | `inspection` | jā | jā |
@@ -223,6 +224,58 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Komanda `repo prune` noņem rindas, kas palikušas pēc tam, kad projekts vai datu avots, kam tās piederēja, vairs nepastāv.
+Projekta vai datu avota dzēšana noņem pašu objektu, taču atstāj tā profilus, prognozes, statusus un rindu skaitus — apzināts kompromiss, jo dzēšana, kas vienlaikus iztīrītu arī šīs tabulas, liktu lietotājam gaidīt. `repo prune` ir uzkopšanas darbība, kas tās notīra, un to ir droši palaist jebkurā laikā: tā noņem tikai tās rindas, kuru projekts vai datu avots vairs neeksistē.
+
+Rindas, ko Python aizmugursistēma ierakstījusi tabulās, kuras pašreizējais laidiens vairs neizmanto, netiek skartas.
+
+#### Komandas lietojums
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Opcijas
+- `--dry-run`: Ziņo, kas tiktu noņemts, neko nenoņemot.
+
+Tiek uzskaitītas tikai tabulas ar bāreņrindām. Ja tādu nav, komanda ziņo
+`No orphaned rows found.` un beidz darbu.
+
+#### Piemērs
+```bash
+digna repo prune
+```
+
+#### Izvades piemērs
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Lai redzētu to pašu pārskatu, neko nenoņemot:
+```bash
+digna repo prune --dry-run
+```
+
+Rindu skaiti ir identiski; atšķiras tikai noslēdzošā rinda:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +587,69 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Komanda `project cleanup` noņem pārbaužu rezultātus, ko projekts uzkrājis noteiktā datumu diapazonā — profilus, prognozes, rindu skaitus un visus pārbaužu, atribūtu, datu kopu un datu avotu statusus. Tā noņem tieši to, ko ierakstīja šo datumu pārbaude, tāpēc pēc tam diapazonu var pārbaudīt atkārtoti, lai rezultātus atjaunotu.
+
+Timeliness un Schema Tracker vēsture **netiek** noņemta: tā reģistrē to, ko digna novēroja konkrētā dienā, nevis no tā atvasinātu rezultātu, tāpēc pagātnes datumu diapazona tīrīšana to atstāj neskartu.
+
+Katrs datu avots tiek tīrīts savā transakcijā, tāpēc pārtraukta izpilde atstāj veselus datu avotus, nevis daļēji iztīrītu.
+
+#### Komandas lietojums
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Tīrāmais projekts (obligāts). Vienā izsaukumā — viens projekts.
+- **FROM_DATE**: Pirmais datums, kura rezultāti jānoņem, formātā `YYYY-MM-DD` (obligāts).
+- **TO_DATE**: Pēdējais datums (ieskaitot), kura rezultāti jānoņem, formātā `YYYY-MM-DD` (obligāts).
+
+#### Opcijas
+- `--table-name`, `-n`: Ierobežo tīrīšanu ar šiem datu avotiem. Vairākus nosaukumus var norādīt, atdalot ar atstarpēm.
+- `--table-filter`: Ierobežo tīrīšanu ar datu avotiem, kuru nosaukumā ir šī apakšvirkne.
+- `--dry-run`: Uzskaita datu avotus, kas tiktu iztīrīti, neko nenoņemot.
+- `--timing`: Parāda, cik ilgi ilga tīrīšana.
+
+`--table-name` un `--table-filter` tiek apvienotas ar VAI — datu avots tiek iztīrīts, ja tas ir nosaukts vai ja sakrīt apakšvirkne. Ja neviens datu avots neatbilst, komanda neizdodas, nevis ziņo par sekmīgu tīrīšanu, kas neko neizdarīja.
+
+#### Piemērs
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Ierobežojot ar vienu datu avotu:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Izvades piemērs
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Lai redzētu, kuri datu avoti tiktu iztīrīti, neko nenoņemot:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Katra rinda ir atzīmēta, tāpēc izmēģinājuma izpildi nevar sajaukt ar īstu:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Pārbaužu pārvaldība
 
 ---
@@ -707,3 +823,85 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows pakalpojuma pārvaldība
+
+Pieejams tikai operētājsistēmā Windows. Šīs komandas reģistrē ***digna*** aizmugursistēmu Windows pakalpojumu pārvaldniekā un to vada; pats pakalpojums fonā izpilda `serve`. Katra komanda jāpalaiž no komandu uzvednes ar paaugstinātām tiesībām, un katra pieņem `--name`, lai varētu vērsties pie pakalpojuma, kas reģistrēts ar nenoklusējuma nosaukumu.
+
+---
+
+### windows install
+
+Komanda `windows install` reģistrē ***digna*** kā Windows pakalpojumu.
+
+Šeit norādītā adrese un ports tiek ierakstīti pakalpojuma reģistrācijā, un tieši tiem pakalpojums piesaistās — tie netiek nolasīti no `config.toml`. Lai tos vēlāk mainītu, atinstalējiet pakalpojumu un instalējiet to vēlreiz.
+
+#### Komandas lietojums
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Opcijas
+- `--name`: Nosaukums, ar kādu reģistrēt pakalpojumu (noklusējums: `digna`).
+- `--display-name`: Nosaukums, kas tiek rādīts services.msc (noklusējums: `digna`).
+- `--description`: Apraksts, kas tiek rādīts services.msc (noklusējums: `digna data quality backend`).
+- `--address`: Adrese, kurai pakalpojums piesaista savu API (noklusējums: `127.0.0.1`).
+- `--port`: Ports, kuram pakalpojums piesaista savu API (noklusējums: `8000`).
+- `--working-dir`: Mape, kurā atrodas `config.toml` un `license.toml` un kuru pakalpojums izmanto kā darba mapi (noklusējums: `digna` izpildāmā faila mape).
+- `--start-type`: Kad pakalpojums startē — `auto` kopā ar Windows, `manual` tikai pēc pieprasījuma, `disabled` reģistrēts, taču atsakās startēt (noklusējums: `auto`).
+- `--account`: Konts, ar kuru darbināt pakalpojumu, piemēram, `DOMAIN\user` vai `.\user` (noklusējums: `LocalSystem`).
+- `--password`: `--account` parole.
+
+#### Piemērs
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Reģistrēt ar otru nosaukumu, darbinot ar domēna kontu:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Komanda `windows start` startē reģistrētu pakalpojumu.
+
+#### Komandas lietojums
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Opcijas
+- `--name`: Nosaukums, ar kādu pakalpojums reģistrēts (noklusējums: `digna`).
+
+---
+
+### windows stop
+
+Komanda `windows stop` aptur darbojošos pakalpojumu. Pirms jebkura lietojumprogrammas faila aizstāšanas apturiet pakalpojumu.
+
+#### Komandas lietojums
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Opcijas
+- `--name`: Nosaukums, ar kādu pakalpojums reģistrēts (noklusējums: `digna`).
+
+---
+
+### windows uninstall
+
+Komanda `windows uninstall` atceļ pakalpojuma reģistrāciju. Vispirms to apturiet.
+
+#### Komandas lietojums
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Opcijas
+- `--name`: Nosaukums, ar kādu pakalpojums reģistrēts (noklusējums: `digna`).
