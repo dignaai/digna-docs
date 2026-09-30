@@ -72,19 +72,31 @@ Effekt: Gir brukere finmasket kontroll over spørringsutførelse for å balanser
 
 ### Konfigurerbar prediksjonsmodell
 
-Modellen bak avviksdeteksjonen kan nå konfigureres. Sju parametre styrer hvordan prediksjonen tilpasses:
+Modellen bak avviksdeteksjonen veier nå konkurrerende forklaringer av hver serie opp mot hverandre – et mønster kombinert med en tolkning av de nyeste observasjonene – og blander prognosene deres etter hvor sterkt hver av dem støttes. En enkelt ekstremverdi kan ikke lenger lekke inn i de påfølgende prediksjonene.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+To innstillinger på datakildens nye fane **Model** styrer den, hver fra `0.0` til `1.0` med `0.5` som standard:
 
-Standardverdiene passer for de aller fleste seriene, og hver parameter kan når som helst tilbakestilles til standardverdien.
+- **Break Sensitivity** – hvor raskt et hopp til et nytt nivå eller en trend som snur blir godtatt i stedet for å behandles som uteliggere
+- **Model Complexity** – hvor mye struktur modellen leter etter, fra kalendereffekter og ett enkelt nivåskift opp til ukjente sykluser, effekter knyttet til dag i måneden og månedlige nullstillinger
 
-Effekt: Gir brukerne kontroll over selve prediksjonsmodellen, ved siden av de eksisterende innstillingene Sensitivity og Memory på toleransebåndet. Kontakt digna for veiledning om når en parameter bør endres og hvordan den settes.
+Begge kan når som helst tilbakestilles til standardverdiene. Se [Modellinnstillinger](../platform/data_anomalies/how_it_works.md#model-settings) for hvordan hver av dem virker.
+
+Effekt: Gir brukerne kontroll over selve prediksjonsmodellen, ved siden av de eksisterende innstillingene Sensitivity og Memory på toleransebåndet, som nå ligger på fanen **Thresholds**.
+
+---
+
+### Kontroll over avviksvarsler
+
+- Ny fane **Notifications** i datakildens avviksinnstillinger:
+  - **Minimum Alerts** – hvor mange mislykkede kontroller (ikke usikre) en inspeksjon trenger før et varsel sendes (standard `1`)
+  - **Pause After Notification (Days)** – hvor lenge et abonnement forblir stille etter å ha varslet om datakilden (standard `0`, ingen pause)
+- Abonnenter varsles nå når en inspeksjon feiler fullstendig (**Notify Inspection Errors**)
+- Hvert varsel lenker direkte til siden det gjelder – de mislykkede kontrollene i inspeksjonen, eller visningene for Schema Tracker og Timeliness
+- Tydeligere abonnementsbrytere: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+Slik fungerer varsler: varsler sendes gjennom **varslingskanaler** – Email (via en SMTP-tilkobling), Slack eller Jira – som administratorer setter opp og kan kontrollere med **Test Notification Channel**. Et **abonnement** kobler en kanal til et prosjekt: det dekker alle datakilder eller utvalgte, og bryterne velger hva det rapporterer – hver modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker og kontroller av datavolum), inspeksjoner som feiler fullstendig, og eventuelt også beståtte inspeksjoner.
+
+Effekt: Færre og mer handlingsrettede varsler – isolerte avvik og vedvarende anomalier oversvømmer ikke lenger kanalen.
 
 ---
 

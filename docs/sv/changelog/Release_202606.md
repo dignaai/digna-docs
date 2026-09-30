@@ -72,19 +72,31 @@ Påverkan: Ger användare finjusterad kontroll över frågeexekvering för att b
 
 ### Konfigurerbar prediktionsmodell
 
-Modellen bakom avvikelsedetekteringen är nu konfigurerbar. Sju parametrar styr hur prediktionen anpassas:
+Modellen bakom avvikelsedetekteringen väger nu konkurrerande förklaringar av varje serie mot varandra – ett mönster kombinerat med en tolkning av de senaste observationerna – och blandar deras prognoser efter hur starkt stöd var och en har. Ett enskilt extremvärde kan inte längre läcka in i de efterföljande prediktionerna.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Två inställningar på datakällans nya flik **Model** styr den, var och en från `0.0` till `1.0` med `0.5` som standard:
 
-Standardvärdena passar den absoluta merparten av serierna, och varje parameter kan när som helst återställas till sitt standardvärde.
+- **Break Sensitivity** – hur snabbt ett hopp till en ny nivå eller en trend som vänder godtas i stället för att behandlas som extremvärden
+- **Model Complexity** – hur mycket struktur modellen letar efter, från kalendereffekter och ett enskilt nivåskifte upp till okända cykler, effekter kopplade till dag i månaden och månatliga nollställningar
 
-Påverkan: Ger användare kontroll över själva prediktionsmodellen, vid sidan av de befintliga inställningarna Sensitivity och Memory för toleransbandet. Kontakta digna för vägledning om när en parameter bör ändras och hur den ska sättas.
+Båda kan när som helst återställas till sina standardvärden. Se [Modellinställningar](../platform/data_anomalies/how_it_works.md#model-settings) för hur var och en verkar.
+
+Påverkan: Ger användare kontroll över själva prediktionsmodellen, vid sidan av de befintliga inställningarna Sensitivity och Memory för toleransbandet, som nu finns på fliken **Thresholds**.
+
+---
+
+### Styrning av avvikelsenotifieringar
+
+- Ny flik **Notifications** i datakällans avvikelseinställningar:
+  - **Minimum Alerts** – hur många misslyckade kontroller (inte osäkra) en inspektion behöver innan en notifiering skickas (standard `1`)
+  - **Pause After Notification (Days)** – hur länge en prenumeration förblir tyst efter att ha notifierat om datakällan (standard `0`, ingen paus)
+- Prenumeranter notifieras nu när en inspektion misslyckas helt (**Notify Inspection Errors**)
+- Varje notifiering länkar direkt till sidan den gäller – inspektionens misslyckade kontroller, eller vyerna för Schema Tracker och Timeliness
+- Tydligare prenumerationsreglage: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+Så fungerar notifieringar: notifieringar skickas via **notifieringskanaler** – Email (via en SMTP-anslutning), Slack eller Jira – som administratörer konfigurerar och kan kontrollera med **Test Notification Channel**. En **prenumeration** kopplar en kanal till ett projekt: den omfattar alla datakällor eller utvalda, och dess reglage väljer vad den rapporterar – varje modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker och kontroller av datavolym), inspektioner som misslyckas helt och, om så önskas, även godkända inspektioner.
+
+Påverkan: Färre och mer åtgärdbara notifieringar – enstaka avvikelser och kvarstående anomalier översvämmar inte längre kanalen.
 
 ---
 

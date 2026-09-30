@@ -72,19 +72,31 @@ Konfigurer forespørgselsudførelsesstrategi: **Single** eller **Combined** mode
 
 ### Konfigurerbar forudsigelsesmodel
 
-Modellen bag anomalidetektionen kan nu konfigureres. Syv parametre styrer, hvordan forudsigelsen tilpasses:
+Modellen bag anomalidetektionen afvejer nu konkurrerende forklaringer af hver serie – et mønster kombineret med en aflæsning af de seneste observationer – og blander deres prognoser efter, hvor stærkt hver af dem understøttes. En enkelt ekstremværdi kan ikke længere smitte af på de efterfølgende forudsigelser.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+To indstillinger på datakildens nye fane **Model** styrer den, hver fra `0.0` til `1.0` med `0.5` som standard:
 
-Standardværdierne passer til langt de fleste serier, og hver parameter kan til enhver tid nulstilles til sin standardværdi.
+- **Break Sensitivity** – hvor hurtigt et spring til et nyt niveau eller en trend, der vender, accepteres i stedet for at blive behandlet som outliers
+- **Model Complexity** – hvor meget struktur modellen leder efter, fra kalendereffekter og et enkelt niveauskift op til ukendte cyklusser, effekter knyttet til dag i måneden og månedlige nulstillinger
 
-**Indvirkning:** Giver brugerne kontrol over selve forudsigelsesmodellen ved siden af de eksisterende indstillinger Sensitivity og Memory på tolerancebåndet. Kontakt digna for vejledning om, hvornår en parameter bør ændres, og hvordan den sættes.
+Begge kan til enhver tid nulstilles til deres standardværdier. Se [Modelindstillinger](../platform/data_anomalies/how_it_works.md#model-settings) for, hvordan hver af dem virker.
+
+**Indvirkning:** Giver brugerne kontrol over selve forudsigelsesmodellen ved siden af de eksisterende indstillinger Sensitivity og Memory på tolerancebåndet, som nu findes på fanen **Thresholds**.
+
+---
+
+### Styring af anomalinotifikationer
+
+- Ny fane **Notifications** i datakildens anomaliindstillinger:
+  - **Minimum Alerts** – hvor mange fejlede kontroller (ikke usikre) en inspektion skal have, før der sendes en notifikation (standard `1`)
+  - **Pause After Notification (Days)** – hvor længe et abonnement forbliver tavst efter at have notificeret om datakilden (standard `0`, ingen pause)
+- Abonnenter får nu besked, når en inspektion fejler fuldstændigt (**Notify Inspection Errors**)
+- Hver notifikation linker direkte til den side, den handler om – inspektionens fejlede kontroller eller visningerne for Schema Tracker og Timeliness
+- Tydeligere abonnementskontakter: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Sådan fungerer notifikationer:** notifikationer sendes via **notifikationskanaler** – Email (via en SMTP-forbindelse), Slack eller Jira – som administratorer opsætter og kan kontrollere med **Test Notification Channel**. Et **abonnement** forbinder en kanal med et projekt: det dækker alle datakilder eller udvalgte, og dets kontakter bestemmer, hvad det rapporterer – hvert modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker og kontroller af datavolumen), inspektioner, der fejler fuldstændigt, og eventuelt også beståede inspektioner.
+
+**Indvirkning:** Færre og mere handlingsrettede notifikationer – isolerede afvigelser og vedvarende anomalier oversvømmer ikke længere kanalen.
 
 ---
 
