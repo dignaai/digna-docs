@@ -72,19 +72,31 @@ Hatás: Finomhangolási lehetőséget ad a lekérdezés-végrehajtás felett, ho
 
 ### Konfigurálható előrejelzési modell
 
-Az anomáliadetektálás mögötti modell mostantól konfigurálható. Hét paraméter irányítja, hogyan illeszkedik az előrejelzés:
+Az anomáliadetektálás mögötti modell mostantól minden sorozatnál egymással versengő magyarázatokat mérlegel – egy mintázatot a legutóbbi megfigyelések értelmezésével kombinálva –, és előrejelzéseiket aszerint vegyíti, mennyire erősen támasztja alá őket az adat. Egyetlen szélsőséges érték már nem szivároghat át a következő előrejelzésekbe.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Az adatforrás új **Model** lapján két beállítás irányítja, mindkettő `0.0` és `1.0` között állítható, az alapértelmezés `0.5`:
 
-Az alapértelmezések a sorozatok túlnyomó többségéhez megfelelnek, és minden paraméter bármikor visszaállítható az alapértelmezett értékére.
+- **Break Sensitivity** – milyen gyorsan fogadja el a modell egy új szintre ugrást vagy egy forduló trendet ahelyett, hogy kiugró értékeknek tekintené
+- **Model Complexity** – mennyi struktúrát keres a modell: a naptári hatásoktól és egyetlen szinteltolódástól egészen az ismeretlen ciklusokig, a hónap napjaihoz kötött hatásokig és a havi nullázódásokig
 
-Hatás: Az eddigi, tűréssávra vonatkozó Sensitivity és Memory beállítások mellett magát az előrejelzési modellt is a felhasználó kezébe adja. Ha tanácsra van szüksége, mikor melyik paraméterhez nyúljon és hogyan állítsa be, forduljon a dignához.
+Mindkettő bármikor visszaállítható az alapértelmezett értékére. Hogy melyik hogyan hat, lásd: [Modellbeállítások](../platform/data_anomalies/how_it_works.md#model-settings).
+
+Hatás: Az eddigi, tűréssávra vonatkozó Sensitivity és Memory beállítások mellett – amelyek mostantól a **Thresholds** lapon találhatók – magát az előrejelzési modellt is a felhasználó kezébe adja.
+
+---
+
+### Anomália-értesítések szabályozása
+
+- Új **Notifications** lap az adatforrás anomáliabeállításai között:
+  - **Minimum Alerts** – hány sikertelen ellenőrzés (a bizonytalanok nem számítanak) szükséges egy inspekcióban ahhoz, hogy értesítés menjen ki (alapértelmezés: `1`)
+  - **Pause After Notification (Days)** – mennyi ideig marad néma egy feliratkozás, miután értesített az adatforrásról (alapértelmezés: `0`, nincs szünet)
+- A feliratkozók mostantól értesítést kapnak, ha egy inspekció teljes egészében meghiúsul (**Notify Inspection Errors**)
+- Minden értesítés közvetlenül arra az oldalra mutat, amelyről szól – az inspekció sikertelen ellenőrzéseire, illetve a Schema Tracker és Timeliness nézetekre
+- Egyértelműbb feliratkozási kapcsolók: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Hogyan működnek az értesítések:** az értesítések **értesítési csatornákon** keresztül mennek ki – Email (SMTP-kapcsolaton keresztül), Slack vagy Jira –, amelyeket az adminisztrátorok állítanak be, és a **Test Notification Channel** funkcióval ellenőrizhetnek. Egy **feliratkozás** egy csatornát kapcsol egy projekthez: az összes adatforrásra vagy csak a kiválasztottakra vonatkozik, kapcsolói pedig meghatározzák, miről tájékoztat – az egyes modulokról (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker és az adatmennyiség-ellenőrzések), a teljes egészében meghiúsuló inspekciókról, és igény szerint a sikeres inspekciókról is.
+
+Hatás: Kevesebb, de hasznosabb értesítés – az elszigetelt eltérések és a tartósan fennálló anomáliák többé nem árasztják el a csatornát.
 
 ---
 

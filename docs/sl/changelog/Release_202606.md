@@ -73,19 +73,31 @@ Konfigurirajte strategijo izvajanja poizvedb: **Single** ali **Combined** način
 
 ### Nastavljiv Napovedni Model
 
-Model, na katerem temelji zaznavanje anomalij, je zdaj nastavljiv. Sedem parametrov usmerja, kako se napoved prilagodi:
+Model, na katerem temelji zaznavanje anomalij, zdaj pri vsaki seriji tehta konkurenčne razlage – vzorec v kombinaciji z interpretacijo najnovejših opazovanj – in njihove napovedi združi glede na to, kako močno je podprta vsaka od njih. Posamezna ekstremna vrednost ne more več pronicati v naslednje napovedi.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Usmerjata ga dve nastavitvi na novem zavihku **Model** podatkovnega vira, vsaka od `0.0` do `1.0`, s privzeto vrednostjo `0.5`:
 
-Privzete vrednosti ustrezajo veliki večini serij, vsak parameter pa je mogoče kadar koli vrniti na privzeto vrednost.
+- **Break Sensitivity** – kako hitro model sprejme skok na novo raven ali obrat trenda kot dejansko spremembo, namesto da bi ga obravnaval kot osamelce
+- **Model Complexity** – koliko strukture model išče, od koledarskih učinkov in enkratnega premika ravni do neznanih ciklov, učinkov dni v mesecu in mesečnih ponastavitev
 
-**Vpliv:** Uporabnikom daje nadzor nad samim napovednim modelom, poleg obstoječih nastavitev Sensitivity in Memory za pas tolerance. Za nasvet, kdaj poseči po posameznem parametru in kako ga nastaviti, se obrnite na digna.
+Obe nastavitvi je mogoče kadar koli vrniti na privzeti vrednosti. Kako deluje posamezna nastavitev, si oglejte v razdelku [Nastavitve modela](../platform/data_anomalies/how_it_works.md#model-settings).
+
+**Vpliv:** Uporabnikom daje nadzor nad samim napovednim modelom, poleg obstoječih nastavitev Sensitivity in Memory za pas tolerance, ki so zdaj na zavihku **Thresholds**.
+
+---
+
+### Nadzor Obvestil o Anomalijah
+
+- Nov zavihek **Notifications** v nastavitvah anomalij podatkovnega vira:
+  - **Minimum Alerts** – koliko neuspešnih preverjanj (negotova se ne štejejo) mora imeti inšpekcija, preden je poslano obvestilo (privzeto `1`)
+  - **Pause After Notification (Days)** – kako dolgo naročnina ostane tiha, potem ko je poslala obvestilo o podatkovnem viru (privzeto `0`, brez premora)
+- Naročniki so zdaj obveščeni, ko inšpekcija v celoti spodleti (**Notify Inspection Errors**)
+- Vsako obvestilo vodi neposredno na stran, na katero se nanaša – na neuspešna preverjanja inšpekcije ali na pogleda Schema Tracker in Timeliness
+- Jasnejša stikala naročnine: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Kako delujejo obvestila:** obvestila se pošiljajo prek **kanalov obveščanja** – Email (prek povezave SMTP), Slack ali Jira –, ki jih nastavijo skrbniki in jih lahko preverijo s funkcijo **Test Notification Channel**. **Naročnina** poveže kanal s projektom: zajema vse podatkovne vire ali le izbrane, njena stikala pa določajo, o čem poroča – o vsakem modulu (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker in preverjanja obsega podatkov), o inšpekcijah, ki v celoti spodletijo, in po želji tudi o uspešnih inšpekcijah.
+
+**Vpliv:** Manj, a bolj uporabnih obvestil – posamezna odstopanja in vztrajne anomalije ne preplavljajo več kanala.
 
 ---
 
