@@ -778,7 +778,7 @@ uninstall_service.bat
     paikallaan. Jos kansio on jo nimetty uudelleen, palauta sen alkuperäinen nimi, poista rekisteröinti ja jatka sitten.
 
     Kirjaa muistiin tili, jolla palvelu suoritettiin, sekä osoite ja portti, joissa se palveli — tarvitset
-    niitä vaiheessa 7.
+    niitä vaiheessa 9.
 
 #### Vaihe 2: Varmuuskopioi nykyinen asennus
 

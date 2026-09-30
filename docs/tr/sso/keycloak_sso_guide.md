@@ -17,7 +17,7 @@ Bu kılavuz **Keycloak tarafını** kapsar: istemciyi oluşturma ve digna'nın i
 
 | Gereksinim | Notlar |
 |---|---|
-| **Keycloak sürümü** | Burada kullanılan URL yolları için 17 veya üzeri; Adım 4'teki nota bakın |
+| **Keycloak sürümü** | Burada kullanılan URL yolları için 17 veya üzeri; Adım 5'teki nota bakın |
 | **Keycloak rolü** | Hedef realm'de `realm-admin` veya bir sunucu yöneticisi |
 | **Realm** | digna kullanıcılarınızın ait olduğu realm; mutlaka `master` olması gerekmez |
 | **digna yönlendirme URI'si** | Kullanıcıların oturum açtıktan sonra döndüğü URL, ör. `https://digna.yourdomain.com/oidc/callback` |

@@ -17,7 +17,7 @@ Tento průvodce pokrývá **stranu Keycloak**: vytvoření klienta a získání 
 
 | Požadavek | Poznámky |
 |---|---|
-| **Keycloak version** | 17 nebo novější pro zde použité cesty URL — viz poznámka v Kroku 4 |
+| **Keycloak version** | 17 nebo novější pro zde použité cesty URL — viz poznámka v Kroku 5 |
 | **Keycloak role** | `realm-admin` na cílovém realm, nebo administrátor serveru |
 | **Realm** | Realm, do kterého patří vaši digna uživatelé, nemusí to být nutně `master` |
 | **digna redirect URI** | URL, kam se uživatelé vrací po přihlášení, např. `https://digna.yourdomain.com/oidc/callback` |

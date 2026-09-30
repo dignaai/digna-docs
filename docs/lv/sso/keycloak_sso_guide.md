@@ -17,7 +17,7 @@ Keycloak ir pašmitināts (self-hosted) identitātes nodrošinātājs, kas piln�
 
 | Prasība | Piezīmes |
 |---|---|
-| **Keycloak versija** | 17 vai jaunāka šeit izmantotajiem URL ceļiem — skatiet piezīmi 4. solī |
+| **Keycloak versija** | 17 vai jaunāka šeit izmantotajiem URL ceļiem — skatiet piezīmi 5. solī |
 | **Keycloak loma** | `realm-admin` mērķa realm vai servera administrators |
 | **Realm** | Realm, kurā atrodas jūsu digna lietotāji, ne obligāti `master` |
 | **digna redirect URI** | URL, uz kuru lietotāji atgriežas pēc pieteikšanās, piem. `https://digna.yourdomain.com/oidc/callback` |

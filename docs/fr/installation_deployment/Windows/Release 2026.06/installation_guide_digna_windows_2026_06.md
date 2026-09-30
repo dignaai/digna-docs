@@ -759,7 +759,7 @@ uninstall_service.bat
 
     `uninstall_service.bat` se trouve dans le dossier `bin` que vous êtes sur le point de renommer, et c'est le seul moyen de supprimer l'enregistrement qu'il a créé. Exécutez-le tant que l'ancienne installation est encore en place. Si le dossier a déjà été renommé, redonnez-lui son nom d'origine, désenregistrez le service, puis continuez.
 
-    Notez le compte sous lequel le service s'exécutait, ainsi que l'adresse et le port sur lesquels il servait — vous en aurez besoin à l'étape 7.
+    Notez le compte sous lequel le service s'exécutait, ainsi que l'adresse et le port sur lesquels il servait — vous en aurez besoin à l'étape 9.
 
 #### Étape 2 : Sauvegarder l'installation actuelle
 

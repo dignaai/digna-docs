@@ -85,7 +85,7 @@ Klicka sedan **Next** och slutför guiden.
 
 !!! warning "openid är inte förkryssat som standard"
 
-    AD FS förvanskar i vissa versioner endast `user_impersonation`. Utan `openid` returnerar token-endpointen en OAuth access token istället för en ID-token, och digna kan inte identifiera användaren.
+    AD FS förväljer i vissa versioner endast `user_impersonation`. Utan `openid` returnerar token-endpointen en OAuth access token istället för en ID-token, och digna kan inte identifiera användaren.
 
 ---
 

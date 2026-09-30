@@ -779,7 +779,7 @@ uninstall_service.bat
     en su sitio. Si la carpeta ya se ha renombrado, devuélvele su nombre, anula el registro y continúa.
 
     Anota la cuenta con la que se ejecutaba el servicio, así como la dirección y el puerto en los que servía: los
-    necesitarás en el Paso 7.
+    necesitarás en el Paso 9.
 
 #### Paso 2: Respaldar la instalación actual
 

@@ -779,7 +779,7 @@ uninstall_service.bat
     helyén van. Ha a mappát már átnevezted, nevezd vissza, töröld a regisztrációt, majd folytasd.
 
     Jegyezd fel, milyen fiókkal futott a szolgáltatás, valamint azt a címet és portot, amelyen
-    kiszolgált — a 7. lépésben szükséged lesz rájuk.
+    kiszolgált — a 9. lépésben szükséged lesz rájuk.
 
 #### 2. lépés: Mentse a jelenlegi telepítést
 

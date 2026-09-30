@@ -17,7 +17,7 @@ Denna guide täcker **Keycloak-sidan**: skapa klienten och samla de värden dign
 
 | Krav | Noteringar |
 |---|---|
-| **Keycloak-version** | 17 eller senare för de URL-sökvägar som används här — se noteringen i Steg 4 |
+| **Keycloak-version** | 17 eller senare för de URL-sökvägar som används här — se noteringen i Steg 5 |
 | **Keycloak-roll** | `realm-admin` i mål-realmen, eller serveradministratör |
 | **Realm** | Den realm som dina digna-användare tillhör, inte nödvändigtvis `master` |
 | **digna redirect URI** | URL:en dit användarna återvänder efter inloggning, t.ex. `https://digna.yourdomain.com/oidc/callback` |

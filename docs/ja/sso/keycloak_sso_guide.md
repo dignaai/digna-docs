@@ -17,7 +17,7 @@ Keycloakはセルフホスト型で、完全にOIDC準拠のアイデンティ�
 
 | 要件 | 説明 |
 |---|---|
-| **Keycloak のバージョン** | ここで使うURLパスは17以降 — 手順4の注記を参照 |
+| **Keycloak のバージョン** | ここで使うURLパスは17以降 — 手順5の注記を参照 |
 | **Keycloak の権限** | 対象realmでの `realm-admin` 、またはサーバー管理者 |
 | **Realm** | dignaユーザーが所属するrealm（必ずしも `master` ではない） |
 | **dignaのリダイレクトURI** | ログイン後にユーザーが戻るURL、例: `https://digna.yourdomain.com/oidc/callback` |

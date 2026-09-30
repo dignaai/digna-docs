@@ -779,7 +779,7 @@ uninstall_service.bat
     på plass. Hvis mappen allerede har fått nytt navn, gir du den det opprinnelige navnet tilbake, avregistrerer og fortsetter deretter.
 
     Noter kontoen tjenesten kjørte under, og adressen og porten den leverte på — du vil
-    trenge dem i trinn 7.
+    trenge dem i trinn 9.
 
 #### Trinn 2: Sikkerhetskopier gjeldende installasjon
 

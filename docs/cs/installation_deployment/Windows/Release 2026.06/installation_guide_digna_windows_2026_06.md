@@ -779,7 +779,7 @@ uninstall_service.bat
     službu odregistrujte a poté pokračujte.
 
     Poznamenejte si účet, pod kterým služba běžela, a adresu a port, na kterých poskytovala
-    služby — budete je potřebovat v kroku 7.
+    služby — budete je potřebovat v kroku 9.
 
 #### Krok 2: Zálohujte stávající instalaci
 

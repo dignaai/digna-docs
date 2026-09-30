@@ -780,7 +780,7 @@ uninstall_service.bat
     nome, deregistrate il servizio e poi proseguite.
 
     Annotate l'account con cui veniva eseguito il servizio, e l'indirizzo e la porta su cui
-    rispondeva: vi serviranno nel Passo 7.
+    rispondeva: vi serviranno nel Passo 9.
 
 #### Passo 2: Eseguire il backup dell'installazione attuale
 

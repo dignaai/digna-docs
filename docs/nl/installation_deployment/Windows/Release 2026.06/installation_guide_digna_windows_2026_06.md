@@ -782,7 +782,7 @@ uninstall_service.bat
     deregistreer, en ga daarna verder.
 
     Noteer het account waaronder de service draaide, en het adres en de poort waarop deze
-    bereikbaar was — u hebt ze nodig in Stap 7.
+    bereikbaar was — u hebt ze nodig in Stap 9.
 
 #### Stap 2: Huidige installatie veiligstellen
 

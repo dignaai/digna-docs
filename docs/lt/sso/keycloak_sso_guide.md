@@ -17,7 +17,7 @@ Keycloak yra savarankiškai talpinamas, pilnai OIDC suderinamas tapatybės tiek�
 
 | Reikalavimas | Pastabos |
 |---|---|
-| **Keycloak versija** | 17 arba naujesnė dėl čia naudojamų URL kelių — žr. pastabą 4 žingsnyje |
+| **Keycloak versija** | 17 arba naujesnė dėl čia naudojamų URL kelių — žr. pastabą 5 žingsnyje |
 | **Keycloak rolė** | `realm-admin` tiksliniame realm arba serverio administratorius |
 | **Realm** | Realm, kuriam priklauso jūsų digna vartotojai — nebūtinai `master` |
 | **digna peradresavimo URI** | URL, į kurį vartotojai grįžta po prisijungimo, pvz. `https://digna.yourdomain.com/oidc/callback` |

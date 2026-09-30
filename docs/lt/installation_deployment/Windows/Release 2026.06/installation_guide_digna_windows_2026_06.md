@@ -779,7 +779,7 @@ uninstall_service.bat
     Jei aplankas jau pervadintas, grąžinkite jam senąjį pavadinimą, išregistruokite paslaugą ir tęskite.
 
     Užsirašykite paskyrą, kuria veikė paslauga, bei adresą ir prievadą, kuriais ji veikė — jų
-    prireiks 7 žingsnyje.
+    prireiks 9 žingsnyje.
 
 #### 2 žingsnis: Sukurkite dabartinio diegimo atsarginę kopiją
 

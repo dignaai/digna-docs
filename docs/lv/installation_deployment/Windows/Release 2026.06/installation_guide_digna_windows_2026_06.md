@@ -777,7 +777,7 @@ uninstall_service.bat
     Ja mape jau ir pārdēvēta, pārdēvējiet to atpakaļ, atreģistrējiet servisu un tad turpiniet.
 
     Pierakstiet kontu, ar kuru serviss darbojās, kā arī adresi un portu, kurā tas apkalpoja — tie
-    jums būs vajadzīgi 7. solī.
+    jums būs vajadzīgi 9. solī.
 
 #### 2. solis: Izveidojiet pašreizējās instalācijas dublējumu
 

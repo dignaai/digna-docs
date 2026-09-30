@@ -17,7 +17,7 @@ See juhend käsitleb **Keycloak’i poolt**: kliendi loomist ja väärtuste kogu
 
 | Nõue | Märkused |
 |---|---|
-| **Keycloak versioon** | 17 või uuem kasutatavate URL-radade jaoks — vt märkust Sammus 4 |
+| **Keycloak versioon** | 17 või uuem kasutatavate URL-radade jaoks — vt märkust Sammus 5 |
 | **Keycloak roll** | `realm-admin` sihtrealmil või serveri administraator |
 | **Realm** | Realm, millele teie digna kasutajad kuuluvad, mitte tingimata `master` |
 | **digna redirect URI** | URL, kuhu kasutajad peale sisselogimist naasevad, nt `https://digna.yourdomain.com/oidc/callback` |

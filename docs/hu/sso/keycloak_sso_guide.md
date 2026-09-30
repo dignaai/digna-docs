@@ -17,7 +17,7 @@ Ez az útmutató a **Keycloak-oldalt** fedi le: a kliens létrehozását és azo
 
 | Követelmény | Megjegyzés |
 |---|---|
-| **Keycloak verzió** | 17 vagy újabb a használt URL-útvonalakhoz — lásd a 4. lépés megjegyzését |
+| **Keycloak verzió** | 17 vagy újabb a használt URL-útvonalakhoz — lásd az 5. lépés megjegyzését |
 | **Keycloak szerepkör** | `realm-admin` a céltárhelyen (realm), vagy szerveradminisztrátor |
 | **Realm** | Az a realm, amelyhez a digna felhasználói tartoznak — nem feltétlenül a `master` |
 | **digna átirányítási URI** | Az az URL, ahova a felhasználók visszatérnek bejelentkezés után, pl. `https://digna.yourdomain.com/oidc/callback` |

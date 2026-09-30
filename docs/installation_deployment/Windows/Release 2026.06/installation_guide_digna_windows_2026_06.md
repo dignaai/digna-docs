@@ -801,7 +801,7 @@ uninstall_service.bat
     in place. If the folder has already been renamed, rename it back, unregister, then continue.
 
     Note down the account the service ran under, and the address and port it served on — you will
-    need them in Step 7.
+    need them in Step 9.
 
 #### Step 2: Backup Current Installation
 

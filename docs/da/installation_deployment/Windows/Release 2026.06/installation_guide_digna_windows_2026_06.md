@@ -779,7 +779,7 @@ uninstall_service.bat
     er på plads. Hvis mappen allerede er omdøbt, så omdøb den tilbage, afregistrer, og fortsæt derefter.
 
     Notér den konto, servicen kørte under, samt den adresse og port, den kørte på — du får
-    brug for dem i Trin 7.
+    brug for dem i Trin 9.
 
 #### Trin 2: Sikkerhedskopiér nuværende installation
 

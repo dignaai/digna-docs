@@ -17,7 +17,7 @@ Keycloak एक self-hosted, पूरी तरह OIDC-संगत identity p
 
 | आवश्यकता | नोट्स |
 |---|---|
-| **Keycloak version** | यहाँ प्रयुक्त URL पथों के लिए 17 या नया — Step 4 में नोट देखें |
+| **Keycloak version** | यहाँ प्रयुक्त URL पथों के लिए 17 या नया — Step 5 में नोट देखें |
 | **Keycloak role** | लक्षित realm पर `realm-admin`, या सर्वर एडमिनिस्टेटर |
 | **Realm** | वह realm जिसमें आपके digna उपयोगकर्ता हैं, जरूरी नहीं कि `master` हो |
 | **digna redirect URI** | उपयोगकर्ता लॉगिन के बाद जिस URL पर लौटते हैं, उदाहरण: `https://digna.yourdomain.com/oidc/callback` |

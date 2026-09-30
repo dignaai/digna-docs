@@ -17,7 +17,7 @@ Este guia cobre o **lado do Keycloak**: criar o cliente e recolher os valores qu
 
 | Requisito | Observações |
 |---|---|
-| **Versão do Keycloak** | 17 ou posterior para os caminhos de URL usados aqui — veja a nota no Passo 4 |
+| **Versão do Keycloak** | 17 ou posterior para os caminhos de URL usados aqui — veja a nota no Passo 5 |
 | **Função no Keycloak** | `realm-admin` no realm de destino, ou um administrador do servidor |
 | **Realm** | O realm ao qual seus usuários do digna pertencem, não necessariamente `master` |
 | **URI de redirect do digna** | A URL para onde os usuários retornam após o login, ex.: `https://digna.yourdomain.com/oidc/callback` |

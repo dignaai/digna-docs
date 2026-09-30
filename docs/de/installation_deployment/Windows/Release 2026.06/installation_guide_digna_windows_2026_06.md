@@ -807,7 +807,7 @@ uninstall_service.bat
     melden Sie den Dienst ab und fahren Sie dann fort.
 
     Notieren Sie sich das Konto, unter dem der Dienst lief, sowie die Adresse und den Port, auf dem
-    er erreichbar war — Sie benötigen diese Angaben in Schritt 7.
+    er erreichbar war — Sie benötigen diese Angaben in Schritt 9.
 
 #### Schritt 2: Aktuelle Installation sichern
 

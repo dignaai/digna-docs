@@ -780,7 +780,7 @@ uninstall_service.bat
     jätkake seejärel.
 
     Pange kirja konto, mille all teenus töötas, ning aadress ja port, millel see teenindas — neid
-    läheb vaja sammus 7.
+    läheb vaja sammus 9.
 
 #### Samm 2: Varundage praegune paigaldus
 
