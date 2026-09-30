@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Na het uitpakken zou je de volgende items moeten zien:
    - `dashboard/` — Webdashboard-interface
    - `digna` — Hoofduitvoerbaar bestand (backend + CLI gecombineerd)
-   - `config.toml` — Configuratiebestand
-   - `license.toml` — Licentiebestand (kopieer jouw bestand hierheen)
+
+!!! info "Het configuratie- en licentiebestand zitten niet in het pakket"
+
+    Noch `config.toml` noch `dashboard/dashboard_config.toml` wordt met de installatie
+    meegeleverd — u maakt beide zelf aan, in [Backendconfiguratie](#backend-configuration) en
+    [Dashboardconfiguratie](#dashboard-configuration). Ook `license.toml` wordt niet meegeleverd;
+    digna levert het afzonderlijk, zoals Stap 3 beschrijft.
 
 ### Stap 3: Installeer het licentiebestand
 
@@ -525,9 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Stap 1: Zet het dashboard uit naar de webserver
 
-Het digna-dashboard heeft een eigen separaat `config.toml`-bestand in de `dashboard/`-map. Deze configuratie wordt al meegeleverd en vereist geen wijzigingen tijdens de initiële setup. Je hoeft dit alleen te wijzigen als je de backendverbinding wilt aanpassen.
+Het digna-dashboard leest zijn eigen configuratie uit `dashboard/dashboard_config.toml`. Dat bestand wordt niet met de installatie meegeleverd — u maakt het aan in de `dashboard/`-map, naast de dashboardbestanden.
 
-Als je de dashboardconfiguratie wilt aanpassen (bijv. bij multi-instance deployments), raadpleeg dan de documentatie van het dashboard.
+De inhoud ervan wordt beschreven onder [Single Sign-On](../../../sso/overview.md), en daar is het bestand ook nodig: het bevat de aanmeldopties die het dashboard aanbiedt en, voor multi-instance-deployments, de backendverbinding.
 
 Kies je webserver en volg de bijbehorende deploymentstappen.
 
@@ -582,19 +587,25 @@ Het draaien van de digna-backend als een Windows-service zorgt ervoor dat deze:
 - Automatisch opnieuw start als deze crasht
 - Beheerd kan worden via Windows Services
 
-### Bestanden voor servicemanagement
+### De `windows`-commando's
 
-Alle benodigde bestanden bevinden zich in de digna-installatiemap onder: `bin/`
+De service wordt beheerd door het `digna`-uitvoerbare bestand zelf, via de subcommando's van
+`digna windows`. Er zijn geen batchbestanden meer om uit te voeren.
 
-De volgende batchbestanden zijn beschikbaar:
-- `install_service.bat` — Registreert digna als een Windows-service
-- `uninstall_service.bat` — Deregistreert de service
-- `start_service.bat` — Start de service
-- `stop_service.bat` — Stopt de service
+| Commando | Doel |
+|---|---|
+| `digna windows install` | Registreert digna als een Windows-service |
+| `digna windows start` | Start de geregistreerde service |
+| `digna windows stop` | Stopt de draaiende service |
+| `digna windows uninstall` | Deregistreert de service |
 
 !!! warning "Beheerdersrechten vereist"
 
-    Alle batchbestanden moeten worden uitgevoerd met Administrator-rechten.
+    Alle vier de commando's moeten worden uitgevoerd vanuit een Opdrachtprompt die als Administrator is geopend.
+
+Elk commando accepteert `--name` om een service aan te spreken die onder een andere dan de
+standaardnaam is geregistreerd. De volledige lijst met opties staat in de
+[CLI-referentie](../../../cli/Command_Line_Interface_202606.md).
 
 ### De service installeren
 
@@ -602,37 +613,66 @@ De volgende batchbestanden zijn beschikbaar:
    - Klik met de rechtermuisknop op Opdrachtprompt
    - Kies "Als administrator uitvoeren"
 
-2. **Navigeer naar de bin-map**
+2. **Navigeer naar uw digna-installatiemap**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Voer het installatiescript uit**
+3. **Registreer de service**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-De digna-server is nu geregistreerd als een Windows-service met **automatische opstart** ingeschakeld. De service start niet direct — zie de volgende sectie om deze te starten.
+!!! important "Geef adres en poort op, tenzij de standaardwaarden volstaan"
+
+    `install` legt het adres en de poort vast in de serviceregistratie, en de service bindt zich
+    precies aan wat is vastgelegd. De standaardwaarden zijn `127.0.0.1` en `8000`, die alleen
+    verbindingen van de machine zelf accepteren. Een dashboard op een andere host kan die niet
+    bereiken, dus geef het adres op waarop de backend moet luisteren:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Deze waarden worden niet uit `config.toml` gelezen. Om ze later te wijzigen, verwijdert u de
+    service en installeert u deze opnieuw met de nieuwe waarden.
+
+De service wordt geregistreerd met **automatische opstart**, zodat deze met Windows meestart. De
+service start niet direct — zie de volgende sectie.
+
+#### Installatieopties
+
+| Optie | Standaard | Doel |
+|---|---|---|
+| `--name` | `digna` | Naam waaronder de service wordt geregistreerd |
+| `--display-name` | `digna` | Naam die in services.msc wordt getoond |
+| `--description` | `digna data quality backend` | Beschrijving die in services.msc wordt getoond |
+| `--address` | `127.0.0.1` | Adres waaraan de service zijn API bindt |
+| `--port` | `8000` | Poort waaraan de service zijn API bindt |
+| `--working-dir` | de map van het `digna`-uitvoerbare bestand | Map met `config.toml` en `license.toml`, die de service als werkmap gebruikt |
+| `--start-type` | `auto` | `auto` start met Windows, `manual` start alleen op verzoek, `disabled` registreert de service maar weigert deze te starten |
+| `--account` | `LocalSystem` | Account waaronder de service draait, bijv. `DOMAIN\user` of `.\user` |
+| `--password` | | Wachtwoord van `--account` |
+
+!!! tip "Draaien onder een domeinaccount"
+
+    `LocalSystem` heeft geen netwerkidentiteit, dus Windows-verificatie bij SQL Server en elke
+    toegang tot een netwerkshare mislukken. Installeer met `--account` en `--password` wanneer de
+    service als een specifieke gebruiker bij resources moet kunnen.
 
 ### De service starten en stoppen
 
 #### Om de service te starten
 
-1. Open Opdrachtprompt als Administrator
-2. Navigeer naar `digna\bin`
-3. Voer uit:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Om de service te stoppen
 
-1. Open Opdrachtprompt als Administrator
-2. Navigeer naar `digna\bin`
-3. Voer uit:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Tip"
 
@@ -642,37 +682,41 @@ De digna-server is nu geregistreerd als een Windows-service met **automatische o
 
 Als je de digna-installatie wilt verplaatsen:
 
-1. **De huidige service deïnstalleren**
+1. **Stop en deregistreer de huidige service**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Verplaats de applicatiebestanden**
    - Verplaats de volledige digna-installatiemap naar de nieuwe locatie
 
-3. **Installeer de service opnieuw**
+3. **Registreer de service opnieuw vanaf de nieuwe locatie**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Herhaal alle waarden voor `--address`, `--port` of `--account` die u de eerste keer hebt
+   gebruikt — de vorige registratie bestaat niet meer.
 
 4. **Start de service**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### De service verwijderen
 
 1. **Stop de draaiende service**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Deïnstalleer de service**
+2. **Deregistreer de service**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 De digna-server is nu afgehandeld als Windows-service.
@@ -711,14 +755,34 @@ Een back-up zorgt dat je kunt herstellen als de upgrade onverwachte problemen te
 
 ### Upgradeproces
 
-#### Stap 1: Stop de digna-service
+#### Stap 1: Stop en deregistreer de oude service
 
-Als digna als Windows-service draait, stop deze dan eerst:
+Als digna als Windows-service draait, stop deze dan met de **batchbestanden van uw huidige
+installatie** — de `digna windows`-commando's horen bij de nieuwe release en zijn nog niet
+beschikbaar:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Deregistreer de service daarna, opnieuw met het oude batchbestand. De registratie verwijst naar
+het oude uitvoerbare bestand en de bijbehorende scripts, die beide door deze upgrade worden
+vervangen, dus ze kan niet opnieuw worden gebruikt:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Deregistreer voordat u iets hernoemt"
+
+    `uninstall_service.bat` staat in de `bin`-map die u zo meteen gaat hernoemen, en het is het
+    enige dat de registratie kan verwijderen die het heeft aangemaakt. Voer het uit terwijl de oude
+    installatie nog op zijn plaats staat. Als de map al is hernoemd, zet de naam dan terug,
+    deregistreer, en ga daarna verder.
+
+    Noteer het account waaronder de service draaide, en het adres en de poort waarop deze
+    bereikbaar was — u hebt ze nodig in Stap 7.
 
 #### Stap 2: Huidige installatie veiligstellen
 
@@ -739,7 +803,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend en dignacli worden niet meer gebruikt"
 
-    Vanaf Release 2026.06 worden `dignabackend` en `dignacli` vervangen door het enkele uitvoerbare bestand `digna`, dat backend en CLI combineert. Bewaar `dignabackend_old` en `dignacli_old` alleen totdat u de upgrade hebt geverifieerd — daarna kunt u beide mappen verwijderen. Bewaar `dashboard_old` totdat u uw configuratiebestanden eruit hebt teruggezet (zie stap 4).
+    Vanaf Release 2026.06 worden `dignabackend` en `dignacli` vervangen door het enkele uitvoerbare bestand `digna`, dat backend en CLI combineert. Bewaar `dignabackend_old` en `dignacli_old` alleen totdat u de upgrade hebt geverifieerd — daarna kunt u beide mappen verwijderen. Bewaar `dashboard_old` totdat u uw configuratiebestanden eruit hebt teruggezet (zie stap 4). Ook de `bin`-map verdwijnt: de batchbestanden daarin stuurden de oude service aan en 2026.06 levert ze niet meer mee, dus zodra de service in Stap 1 is gederegistreerd, doen ze niets anders dan misleiden.
 
 #### Stap 3: Pak de nieuwe versie uit en deploy
 
@@ -749,7 +813,10 @@ ren dashboard dashboard_old
 
 !!! warning "Belangrijk"
 
-    Het `config.toml`-bestand is **nooit** inbegrepen in het installatie-ZIP. Je bestaande configuratie blijft veilig.
+    Noch `config.toml` noch `dashboard/dashboard_config.toml` wordt ooit in het
+    installatie-ZIP opgenomen — het digna-team levert geen van beide bestanden mee. Uw bestaande
+    configuratie blijft bij de upgrade dus onaangeroerd, en de kopieën in de hernoemde
+    `*_old`-mappen zijn de enige die u hebt.
 
 #### Stap 4: Herstel je configuratiebestanden
 
@@ -800,7 +867,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Herhaal de sectie voor elke provider en houd elke sleutel gelijk aan de `key` in `dashboard_config.toml`. `digna config check` meldt `oidc_clients` als FAILED zolang de oude vorm nog aanwezig is. Alleen installaties die eenmalige aanmelding gebruiken zijn betroffen.
 
-#### Stap 5: Configuratie valideren
+#### Stap 5: Herlaad de webserver
+
+Het dashboard bestaat uit statische bestanden, dus uw webserver — en de browser — kan nog
+steeds de vorige versie serveren. Herlaad of herstart de webserver die de `dashboard`-map
+host, en herlaad de pagina daarna met een harde vernieuwing (++ctrl+f5++).
+
+#### Stap 6: Configuratie valideren
 
 Controleer of de bijgewerkte `config.toml` volledig is voordat u de repository aanraakt:
 
@@ -810,7 +883,26 @@ digna config check
 
 Elke sectie moet OK melden. Los alles op wat als FAILED wordt gemeld en voer het commando opnieuw uit voordat u verdergaat.
 
-#### Stap 6: Upgrade het repository-schema
+#### Stap 7: Vervang het licentiebestand
+
+Elke release krijgt een eigen licentie. Kopieer het `license.toml` dat het digna-team voor
+deze release heeft geleverd naar de installatiemap, ter vervanging van het oude:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Behoud de vorige licentie niet"
+
+    Een `license.toml` die voor een eerdere release is uitgegeven, dekt deze release niet, en elk
+    commando dat de licentie controleert — `user`, `inspection`, `repo` — breekt af voordat het
+    de repository aanraakt wanneer de controle mislukt. Controleer de licentie voordat u verdergaat:
+
+    ```bash
+    digna license check
+    ```
+
+#### Stap 8: Upgrade het repository-schema
 
 Navigeer naar je digna-installatiemap en voer uit:
 
@@ -820,14 +912,23 @@ digna repo upgrade
 
 Dit werkt het PostgreSQL-schema bij naar de nieuwste versie terwijl alle bestaande data behouden blijven.
 
-#### Stap 7: Herstart services
+#### Stap 9: Registreer en start de service
 
-Als je draait als Windows-service:
+De oude registratie is in Stap 1 verwijderd, dus de service wordt opnieuw geregistreerd — dit keer
+met het `digna`-uitvoerbare bestand, dat geen batchbestanden heeft:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Geef `--address` en `--port` de waarden waarop de oude service bereikbaar was, tenzij u de nieuwe
+standaardwaarden `127.0.0.1` en `8000` wilt; ze worden in de registratie vastgelegd en niet meer
+uit `config.toml` gelezen. Voeg `--account` en `--password` toe als de oude service onder een
+domeinaccount draaide. Zie
+[digna als Windows-service uitvoeren](#running-digna-as-a-windows-service) voor de volledige
+lijst met opties.
 
 Als je handmatig draait, start de server opnieuw:
 
@@ -838,7 +939,7 @@ digna serve --address <address> --port <port>
 
 Als je IIS of Tomcat gebruikt, herstart dan de betreffende webserver.
 
-#### Stap 8: Verifieer de upgrade
+#### Stap 10: Verifieer de upgrade
 
 1. Open het digna-dashboard
 2. Controleer of de interface correct laadt

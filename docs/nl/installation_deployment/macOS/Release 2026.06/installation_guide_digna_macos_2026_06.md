@@ -1,11 +1,11 @@
 ---
-title: Linux-installatiehandleiding – digna Release 2026.06 | digna Documentatie
-description: Stapsgewijze handleiding voor het installeren van digna Release 2026.06 op Linux — systeemvereisten, PostgreSQL-configuratie, nginx- of Apache-configuratie, backend- en dashboardconfiguratie, digna als systemd-service uitvoeren en upgraden naar een nieuwe release.
-keywords: digna linux installatie, digna implementatiehandleiding, digna backend configuratie, digna dashboard installatie, postgresql linux, nginx linux, digna systemd service, digna upgrade handleiding
+title: macOS-installatiehandleiding – digna Release 2026.06 | digna Documentatie
+description: Stapsgewijze handleiding voor het installeren van digna Release 2026.06 op macOS — systeemvereisten, Homebrew- en PostgreSQL-configuratie, nginx- of Apache-configuratie, backend- en dashboardconfiguratie, digna als achtergrondservice uitvoeren en upgraden naar een nieuwe release.
+keywords: digna macos installatie, digna mac implementatiehandleiding, digna backend configuratie, digna dashboard installatie, postgresql homebrew, nginx macos, digna launchd service, digna upgrade handleiding
 image: /assets/logo_square.png
 ---
 
-# Linux-installatiehandleiding voor digna Release 2026.06
+# macOS-installatiehandleiding voor digna Release 2026.06
 
 **Release:** 2026.06
 
@@ -24,7 +24,7 @@ image: /assets/logo_square.png
 6. [Initiële installatie](#initial-installation)
 7. [Backendconfiguratie](#backend-configuration)
 8. [Dashboardconfiguratie](#dashboard-configuration)
-9. [digna als systemd-service draaien](#running-digna-as-a-systemd-service)
+9. [digna als achtergrondservice draaien](#running-digna-as-a-background-service)
 10. [Upgraden naar een nieuwe release](#upgrading-to-a-new-release)
 
 ---
@@ -42,20 +42,11 @@ digna bestaat uit twee hoofdcomponenten:
 
 ### Wat is nieuw in Release 2026.06
 
-Deze release brengt data-observability-mogelijkheden rechtstreeks in je code, zodat ontwikkelaars datakwaliteit aan de bron kunnen monitoren. Zie de [release notes](http://docs.digna.ai/changelog/Release_202606/) voor volledige details.
+Deze release brengt data-observability-mogelijkheden rechtstreeks in uw code, zodat ontwikkelaars datakwaliteit aan de bron kunnen monitoren. Zie de [release notes](http://docs.digna.ai/changelog/Release_202606/) voor volledige details.
 
-### Op zoek naar Windows of macOS?
+### Op zoek naar Windows of Linux?
 
-Deze handleiding behandelt Linux. Voor andere platforms, zie de [Windows Installation Guide](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) of de [macOS Installation Guide](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
-
-### Voor welke distributie geldt deze handleiding?
-
-De instructies zijn geschreven voor de twee meest voorkomende serverfamilies. Waar ze verschillen, worden beide commando's gegeven:
-
-- **Debian-familie** — Debian, Ubuntu. Pakketbeheerder: `apt`.
-- **RHEL-familie** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Pakketbeheerder: `dnf`.
-
-Elke moderne distributie met `systemd` werkt; alleen de pakketnamen en enkele configuratiepaden verschillen.
+Deze handleiding behandelt macOS. Voor andere platforms, zie de [Windows-installatiehandleiding](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) of de [Linux-installatiehandleiding](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
 
 ---
 
@@ -65,20 +56,20 @@ Voordat u met de installatie begint, zorgt u ervoor dat uw systeem aan de volgen
 
 | Vereiste | Specificatie |
 |---|---|
-| **Besturingssysteem** | Ubuntu 22.04 LTS of later, Debian 12 of later, RHEL 9 / Rocky 9 / AlmaLinux 9 of later |
-| **Architectuur** | x86_64 (amd64) of arm64 |
-| **Init-systeem** | systemd |
+| **Besturingssysteem** | macOS 13 (Ventura) of later |
+| **Architectuur** | Apple Silicon (arm64) of Intel (x86_64) |
 | **Geheugen (minimale opzet)** | 16 GB RAM |
 | **Schijfruimte** | 10 GB beschikbare opslag |
 | **Database** | PostgreSQL Server 12 of hoger |
 | **Webserver** | nginx, Apache httpd, of gelijkwaardig |
+| **Opdrachtregelprogramma's** | Xcode Command Line Tools (vereist door Homebrew) |
 
 ### Opties voor database-installatie
 
 **Als PostgreSQL al is geïnstalleerd:**
-Je kunt een nieuwe database voor digna toevoegen aan je bestaande PostgreSQL-server.
+U kunt een nieuwe database voor digna toevoegen aan uw bestaande PostgreSQL-server.
 
-**Als je PostgreSQL op dezelfde machine als digna installeert:**
+**Als u PostgreSQL op dezelfde machine als digna installeert:**
 
 !!! info "Aanbevolen specificaties"
 
@@ -87,166 +78,149 @@ Je kunt een nieuwe database voor digna toevoegen aan je bestaande PostgreSQL-ser
 
     Deze hogere specificaties bieden ruimte voor zowel digna als de PostgreSQL-database die tegelijk draaien.
 
-### Controleren van distributie en architectuur
+### Uw architectuur controleren
 
-Verschillende commando's in deze handleiding verschillen tussen de Debian- en RHEL-families. Om te controleren welke u gebruikt, voer uit:
+Verschillende paden in deze handleiding verschillen tussen Macs met Apple Silicon en Intel. Om te controleren welke u hebt, opent u **Terminal** en voert u uit:
 
 ```bash
-cat /etc/os-release
 uname -m
 ```
 
-- `ID=ubuntu` of `ID=debian` — gebruik de `apt`-commando's.
-- `ID=rhel`, `rocky`, `almalinux` of `fedora` — gebruik de `dnf`-commando's.
-- `x86_64` of `aarch64` — de architectuur van het installatiepakket dat u nodig hebt.
+- `arm64` — Apple Silicon. Homebrew installeert naar `/opt/homebrew`.
+- `x86_64` — Intel. Homebrew installeert naar `/usr/local`.
+
+!!! tip "Tip"
+
+    In plaats van een van beide paden vast te coderen, gebruikt deze handleiding `$(brew --prefix)`, dat op beide architecturen naar de juiste locatie wordt uitgebreid. U kunt de commando's letterlijk kopiëren.
 
 ---
 
 ## Voorbereiding vóór installatie {: #pre-installation-setup }
 
-Voordat u digna installeert, zorgt u dat twee belangrijke vereisten aanwezig zijn:
+Voordat u digna installeert, zorgt u dat drie belangrijke vereisten aanwezig zijn:
 
-1. **PostgreSQL-server** – voor het opslaan van berekende metrics en prestatiegegevens
-2. **Webserver** – voor het hosten van het digna-dashboard
+1. **Homebrew** – de pakketbeheerder waarmee de onderstaande componenten worden geïnstalleerd
+2. **PostgreSQL-server** – voor het opslaan van berekende metrics en prestatiegegevens
+3. **Webserver** – voor het hosten van het digna-dashboard
 
 Als deze componenten nog niet zijn ingesteld, volg dan de onderstaande secties om ze te installeren en te configureren.
 
-### Vernieuwen van de pakketindex
+### Homebrew installeren
 
-Werk uw pakketlijsten bij voordat u iets installeert:
+Homebrew is de standaardpakketbeheerder voor macOS en wordt in deze hele handleiding gebruikt om PostgreSQL en nginx te installeren.
+
+#### Stap 1: Controleer of Homebrew al is geïnstalleerd
+
+Open **Terminal** (druk op `Cmd + Space`, typ `Terminal`, druk op Enter) en voer uit:
 
 ```bash
-sudo apt update
+brew --version
 ```
+
+Als er een versienummer wordt getoond, ga dan direct naar de sectie [PostgreSQL-serverconfiguratie](#postgresql-server-setup).
+
+#### Stap 2: Installeer Homebrew
+
+Als het commando niet werd gevonden, installeer Homebrew dan volgens de instructies op de [officiële Homebrew-site](https://brew.sh). Het installatieprogramma installeert ook de Xcode Command Line Tools als die nog niet aanwezig zijn.
+
+#### Stap 3: Voeg Homebrew toe aan uw PATH
+
+Op Apple Silicon toont het installatieprogramma twee commando's om Homebrew aan uw shell-omgeving toe te voegen. Voer ze uit zoals aangegeven en controleer daarna:
+
 ```bash
-sudo dnf check-update
+brew --prefix
 ```
 
-!!! note "Opmerking"
-
-    Door de hele handleiding geldt: het eerste commando in een paar is voor de **Debian-familie** en het tweede voor de **RHEL-familie**. Voer alleen degene uit die bij uw systeem hoort.
+Dit zou `/opt/homebrew` moeten tonen op Apple Silicon of `/usr/local` op Intel.
 
 ---
 
 ## PostgreSQL-serverconfiguratie {: #postgresql-server-setup }
 
-### Als u al PostgreSQL heeft
+### Als u PostgreSQL al hebt
 
-Als PostgreSQL al is geïnstalleerd en actief op uw lokale machine of als u een beheerde externe PostgreSQL-server gebruikt, kunt u doorgaan naar de [volgende sectie](#web-server-configuration).
+Als PostgreSQL al is geïnstalleerd en draait op uw lokale machine, of als u een beheerde externe PostgreSQL-server gebruikt, kunt u doorgaan naar de [volgende sectie](#web-server-configuration).
 
-### PostgreSQL installeren
+### Installatieopties
 
-#### Stap 1: Installeer het serverpakket
+macOS biedt twee eenvoudige manieren om PostgreSQL te installeren. Kies er **één**:
 
-```bash
-sudo apt install -y postgresql postgresql-contrib
-```
-```bash
-sudo dnf install -y postgresql-server postgresql-contrib
-```
+- [Homebrew](#postgresql-homebrew) — installatie via de opdrachtregel, aanbevolen voor serverimplementaties
+- [Postgres.app](#postgresql-app) — grafische installatie, handig voor lokale evaluatie
 
-!!! tip "Tip"
+### PostgreSQL installeren met Homebrew {: #postgresql-homebrew }
 
-    Distributiepakketten kunnen achterlopen op de actuele PostgreSQL-release. Als u een specifieke nieuwere versie nodig hebt, gebruik dan de officiële [PostgreSQL apt- of yum-repository](https://www.postgresql.org/download/linux/).
-
-#### Stap 2: Initialiseer de databasecluster
-
-Bij de **Debian-familie** maakt en start het pakket automatisch een cluster — sla deze stap dan over.
-
-Bij de **RHEL-familie** moet de cluster expliciet worden aangemaakt:
+#### Stap 1: Installeer de PostgreSQL-formule
 
 ```bash
-sudo postgresql-setup --initdb
+brew install postgresql@16
 ```
 
-#### Stap 3: Start en zet de service aan
+#### Stap 2: Voeg PostgreSQL toe aan uw PATH
+
+Formules van PostgreSQL met een versienummer zijn *keg-only*, wat betekent dat Homebrew hun commando's niet automatisch in uw PATH koppelt. Voeg ze zelf toe:
 
 ```bash
-sudo systemctl enable --now postgresql
+echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
-Dit start PostgreSQL onmiddellijk en zorgt ervoor dat het ook automatisch start bij het opstarten.
+!!! note "Opmerking"
+
+    Dit gaat uit van de standaard-`zsh`-shell van macOS. Als u `bash` gebruikt, voeg dezelfde regel dan toe aan `~/.bash_profile`.
+
+#### Stap 3: Start de PostgreSQL-service
+
+```bash
+brew services start postgresql@16
+```
+
+Dit start PostgreSQL direct en stelt het zo in dat het automatisch opnieuw start wanneer u zich aanmeldt.
 
 #### Stap 4: Verifieer de installatie
 
 ```bash
 psql --version
-sudo systemctl status postgresql
 ```
 
-U zou de PostgreSQL-versie en een `active (running)` service moeten zien.
+U zou de PostgreSQL-versie moeten zien als de installatie is geslaagd.
 
 #### Stap 5: Verbinden met de server
 
-Een Linux PostgreSQL-pakket maakt een `postgres` systeemaccount dat de cluster bezit. Verbind hiermee:
-
 ```bash
-sudo -u postgres psql
+psql postgres
 ```
 
-!!! note "Opmerking — Linux verschilt hier van Windows"
+!!! warning "Belangrijk — macOS wijkt hier af van Windows"
 
-    De Windows-installer vraagt tijdens de installatie om een wachtwoord voor de `postgres` superuser. Linux-pakketten doen dat niet. In plaats daarvan worden lokale verbindingen geverifieerd via **peer authentication**: de `postgres` OS-gebruiker mag zonder wachtwoord verbinden als de `postgres` databasegebruiker.
+    Het Windows-installatieprogramma vraagt u een `postgres`-superuser en wachtwoord aan te maken. Homebrew doet dat niet. In plaats daarvan maakt het een superuser aan met de naam van uw **macOS-account**, zonder wachtwoord, alleen bereikbaar vanaf de lokale machine.
 
-    Daarom gebruikt het bovenstaande commando `sudo -u postgres`. De digna-backend maakt verbinding via TCP met een gebruikersnaam en wachtwoord, dus u maakt een expliciete digna-gebruiker aan in [Initiële installatie](#initial-installation).
+    Dit betekent dat er op een nieuwe Homebrew-installatie geen `postgres`-rol bestaat. Gebruik uw eigen accountnaam wanneer u een superuser nodig hebt, en maak een expliciete digna-gebruiker aan zoals beschreven in [Initiële installatie](#initial-installation).
 
 #### Stap 6: Bevestig de poort
 
-De standaard PostgreSQL-poort is `5432`. Om te bevestigen op welke poort uw server luistert:
+De standaardpoort van PostgreSQL is `5432`. Om te bevestigen op welke poort uw server luistert:
 
 ```bash
-sudo -u postgres psql -c "SHOW port;"
+psql postgres -c "SHOW port;"
 ```
 
-Noteer de waarde — u heeft deze nodig bij het configureren van de digna-backend.
+Noteer de waarde — u hebt die nodig bij het configureren van de digna-backend.
 
-#### Stap 7: Schakel wachtwoordverificatie in voor de digna-gebruiker
+### PostgreSQL installeren met Postgres.app {: #postgresql-app }
 
-digna maakt verbinding met PostgreSQL via TCP als `digna_user`, wat wachtwoordverificatie vereist in plaats van peer authentication. Controleer dat uw `pg_hba.conf` dit toestaat.
+Als u de voorkeur geeft aan een grafische installatie:
 
-Vind het bestand:
+1. Download [Postgres.app](https://postgresapp.com) en sleep het naar uw map **Applications**
+2. Open de app en klik op **Initialize** om een nieuwe server aan te maken
+3. Volg de instructies van de app om de opdrachtregelprogramma's aan uw PATH toe te voegen
+4. Verifieer de installatie:
 
 ```bash
-sudo -u postgres psql -c "SHOW hba_file;"
+psql --version
 ```
 
-Open het in een editor en controleer of de lokale TCP-regels `scram-sha-256` (of `md5` op oudere servers) gebruiken in plaats van `ident`:
-
-```
-# TYPE  DATABASE  USER  ADDRESS         METHOD
-host    all       all   127.0.0.1/32    scram-sha-256
-host    all       all   ::1/128         scram-sha-256
-```
-
-Herlaad PostgreSQL na elke wijziging:
-
-```bash
-sudo systemctl reload postgresql
-```
-
-!!! warning "Belangrijk"
-
-    Als digna `FATAL: Ident authentication failed for user "digna_user"` meldt, is deze instelling de oorzaak.
-
-#### Stap 8: Als PostgreSQL op een andere machine draait
-
-Om verbindingen van een andere host te accepteren, stel `listen_addresses` in `postgresql.conf` in en voeg een bijpassende `host`-regel toe voor uw netwerk in `pg_hba.conf`:
-
-```
-listen_addresses = '*'
-```
-
-Open vervolgens de poort in de firewall en start de service opnieuw:
-
-```bash
-sudo ufw allow 5432/tcp
-```
-```bash
-sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
-```
-```bash
-sudo systemctl restart postgresql
-```
+Postgres.app maakt ook een superuser aan met de naam van uw macOS-account.
 
 ---
 
@@ -254,71 +228,62 @@ sudo systemctl restart postgresql
 
 digna heeft een webserver nodig om het dashboard te hosten. Kies een van de volgende opties:
 
-- [nginx](#nginx-setup) — lichtgewicht en aanbevolen
-- [Apache httpd](#apache-setup) — veelgebruikte alternatieve
+- [nginx](#nginx-setup) — geïnstalleerd via Homebrew, aanbevolen
+- [Apache httpd](#apache-setup) — meegeleverd met macOS
 
 U hoeft slechts **één** van deze servers te installeren en te configureren.
 
 Beide secties configureren twee zaken waarvan het dashboard afhankelijk is:
 
-- **Een single-page-application fallback**, zodat het vernieuwen van een dashboard-URL geen 404 geeft
-- **Een `.md` MIME-type**, zodat Markdown-bestanden correct worden geserveerd
+- **Een fallback voor single-page-applicaties**, zodat het vernieuwen van een dashboard-URL geen 404 oplevert
+- **Een `.md`-MIME-type**, zodat Markdown-bestanden correct worden geserveerd
 
 ### nginx-configuratie {: #nginx-setup }
 
 #### Overzicht
 
-nginx is een lichtgewicht, hoogpresterende webserver, goed geschikt voor het serveren van het statische digna-dashboard.
+nginx is een lichtgewicht, krachtige webserver die zeer geschikt is voor het serveren van het statische digna-dashboard.
 
 #### Installatie
 
 ```bash
-sudo apt install -y nginx
-```
-```bash
-sudo dnf install -y nginx
+brew install nginx
 ```
 
 #### nginx starten
 
 ```bash
-sudo systemctl enable --now nginx
+brew services start nginx
 ```
 
 #### Verifieer de installatie
 
 1. Open uw browser
-2. Navigeer naar `http://localhost`
-3. U zou de nginx-welkomstpagina moeten zien
+2. Navigeer naar `http://localhost:8080`
+3. U zou de welkomstpagina van nginx moeten zien
 
-#### Firewall openen
+!!! note "Opmerking — de standaardpoort is 8080, niet 80"
 
-Als de server vanaf andere machines bereikbaar is, sta HTTP-verkeer toe:
+    Homebrew configureert nginx om op poort `8080` te luisteren, zodat het zonder beheerdersrechten kan draaien. Op macOS vereist binden aan poort `80` of een andere poort onder 1024 root-rechten.
 
-```bash
-sudo ufw allow 'Nginx Full'
-```
-```bash
-sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
-```
+    Om het dashboard op poort 80 te serveren, wijzigt u `listen 8080;` in `listen 80;` in de onderstaande configuratie en start u nginx in plaats daarvan met `sudo brew services start nginx`.
 
 #### Een site configureren voor het dashboard
 
-nginx include elke file in zijn `conf.d`-map op beide distributiefamilies. Maak daar een dedicated configuratiebestand voor digna:
+De nginx-configuratie van Homebrew neemt elk bestand in de map `servers` op. Maak daar een apart configuratiebestand voor digna aan:
 
 ```bash
-sudo nano /etc/nginx/conf.d/digna.conf
+nano $(brew --prefix)/etc/nginx/servers/digna.conf
 ```
 
-Plak het volgende en vervang `/opt/digna/dashboard` door het werkelijke pad naar uw uitgepakte `dashboard`-map:
+Plak het volgende en vervang `/path/to/digna/dashboard` door het werkelijke pad naar uw uitgepakte `dashboard`-map:
 
 ```nginx
 server {
-    listen       80 default_server;
-    listen       [::]:80 default_server;
-    server_name  _;
+    listen       8080;
+    server_name  localhost;
 
-    root   /opt/digna/dashboard;
+    root   /path/to/digna/dashboard;
     index  index.html;
 
     # Serve Markdown files with the correct MIME type.
@@ -336,25 +301,15 @@ server {
 
 !!! warning "Belangrijk"
 
-    Zonder de `try_files`-directive geeft het herladen van een dashboardpagina anders dan de root-URL een 404. Dit is het nginx-equivalent van de URL Rewrite-module die op IIS onder Windows vereist is.
-
-#### De standaardsite uitschakelen
-
-Slechts één serverblok kan `default_server` voor een poort zijn. Bij de **Debian-familie**, verwijder de meegeleverde default zodat deze niet in conflict komt:
-
-```bash
-sudo rm /etc/nginx/sites-enabled/default
-```
-
-Bij de **RHEL-familie**, zet het `server { ... }`-blok in `/etc/nginx/nginx.conf` uit door het te commentariëren of te verwijderen.
+    Zonder de `try_files`-directive levert het herladen van elke dashboardpagina behalve de root-URL een 404 op. Dit is het nginx-equivalent van de URL Rewrite-module die IIS op Windows vereist.
 
 #### Pas de configuratie toe
 
-Test de configuratie op syntaxisfouten en herlaad nginx:
+Test de configuratie op syntaxfouten en herlaad daarna nginx:
 
 ```bash
-sudo nginx -t
-sudo systemctl reload nginx
+nginx -t
+brew services restart nginx
 ```
 
 ---
@@ -363,67 +318,43 @@ sudo systemctl reload nginx
 
 #### Overzicht
 
-Apache httpd is beschikbaar in de standaardrepositories van alle ondersteunde distributies. Het pakket heet `apache2` op de Debian-familie en `httpd` op de RHEL-familie.
-
-#### Installatie
-
-```bash
-sudo apt install -y apache2
-```
-```bash
-sudo dnf install -y httpd
-```
+macOS bevat Apache httpd, dus er is geen installatie nodig. Het is standaard uitgeschakeld.
 
 #### Apache starten
 
 ```bash
-sudo systemctl enable --now apache2
-```
-```bash
-sudo systemctl enable --now httpd
+sudo apachectl start
 ```
 
 #### Verifieer de installatie
 
 1. Open uw browser
 2. Navigeer naar `http://localhost`
-3. U zou de standaard Apache-pagina van de distributie moeten zien
+3. U zou het bericht "It works!" moeten zien
 
 #### Vereist: mod_rewrite inschakelen
 
-Het dashboard vereist URL-rewriting.
-
-Bij de **Debian-familie**, schakel de module in en herstart:
+Het dashboard vereist URL-herschrijving. Open de Apache-configuratie:
 
 ```bash
-sudo a2enmod rewrite
-sudo systemctl restart apache2
+sudo nano /etc/apache2/httpd.conf
 ```
 
-Bij de **RHEL-familie** wordt `mod_rewrite` standaard geladen. Controleer dit:
+Zoek de volgende regel en verwijder het voorloop-`#` om de regel te activeren:
 
-```bash
-httpd -M | grep rewrite
+```apache
+LoadModule rewrite_module libexec/apache2/mod_rewrite.so
 ```
 
 #### Vereist: .htaccess-overrides toestaan
 
-Open het configuratiebestand voor uw documentroot:
-
-```bash
-sudo nano /etc/apache2/apache2.conf
-```
-```bash
-sudo nano /etc/httpd/conf/httpd.conf
-```
-
-Zoek het `<Directory>`-blok dat uw documentroot dekt (`/var/www/html` op beide families) en wijzig:
+Zoek in hetzelfde bestand het blok `<Directory "/Library/WebServer/Documents">` en wijzig:
 
 ```apache
 AllowOverride None
 ```
 
-naar:
+in:
 
 ```apache
 AllowOverride All
@@ -431,7 +362,7 @@ AllowOverride All
 
 #### Vereist: MIME-type voor Markdown-bestanden
 
-Voeg in hetzelfde bestand de volgende regel toe zodat Markdown-bestanden correct worden geserveerd:
+Voeg, nog steeds in `httpd.conf`, de volgende regel toe zodat Markdown-bestanden correct worden geserveerd:
 
 ```apache
 AddType text/markdown .md
@@ -443,15 +374,11 @@ AddType text/markdown .md
 
 #### Pas de configuratie toe
 
-Controleer de configuratie op syntaxisfouten en herstart Apache:
+Controleer de configuratie op syntaxfouten en herstart daarna Apache:
 
 ```bash
 sudo apachectl configtest
-sudo systemctl restart apache2
-```
-```bash
-sudo apachectl configtest
-sudo systemctl restart httpd
+sudo apachectl restart
 ```
 
 ---
@@ -460,9 +387,9 @@ sudo systemctl restart httpd
 
 ### Stap 1: Zet de digna-repository op
 
-De digna-repository slaat alle door digna berekende metrics op. Het fungeert als de centrale database voor analytische en prestatiegegevens.
+De digna-repository slaat alle door digna berekende metrics op. Ze fungeert als centrale database voor analytische en prestatiegegevens.
 
-#### Maak de repository-schema en gebruiker aan
+#### Maak het repository-schema en de gebruiker aan
 
 Open uw PostgreSQL-client (psql, pgAdmin of vergelijkbaar) en voer de volgende SQL-commando's uit:
 
@@ -490,13 +417,13 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
-Om deze vanuit de shell in één stap uit te voeren:
+Om deze in één stap vanuit de Terminal uit te voeren:
 
 ```bash
-sudo -u postgres psql
+psql postgres
 ```
 
-Plak vervolgens de statements op de `postgres=#` prompt en typ `\q` om af te sluiten.
+Plak daarna de statements bij de prompt `postgres=#` en typ `\q` om af te sluiten.
 
 !!! tip "Best Practice"
 
@@ -507,7 +434,7 @@ Plak vervolgens de statements op de `postgres=#` prompt en typ `\q` om af te slu
 ### Stap 2: Pak het digna-installatiepakket uit
 
 1. Zoek het digna-installatie-ZIP-bestand dat aan u is geleverd
-2. Pak het uit naar uw gewenste installatieplek — bijvoorbeeld `/opt/digna`
+2. Pak het uit naar uw gewenste installatieplek — bijvoorbeeld `/opt/digna` of `~/digna`
 3. Na uitpakken zou u de volgende items moeten zien:
    - `dashboard/` — Webdashboard-interface
    - `digna` — Hoofdprogramma (backend + CLI gecombineerd)
@@ -519,38 +446,34 @@ Plak vervolgens de statements op de `postgres=#` prompt en typ `\q` om af te slu
     [Dashboardconfiguratie](#dashboard-configuration). Ook `license.toml` wordt niet meegeleverd;
     digna levert het afzonderlijk, zoals Stap 3 beschrijft.
 
-Om vanuit de shell uit te pakken:
+Om vanuit de Terminal uit te pakken:
 
 ```bash
-sudo mkdir -p /opt/digna
-sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
+unzip digna-2026.06-macos.zip -d /opt/digna
 ```
-
-!!! note "Opmerking"
-
-    Als `unzip` niet is geïnstalleerd, voeg het toe met `sudo apt install -y unzip` of `sudo dnf install -y unzip`.
 
 #### Maak het uitvoerbare bestand uitvoerbaar
 
-Afhankelijk van hoe het archief is overgezet, kan het uitvoerbit verloren zijn gegaan. Stel het expliciet in:
+Afhankelijk van hoe het archief is overgedragen, blijft het uitvoerbaar-bit bij het uitpakken mogelijk niet behouden. Stel het expliciet in:
 
 ```bash
 cd /opt/digna
-sudo chmod +x digna
+chmod +x digna
 ```
 
-#### Maak een serviceaccount aan
+#### Als macOS de applicatie blokkeert
 
-Het is aanbevolen om de backend als een dedicated niet-geprivilegieerde gebruiker te draaien voor productie-omgevingen:
+Bestanden die via een browser of mailprogramma zijn gedownload, krijgen een quarantaine-attribuut. Als macOS meldt dat de app *"niet kan worden geopend omdat de ontwikkelaar niet kan worden geverifieerd"*, verwijder het attribuut dan uit de installatiemap:
 
 ```bash
-sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
-sudo chown -R digna:digna /opt/digna
+xattr -dr com.apple.quarantine /opt/digna
 ```
+
+U kunt ook **System Settings → Privacy & Security** openen, het geblokkeerde item onderaan de pagina zoeken en op **Open Anyway** klikken.
 
 !!! note "Opmerking"
 
-    Op de RHEL-familie is het equivalente shell-pad `/sbin/nologin`.
+    Deze stap is alleen nodig als macOS het uitvoerbare bestand daadwerkelijk blokkeert. Pakketten die via SSH of vanaf interne netwerkshares zijn overgedragen, worden meestal niet in quarantaine geplaatst.
 
 ### Stap 3: Installeer het licentiebestand
 
@@ -586,7 +509,7 @@ Het `config_template.toml`-bestand wordt meegeleverd in uw digna-installatiemap.
 
 ```bash
 cd /opt/digna
-sudo mv config_template.toml config.toml
+mv config_template.toml config.toml
 ```
 
 **Locatie:** `/opt/digna/config.toml`
@@ -614,7 +537,7 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 
 !!! note "Opmerking"
 
-    Als u het dashboard vanaf nginx of Apache op de standaard HTTP-poort serveert, is de origin die u moet toestaan `http://localhost` — of de publieke URL van de server wanneer het dashboard vanaf andere machines bereikbaar is.
+    Als u het dashboard serveert vanaf de nginx van Homebrew op de standaardpoort, is de origin die u moet toestaan `http://localhost:8080`.
 
 #### [repo] Sectie
 
@@ -638,15 +561,6 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 | `digna_REPO_SCHEMA` | `dignarepo` | Eerder aangemaakt schema |
 | `digna_REPO_USER` | `digna_user` | Gebruiker aangemaakt in PostgreSQL-setup |
 | `digna_REPO_PASSWORD` | Uw wachtwoord | Wachtwoord ingesteld tijdens het aanmaken van het schema |
-
-!!! tip "Best Practice"
-
-    `config.toml` bevat een databasewachtwoord in platte tekst. Beperk de permissies zodat alleen het serviceaccount het kan lezen:
-
-    ```bash
-    sudo chown digna:digna /opt/digna/config.toml
-    sudo chmod 600 /opt/digna/config.toml
-    ```
 
 #### [base] Sectie
 
@@ -678,7 +592,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 !!! tip "Tip"
 
-    Om het aantal beschikbare CPU-cores op uw server te vinden, voert u `nproc` uit.
+    Om het aantal beschikbare CPU-cores op uw Mac te vinden, voert u `sysctl -n hw.ncpu` uit.
 
 #### [encryption] Sectie
 
@@ -695,7 +609,10 @@ DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
 
 !!! warning "Bescherm config.toml"
 
-    Deze sleutel is een vaste waarde, identiek in alle digna-installaties, en het is de sleutel die de gevoelige waarden in uw repository ontsleutelt. Beperk `config.toml` tot het account waaronder digna draait, houd het bestand buiten versiebeheer en gedeelde schijven, en sluit het uit van elke back-up die minder veilig wordt bewaard dan de repository zelf.
+    Deze sleutel is een vaste waarde, identiek in alle digna-installaties, en het is de sleutel die
+    de gevoelige waarden in uw repository ontsleutelt. Beperk `config.toml` tot het account waaronder
+    digna draait, houd het bestand buiten versiebeheer en gedeelde schijven, en sluit het uit van elke
+    back-up die minder veilig wordt bewaard dan de repository zelf.
 
 #### [logging] Sectie
 
@@ -719,7 +636,7 @@ digna_LOGGING_BACKUP_COUNT = 10
 Controleer voordat u de repository initialiseert of `config.toml` volledig en correct opgebouwd is. Voer in uw digna-installatiemap uit:
 
 ```bash
-digna config check
+./digna config check
 ```
 
 Elke sectie wordt afzonderlijk gevalideerd, zodat één fout de toestand van de rest niet verbergt:
@@ -740,7 +657,7 @@ Los alles op wat als FAILED wordt gemeld en voer het commando opnieuw uit voorda
 
 ### Stap 3: Initialiseer de repository
 
-1. Open een terminal
+1. Open **Terminal**
 2. Navigeer naar uw digna-installatiemap (waar `config.toml` en het `digna`-uitvoerbare bestand zich bevinden)
 3. Voer de verbindingscontrole uit:
 
@@ -749,14 +666,15 @@ cd /opt/digna
 ./digna repo check
 ```
 
-U zou een bevestiging moeten zien dat de verbinding tot stand is gebracht (de repository zelf is nog niet geïnitieerd).
+U zou een bevestiging moeten zien dat de verbinding tot stand is gebracht (de repository zelf is nog niet geïnitialiseerd).
 
 !!! note "Opmerking"
 
-    Op Linux staat de huidige map niet in uw PATH, dus het uitvoerbare bestand wordt aangeroepen als `./digna` in plaats van `digna`. Om overal de korte vorm te gebruiken, maak een symbolische link:
+    Op macOS staan commando's in de huidige map niet in uw PATH, dus het uitvoerbare bestand wordt aangeroepen als `./digna` in plaats van `digna`. Om overal de korte vorm te gebruiken, voegt u de installatiemap toe aan uw PATH:
 
     ```bash
-    sudo ln -s /opt/digna/digna /usr/local/bin/digna
+    echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
     ```
 
 ### Stap 4: Installeer het repository-schema
@@ -771,9 +689,7 @@ Dit commando installeert de benodigde tabellen en het schema in uw PostgreSQL-da
 
 ### Stap 5: Maak een admin-gebruiker aan
 
-1. Open een **nieuw** terminalvenster
-2. Navigeer naar uw digna-installatiemap
-3. Voer het volgende commando uit om een admin-gebruiker aan te maken:
+De admin-gebruiker wordt rechtstreeks in het repository-schema aangemaakt, dus de server hoeft nog niet te draaien. Voer in de digna-installatiemap uit:
 
 ```bash
 ./digna user add <email> <password> "<display_name>" --admin
@@ -789,13 +705,11 @@ Hiermee wordt een gebruiker aangemaakt met het e-mailadres `admin@example.com` e
 
 !!! tip "Tip"
 
-    Zet het wachtwoord tussen enkele aanhalingstekens. `bash` en `zsh` behandelen tekens zoals `!`, `$` en `*` speciaal; een niet-geciteerd wachtwoord met deze tekens wordt mogelijk niet correct doorgegeven.
+    Zet het wachtwoord tussen enkele aanhalingstekens. `zsh` behandelt tekens zoals `!`, `$` en `*` speciaal, en een niet-geciteerd wachtwoord met deze tekens wordt niet doorgegeven zoals u het hebt getypt.
 
 !!! tip "Best Practice"
 
     Gebruik een sterk wachtwoord met een mix van hoofdletters, kleine letters, cijfers en speciale tekens.
-
----
 
 ### Stap 6: Start de digna-server
 
@@ -820,18 +734,13 @@ INFO:     Uvicorn running on http://localhost:8082
 
 !!! tip "Tip"
 
-    Als het dashboard vanaf een andere machine wordt geserveerd dan de backend, open dan ook de API-poort in de firewall:
-
-    ```bash
-    sudo ufw allow 8082/tcp
-    ```
-    ```bash
-    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
-    ```
+    De eerste keer dat u de server start, kan macOS vragen of de applicatie inkomende netwerkverbindingen mag accepteren. Klik op **Allow**, anders kan het dashboard de backend niet bereiken.
 
 !!! note "De server houdt de terminal bezet"
 
-    `serve` draait op de voorgrond en blijft draaien totdat u het stopt met ++ctrl+c++. Laat het draaien terwijl u de installatie afrondt; zie voor automatisch starten bij het opstarten [digna als systemd-service uitvoeren](#running-digna-as-a-systemd-service).
+    `serve` draait op de voorgrond en blijft draaien totdat u het stopt met ++ctrl+c++. Laat het draaien terwijl u de installatie afrondt; zie [digna als achtergrondservice draaien](#running-digna-as-a-background-service) om het in plaats daarvan automatisch bij het opstarten te starten.
+
+---
 
 ## Dashboardconfiguratie {: #dashboard-configuration }
 
@@ -845,41 +754,41 @@ Kies uw webserver en volg de bijbehorende deployment-stappen.
 
 #### Deployen naar nginx
 
-Als u de [nginx Setup](#nginx-setup) heeft gevolgd, wijst het serverblok al naar uw `dashboard`-map en is er geen kopiëren nodig.
+Als u de sectie [nginx-configuratie](#nginx-setup) hebt gevolgd, verwijst het serverblok al naar uw `dashboard`-map en hoeft er niets te worden gekopieerd.
 
 1. **Bevestig het pad**
-   - Open `/etc/nginx/conf.d/digna.conf`
-   - Controleer of `root` naar uw uitgepakte `dashboard`-map wijst
+   - Open `$(brew --prefix)/etc/nginx/servers/digna.conf`
+   - Controleer of `root` naar uw uitgepakte `dashboard`-map verwijst
 
 2. **Zorg dat de map leesbaar is**
    ```bash
-   sudo chmod -R a+rX /opt/digna/dashboard
+   chmod -R a+rX /opt/digna/dashboard
    ```
 
 3. **Herlaad nginx**
    ```bash
-   sudo nginx -t
-   sudo systemctl reload nginx
+   nginx -t
+   brew services restart nginx
    ```
 
 4. **Test de installatie**
    - Open uw browser
-   - Navigeer naar `http://localhost` (of uw geconfigureerde URL)
-   - U zou de inlogpagina van het digna-dashboard moeten zien
+   - Navigeer naar `http://localhost:8080` (of uw geconfigureerde URL)
+   - U zou de aanmeldpagina van het digna-dashboard moeten zien
 
 #### Deployen naar Apache httpd
 
-1. **Kopieer het dashboard naar de documentroot**
+1. **Kopieer het dashboard naar de document root**
    ```bash
-   sudo cp -R /opt/digna/dashboard /var/www/html/digna
+   sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
    ```
 
 2. **Voeg de rewrite-regels toe**
 
-   Maak een `.htaccess`-bestand in de gedeployde map zodat dashboard-routes een browserrefresh overleven:
+   Maak een `.htaccess`-bestand aan in de uitgerolde map, zodat dashboardroutes een browservernieuwing overleven:
 
    ```bash
-   sudo nano /var/www/html/digna/.htaccess
+   sudo nano /Library/WebServer/Documents/digna/.htaccess
    ```
 
    Plak het volgende:
@@ -899,80 +808,54 @@ Als u de [nginx Setup](#nginx-setup) heeft gevolgd, wijst het serverblok al naar
 
 3. **Herstart Apache**
    ```bash
-   sudo systemctl restart apache2
-   ```
-   ```bash
-   sudo systemctl restart httpd
+   sudo apachectl restart
    ```
 
-4. **Toegang tot het dashboard**
+4. **Open het dashboard**
    - Open uw browser
    - Navigeer naar `http://localhost/digna`
-   - U zou de inlogpagina van het digna-dashboard moeten zien
-
-### Stap 2: SELinux (alleen RHEL-familie)
-
-Op RHEL, Rocky, AlmaLinux en Fedora staat SELinux standaard in enforcing en zal de webserver blokkeren om bestanden buiten de verwachte locaties te lezen. Controleer of het actief is:
-
-```bash
-getenforce
-```
-
-Als het resultaat `Enforcing` is en u serveert het dashboard vanaf `/opt/digna/dashboard`, label dan de map zodat de webserver deze kan lezen:
-
-```bash
-sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
-sudo restorecon -Rv /opt/digna/dashboard
-```
-
-!!! note "Opmerking"
-
-    Als `semanage` niet gevonden wordt, installeer het dan met `sudo dnf install -y policycoreutils-python-utils`.
-
-!!! warning "Belangrijk"
-
-    Een dashboard dat **403 Forbidden** retourneert op een vers geconfigureerde RHEL-server is vrijwel altijd een SELinux-labellingprobleem in plaats van een bestandspermissieprobleem. Controleer met `sudo ausearch -m avc -ts recent`.
+   - U zou de aanmeldpagina van het digna-dashboard moeten zien
 
 ---
 
-## digna als systemd-service draaien {: #running-digna-as-a-systemd-service }
+## digna als achtergrondservice draaien {: #running-digna-as-a-background-service }
 
 ### Waarom digna als service draaien?
 
-Het draaien van de digna-backend als systemd-service zorgt ervoor dat deze:
+Door de digna-backend als achtergrondservice te draaien, zorgt u ervoor dat deze:
 
-- Automatisch start bij het opstarten van de machine
-- Op de achtergrond draait zonder een geopend terminalvenster
-- Automatisch opnieuw start als het crasht
-- Beheerd kan worden via `systemctl`, de standaard Linux-servicemanager
+- Automatisch start wanneer de machine opstart
+- Op de achtergrond draait zonder een geopend Terminal-venster
+- Automatisch opnieuw start als deze crasht
+- Beheerd kan worden via `launchctl`, de servicebeheerder van macOS
 
-### Servicebeheerbestanden
+### Bestanden voor servicebeheer
 
 Alle benodigde bestanden bevinden zich in de digna-installatiemap onder: `bin/`
 
 De volgende shellscripts zijn beschikbaar:
 
-- `install_service.sh` — Registreert digna bij systemd
+- `install_service.sh` — Registreert digna bij launchd
 - `uninstall_service.sh` — Deregistreert de service
 - `start_service.sh` — Start de geregistreerde service
 - `stop_service.sh` — Stopt de draaiende service
 
-!!! warning "Rootrechten vereist"
+!!! warning "Beheerdersrechten vereist"
 
-    Alle scripts moeten met `sudo` worden uitgevoerd, omdat het registreren van een service die bij het opstarten start een unit-file naar `/etc/systemd/system` schrijft.
+    Alle scripts moeten met `sudo` worden uitgevoerd, omdat het registreren van een service die bij het opstarten start naar `/Library/LaunchDaemons` schrijft.
 
-### Maak de scripts uitvoerbaar
+### De scripts uitvoerbaar maken
 
-Bij extractie kan het uitvoerbit verloren zijn gegaan. Voor eerste gebruik:
+Bij het uitpakken blijft het uitvoerbaar-bit mogelijk niet behouden. Vóór het eerste gebruik:
 
 ```bash
 cd /opt/digna/bin
-sudo chmod +x *.sh
+chmod +x *.sh
 ```
 
 ### De service installeren
 
-1. **Open een terminal**
+1. **Open Terminal**
 
 2. **Navigeer naar de bin-map**
    ```bash
@@ -984,13 +867,13 @@ sudo chmod +x *.sh
    sudo ./install_service.sh
    ```
 
-De digna-server is nu geregistreerd bij systemd met **automatisch opstarten** ingeschakeld. De service start niet onmiddellijk — zie de volgende sectie om deze te starten.
+De digna-server is nu bij launchd geregistreerd met **automatische opstart** ingeschakeld. De service start niet direct — zie de volgende sectie om deze te starten.
 
 ### De service starten en stoppen
 
 #### Om de service te starten
 
-1. Open een terminal
+1. Open Terminal
 2. Navigeer naar `/opt/digna/bin`
 3. Voer uit:
    ```bash
@@ -999,7 +882,7 @@ De digna-server is nu geregistreerd bij systemd met **automatisch opstarten** in
 
 #### Om de service te stoppen
 
-1. Open een terminal
+1. Open Terminal
 2. Navigeer naar `/opt/digna/bin`
 3. Voer uit:
    ```bash
@@ -1010,51 +893,21 @@ De digna-server is nu geregistreerd bij systemd met **automatisch opstarten** in
 
     Stop de service altijd voordat u applicatiebestanden bijwerkt.
 
-### Beheren van de service met systemctl
-
-Zodra geregistreerd, kan de service ook gecontroleerd worden met de standaard systemd-commando's vanuit elke map:
-
-```bash
-sudo systemctl start digna
-sudo systemctl stop digna
-sudo systemctl restart digna
-sudo systemctl status digna
-```
-
-### Verifiëren van de service
+### De service verifiëren
 
 Om te bevestigen dat de service geregistreerd is en draait:
 
 ```bash
-systemctl is-enabled digna
-systemctl is-active digna
+sudo launchctl list | grep digna
 ```
 
-`enabled` betekent dat de service bij het opstarten start; `active` betekent dat deze nu draait.
-
-### Bekijk de servicelogboeken
-
-systemd captureert alles wat de backend naar de console schrijft. Om het te lezen:
-
-```bash
-sudo journalctl -u digna -n 100
-```
-
-Om de log realtime te volgen terwijl u een probleem reproduceert:
-
-```bash
-sudo journalctl -u digna -f
-```
-
-!!! tip "Tip"
-
-    Dit is de snelste manier om een service te diagnosticeren die start en onmiddellijk weer stopt. Een repository-verbindingfout of een ontbrekend `license.toml` wordt hier gerapporteerd.
+Een regel die met een proces-ID begint, geeft aan dat de service draait. Een `-` in de eerste kolom betekent dat de service geregistreerd maar gestopt is.
 
 ### De service naar een nieuwe map verplaatsen
 
-De unit-file slaat het absolute pad naar het uitvoerbare bestand op, dus het verplaatsen van de installatie vereist het opnieuw registreren van de service:
+launchd slaat het absolute pad naar het uitvoerbare bestand op, dus het verplaatsen van de installatie vereist dat de service opnieuw wordt geregistreerd:
 
-1. **Verwijder de huidige service**
+1. **Deïnstalleer de huidige service**
    ```bash
    cd /old/path/digna/bin
    sudo ./uninstall_service.sh
@@ -1084,12 +937,12 @@ De unit-file slaat het absolute pad naar het uitvoerbare bestand op, dus het ver
    sudo ./stop_service.sh
    ```
 
-2. **Verwijder de service**
+2. **Deïnstalleer de service**
    ```bash
    sudo ./uninstall_service.sh
    ```
 
-De digna-server is nu van systemd losgekoppeld.
+De digna-server is nu bij launchd gederegistreerd.
 
 ---
 
@@ -1123,7 +976,7 @@ Zet na de upgrade elke betrokken verbinding om naar ODBC en test ze vanuit het d
 Maak vóór het upgraden een backup van uw repository (PostgreSQL) om gegevensverlies te voorkomen.
 Een backup zorgt ervoor dat u kunt herstellen als de upgrade onverwachte problemen veroorzaakt.
 
-Om een backup vanaf de shell te maken:
+Om een backup vanuit de Terminal te maken:
 
 ```bash
 pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
@@ -1133,14 +986,14 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 #### Stap 1: Stop de digna-service
 
-Als digna als systemd-service draait, stop deze dan eerst:
+Als digna als achtergrondservice draait, stop deze dan eerst:
 
 ```bash
 cd /opt/digna/bin
 sudo ./stop_service.sh
 ```
 
-Als digna in de voorgrond draait, druk dan op `Ctrl + C` in het terminalvenster.
+Als digna op de voorgrond draait, druk dan op `Ctrl + C` in het bijbehorende Terminal-venster.
 
 #### Stap 2: Huidige installatie veiligstellen
 
@@ -1148,13 +1001,13 @@ Hernoem in uw digna-installatiemap de mappen van uw huidige installatie, zodat d
 
 ```bash
 cd /opt/digna
-sudo mv dignabackend dignabackend_old
+mv dignabackend dignabackend_old
 ```
 ```bash
-sudo mv dignacli dignacli_old
+mv dignacli dignacli_old
 ```
 ```bash
-sudo mv dashboard dashboard_old
+mv dashboard dashboard_old
 ```
 
 !!! info "dignabackend en dignacli worden niet meer gebruikt"
@@ -1165,11 +1018,11 @@ sudo mv dashboard dashboard_old
 
 1. Pak het nieuwe digna-installatie-ZIP-bestand uit
 2. Kopieer het nieuwe `digna`-uitvoerbare bestand en de `dashboard`-map naar uw installatiemap
-3. Herstel het uitvoerbit en de eigendom voor het serviceaccount:
+3. Herstel het uitvoerbaar-bit en verwijder zo nodig het quarantaine-attribuut:
 
 ```bash
-sudo chmod +x /opt/digna/digna
-sudo chown -R digna:digna /opt/digna
+chmod +x /opt/digna/digna
+xattr -dr com.apple.quarantine /opt/digna
 ```
 
 !!! warning "Belangrijk"
@@ -1182,7 +1035,7 @@ sudo chown -R digna:digna /opt/digna
 #### Stap 4: Herstel uw configuratiebestanden
 
 ```bash
-sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
 
 !!! warning "Release 2026.06 wijzigt config.toml"
@@ -1200,7 +1053,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Voeg de twee `[base]`-sleutels toe aan uw bestaande `[base]`-sectie en voeg `[encryption]` toe als nieuwe sectie. Verwijder daarna de instellingen die niet meer worden gebruikt: **`digna_FERNET_KEY`** uit `[base]`, en **`digna_APP_HOST`** en **`digna_APP_PORT`** uit `[app]` — de server haalt zijn adres en poort nu uit `digna serve`.
 
-    Wat elke instelling doet, staat in [Backend-configuratie](#backend-configuration).
+    Wat elke instelling doet, staat in [Backendconfiguratie](#backend-configuration).
 
 !!! warning "Eenmalige aanmelding: de indeling van [oidc_clients] is gewijzigd"
 
@@ -1233,7 +1086,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 Het dashboard bestaat uit statische bestanden, dus uw webserver — en de browser — kan nog
 steeds de vorige versie serveren. Herlaad of herstart de webserver die de `dashboard`-map
-host, en herlaad de pagina daarna met een harde vernieuwing (++ctrl+f5++).
+host, en herlaad de pagina daarna met een harde vernieuwing (++cmd+shift+r++).
 
 #### Stap 6: Configuratie valideren
 
@@ -1251,7 +1104,7 @@ Elke release krijgt een eigen licentie. Kopieer het `license.toml` dat het digna
 deze release heeft geleverd naar de installatiemap, ter vervanging van het oude:
 
 ```bash
-sudo cp /path/to/new/license.toml /opt/digna/license.toml
+cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
 !!! warning "Behoud de vorige licentie niet"
@@ -1277,42 +1130,33 @@ Dit werkt het PostgreSQL-schema bij naar de nieuwste versie terwijl alle bestaan
 
 #### Stap 9: Herstart services
 
-Als u als systemd-service draait:
+Als digna als achtergrondservice draait:
 
 ```bash
 cd /opt/digna/bin
 sudo ./start_service.sh
 ```
 
-Als u handmatig draait, start de server opnieuw:
+Als u de server handmatig draait, start deze dan opnieuw:
 
 ```bash
 cd /opt/digna
 ./digna serve --address <address> --port <port>
 ```
 
-Als u nginx of Apache gebruikt, herlaad dan de betreffende webserver:
+Als u nginx of Apache gebruikt, herstart dan de betreffende webserver:
 
 ```bash
-sudo systemctl reload nginx
+brew services restart nginx
 ```
 ```bash
-sudo systemctl restart apache2
-```
-
-Op de RHEL-familie, breng de SELinux-labels opnieuw aan als de `dashboard`-map is vervangen:
-
-```bash
-sudo restorecon -Rv /opt/digna/dashboard
+sudo apachectl restart
 ```
 
 #### Stap 10: Verifieer de upgrade
 
-1. Ga naar het digna-dashboard
+1. Open het digna-dashboard
 2. Controleer of de interface correct laadt
-3. Controleer de serverlogs op eventuele fouten:
-4. Zet elke verbinding die nog geen ODBC gebruikte om naar ODBC en test daarna alle verbindingen — zie [Een verbinding testen](../../../databases/overview.md#testing-a-connection)
-
-```bash
-sudo journalctl -u digna -n 100
-```
+3. Controleer de serverlogs op eventuele fouten
+4. Zet elke verbinding die nog geen ODBC gebruikte om naar ODBC en test daarna alle verbindingen
+   — zie [Een verbinding testen](../../../databases/overview.md#testing-a-connection)
