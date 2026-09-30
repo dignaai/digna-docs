@@ -59,6 +59,7 @@ Az alábbi táblázat rögzíti, hogy az egyes parancskategóriák mit töltenek
 | `license check` | nem | ez *maga* az ellenőrzés |
 | `crypt` | igen | nem |
 | `serve` | igen | nem |
+| `windows` | nem (a szolgáltatás indításkor olvassa be) | nem |
 | `project` | igen | nem |
 | `user` | igen | igen |
 | `inspection` | igen | igen |
@@ -223,6 +224,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+A `repo prune` parancs eltávolítja azokat a sorokat, amelyek túlélték azt a projektet vagy adatforrást, amelyhez tartoztak.
+Egy projekt vagy adatforrás törlése magát az objektumot eltávolítja, de a hozzá tartozó profilokat, előrejelzéseket,
+állapotokat és sorszámokat meghagyja — ez tudatos kompromisszum, mert egy olyan törlés, amely ezeket a táblákat is
+kitakarítaná, megvárakoztatná a felhasználót. A `repo prune` az a karbantartási lépés, amely ezeket kitakarítja, és
+bármikor biztonságosan futtatható: kizárólag olyan sorokat távolít el, amelyek projektje vagy adatforrása már nem létezik.
+
+A Python-háttérrendszer által olyan táblákba írt sorokat, amelyeket a jelenlegi kiadás már nem használ, a parancs érintetlenül hagyja.
+
+#### A parancs használata
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Beállítások
+- `--dry-run`: Kiírja, mi kerülne eltávolításra, anélkül hogy bármit eltávolítana.
+
+Csak az árva sorokat tartalmazó táblák jelennek meg. Ha nincs ilyen, a parancs a
+`No orphaned rows found.` üzenetet írja ki, és kilép.
+
+#### Példa
+```bash
+digna repo prune
+```
+
+#### Példakimenet
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Ugyanez a jelentés, anélkül hogy bármi eltávolításra kerülne:
+```bash
+digna repo prune --dry-run
+```
+
+A sorszámok azonosak, csak a záró sor különbözik:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +590,77 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+A `project cleanup` parancs eltávolítja azokat az ellenőrzési eredményeket, amelyeket egy projekt egy dátumtartományban
+felhalmozott — a profilokat, előrejelzéseket, sorszámokat, valamint minden ellenőrzési, attribútum-, adathalmaz- és adatforrás-állapotot.
+Pontosan azt távolítja el, amit az adott dátumokra vonatkozó ellenőrzés írt, így a tartomány utána újra ellenőrizhető
+az eredmények újraépítéséhez.
+
+A Timeliness és a Schema Tracker előzményei **nem** kerülnek eltávolításra: ezek azt rögzítik, amit a digna egy adott
+napon megfigyelt, nem pedig egy abból származtatott eredményt, ezért egy múltbeli dátumtartomány tisztítása érintetlenül hagyja őket.
+
+Minden adatforrás tisztítása saját tranzakcióban történik, így egy megszakított futás teljes adatforrásokat hagy maga után,
+nem pedig félig kitisztítottat.
+
+#### A parancs használata
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: A tisztítandó projekt (kötelező). Hívásonként egy projekt.
+- **FROM_DATE**: Az első dátum, amelyre vonatkozóan az eredmények eltávolításra kerülnek, `YYYY-MM-DD` formátumban (kötelező).
+- **TO_DATE**: Az utolsó dátum (a tartományba beleértve), amelyre vonatkozóan az eredmények eltávolításra kerülnek, `YYYY-MM-DD` formátumban (kötelező).
+
+#### Beállítások
+- `--table-name`, `-n`: A tisztítást ezekre az adatforrásokra korlátozza. Több név is megadható
+  szóközzel elválasztva.
+- `--table-filter`: A tisztítást azokra az adatforrásokra korlátozza, amelyek neve tartalmazza ezt a részkarakterláncot.
+- `--dry-run`: Felsorolja a tisztításra kerülő adatforrásokat, anélkül hogy bármit eltávolítana.
+- `--timing`: Megjeleníti, mennyi ideig tartott a tisztítás.
+
+A `--table-name` és a `--table-filter` VAGY kapcsolatban áll — egy adatforrás akkor kerül tisztításra, ha meg van nevezve,
+vagy ha a részkarakterlánc illeszkedik rá. Ha egyetlen adatforrás sem illeszkedik, a parancs hibával leáll, ahelyett hogy
+sikert jelentene egy olyan tisztításról, amely semmit sem csinált.
+
+#### Példa
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Egyetlen adatforrásra korlátozva:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Példakimenet
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Annak megtekintése, mely adatforrások kerülnének tisztításra, anélkül hogy bármi eltávolításra kerülne:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Minden sor meg van jelölve, így egy próbafuttatás nem téveszthető össze egy valódival:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Ellenőrzések kezelése
 
 ---
@@ -707,3 +834,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows-szolgáltatás kezelése
+
+Csak Windows rendszeren érhető el. A parancsok regisztrálják a ***digna*** háttérrendszert a Windows
+szolgáltatáskezelőjében, és vezérlik azt; maga a szolgáltatás a háttérben a `serve` parancsot futtatja. Minden parancsot
+emelt jogosultságú (rendszergazdaként megnyitott) Parancssorból kell futtatni, és mindegyik elfogadja a `--name` beállítást,
+így egy nem alapértelmezett néven regisztrált szolgáltatás is megcímezhető.
+
+---
+
+### windows install
+
+A `windows install` parancs Windows-szolgáltatásként regisztrálja a ***digna*** alkalmazást.
+
+Az itt megadott cím és port a szolgáltatás regisztrációjában rögzül, és a szolgáltatás ezekhez kötődik —
+nem a `config.toml` fájlból olvassa be őket. Ha később módosítani szeretné őket, távolítsa el
+a szolgáltatást, és telepítse újra.
+
+#### A parancs használata
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva lesz (alapértelmezés: `digna`).
+- `--display-name`: A services.msc-ben megjelenő név (alapértelmezés: `digna`).
+- `--description`: A services.msc-ben megjelenő leírás (alapértelmezés: `digna data quality backend`).
+- `--address`: Az a cím, amelyhez a szolgáltatás az API-ját köti (alapértelmezés: `127.0.0.1`).
+- `--port`: Az a port, amelyhez a szolgáltatás az API-ját köti (alapértelmezés: `8000`).
+- `--working-dir`: A `config.toml` és a `license.toml` fájlt tartalmazó könyvtár, amelyet a szolgáltatás
+  munkakönyvtárként használ (alapértelmezés: a `digna` futtatható állomány könyvtára).
+- `--start-type`: Mikor indul a szolgáltatás — `auto` a Windows-zal együtt, `manual` csak kérésre,
+  `disabled` regisztrálva van, de nem hajlandó elindulni (alapértelmezés: `auto`).
+- `--account`: A fiók, amelynek nevében a szolgáltatás fut, pl. `DOMAIN\user` vagy `.\user` (alapértelmezés: `LocalSystem`).
+- `--password`: A `--account` fiók jelszava.
+
+#### Példa
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Regisztrálás egy második néven, tartományi fiókkal futtatva:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+A `windows start` parancs elindít egy regisztrált szolgáltatást.
+
+#### A parancs használata
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva van (alapértelmezés: `digna`).
+
+---
+
+### windows stop
+
+A `windows stop` parancs leállít egy futó szolgáltatást. Bármely alkalmazásfájl cseréje előtt állítsa le
+a szolgáltatást.
+
+#### A parancs használata
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva van (alapértelmezés: `digna`).
+
+---
+
+### windows uninstall
+
+A `windows uninstall` parancs törli a szolgáltatás regisztrációját. Előbb állítsa le a szolgáltatást.
+
+#### A parancs használata
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva van (alapértelmezés: `digna`).

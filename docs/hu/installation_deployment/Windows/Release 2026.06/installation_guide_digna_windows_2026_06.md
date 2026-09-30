@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. A kicsomagolás után a következő elemeket kell látnod:
    - `dashboard/` — webes dashboard felület
    - `digna` — fő futtatható állomány (backend + CLI kombinálva)
-   - `config.toml` — konfigurációs fájl
-   - `license.toml` — licenc fájl (másold ide a sajátodat)
+
+!!! info "A konfigurációs és a licencfájl nincs benne a csomagban"
+
+    Sem a `config.toml`, sem a `dashboard/dashboard_config.toml` nem része a telepítésnek — mindkettőt
+    magadnak kell létrehoznod, a [Backend konfiguráció](#backend-configuration) és a
+    [Dashboard konfiguráció](#dashboard-configuration) szakaszban leírtak szerint. A `license.toml` sem
+    része a csomagnak; a digna külön biztosítja, ahogyan a 3. lépés leírja.
 
 ### 3. lépés: Telepítsd a licenc fájlt
 
@@ -525,9 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1. lépés: Telepítsd a dashboardot a webkiszolgálóra
 
-A digna dashboard saját `config.toml` fájllal rendelkezik a `dashboard/` könyvtárban. Ez a konfiguráció alapértelmezetten biztosítva van, és kezdeti telepítéskor általában nincs szükség módosításra. Csak akkor kell módosítanod, ha a backend kapcsolatot testre szeretnéd szabni.
+A digna dashboard a saját konfigurációját a `dashboard/dashboard_config.toml` fájlból olvassa. Ez a fájl nem része a telepítésnek — neked kell létrehoznod a `dashboard/` könyvtárban, a dashboard fájljai mellett.
 
-Ha módosítani szeretnéd a dashboard konfigurációját (például többinstanciás telepítésnél), kövesd a dashboard dokumentációját.
+A tartalmát az [Egyszeri bejelentkezés (SSO)](../../../sso/overview.md) oldal írja le, és ott is van rá szükség: ez tartalmazza a dashboard által kínált bejelentkezési lehetőségeket, valamint többinstanciás telepítéseknél a backend kapcsolatot.
 
 Válaszd ki a webkiszolgálót, és kövesd az alábbi telepítési lépéseket.
 
@@ -582,19 +587,24 @@ A digna backend Windows szolgáltatásként való futtatása biztosítja, hogy a
 - Automatikusan újrainduljon, ha összeomlik
 - A Windows Szolgáltatások felületen keresztül menedzselhető legyen
 
-### Szolgáltatás-kezelő fájlok
+### A `windows` parancsok
 
-Minden szükséges fájl a digna telepítési könyvtárában található: `bin/`
+A szolgáltatást maga a `digna` futtatható állomány kezeli, a `digna windows`
+alparancsokon keresztül. Nincs szükség batch fájlok futtatására.
 
-A következő batch fájlok állnak rendelkezésre:
-- `install_service.bat` — digna regisztrálása Windows szolgáltatásként
-- `uninstall_service.bat` — a szolgáltatás eltávolítása
-- `start_service.bat` — a szolgáltatás indítása
-- `stop_service.bat` — a szolgáltatás leállítása
+| Parancs | Cél |
+|---|---|
+| `digna windows install` | digna regisztrálása Windows szolgáltatásként |
+| `digna windows start` | a regisztrált szolgáltatás indítása |
+| `digna windows stop` | a futó szolgáltatás leállítása |
+| `digna windows uninstall` | a szolgáltatás regisztrációjának törlése |
 
 !!! warning "Rendszergazdai jogosultság szükséges"
 
-    Minden batch fájlt rendszergazdai jogosultságokkal kell futtatni.
+    Mind a négy parancsot rendszergazdaként megnyitott Parancssorból kell futtatni.
+
+Minden parancs elfogadja a `--name` kapcsolót, amellyel egy nem alapértelmezett néven regisztrált
+szolgáltatást címezhetsz meg. A teljes opciólista a [CLI referenciában](../../../cli/Command_Line_Interface_202606.md) található.
 
 ### A szolgáltatás telepítése
 
@@ -602,37 +612,66 @@ A következő batch fájlok állnak rendelkezésre:
    - Jobb klikk a Parancssorra
    - Válaszd a "Futtatás rendszergazdaként" opciót
 
-2. **Navigálj a bin mappába**
+2. **Navigálj a digna telepítési könyvtáradba**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Futtasd a telepítő scriptet**
+3. **Regisztráld a szolgáltatást**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-A digna szerver mostantól regisztrálva van Windows szolgáltatásként automatikus indítással engedélyezve. Maga a szolgáltatás még nem indul el — a következő szakaszban indíthatod el.
+!!! important "Add meg a címet és a portot, hacsak az alapértékek nem felelnek meg"
+
+    Az `install` rögzíti a címet és a portot a szolgáltatás regisztrációjában, és a szolgáltatás
+    pontosan a rögzített értékekhez kötődik. Az alapértékek `127.0.0.1` és `8000`, amelyek csak
+    magáról a gépről fogadnak kapcsolatot. Egy másik gépen futó dashboard ezt nem éri el, ezért add
+    meg azt a címet, amelyen a backendnek figyelnie kell:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Ezeket az értékeket a rendszer nem a `config.toml` fájlból olvassa. Ha később módosítani
+    szeretnéd őket, távolítsd el a szolgáltatást, és telepítsd újra az új értékekkel.
+
+A szolgáltatás **automatikus indítással** van regisztrálva, így a Windows-zal együtt indul. Azonnal
+nem indul el — lásd a következő szakaszt.
+
+#### Telepítési opciók
+
+| Opció | Alapérték | Cél |
+|---|---|---|
+| `--name` | `digna` | A név, amelyen a szolgáltatás regisztrálva lesz |
+| `--display-name` | `digna` | A services.msc-ben megjelenő név |
+| `--description` | `digna data quality backend` | A services.msc-ben megjelenő leírás |
+| `--address` | `127.0.0.1` | A cím, amelyhez a szolgáltatás az API-ját köti |
+| `--port` | `8000` | A port, amelyhez a szolgáltatás az API-ját köti |
+| `--working-dir` | a `digna` futtatható állomány könyvtára | A `config.toml` és a `license.toml` fájlt tartalmazó könyvtár, amelyet a szolgáltatás munkakönyvtárként használ |
+| `--start-type` | `auto` | Az `auto` a Windows-zal együtt indul, a `manual` csak kérésre indul, a `disabled` regisztrálja a szolgáltatást, de nem engedi elindítani |
+| `--account` | `LocalSystem` | A fiók, amelynek nevében a szolgáltatás fut, pl. `DOMAIN\user` vagy `.\user` |
+| `--password` | | A `--account` fiók jelszava |
+
+!!! tip "Futtatás tartományi fiókkal"
+
+    A `LocalSystem` fióknak nincs hálózati identitása, ezért a SQL Serverrel szembeni Windows-hitelesítés
+    és a hálózati megosztások elérése sikertelen lesz. Telepítsd a `--account` és a `--password`
+    kapcsolóval, ha a szolgáltatásnak egy adott felhasználóként kell erőforrásokat elérnie.
 
 ### A szolgáltatás indítása és leállítása
 
 #### Szolgáltatás indítása
 
-1. Nyisd meg a Parancssort rendszergazdaként
-2. Navigálj a `digna\bin` mappába
-3. Futtasd:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Szolgáltatás leállítása
 
-1. Nyisd meg a Parancssort rendszergazdaként
-2. Navigálj a `digna\bin` mappába
-3. Futtasd:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Tipp"
 
@@ -642,37 +681,41 @@ A digna szerver mostantól regisztrálva van Windows szolgáltatásként automat
 
 Ha át kell helyezned a digna telepítést:
 
-1. **Távolítsd el a jelenlegi szolgáltatást**
+1. **Állítsd le és töröld a jelenlegi szolgáltatás regisztrációját**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Mozgasd az alkalmazás fájlokat**
    - Mozgasd az egész digna telepítési mappát az új helyre
 
-3. **Telepítsd újra a szolgáltatást**
+3. **Regisztráld újra a szolgáltatást az új helyről**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Add meg újra az első alkalommal használt `--address`, `--port` vagy `--account` értékeket — a
+   korábbi regisztráció már nem létezik.
 
 4. **Indítsd el a szolgáltatást**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### A szolgáltatás eltávolítása
 
 1. **Állítsd le a futó szolgáltatást**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Távolítsd el a szolgáltatást**
+2. **Töröld a szolgáltatás regisztrációját**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 A digna szerver mostantól nincs regisztrálva Windows szolgáltatásként.
@@ -710,14 +753,33 @@ A frissítés előtt készíts biztonsági mentést az adattárról (PostgreSQL)
 
 ### Frissítési folyamat
 
-#### 1. lépés: Állítsd le a digna szolgáltatást
+#### 1. lépés: Állítsd le a régi szolgáltatást, és töröld a regisztrációját
 
-Ha a digna Windows szolgáltatásként fut, először állítsd le:
+Ha a digna Windows szolgáltatásként fut, állítsd le a **jelenlegi telepítésed batch
+fájljaival** — a `digna windows` parancsok az új kiadáshoz tartoznak, és még nem
+érhetők el:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Ezután töröld a szolgáltatás regisztrációját, szintén a régi batch fájllal. A regisztráció a régi
+futtatható állományra és annak scriptjeire mutat, amelyeket ez a frissítés lecserél, ezért nem
+használható újra:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Töröld a regisztrációt, mielőtt bármit átneveznél"
+
+    Az `uninstall_service.bat` abban a `bin` mappában található, amelyet mindjárt átnevezel, és csak
+    ez tudja eltávolítani az általa létrehozott regisztrációt. Futtasd, amíg a régi telepítés még a
+    helyén van. Ha a mappát már átnevezted, nevezd vissza, töröld a regisztrációt, majd folytasd.
+
+    Jegyezd fel, milyen fiókkal futott a szolgáltatás, valamint azt a címet és portot, amelyen
+    kiszolgált — a 7. lépésben szükséged lesz rájuk.
 
 #### 2. lépés: Mentse a jelenlegi telepítést
 
@@ -738,7 +800,7 @@ ren dashboard dashboard_old
 
 !!! info "a dignabackend és a dignacli már nem használatos"
 
-    A 2026.06 kiadástól a `dignabackend` és a `dignacli` helyét az egyetlen `digna` futtatható fájl veszi át, amely egyesíti a háttérrendszert és a CLI-t. A `dignabackend_old` és a `dignacli_old` mappát csak addig tartsa meg, amíg a frissítést ellenőrizte — utána mindkettőt törölheti. A `dashboard_old` mappát tartsa meg, amíg vissza nem állította belőle a konfigurációs fájljait (lásd a 4. lépést).
+    A 2026.06 kiadástól a `dignabackend` és a `dignacli` helyét az egyetlen `digna` futtatható fájl veszi át, amely egyesíti a háttérrendszert és a CLI-t. A `dignabackend_old` és a `dignacli_old` mappát csak addig tartsa meg, amíg a frissítést ellenőrizte — utána mindkettőt törölheti. A `dashboard_old` mappát tartsa meg, amíg vissza nem állította belőle a konfigurációs fájljait (lásd a 4. lépést). A `bin` mappa is megszűnik: a benne lévő batch fájlok a régi szolgáltatást vezérelték, és a 2026.06 kiadás már nem tartalmazza őket, így miután az 1. lépésben törölted a szolgáltatás regisztrációját, már csak félrevezetnének.
 
 #### 3. lépés: Csomagold ki és telepítsd az új verziót
 
@@ -748,7 +810,10 @@ ren dashboard dashboard_old
 
 !!! warning "Fontos"
 
-    A `config.toml` fájl **soha** nincs benne a telepítési ZIP-ben. A meglévő konfigurációd biztonságban marad.
+    Sem a `config.toml`, sem a `dashboard/dashboard_config.toml` **soha** nem része a
+    telepítési ZIP-nek — a digna csapat egyik fájlt sem szállítja. A meglévő konfigurációdat
+    ezért a frissítés nem érinti, és az átnevezett `*_old` mappákban lévő példányok az
+    egyetlenek, amelyekkel rendelkezel.
 
 #### 4. lépés: Állítsd vissza a konfigurációs fájlokat
 
@@ -799,7 +864,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Ismételje meg a szakaszt minden szolgáltatóhoz, és tartsa minden kulcsot azonosnak a `dashboard_config.toml` fájlban lévő `key` értékkel. A `digna config check` FAILED állapotúnak jelenti az `oidc_clients` szakaszt mindaddig, amíg a régi forma megmarad. Ez csak az egyszeri bejelentkezést használó telepítéseket érinti.
 
-#### 5. lépés: Ellenőrizze a konfigurációt
+#### 5. lépés: Töltsd újra a webkiszolgálót
+
+A dashboard statikus fájlok összessége, ezért előfordulhat, hogy a webkiszolgáló — és a böngésző —
+még az előző verziót szolgálja ki. Töltsd újra vagy indítsd újra azt a webkiszolgálót, amely a
+`dashboard` mappát kiszolgálja, majd töltsd be újra az oldalt kényszerített frissítéssel (++ctrl+f5++).
+
+#### 6. lépés: Ellenőrizze a konfigurációt
 
 Mielőtt hozzányúlna a tárolóhoz, győződjön meg róla, hogy a frissített `config.toml` teljes:
 
@@ -809,7 +880,26 @@ digna config check
 
 Minden szekciónak OK állapotot kell jelentenie. Javítson ki mindent, amit FAILED állapotúként jelent, és a folytatás előtt futtassa újra a parancsot.
 
-#### 6. lépés: Frissítsd az adattár sémáját
+#### 7. lépés: Cseréld le a licencfájlt
+
+Minden kiadás külön licencet kap. Másold a digna csapat által ehhez a kiadáshoz biztosított
+`license.toml` fájlt a telepítési könyvtárba, felülírva a régit:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Ne tartsd meg a korábbi licencet"
+
+    Egy korábbi kiadáshoz kiállított `license.toml` nem érvényes erre a kiadásra, és minden
+    parancs, amely ellenőrzi a licencet — `user`, `inspection`, `repo` — megszakad, mielőtt
+    az adattárhoz nyúlna, ha az ellenőrzés sikertelen. Ellenőrizd a licencet, mielőtt továbblépsz:
+
+    ```bash
+    digna license check
+    ```
+
+#### 8. lépés: Frissítsd az adattár sémáját
 
 Navigálj a digna telepítési könyvtárába és futtasd:
 
@@ -819,14 +909,22 @@ digna repo upgrade
 
 Ez frissíti a PostgreSQL sémát a legújabb verzióra, miközben megőrzi a meglévő adatokat.
 
-#### 7. lépés: Indítsd újra a szolgáltatásokat
+#### 9. lépés: Regisztráld és indítsd el a szolgáltatást
 
-Ha Windows szolgáltatásként fut:
+A régi regisztrációt az 1. lépésben törölted, ezért a szolgáltatást újra regisztrálni kell — ezúttal
+a `digna` futtatható állománnyal, amelyhez nem tartoznak batch fájlok:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+A `--address` és a `--port` kapcsolónak add meg azokat az értékeket, amelyeken a régi szolgáltatás
+kiszolgált, hacsak nem az új alapértékeket (`127.0.0.1` és `8000`) szeretnéd; ezeket a regisztráció
+rögzíti, és a rendszer már nem a `config.toml` fájlból olvassa. Add hozzá a `--account` és a
+`--password` kapcsolót, ha a régi szolgáltatás tartományi fiókkal futott. A teljes opciólistát lásd:
+[digna futtatása Windows szolgáltatásként](#running-digna-as-a-windows-service).
 
 Ha kézzel futtattad korábban, indítsd újra a szervert:
 
@@ -837,7 +935,7 @@ digna serve --address <address> --port <port>
 
 Ha IIS-t vagy Tomcat-et használsz, indítsd újra a megfelelő webkiszolgálót.
 
-#### 8. lépés: Ellenőrizd a frissítést
+#### 10. lépés: Ellenőrizd a frissítést
 
 1. Nyisd meg a digna dashboardot
 2. Ellenőrizd, hogy a felület betöltődik-e rendesen
