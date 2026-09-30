@@ -1,5 +1,5 @@
 ---
-title: macOS इंस्टॉलेशन गाइड – digna रिलीज 2026.06 | digna डॉ큐मेंटेशन
+title: macOS इंस्टॉलेशन गाइड – digna रिलीज 2026.06 | digna डॉक्यूमेंटेशन
 description: macOS पर digna रिलीज 2026.06 इंस्टॉल करने के चरण-दर-चरण निर्देश — सिस्टम आवश्यकताएँ, Homebrew और PostgreSQL सेटअप, nginx या Apache कॉन्फ़िगरेशन, बैकएंड और डैशबोर्ड कॉन्फ़िगरेशन, digna को बैकग्राउंड सेवा के रूप में चलाना, और नए रिलीज़ में अपग्रेड करना।
 keywords: digna macOS इंस्टॉलेशन, digna mac डिप्लॉयमेंट गाइड, digna बैकएंड सेटअप, digna डैशबोर्ड इंस्टॉलेशन, postgresql homebrew, nginx macOS, digna launchd सेवा, digna अपग्रेड गाइड
 image: /assets/logo_square.png
