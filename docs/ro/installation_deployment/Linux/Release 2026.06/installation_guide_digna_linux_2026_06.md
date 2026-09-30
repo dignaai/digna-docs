@@ -1,15 +1,15 @@
 ---
-title: Ghid de instalare pe Windows – digna Release 2026.06 | Documentația digna
-description: Ghid pas cu pas pentru instalarea digna Release 2026.06 pe Windows — cerințe de sistem, configurarea PostgreSQL, configurarea web serverului, configurarea backend-ului și a dashboard-ului, rularea digna ca serviciu Windows și actualizarea la o versiune nouă.
-keywords: digna instalare windows, ghid implementare digna, configurare backend digna, instalare dashboard digna, configurare postgresql, serviciu windows digna, ghid actualizare digna
+title: Ghid de instalare pe Linux – digna Release 2026.06 | Documentația digna
+description: Ghid pas cu pas pentru instalarea digna Release 2026.06 pe Linux — cerințe de sistem, configurarea PostgreSQL, configurarea nginx sau Apache, configurarea backend-ului și a dashboard-ului, rularea digna ca serviciu systemd și actualizarea la o versiune nouă.
+keywords: digna instalare linux, ghid implementare digna, configurare backend digna, instalare dashboard digna, postgresql linux, nginx linux, serviciu systemd digna, ghid actualizare digna
 image: /assets/logo_square.png
 ---
 
-# Ghid de instalare pe Windows pentru digna Release 2026.06
+# Ghid de instalare pe Linux pentru digna Release 2026.06
 
 **Release:** 2026.06
 
-**Ultima actualizare:** 30 august 2026
+**Ultima actualizare:** 5 septembrie 2026
 
 
 ---
@@ -24,7 +24,7 @@ image: /assets/logo_square.png
 6. [Instalarea inițială](#initial-installation)
 7. [Configurarea backend-ului](#backend-configuration)
 8. [Configurarea dashboard-ului](#dashboard-configuration)
-9. [Rularea digna ca serviciu Windows](#running-digna-as-a-windows-service)
+9. [Rularea digna ca serviciu systemd](#running-digna-as-a-systemd-service)
 10. [Actualizarea la o versiune nouă](#upgrading-to-a-new-release)
 
 ---
@@ -44,9 +44,18 @@ digna este alcătuită din două componente principale:
 
 Această versiune aduce capabilitățile de observabilitate a datelor direct în codul dumneavoastră, permițând dezvoltatorilor să monitorizeze calitatea datelor la sursă. Consultați [notele de lansare](http://docs.digna.ai/changelog/Release_202606/) pentru detalii complete.
 
-### Căutați macOS sau Linux?
+### Căutați Windows sau macOS?
 
-Acest ghid acoperă Windows. Pentru alte platforme, consultați [Ghidul de instalare macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md) sau [Ghidul de instalare Linux](../../Linux/Release%202026.06/installation_guide_digna_linux_2026_06.md).
+Acest ghid acoperă Linux. Pentru alte platforme, consultați [Ghidul de instalare Windows](../../Windows/Release%202026.06/installation_guide_digna_windows_2026_06.md) sau [Ghidul de instalare macOS](../../macOS/Release%202026.06/installation_guide_digna_macos_2026_06.md).
+
+### Ce distribuții acoperă acest ghid?
+
+Instrucțiunile sunt scrise pentru cele mai răspândite două familii de servere. Acolo unde cele două diferă, sunt indicate ambele comenzi:
+
+- **Familia Debian** — Debian, Ubuntu. Manager de pachete: `apt`.
+- **Familia RHEL** — Red Hat Enterprise Linux, Rocky Linux, AlmaLinux, Fedora. Manager de pachete: `dnf`.
+
+Orice distribuție modernă cu `systemd` va funcționa; se schimbă doar numele pachetelor și câteva căi de configurare.
 
 ---
 
@@ -56,11 +65,13 @@ Acest ghid acoperă Windows. Pentru alte platforme, consultați [Ghidul de insta
 
 | Cerință | Specificație |
 |---|---|
-| **Sistem de operare** | Windows Server sau Windows 10/11 |
+| **Sistem de operare** | Ubuntu 22.04 LTS sau mai nou, Debian 12 sau mai nou, RHEL 9 / Rocky 9 / AlmaLinux 9 sau mai nou |
+| **Arhitectură** | x86_64 (amd64) sau arm64 |
+| **Sistem de inițializare** | systemd |
 | **Memorie (configurație minimă)** | 16 GB RAM |
 | **Spațiu pe disc** | 10 GB spațiu de stocare disponibil |
 | **Bază de date** | PostgreSQL Server 12 sau o versiune superioară |
-| **Web server** | IIS, Apache Tomcat sau echivalent |
+| **Web server** | nginx, Apache httpd sau echivalent |
 
 ### Opțiuni de instalare a bazei de date
 
@@ -76,6 +87,19 @@ Puteți adăuga o bază de date nouă pentru digna pe serverul PostgreSQL existe
 
     Aceste specificații mai mari permit rularea simultană a digna și a bazei de date PostgreSQL.
 
+### Verificarea distribuției și a arhitecturii
+
+Mai multe comenzi din acest ghid diferă între familiile Debian și RHEL. Pentru a verifica pe care dintre ele vă aflați, rulați:
+
+```bash
+cat /etc/os-release
+uname -m
+```
+
+- `ID=ubuntu` sau `ID=debian` — folosiți comenzile `apt`.
+- `ID=rhel`, `rocky`, `almalinux` sau `fedora` — folosiți comenzile `dnf`.
+- `x86_64` sau `aarch64` — arhitectura pachetului de instalare de care aveți nevoie.
+
 ---
 
 ## Pregătirea înainte de instalare {: #pre-installation-setup }
@@ -87,6 +111,21 @@ Puteți adăuga o bază de date nouă pentru digna pe serverul PostgreSQL existe
 
 Dacă aceste componente nu sunt deja configurate, urmați secțiunile de mai jos pentru a le instala și configura.
 
+### Reîmprospătarea indexului de pachete
+
+Actualizați listele de pachete înainte de a instala ceva:
+
+```bash
+sudo apt update
+```
+```bash
+sudo dnf check-update
+```
+
+!!! note "Notă"
+
+    În tot acest ghid, prima comandă dintr-o pereche este pentru **familia Debian**, iar a doua pentru **familia RHEL**. Rulați doar comanda care corespunde sistemului dumneavoastră.
+
 ---
 
 ## Configurarea serverului PostgreSQL {: #postgresql-server-setup }
@@ -97,56 +136,117 @@ Dacă PostgreSQL este deja instalat și rulează pe mașina locală sau dacă fo
 
 ### Instalarea PostgreSQL
 
-Urmați pașii de mai jos pentru a instala PostgreSQL pe Windows:
+#### Pasul 1: Instalați pachetul serverului
 
-#### Pasul 1: Descărcați PostgreSQL
-
-1. Accesați [pagina de descărcări PostgreSQL](https://www.postgresql.org/download/)
-2. Selectați **Windows**
-3. Descărcați cel mai recent program de instalare
-
-#### Pasul 2: Rulați programul de instalare
-
-1. Faceți dublu clic pe fișierul de instalare descărcat
-2. Urmați instrucțiunile din asistentul de instalare
-
-#### Pasul 3: Alegeți directorul de instalare
-
-Selectați directorul în care va fi instalat PostgreSQL. Locația implicită este de obicei potrivită.
-
-#### Pasul 4: Selectați componentele
-
-Pentru o configurație standard, păstrați selectate opțiunile implicite ale componentelor.
-
-#### Pasul 5: Setați parola superutilizatorului PostgreSQL
-
-Introduceți și confirmați o parolă pentru superutilizatorul PostgreSQL (`postgres`). **Păstrați această parolă în siguranță** — veți avea nevoie de ea mai târziu.
-
-#### Pasul 6: Configurați numărul portului
-
-Portul implicit PostgreSQL este `5432`. Puteți folosi valoarea implicită sau puteți specifica un alt port, dacă este necesar.
+```bash
+sudo apt install -y postgresql postgresql-contrib
+```
+```bash
+sudo dnf install -y postgresql-server postgresql-contrib
+```
 
 !!! tip "Sfat"
 
-    Dacă portul 5432 este deja utilizat, alegeți un port alternativ și notați-l pentru configurarea ulterioară.
+    Pachetele distribuției pot rămâne în urma versiunii curente PostgreSQL. Dacă aveți nevoie de o anumită versiune mai nouă, folosiți în schimb [repository-ul oficial PostgreSQL apt sau yum](https://www.postgresql.org/download/linux/).
 
-#### Pasul 7: Alegeți setările regionale
+#### Pasul 2: Inițializați clusterul de baze de date
 
-Selectați setările regionale (locale) pentru baza de date. Valoarea implicită este de obicei potrivită pentru majoritatea instalărilor.
+Pe **familia Debian**, pachetul creează și pornește automat un cluster — treceți la pasul următor.
 
-#### Pasul 8: Finalizați instalarea
+Pe **familia RHEL**, clusterul trebuie creat explicit:
 
-Faceți clic pe **Next** în pașii rămași, apoi pe **Finish**.
+```bash
+sudo postgresql-setup --initdb
+```
 
-#### Pasul 9: Verificați instalarea
+#### Pasul 3: Porniți și activați serviciul
 
-Deschideți Command Prompt și verificați că PostgreSQL este instalat:
+```bash
+sudo systemctl enable --now postgresql
+```
+
+Aceasta pornește imediat PostgreSQL și îl configurează să pornească din nou automat la pornirea sistemului.
+
+#### Pasul 4: Verificați instalarea
 
 ```bash
 psql --version
+sudo systemctl status postgresql
 ```
 
-Dacă instalarea a reușit, ar trebui să vedeți versiunea PostgreSQL.
+Ar trebui să vedeți versiunea PostgreSQL și un serviciu `active (running)`.
+
+#### Pasul 5: Conectați-vă la server
+
+Un pachet PostgreSQL pentru Linux creează un cont de sistem `postgres` care deține clusterul. Conectați-vă prin intermediul acestuia:
+
+```bash
+sudo -u postgres psql
+```
+
+!!! note "Notă — aici Linux diferă de Windows"
+
+    Programul de instalare pentru Windows vă cere să setați o parolă pentru superutilizatorul `postgres` în timpul instalării. Pachetele Linux nu fac acest lucru. În schimb, conexiunile locale sunt autentificate prin **peer authentication**: utilizatorul de sistem de operare `postgres` are voie să se conecteze ca utilizatorul de bază de date `postgres` fără parolă.
+
+    De aceea comanda de mai sus folosește `sudo -u postgres`. Backend-ul digna se conectează prin TCP cu nume de utilizator și parolă, așa că veți crea un utilizator digna explicit în [Instalarea inițială](#initial-installation).
+
+#### Pasul 6: Confirmați portul
+
+Portul implicit PostgreSQL este `5432`. Pentru a confirma portul pe care ascultă serverul:
+
+```bash
+sudo -u postgres psql -c "SHOW port;"
+```
+
+Notați valoarea — veți avea nevoie de ea la configurarea backend-ului digna.
+
+#### Pasul 7: Activați autentificarea prin parolă pentru utilizatorul digna
+
+digna se conectează la PostgreSQL prin TCP ca `digna_user`, ceea ce necesită autentificare prin parolă, nu peer authentication. Verificați că fișierul `pg_hba.conf` permite acest lucru.
+
+Găsiți fișierul:
+
+```bash
+sudo -u postgres psql -c "SHOW hba_file;"
+```
+
+Deschideți-l într-un editor și confirmați că liniile TCP locale folosesc `scram-sha-256` (sau `md5` pe serverele mai vechi), nu `ident`:
+
+```
+# TYPE  DATABASE  USER  ADDRESS         METHOD
+host    all       all   127.0.0.1/32    scram-sha-256
+host    all       all   ::1/128         scram-sha-256
+```
+
+Reîncărcați PostgreSQL după orice modificare:
+
+```bash
+sudo systemctl reload postgresql
+```
+
+!!! warning "Important"
+
+    Dacă digna raportează `FATAL: Ident authentication failed for user "digna_user"`, această setare este cauza.
+
+#### Pasul 8: Dacă PostgreSQL rulează pe o altă mașină
+
+Pentru a accepta conexiuni de la o altă gazdă, setați `listen_addresses` în `postgresql.conf` și adăugați o linie `host` corespunzătoare pentru rețeaua dumneavoastră în `pg_hba.conf`:
+
+```
+listen_addresses = '*'
+```
+
+Apoi deschideți portul în firewall și reporniți serviciul:
+
+```bash
+sudo ufw allow 5432/tcp
+```
+```bash
+sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
+```
+```bash
+sudo systemctl restart postgresql
+```
 
 ---
 
@@ -154,86 +254,205 @@ Dacă instalarea a reușit, ar trebui să vedeți versiunea PostgreSQL.
 
 digna necesită un web server pentru a găzdui dashboard-ul. Alegeți una dintre următoarele opțiuni:
 
-- [Internet Information Services (IIS)](#iis-setup)
-- [Apache Tomcat](#apache-tomcat-setup)
+- [nginx](#nginx-setup) — ușor și recomandat
+- [Apache httpd](#apache-setup) — alternativă larg răspândită
 
 Trebuie să instalați și să configurați **doar unul** dintre aceste servere.
 
-### Configurarea IIS {: #iis-setup }
+Ambele secțiuni configurează două lucruri de care depinde dashboard-ul:
+
+- **O rută de rezervă pentru aplicația single-page**, astfel încât reîmprospătarea unui URL al dashboard-ului să nu returneze 404
+- **Un tip MIME pentru `.md`**, astfel încât fișierele Markdown să fie servite corect
+
+### Configurarea nginx {: #nginx-setup }
 
 #### Prezentare generală
 
-Internet Information Services (IIS) este web serverul Microsoft pentru găzduirea site-urilor și a aplicațiilor web.
+nginx este un web server ușor și performant, foarte potrivit pentru servirea dashboard-ului static digna.
 
-#### Activarea IIS
+#### Instalare
 
-1. **Deschideți Control Panel**
-   - Apăsați `Win + R`
-   - Tastați `control` și apăsați Enter
+```bash
+sudo apt install -y nginx
+```
+```bash
+sudo dnf install -y nginx
+```
 
-2. **Accesați Windows Features**
-   - Faceți clic pe **Programs**
-   - Selectați **Turn Windows features on or off**
+#### Pornirea nginx
 
-3. **Activați Internet Information Services**
-   - Derulați în jos și găsiți **Internet Information Services (IIS)**
-   - Bifați caseta pentru a-l activa
-   - Faceți clic pe **+** pentru a extinde lista și verificați că sunt selectate următoarele subcomponente:
-     - **Web Management Tools**
-     - **World Wide Web Services**
+```bash
+sudo systemctl enable --now nginx
+```
 
-4. **Faceți clic pe OK** pentru a aplica modificările
+#### Verificați instalarea
 
-5. **Verificați instalarea IIS**
-   - Deschideți browserul
-   - Accesați `http://localhost`
-   - Ar trebui să vedeți pagina de bun venit IIS
+1. Deschideți browserul
+2. Accesați `http://localhost`
+3. Ar trebui să vedeți pagina de bun venit nginx
 
-#### Obligatoriu: modulul URL Rewrite
+#### Deschiderea firewall-ului
 
-IIS necesită componenta URL Rewrite. Descărcați-o și instalați-o de pe [pagina oficială Microsoft](https://www.iis.net/downloads/microsoft/url-rewrite).
+Dacă serverul este accesat de pe alte mașini, permiteți traficul HTTP:
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+```bash
+sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
+```
+
+#### Configurarea unui site pentru dashboard
+
+Pe ambele familii de distribuții, nginx include fiecare fișier din directorul său `conf.d`. Creați acolo un fișier de configurare dedicat pentru digna:
+
+```bash
+sudo nano /etc/nginx/conf.d/digna.conf
+```
+
+Lipiți următorul conținut, înlocuind `/opt/digna/dashboard` cu calea reală către folderul `dashboard` extras:
+
+```nginx
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+
+    root   /opt/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "Important"
+
+    Fără directiva `try_files`, reîncărcarea oricărei pagini a dashboard-ului în afară de URL-ul rădăcină returnează 404. Acesta este echivalentul nginx al modulului URL Rewrite cerut de IIS pe Windows.
+
+#### Dezactivați site-ul implicit
+
+Un singur bloc server poate fi `default_server` pentru un port. Pe **familia Debian**, eliminați site-ul implicit din pachet, pentru a nu intra în conflict:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+```
+
+Pe **familia RHEL**, comentați sau ștergeți blocul `server { ... }` din `/etc/nginx/nginx.conf`.
+
+#### Aplicați configurația
+
+Testați configurația pentru erori de sintaxă, apoi reîncărcați nginx:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+### Configurarea Apache httpd {: #apache-setup }
+
+#### Prezentare generală
+
+Apache httpd este disponibil în repository-urile implicite ale fiecărei distribuții acceptate. Pachetul se numește `apache2` pe familia Debian și `httpd` pe familia RHEL.
+
+#### Instalare
+
+```bash
+sudo apt install -y apache2
+```
+```bash
+sudo dnf install -y httpd
+```
+
+#### Pornirea Apache
+
+```bash
+sudo systemctl enable --now apache2
+```
+```bash
+sudo systemctl enable --now httpd
+```
+
+#### Verificați instalarea
+
+1. Deschideți browserul
+2. Accesați `http://localhost`
+3. Ar trebui să vedeți pagina Apache implicită a distribuției
+
+#### Obligatoriu: activați mod_rewrite
+
+Dashboard-ul necesită rescrierea URL-urilor.
+
+Pe **familia Debian**, activați modulul și reporniți:
+
+```bash
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
+
+Pe **familia RHEL**, `mod_rewrite` este încărcat implicit. Confirmați acest lucru:
+
+```bash
+httpd -M | grep rewrite
+```
+
+#### Obligatoriu: permiteți suprascrierile .htaccess
+
+Deschideți fișierul de configurare pentru document root:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
+```
+
+Găsiți blocul `<Directory>` care acoperă document root (`/var/www/html` pe ambele familii) și modificați:
+
+```apache
+AllowOverride None
+```
+
+în:
+
+```apache
+AllowOverride All
+```
 
 #### Obligatoriu: tipul MIME pentru fișierele Markdown
 
-Pentru ca fișierele Markdown (`.md`) să fie servite corect de IIS:
+În același fișier, adăugați linia următoare, astfel încât fișierele Markdown să fie servite corect:
 
-1. Deschideți **IIS Manager** (apăsați `Win + R`, tastați `inetmgr`, apăsați Enter)
-2. Accesați **Your Site > MIME Types**
-3. Faceți clic pe **Add...**
-4. Configurați:
-   - **File name extension**: `.md`
-   - **MIME type**: `text/markdown`
+```apache
+AddType text/markdown .md
+```
 
 !!! warning "Important"
 
     Fără această setare, fișierele `.md` s-ar putea să nu fie servite corect.
 
----
+#### Aplicați configurația
 
-### Configurarea Apache Tomcat {: #apache-tomcat-setup }
+Verificați configurația pentru erori de sintaxă, apoi reporniți Apache:
 
-#### Prezentare generală
-
-Apache Tomcat este un container de servleturi Java și un web server open-source.
-
-#### Instalare
-
-1. **Descărcați Apache Tomcat**
-   - Accesați [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi)
-   - Descărcați distribuția ZIP pentru Windows
-
-2. **Extrageți arhiva**
-   - Extrageți fișierul ZIP într-un director de pe sistemul dumneavoastră
-   - Exemplu: `C:\Program Files\Apache Tomcat`
-
-3. **Verificați că Tomcat rulează**
-   - Deschideți browserul
-   - Accesați `http://localhost:8080`
-   - Ar trebui să vedeți pagina de bun venit Apache Tomcat
-
-!!! tip "Sfat"
-
-    Apache Tomcat pornește de obicei automat după instalare. Dacă nu pornește, accesați folderul `bin` și rulați `startup.bat`.
+```bash
+sudo apachectl configtest
+sudo systemctl restart apache2
+```
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
 
 ---
 
@@ -245,7 +464,7 @@ Repository-ul digna stochează toate metricile calculate de digna. Acesta funcț
 
 #### Creați schema repository-ului și utilizatorul
 
-Deschideți clientul PostgreSQL (pgAdmin, psql sau similar) și executați următoarele comenzi SQL:
+Deschideți clientul PostgreSQL (psql, pgAdmin sau similar) și executați următoarele comenzi SQL:
 
 ```sql
 CREATE SCHEMA <digna_repo_schema>;
@@ -271,6 +490,14 @@ CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
 GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ```
 
+Pentru a le rula din shell într-un singur pas:
+
+```bash
+sudo -u postgres psql
+```
+
+Apoi lipiți instrucțiunile la promptul `postgres=#` și tastați `\q` pentru a ieși.
+
 !!! tip "Practică recomandată"
 
     Folosiți parole puternice și complexe pentru utilizatorii bazei de date. Evitați credențialele ușor de ghicit.
@@ -280,7 +507,7 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 ### Pasul 2: Extrageți pachetul de instalare digna
 
 1. Găsiți fișierul ZIP de instalare digna care v-a fost furnizat
-2. Extrageți-l în locația de instalare dorită
+2. Extrageți-l în locația de instalare dorită — de exemplu `/opt/digna`
 3. După extragere, ar trebui să vedeți următoarele elemente:
    - `dashboard/` — interfața web a dashboard-ului
    - `digna` — executabilul principal (backend + CLI combinate)
@@ -291,6 +518,39 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
     creați pe amândouă dumneavoastră, în [Configurarea backend-ului](#backend-configuration) și
     [Configurarea dashboard-ului](#dashboard-configuration). Nici `license.toml` nu este livrat;
     digna îl furnizează separat, așa cum descrie Pasul 3.
+
+Pentru extragerea din shell:
+
+```bash
+sudo mkdir -p /opt/digna
+sudo unzip digna-2026.06-linux-x86_64.zip -d /opt/digna
+```
+
+!!! note "Notă"
+
+    Dacă `unzip` nu este instalat, adăugați-l cu `sudo apt install -y unzip` sau `sudo dnf install -y unzip`.
+
+#### Faceți executabilul rulabil
+
+În funcție de modul în care a fost transferată arhiva, bitul de execuție s-ar putea să nu se păstreze la extragere. Setați-l explicit:
+
+```bash
+cd /opt/digna
+sudo chmod +x digna
+```
+
+#### Creați un cont de serviciu
+
+Pentru implementările de producție se recomandă rularea backend-ului sub un utilizator dedicat, fără privilegii:
+
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! note "Notă"
+
+    Pe familia RHEL, calea echivalentă a shell-ului este `/sbin/nologin`.
 
 ### Pasul 3: Instalați fișierul de licență
 
@@ -307,10 +567,11 @@ Fișierul de licență conține informațiile dumneavoastră de client, data de 
 **Structura directorului după configurare:**
 
 ```
-digna_installation/
+/opt/digna/
 ├── config.toml         (configuration file)
 ├── license.toml        (YOUR LICENSE FILE - copy here)
 ├── digna               (main executable)
+├── bin/                (service management scripts)
 └── dashboard/          (web interface)
     └── (dashboard files)
 ```
@@ -323,7 +584,12 @@ digna_installation/
 
 Fișierul `config_template.toml` este furnizat în directorul de instalare digna. Trebuie doar să-l redenumiți în `config.toml`.
 
-**Locație:** `digna_installation/config.toml`
+```bash
+cd /opt/digna
+sudo mv config_template.toml config.toml
+```
+
+**Locație:** `/opt/digna/config.toml`
 
 Deschideți `config.toml` într-un editor de text și configurați fiecare secțiune de mai jos.
 
@@ -345,6 +611,10 @@ digna_APP_CORS_ALLOW_HEADERS = ["*"]
 | `digna_APP_CORS_ALLOW_CREDENTIALS` | `true` | Necesar pentru CORS cu credențiale |
 | `digna_APP_CORS_ALLOW_METHODS` | `["*"]` | Permite toate metodele HTTP |
 | `digna_APP_CORS_ALLOW_HEADERS` | `["*"]` | Permite toate antetele |
+
+!!! note "Notă"
+
+    Dacă serviți dashboard-ul din nginx sau Apache pe portul HTTP implicit, originea care trebuie permisă este `http://localhost` — sau URL-ul public al serverului, atunci când dashboard-ul este accesat de pe alte mașini.
 
 #### Secțiunea [repo]
 
@@ -368,6 +638,15 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 | `digna_REPO_SCHEMA` | `dignarepo` | Schema creată anterior |
 | `digna_REPO_USER` | `digna_user` | Utilizatorul creat la configurarea PostgreSQL |
 | `digna_REPO_PASSWORD` | Parola dumneavoastră | Parola setată la crearea schemei |
+
+!!! tip "Practică recomandată"
+
+    `config.toml` conține o parolă a bazei de date în text simplu. Restricționați-i permisiunile, astfel încât doar contul de serviciu să-l poată citi:
+
+    ```bash
+    sudo chown digna:digna /opt/digna/config.toml
+    sudo chmod 600 /opt/digna/config.toml
+    ```
 
 #### Secțiunea [base]
 
@@ -396,6 +675,10 @@ DIGNA_CLEANUP_TIME = "12:00"
 | `digna_MAX_WORKERS` | Numărul de nuclee CPU - 1 | Numărul de sarcini de inspecție paralele |
 | `DIGNA_SCHEDULER_MAX_DELAY` | `100` | Întârzierea maximă, în secunde, pe care planificatorul o poate adăuga înainte de a porni o sarcină scadentă |
 | `DIGNA_CLEANUP_TIME` | `"12:00"` | Ora din zi (format de 24 de ore `HH:MM`) la care începe curățarea zilnică |
+
+!!! tip "Sfat"
+
+    Pentru a afla numărul de nuclee CPU disponibile pe server, rulați `nproc`.
 
 #### Secțiunea [encryption]
 
@@ -439,7 +722,7 @@ digna_LOGGING_BACKUP_COUNT = 10
 Înainte de a inițializa repository-ul, verificați dacă `config.toml` este complet și corect alcătuit. În directorul de instalare digna, rulați:
 
 ```bash
-digna config check
+./digna config check
 ```
 
 Fiecare secțiune este validată separat, astfel încât o singură greșeală nu ascunde starea celorlalte:
@@ -460,22 +743,31 @@ Corectați tot ce este raportat ca FAILED și rulați comanda din nou înainte d
 
 ### Pasul 3: Inițializați repository-ul
 
-1. Deschideți Command Prompt
+1. Deschideți un terminal
 2. Accesați directorul de instalare digna (unde se află `config.toml` și executabilul `digna`)
 3. Rulați testul de conexiune:
 
 ```bash
-digna repo check
+cd /opt/digna
+./digna repo check
 ```
 
 Ar trebui să vedeți o confirmare că conexiunea este stabilită (repository-ul în sine nu a fost încă inițializat).
+
+!!! note "Notă"
+
+    Pe Linux, directorul curent nu se află în PATH, așa că executabilul este apelat ca `./digna`, nu ca `digna`. Pentru a folosi peste tot forma scurtă, adăugați o legătură simbolică:
+
+    ```bash
+    sudo ln -s /opt/digna/digna /usr/local/bin/digna
+    ```
 
 ### Pasul 4: Instalați schema repository-ului
 
 În același director, rulați:
 
 ```bash
-digna repo install
+./digna repo install
 ```
 
 Această comandă instalează tabelele și schema necesare în baza de date PostgreSQL.
@@ -485,16 +777,20 @@ Această comandă instalează tabelele și schema necesare în baza de date Post
 Utilizatorul administrator este creat direct în schema repository-ului, astfel încât serverul nu trebuie să ruleze încă. În directorul de instalare digna, rulați:
 
 ```bash
-digna user add <email> <password> "<display_name>" --admin
+./digna user add <email> <password> "<display_name>" --admin
 ```
 
 **Exemplu:**
 
 ```bash
-digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
 ```
 
-Aceasta creează un utilizator cu privilegii administrative complete.
+Aceasta creează un utilizator cu adresa de e-mail `admin@example.com` și privilegii administrative complete.
+
+!!! tip "Sfat"
+
+    Puneți parola între ghilimele simple. `bash` și `zsh` tratează în mod special caractere precum `!`, `$` și `*`, iar o parolă fără ghilimele care le conține nu va fi transmisă așa cum a fost tastată.
 
 !!! tip "Practică recomandată"
 
@@ -505,7 +801,7 @@ Aceasta creează un utilizator cu privilegii administrative complete.
 În directorul de instalare digna, porniți serverul cu:
 
 ```bash
-digna serve --address <host> --port <port>
+./digna serve --address <host> --port <port>
 ```
 
 **Parametri:**
@@ -521,9 +817,20 @@ INFO:     Application startup complete
 INFO:     Uvicorn running on http://localhost:8082
 ```
 
+!!! tip "Sfat"
+
+    Dacă dashboard-ul este servit de pe o altă mașină decât backend-ul, deschideți și portul API în firewall:
+
+    ```bash
+    sudo ufw allow 8082/tcp
+    ```
+    ```bash
+    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
+    ```
+
 !!! note "Serverul ocupă terminalul"
 
-    `serve` rulează în prim-plan și continuă până când îl opriți cu ++ctrl+c++. Lăsați-l să ruleze cât timp finalizați configurarea; pentru a-l porni automat la pornirea sistemului, consultați [Rularea digna ca serviciu Windows](#running-digna-as-a-windows-service).
+    `serve` rulează în prim-plan și continuă până când îl opriți cu ++ctrl+c++. Lăsați-l să ruleze cât timp finalizați configurarea; pentru a-l porni automat la pornirea sistemului, consultați [Rularea digna ca serviciu systemd](#running-digna-as-a-systemd-service).
 
 ---
 
@@ -537,189 +844,253 @@ Conținutul său este descris în [Single Sign-On](../../../sso/overview.md), un
 
 Alegeți web serverul și urmați pașii de implementare corespunzători.
 
-#### Implementarea pe IIS
+#### Implementarea pe nginx
 
-1. **Deschideți IIS Manager**
-   - Apăsați `Win + R`, tastați `inetmgr`, apăsați Enter
+Dacă ați urmat secțiunea [Configurarea nginx](#nginx-setup), blocul server indică deja folderul `dashboard` și nu este necesară nicio copiere.
 
-2. **Creați un site web nou**
-   - În panoul din stânga, faceți clic dreapta pe **Sites**
-   - Selectați **Add Website...**
+1. **Confirmați calea**
+   - Deschideți `/etc/nginx/conf.d/digna.conf`
+   - Verificați că `root` indică folderul `dashboard` extras
 
-3. **Configurați site-ul web**
-   - **Site Name**: introduceți un nume (de ex. "dignaDashboard")
-   - **Physical Path**: faceți clic pe Browse și selectați folderul `dashboard`
-   - **Binding**: setați adresa IP și portul (implicit portul 80 pentru HTTP, 443 pentru HTTPS)
+2. **Asigurați-vă că folderul poate fi citit**
+   ```bash
+   sudo chmod -R a+rX /opt/digna/dashboard
+   ```
 
-4. **Porniți site-ul web**
-   - Faceți clic pe **OK** pentru a crea site-ul
-   - Faceți clic dreapta pe noul site și selectați **Start**
+3. **Reîncărcați nginx**
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
 
-5. **Testați instalarea**
+4. **Testați instalarea**
    - Deschideți browserul
    - Accesați `http://localhost` (sau URL-ul configurat)
    - Ar trebui să vedeți pagina de autentificare a dashboard-ului digna
 
-#### Implementarea pe Apache Tomcat
+#### Implementarea pe Apache httpd
 
-1. **Copiați dashboard-ul în Tomcat**
-   - Copiați folderul `dashboard` în directorul `webapps` al Tomcat
-   - Redenumiți-l, dacă este necesar (de ex. în `digna`)
-   - Exemplu: `C:\Program Files\Apache Tomcat\webapps\digna`
+1. **Copiați dashboard-ul în document root**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /var/www/html/digna
+   ```
 
-2. **Verificați implementarea**
-   - Reîmprospătați sau reîncărcați pagina de administrare Tomcat (http://localhost:8080)
-   - Ar trebui să vedeți "digna" (sau numele ales) în lista aplicațiilor implementate
+2. **Adăugați regulile de rescriere**
 
-3. **Accesați dashboard-ul**
+   Creați un fișier `.htaccess` în folderul implementat, astfel încât rutele dashboard-ului să reziste la reîmprospătarea browserului:
+
+   ```bash
+   sudo nano /var/www/html/digna/.htaccess
+   ```
+
+   Lipiți următorul conținut:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **Reporniți Apache**
+   ```bash
+   sudo systemctl restart apache2
+   ```
+   ```bash
+   sudo systemctl restart httpd
+   ```
+
+4. **Accesați dashboard-ul**
    - Deschideți browserul
-   - Accesați `http://localhost:8080/digna`
+   - Accesați `http://localhost/digna`
    - Ar trebui să vedeți pagina de autentificare a dashboard-ului digna
+
+### Pasul 2: SELinux (doar familia RHEL)
+
+Pe RHEL, Rocky, AlmaLinux și Fedora, SELinux este implicit în modul enforcing și va împiedica web serverul să citească fișiere din afara locațiilor așteptate. Verificați dacă este activ:
+
+```bash
+getenforce
+```
+
+Dacă rezultatul este `Enforcing` și serviți dashboard-ul din `/opt/digna/dashboard`, etichetați directorul astfel încât web serverul să-l poată citi:
+
+```bash
+sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+!!! note "Notă"
+
+    Dacă `semanage` nu este găsit, instalați-l cu `sudo dnf install -y policycoreutils-python-utils`.
+
+!!! warning "Important"
+
+    Un dashboard care returnează **403 Forbidden** pe un server RHEL proaspăt configurat este aproape întotdeauna o problemă de etichetare SELinux, nu una de permisiuni ale fișierelor. Confirmați cu `sudo ausearch -m avc -ts recent`.
 
 ---
 
-## Rularea digna ca serviciu Windows {: #running-digna-as-a-windows-service }
+## Rularea digna ca serviciu systemd {: #running-digna-as-a-systemd-service }
 
-### De ce să folosiți un serviciu Windows?
+### De ce să rulați digna ca serviciu?
 
-Rularea backend-ului digna ca serviciu Windows asigură că acesta:
-- Pornește automat la pornirea serverului
-- Rulează în fundal, fără un Command Prompt deschis
+Rularea backend-ului digna ca serviciu systemd asigură că acesta:
+
+- Pornește automat la pornirea mașinii
+- Rulează în fundal, fără o fereastră de terminal deschisă
 - Repornește automat dacă se blochează
-- Poate fi gestionat prin Windows Services
+- Poate fi gestionat prin `systemctl`, managerul de servicii standard din Linux
 
-### Comenzile `windows`
+### Fișierele de gestionare a serviciului
 
-Serviciul este gestionat chiar de executabilul `digna`, prin subcomenzile `digna windows`.
-Nu există fișiere batch de rulat.
+Toate fișierele necesare se află în directorul de instalare digna, în: `bin/`
 
-| Comandă | Scop |
-|---|---|
-| `digna windows install` | Înregistrează digna ca serviciu Windows |
-| `digna windows start` | Pornește serviciul înregistrat |
-| `digna windows stop` | Oprește serviciul aflat în execuție |
-| `digna windows uninstall` | Anulează înregistrarea serviciului |
+Sunt disponibile următoarele scripturi shell:
 
-!!! warning "Sunt necesare drepturi de administrator"
+- `install_service.sh` — înregistrează digna în systemd
+- `uninstall_service.sh` — anulează înregistrarea serviciului
+- `start_service.sh` — pornește serviciul înregistrat
+- `stop_service.sh` — oprește serviciul aflat în execuție
 
-    Toate cele patru comenzi trebuie rulate dintr-un Command Prompt deschis ca Administrator.
+!!! warning "Sunt necesare privilegii root"
 
-Fiecare comandă acceptă `--name` pentru a adresa un serviciu înregistrat sub un nume diferit de cel
-implicit. Lista completă a opțiunilor se află în [referința CLI](../../../cli/Command_Line_Interface_202606.md).
+    Toate scripturile trebuie executate cu `sudo`, deoarece înregistrarea unui serviciu care pornește la pornirea sistemului scrie un fișier unit în `/etc/systemd/system`.
+
+### Facerea scripturilor executabile
+
+Este posibil ca extragerea să nu păstreze bitul de execuție. Înainte de prima utilizare:
+
+```bash
+cd /opt/digna/bin
+sudo chmod +x *.sh
+```
 
 ### Instalarea serviciului
 
-1. **Deschideți Command Prompt ca Administrator**
-   - Faceți clic dreapta pe Command Prompt
-   - Selectați "Run as Administrator"
+1. **Deschideți un terminal**
 
-2. **Accesați directorul de instalare digna**
+2. **Accesați folderul bin**
    ```bash
-   cd C:\path\to\digna
+   cd /opt/digna/bin
    ```
 
-3. **Înregistrați serviciul**
+3. **Rulați scriptul de instalare**
    ```bash
-   digna windows install
+   sudo ./install_service.sh
    ```
 
-!!! important "Specificați adresa și portul, dacă valorile implicite nu vă convin"
-
-    `install` consemnează adresa și portul în înregistrarea serviciului, iar serviciul se leagă
-    exact la ce a fost consemnat. Valorile implicite sunt `127.0.0.1` și `8000`, care acceptă conexiuni
-    doar de pe mașina însăși. Un dashboard aflat pe altă gazdă nu le poate accesa, așa că indicați
-    adresa pe care backend-ul trebuie să asculte:
-
-    ```bash
-    digna windows install --address 0.0.0.0 --port 8082
-    ```
-
-    Aceste valori nu sunt citite din `config.toml`. Pentru a le modifica ulterior, dezinstalați serviciul
-    și instalați-l din nou cu noile valori.
-
-Serviciul este înregistrat cu **pornire automată**, așa că va porni odată cu Windows. Nu pornește
-imediat — consultați secțiunea următoare.
-
-#### Opțiuni de instalare
-
-| Opțiune | Implicit | Scop |
-|---|---|---|
-| `--name` | `digna` | Numele sub care se înregistrează serviciul |
-| `--display-name` | `digna` | Numele afișat în services.msc |
-| `--description` | `digna data quality backend` | Descrierea afișată în services.msc |
-| `--address` | `127.0.0.1` | Adresa la care serviciul își leagă API-ul |
-| `--port` | `8000` | Portul la care serviciul își leagă API-ul |
-| `--working-dir` | directorul executabilului `digna` | Directorul care conține `config.toml` și `license.toml`, pe care serviciul îl folosește ca director de lucru |
-| `--start-type` | `auto` | `auto` pornește odată cu Windows, `manual` pornește doar la cerere, `disabled` înregistrează serviciul, dar refuză să-l pornească |
-| `--account` | `LocalSystem` | Contul sub care rulează, de ex. `DOMAIN\user` sau `.\user` |
-| `--password` | | Parola pentru `--account` |
-
-!!! tip "Rularea sub un cont de domeniu"
-
-    `LocalSystem` nu are identitate de rețea, așa că autentificarea Windows față de SQL Server și orice
-    acces la o partajare de rețea vor eșua. Instalați cu `--account` și `--password` acolo unde
-    serviciul trebuie să acceseze resurse ca un anumit utilizator.
+Serverul digna este acum înregistrat în systemd, cu **pornire automată** activată. Serviciul nu pornește imediat — consultați secțiunea următoare pentru a-l porni.
 
 ### Pornirea și oprirea serviciului
 
 #### Pentru a porni serviciul
 
-```bash
-digna windows start
-```
+1. Deschideți un terminal
+2. Accesați `/opt/digna/bin`
+3. Rulați:
+   ```bash
+   sudo ./start_service.sh
+   ```
 
 #### Pentru a opri serviciul
 
-```bash
-digna windows stop
-```
+1. Deschideți un terminal
+2. Accesați `/opt/digna/bin`
+3. Rulați:
+   ```bash
+   sudo ./stop_service.sh
+   ```
 
 !!! tip "Sfat"
 
     Opriți întotdeauna serviciul înainte de a actualiza fișierele aplicației.
 
+### Gestionarea serviciului cu systemctl
+
+După înregistrare, serviciul poate fi controlat și cu comenzile systemd standard, din orice director:
+
+```bash
+sudo systemctl start digna
+sudo systemctl stop digna
+sudo systemctl restart digna
+sudo systemctl status digna
+```
+
+### Verificarea serviciului
+
+Pentru a confirma că serviciul este înregistrat și rulează:
+
+```bash
+systemctl is-enabled digna
+systemctl is-active digna
+```
+
+`enabled` înseamnă că serviciul pornește la pornirea sistemului; `active` înseamnă că rulează în acest moment.
+
+### Vizualizarea logurilor serviciului
+
+systemd captează tot ce scrie backend-ul în consolă. Pentru a citi aceste mesaje:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+Pentru a urmări logul în timp real în timp ce reproduceți o problemă:
+
+```bash
+sudo journalctl -u digna -f
+```
+
+!!! tip "Sfat"
+
+    Aceasta este cea mai rapidă metodă de a diagnostica un serviciu care pornește și se oprește imediat. O eroare de conexiune la repository sau un `license.toml` lipsă sunt raportate aici.
+
 ### Mutarea serviciului într-un director nou
 
-Dacă trebuie să mutați instalarea digna:
+Fișierul unit stochează calea absolută către executabil, așa că mutarea instalării necesită reînregistrarea serviciului:
 
-1. **Opriți serviciul curent și anulați-i înregistrarea**
+1. **Dezinstalați serviciul curent**
    ```bash
-   cd C:\old\path\digna
-   digna windows stop
-   digna windows uninstall
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
    ```
 
 2. **Mutați fișierele aplicației**
-   - Mutați întregul folder de instalare digna în noua locație
-
-3. **Înregistrați din nou serviciul din noua locație**
    ```bash
-   cd C:\new\path\digna
-   digna windows install
+   sudo mv /old/path/digna /new/path/digna
    ```
 
-   Repetați toate valorile `--address`, `--port` sau `--account` pe care le-ați folosit prima dată — înregistrarea
-   anterioară nu mai există.
+3. **Reinstalați serviciul**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
 
 4. **Porniți serviciul**
    ```bash
-   digna windows start
+   sudo ./start_service.sh
    ```
 
 ### Dezinstalarea serviciului
 
 1. **Opriți serviciul aflat în execuție**
    ```bash
-   cd C:\path\to\digna
-   digna windows stop
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
    ```
 
-2. **Anulați înregistrarea serviciului**
+2. **Dezinstalați serviciul**
    ```bash
-   digna windows uninstall
+   sudo ./uninstall_service.sh
    ```
 
-Serverul digna nu mai este acum înregistrat ca serviciu Windows.
+Serverul digna nu mai este acum înregistrat în systemd.
 
 ---
 
@@ -774,61 +1145,54 @@ consultați [Crearea unei conexiuni la baza de date](../../../databases/overview
 Înainte de a actualiza digna, faceți o copie de siguranță a repository-ului (PostgreSQL) pentru a vă proteja împotriva pierderii de date.
 O copie de siguranță vă permite recuperarea dacă actualizarea întâmpină probleme neașteptate.
 
+Pentru a crea o copie de siguranță din shell:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
 ### Procesul de actualizare
 
-#### Pasul 1: Opriți vechiul serviciu și anulați-i înregistrarea
+#### Pasul 1: Opriți serviciul digna
 
-Dacă digna rulează ca serviciu Windows, opriți-l cu **fișierele batch ale instalării
-curente** — comenzile `digna windows` aparțin noii versiuni și nu sunt încă
-disponibile:
+Dacă digna rulează ca serviciu systemd, opriți-l mai întâi:
 
 ```bash
-cd C:\path\to\digna\bin
-stop_service.bat
+cd /opt/digna/bin
+sudo ./stop_service.sh
 ```
 
-Apoi anulați înregistrarea serviciului, tot cu vechiul fișier batch. Înregistrarea indică vechiul
-executabil și scripturile acestuia, pe care această actualizare le înlocuiește pe amândouă, așa că nu poate fi refolosită:
-
-```bash
-uninstall_service.bat
-```
-
-!!! warning "Anulați înregistrarea înainte de a redenumi ceva"
-
-    `uninstall_service.bat` se află în folderul `bin` pe care urmează să-l redenumiți și este singurul
-    lucru care poate elimina înregistrarea pe care a creat-o. Rulați-l cât timp vechea instalare se află încă
-    la locul ei. Dacă folderul a fost deja redenumit, readuceți-i numele inițial, anulați înregistrarea, apoi continuați.
-
-    Notați contul sub care rula serviciul, precum și adresa și portul pe care servea — veți
-    avea nevoie de ele la Pasul 9.
+Dacă digna rulează în prim-plan, apăsați `Ctrl + C` în fereastra sa de terminal.
 
 #### Pasul 2: Faceți o copie de siguranță a instalării curente
 
 În directorul de instalare digna, redenumiți folderele instalării curente, astfel încât noua versiune să poată fi implementată alături de ele:
 
 ```bash
-# Rename the folder containing dignabackend
-ren dignabackend dignabackend_old
+cd /opt/digna
+sudo mv dignabackend dignabackend_old
 ```
 ```bash
-# Rename the folder containing dignacli
-ren dignacli dignacli_old
+sudo mv dignacli dignacli_old
 ```
 ```bash
-# Rename dashboard
-ren dashboard dashboard_old
+sudo mv dashboard dashboard_old
 ```
 
 !!! info "dignabackend și dignacli nu mai sunt folosite"
 
-    Începând cu Release 2026.06, `dignabackend` și `dignacli` sunt înlocuite de executabilul unic `digna`, care reunește backend-ul și CLI-ul. Păstrați `dignabackend_old` și `dignacli_old` doar până când ați verificat actualizarea — apoi puteți șterge ambele foldere. Păstrați `dashboard_old` până când v-ați restaurat din el fișierele de configurare (consultați Pasul 4). Și folderul `bin` dispare: fișierele sale batch controlau vechiul serviciu, iar versiunea 2026.06 nu le mai livrează, așa că, odată ce înregistrarea serviciului a fost anulată la Pasul 1, ele nu fac decât să inducă în eroare.
+    Începând cu Release 2026.06, `dignabackend` și `dignacli` sunt înlocuite de executabilul unic `digna`, care reunește backend-ul și CLI-ul. Păstrați `dignabackend_old` și `dignacli_old` doar până când ați verificat actualizarea — apoi puteți șterge ambele foldere. Păstrați `dashboard_old` până când v-ați restaurat din el fișierele de configurare (consultați Pasul 4).
 
 #### Pasul 3: Extrageți și implementați noua versiune
 
 1. Extrageți noul fișier ZIP de instalare digna
 2. Copiați noul executabil `digna` și folderul `dashboard` în directorul de instalare
+3. Restabiliți bitul de execuție și proprietarul (contul de serviciu):
 
+```bash
+sudo chmod +x /opt/digna/digna
+sudo chown -R digna:digna /opt/digna
+```
 
 !!! warning "Important"
 
@@ -840,8 +1204,9 @@ ren dashboard dashboard_old
 #### Pasul 4: Restaurați fișierele de configurare
 
 ```bash
-copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
+sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 ```
+
 !!! warning "Release 2026.06 modifică config.toml"
 
     Trei setări sunt noi și obligatorii, iar trei nu mai sunt folosite. Un `config.toml` preluat dintr-o versiune anterioară nu conține setările noi, iar digna nu va porni cât timp acestea lipsesc. Adăugați următoarele în `config.toml` existent:
@@ -900,7 +1265,7 @@ apoi reîncărcați pagina forțat (++ctrl+f5++).
 Confirmați că `config.toml` actualizat este complet înainte de a atinge repository-ul:
 
 ```bash
-digna config check
+./digna config check
 ```
 
 Fiecare secțiune trebuie să raporteze OK. Corectați tot ce este raportat ca FAILED și rulați comanda din nou înainte de a continua.
@@ -911,7 +1276,7 @@ Fiecare versiune este licențiată separat. Copiați fișierul `license.toml` fu
 această versiune în directorul de instalare, înlocuindu-l pe cel vechi:
 
 ```bash
-copy /Y C:\path\to\new\license.toml license.toml
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
 ```
 
 !!! warning "Nu păstrați licența anterioară"
@@ -921,7 +1286,7 @@ copy /Y C:\path\to\new\license.toml license.toml
     repository-ul atunci când verificarea eșuează. Verificați-o înainte de a merge mai departe:
 
     ```bash
-    digna license check
+    ./digna license check
     ```
 
 #### Pasul 8: Actualizați schema repository-ului
@@ -929,37 +1294,42 @@ copy /Y C:\path\to\new\license.toml license.toml
 Accesați directorul de instalare digna și rulați:
 
 ```bash
-digna repo upgrade
+cd /opt/digna
+./digna repo upgrade
 ```
 
 Aceasta actualizează schema PostgreSQL la cea mai recentă versiune, păstrând toate datele existente.
 
-#### Pasul 9: Înregistrați și porniți serviciul
+#### Pasul 9: Reporniți serviciile
 
-Vechea înregistrare a fost eliminată la Pasul 1, așa că serviciul este înregistrat din nou — de data aceasta cu
-executabilul `digna`, care nu are fișiere batch:
+Dacă rulați ca serviciu systemd:
 
 ```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
+cd /opt/digna/bin
+sudo ./start_service.sh
 ```
-
-Dați opțiunilor `--address` și `--port` valorile pe care servea vechiul serviciu, cu excepția cazului în care doriți noile
-valori implicite `127.0.0.1` și `8000`; acestea sunt consemnate în înregistrare și nu mai sunt citite
-din `config.toml`. Adăugați `--account` și `--password` dacă vechiul serviciu rula sub un cont
-de domeniu. Consultați
-[Rularea digna ca serviciu Windows](#running-digna-as-a-windows-service) pentru lista completă
-a opțiunilor.
 
 Dacă rulați manual, reporniți serverul:
 
 ```bash
-cd C:\path\to\digna
-digna serve --address <address> --port <port>
+cd /opt/digna
+./digna serve --address <address> --port <port>
 ```
 
-Dacă folosiți IIS sau Tomcat, reporniți web serverul respectiv.
+Dacă folosiți nginx sau Apache, reîncărcați web serverul respectiv:
+
+```bash
+sudo systemctl reload nginx
+```
+```bash
+sudo systemctl restart apache2
+```
+
+Pe familia RHEL, reaplicați etichetarea SELinux dacă directorul `dashboard` a fost înlocuit:
+
+```bash
+sudo restorecon -Rv /opt/digna/dashboard
+```
 
 #### Pasul 10: Verificați actualizarea
 
@@ -967,7 +1337,8 @@ Dacă folosiți IIS sau Tomcat, reporniți web serverul respectiv.
 2. Verificați că interfața se încarcă corect
 3. Verificați logurile serverului pentru eventuale erori
 4. Treceți pe ODBC fiecare conexiune care nu îl folosea încă, apoi testați toate conexiunile
-   — consultați [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection)
+   — consultați [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection):
 
-
-
+```bash
+sudo journalctl -u digna -n 100
+```
