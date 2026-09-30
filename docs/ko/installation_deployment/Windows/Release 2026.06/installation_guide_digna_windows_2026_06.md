@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. 압축 해제 후 다음 항목들이 표시되어야 합니다:
    - `dashboard/` — 웹 대시보드 인터페이스
    - `digna` — 메인 실행 파일(백엔드 + CLI 포함)
-   - `config.toml` — 설정 파일
-   - `license.toml` — 라이선스 파일(여기에 복사)
+
+!!! info "구성 파일과 라이선스 파일은 패키지에 포함되어 있지 않습니다"
+
+    `config.toml`과 `dashboard/dashboard_config.toml`은 모두 설치 패키지에 포함되어 있지 않습니다.
+    두 파일은 [백엔드 구성](#backend-configuration) 및
+    [대시보드 구성](#dashboard-configuration)에서 직접 생성합니다. `license.toml`도 포함되어 있지 않으며,
+    3단계에서 설명하는 것처럼 digna가 별도로 제공합니다.
 
 ### 3단계: 라이선스 파일 설치
 
@@ -525,7 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1단계: 대시보드를 웹 서버에 배포
 
-digna 대시보드는 `dashboard/` 디렉터리에 별도의 `config.toml` 파일을 가지고 있습니다. 이 구성은 초기 설정 시 이미 제공되며 변경이 필요하지 않습니다. 백엔드 연결을 사용자화해야 하는 경우에만 수정하면 됩니다.
+digna 대시보드는 자체 구성을 `dashboard/dashboard_config.toml`에서 읽습니다. 이 파일은 설치 패키지에 포함되어 있지 않으므로, 대시보드 파일과 함께 `dashboard/` 디렉터리에 직접 생성해야 합니다.
+
+파일의 내용은 [Single Sign-On](../../../sso/overview.md)에서 설명하며, 이 파일이 필요한 곳도 바로 그곳입니다. 이 파일에는 대시보드가 제공하는 로그인 옵션과, 다중 인스턴스 배포의 경우 백엔드 연결 정보가 담깁니다.
 
 대시보드를 배포할 웹 서버를 선택하고 해당 배포 절차를 따르세요.
 
@@ -580,19 +587,24 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
 - 충돌 시 자동으로 재시작 가능
 - Windows 서비스 관리 도구를 통해 관리 가능
 
-### 서비스 관리 파일
+### `windows` 명령
 
-모든 필요한 파일은 digna 설치 디렉터리의 `bin/` 아래에 위치합니다.
+서비스는 `digna` 실행 파일 자체가 `digna windows` 하위 명령을 통해 관리합니다.
+실행할 배치 파일은 없습니다.
 
-다음 배치 파일들이 제공됩니다:
-- `install_service.bat` — digna를 Windows 서비스로 등록
-- `uninstall_service.bat` — 서비스 등록 해제
-- `start_service.bat` — 서비스를 시작
-- `stop_service.bat` — 서비스를 중지
+| 명령 | 용도 |
+|---|---|
+| `digna windows install` | digna를 Windows 서비스로 등록 |
+| `digna windows start` | 등록된 서비스를 시작 |
+| `digna windows stop` | 실행 중인 서비스를 중지 |
+| `digna windows uninstall` | 서비스 등록 해제 |
 
 !!! warning "관리자 권한 필요"
 
-    모든 배치 파일은 관리자 권한으로 실행해야 합니다.
+    네 가지 명령은 모두 관리자 권한으로 연 명령 프롬프트에서 실행해야 합니다.
+
+모든 명령은 `--name`을 받으므로 기본값이 아닌 이름으로 등록된 서비스도 지정할 수 있습니다. 전체
+옵션 목록은 [CLI 참조](../../../cli/Command_Line_Interface_202606.md)에 있습니다.
 
 ### 서비스 설치
 
@@ -600,37 +612,65 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
    - 명령 프롬프트 오른쪽 클릭
    - "관리자 권한으로 실행(Run as Administrator)" 선택
 
-2. **bin 폴더로 이동**
+2. **digna 설치 디렉터리로 이동**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **설치 스크립트 실행**
+3. **서비스 등록**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-이제 digna 서버가 자동 시작으로 설정된 Windows 서비스로 등록됩니다. 서비스는 즉시 시작되지 않습니다 — 다음 섹션에서 시작 방법을 참조하세요.
+!!! important "기본값이 적합하지 않다면 주소와 포트를 지정하십시오"
+
+    `install`은 주소와 포트를 서비스 등록 정보에 기록하며, 서비스는 기록된 값에 정확히 바인딩합니다.
+    기본값은 `127.0.0.1`과 `8000`으로, 해당 머신 자체에서 오는 연결만 허용합니다. 다른 호스트에 있는
+    대시보드는 여기에 접근할 수 없으므로, 백엔드가 수신 대기할 주소를 지정하십시오:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    이 값은 `config.toml`에서 읽지 않습니다. 나중에 변경하려면 서비스를 제거한 후 새 값으로
+    다시 설치하십시오.
+
+서비스는 **자동 시작**으로 등록되므로 Windows와 함께 시작됩니다. 서비스는 즉시 시작되지
+않습니다 — 다음 섹션을 참조하세요.
+
+#### 설치 옵션
+
+| 옵션 | 기본값 | 용도 |
+|---|---|---|
+| `--name` | `digna` | 서비스를 등록할 이름 |
+| `--display-name` | `digna` | services.msc에 표시되는 이름 |
+| `--description` | `digna data quality backend` | services.msc에 표시되는 설명 |
+| `--address` | `127.0.0.1` | 서비스가 API를 바인딩할 주소 |
+| `--port` | `8000` | 서비스가 API를 바인딩할 포트 |
+| `--working-dir` | `digna` 실행 파일이 있는 디렉터리 | `config.toml`과 `license.toml`이 있는 디렉터리로, 서비스는 이를 작업 디렉터리로 사용합니다 |
+| `--start-type` | `auto` | `auto`는 Windows와 함께 시작, `manual`은 요청할 때만 시작, `disabled`는 서비스를 등록하지만 시작을 거부합니다 |
+| `--account` | `LocalSystem` | 서비스를 실행할 계정, 예: `DOMAIN\user` 또는 `.\user` |
+| `--password` | | `--account`의 암호 |
+
+!!! tip "도메인 계정으로 실행하기"
+
+    `LocalSystem`에는 네트워크 ID가 없으므로 SQL Server에 대한 Windows 인증과 네트워크 공유에 대한
+    모든 접근이 실패합니다. 서비스가 특정 사용자로 리소스에 접근해야 하는 경우 `--account`와
+    `--password`를 지정하여 설치하십시오.
 
 ### 서비스 시작 및 중지
 
 #### 서비스를 시작하려면
 
-1. 관리자 권한으로 명령 프롬프트 열기
-2. `digna\bin`으로 이동
-3. 다음 실행:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### 서비스를 중지하려면
 
-1. 관리자 권한으로 명령 프롬프트 열기
-2. `digna\bin`으로 이동
-3. 다음 실행:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "팁"
 
@@ -640,37 +680,41 @@ digna 백엔드를 Windows 서비스로 실행하면 다음과 같은 이점이 
 
 digna 설치 위치를 이동해야 하는 경우:
 
-1. **현재 서비스 제거**
+1. **현재 서비스 중지 및 등록 해제**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **애플리케이션 파일 이동**
    - 전체 digna 설치 폴더를 새 위치로 이동
 
-3. **서비스 재설치**
+3. **새 위치에서 서비스 다시 등록**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   처음에 사용한 `--address`, `--port` 또는 `--account` 값을 다시 지정하십시오 — 이전
+   등록 정보는 삭제되었습니다.
 
 4. **서비스 시작**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### 서비스 제거
 
 1. **실행 중인 서비스 중지**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **서비스 제거**
+2. **서비스 등록 해제**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 이제 digna 서버는 Windows 서비스에서 등록 해제됩니다.
@@ -708,14 +752,31 @@ digna를 업그레이드하기 전에 저장소(PostgreSQL)를 백업하여 데�
 
 ### 업그레이드 절차
 
-#### 1단계: digna 서비스 중지
+#### 1단계: 이전 서비스 중지 및 등록 해제
 
-digna가 Windows 서비스로 실행 중인 경우 먼저 중지하세요:
+digna가 Windows 서비스로 실행 중인 경우 **현재 설치의 배치 파일**로 중지하십시오. `digna windows`
+명령은 새 릴리스에 속하므로 아직 사용할 수 없습니다:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+그런 다음 역시 이전 배치 파일로 서비스 등록을 해제하십시오. 등록 정보는 이전 실행 파일과 그
+스크립트를 가리키며, 이번 업그레이드에서 둘 다 교체되므로 재사용할 수 없습니다:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "이름을 변경하기 전에 등록을 해제하십시오"
+
+    `uninstall_service.bat`은 곧 이름을 변경할 `bin` 폴더에 있으며, 자신이 생성한 등록 정보를
+    제거할 수 있는 유일한 수단입니다. 이전 설치가 그대로 있는 동안 실행하십시오. 폴더의 이름을 이미
+    변경했다면 원래 이름으로 되돌리고 등록을 해제한 다음 계속하십시오.
+
+    서비스가 실행되던 계정과 서비스가 사용하던 주소 및 포트를 기록해 두십시오 — 7단계에서
+    필요합니다.
 
 #### 2단계: 현재 설치 백업
 
@@ -736,7 +797,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend와 dignacli는 더 이상 사용되지 않습니다"
 
-    릴리스 2026.06부터 `dignabackend`와 `dignacli`는 백엔드와 CLI를 통합한 단일 실행 파일 `digna`로 대체됩니다. `dignabackend_old`와 `dignacli_old`는 업그레이드를 확인할 때까지만 보관하고, 그 후에는 두 폴더 모두 삭제해도 됩니다. `dashboard_old`는 거기에서 구성 파일을 복원할 때까지 보관하십시오(4단계 참조).
+    릴리스 2026.06부터 `dignabackend`와 `dignacli`는 백엔드와 CLI를 통합한 단일 실행 파일 `digna`로 대체됩니다. `dignabackend_old`와 `dignacli_old`는 업그레이드를 확인할 때까지만 보관하고, 그 후에는 두 폴더 모두 삭제해도 됩니다. `dashboard_old`는 거기에서 구성 파일을 복원할 때까지 보관하십시오(4단계 참조). `bin` 폴더도 필요 없어집니다. 그 안의 배치 파일은 이전 서비스를 구동하던 것으로 2026.06에는 포함되지 않으므로, 1단계에서 서비스 등록을 해제한 뒤에는 혼란만 줄 뿐입니다.
 
 #### 3단계: 새 버전 압축 해제 및 배포
 
@@ -745,7 +806,9 @@ ren dashboard dashboard_old
 
 !!! warning "중요"
 
-    `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
+    `config.toml`과 `dashboard/dashboard_config.toml`은 모두 설치 ZIP에 **절대** 포함되지 않습니다.
+    digna 팀은 두 파일 중 어느 것도 제공하지 않습니다. 따라서 기존 구성은 업그레이드의 영향을 받지 않으며,
+    이름이 변경된 `*_old` 폴더에 있는 사본이 유일한 사본입니다.
 
 #### 4단계: 구성 파일 복원
 
@@ -796,7 +859,12 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     공급자마다 이 섹션을 반복하고, 각 키를 `dashboard_config.toml`의 `key`와 동일하게 유지하십시오. 이전 형식이 남아 있는 동안 `digna config check`는 `oidc_clients`를 FAILED로 보고합니다. Single Sign-On을 사용하는 설치에만 해당됩니다.
 
-#### 5단계: 구성 검증
+#### 5단계: 웹 서버 다시 로드
+
+대시보드는 정적 파일의 집합이므로, 웹 서버와 브라우저가 여전히 이전 버전을 제공하고 있을 수 있습니다.
+`dashboard` 폴더를 호스팅하는 웹 서버를 다시 로드하거나 재시작한 다음, 강력 새로 고침(++ctrl+f5++)으로 페이지를 다시 로드하십시오.
+
+#### 6단계: 구성 검증
 
 리포지터리를 건드리기 전에 업데이트된 `config.toml`이 완전한지 확인하십시오:
 
@@ -806,7 +874,26 @@ digna config check
 
 모든 섹션이 OK로 보고되어야 합니다. FAILED로 보고된 모든 항목을 수정하고, 계속하기 전에 명령을 다시 실행하십시오.
 
-#### 6단계: 저장소 스키마 업그레이드
+#### 7단계: 라이선스 파일 교체
+
+각 릴리스는 별도로 라이선스가 부여됩니다. digna 팀이 이 릴리스용으로 제공한 `license.toml`을
+설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "이전 라이선스를 유지하지 마십시오"
+
+    이전 릴리스용으로 발급된 `license.toml`은 이 릴리스에 적용되지 않으며, 라이선스를 검사하는
+    모든 명령(`user`, `inspection`, `repo`)은 검사에 실패하면 저장소에 접근하기 전에 중단됩니다.
+    계속하기 전에 라이선스를 확인하십시오:
+
+    ```bash
+    digna license check
+    ```
+
+#### 8단계: 저장소 스키마 업그레이드
 
 digna 설치 디렉터리로 이동하여 다음을 실행합니다:
 
@@ -816,14 +903,21 @@ digna repo upgrade
 
 이 명령은 PostgreSQL 스키마를 최신 버전으로 업데이트하면서 기존 데이터를 유지합니다.
 
-#### 7단계: 서비스 재시작
+#### 9단계: 서비스 등록 및 시작
 
-Windows 서비스로 실행 중인 경우:
+이전 등록 정보는 1단계에서 제거되었으므로 서비스를 다시 등록합니다. 이번에는 배치 파일이 없는
+`digna` 실행 파일로 등록합니다:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+새 기본값인 `127.0.0.1`과 `8000`을 사용하려는 경우가 아니라면 `--address`와 `--port`에 이전 서비스가
+사용하던 값을 지정하십시오. 이 값은 등록 정보에 기록되며 더 이상 `config.toml`에서 읽지 않습니다.
+이전 서비스가 도메인 계정으로 실행되었다면 `--account`와 `--password`를 추가하십시오. 전체 옵션
+목록은 [digna를 Windows 서비스로 실행하기](#running-digna-as-a-windows-service)를 참조하십시오.
 
 수동으로 실행 중인 경우, 서버를 다시 시작하세요:
 
@@ -834,7 +928,7 @@ digna serve --address <address> --port <port>
 
 IIS 또는 Tomcat을 사용하는 경우 해당 웹 서버를 재시작하세요.
 
-#### 8단계: 업그레이드 확인
+#### 10단계: 업그레이드 확인
 
 1. digna 대시보드에 접속
 2. 인터페이스가 올바르게 로드되는지 확인

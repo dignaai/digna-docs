@@ -438,8 +438,13 @@ psql postgres
 3. 압축을 풀면 다음 항목이 보여야 합니다:
    - `dashboard/` — 웹 대시보드 인터페이스
    - `digna` — 메인 실행 파일(백엔드 + CLI 통합)
-   - `config.toml` — 구성 파일
-   - `license.toml` — 라이선스 파일(별도로 복사)
+
+!!! info "구성 파일과 라이선스 파일은 패키지에 포함되어 있지 않습니다"
+
+    `config.toml`과 `dashboard/dashboard_config.toml`은 모두 설치 패키지에 포함되어 있지 않습니다.
+    두 파일은 [백엔드 구성](#backend-configuration) 및
+    [대시보드 구성](#dashboard-configuration)에서 직접 생성합니다. `license.toml`도 포함되어 있지 않으며,
+    3단계에서 설명하는 것처럼 digna가 별도로 제공합니다.
 
 터미널에서 압축을 풀려면:
 
@@ -740,9 +745,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### 1단계: 대시보드를 웹 서버에 배포
 
-digna 대시보드에는 별도의 `config.toml` 파일이 `dashboard/` 디렉터리에 있습니다. 초기 설정에서는 이 구성 파일이 이미 제공되어 있으며 변경이 필요하지 않습니다. 백엔드 연결을 사용자화해야 하는 경우에만 수정하면 됩니다.
+digna 대시보드는 자체 구성을 `dashboard/dashboard_config.toml`에서 읽습니다. 이 파일은 설치 패키지에 포함되어 있지 않으므로, 대시보드 파일과 함께 `dashboard/` 디렉터리에 직접 생성해야 합니다.
 
-대시보드 구성이 필요하거나(예: 다중 인스턴스 배포) 수정해야 하는 경우에는 대시보드 문서를 참조하세요.
+파일의 내용은 [Single Sign-On](../../../sso/overview.md)에서 설명하며, 이 파일이 필요한 곳도 바로 그곳입니다. 이 파일에는 대시보드가 제공하는 로그인 옵션과, 다중 인스턴스 배포의 경우 백엔드 연결 정보가 담깁니다.
 
 웹 서버를 선택한 다음 해당 배포 단계를 따르세요.
 
@@ -1020,7 +1025,9 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "중요"
 
-    `config.toml` 파일은 설치 ZIP에 **절대 포함되지 않습니다**. 기존 구성은 안전하게 유지됩니다.
+    `config.toml`과 `dashboard/dashboard_config.toml`은 모두 설치 ZIP에 **절대** 포함되지 않습니다.
+    digna 팀은 두 파일 중 어느 것도 제공하지 않습니다. 따라서 기존 구성은 업그레이드의 영향을 받지 않으며,
+    이름이 변경된 `*_old` 폴더에 있는 사본이 유일한 사본입니다.
 
 #### 4단계: 구성 파일 복원
 
@@ -1072,7 +1079,12 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     공급자마다 이 섹션을 반복하고, 각 키를 `dashboard_config.toml`의 `key`와 동일하게 유지하십시오. 이전 형식이 남아 있는 동안 `digna config check`는 `oidc_clients`를 FAILED로 보고합니다. Single Sign-On을 사용하는 설치에만 해당됩니다.
 
-#### 5단계: 구성 검증
+#### 5단계: 웹 서버 다시 로드
+
+대시보드는 정적 파일의 집합이므로, 웹 서버와 브라우저가 여전히 이전 버전을 제공하고 있을 수 있습니다.
+`dashboard` 폴더를 호스팅하는 웹 서버를 다시 로드하거나 재시작한 다음, 강력 새로 고침(++cmd+shift+r++)으로 페이지를 다시 로드하십시오.
+
+#### 6단계: 구성 검증
 
 리포지터리를 건드리기 전에 업데이트된 `config.toml`이 완전한지 확인하십시오:
 
@@ -1082,7 +1094,26 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 모든 섹션이 OK로 보고되어야 합니다. FAILED로 보고된 모든 항목을 수정하고, 계속하기 전에 명령을 다시 실행하십시오.
 
-#### 6단계: 리포지토리 스키마 업그레이드
+#### 7단계: 라이선스 파일 교체
+
+각 릴리스는 별도로 라이선스가 부여됩니다. digna 팀이 이 릴리스용으로 제공한 `license.toml`을
+설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "이전 라이선스를 유지하지 마십시오"
+
+    이전 릴리스용으로 발급된 `license.toml`은 이 릴리스에 적용되지 않으며, 라이선스를 검사하는
+    모든 명령(`user`, `inspection`, `repo`)은 검사에 실패하면 저장소에 접근하기 전에 중단됩니다.
+    계속하기 전에 라이선스를 확인하십시오:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### 8단계: 리포지토리 스키마 업그레이드
 
 digna 설치 디렉터리로 이동하여 다음을 실행하세요:
 
@@ -1093,7 +1124,7 @@ cd /opt/digna
 
 이 명령은 기존 데이터를 보존하면서 PostgreSQL 스키마를 최신 버전으로 업데이트합니다.
 
-#### 7단계: 서비스 재시작
+#### 9단계: 서비스 재시작
 
 백그라운드 서비스로 실행 중이었다면:
 
@@ -1118,7 +1149,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### 8단계: 업그레이드 확인
+#### 10단계: 업그레이드 확인
 
 1. digna 대시보드에 접속합니다.
 2. 인터페이스가 정상적으로 로드되는지 확인합니다.
