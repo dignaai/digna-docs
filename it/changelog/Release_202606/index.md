@@ -83,13 +83,6 @@ Entrambe possono essere ripristinate ai valori predefiniti in qualsiasi momento.
 - Nuova scheda **Notifications** nelle impostazioni delle anomalie del datasource:
   - **Minimum Alerts** – quanti controlli falliti (non quelli incerti) servono a un'ispezione prima che venga inviata una notifica (predefinito `1`)
   - **Pause After Notification (Days)** – per quanto tempo una sottoscrizione resta silenziosa dopo aver inviato una notifica sul datasource (predefinito `0`, nessuna pausa)
-- Gli iscritti ora ricevono una notifica quando un'ispezione fallisce del tutto (**Notify Inspection Errors**)
-- Ogni notifica rimanda direttamente alla pagina a cui si riferisce – i controlli falliti dell'ispezione, oppure le viste Schema Tracker e Timeliness
-- Interruttori di sottoscrizione più chiari: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Come funzionano le notifiche:** le notifiche vengono inviate tramite **canali di notifica** – Email (tramite una connessione SMTP), Slack o Jira – che gli amministratori configurano e possono verificare con **Test Notification Channel**. Una **sottoscrizione** collega un canale a un progetto: copre tutti i datasource o solo quelli selezionati, e i suoi interruttori stabiliscono cosa segnala – ciascun modulo (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker e controlli del volume dei dati), le ispezioni che falliscono del tutto e, facoltativamente, anche le ispezioni superate.
-
-**Impatto:** Notifiche meno numerose e più utili – le deviazioni isolate e le anomalie persistenti non inondano più il canale.
 
 ---
 

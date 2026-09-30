@@ -84,13 +84,6 @@ Ambas podem ser restauradas aos seus padrões a qualquer momento. Veja [Configur
 - Nova aba **Notifications** nas configurações de anomalias da fonte de dados:
   - **Minimum Alerts** – quantas verificações com falha (não as incertas) uma inspeção precisa ter antes que uma notificação seja enviada (padrão `1`)
   - **Pause After Notification (Days)** – por quanto tempo uma assinatura fica em silêncio depois de notificar sobre a fonte de dados (padrão `0`, sem pausa)
-- Os assinantes agora são notificados quando uma inspeção falha por completo (**Notify Inspection Errors**)
-- Cada notificação leva diretamente à página a que se refere — as verificações com falha da inspeção, ou as visualizações do Schema Tracker e do Timeliness
-- Chaves de assinatura mais claras: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Como as notificações funcionam:** as notificações são enviadas por **canais de notificação** – Email (via uma conexão SMTP), Slack ou Jira –, que os administradores configuram e podem verificar com **Test Notification Channel**. Uma **assinatura** conecta um canal a um projeto: ela abrange todas as fontes de dados ou apenas as selecionadas, e suas chaves definem o que ela reporta – cada módulo (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker e verificações de volume de dados), inspeções que falham por completo e, opcionalmente, também inspeções aprovadas.
-
-**Impacto:** Menos notificações, e mais acionáveis — desvios isolados e anomalias persistentes não inundam mais o canal.
 
 ---
 

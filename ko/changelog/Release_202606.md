@@ -83,13 +83,6 @@
 - 데이터 소스의 이상 설정에 새 **Notifications** 탭 추가:
   - **Minimum Alerts** – 알림이 전송되기 전에 한 검사에서 필요한 실패한 체크(불확실한 체크 제외) 수(기본값 `1`)
   - **Pause After Notification (Days)** – 데이터 소스에 대해 알림을 보낸 후 구독이 알림을 보내지 않는 기간(기본값 `0`, 일시 중지 없음)
-- 이제 검사 자체가 실패하면 구독자에게 알림이 전송됩니다(**Notify Inspection Errors**)
-- 모든 알림은 해당 페이지, 즉 검사의 실패한 체크 또는 Schema Tracker 및 Timeliness 보기로 바로 연결됩니다
-- 더 명확해진 구독 스위치: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**알림 작동 방식:** 알림은 **알림 채널**(Email(SMTP 연결 사용), Slack 또는 Jira)을 통해 전송되며, 알림 채널은 관리자가 설정하고 **Test Notification Channel**로 확인할 수 있습니다. **구독**은 채널을 프로젝트에 연결합니다. 구독은 모든 데이터 소스 또는 선택한 데이터 소스를 대상으로 하며, 스위치로 무엇을 보고할지 선택합니다. 각 모듈(Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker 및 데이터 볼륨 체크), 완전히 실패한 검사, 그리고 선택적으로 통과한 검사까지 포함할 수 있습니다.
-
-**영향:** 알림은 줄고 더 실행 가능해집니다. 고립된 편차와 지속되는 이상이 더 이상 채널을 가득 채우지 않습니다.
 
 ---
 

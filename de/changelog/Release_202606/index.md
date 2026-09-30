@@ -83,13 +83,6 @@ Beide lassen sich jederzeit auf ihre Standardwerte zurücksetzen. Unter [Modelle
 - Neuer Tab **Benachrichtigungen** in den Anomalie-Einstellungen der Datenquelle:
   - **Mindestanzahl Alarme** – wie viele fehlgeschlagene Prüfungen (nicht unsichere) eine Inspektion benötigt, bevor eine Benachrichtigung gesendet wird (Standard `1`)
   - **Pause nach Benachrichtigung (Tage)** – wie lange eine Subscription stumm bleibt, nachdem sie über die Datenquelle benachrichtigt hat (Standard `0`, keine Pause)
-- Abonnenten werden jetzt benachrichtigt, wenn eine Inspektion vollständig fehlschlägt (**Über Inspektionsfehler benachrichtigen**)
-- Jede Benachrichtigung verlinkt direkt auf die Seite, um die es geht – die fehlgeschlagenen Prüfungen der Inspektion oder die Ansichten von Schema Tracker und Timeliness
-- Klarere Subscription-Schalter: **Über bestandene Inspektionen benachrichtigen**, **Über Inspektionsfehler benachrichtigen**, **Über Datenvolumen-Prüfungen benachrichtigen**
-
-**So funktionieren Benachrichtigungen:** Benachrichtigungen werden über **Benachrichtigungskanäle** versendet – Email (über eine SMTP-Verbindung), Slack oder Jira –, die Administratoren einrichten und mit **Benachrichtigungskanal testen** prüfen können. Eine **Subscription** verbindet einen Kanal mit einem Projekt: Sie umfasst alle oder ausgewählte Datenquellen, und ihre Schalter legen fest, worüber sie berichtet – jedes Modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker und Datenvolumen-Prüfungen), vollständig fehlgeschlagene Inspektionen und optional auch bestandene Inspektionen.
-
-**Auswirkung:** Weniger, dafür aussagekräftigere Benachrichtigungen – vereinzelte Abweichungen und anhaltende Anomalien überfluten den Kanal nicht mehr.
 
 ---
 

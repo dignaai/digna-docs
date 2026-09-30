@@ -84,13 +84,6 @@ Both can be restored to their defaults at any time. See [Model Settings](../plat
 - New **Notifications** tab on the data source's anomaly settings:
   - **Minimum Alerts** – how many failed checks (not uncertain ones) an inspection needs before a notification is sent (default `1`)
   - **Pause After Notification (Days)** – how long a subscription stays silent after notifying about the data source (default `0`, no pause)
-- Subscribers are now notified when an inspection fails outright (**Notify Inspection Errors**)
-- Every notification links straight to the page it is about — the failed checks of the inspection, or the Schema Tracker and Timeliness views
-- Clearer subscription switches: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**How notifications work:** notifications are sent through **notification channels** – Email (via an SMTP connection), Slack or Jira – which administrators set up and can check with **Test Notification Channel**. A **subscription** connects a channel to a project: it covers all data sources or selected ones, and its switches choose what it reports – each module (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker and data volume checks), inspections that fail outright, and optionally passed inspections as well.
-
-**Impact:** Fewer, more actionable notifications — isolated deviations and persisting anomalies no longer flood the channel.
 
 ---
 

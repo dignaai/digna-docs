@@ -571,13 +571,6 @@ Beide kunnen op elk moment worden teruggezet naar hun standaardwaarden. Zie [Mod
 - Nieuw tabblad **Notifications** in de anomalie-instellingen van de datasource:
   - **Minimum Alerts** – hoeveel mislukte controles (geen onzekere) een inspectie nodig heeft voordat een melding wordt verzonden (standaard `1`)
   - **Pause After Notification (Days)** – hoe lang een abonnement stil blijft na een melding over de datasource (standaard `0`, geen pauze)
-- Abonnees krijgen nu een melding wanneer een inspectie volledig mislukt (**Notify Inspection Errors**)
-- Elke melding linkt rechtstreeks naar de pagina waar die over gaat – de mislukte controles van de inspectie, of de weergaven van Schema Tracker en Timeliness
-- Duidelijkere abonnementsschakelaars: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Zo werken meldingen:** meldingen worden verzonden via **notificatiekanalen** – Email (via een SMTP-verbinding), Slack of Jira – die beheerders instellen en kunnen controleren met **Test Notification Channel**. Een **abonnement** koppelt een kanaal aan een project: het omvat alle of geselecteerde datasources, en de schakelaars bepalen waarover het rapporteert – elke module (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker en datavolumecontroles), inspecties die volledig mislukken en optioneel ook geslaagde inspecties.
-
-**Impact:** Minder, maar beter bruikbare meldingen – geïsoleerde afwijkingen en aanhoudende anomalieën overspoelen het kanaal niet langer.
 
 ---
 

@@ -571,13 +571,6 @@ Ambos pueden restaurarse a sus valores predeterminados en cualquier momento. Con
 - Nueva pestaña **Notifications** en los ajustes de anomalías de la fuente de datos:
   - **Minimum Alerts** – cuántas comprobaciones fallidas (no las inciertas) necesita una inspección antes de enviar una notificación (predeterminado `1`)
   - **Pause After Notification (Days)** – cuánto tiempo permanece en silencio una suscripción después de notificar sobre la fuente de datos (predeterminado `0`, sin pausa)
-- Los suscriptores ahora reciben una notificación cuando una inspección falla por completo (**Notify Inspection Errors**)
-- Cada notificación enlaza directamente con la página a la que se refiere – las comprobaciones fallidas de la inspección, o las vistas de Schema Tracker y Timeliness
-- Interruptores de suscripción más claros: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Cómo funcionan las notificaciones:** las notificaciones se envían a través de **canales de notificación** – Email (mediante una conexión SMTP), Slack o Jira – que los administradores configuran y pueden comprobar con **Test Notification Channel**. Una **suscripción** conecta un canal con un proyecto: abarca todas las fuentes de datos o las seleccionadas, y sus interruptores eligen qué informa – cada módulo (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker y comprobaciones de volumen de datos), las inspecciones que fallan por completo y, opcionalmente, también las inspecciones superadas.
-
-**Impacto:** Menos notificaciones y más útiles – las desviaciones aisladas y las anomalías persistentes ya no saturan el canal.
 
 ---
 

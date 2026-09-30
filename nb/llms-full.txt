@@ -571,13 +571,6 @@ Effekt: Gir brukerne kontroll over selve prediksjonsmodellen, ved siden av de ek
 - Ny fane **Notifications** i datakildens avviksinnstillinger:
   - **Minimum Alerts** – hvor mange mislykkede kontroller (ikke usikre) en inspeksjon trenger før et varsel sendes (standard `1`)
   - **Pause After Notification (Days)** – hvor lenge et abonnement forblir stille etter å ha varslet om datakilden (standard `0`, ingen pause)
-- Abonnenter varsles nå når en inspeksjon feiler fullstendig (**Notify Inspection Errors**)
-- Hvert varsel lenker direkte til siden det gjelder – de mislykkede kontrollene i inspeksjonen, eller visningene for Schema Tracker og Timeliness
-- Tydeligere abonnementsbrytere: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-Slik fungerer varsler: varsler sendes gjennom **varslingskanaler** – Email (via en SMTP-tilkobling), Slack eller Jira – som administratorer setter opp og kan kontrollere med **Test Notification Channel**. Et **abonnement** kobler en kanal til et prosjekt: det dekker alle datakilder eller utvalgte, og bryterne velger hva det rapporterer – hver modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker og kontroller av datavolum), inspeksjoner som feiler fullstendig, og eventuelt også beståtte inspeksjoner.
-
-Effekt: Færre og mer handlingsrettede varsler – isolerte avvik og vedvarende anomalier oversvømmer ikke lenger kanalen.
 
 ---
 

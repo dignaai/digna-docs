@@ -83,13 +83,6 @@ Hatás: Az eddigi, tűréssávra vonatkozó Sensitivity és Memory beállításo
 - Új **Notifications** lap az adatforrás anomáliabeállításai között:
   - **Minimum Alerts** – hány sikertelen ellenőrzés (a bizonytalanok nem számítanak) szükséges egy inspekcióban ahhoz, hogy értesítés menjen ki (alapértelmezés: `1`)
   - **Pause After Notification (Days)** – mennyi ideig marad néma egy feliratkozás, miután értesített az adatforrásról (alapértelmezés: `0`, nincs szünet)
-- A feliratkozók mostantól értesítést kapnak, ha egy inspekció teljes egészében meghiúsul (**Notify Inspection Errors**)
-- Minden értesítés közvetlenül arra az oldalra mutat, amelyről szól – az inspekció sikertelen ellenőrzéseire, illetve a Schema Tracker és Timeliness nézetekre
-- Egyértelműbb feliratkozási kapcsolók: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Hogyan működnek az értesítések:** az értesítések **értesítési csatornákon** keresztül mennek ki – Email (SMTP-kapcsolaton keresztül), Slack vagy Jira –, amelyeket az adminisztrátorok állítanak be, és a **Test Notification Channel** funkcióval ellenőrizhetnek. Egy **feliratkozás** egy csatornát kapcsol egy projekthez: az összes adatforrásra vagy csak a kiválasztottakra vonatkozik, kapcsolói pedig meghatározzák, miről tájékoztat – az egyes modulokról (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker és az adatmennyiség-ellenőrzések), a teljes egészében meghiúsuló inspekciókról, és igény szerint a sikeres inspekciókról is.
-
-Hatás: Kevesebb, de hasznosabb értesítés – az elszigetelt eltérések és a tartósan fennálló anomáliák többé nem árasztják el a csatornát.
 
 ---
 

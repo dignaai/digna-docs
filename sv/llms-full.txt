@@ -571,13 +571,6 @@ Påverkan: Ger användare kontroll över själva prediktionsmodellen, vid sidan 
 - Ny flik **Notifications** i datakällans avvikelseinställningar:
   - **Minimum Alerts** – hur många misslyckade kontroller (inte osäkra) en inspektion behöver innan en notifiering skickas (standard `1`)
   - **Pause After Notification (Days)** – hur länge en prenumeration förblir tyst efter att ha notifierat om datakällan (standard `0`, ingen paus)
-- Prenumeranter notifieras nu när en inspektion misslyckas helt (**Notify Inspection Errors**)
-- Varje notifiering länkar direkt till sidan den gäller – inspektionens misslyckade kontroller, eller vyerna för Schema Tracker och Timeliness
-- Tydligare prenumerationsreglage: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-Så fungerar notifieringar: notifieringar skickas via **notifieringskanaler** – Email (via en SMTP-anslutning), Slack eller Jira – som administratörer konfigurerar och kan kontrollera med **Test Notification Channel**. En **prenumeration** kopplar en kanal till ett projekt: den omfattar alla datakällor eller utvalda, och dess reglage väljer vad den rapporterar – varje modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker och kontroller av datavolym), inspektioner som misslyckas helt och, om så önskas, även godkända inspektioner.
-
-Påverkan: Färre och mer åtgärdbara notifieringar – enstaka avvikelser och kvarstående anomalier översvämmar inte längre kanalen.
 
 ---
 

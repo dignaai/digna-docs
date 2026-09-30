@@ -83,13 +83,6 @@ Abu nustatymus bet kada galima grąžinti į numatytąsias reikšmes. Kaip veiki
 - Naujas skirtukas **Notifications** duomenų šaltinio anomalijų nustatymuose:
   - **Minimum Alerts** – kiek nepavykusių patikrų (ne neapibrėžtų) turi surinkti inspekcija, kad būtų išsiųstas pranešimas (numatytoji reikšmė `1`)
   - **Pause After Notification (Days)** – kiek laiko prenumerata nutyla po pranešimo apie duomenų šaltinį (numatytoji reikšmė `0`, be pauzės)
-- Prenumeratoriai dabar informuojami, kai inspekcija visiškai nepavyksta (**Notify Inspection Errors**)
-- Kiekvienas pranešimas veda tiesiai į puslapį, su kuriuo jis susijęs – į nepavykusias inspekcijos patikras arba į Schema Tracker ir Timeliness rodinius
-- Aiškesni prenumeratos jungikliai: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Kaip veikia pranešimai:** pranešimai siunčiami per **pranešimų kanalus** – Email (per SMTP ryšį), Slack arba Jira, – kuriuos nustato administratoriai ir kuriuos galima patikrinti naudojant **Test Notification Channel**. **Prenumerata** susieja kanalą su projektu: ji apima visus arba pasirinktus duomenų šaltinius, o jos jungikliai nustato, apie ką ji praneša – kiekvieną modulį (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ir duomenų apimties patikras), visiškai nepavykusias inspekcijas ir, pasirinktinai, taip pat sėkmingas inspekcijas.
-
-**Poveikis:** Mažiau, bet naudingesnių pranešimų – pavieniai nuokrypiai ir išliekančios anomalijos nebeužtvindo kanalo.
 
 ---
 

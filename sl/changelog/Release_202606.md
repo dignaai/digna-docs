@@ -84,13 +84,6 @@ Obe nastavitvi je mogoče kadar koli vrniti na privzeti vrednosti. Kako deluje p
 - Nov zavihek **Notifications** v nastavitvah anomalij podatkovnega vira:
   - **Minimum Alerts** – koliko neuspešnih preverjanj (negotova se ne štejejo) mora imeti inšpekcija, preden je poslano obvestilo (privzeto `1`)
   - **Pause After Notification (Days)** – kako dolgo naročnina ostane tiha, potem ko je poslala obvestilo o podatkovnem viru (privzeto `0`, brez premora)
-- Naročniki so zdaj obveščeni, ko inšpekcija v celoti spodleti (**Notify Inspection Errors**)
-- Vsako obvestilo vodi neposredno na stran, na katero se nanaša – na neuspešna preverjanja inšpekcije ali na pogleda Schema Tracker in Timeliness
-- Jasnejša stikala naročnine: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Kako delujejo obvestila:** obvestila se pošiljajo prek **kanalov obveščanja** – Email (prek povezave SMTP), Slack ali Jira –, ki jih nastavijo skrbniki in jih lahko preverijo s funkcijo **Test Notification Channel**. **Naročnina** poveže kanal s projektom: zajema vse podatkovne vire ali le izbrane, njena stikala pa določajo, o čem poroča – o vsakem modulu (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker in preverjanja obsega podatkov), o inšpekcijah, ki v celoti spodletijo, in po želji tudi o uspešnih inšpekcijah.
-
-**Vpliv:** Manj, a bolj uporabnih obvestil – posamezna odstopanja in vztrajne anomalije ne preplavljajo več kanala.
 
 ---
 
