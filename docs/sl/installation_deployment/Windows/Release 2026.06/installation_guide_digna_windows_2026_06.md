@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Po razpakiranju bi morali videti naslednje elemente:
    - `dashboard/` — Spletni vmesnik nadzorne plošče
    - `digna` — Glavna izvršljiva datoteka (backend + CLI skupaj)
-   - `config.toml` — Konfiguracijska datoteka
-   - `license.toml` — Licenčna datoteka (sem kopirajte vašo)
+
+!!! info "Konfiguracijskih in licenčnih datotek ni v paketu"
+
+    Niti `config.toml` niti `dashboard/dashboard_config.toml` nista priložena namestitvi — obe
+    ustvarite sami, v razdelkih [Konfiguracija backenda](#backend-configuration) in
+    [Konfiguracija nadzorne plošče](#dashboard-configuration). Tudi `license.toml` ni priložena;
+    digna jo posreduje ločeno, kot opisuje Korak 3.
 
 ### Korak 3: Namestite licenčno datoteko
 
@@ -525,9 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Korak 1: Namestite nadzorno ploščo na spletni strežnik
 
-Nadzorna plošča digna ima svojo ločeno datoteko `config.toml`, ki se nahaja v mapi `dashboard/`. Ta konfiguracija je že priložena in običajno ne zahteva sprememb med začetno namestitvijo. Spremenite jo le, če želite prilagoditi povezavo na backend.
+Nadzorna plošča digna prebere svojo konfiguracijo iz datoteke `dashboard/dashboard_config.toml`. Ta datoteka ni priložena namestitvi — ustvarite jo v mapi `dashboard/` poleg datotek nadzorne plošče.
 
-Če potrebujete spremembe konfiguracije nadzorne plošče (npr. za večinstančne namestitve), se obrnite na dokumentacijo nadzorne plošče.
+Njena vsebina je opisana v razdelku [Enotna prijava (SSO)](../../../sso/overview.md), kjer je datoteka tudi potrebna: vsebuje možnosti prijave, ki jih ponuja nadzorna plošča, in pri večinstančnih namestitvah povezavo na backend.
 
 Izberite spletni strežnik in sledite ustreznim korakom namestitve.
 
@@ -582,19 +587,24 @@ Poganjanje digna backenda kot Windows storitve zagotavlja:
 - Samodejno ponovni zagon v primeru izpada
 - Upravljanje preko Windows Services
 
-### Datoteke za upravljanje storitve
+### Ukazi `windows`
 
-Vse potrebne datoteke se nahajajo v imeniku namestitve digna pod: `bin/`
+Storitev upravlja sama izvršljiva datoteka `digna`, s podukazi `digna windows`.
+Batch datotek za zagon ni.
 
-Na voljo so naslednje batch datoteke:
-- `install_service.bat` — Registrira digna kot Windows storitev
-- `uninstall_service.bat` — Odstrani registracijo storitve
-- `start_service.bat` — Zažene storitev
-- `stop_service.bat` — Ustavi storitev
+| Ukaz | Namen |
+|---|---|
+| `digna windows install` | Registrira digna kot Windows storitev |
+| `digna windows start` | Zažene registrirano storitev |
+| `digna windows stop` | Ustavi delujočo storitev |
+| `digna windows uninstall` | Odstrani registracijo storitve |
 
-!!! warning "Administrator Required"
+!!! warning "Potrebne so administratorske pravice"
 
-    Vse batch datoteke je potrebno zagnati z administratorskimi privilegiji.
+    Vse štiri ukaze je treba zagnati iz Command Prompt, odprtega kot administrator.
+
+Vsak ukaz sprejme `--name`, s katerim naslovite storitev, registrirano pod imenom, ki ni privzeto. Celoten
+seznam možnosti je v [referenci CLI](../../../cli/Command_Line_Interface_202606.md).
 
 ### Namestitev storitve
 
@@ -602,37 +612,66 @@ Na voljo so naslednje batch datoteke:
    - Desni klik na Command Prompt
    - Izberite "Run as Administrator"
 
-2. **Pomaknite se v mapo bin**
+2. **Pomaknite se v imenik namestitve digna**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Zaženite namestitveni skript**
+3. **Registrirajte storitev**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-Digna strežnik je zdaj registriran kot Windows storitev z omogočenim samodejnim zagonom. Storitev se ne zažene takoj — glejte naslednji razdelek za zagon.
+!!! important "Navedite naslov in vrata, razen če vam ustrezajo privzete vrednosti"
+
+    `install` zabeleži naslov in vrata v registraciji storitve, storitev pa se veže natanko na
+    zabeleženo. Privzeti vrednosti sta `127.0.0.1` in `8000`, ki sprejemata povezave
+    samo z istega računalnika. Nadzorna plošča na drugem gostitelju tja ne more dostopati, zato navedite
+    naslov, na katerem naj backend posluša:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Te vrednosti se ne preberejo iz `config.toml`. Če jih želite pozneje spremeniti, storitev odstranite in
+    jo znova namestite z novimi vrednostmi.
+
+Storitev je registrirana s **samodejnim zagonom**, zato se bo zagnala skupaj z Windows. Takoj se
+ne zažene — glejte naslednji razdelek.
+
+#### Možnosti namestitve
+
+| Možnost | Privzeto | Namen |
+|---|---|---|
+| `--name` | `digna` | Ime, pod katerim naj se registrira storitev |
+| `--display-name` | `digna` | Ime, prikazano v services.msc |
+| `--description` | `digna data quality backend` | Opis, prikazan v services.msc |
+| `--address` | `127.0.0.1` | Naslov, na katerega storitev veže svoj API |
+| `--port` | `8000` | Vrata, na katera storitev veže svoj API |
+| `--working-dir` | imenik izvršljive datoteke `digna` | Imenik z datotekama `config.toml` in `license.toml`, ki ga storitev uporabi kot svoj delovni imenik |
+| `--start-type` | `auto` | `auto` se zažene skupaj z Windows, `manual` se zažene samo na zahtevo, `disabled` registrira storitev, vendar je ne dovoli zagnati |
+| `--account` | `LocalSystem` | Račun, pod katerim teče, npr. `DOMAIN\user` ali `.\user` |
+| `--password` | | Geslo računa `--account` |
+
+!!! tip "Izvajanje pod domenskim računom"
+
+    `LocalSystem` nima omrežne identitete, zato preverjanje pristnosti Windows proti SQL Server in vsak
+    dostop do omrežne mape ne bosta uspela. Kadar mora storitev dostopati do virov kot določen uporabnik,
+    jo namestite z `--account` in `--password`.
 
 ### Zagon in ustavitev storitve
 
 #### Za zagon storitve
 
-1. Odprite Command Prompt kot administrator
-2. Pomaknite se v `digna\bin`
-3. Zaženite:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Za ustavitev storitve
 
-1. Odprite Command Prompt kot administrator
-2. Pomaknite se v `digna\bin`
-3. Zaženite:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Nasvet"
 
@@ -642,37 +681,41 @@ Digna strežnik je zdaj registriran kot Windows storitev z omogočenim samodejni
 
 Če potrebujete premestitev namestitve digna:
 
-1. **Odstranite trenutno storitev**
+1. **Ustavite trenutno storitev in odstranite njeno registracijo**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Premaknite datoteke aplikacije**
    - Premaknite celotno mapo namestitve digna na novo lokacijo
 
-3. **Ponovno namestite storitev**
+3. **Storitev znova registrirajte z nove lokacije**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Ponovite vse vrednosti `--address`, `--port` ali `--account`, ki ste jih uporabili prvič — prejšnje
+   registracije ni več.
 
 4. **Zaženite storitev**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Odstranitev storitve
 
 1. **Ustavite tekočo storitev**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Odstranite storitev**
+2. **Odstranite registracijo storitve**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 Digna strežnik je zdaj odregistriran kot Windows storitev.
@@ -711,14 +754,31 @@ Varnostna kopija omogoča obnovitev, če pride do nepričakovanih težav med nad
 
 ### Postopek nadgradnje
 
-#### Korak 1: Ustavite digna storitev
+#### Korak 1: Ustavite staro storitev in odstranite njeno registracijo
 
-Če digna teče kot Windows storitev, jo najprej ustavite:
+Če digna teče kot Windows storitev, jo ustavite z **batch datotekami vaše trenutne
+namestitve** — ukazi `digna windows` pripadajo novi izdaji in še niso na voljo:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Nato odstranite registracijo storitve, spet s staro batch datoteko. Registracija kaže na staro
+izvršljivo datoteko in njene skripte, ki ju ta nadgradnja zamenja, zato je ni mogoče znova uporabiti:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Registracijo odstranite, preden karkoli preimenujete"
+
+    `uninstall_service.bat` je v mapi `bin`, ki jo boste kmalu preimenovali, in je edino, kar lahko
+    odstrani registracijo, ki jo je ustvarila. Zaženite jo, dokler je stara namestitev še na svojem mestu. Če je
+    mapa že preimenovana, ji vrnite prvotno ime, odstranite registracijo in nato nadaljujte.
+
+    Zapišite si račun, pod katerim je tekla storitev, ter naslov in vrata, na katerih je stregla — potrebovali
+    jih boste v koraku 9.
 
 #### Korak 2: Varnostna Kopija Trenutne Namestitve
 
@@ -739,7 +799,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend in dignacli nista več v uporabi"
 
-    Od izdaje 2026.06 `dignabackend` in `dignacli` nadomešča ena sama izvršljiva datoteka `digna`, ki združuje zaledje in CLI. Mapi `dignabackend_old` in `dignacli_old` obdržite le, dokler ne preverite nadgradnje — nato ju lahko obe izbrišete. Mapo `dashboard_old` obdržite, dokler iz nje ne obnovite svojih konfiguracijskih datotek (glejte korak 4).
+    Od izdaje 2026.06 `dignabackend` in `dignacli` nadomešča ena sama izvršljiva datoteka `digna`, ki združuje zaledje in CLI. Mapi `dignabackend_old` in `dignacli_old` obdržite le, dokler ne preverite nadgradnje — nato ju lahko obe izbrišete. Mapo `dashboard_old` obdržite, dokler iz nje ne obnovite svojih konfiguracijskih datotek (glejte korak 4). Odstrani se tudi mapa `bin`: njene batch datoteke so upravljale staro storitev in izdaja 2026.06 jih ne vsebuje, zato potem, ko je bila registracija storitve v koraku 1 odstranjena, le še zavajajo.
 
 #### Korak 3: Razpakirajte in namestite novo verzijo
 
@@ -749,7 +809,9 @@ ren dashboard dashboard_old
 
 !!! warning "Pomembno"
 
-    Datoteka `config.toml` NI nikoli vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
+    Niti `config.toml` niti `dashboard/dashboard_config.toml` nista **nikoli** vključena v
+    namestitveni ZIP — ekipa digna nobene od teh datotek nikoli ne dostavi. Nadgradnja vaše obstoječe
+    konfiguracije zato ne spremeni, kopije v preimenovanih mapah `*_old` pa so edine, ki jih imate.
 
 #### Korak 4: Obnovite konfiguracijske datoteke
 
@@ -800,7 +862,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Razdelek ponovite za vsakega ponudnika in vsak ključ ohranite enak vrednosti `key` v datoteki `dashboard_config.toml`. `digna config check` javi `oidc_clients` kot FAILED, dokler stara oblika ostaja. Prizadete so le namestitve, ki uporabljajo enotno prijavo.
 
-#### Korak 5: Preverjanje Konfiguracije
+#### Korak 5: Ponovno naložite spletni strežnik
+
+Nadzorna plošča je nabor statičnih datotek, zato vaš spletni strežnik — in brskalnik — morda še vedno
+streže prejšnjo različico. Ponovno naložite ali znova zaženite spletni strežnik, ki gosti mapo `dashboard`,
+nato pa stran osvežite s trdim osveževanjem (++ctrl+f5++).
+
+#### Korak 6: Preverjanje Konfiguracije
 
 Preden se dotaknete repozitorija, potrdite, da je posodobljeni `config.toml` popoln:
 
@@ -810,7 +878,26 @@ digna config check
 
 Vsaka sekcija mora javiti OK. Odpravite vse, kar je javljeno kot FAILED, in pred nadaljevanjem ukaz poženite znova.
 
-#### Korak 6: Nadgradite shemo repozitorija
+#### Korak 7: Zamenjajte licenčno datoteko
+
+Vsaka izdaja je licencirana ločeno. Datoteko `license.toml`, ki vam jo je ekipa digna posredovala za
+to izdajo, kopirajte v imenik namestitve in z njo zamenjajte staro:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Ne obdržite prejšnje licence"
+
+    Datoteka `license.toml`, izdana za prejšnjo izdajo, ne velja za to, in vsak ukaz, ki preverja
+    licenco — `user`, `inspection`, `repo` — se prekine, še preden se dotakne repozitorija, če
+    preverjanje ne uspe. Preden nadaljujete, jo preverite:
+
+    ```bash
+    digna license check
+    ```
+
+#### Korak 8: Nadgradite shemo repozitorija
 
 Pomaknite se v imenik namestitve digna in zaženite:
 
@@ -820,14 +907,22 @@ digna repo upgrade
 
 To posodobi PostgreSQL shemo na najnovejšo različico, pri tem pa ohrani vse obstoječe podatke.
 
-#### Korak 7: Ponovni zagon storitev
+#### Korak 9: Registrirajte in zaženite storitev
 
-Če poganjate kot Windows storitev:
+Stara registracija je bila odstranjena v koraku 1, zato se storitev registrira znova — tokrat z
+izvršljivo datoteko `digna`, ki nima batch datotek:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Za `--address` in `--port` navedite vrednosti, na katerih je stregla stara storitev, razen če želite nove
+privzete vrednosti `127.0.0.1` in `8000`; zabeležijo se v registraciji in se ne berejo več
+iz `config.toml`. Če je stara storitev tekla pod domenskim računom, dodajte `--account` in `--password`. Celoten
+seznam možnosti je v razdelku
+[Poganjanje digna kot Windows storitve](#running-digna-as-a-windows-service).
 
 Če poganjate ročno, ponovno zaženite strežnik:
 
@@ -838,7 +933,7 @@ digna serve --address <address> --port <port>
 
 Če uporabljate IIS ali Tomcat, ponovno zaženite ustrezen spletni strežnik.
 
-#### Korak 8: Preverite nadgradnjo
+#### Korak 10: Preverite nadgradnjo
 
 1. Dostopajte do digna nadzorne plošče
 2. Preverite, ali se vmesnik nalaga pravilno

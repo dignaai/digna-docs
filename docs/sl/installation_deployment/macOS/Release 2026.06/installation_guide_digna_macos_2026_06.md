@@ -438,8 +438,13 @@ Nato prilepite izjave na poziv `postgres=#` in vtipkajte `\q`, da zapustite.
 3. Po razširitvi bi morali videti naslednje elemente:
    - `dashboard/` — spletni vmesnik nadzorne plošče
    - `digna` — glavni izvršljivi program (backend + CLI skupaj)
-   - `config.toml` — konfiguracijska datoteka
-   - `license.toml` — licenčna datoteka (kopirajte svojo sem)
+
+!!! info "Konfiguracijskih in licenčnih datotek ni v paketu"
+
+    Niti `config.toml` niti `dashboard/dashboard_config.toml` nista priložena namestitvi — obe
+    ustvarite sami, v razdelkih [Konfiguracija backend‑a](#backend-configuration) in
+    [Konfiguracija nadzorne plošče](#dashboard-configuration). Tudi `license.toml` ni priložena;
+    digna jo posreduje ločeno, kot opisuje Korak 3.
 
 Za razširitev iz Terminala:
 
@@ -740,9 +745,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Korak 1: Razmestitev nadzorne plošče na spletni strežnik
 
-Nadzorna plošča digna ima svojo ločeno datoteko `config.toml` v imeniku `dashboard/`. Ta konfiguracija je že priložena in med začetno namestitvijo običajno ni potrebna sprememba. Konfigurirate jo le, če želite prilagoditi povezavo na backend ali pri večinstančnih nameščanjih.
+Nadzorna plošča digna prebere svojo konfiguracijo iz datoteke `dashboard/dashboard_config.toml`. Ta datoteka ni priložena namestitvi — ustvarite jo v imeniku `dashboard/` poleg datotek nadzorne plošče.
 
-Če morate spremeniti konfiguracijo nadzorne plošče, si oglejte dokumentacijo nadzorne plošče.
+Njena vsebina je opisana v razdelku [Enotna prijava (SSO)](../../../sso/overview.md), kjer je datoteka tudi potrebna: vsebuje možnosti prijave, ki jih ponuja nadzorna plošča, in pri večinstančnih nameščanjih povezavo na backend.
 
 Izberite spletni strežnik in sledite ustreznim korakom za namestitev.
 
@@ -1021,7 +1026,9 @@ xattr -dr com.apple.quarantine /opt/digna
 
 !!! warning "Pomembno"
 
-    Datoteka `config.toml` **nikoli** ni vključena v namestitveni ZIP. Vaša obstoječa konfiguracija ostane varna.
+    Niti `config.toml` niti `dashboard/dashboard_config.toml` nista **nikoli** vključena v
+    namestitveni ZIP — ekipa digna nobene od teh datotek nikoli ne dostavi. Nadgradnja vaše obstoječe
+    konfiguracije zato ne spremeni, kopije v preimenovanih mapah `*_old` pa so edine, ki jih imate.
 
 #### Korak 4: Obnovite konfiguracijske datoteke
 
@@ -1073,7 +1080,13 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
     Razdelek ponovite za vsakega ponudnika in vsak ključ ohranite enak vrednosti `key` v datoteki `dashboard_config.toml`. `digna config check` javi `oidc_clients` kot FAILED, dokler stara oblika ostaja. Prizadete so le namestitve, ki uporabljajo enotno prijavo.
 
-#### Korak 5: Preverjanje Konfiguracije
+#### Korak 5: Ponovno naložite spletni strežnik
+
+Nadzorna plošča je nabor statičnih datotek, zato vaš spletni strežnik — in brskalnik — morda še vedno
+streže prejšnjo različico. Ponovno naložite ali znova zaženite spletni strežnik, ki gosti mapo `dashboard`,
+nato pa stran osvežite s trdim osveževanjem (++cmd+shift+r++).
+
+#### Korak 6: Preverjanje Konfiguracije
 
 Preden se dotaknete repozitorija, potrdite, da je posodobljeni `config.toml` popoln:
 
@@ -1083,7 +1096,26 @@ Preden se dotaknete repozitorija, potrdite, da je posodobljeni `config.toml` pop
 
 Vsaka sekcija mora javiti OK. Odpravite vse, kar je javljeno kot FAILED, in pred nadaljevanjem ukaz poženite znova.
 
-#### Korak 6: Nadgradite shemo repozitorija
+#### Korak 7: Zamenjajte licenčno datoteko
+
+Vsaka izdaja je licencirana ločeno. Datoteko `license.toml`, ki vam jo je ekipa digna posredovala za
+to izdajo, kopirajte v imenik namestitve in z njo zamenjajte staro:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "Ne obdržite prejšnje licence"
+
+    Datoteka `license.toml`, izdana za prejšnjo izdajo, ne velja za to, in vsak ukaz, ki preverja
+    licenco — `user`, `inspection`, `repo` — se prekine, še preden se dotakne repozitorija, če
+    preverjanje ne uspe. Preden nadaljujete, jo preverite:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### Korak 8: Nadgradite shemo repozitorija
 
 Pojdite v imenik namestitve digna in zaženite:
 
@@ -1094,7 +1126,7 @@ cd /opt/digna
 
 To posodobi PostgreSQL shemo na najnovejšo različico ob ohranitvi vseh obstoječih podatkov.
 
-#### Korak 7: Ponovni zagon storitev
+#### Korak 9: Ponovni zagon storitev
 
 Če tečete kot ozadna storitev:
 
@@ -1119,7 +1151,7 @@ brew services restart nginx
 sudo apachectl restart
 ```
 
-#### Korak 8: Preverite nadgradnjo
+#### Korak 10: Preverite nadgradnjo
 
 1. Dostopajte do digna nadzorne plošče
 2. Preverite, ali se vmesnik naloži pravilno

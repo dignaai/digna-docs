@@ -59,6 +59,7 @@ Naslednja tabela beleži, kaj vsaka kategorija ukazov naloži, preden sploh kaj 
 | `license check` | ne | to *je* preverjanje |
 | `crypt` | da | ne |
 | `serve` | da | ne |
+| `windows` | ne (storitev jo prebere ob zagonu) | ne |
 | `project` | da | ne |
 | `user` | da | da |
 | `inspection` | da | da |
@@ -223,6 +224,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Ukaz `repo prune` odstrani vrstice, ki so preživele projekt ali podatkovni vir, kateremu so pripadale.
+Brisanje projekta ali podatkovnega vira odstrani sam objekt, ne pa tudi njegovih profilov, napovedi,
+statusov in števil vrstic — to je premišljen kompromis, saj bi brisanje, ki bi hkrati počistilo še te tabele,
+uporabnika pustilo čakati. `repo prune` je vzdrževalni korak, ki jih počisti, in ga je varno
+zagnati kadar koli: odstrani izključno vrstice, katerih projekt ali podatkovni vir ne obstaja več.
+
+Vrstic, ki jih je zaledje Python zapisalo v tabele, ki jih trenutna izdaja ne uporablja več, se ne dotakne.
+
+#### Uporaba ukaza
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Možnosti
+- `--dry-run`: Sporoči, kaj bi bilo odstranjeno, ne da bi kar koli odstranil.
+
+Navedene so samo tabele z osirotelimi vrsticami. Če jih ni, ukaz sporoči
+`No orphaned rows found.` in se konča.
+
+#### Primer
+```bash
+digna repo prune
+```
+
+#### Primer izpisa
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Za enako poročilo brez odstranjevanja:
+```bash
+digna repo prune --dry-run
+```
+
+Števila vrstic so enaka; razlikuje se le zaključna vrstica:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +590,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Ukaz `project cleanup` odstrani rezultate pregledov, ki jih je projekt nabral v določenem časovnem
+obdobju — profile, napovedi, števila vrstic ter vse statuse preverjanj, atributov, podatkovnih nizov in podatkovnih virov.
+Odstrani natanko tisto, kar je zapisal pregled teh datumov, zato je mogoče obdobje nato
+ponovno pregledati in rezultate znova zgraditi.
+
+Zgodovina Timeliness in Schema Tracker se **ne** odstrani: ta beleži, kaj je digna opazila na
+določen dan, in ne rezultata, izpeljanega iz tega, zato čiščenje preteklega časovnega obdobja
+zgodovino pusti nedotaknjeno.
+
+Vsak podatkovni vir se počisti v lastni transakciji, zato prekinjen zagon pusti za seboj cele podatkovne vire
+in nikoli napol počiščenega.
+
+#### Uporaba ukaza
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Projekt, ki naj se počisti (obvezno). En projekt na klic.
+- **FROM_DATE**: Prvi datum, za katerega naj se odstranijo rezultati, `YYYY-MM-DD` (obvezno).
+- **TO_DATE**: Zadnji datum, za katerega naj se odstranijo rezultati, vključno, `YYYY-MM-DD` (obvezno).
+
+#### Možnosti
+- `--table-name`, `-n`: Omeji čiščenje na te podatkovne vire. Navedete lahko več imen,
+  ločenih s presledki.
+- `--table-filter`: Omeji čiščenje na podatkovne vire, katerih ime vsebuje ta podniz.
+- `--dry-run`: Navede podatkovne vire, ki bi bili počiščeni, ne da bi kar koli odstranil.
+- `--timing`: Prikaže, koliko časa je trajalo čiščenje.
+
+`--table-name` in `--table-filter` se združita z logičnim ALI — podatkovni vir se počisti, če je naveden po imenu ali
+če se ujema podniz. Če se ne ujema noben podatkovni vir, ukaz ne uspe, namesto da bi sporočil
+uspeh čiščenja, ki ni storilo ničesar.
+
+#### Primer
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Omejeno na en podatkovni vir:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Primer izpisa
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Za prikaz podatkovnih virov, ki bi bili počiščeni, brez odstranjevanja:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Vsaka vrstica je označena, zato poskusnega zagona ni mogoče zamenjati s pravim:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Upravljanje pregledov
 
 ---
@@ -707,3 +835,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Upravljanje storitve Windows
+
+Na voljo samo v sistemu Windows. Ukazi registrirajo zaledje ***digna*** v upravitelju storitev
+Windows in ga upravljajo; sama storitev v ozadju izvaja `serve`. Vsak ukaz je treba
+zagnati iz ukaznega poziva s skrbniškimi pravicami, in vsak sprejme `--name`, tako da je mogoče nasloviti tudi storitev,
+registrirano pod imenom, ki ni privzeto.
+
+---
+
+### windows install
+
+Ukaz `windows install` registrira ***digna*** kot storitev Windows.
+
+Naslov in vrata, navedena tukaj, se zabeležijo v registraciji storitve in nanje se storitev
+veže — ne preberejo se iz `config.toml`. Če ju želite pozneje spremeniti, storitev odstranite
+in jo znova namestite.
+
+#### Uporaba ukaza
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim naj se registrira storitev (privzeto: `digna`).
+- `--display-name`: Ime, prikazano v services.msc (privzeto: `digna`).
+- `--description`: Opis, prikazan v services.msc (privzeto: `digna data quality backend`).
+- `--address`: Naslov, na katerega storitev veže svoj API (privzeto: `127.0.0.1`).
+- `--port`: Vrata, na katera storitev veže svoj API (privzeto: `8000`).
+- `--working-dir`: Imenik z datotekama `config.toml` in `license.toml`, ki ga storitev uporabi
+  kot svoj delovni imenik (privzeto: imenik izvršljive datoteke `digna`).
+- `--start-type`: Kdaj se storitev zažene — `auto` skupaj z Windows, `manual` samo na zahtevo,
+  `disabled` registrirana, vendar se ne zažene (privzeto: `auto`).
+- `--account`: Račun, pod katerim teče, npr. `DOMAIN\user` ali `.\user` (privzeto: `LocalSystem`).
+- `--password`: Geslo računa `--account`.
+
+#### Primer
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registracija pod drugim imenom, z izvajanjem pod domenskim računom:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Ukaz `windows start` zažene registrirano storitev.
+
+#### Uporaba ukaza
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim je storitev registrirana (privzeto: `digna`).
+
+---
+
+### windows stop
+
+Ukaz `windows stop` ustavi delujočo storitev. Preden zamenjate katero koli
+datoteko aplikacije, storitev ustavite.
+
+#### Uporaba ukaza
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim je storitev registrirana (privzeto: `digna`).
+
+---
+
+### windows uninstall
+
+Ukaz `windows uninstall` odjavi storitev. Najprej jo ustavite.
+
+#### Uporaba ukaza
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim je storitev registrirana (privzeto: `digna`).
