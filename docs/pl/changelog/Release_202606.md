@@ -91,13 +91,6 @@ Oba ustawienia można w dowolnej chwili przywrócić do wartości domyślnych. Z
 - Nowa karta **Powiadomienia** w ustawieniach anomalii źródła danych:
   - **Minimalna liczba alertów** – ile nieudanych kontroli (nie niepewnych) musi mieć inspekcja, zanim zostanie wysłane powiadomienie (domyślnie `1`)
   - **Przerwa po powiadomieniu (dni)** – jak długo subskrypcja milczy po wysłaniu powiadomienia o danym źródle danych (domyślnie `0`, bez przerwy)
-- Subskrybenci są teraz powiadamiani, gdy inspekcja całkowicie się nie powiedzie (**Powiadamiaj o błędach inspekcji**)
-- Każde powiadomienie prowadzi bezpośrednio do strony, której dotyczy – nieudanych kontroli inspekcji albo widoków Schema Tracker i Timeliness
-- Czytelniejsze przełączniki subskrypcji: **Powiadamiaj o poprawnych inspekcjach**, **Powiadamiaj o błędach inspekcji**, **Powiadamiaj o kontrolach wolumenu danych**
-
-**Jak działają powiadomienia:** powiadomienia są wysyłane przez **kanały powiadomień** – Email (przez połączenie SMTP), Slack lub Jira – które konfigurują administratorzy i które mogą sprawdzić za pomocą **Przetestuj kanał powiadomień**. **Subskrypcja** łączy kanał z projektem: obejmuje wszystkie źródła danych lub wybrane z nich, a jej przełączniki określają, o czym informuje – o każdym module (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker oraz kontrolach wolumenu danych), o inspekcjach, które całkowicie się nie powiodły, i opcjonalnie także o poprawnych inspekcjach.
-
-**Wpływ:** Mniej powiadomień, za to bardziej przydatnych – pojedyncze odchylenia i utrzymujące się anomalie nie zalewają już kanału.
 
 ---
 

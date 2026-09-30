@@ -90,13 +90,6 @@ Begge kan til enhver tid nulstilles til deres standardværdier. Se [Modelindstil
 - Ny fane **Notifications** i datakildens anomaliindstillinger:
   - **Minimum Alerts** – hvor mange fejlede kontroller (ikke usikre) en inspektion skal have, før der sendes en notifikation (standard `1`)
   - **Pause After Notification (Days)** – hvor længe et abonnement forbliver tavst efter at have notificeret om datakilden (standard `0`, ingen pause)
-- Abonnenter får nu besked, når en inspektion fejler fuldstændigt (**Notify Inspection Errors**)
-- Hver notifikation linker direkte til den side, den handler om – inspektionens fejlede kontroller eller visningerne for Schema Tracker og Timeliness
-- Tydeligere abonnementskontakter: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Sådan fungerer notifikationer:** notifikationer sendes via **notifikationskanaler** – Email (via en SMTP-forbindelse), Slack eller Jira – som administratorer opsætter og kan kontrollere med **Test Notification Channel**. Et **abonnement** forbinder en kanal med et projekt: det dækker alle datakilder eller udvalgte, og dets kontakter bestemmer, hvad det rapporterer – hvert modul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker og kontroller af datavolumen), inspektioner, der fejler fuldstændigt, og eventuelt også beståede inspektioner.
-
-**Indvirkning:** Færre og mere handlingsrettede notifikationer – isolerede afvigelser og vedvarende anomalier oversvømmer ikke længere kanalen.
 
 ---
 

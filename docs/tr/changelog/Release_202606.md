@@ -90,13 +90,6 @@ Etkisi: Tolerans bandındaki, artık **Thresholds** sekmesinde bulunan mevcut Se
 - Veri kaynağının anomali ayarlarında yeni **Notifications** sekmesi:
   - **Minimum Alerts** – bir bildirim gönderilmeden önce bir incelemede kaç başarısız kontrol (belirsiz olanlar sayılmaz) bulunması gerektiği (varsayılan `1`)
   - **Pause After Notification (Days)** – bir aboneliğin veri kaynağı hakkında bildirim gönderdikten sonra ne kadar süre sessiz kaldığı (varsayılan `0`, duraklama yok)
-- Aboneler artık bir inceleme tamamen başarısız olduğunda bilgilendirilir (**Notify Inspection Errors**)
-- Her bildirim doğrudan ilgili olduğu sayfaya bağlantı verir – incelemenin başarısız kontrollerine ya da Schema Tracker ve Timeliness görünümlerine
-- Daha anlaşılır abonelik anahtarları: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Bildirimler nasıl çalışır:** bildirimler, yöneticilerin kurduğu ve **Test Notification Channel** ile sınayabildiği **bildirim kanalları** üzerinden gönderilir – Email (bir SMTP bağlantısı aracılığıyla), Slack veya Jira. Bir **abonelik**, bir kanalı bir projeye bağlar: tüm veri kaynaklarını veya seçilenleri kapsar ve anahtarları neyi raporlayacağını belirler – her modül (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ve veri hacmi kontrolleri), tamamen başarısız olan incelemeler ve isteğe bağlı olarak başarılı incelemeler de.
-
-Etkisi: Daha az ama daha eyleme dönük bildirimler – tekil sapmalar ve süregelen anomaliler artık kanalı doldurmaz.
 
 ---
 

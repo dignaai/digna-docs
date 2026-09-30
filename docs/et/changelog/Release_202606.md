@@ -90,13 +90,6 @@ Mõlemad saab igal ajal vaikeväärtustele taastada. Kuidas kumbki toimib, vaada
 - Uus vahekaart **Notifications** andmeallika anomaaliaseadetes:
   - **Minimum Alerts** – mitu ebaõnnestunud kontrolli (mitte ebakindlat) peab inspektsioonil olema, enne kui teavitus saadetakse (vaikimisi `1`)
   - **Pause After Notification (Days)** – kui kaua tellimus pärast andmeallika kohta teavitamist vaikib (vaikimisi `0`, pausi pole)
-- Tellijaid teavitatakse nüüd, kui inspektsioon täielikult ebaõnnestub (**Notify Inspection Errors**)
-- Iga teavitus viib otse lehele, mida see puudutab – inspektsiooni ebaõnnestunud kontrollideni või Schema Trackeri ja Timeliness vaadeteni
-- Selgemad tellimuse lülitid: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Kuidas teavitused toimivad:** teavitused saadetakse **teavituskanalite** kaudu – Email (SMTP-ühenduse kaudu), Slack või Jira –, mille seadistavad administraatorid ja mida saab kontrollida funktsiooniga **Test Notification Channel**. **Tellimus** seob kanali projektiga: see hõlmab kõiki või valitud andmeallikaid ning selle lülitid määravad, millest see teatab – iga moodul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ja andmemahu kontrollid), täielikult ebaõnnestunud inspektsioonid ning soovi korral ka edukad inspektsioonid.
-
-**Mõju:** Vähem, kuid sisukamaid teavitusi – üksikud kõrvalekalded ja püsivad anomaaliad ei ujuta enam kanalit üle.
 
 ---
 

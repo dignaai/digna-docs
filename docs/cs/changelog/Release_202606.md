@@ -90,13 +90,6 @@ Obě lze kdykoli vrátit na výchozí hodnoty. Jak každé z nich působí, najd
 - Nová záložka **Notifications** v nastavení anomálií datového zdroje:
   - **Minimum Alerts** – kolik neúspěšných kontrol (nikoli nejistých) musí inspekce mít, než je odeslána notifikace (výchozí `1`)
   - **Pause After Notification (Days)** – jak dlouho odběr po notifikaci o datovém zdroji mlčí (výchozí `0`, bez pauzy)
-- Odběratelé jsou nyní upozorněni, když inspekce zcela selže (**Notify Inspection Errors**)
-- Každá notifikace odkazuje přímo na stránku, které se týká – na neúspěšné kontroly inspekce nebo na zobrazení Schema Tracker a Timeliness
-- Přehlednější přepínače odběru: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
-
-**Jak notifikace fungují:** notifikace se odesílají prostřednictvím **notifikačních kanálů** – Email (přes SMTP připojení), Slack nebo Jira –, které nastavují administrátoři a mohou je ověřit pomocí **Test Notification Channel**. **Odběr** propojuje kanál s projektem: pokrývá všechny nebo vybrané datové zdroje a jeho přepínače určují, o čem informuje – o každém modulu (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker a kontroly objemu dat), o inspekcích, které zcela selžou, a volitelně také o úspěšných inspekcích.
-
-**Dopad:** Méně notifikací, ale s vyšší vypovídací hodnotou – izolované odchylky a přetrvávající anomálie již nezahlcují kanál.
 
 ---
 
