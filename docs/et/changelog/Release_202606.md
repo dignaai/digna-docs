@@ -72,19 +72,31 @@ Seadista päringute täitmise strateegia: **Single** või **Combined** mode
 
 ### Seadistatav ennustusmudel
 
-Anomaaliatuvastuse aluseks olev mudel on nüüd seadistatav. Seitse parameetrit juhivad, kuidas ennustus sobitatakse:
+Anomaaliatuvastuse aluseks olev mudel kaalub nüüd iga aegrea puhul konkureerivaid selgitusi – mustrit koos viimaste vaatluste tõlgendusega – ja kombineerib nende prognoosid vastavalt sellele, kui tugevalt igaüht neist toetatakse. Üksik äärmuslik väärtus ei saa enam järgnevatesse ennustustesse lekkida.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Mudelit juhivad kaks seadet andmeallika uuel vahekaardil **Model**, kumbki vahemikus `0.0` kuni `1.0`, vaikeväärtusega `0.5`:
 
-Vaikeväärtused sobivad valdavale enamikule aegridadest ja iga parameetri saab igal ajal vaikeväärtusele taastada.
+- **Break Sensitivity** – kui kiiresti hüpet uuele tasemele või pöörduvat trendi usutakse, selle asemel et käsitleda neid erinditena
+- **Model Complexity** – kui palju struktuuri mudel otsib, alates kalendriefektidest ja ühest tasemenihkest kuni tundmatute tsüklite, kuupäevaefektide ja igakuiste lähtestamisteni
 
-**Mõju:** Annab kasutajatele kontrolli ennustusmudeli enda üle, kõrvuti olemasolevate tolerantsiriba seadetega Sensitivity ja Memory. Juhiste saamiseks, millal mõne parameetri juurde pöörduda ja kuidas seda seadistada, võtke ühendust dignaga.
+Mõlemad saab igal ajal vaikeväärtustele taastada. Kuidas kumbki toimib, vaadake jaotisest [Mudeli seaded](../platform/data_anomalies/how_it_works.md#model-settings).
+
+**Mõju:** Annab kasutajatele kontrolli ennustusmudeli enda üle, kõrvuti olemasolevate tolerantsiriba seadetega Sensitivity ja Memory, mis asuvad nüüd vahekaardil **Thresholds**.
+
+---
+
+### Anomaaliate teavituste juhtimine
+
+- Uus vahekaart **Notifications** andmeallika anomaaliaseadetes:
+  - **Minimum Alerts** – mitu ebaõnnestunud kontrolli (mitte ebakindlat) peab inspektsioonil olema, enne kui teavitus saadetakse (vaikimisi `1`)
+  - **Pause After Notification (Days)** – kui kaua tellimus pärast andmeallika kohta teavitamist vaikib (vaikimisi `0`, pausi pole)
+- Tellijaid teavitatakse nüüd, kui inspektsioon täielikult ebaõnnestub (**Notify Inspection Errors**)
+- Iga teavitus viib otse lehele, mida see puudutab – inspektsiooni ebaõnnestunud kontrollideni või Schema Trackeri ja Timeliness vaadeteni
+- Selgemad tellimuse lülitid: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Kuidas teavitused toimivad:** teavitused saadetakse **teavituskanalite** kaudu – Email (SMTP-ühenduse kaudu), Slack või Jira –, mille seadistavad administraatorid ja mida saab kontrollida funktsiooniga **Test Notification Channel**. **Tellimus** seob kanali projektiga: see hõlmab kõiki või valitud andmeallikaid ning selle lülitid määravad, millest see teatab – iga moodul (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker ja andmemahu kontrollid), täielikult ebaõnnestunud inspektsioonid ning soovi korral ka edukad inspektsioonid.
+
+**Mõju:** Vähem, kuid sisukamaid teavitusi – üksikud kõrvalekalded ja püsivad anomaaliad ei ujuta enam kanalit üle.
 
 ---
 

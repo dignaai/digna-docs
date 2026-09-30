@@ -72,19 +72,31 @@ Konfigurējiet vaicājumu izpildes stratēģiju: **Single** vai **Combined** re�
 
 ### Konfigurējams prognozēšanas modelis
 
-Modelis, uz kura balstās anomāliju noteikšana, tagad ir konfigurējams. Septiņi parametri nosaka, kā prognoze tiek pielāgota:
+Modelis, uz kura balstās anomāliju noteikšana, tagad izvērtē konkurējošus katras rindas skaidrojumus – likumsakarību apvienojumā ar jaunāko novērojumu interpretāciju – un apvieno to prognozes atbilstoši tam, cik spēcīgi katrs no tiem ir pamatots. Viena ekstrēma vērtība vairs nevar ieplūst nākamajās prognozēs.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+To nosaka divi iestatījumi datu avota jaunajā cilnē **Model**, katrs no `0.0` līdz `1.0`, ar noklusējuma vērtību `0.5`:
 
-Noklusējuma vērtības ir piemērotas lielākajai daļai rindu, un katru parametru jebkurā brīdī var atjaunot uz tā noklusējuma vērtību.
+- **Break Sensitivity** – cik ātri lēciens uz jaunu līmeni vai tendences pagrieziens tiek pieņemts kā patiess, nevis uzskatīts par izlēcējvērtībām
+- **Model Complexity** – cik daudz struktūras modelis meklē, sākot no kalendāra efektiem un vienas līmeņa nobīdes līdz nezināmiem cikliem, mēneša dienu efektiem un ikmēneša atiestatījumiem
 
-**Ietekme:** Dod lietotājiem kontroli pār pašu prognozēšanas modeli līdzās esošajiem pielaides joslas iestatījumiem Sensitivity un Memory. Lai saņemtu norādes, kad pievērsties kādam parametram un kā to iestatīt, sazinieties ar digna.
+Abus jebkurā brīdī var atjaunot uz noklusējuma vērtībām. Kā darbojas katrs no tiem, skatiet sadaļā [Modeļa iestatījumi](../platform/data_anomalies/how_it_works.md#model-settings).
+
+**Ietekme:** Dod lietotājiem kontroli pār pašu prognozēšanas modeli līdzās esošajiem pielaides joslas iestatījumiem Sensitivity un Memory, kas tagad atrodas cilnē **Thresholds**.
+
+---
+
+### Anomāliju paziņojumu vadība
+
+- Jauna cilne **Notifications** datu avota anomāliju iestatījumos:
+  - **Minimum Alerts** – cik neizdevušos pārbaužu (ne nenoteiktu) inspekcijai nepieciešams, pirms tiek nosūtīts paziņojums (noklusējums `1`)
+  - **Pause After Notification (Days)** – cik ilgi abonements klusē pēc paziņojuma par datu avotu (noklusējums `0`, bez pauzes)
+- Abonenti tagad saņem paziņojumu, ja inspekcija pilnībā neizdodas (**Notify Inspection Errors**)
+- Katrs paziņojums ved tieši uz lapu, uz kuru tas attiecas – uz inspekcijas neizdevušās pārbaudēm vai uz Schema Tracker un Timeliness skatiem
+- Skaidrāki abonementa slēdži: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**Kā darbojas paziņojumi:** paziņojumi tiek sūtīti caur **paziņojumu kanāliem** – Email (izmantojot SMTP savienojumu), Slack vai Jira –, kurus iestata administratori un kurus var pārbaudīt ar **Test Notification Channel**. **Abonements** savieno kanālu ar projektu: tas aptver visus vai atlasītus datu avotus, un tā slēdži nosaka, par ko tas ziņo – par katru moduli (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker un datu apjoma pārbaudes), par pilnībā neizdevušām inspekcijām un pēc izvēles arī par veiksmīgām inspekcijām.
+
+**Ietekme:** Mazāk, bet mērķtiecīgāku paziņojumu – atsevišķas novirzes un noturīgas anomālijas vairs nepārpludina kanālu.
 
 ---
 
