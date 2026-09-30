@@ -59,6 +59,7 @@ digna repo check --stacktrace     # rejected: unknown argument
 | `license check` | いいえ | それ *自体* が検査です |
 | `crypt` | はい | いいえ |
 | `serve` | はい | いいえ |
+| `windows` | いいえ（サービスが起動時に読み込みます） | いいえ |
 | `project` | はい | いいえ |
 | `user` | はい | はい |
 | `inspection` | はい | はい |
@@ -223,6 +224,57 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+`repo prune` コマンドは、所属していたプロジェクトまたはデータソースが存在しなくなった後も残っている行を削除します。プロジェクトやデータソースを削除すると、オブジェクト自体は削除されますが、そのプロファイル、予測、ステータス、行数は残ります。これは意図的なトレードオフです。削除時にそれらのテーブルもまとめて処理すると、ユーザーを待たせることになるためです。`repo prune` はそれらを片付けるためのメンテナンス処理で、いつ実行しても安全です。削除するのは、プロジェクトまたはデータソースがもはや存在しない行だけです。
+
+Python バックエンドが、現在のリリースではもう使用されていないテーブルに書き込んだ行はそのまま残されます。
+
+#### コマンドの使い方
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### オプション
+- `--dry-run`: 何も削除せずに、削除される内容を報告します。
+
+孤立した行があるテーブルのみが一覧表示されます。該当するものがない場合、コマンドは
+`No orphaned rows found.` と報告して終了します。
+
+#### 例
+```bash
+digna repo prune
+```
+
+#### 出力例
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+何も削除せずに同じレポートを確認するには:
+```bash
+digna repo prune --dry-run
+```
+
+行数は同一で、最後の行だけが異なります:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +586,70 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+`project cleanup` コマンドは、プロジェクトが指定した期間に蓄積した検査結果 — プロファイル、予測、行数、およびすべてのチェック、属性、データセット、データソースのステータス — を削除します。削除されるのは、その日付の検査によって書き込まれたものだけであるため、後でその期間を再検査して結果を再構築できます。
+
+Timeliness と Schema Tracker の履歴は削除 **されません**。これらはそこから導き出された結果ではなく、digna がその日に観測した内容を記録したものであるため、過去の期間をクリーンアップしてもそのまま残ります。
+
+各データソースはそれぞれ独自のトランザクションでクリーンアップされるため、実行が中断されても、中途半端にクリーンアップされたデータソースが残ることはなく、データソース単位で完結した状態が保たれます。
+
+#### コマンドの使い方
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### 引数
+- **PROJECT_NAME**: クリーンアップするプロジェクト（必須）。1 回の実行につき 1 プロジェクトです。
+- **FROM_DATE**: 結果を削除する最初の日付、`YYYY-MM-DD`（必須）。
+- **TO_DATE**: 結果を削除する最後の日付（この日を含む）、`YYYY-MM-DD`（必須）。
+
+#### オプション
+- `--table-name`、`-n`: クリーンアップをこれらのデータソースに限定します。複数の名前をスペース区切りで
+  指定できます。
+- `--table-filter`: クリーンアップを、名前にこの部分文字列を含むデータソースに限定します。
+- `--dry-run`: 何も削除せずに、クリーンアップ対象となるデータソースを一覧表示します。
+- `--timing`: クリーンアップにかかった時間を表示します。
+
+`--table-name` と `--table-filter` は OR として組み合わされます — 名前が指定されているか、部分文字列が一致すれば、そのデータソースはクリーンアップされます。一致するデータソースがない場合、何もしなかったクリーンアップを成功と報告するのではなく、コマンドは失敗します。
+
+#### 例
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+1 つのデータソースに限定する場合:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### 出力例
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+何も削除せずに、どのデータソースがクリーンアップされるかを確認するには:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+すべての行に印が付くため、ドライランを実際の実行と取り違えることはありません:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## 検査管理
 
 ---
@@ -707,3 +823,88 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows サービスの管理
+
+Windows でのみ使用できます。これらのコマンドは ***digna*** バックエンドを Windows のサービスマネージャーに登録し、制御します。サービス自体はバックグラウンドで `serve` を実行します。すべてのコマンドは管理者として開いたコマンドプロンプトから実行する必要があり、いずれも `--name` を受け付けるため、既定以外の名前で登録したサービスを指定できます。
+
+---
+
+### windows install
+
+`windows install` コマンドは ***digna*** を Windows サービスとして登録します。
+
+ここで指定したアドレスとポートはサービスの登録情報に記録され、サービスはそれにバインドします — `config.toml` からは読み込まれません。後で変更するには、サービスをアンインストールしてから再度インストールしてください。
+
+#### コマンドの使い方
+```bash
+digna windows install [OPTIONS]
+```
+
+#### オプション
+- `--name`: サービスを登録する名前（既定値: `digna`）。
+- `--display-name`: services.msc に表示される名前（既定値: `digna`）。
+- `--description`: services.msc に表示される説明（既定値: `digna data quality backend`）。
+- `--address`: サービスが API をバインドするアドレス（既定値: `127.0.0.1`）。
+- `--port`: サービスが API をバインドするポート（既定値: `8000`）。
+- `--working-dir`: `config.toml` と `license.toml` を格納するディレクトリ。サービスはこれを
+  作業ディレクトリにします（既定値: `digna` 実行ファイルのディレクトリ）。
+- `--start-type`: サービスの起動タイミング — `auto` は Windows とともに起動、`manual` は要求されたときのみ起動、
+  `disabled` は登録されるが起動を拒否します（既定値: `auto`）。
+- `--account`: 実行に使うアカウント（例: `DOMAIN\user` または `.\user`、既定値: `LocalSystem`）。
+- `--password`: `--account` のパスワード。
+
+#### 例
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+別の名前で、ドメインアカウントとして実行するように登録する場合:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+`windows start` コマンドは登録済みのサービスを開始します。
+
+#### コマンドの使い方
+```bash
+digna windows start [OPTIONS]
+```
+
+#### オプション
+- `--name`: サービスが登録されている名前（既定値: `digna`）。
+
+---
+
+### windows stop
+
+`windows stop` コマンドは実行中のサービスを停止します。アプリケーションファイルを置き換える前には
+サービスを停止してください。
+
+#### コマンドの使い方
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### オプション
+- `--name`: サービスが登録されている名前（既定値: `digna`）。
+
+---
+
+### windows uninstall
+
+`windows uninstall` コマンドはサービスの登録を解除します。先にサービスを停止してください。
+
+#### コマンドの使い方
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### オプション
+- `--name`: サービスが登録されている名前（既定値: `digna`）。
