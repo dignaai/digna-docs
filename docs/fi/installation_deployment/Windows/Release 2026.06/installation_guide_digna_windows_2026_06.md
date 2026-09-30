@@ -284,8 +284,13 @@ GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
 3. Purkamisen jälkeen näet seuraavat kohteet:
    - `dashboard/` — Web-dashboardin käyttöliittymä
    - `digna` — Pääsuoritettava tiedosto (backend + CLI yhdistettynä)
-   - `config.toml` — Konfiguraatiotiedosto
-   - `license.toml` — Lisenssitiedosto (kopioi oma lisenssi tähän)
+
+!!! info "Konfiguraatio- ja lisenssitiedostot eivät sisälly pakettiin"
+
+    Asennuksen mukana ei toimiteta `config.toml`- eikä `dashboard/dashboard_config.toml`-tiedostoa — luot
+    molemmat itse kohdissa [Backendin määritys](#backend-configuration) ja
+    [Dashboardin määritys](#dashboard-configuration). Myöskään `license.toml` ei sisälly pakettiin;
+    digna toimittaa sen erikseen, kuten vaiheessa 3 kuvataan.
 
 ### Vaihe 3: Asenna lisenssitiedosto
 
@@ -525,9 +530,9 @@ INFO:     Uvicorn running on http://localhost:8082
 
 ### Vaihe 1: Ota dashboard käyttöön verkkopalvelimella
 
-Digna-dashboardilla on erillinen `config.toml`-tiedosto, joka sijaitsee `dashboard/`-hakemistossa. Tämä konfiguraatio toimitetaan valmiina eikä vaadi muutoksia alkuasennuksessa. Sinun tarvitsee muuttaa sitä vain, jos haluat mukauttaa backend-yhteyttä tai tehdä moninstance-asennuksia.
+digna-dashboard lukee oman konfiguraationsa tiedostosta `dashboard/dashboard_config.toml`. Tätä tiedostoa ei toimiteta asennuksen mukana — luot sen `dashboard/`-hakemistoon dashboardin tiedostojen rinnalle.
 
-Jos tarvitset muutoksia dashboardin konfiguraatioon, katso dashboardin dokumentaatiota.
+Sen sisältö on kuvattu kohdassa [Yhden kirjautumisen (SSO) yleiskatsaus](../../../sso/overview.md), jossa tiedostoa myös tarvitaan: se sisältää dashboardin tarjoamat kirjautumisvaihtoehdot ja monen instanssin käyttöönotoissa backend-yhteyden.
 
 Valitse verkkopalvelimesi ja seuraa vastaavia käyttöönotto-ohjeita.
 
@@ -582,19 +587,24 @@ digna-backendin ajaminen Windows-palveluna varmistaa, että se:
 - Käynnistyy uudelleen automaattisesti kaatumistapauksissa
 - On hallittavissa Windowsin Palvelut-työkalulla
 
-### Palvelun hallintatiedostot
+### `windows`-komennot
 
-Kaikki tarvittavat tiedostot sijaitsevat digna-asennushakemistossa polussa: `bin/`
+Palvelua hallitaan itse `digna`-suoritustiedostolla, `digna windows` -alikomentojen avulla.
+Suoritettavia bat-tiedostoja ei ole.
 
-Seuraavat bat-tiedostot ovat käytettävissä:
-- `install_service.bat` — Rekisteröi dignan Windows-palveluna
-- `uninstall_service.bat` — Poistaa palvelun rekisteröinnin
-- `start_service.bat` — Käynnistää palvelun
-- `stop_service.bat` — Pysäyttää palvelun
+| Komento | Tarkoitus |
+|---|---|
+| `digna windows install` | Rekisteröi dignan Windows-palveluksi |
+| `digna windows start` | Käynnistää rekisteröidyn palvelun |
+| `digna windows stop` | Pysäyttää käynnissä olevan palvelun |
+| `digna windows uninstall` | Poistaa palvelun rekisteröinnin |
 
 !!! warning "Ylläpitäjäoikeudet vaaditaan"
 
-    Kaikki bat-tiedostot on suoritettava järjestelmänvalvojan oikeuksin.
+    Kaikki neljä komentoa on suoritettava järjestelmänvalvojana avatusta komentokehotteesta.
+
+Jokainen komento hyväksyy valitsimen `--name`, jolla voidaan viitata muulla kuin oletusnimellä rekisteröityyn palveluun. Täydellinen
+valitsinluettelo on [CLI-referenssissä](../../../cli/Command_Line_Interface_202606.md).
 
 ### Palvelun asentaminen
 
@@ -602,37 +612,66 @@ Seuraavat bat-tiedostot ovat käytettävissä:
    - Napsauta komentokehote oikealla painikkeella
    - Valitse "Run as Administrator"
 
-2. **Siirry bin-kansioon**
+2. **Siirry digna-asennushakemistoosi**
    ```bash
-   cd C:\path\to\digna\bin
+   cd C:\path\to\digna
    ```
 
-3. **Suorita asennusskripti**
+3. **Rekisteröi palvelu**
    ```bash
-   install_service.bat
+   digna windows install
    ```
 
-digna-palvelin on nyt rekisteröity Windows-palveluna automaattisella käynnistyksellä. Palvelu ei käynnisty välittömästi — katso seuraavaa osiota käynnistystä varten.
+!!! important "Määritä osoite ja portti, elleivät oletusarvot sovi sinulle"
+
+    `install` tallentaa osoitteen ja portin palvelun rekisteröintiin, ja palvelu sitoutuu
+    täsmälleen tallennettuihin arvoihin. Oletusarvot ovat `127.0.0.1` ja `8000`, jotka hyväksyvät yhteyksiä
+    vain koneelta itseltään. Toisella isännällä oleva dashboard ei tavoita sitä, joten anna
+    osoite, jota backendin tulee kuunnella:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    Näitä arvoja ei lueta tiedostosta `config.toml`. Jos haluat muuttaa niitä myöhemmin, poista palvelun rekisteröinti ja
+    asenna palvelu uudelleen uusilla arvoilla.
+
+Palvelu rekisteröidään **automaattisella käynnistyksellä**, joten se käynnistyy Windowsin mukana. Se ei
+käynnisty välittömästi — katso seuraava osio.
+
+#### Asennuksen valitsimet
+
+| Valitsin | Oletus | Tarkoitus |
+|---|---|---|
+| `--name` | `digna` | Nimi, jolla palvelu rekisteröidään |
+| `--display-name` | `digna` | services.msc-näkymässä näytettävä nimi |
+| `--description` | `digna data quality backend` | services.msc-näkymässä näytettävä kuvaus |
+| `--address` | `127.0.0.1` | Osoite, johon palvelu sitoo API:nsa |
+| `--port` | `8000` | Portti, johon palvelu sitoo API:nsa |
+| `--working-dir` | `digna`-suoritustiedoston hakemisto | Hakemisto, jossa `config.toml` ja `license.toml` sijaitsevat ja jonka palvelu asettaa työhakemistokseen |
+| `--start-type` | `auto` | `auto` käynnistyy Windowsin mukana, `manual` käynnistyy vain pyydettäessä, `disabled` rekisteröi palvelun mutta estää sen käynnistämisen |
+| `--account` | `LocalSystem` | Tili, jolla palvelu suoritetaan, esim. `DOMAIN\user` tai `.\user` |
+| `--password` | | Tilin `--account` salasana |
+
+!!! tip "Suorittaminen toimialuetilillä"
+
+    `LocalSystem`-tilillä ei ole verkkoidentiteettiä, joten Windows-todennus SQL Serveriin ja kaikki
+    verkkojakojen käyttö epäonnistuvat. Asenna valitsimilla `--account` ja `--password`, jos
+    palvelun on käytettävä resursseja tiettynä käyttäjänä.
 
 ### Palvelun käynnistäminen ja pysäyttäminen
 
 #### Palvelun käynnistäminen
 
-1. Avaa komentokehote järjestelmänvalvojana
-2. Siirry `digna\bin`-hakemistoon
-3. Suorita:
-   ```bash
-   start_service.bat
-   ```
+```bash
+digna windows start
+```
 
 #### Palvelun pysäyttäminen
 
-1. Avaa komentokehote järjestelmänvalvojana
-2. Siirry `digna\bin`-hakemistoon
-3. Suorita:
-   ```bash
-   stop_service.bat
-   ```
+```bash
+digna windows stop
+```
 
 !!! tip "Vinkki"
 
@@ -642,37 +681,41 @@ digna-palvelin on nyt rekisteröity Windows-palveluna automaattisella käynnisty
 
 Jos sinun on siirrettävä digna-asennus:
 
-1. **Poista nykyinen palvelu**
+1. **Pysäytä nykyinen palvelu ja poista sen rekisteröinti**
    ```bash
-   cd C:\old\path\digna\bin
-   uninstall_service.bat
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
    ```
 
 2. **Siirrä sovellustiedostot**
    - Siirrä koko digna-asennushakemisto uuteen sijaintiin
 
-3. **Asenna palvelu uudelleen**
+3. **Rekisteröi palvelu uudelleen uudesta sijainnista**
    ```bash
-   cd C:\new\path\digna\bin
-   install_service.bat
+   cd C:\new\path\digna
+   digna windows install
    ```
+
+   Toista kaikki valitsimien `--address`, `--port` ja `--account` arvot, joita käytit ensimmäisellä kerralla — aiempi
+   rekisteröinti on poistettu.
 
 4. **Käynnistä palvelu**
    ```bash
-   start_service.bat
+   digna windows start
    ```
 
 ### Palvelun poistaminen
 
 1. **Pysäytä käynnissä oleva palvelu**
    ```bash
-   cd C:\path\to\digna\bin
-   stop_service.bat
+   cd C:\path\to\digna
+   digna windows stop
    ```
 
-2. **Poista palvelu**
+2. **Poista palvelun rekisteröinti**
    ```bash
-   uninstall_service.bat
+   digna windows uninstall
    ```
 
 digna-palvelin on nyt poistettu Windows-palveluna rekisteristä.
@@ -710,14 +753,32 @@ Ennen dignan päivittämistä tee varmuuskopio repositoriostasi (PostgreSQL) suo
 
 ### Päivitysprosessi
 
-#### Vaihe 1: Pysäytä digna-palvelu
+#### Vaihe 1: Pysäytä vanha palvelu ja poista sen rekisteröinti
 
-Jos digna on käynnissä Windows-palveluna, pysäytä se ensin:
+Jos digna on käynnissä Windows-palveluna, pysäytä se **nykyisen asennuksesi bat-tiedostoilla**
+— `digna windows` -komennot kuuluvat uuteen julkaisuun eivätkä ole vielä
+käytettävissä:
 
 ```bash
 cd C:\path\to\digna\bin
 stop_service.bat
 ```
+
+Poista sen jälkeen palvelun rekisteröinti, jälleen vanhalla bat-tiedostolla. Rekisteröinti osoittaa vanhaan
+suoritustiedostoon ja sen skripteihin, jotka molemmat tämä päivitys korvaa, joten sitä ei voi käyttää uudelleen:
+
+```bash
+uninstall_service.bat
+```
+
+!!! warning "Poista rekisteröinti ennen kuin nimeät mitään uudelleen"
+
+    `uninstall_service.bat` sijaitsee `bin`-kansiossa, jonka olet nimeämässä uudelleen, ja se on ainoa
+    keino poistaa sen itse luoma rekisteröinti. Suorita se, kun vanha asennus on vielä
+    paikallaan. Jos kansio on jo nimetty uudelleen, palauta sen alkuperäinen nimi, poista rekisteröinti ja jatka sitten.
+
+    Kirjaa muistiin tili, jolla palvelu suoritettiin, sekä osoite ja portti, joissa se palveli — tarvitset
+    niitä vaiheessa 7.
 
 #### Vaihe 2: Varmuuskopioi nykyinen asennus
 
@@ -738,7 +799,7 @@ ren dashboard dashboard_old
 
 !!! info "dignabackend ja dignacli eivät ole enää käytössä"
 
-    Julkaisusta 2026.06 alkaen `dignabackend` ja `dignacli` korvataan yhdellä suoritettavalla tiedostolla `digna`, joka yhdistää taustajärjestelmän ja CLI:n. Säilytä `dignabackend_old` ja `dignacli_old` vain siihen asti, kunnes olet varmistanut päivityksen — sen jälkeen voit poistaa molemmat kansiot. Säilytä `dashboard_old`, kunnes olet palauttanut siitä konfiguraatiotiedostosi (katso vaihe 4).
+    Julkaisusta 2026.06 alkaen `dignabackend` ja `dignacli` korvataan yhdellä suoritettavalla tiedostolla `digna`, joka yhdistää taustajärjestelmän ja CLI:n. Säilytä `dignabackend_old` ja `dignacli_old` vain siihen asti, kunnes olet varmistanut päivityksen — sen jälkeen voit poistaa molemmat kansiot. Säilytä `dashboard_old`, kunnes olet palauttanut siitä konfiguraatiotiedostosi (katso vaihe 4). Myös `bin`-kansio poistuu: sen bat-tiedostot ohjasivat vanhaa palvelua, eikä 2026.06 toimita niitä, joten kun palvelun rekisteröinti on poistettu vaiheessa 1, ne vain johtavat harhaan.
 
 #### Vaihe 3: Pura ja ota käyttöön uusi versio
 
@@ -748,7 +809,9 @@ ren dashboard dashboard_old
 
 !!! warning "Tärkeää"
 
-    `config.toml`-tiedostoa ei **koskaan** sisällytetä asennus-ZIPiin. Olemassa oleva konfiguraatiosi säilyy turvassa.
+    Asennuksen ZIP-tiedostoon ei koskaan sisällytetä `config.toml`- eikä `dashboard/dashboard_config.toml`-tiedostoa
+    — digna-tiimi ei koskaan toimita kumpaakaan tiedostoa. Päivitys ei siksi koske olemassa olevaan
+    konfiguraatioosi, ja uudelleennimetyissä `*_old`-kansioissa olevat kopiot ovat ainoat, jotka sinulla on.
 
 #### Vaihe 4: Palauta konfiguraatiotiedostosi
 
@@ -799,7 +862,13 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 
     Toista osio jokaiselle palveluntarjoajalle ja pidä jokainen avain samana kuin `key` tiedostossa `dashboard_config.toml`. `digna config check` raportoi `oidc_clients`-osion tilassa FAILED niin kauan kuin vanha muoto on yhä paikallaan. Tämä koskee vain asennuksia, jotka käyttävät kertakirjautumista.
 
-#### Vaihe 5: Tarkista konfiguraatio
+#### Vaihe 5: Lataa web-palvelin uudelleen
+
+Dashboard koostuu staattisista tiedostoista, joten web-palvelimesi — ja selain — saattaa yhä
+tarjoilla edellistä versiota. Lataa uudelleen tai käynnistä uudelleen se web-palvelin, joka isännöi `dashboard`-kansiota,
+ja lataa sitten sivu uudelleen pakotetulla päivityksellä (++ctrl+f5++).
+
+#### Vaihe 6: Tarkista konfiguraatio
 
 Varmista, että päivitetty `config.toml` on täydellinen ennen kuin kosket arkistoon:
 
@@ -809,7 +878,26 @@ digna config check
 
 Jokaisen osion on raportoitava OK. Korjaa kaikki, mikä raportoidaan tilassa FAILED, ja suorita komento uudelleen ennen jatkamista.
 
-#### Vaihe 6: Päivitä repositorion skeema
+#### Vaihe 7: Vaihda lisenssitiedosto
+
+Jokainen julkaisu lisensoidaan erikseen. Kopioi digna-tiimin tätä julkaisua varten toimittama `license.toml`
+asennushakemistoon vanhan tiedoston tilalle:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "Älä säilytä edellistä lisenssiä"
+
+    Aiempaa julkaisua varten myönnetty `license.toml` ei kata tätä julkaisua, ja jokainen komento,
+    joka tarkistaa lisenssin — `user`, `inspection`, `repo` — keskeytyy ennen repositorion
+    koskettamista, jos tarkistus epäonnistuu. Tarkista lisenssi ennen kuin jatkat:
+
+    ```bash
+    digna license check
+    ```
+
+#### Vaihe 8: Päivitä repositorion skeema
 
 Siirry digna-asennushakemistoon ja suorita:
 
@@ -819,14 +907,22 @@ digna repo upgrade
 
 Tämä päivittää PostgreSQL-skeeman uusimpaan versioon säilyttäen kaikki nykyiset tiedot.
 
-#### Vaihe 7: Käynnistä palvelut uudelleen
+#### Vaihe 9: Rekisteröi ja käynnistä palvelu
 
-Jos käytät Windows-palvelua:
+Vanha rekisteröinti poistettiin vaiheessa 1, joten palvelu rekisteröidään uudelleen — tällä kertaa
+`digna`-suoritustiedostolla, jossa ei ole bat-tiedostoja:
 
 ```bash
-cd C:\path\to\digna\bin
-start_service.bat
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
 ```
+
+Anna valitsimille `--address` ja `--port` arvot, joissa vanha palvelu palveli, ellet halua uusia
+oletusarvoja `127.0.0.1` ja `8000`; ne tallennetaan rekisteröintiin eikä niitä enää lueta
+tiedostosta `config.toml`. Lisää `--account` ja `--password`, jos vanha palvelu suoritettiin toimialuetilillä.
+Katso täydellinen valitsinluettelo kohdasta
+[dignan ajaminen Windows-palveluna](#running-digna-as-a-windows-service).
 
 Jos ajat palvelinta manuaalisesti, käynnistä se uudelleen:
 
@@ -837,7 +933,7 @@ digna serve --address <address> --port <port>
 
 Jos käytät IIS:ää tai Tomcatia, käynnistä vastaava verkkopalvelin uudelleen.
 
-#### Vaihe 8: Vahvista päivitys
+#### Vaihe 10: Vahvista päivitys
 
 1. Avaa digna-dashboard
 2. Varmista, että käyttöliittymä latautuu oikein

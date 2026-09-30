@@ -59,6 +59,7 @@ Seuraava taulukko kertoo, mitä kukin komentoluokka lataa ennen kuin se tekee mi
 | `license check` | ei | se *on* itse tarkistus |
 | `crypt` | kyllä | ei |
 | `serve` | kyllä | ei |
+| `windows` | ei (palvelu lukee sen käynnistyessään) | ei |
 | `project` | kyllä | ei |
 | `user` | kyllä | kyllä |
 | `inspection` | kyllä | kyllä |
@@ -223,6 +224,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Komento `repo prune` poistaa rivit, jotka ovat jääneet jäljelle, kun niiden projekti tai tietolähde on poistettu.
+Projektin tai tietolähteen poistaminen poistaa itse objektin, mutta jättää sen profiilit, ennusteet,
+tilat ja rivimäärät paikalleen — tämä on tietoinen valinta, sillä poisto, joka tyhjentäisi myös nämä taulut,
+pitäisi käyttäjän odottamassa. `repo prune` on siivousajo, joka poistaa ne, ja sen voi turvallisesti
+suorittaa milloin tahansa: se poistaa vain rivejä, joiden projektia tai tietolähdettä ei enää ole olemassa.
+
+Python-taustajärjestelmän kirjoittamiin riveihin tauluissa, joita nykyinen julkaisu ei enää käytä, ei kosketa.
+
+#### Komennon käyttö
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Valitsimet
+- `--dry-run`: Raportoi, mitä poistettaisiin, poistamatta mitään.
+
+Vain taulut, joissa on orpoja rivejä, luetellaan. Jos niitä ei ole, komento ilmoittaa
+`No orphaned rows found.` ja päättyy.
+
+#### Esimerkki
+```bash
+digna repo prune
+```
+
+#### Esimerkkituloste
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Saman raportin näkeminen poistamatta mitään:
+```bash
+digna repo prune --dry-run
+```
+
+Rivimäärät ovat samat; vain viimeinen rivi eroaa:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +590,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+Komento `project cleanup` poistaa tarkastustulokset, jotka projektiin on kertynyt tietyltä päivämääräväliltä
+— profiilit, ennusteet, rivimäärät sekä jokaisen tarkistuksen, attribuutin, tietojoukon ja tietolähteen
+tilan. Se poistaa täsmälleen sen, minkä näiden päivämäärien tarkastus kirjoitti, joten välin voi
+tarkastaa jälkikäteen uudelleen tulosten muodostamiseksi.
+
+Timeliness- ja Schema Tracker -historiaa **ei** poisteta: ne kirjaavat, mitä digna havaitsi
+tiettynä päivänä, eivätkä ole siitä johdettuja tuloksia, joten menneen päivämäärävälin siivous jättää ne
+ennalleen.
+
+Jokainen tietolähde siivotaan omassa transaktiossaan, joten keskeytynyt ajo jättää tietolähteet
+joko kokonaan siivotuiksi tai koskemattomiksi, ei puoliksi siivotuiksi.
+
+#### Komennon käyttö
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentit
+- **PROJECT_NAME**: Siivottava projekti (pakollinen). Yksi projekti kutsua kohden.
+- **FROM_DATE**: Ensimmäinen päivä, jonka tulokset poistetaan, `YYYY-MM-DD` (pakollinen).
+- **TO_DATE**: Viimeinen päivä, jonka tulokset poistetaan (mukaan lukien), `YYYY-MM-DD` (pakollinen).
+
+#### Valitsimet
+- `--table-name`, `-n`: Rajaa siivouksen näihin tietolähteisiin. Useita nimiä voi antaa
+  välilyönnein eroteltuina.
+- `--table-filter`: Rajaa siivouksen tietolähteisiin, joiden nimi sisältää tämän merkkijonon.
+- `--dry-run`: Luettelee tietolähteet, jotka siivottaisiin, poistamatta mitään.
+- `--timing`: Näyttää, kauanko siivous kesti.
+
+`--table-name` ja `--table-filter` yhdistyvät TAI-ehtona — tietolähde siivotaan, jos se on nimetty tai
+jos merkkijono täsmää. Komento epäonnistuu, jos mikään tietolähde ei täsmää, sen sijaan että se
+ilmoittaisi onnistuneesta siivouksesta, joka ei tehnyt mitään.
+
+#### Esimerkki
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Rajattuna yhteen tietolähteeseen:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Esimerkkituloste
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Siivottavien tietolähteiden näkeminen poistamatta mitään:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Jokainen rivi on merkitty, joten koeajoa ei voi sekoittaa oikeaan ajoon:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Tarkastusten hallinta
 
 ---
@@ -707,3 +835,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows-palvelun hallinta
+
+Käytettävissä vain Windowsissa. Komennot rekisteröivät ***digna***-taustajärjestelmän Windowsin
+palvelunhallintaan ja ohjaavat sitä; itse palvelu suorittaa komentoa `serve` taustalla. Jokainen komento
+on suoritettava järjestelmänvalvojan oikeuksin avatusta komentokehotteesta, ja jokainen hyväksyy valitsimen `--name`, jotta
+muulla kuin oletusnimellä rekisteröityyn palveluun voidaan viitata.
+
+---
+
+### windows install
+
+Komento `windows install` rekisteröi ***digna***-järjestelmän Windows-palveluksi.
+
+Tässä annetut osoite ja portti tallennetaan palvelun rekisteröintiin, ja palvelu sitoutuu niihin
+— niitä ei lueta tiedostosta `config.toml`. Jos haluat muuttaa niitä myöhemmin, poista palvelun
+asennus ja asenna se uudelleen.
+
+#### Komennon käyttö
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Valitsimet
+- `--name`: Nimi, jolla palvelu rekisteröidään (oletus: `digna`).
+- `--display-name`: services.msc-näkymässä näytettävä nimi (oletus: `digna`).
+- `--description`: services.msc-näkymässä näytettävä kuvaus (oletus: `digna data quality backend`).
+- `--address`: Osoite, johon palvelu sitoo API:nsa (oletus: `127.0.0.1`).
+- `--port`: Portti, johon palvelu sitoo API:nsa (oletus: `8000`).
+- `--working-dir`: Hakemisto, jossa `config.toml` ja `license.toml` sijaitsevat ja jonka palvelu asettaa
+  työhakemistokseen (oletus: `digna`-suoritustiedoston hakemisto).
+- `--start-type`: Milloin palvelu käynnistyy — `auto` Windowsin mukana, `manual` vain pyydettäessä,
+  `disabled` rekisteröity mutta kieltäytyy käynnistymästä (oletus: `auto`).
+- `--account`: Tili, jolla palvelu suoritetaan, esim. `DOMAIN\user` tai `.\user` (oletus: `LocalSystem`).
+- `--password`: Tilin `--account` salasana.
+
+#### Esimerkki
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Rekisteröinti toisella nimellä toimialuetilillä suoritettuna:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Komento `windows start` käynnistää rekisteröidyn palvelun.
+
+#### Komennon käyttö
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Valitsimet
+- `--name`: Nimi, jolla palvelu on rekisteröity (oletus: `digna`).
+
+---
+
+### windows stop
+
+Komento `windows stop` pysäyttää käynnissä olevan palvelun. Pysäytä palvelu ennen kuin korvaat
+yhtään sovellustiedostoa.
+
+#### Komennon käyttö
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Valitsimet
+- `--name`: Nimi, jolla palvelu on rekisteröity (oletus: `digna`).
+
+---
+
+### windows uninstall
+
+Komento `windows uninstall` poistaa palvelun rekisteröinnin. Pysäytä se ensin.
+
+#### Komennon käyttö
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Valitsimet
+- `--name`: Nimi, jolla palvelu on rekisteröity (oletus: `digna`).
