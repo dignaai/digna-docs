@@ -59,6 +59,7 @@ La siguiente tabla recoge lo que carga cada categoría de comandos antes de hace
 | `license check` | no | *es* la propia comprobación |
 | `crypt` | sí | no |
 | `serve` | sí | no |
+| `windows` | no (el servicio lo lee al iniciarse) | no |
 | `project` | sí | no |
 | `user` | sí | sí |
 | `inspection` | sí | sí |
@@ -223,6 +224,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+El comando `repo prune` elimina las filas que han sobrevivido al proyecto o a la fuente de datos a los que pertenecían.
+Al eliminar un proyecto o una fuente de datos se elimina el propio objeto, pero se conservan sus perfiles, predicciones,
+estados y recuentos de filas; es una decisión deliberada, ya que una eliminación que también limpiara esas tablas
+haría esperar al usuario. `repo prune` es la tarea de mantenimiento que los elimina, y es seguro
+ejecutarlo en cualquier momento: solo elimina filas cuyo proyecto o fuente de datos ya no existe.
+
+Las filas que el backend de Python escribió en tablas que la versión actual ya no utiliza no se modifican.
+
+#### Uso del comando
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Opciones
+- `--dry-run`: Informa de lo que se eliminaría sin eliminar nada.
+
+Solo se enumeran las tablas con filas huérfanas. Si no hay ninguna, el comando informa
+`No orphaned rows found.` y termina.
+
+#### Ejemplo
+```bash
+digna repo prune
+```
+
+#### Ejemplo de salida
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Para ver el mismo informe sin eliminar nada:
+```bash
+digna repo prune --dry-run
+```
+
+Los recuentos de filas son idénticos; solo cambia la línea final:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +590,78 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+El comando `project cleanup` elimina los resultados de inspección que un proyecto acumuló en un intervalo
+de fechas: perfiles, predicciones, recuentos de filas y todos los estados de comprobaciones, atributos, conjuntos de datos y fuentes
+de datos. Elimina exactamente lo que escribió una inspección de esas fechas, de modo que el intervalo puede
+volver a inspeccionarse después para reconstruirlo.
+
+El historial de Timeliness y de Schema Tracker **no** se elimina: registra lo que digna observó en un
+día determinado, no un resultado derivado de ello, por lo que la limpieza de un intervalo de fechas pasado lo deja
+intacto.
+
+Cada fuente de datos se limpia en su propia transacción, de modo que una ejecución interrumpida deja fuentes de datos completas
+en lugar de una limpiada a medias.
+
+#### Uso del comando
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentos
+- **PROJECT_NAME**: Proyecto que se va a limpiar (obligatorio). Un proyecto por invocación.
+- **FROM_DATE**: Primera fecha cuyos resultados se eliminan, `YYYY-MM-DD` (obligatorio).
+- **TO_DATE**: Última fecha cuyos resultados se eliminan, inclusive, `YYYY-MM-DD` (obligatorio).
+
+#### Opciones
+- `--table-name`, `-n`: Limita la limpieza a estas fuentes de datos. Se pueden indicar varios nombres
+  separados por espacios.
+- `--table-filter`: Limita la limpieza a las fuentes de datos cuyo nombre contiene esta subcadena.
+- `--dry-run`: Enumera las fuentes de datos que se limpiarían sin eliminar nada.
+- `--timing`: Muestra cuánto tiempo tardó la limpieza.
+
+`--table-name` y `--table-filter` se combinan como un OR: una fuente de datos se limpia si se nombra o
+si coincide la subcadena. El comando falla si ninguna fuente de datos coincide, en lugar de informar
+de éxito en una limpieza que no hizo nada.
+
+#### Ejemplo
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Limitado a una fuente de datos:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Ejemplo de salida
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Para ver qué fuentes de datos se limpiarían sin eliminar nada:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Cada línea va marcada, de modo que una ejecución de prueba no puede confundirse con una real:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Gestión de inspecciones
 
 ---
@@ -707,3 +835,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Gestión del servicio de Windows
+
+Disponible solo en Windows. Los comandos registran el backend de ***digna*** en el administrador de
+servicios de Windows y lo controlan; el propio servicio ejecuta `serve` en segundo plano. Todos los comandos
+deben ejecutarse desde un símbolo del sistema con privilegios elevados, y cada uno acepta `--name` para poder dirigirse
+a un servicio registrado con un nombre distinto del predeterminado.
+
+---
+
+### windows install
+
+El comando `windows install` registra ***digna*** como servicio de Windows.
+
+La dirección y el puerto indicados aquí se guardan en el registro del servicio y son aquellos a los que se enlaza
+el servicio; no se leen de `config.toml`. Para cambiarlos más adelante, desinstale
+el servicio y vuelva a instalarlo.
+
+#### Uso del comando
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Opciones
+- `--name`: Nombre con el que se registra el servicio (por defecto: `digna`).
+- `--display-name`: Nombre que se muestra en services.msc (por defecto: `digna`).
+- `--description`: Descripción que se muestra en services.msc (por defecto: `digna data quality backend`).
+- `--address`: Dirección a la que el servicio enlaza su API (por defecto: `127.0.0.1`).
+- `--port`: Puerto al que el servicio enlaza su API (por defecto: `8000`).
+- `--working-dir`: Directorio que contiene `config.toml` y `license.toml`, que el servicio convierte en
+  su directorio de trabajo (por defecto: el directorio del ejecutable `digna`).
+- `--start-type`: Cuándo se inicia el servicio: `auto` con Windows, `manual` solo cuando se solicita,
+  `disabled` registrado pero se niega a iniciarse (por defecto: `auto`).
+- `--account`: Cuenta con la que se ejecuta, p. ej. `DOMAIN\user` o `.\user` (por defecto: `LocalSystem`).
+- `--password`: Contraseña de `--account`.
+
+#### Ejemplo
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registro con un segundo nombre, ejecutándose con una cuenta de dominio:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+El comando `windows start` inicia un servicio registrado.
+
+#### Uso del comando
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Opciones
+- `--name`: Nombre con el que está registrado el servicio (por defecto: `digna`).
+
+---
+
+### windows stop
+
+El comando `windows stop` detiene un servicio en ejecución. Detenga el servicio antes de sustituir cualquier
+archivo de la aplicación.
+
+#### Uso del comando
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Opciones
+- `--name`: Nombre con el que está registrado el servicio (por defecto: `digna`).
+
+---
+
+### windows uninstall
+
+El comando `windows uninstall` elimina el registro del servicio. Deténgalo primero.
+
+#### Uso del comando
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Opciones
+- `--name`: Nombre con el que está registrado el servicio (por defecto: `digna`).
