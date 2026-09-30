@@ -73,19 +73,31 @@ Configure query execution strategy: **Single** or **Combined** mode
 
 ### Configurable Prediction Model
 
-The model behind anomaly detection is now configurable. Seven parameters steer how the prediction is fitted:
+The model behind anomaly detection now weighs competing explanations of each series — a pattern combined with a reading of the most recent observations — and blends their forecasts by how strongly each is supported. A single extreme value can no longer leak into the following predictions.
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Two settings on the data source's new **Model** tab steer it, each from `0.0` to `1.0` with `0.5` as the default:
 
-The defaults suit the great majority of series, and each parameter can be restored to its default at any time.
+- **Break Sensitivity** – how quickly a jump to a new level or a turning trend is believed rather than treated as outliers
+- **Model Complexity** – how much structure the model looks for, from calendar effects and a single level shift up to unknown cycles, month-day effects and monthly resets
 
-**Impact:** Gives users control over the prediction model itself, alongside the existing Sensitivity and Memory settings on the tolerance band. For guidance on when to reach for one and how to set it, contact digna.
+Both can be restored to their defaults at any time. See [Model Settings](../platform/data_anomalies/how_it_works.md#model-settings) for how each one acts.
+
+**Impact:** Gives users control over the prediction model itself, alongside the existing Sensitivity and Memory settings on the tolerance band, now on the **Thresholds** tab.
+
+---
+
+### Anomaly Notification Controls
+
+- New **Notifications** tab on the data source's anomaly settings:
+  - **Minimum Alerts** – how many failed checks (not uncertain ones) an inspection needs before a notification is sent (default `1`)
+  - **Pause After Notification (Days)** – how long a subscription stays silent after notifying about the data source (default `0`, no pause)
+- Subscribers are now notified when an inspection fails outright (**Notify Inspection Errors**)
+- Every notification links straight to the page it is about — the failed checks of the inspection, or the Schema Tracker and Timeliness views
+- Clearer subscription switches: **Notify on Passed Inspections**, **Notify Inspection Errors**, **Notify Data Volume Checks**
+
+**How notifications work:** notifications are sent through **notification channels** – Email (via an SMTP connection), Slack or Jira – which administrators set up and can check with **Test Notification Channel**. A **subscription** connects a channel to a project: it covers all data sources or selected ones, and its switches choose what it reports – each module (Data Anomalies, Data Validation, Data Analytics, Timeliness, Schema Tracker and data volume checks), inspections that fail outright, and optionally passed inspections as well.
+
+**Impact:** Fewer, more actionable notifications — isolated deviations and persisting anomalies no longer flood the channel.
 
 ---
 

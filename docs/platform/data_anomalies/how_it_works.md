@@ -1,6 +1,6 @@
 ---
 title: Data Anomalies – How It Works | digna Documentation
-description: How digna Data Anomalies works end to end — in-database profiling, robust prediction per series, a tolerance band derived from recent prediction error, and status rollup from check to data source.
+description: How digna Data Anomalies works end to end — in-database profiling, a prediction per series that weighs competing explanations, a tolerance band derived from recent prediction error, status rollup from check to data source, and anomaly notifications.
 image: /assets/logo_square.png
 keywords:
   - anomaly detection how it works
@@ -52,25 +52,24 @@ See [How Profiling Works](../profiling/how_it_works.md) for the mechanics, inclu
 
 Every combination of dataset, column, and statistic is its own time series, and each gets its own model.
 
-The model is a **robust regression** fitted to the history of that series. It always carries an intercept and a level-shift term for each detected structural break; beyond that, it selects its own structure from a set of candidates — a linear trend, the previous one or two observations, weekday effects, within-month and within-year seasonality, and month-boundary spikes.
+The model reads a series the way a person reading its chart would: it holds **several competing explanations** of the history at once and weighs them against each other. Each explanation combines a *pattern* — a level, a trend, weekly, monthly and yearly calendar effects, settled shifts of level, cycles, days of the month that stand out — with a reading of the *most recent observations*: nothing changed and the odd values are outliers, the level jumped, the trend turned, an episode that is now over, a spike that is fading, a level that wanders.
 
-Candidates are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday terms, and a series too short to show seasonality does not get seasonal terms at all.
+Every explanation is scored by how well it accounts for the observations, and the prediction is the blend of their forecasts, each weighted by how strongly it is supported. Explanations are admitted only when the data genuinely supports them, so a series with no weekly pattern does not get weekday effects, and a simple series is not made to look complicated.
 
-Robustness is what keeps a single bad day from poisoning the following ones: a spike is downweighted rather than fitted, so it does not drag the prediction that follows it.
+No explanation predicts from the previous observations directly, which is what keeps a single bad day from poisoning the following ones: a single extreme value stays an outlier, however far off it is, and does not drag the prediction after it.
 
-The model can also absorb a **structural break** — a genuine step change such as a migration, a new source system, or a business change — and predict from the new level instead of averaging across the step indefinitely.
+A **structural break** — a genuine step change such as a migration, a new source system, or a business change — is one of the explanations. Once the evidence for it is strong enough, the model predicts from the new level or slope instead of averaging across the change; until then, it hedges and moves over gradually.
 
-Release 2026.06 opens the model up to configuration. Seven parameters steer how the prediction is fitted:
+### Model Settings {: #model-settings }
 
-- Break Sensitivity
-- Outlier Sensitivity
-- Memory
-- Ridge Strength
-- Gap Tolerance
-- Outlier Correction
-- Plausible Range Tightness
+Release 2026.06 opens the model up to configuration. Two settings on the data source's **Model** tab steer the prediction. Both run from `0.0` to `1.0`, and `0.5` is the default the model is tuned at:
 
-The defaults suit the great majority of series, and each parameter can be restored to its default at any time. For guidance on when to reach for one and how to set it, contact digna.
+| Setting | Effect |
+|---|---|
+| **Break Sensitivity** | How quickly a fundamental change — a jump to a new level, or a trend that sets in or turns — is believed rather than treated as outliers. Higher believes a change after fewer observations: a clear change takes about seven observations at `0.0`, about three at `0.5`, and one or two at `1.0`. A smaller change, or a change of slope, takes longer to show. |
+| **Model Complexity** | How much structure the model looks for, from a glance to a careful study. Lower sticks to a level, a trend, the calendar, a single shift of level and the recent observations. Higher also considers rarer explanations — a cycle the calendar does not know, a change of slope, days of the month that stand out, totals that reset monthly, several shifts of level — and each needs less evidence to be believed. Higher settings take longer to compute. |
+
+Both settings act only on how much an explanation is believed, so the prediction changes gradually as either is turned. Every other quantity the model uses is fixed. The defaults suit the great majority of series, and **Restore Defaults** returns both settings to `0.5` at any time.
 
 ---
 
@@ -80,7 +79,7 @@ digna does not compare the observation to the prediction directly. It compares i
 
 This is why a genuinely noisy series is not permanently red: its band is wide because its predictions have genuinely been that wrong. A precise series gets a narrow band, and a real deviation on it is caught early.
 
-Two settings on the data source adjust the band:
+Two settings on the data source's **Thresholds** tab adjust the band:
 
 | Setting | Effect |
 |---|---|
@@ -117,6 +116,21 @@ The observation is compared against the band and reported as one of three status
 Statuses then roll up — **check → attribute → dataset → data source** — with the worst status winning at each level, alongside the count of checks that passed, were uncertain, and failed.
 
 Checks whose mapping has anomaly detection switched off are excluded from the rollup entirely, which is what makes disabling a noisy statistic effective rather than merely cosmetic.
+
+---
+
+## Notifications
+
+When a data source's anomaly status is **Failed**, digna notifies every subscription that covers the data source through its notification channel (Email, Slack or Jira). The message lists the failed checks and links straight to them on the data source's inspection page.
+
+Two settings on the data source's **Notifications** tab decide when such a notification is sent:
+
+| Setting | Effect | Default |
+|---|---|---|
+| **Minimum Alerts** | How many **Failed** checks an inspection date needs before a notification is sent — **Uncertain** checks do not count. Higher values hold back isolated deviations. At least `1`. | `1` — every failed inspection notifies |
+| **Pause After Notification (Days)** | After a notification, how many inspection dates the same subscription stays silent about this data source, so a persisting anomaly is not reported over and over. | `0` — never pauses |
+
+Both apply to data anomaly notifications only, and **Restore Defaults** returns them to their defaults. Which modules a subscription notifies about, and whether it also reports passed inspections and inspection errors, is set on the subscription itself.
 
 ---
 
