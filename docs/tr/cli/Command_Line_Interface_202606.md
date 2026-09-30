@@ -59,6 +59,7 @@ Aşağıdaki tablo, her komut kategorisinin herhangi bir işlem yapmadan önce n
 | `license check` | hayır | denetimin *kendisidir* |
 | `crypt` | evet | hayır |
 | `serve` | evet | hayır |
+| `windows` | hayır (hizmet, başlarken okur) | hayır |
 | `project` | evet | hayır |
 | `user` | evet | evet |
 | `inspection` | evet | evet |
@@ -223,6 +224,61 @@ digna repo upgrade
 Upgrading from 2.3.1 to 2.3.2...
 Upgrading from 2.3.2 to 3.0.0...
 ✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+`repo prune` komutu, ait oldukları projeden veya veri kaynağından daha uzun süre kalmış satırları kaldırır.
+Bir projeyi veya veri kaynağını silmek nesnenin kendisini kaldırır, ancak profillerini, tahminlerini,
+durumlarını ve satır sayılarını geride bırakır — bu bilinçli bir tercihtir, çünkü bu tabloları da temizleyen bir silme işlemi
+kullanıcıyı bekletirdi. `repo prune`, bunları temizleyen bakım adımıdır ve herhangi bir zamanda güvenle
+çalıştırılabilir: yalnızca projesi veya veri kaynağı artık mevcut olmayan satırları kaldırır.
+
+Python arka ucunun, geçerli sürümün artık kullanmadığı tablolara yazdığı satırlara dokunulmaz.
+
+#### Komut Kullanımı
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Seçenekler
+- `--dry-run`: Hiçbir şeyi kaldırmadan nelerin kaldırılacağını raporlar.
+
+Yalnızca sahipsiz satırlar içeren tablolar listelenir. Hiç yoksa komut
+`No orphaned rows found.` bildirir ve sonlanır.
+
+#### Örnek
+```bash
+digna repo prune
+```
+
+#### Örnek Çıktı
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Hiçbir şeyi kaldırmadan aynı raporu görmek için:
+```bash
+digna repo prune --dry-run
+```
+
+Satır sayıları aynıdır; yalnızca son satır farklıdır:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
 ```
 
 ---
@@ -534,6 +590,77 @@ digna project plan-import-ds ProjectB my_export.json
 
 ---
 
+### project cleanup
+
+`project cleanup` komutu, bir projenin belirli bir tarih aralığında biriktirdiği denetim sonuçlarını kaldırır —
+profiller, tahminler, satır sayıları ve tüm kontrol, öznitelik, veri kümesi ve veri kaynağı
+durumları. Yalnızca bu tarihlere ait bir denetimin yazdıklarını kaldırır; böylece aralık daha sonra
+yeniden denetlenerek sonuçlar yeniden oluşturulabilir.
+
+Timeliness ve Schema Tracker geçmişi **kaldırılmaz**: bunlar, ***digna***'nın belirli bir günde gözlemlediklerini
+kaydeder, o günden türetilmiş bir sonucu değil; bu nedenle geçmiş bir tarih aralığının temizlenmesi bunlara dokunmaz.
+
+Her veri kaynağı kendi işleminde (transaction) temizlenir; böylece yarıda kesilen bir çalıştırma, yarısı temizlenmiş bir veri kaynağı
+değil, bütün veri kaynakları bırakır.
+
+#### Komut Kullanımı
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: Temizlenecek proje (zorunlu). Her çağrıda bir proje.
+- **FROM_DATE**: Sonuçların kaldırılacağı ilk tarih, `YYYY-MM-DD` (zorunlu).
+- **TO_DATE**: Sonuçların kaldırılacağı son tarih (dahil), `YYYY-MM-DD` (zorunlu).
+
+#### Seçenekler
+- `--table-name`, `-n`: Temizliği bu veri kaynaklarıyla sınırlar. Birden çok ad boşlukla
+  ayrılarak verilebilir.
+- `--table-filter`: Temizliği, adı bu alt dizeyi içeren veri kaynaklarıyla sınırlar.
+- `--dry-run`: Hiçbir şeyi kaldırmadan temizlenecek veri kaynaklarını listeler.
+- `--timing`: Temizliğin ne kadar sürdüğünü görüntüler.
+
+`--table-name` ve `--table-filter` VEYA mantığıyla birleşir — bir veri kaynağı, adı verilmişse ya da
+alt dize eşleşiyorsa temizlenir. Hiçbir veri kaynağı eşleşmezse komut, hiçbir şey yapmamış bir temizlik için
+başarı bildirmek yerine başarısız olur.
+
+#### Örnek
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Tek bir veri kaynağıyla sınırlı olarak:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Örnek Çıktı
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Hiçbir şeyi kaldırmadan hangi veri kaynaklarının temizleneceğini görmek için:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Her satır işaretlenir; böylece bir deneme çalıştırması gerçek bir çalıştırmayla karıştırılamaz:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
 ## Denetim Yönetimi
 
 ---
@@ -707,3 +834,93 @@ digna serve --address 0.0.0.0 --port 8000
 ```text
 Server running on http://0.0.0.0:8000
 ```
+
+---
+
+## Windows Hizmet Yönetimi
+
+Yalnızca Windows'ta kullanılabilir. Bu komutlar ***digna*** arka ucunu Windows hizmet yöneticisine
+kaydeder ve denetler; hizmetin kendisi `serve` komutunu arka planda çalıştırır. Her komut
+yükseltilmiş (yönetici olarak açılmış) bir Komut İstemi'nden çalıştırılmalıdır ve varsayılan olmayan bir adla kaydedilmiş bir hizmete
+erişilebilmesi için her biri `--name` seçeneğini kabul eder.
+
+---
+
+### windows install
+
+`windows install` komutu, ***digna***'yı bir Windows hizmeti olarak kaydeder.
+
+Burada verilen adres ve bağlantı noktası hizmet kaydına yazılır ve hizmetin bağlandığı değerler bunlardır —
+`config.toml` dosyasından okunmazlar. Bunları sonradan değiştirmek için hizmeti kaldırın
+ve yeniden yükleyin.
+
+#### Komut Kullanımı
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kaydedileceği ad (varsayılan: `digna`).
+- `--display-name`: services.msc'de gösterilen ad (varsayılan: `digna`).
+- `--description`: services.msc'de gösterilen açıklama (varsayılan: `digna data quality backend`).
+- `--address`: Hizmetin API'sini bağladığı adres (varsayılan: `127.0.0.1`).
+- `--port`: Hizmetin API'sini bağladığı bağlantı noktası (varsayılan: `8000`).
+- `--working-dir`: `config.toml` ve `license.toml` dosyalarını içeren ve hizmetin çalışma dizini olarak
+  kullandığı dizin (varsayılan: `digna` çalıştırılabilir dosyasının bulunduğu dizin).
+- `--start-type`: Hizmetin ne zaman başlayacağı — `auto` Windows ile birlikte, `manual` yalnızca istendiğinde,
+  `disabled` kayıtlıdır ancak başlamayı reddeder (varsayılan: `auto`).
+- `--account`: Hizmetin çalışacağı hesap, ör. `DOMAIN\user` veya `.\user` (varsayılan: `LocalSystem`).
+- `--password`: `--account` hesabının parolası.
+
+#### Örnek
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+İkinci bir adla, bir etki alanı hesabıyla çalışacak şekilde kaydetmek için:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+`windows start` komutu, kayıtlı bir hizmeti başlatır.
+
+#### Komut Kullanımı
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kayıtlı olduğu ad (varsayılan: `digna`).
+
+---
+
+### windows stop
+
+`windows stop` komutu, çalışan bir hizmeti durdurur. Herhangi bir uygulama dosyasını değiştirmeden önce
+hizmeti durdurun.
+
+#### Komut Kullanımı
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kayıtlı olduğu ad (varsayılan: `digna`).
+
+---
+
+### windows uninstall
+
+`windows uninstall` komutu, hizmetin kaydını kaldırır. Önce hizmeti durdurun.
+
+#### Komut Kullanımı
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kayıtlı olduğu ad (varsayılan: `digna`).
