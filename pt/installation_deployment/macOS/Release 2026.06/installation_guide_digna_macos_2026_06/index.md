@@ -1032,7 +1032,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "A Release 2026.06 altera o config.toml"
 
-    Três configurações são novas e obrigatórias, e três não são mais usadas. Um `config.toml` herdado de uma versão anterior não contém as novas configurações, e o digna não iniciará enquanto elas estiverem ausentes. Acrescente o seguinte ao seu `config.toml` existente:
+    Três configurações são novas e obrigatórias, e duas não são mais usadas. Um `config.toml` herdado de uma versão anterior não contém as novas configurações, e o digna não iniciará enquanto elas estiverem ausentes. Acrescente o seguinte ao seu `config.toml` existente:
 
     ```toml
     [base]
@@ -1043,7 +1043,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Acrescente as duas chaves `[base]` à sua seção `[base]` existente e adicione `[encryption]` como uma nova seção. Em seguida, remova as configurações que não são mais usadas: **`digna_FERNET_KEY`** de `[base]`, e **`digna_APP_HOST`** e **`digna_APP_PORT`** de `[app]` — o servidor agora obtém o endereço e a porta de `digna serve`.
+    Acrescente as duas chaves `[base]` à sua seção `[base]` existente e adicione `[encryption]` como uma nova seção. Em seguida, remova as duas configurações que não são mais usadas, **`digna_APP_HOST`** e **`digna_APP_PORT`**, de `[app]` — o servidor agora obtém o endereço e a porta de `digna serve`.
 
     O que cada configuração faz está descrito em [Configuração do Backend](#backend-configuration).
 

@@ -1031,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Väljalase 2026.06 muudab faili config.toml"
 
-    Kolm sätet on uued ja kohustuslikud, kolm ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
+    Kolm sätet on uued ja kohustuslikud, kaks ei ole enam kasutusel. Varasemast väljalaskest üle võetud `config.toml` uusi sätteid ei sisalda ja digna ei käivitu, kuni need puuduvad. Lisage oma olemasolevasse `config.toml` faili järgmine:
 
     ```toml
     [base]
@@ -1042,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sätted, mida enam ei kasutata: **`digna_FERNET_KEY`** sektsioonist `[base]` ning **`digna_APP_HOST`** ja **`digna_APP_PORT`** sektsioonist `[app]` — aadressi ja pordi saab server nüüd käsult `digna serve`.
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sektsioonist `[app]` kaks sätet, mida enam ei kasutata, **`digna_APP_HOST`** ja **`digna_APP_PORT`** — aadressi ja pordi saab server nüüd käsult `digna serve`.
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
 

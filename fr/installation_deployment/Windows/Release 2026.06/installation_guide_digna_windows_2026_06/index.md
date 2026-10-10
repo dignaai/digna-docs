@@ -792,7 +792,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "La version 2026.06 modifie config.toml"
 
-    Trois paramètres sont nouveaux et obligatoires, trois autres ne sont plus utilisés. Un `config.toml` repris d'une version précédente ne contient pas les nouveaux paramètres, et digna ne démarrera pas tant qu'ils seront absents. Ajoutez ce qui suit à votre `config.toml` existant :
+    Trois paramètres sont nouveaux et obligatoires, deux autres ne sont plus utilisés. Un `config.toml` repris d'une version précédente ne contient pas les nouveaux paramètres, et digna ne démarrera pas tant qu'ils seront absents. Ajoutez ce qui suit à votre `config.toml` existant :
 
     ```toml
     [base]
@@ -803,7 +803,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Ajoutez les deux clés `[base]` à votre section `[base]` existante et ajoutez `[encryption]` comme nouvelle section. Supprimez ensuite les paramètres qui ne sont plus utilisés : **`digna_FERNET_KEY`** de `[base]`, ainsi que **`digna_APP_HOST`** et **`digna_APP_PORT`** de `[app]` — le serveur tire désormais son adresse et son port de `digna serve`.
+    Ajoutez les deux clés `[base]` à votre section `[base]` existante et ajoutez `[encryption]` comme nouvelle section. Supprimez ensuite de `[app]` les deux paramètres qui ne sont plus utilisés, **`digna_APP_HOST`** et **`digna_APP_PORT`** — le serveur tire désormais son adresse et son port de `digna serve`.
 
     Le rôle de chaque paramètre est décrit dans [Configuration du backend](#backend-configuration).
 

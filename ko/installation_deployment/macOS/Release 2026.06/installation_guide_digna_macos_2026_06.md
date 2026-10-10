@@ -1030,7 +1030,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "릴리스 2026.06은 config.toml을 변경합니다"
 
-    세 가지 설정이 새로 추가되어 필수가 되었고, 세 개는 더 이상 사용되지 않습니다. 이전 릴리스에서 가져온 `config.toml`에는 새 설정이 없으며, 이들이 없는 한 digna는 시작되지 않습니다. 기존 `config.toml`에 다음을 추가하십시오:
+    세 가지 설정이 새로 추가되어 필수가 되었고, 두 개는 더 이상 사용되지 않습니다. 이전 릴리스에서 가져온 `config.toml`에는 새 설정이 없으며, 이들이 없는 한 digna는 시작되지 않습니다. 기존 `config.toml`에 다음을 추가하십시오:
 
     ```toml
     [base]
@@ -1041,7 +1041,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 더 이상 사용되지 않는 설정을 제거하십시오. `[base]`에서 **`digna_FERNET_KEY`**, `[app]`에서 **`digna_APP_HOST`**와 **`digna_APP_PORT`**입니다. 서버는 이제 주소와 포트를 `digna serve`에서 받습니다.
+    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 더 이상 사용되지 않는 두 설정 **`digna_APP_HOST`**와 **`digna_APP_PORT`**를 `[app]`에서 제거하십시오. 서버는 이제 주소와 포트를 `digna serve`에서 받습니다.
 
     각 설정의 역할은 다음을 참조하십시오: [백엔드 구성](#backend-configuration).
 

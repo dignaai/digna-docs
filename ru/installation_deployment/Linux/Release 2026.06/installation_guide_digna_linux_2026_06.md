@@ -1202,7 +1202,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Выпуск 2026.06 изменяет config.toml"
 
-    Три параметра новые и обязательные, а три больше не используются. `config.toml`, перенесённый из прежнего выпуска, новых параметров не содержит, и digna не запустится, пока они отсутствуют. Добавьте в существующий `config.toml` следующее:
+    Три параметра новые и обязательные, а два больше не используются. `config.toml`, перенесённый из прежнего выпуска, новых параметров не содержит, и digna не запустится, пока они отсутствуют. Добавьте в существующий `config.toml` следующее:
 
     ```toml
     [base]
@@ -1213,7 +1213,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Добавьте два ключа `[base]` в существующий раздел `[base]` и добавьте `[encryption]` как новый раздел. Затем удалите параметры, которые больше не используются: **`digna_FERNET_KEY`** из `[base]`, а также **`digna_APP_HOST`** и **`digna_APP_PORT`** из `[app]` — адрес и порт сервер теперь берёт из `digna serve`.
+    Добавьте два ключа `[base]` в существующий раздел `[base]` и добавьте `[encryption]` как новый раздел. Затем удалите из `[app]` два параметра, которые больше не используются: **`digna_APP_HOST`** и **`digna_APP_PORT`** — адрес и порт сервер теперь берёт из `digna serve`.
 
     Назначение каждого параметра описано в разделе [Конфигурация backend](#backend-configuration).
 

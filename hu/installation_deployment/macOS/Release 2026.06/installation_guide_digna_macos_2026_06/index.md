@@ -1031,7 +1031,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "A 2026.06 kiadás módosítja a config.toml fájlt"
 
-    Három beállítás új és kötelező, három pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
+    Három beállítás új és kötelező, kettő pedig már nem használatos. A korábbi kiadásból átvett `config.toml` nem tartalmazza az új beállításokat, és a digna nem indul el, amíg hiányoznak. Egészítse ki a meglévő `config.toml` fájlját a következőkkel:
 
     ```toml
     [base]
@@ -1042,7 +1042,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el a már nem használt beállításokat: a **`digna_FERNET_KEY`** kulcsot a `[base]` szekcióból, valamint a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot az `[app]` szekcióból — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el az `[app]` szekcióból a két már nem használt beállítást, a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
 
