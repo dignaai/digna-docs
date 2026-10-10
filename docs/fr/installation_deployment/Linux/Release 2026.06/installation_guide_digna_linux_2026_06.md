@@ -1192,7 +1192,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Ajoutez les deux clés `[base]` à votre section `[base]` existante et ajoutez `[encryption]` comme nouvelle section. Supprimez ensuite de `[app]` les deux paramètres qui ne sont plus utilisés, **`digna_APP_HOST`** et **`digna_APP_PORT`** — le serveur tire désormais son adresse et son port de `digna serve`. Conservez **`digna_FERNET_KEY`** dans `[base]` : la Release 2026.06 en a encore besoin, et il ne pourra être supprimé qu'avec la prochaine version.
+    Ajoutez les deux clés `[base]` à votre section `[base]` existante et ajoutez `[encryption]` comme nouvelle section. Supprimez ensuite de `[app]` les deux paramètres qui ne sont plus utilisés, **`digna_APP_HOST`** et **`digna_APP_PORT`** — le serveur tire désormais son adresse et son port de `digna serve`.
 
     Le rôle de chaque paramètre est décrit dans [Configuration du backend](#backend-configuration).
 
