@@ -1180,7 +1180,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "リリース 2026.06 で config.toml が変わります"
 
-    3 つの設定が新たに必須となり、3 つは使用されなくなりました。以前のリリースから引き継いだ `config.toml` には新しい設定が含まれておらず、それらが欠けている限り digna は起動しません。既存の `config.toml` に次を追加してください:
+    3 つの設定が新たに必須となり、2 つは使用されなくなりました。以前のリリースから引き継いだ `config.toml` には新しい設定が含まれておらず、それらが欠けている限り digna は起動しません。既存の `config.toml` に次を追加してください:
 
     ```toml
     [base]
@@ -1191,7 +1191,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで、使用されなくなった設定を削除してください。`[base]` から **`digna_FERNET_KEY`**、`[app]` から **`digna_APP_HOST`** と **`digna_APP_PORT`** です。サーバーのアドレスとポートは `digna serve` から渡すようになりました。
+    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで、使用されなくなった 2 つの設定、**`digna_APP_HOST`** と **`digna_APP_PORT`** を `[app]` から削除してください。サーバーのアドレスとポートは `digna serve` から渡すようになりました。**`digna_FERNET_KEY`** は `[base]` に残してください。リリース 2026.06 ではまだ必要で、削除できるのは次のリリースからです。
 
     各設定の役割については次を参照してください: [バックエンド構成](#backend-configuration).
 

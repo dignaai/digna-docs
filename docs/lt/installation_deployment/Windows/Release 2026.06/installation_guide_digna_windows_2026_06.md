@@ -822,7 +822,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Leidimas 2026.06 keičia config.toml"
 
-    Trys nuostatos yra naujos ir būtinos, o trys nebenaudojamos. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
+    Trys nuostatos yra naujos ir būtinos, o dvi nebenaudojamos. Iš ankstesnio leidimo perkeltame `config.toml` naujų nuostatų nėra, ir digna nepasileis, kol jų trūks. Į esamą `config.toml` įrašykite:
 
     ```toml
     [base]
@@ -833,7 +833,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada pašalinkite nuostatas, kurios nebenaudojamos: **`digna_FERNET_KEY`** iš `[base]` bei **`digna_APP_HOST`** ir **`digna_APP_PORT`** iš `[app]` — adresą ir prievadą serveris dabar gauna iš `digna serve`.
+    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada iš `[app]` pašalinkite dvi nuostatas, kurios nebenaudojamos, **`digna_APP_HOST`** ir **`digna_APP_PORT`** — adresą ir prievadą serveris dabar gauna iš `digna serve`. **`digna_FERNET_KEY`** palikite `[base]` skyriuje: leidimui 2026.06 ši nuostata dar reikalinga, o pašalinti ją bus galima tik su kitu leidimu.
 
     Ką daro kiekviena nuostata, aprašyta skyriuje [Užkulisinės dalies konfigūracija](#backend-configuration).
 

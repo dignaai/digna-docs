@@ -825,7 +825,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "Release 2026.06 wijzigt config.toml"
 
-    Drie instellingen zijn nieuw en verplicht, drie worden niet meer gebruikt. Een `config.toml` die uit een eerdere release is overgenomen, bevat de nieuwe instellingen niet, en digna start niet zolang ze ontbreken. Voeg het volgende toe aan uw bestaande `config.toml`:
+    Drie instellingen zijn nieuw en verplicht, twee worden niet meer gebruikt. Een `config.toml` die uit een eerdere release is overgenomen, bevat de nieuwe instellingen niet, en digna start niet zolang ze ontbreken. Voeg het volgende toe aan uw bestaande `config.toml`:
 
     ```toml
     [base]
@@ -836,7 +836,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Voeg de twee `[base]`-sleutels toe aan uw bestaande `[base]`-sectie en voeg `[encryption]` toe als nieuwe sectie. Verwijder daarna de instellingen die niet meer worden gebruikt: **`digna_FERNET_KEY`** uit `[base]`, en **`digna_APP_HOST`** en **`digna_APP_PORT`** uit `[app]` — de server haalt zijn adres en poort nu uit `digna serve`.
+    Voeg de twee `[base]`-sleutels toe aan uw bestaande `[base]`-sectie en voeg `[encryption]` toe als nieuwe sectie. Verwijder daarna de twee instellingen die niet meer worden gebruikt, **`digna_APP_HOST`** en **`digna_APP_PORT`**, uit `[app]` — de server haalt zijn adres en poort nu uit `digna serve`. Laat **`digna_FERNET_KEY`** in `[base]` staan: Release 2026.06 heeft die nog nodig, en die kan pas met de volgende release worden verwijderd.
 
     Wat elke instelling doet, staat in [Backend-configuratie](#backend-configuration).
 

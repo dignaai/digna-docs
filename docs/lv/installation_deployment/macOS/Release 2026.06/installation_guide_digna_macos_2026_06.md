@@ -1040,7 +1040,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Laidiens 2026.06 maina config.toml"
 
-    Trīs iestatījumi ir jauni un obligāti, bet trīs vairs netiek izmantoti. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
+    Trīs iestatījumi ir jauni un obligāti, bet divi vairs netiek izmantoti. No iepriekšējā laidiena pārņemtā `config.toml` nesatur jaunos iestatījumus, un digna nestartēs, kamēr to trūks. Pievienojiet savam esošajam `config.toml` šādu:
 
     ```toml
     [base]
@@ -1051,7 +1051,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet iestatījumus, kas vairs netiek izmantoti: **`digna_FERNET_KEY`** no `[base]`, kā arī **`digna_APP_HOST`** un **`digna_APP_PORT`** no `[app]` — adresi un portu serveris tagad iegūst no `digna serve`.
+    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet no `[app]` divus iestatījumus, kas vairs netiek izmantoti, **`digna_APP_HOST`** un **`digna_APP_PORT`** — adresi un portu serveris tagad iegūst no `digna serve`. Atstājiet **`digna_FERNET_KEY`** sadaļā `[base]`: Release 2026.06 tas joprojām ir nepieciešams, un to varēs noņemt tikai ar nākamo laidienu.
 
     Ko dara katrs iestatījums, aprakstīts sadaļā [Backend konfigurācija](#backend-configuration).
 

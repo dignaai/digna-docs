@@ -1186,7 +1186,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Julkaisu 2026.06 muuttaa config.toml-tiedostoa"
 
-    Kolme asetusta on uusia ja pakollisia, ja kolme ei ole enää käytössä. Aiemmasta julkaisusta peritty `config.toml` ei sisällä uusia asetuksia, eikä digna käynnisty niin kauan kuin ne puuttuvat. Lisää seuraavat olemassa olevaan `config.toml`-tiedostoosi:
+    Kolme asetusta on uusia ja pakollisia, ja kaksi ei ole enää käytössä. Aiemmasta julkaisusta peritty `config.toml` ei sisällä uusia asetuksia, eikä digna käynnisty niin kauan kuin ne puuttuvat. Lisää seuraavat olemassa olevaan `config.toml`-tiedostoosi:
 
     ```toml
     [base]
@@ -1197,7 +1197,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisää kaksi `[base]`-avainta olemassa olevaan `[base]`-osioosi ja lisää `[encryption]` uutena osiona. Poista sen jälkeen asetukset, joita ei enää käytetä: **`digna_FERNET_KEY`** osiosta `[base]` sekä **`digna_APP_HOST`** ja **`digna_APP_PORT`** osiosta `[app]` — palvelin saa osoitteensa ja porttinsa nyt komennolta `digna serve`.
+    Lisää kaksi `[base]`-avainta olemassa olevaan `[base]`-osioosi ja lisää `[encryption]` uutena osiona. Poista sen jälkeen kaksi asetusta, joita ei enää käytetä, **`digna_APP_HOST`** ja **`digna_APP_PORT`**, osiosta `[app]` — palvelin saa osoitteensa ja porttinsa nyt komennolta `digna serve`. Säilytä **`digna_FERNET_KEY`** osiossa `[base]`: Release 2026.06 tarvitsee sitä edelleen, ja sen voi poistaa vasta seuraavan julkaisun myötä.
 
     Kunkin asetuksen merkitys on kuvattu kohdassa [Taustajärjestelmän konfigurointi](#backend-configuration).
 

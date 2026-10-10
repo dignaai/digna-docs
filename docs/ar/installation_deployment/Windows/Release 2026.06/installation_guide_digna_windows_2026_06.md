@@ -822,7 +822,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
 ```
 !!! warning "الإصدار 2026.06 يغيّر الملف config.toml"
 
-    ثلاثة إعدادات جديدة وإلزامية، وثلاثة لم تعد مستخدمة. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
+    ثلاثة إعدادات جديدة وإلزامية، واثنان لم يعودا مستخدمَين. الملف `config.toml` المنقول من إصدار سابق لا يحتوي على الإعدادات الجديدة، ولن يبدأ digna ما دامت مفقودة. أضف ما يلي إلى ملف `config.toml` الحالي:
 
     ```toml
     [base]
@@ -833,7 +833,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف الإعدادات التي لم تعد مستخدمة: **`digna_FERNET_KEY`** من `[base]`، و**`digna_APP_HOST`** و**`digna_APP_PORT`** من `[app]` — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`.
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف من `[app]` الإعدادَين اللذين لم يعودا مستخدمَين: **`digna_APP_HOST`** و**`digna_APP_PORT`** — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`. أبقِ **`digna_FERNET_KEY`** في `[base]`: فالإصدار 2026.06 لا يزال يحتاج إليه، ولا يمكن حذفه إلا مع الإصدار التالي.
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
 

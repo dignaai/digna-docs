@@ -1038,7 +1038,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 !!! warning "Izdaja 2026.06 spreminja config.toml"
 
-    Tri nastavitve so nove in obvezne, tri pa niso več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
+    Tri nastavitve so nove in obvezne, dve pa nista več v uporabi. `config.toml`, prenešen iz prejšnje izdaje, novih nastavitev ne vsebuje in digna se ne bo zagnal, dokler manjkajo. V obstoječi `config.toml` dodajte naslednje:
 
     ```toml
     [base]
@@ -1049,7 +1049,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato odstranite nastavitve, ki niso več v uporabi: **`digna_FERNET_KEY`** iz `[base]` ter **`digna_APP_HOST`** in **`digna_APP_PORT`** iz `[app]` — naslov in vrata strežnik zdaj dobi iz `digna serve`.
+    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato iz `[app]` odstranite nastavitvi, ki nista več v uporabi, **`digna_APP_HOST`** in **`digna_APP_PORT`** — naslov in vrata strežnik zdaj dobi iz `digna serve`. **`digna_FERNET_KEY`** pa pustite v `[base]`: izdaja 2026.06 ga še potrebuje, odstraniti pa ga je mogoče šele z naslednjo izdajo.
 
     Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija Zaledja](#backend-configuration).
 
