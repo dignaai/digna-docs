@@ -1043,7 +1043,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで、使用されなくなった 2 つの設定、**`digna_APP_HOST`** と **`digna_APP_PORT`** を `[app]` から削除してください。サーバーのアドレスとポートは `digna serve` から渡すようになりました。**`digna_FERNET_KEY`** は `[base]` に残してください。リリース 2026.06 ではまだ必要で、削除できるのは次のリリースからです。
+    2 つの `[base]` キーを既存の `[base]` セクションに追加し、`[encryption]` を新しいセクションとして追加します。そのうえで、使用されなくなった 2 つの設定、**`digna_APP_HOST`** と **`digna_APP_PORT`** を `[app]` から削除してください。サーバーのアドレスとポートは `digna serve` から渡すようになりました。
 
     各設定の役割については次を参照してください: [バックエンド構成](#backend-configuration).
 

@@ -1050,7 +1050,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف من `[app]` الإعدادَين اللذين لم يعودا مستخدمَين: **`digna_APP_HOST`** و**`digna_APP_PORT`** — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`. أبقِ **`digna_FERNET_KEY`** في `[base]`: فالإصدار 2026.06 لا يزال يحتاج إليه، ولا يمكن حذفه إلا مع الإصدار التالي.
+    أضف مفتاحَي `[base]` إلى قسم `[base]` الحالي، وأضف `[encryption]` كقسم جديد. ثم احذف من `[app]` الإعدادَين اللذين لم يعودا مستخدمَين: **`digna_APP_HOST`** و**`digna_APP_PORT`** — إذ صار الخادم يأخذ عنوانه ومنفذه من `digna serve`.
 
     ما تفعله كل إعداد موضّح في [تهيئة الواجهة الخلفية](#backend-configuration).
 

@@ -1048,7 +1048,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 더 이상 사용되지 않는 두 설정 **`digna_APP_HOST`**와 **`digna_APP_PORT`**를 `[app]`에서 제거하십시오. 서버는 이제 주소와 포트를 `digna serve`에서 받습니다. **`digna_FERNET_KEY`**는 `[base]`에 그대로 두십시오. 릴리스 2026.06에서는 아직 필요하며, 다음 릴리스부터 제거할 수 있습니다.
+    두 개의 `[base]` 키를 기존 `[base]` 섹션에 추가하고 `[encryption]`을 새 섹션으로 추가하십시오. 그런 다음 더 이상 사용되지 않는 두 설정 **`digna_APP_HOST`**와 **`digna_APP_PORT`**를 `[app]`에서 제거하십시오. 서버는 이제 주소와 포트를 `digna serve`에서 받습니다.
 
     각 설정의 역할은 다음을 참조하십시오: [백엔드 구성](#backend-configuration).
 
