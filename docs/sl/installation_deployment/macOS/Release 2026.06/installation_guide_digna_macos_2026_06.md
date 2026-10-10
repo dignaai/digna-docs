@@ -1049,7 +1049,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato iz `[app]` odstranite nastavitvi, ki nista več v uporabi, **`digna_APP_HOST`** in **`digna_APP_PORT`** — naslov in vrata strežnik zdaj dobi iz `digna serve`. **`digna_FERNET_KEY`** pa pustite v `[base]`: izdaja 2026.06 ga še potrebuje, odstraniti pa ga je mogoče šele z naslednjo izdajo.
+    Dva ključa `[base]` dodajte v svojo obstoječo sekcijo `[base]`, sekcijo `[encryption]` pa dodajte kot novo. Nato iz `[app]` odstranite nastavitvi, ki nista več v uporabi, **`digna_APP_HOST`** in **`digna_APP_PORT`** — naslov in vrata strežnik zdaj dobi iz `digna serve`.
 
     Kaj počne posamezna nastavitev, je opisano v razdelku [Konfiguracija Zaledja](#backend-configuration).
 

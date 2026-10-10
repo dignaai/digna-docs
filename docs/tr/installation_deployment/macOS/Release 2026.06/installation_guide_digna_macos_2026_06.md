@@ -1048,7 +1048,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    İki `[base]` anahtarını mevcut `[base]` bölümünüze ekleyin ve `[encryption]` bölümünü yeni bir bölüm olarak ekleyin. Ardından artık kullanılmayan iki ayarı, **`digna_APP_HOST`** ve **`digna_APP_PORT`** ayarlarını, `[app]` bölümünden kaldırın — sunucu adresini ve bağlantı noktasını artık `digna serve` komutundan alır. **`digna_FERNET_KEY`** ayarını ise `[base]` bölümünde bırakın: 2026.06 sürümü buna hâlâ ihtiyaç duyar ve bu ayar ancak bir sonraki sürümle kaldırılabilir.
+    İki `[base]` anahtarını mevcut `[base]` bölümünüze ekleyin ve `[encryption]` bölümünü yeni bir bölüm olarak ekleyin. Ardından artık kullanılmayan iki ayarı, **`digna_APP_HOST`** ve **`digna_APP_PORT`** ayarlarını, `[app]` bölümünden kaldırın — sunucu adresini ve bağlantı noktasını artık `digna serve` komutundan alır.
 
     Her ayarın ne yaptığı şurada açıklanmıştır: [Backend Yapılandırması](#backend-configuration).
 

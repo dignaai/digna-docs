@@ -1198,7 +1198,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el az `[app]` szekcióból a két már nem használt beállítást, a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja. A **`digna_FERNET_KEY`** kulcsot viszont hagyja meg a `[base]` szekcióban: a 2026.06 kiadásnak még szüksége van rá, és csak a következő kiadással távolítható el.
+    Adja hozzá a két `[base]` kulcsot a meglévő `[base]` szekcióhoz, és vegye fel az `[encryption]` szekciót újként. Ezután távolítsa el az `[app]` szekcióból a két már nem használt beállítást, a **`digna_APP_HOST`** és **`digna_APP_PORT`** kulcsot — a kiszolgáló a címét és a portját mostantól a `digna serve` parancstól kapja.
 
     Az egyes beállítások jelentését lásd: [Háttérrendszer konfigurálása](#backend-configuration).
 
