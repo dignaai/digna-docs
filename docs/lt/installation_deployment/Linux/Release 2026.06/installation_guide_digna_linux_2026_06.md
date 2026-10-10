@@ -1197,7 +1197,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada iš `[app]` pašalinkite dvi nuostatas, kurios nebenaudojamos, **`digna_APP_HOST`** ir **`digna_APP_PORT`** — adresą ir prievadą serveris dabar gauna iš `digna serve`. **`digna_FERNET_KEY`** palikite `[base]` skyriuje: leidimui 2026.06 ši nuostata dar reikalinga, o pašalinti ją bus galima tik su kitu leidimu.
+    Du `[base]` raktus įrašykite į esamą `[base]` skyrių, o `[encryption]` pridėkite kaip naują skyrių. Tada iš `[app]` pašalinkite dvi nuostatas, kurios nebenaudojamos, **`digna_APP_HOST`** ir **`digna_APP_PORT`** — adresą ir prievadą serveris dabar gauna iš `digna serve`.
 
     Ką daro kiekviena nuostata, aprašyta skyriuje [Užkulisinės dalies konfigūracija](#backend-configuration).
 

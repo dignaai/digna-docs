@@ -830,7 +830,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet no `[app]` divus iestatījumus, kas vairs netiek izmantoti, **`digna_APP_HOST`** un **`digna_APP_PORT`** — adresi un portu serveris tagad iegūst no `digna serve`. Atstājiet **`digna_FERNET_KEY`** sadaļā `[base]`: Release 2026.06 tas joprojām ir nepieciešams, un to varēs noņemt tikai ar nākamo laidienu.
+    Pievienojiet divas `[base]` atslēgas savai esošajai `[base]` sadaļai un pievienojiet `[encryption]` kā jaunu sadaļu. Pēc tam noņemiet no `[app]` divus iestatījumus, kas vairs netiek izmantoti, **`digna_APP_HOST`** un **`digna_APP_PORT`** — adresi un portu serveris tagad iegūst no `digna serve`.
 
     Ko dara katrs iestatījums, apraksīts sadaļā [Aizmugures konfigurācija](#backend-configuration).
 

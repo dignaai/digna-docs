@@ -1197,7 +1197,7 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sektsioonist `[app]` kaks sätet, mida enam ei kasutata, **`digna_APP_HOST`** ja **`digna_APP_PORT`** — aadressi ja pordi saab server nüüd käsult `digna serve`. Jätke **`digna_FERNET_KEY`** sektsioonis `[base]` alles: väljalase 2026.06 vajab seda veel ja selle saab eemaldada alles järgmise väljalaskega.
+    Lisage kaks `[base]` võtit oma olemasolevasse `[base]` sektsiooni ja lisage `[encryption]` uue sektsioonina. Seejärel eemaldage sektsioonist `[app]` kaks sätet, mida enam ei kasutata, **`digna_APP_HOST`** ja **`digna_APP_PORT`** — aadressi ja pordi saab server nüüd käsult `digna serve`.
 
     Mida iga säte teeb, on kirjeldatud jaotises [Taustasüsteemi konfigureerimine](#backend-configuration).
 

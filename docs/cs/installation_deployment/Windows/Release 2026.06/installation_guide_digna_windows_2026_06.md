@@ -833,7 +833,7 @@ copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
     DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
     ```
 
-    Přidejte dva klíče `[base]` do své stávající sekce `[base]` a přidejte `[encryption]` jako novou sekci. Poté odstraňte z `[app]` dvě nastavení, která se již nepoužívají, **`digna_APP_HOST`** a **`digna_APP_PORT`** — adresu a port si server nyní bere z `digna serve`. **`digna_FERNET_KEY`** v `[base]` ponechte: Release 2026.06 toto nastavení stále potřebuje a odstranit jej půjde až s příští verzí.
+    Přidejte dva klíče `[base]` do své stávající sekce `[base]` a přidejte `[encryption]` jako novou sekci. Poté odstraňte z `[app]` dvě nastavení, která se již nepoužívají, **`digna_APP_HOST`** a **`digna_APP_PORT`** — adresu a port si server nyní bere z `digna serve`.
 
     Význam jednotlivých nastavení je popsán v části [Konfigurace backendu](#backend-configuration).
 
