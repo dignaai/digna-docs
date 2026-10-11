@@ -375,7 +375,7 @@ Ez a rész a biztonsági és cookie beállításokat tartalmazza:
 
 ```toml
 [base]
-DIGNA_FERNET_KEY = "your-fernet-key"
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
