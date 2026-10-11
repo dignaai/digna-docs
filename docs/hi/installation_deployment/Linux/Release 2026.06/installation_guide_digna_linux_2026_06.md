@@ -654,6 +654,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -667,6 +668,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | पैरामीटर | मान | नोट्स |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | एन्क्रिप्शन कुंजी | टोकन और कुकीज़ एन्क्रिप्ट करने के लिए उपयोग होती है (डिफ़ॉल्ट प्रदान किया जाता है) |
 | `digna_COOKIE_DOMAIN` | `localhost` | अपने फ्रंटएंड डोमेन से मिलाएँ |
 | `digna_COOKIE_SECURE` | `false` (लोकल) / `true` (प्रोडक्शन) | HTTPS कनेक्शन्स के लिए `true` का उपयोग करें |
 | `digna_COOKIE_HTTPONLY` | `true` | सुरक्षा के लिए हमेशा सक्षम रखें |

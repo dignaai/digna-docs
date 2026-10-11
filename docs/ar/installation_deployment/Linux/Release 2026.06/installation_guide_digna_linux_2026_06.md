@@ -654,6 +654,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -667,6 +668,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | المعامل | القيمة | ملاحظات |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | مفتاح تشفير | يُستخدم لتشفير الرموز وملفات تعريف الارتباط (يوجد مفتاح افتراضي) |
 | `digna_COOKIE_DOMAIN` | `localhost` | طابق نطاق الواجهة الأمامية |
 | `digna_COOKIE_SECURE` | `false` (محلي) / `true` (إنتاج) | استخدم `true` للاتصالات عبر HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | مفعل دائمًا لأسباب أمنية |

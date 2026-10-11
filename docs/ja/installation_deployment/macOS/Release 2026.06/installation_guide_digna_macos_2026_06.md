@@ -565,6 +565,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -578,6 +579,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | パラメータ | 値 | 備考 |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | 暗号化キー | トークンやクッキーの暗号化に使用（デフォルトが提供されます） |
 | `digna_COOKIE_DOMAIN` | `localhost` | フロントエンドのドメインに合わせてください |
 | `digna_COOKIE_SECURE` | `false`（ローカル） / `true`（本番） | HTTPS では `true` を使用 |
 | `digna_COOKIE_HTTPONLY` | `true` | セキュリティのため常に有効にしてください |
