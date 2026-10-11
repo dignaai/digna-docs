@@ -654,6 +654,7 @@ Tämä osio sisältää suojaus- ja evästeasetukset:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -667,6 +668,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parametri | Arvo | Huomio |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Salausavain | Käytetään tokenien ja evästeiden salaamiseen (oletusarvo saatavilla) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Vastaa frontendin domainia |
 | `digna_COOKIE_SECURE` | `false` (paikallinen) / `true` (tuotanto) | Käytä `true` HTTPS-yhteyksissä |
 | `digna_COOKIE_HTTPONLY` | `true` | Aina päällä turvallisuuden takia |
