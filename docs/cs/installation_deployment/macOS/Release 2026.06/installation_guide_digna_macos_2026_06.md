@@ -568,6 +568,7 @@ Tato sekce obsahuje bezpečnostní a cookie nastavení:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -581,6 +582,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parameter | Hodnota | Poznámky |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Šifrovací klíč | Používá se k šifrování tokenů a cookies (je zde výchozí) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Odpovídá vaší doméně frontendu |
 | `digna_COOKIE_SECURE` | `false` (lokálně) / `true` (produkce) | Použijte `true` pro HTTPS připojení |
 | `digna_COOKIE_HTTPONLY` | `true` | Vždy povoleno pro bezpečnost |

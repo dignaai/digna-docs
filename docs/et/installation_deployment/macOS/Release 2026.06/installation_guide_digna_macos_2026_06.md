@@ -568,6 +568,7 @@ See jaotis sisaldab turva- ja küpsise seadeid:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -581,6 +582,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parameeter | Väärtus | Märkused |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Krüpteerimisvõti | Kasutatakse tokenite ja küpsiste krüpteerimiseks (vaikimisi on võti olemas) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Vastake oma frontend domeenile |
 | `digna_COOKIE_SECURE` | `false` (kohalik) / `true` (produksioon) | Kasutage `true` HTTPS-ühenduste puhul |
 | `digna_COOKIE_HTTPONLY` | `true` | Alati lubatud turvalisuse huvides |
