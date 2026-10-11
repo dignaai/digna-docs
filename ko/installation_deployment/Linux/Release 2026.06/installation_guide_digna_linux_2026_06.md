@@ -647,6 +647,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -660,6 +661,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | 매개변수 | 값 | 메모 |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | 암호화 키 | 토큰 및 쿠키 암호화에 사용 (기본값 제공) |
 | `digna_COOKIE_DOMAIN` | `localhost` | 프론트엔드 도메인과 일치시킬 것 |
 | `digna_COOKIE_SECURE` | `false` (로컬) / `true` (프로덕션) | HTTPS 연결에서는 `true` 사용 |
 | `digna_COOKIE_HTTPONLY` | `true` | 보안을 위해 항상 활성화 |

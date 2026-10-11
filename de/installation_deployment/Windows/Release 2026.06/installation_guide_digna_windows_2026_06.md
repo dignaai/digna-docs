@@ -368,6 +368,7 @@ Dieser Abschnitt enthält Sicherheits- und Cookie-Einstellungen:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -381,6 +382,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parameter | Wert | Hinweise |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Verschlüsselungsschlüssel | Wird zur Verschlüsselung von Tokens und Cookies verwendet (Standardvorgabe vorhanden) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Entspricht Ihrer Frontend-Domain |
 | `digna_COOKIE_SECURE` | `false` (lokal) / `true` (Produktion) | Verwenden Sie `true` bei HTTPS-Verbindungen |
 | `digna_COOKIE_HTTPONLY` | `true` | Immer aus Sicherheitsgründen aktiviert |

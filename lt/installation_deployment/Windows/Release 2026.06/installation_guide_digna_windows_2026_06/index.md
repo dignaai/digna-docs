@@ -368,6 +368,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -381,6 +382,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parametras | Reikšmė | Pastabos |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Šifravimo raktas | Naudojamas tokenams ir slapukams šifruoti (numatytas pateiktas) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Atitinka jūsų frontendo domeną |
 | `digna_COOKIE_SECURE` | `false` (lokaliai) / `true` (produkcijoje) | Naudokite `true` HTTPS ryšiams |
 | `digna_COOKIE_HTTPONLY` | `true` | Visada įjungta dėl saugumo |

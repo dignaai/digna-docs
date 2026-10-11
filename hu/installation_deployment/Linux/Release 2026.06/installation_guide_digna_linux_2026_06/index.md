@@ -647,6 +647,7 @@ Ez a rész biztonsági és cookie beállításokat tartalmaz:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -660,6 +661,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Paraméter | Érték | Megjegyzés |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Titkosítási kulcs | Tokenek és cookie-k titkosításához (alapértelmezett van) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Egyezzen a frontend domainnel |
 | `digna_COOKIE_SECURE` | `false` (helyi) / `true` (éles) | Használjon `true`-t HTTPS esetén |
 | `digna_COOKIE_HTTPONLY` | `true` | Biztonsági okokból mindig engedélyezett |

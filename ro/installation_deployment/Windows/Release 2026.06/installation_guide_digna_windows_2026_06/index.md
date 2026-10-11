@@ -368,6 +368,7 @@ Această secțiune conține setările de securitate și pentru cookie-uri:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -381,6 +382,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parametru | Valoare | Observații |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Cheie de criptare | Folosită pentru a cripta token-urile și cookie-urile (implicit este furnizat) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Trebuie să corespundă domeniului frontend-ului |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (producție) | Folosiți `true` pentru conexiuni HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | Întotdeauna activat, pentru securitate |

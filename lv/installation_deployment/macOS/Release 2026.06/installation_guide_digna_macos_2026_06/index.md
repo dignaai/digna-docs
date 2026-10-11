@@ -561,6 +561,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -574,6 +575,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parametrs | Vērtība | Piezīmes |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Šifrēšanas atslēga | Izmanto, lai šifrētu tokenus un sīkfailus (noklusējums iekļauts) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Atbilst jūsu frontenda domēnam |
 | `digna_COOKIE_SECURE` | `false` (lokāli) / `true` (produkcijā) | Lietojiet `true` HTTPS savienojumiem |
 | `digna_COOKIE_HTTPONLY` | `true` | Vienmēr iespējots drošībai |

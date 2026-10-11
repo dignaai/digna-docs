@@ -563,6 +563,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -576,6 +577,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parameter | Value | Notes |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Ключ шифрования | Используется для шифрования токенов и cookies (по умолчанию предоставлен) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Домен, соответствующий вашему фронтенду |
 | `digna_COOKIE_SECURE` | `false` (локально) / `true` (production) | Используйте `true` для HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | Всегда включено для безопасности |
