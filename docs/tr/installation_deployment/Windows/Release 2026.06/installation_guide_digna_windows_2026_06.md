@@ -375,6 +375,7 @@ Bu bölüm güvenlik ve çerez (cookie) ayarlarını içerir:
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -388,6 +389,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Parameter | Value | Notes |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Şifreleme anahtarı | Tokenları ve çerezleri şifrelemek için kullanılır (varsayılan sağlanır) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Frontend domain'i ile eşleşsin |
 | `digna_COOKIE_SECURE` | `false` (local) / `true` (production) | HTTPS bağlantıları için `true` kullanın |
 | `digna_COOKIE_HTTPONLY` | `true` | Güvenlik için her zaman etkin |

@@ -651,6 +651,7 @@ digna_REPO_PASSWORD = "YourSecurePassword123!"
 
 ```toml
 [base]
+DIGNA_FERNET_KEY = "your-fernet-key"
 digna_COOKIE_DOMAIN = "localhost"
 digna_COOKIE_PATH = "/"
 digna_COOKIE_SECURE = false
@@ -664,6 +665,7 @@ DIGNA_CLEANUP_TIME = "12:00"
 
 | Παράμετρος | Τιμή | Σημειώσεις |
 |---|---|---|
+| `DIGNA_FERNET_KEY` | Κλειδί κρυπτογράφησης | Χρησιμοποιείται για την κρυπτογράφηση tokens και cookies (παρέχεται προεπιλεγμένο) |
 | `digna_COOKIE_DOMAIN` | `localhost` | Ταιριάξτε με το domain του frontend |
 | `digna_COOKIE_SECURE` | `false` (τοπικά) / `true` (παραγωγή) | Χρησιμοποιήστε `true` για συνδέσεις HTTPS |
 | `digna_COOKIE_HTTPONLY` | `true` | Πάντα ενεργοποιημένο για ασφάλεια |
