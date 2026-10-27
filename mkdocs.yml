@@ -133,6 +133,7 @@ nav:
           - OneLogin: sso/onelogin_sso_guide.md
           - PingOne: sso/pingone_sso_guide.md
   - CLI Reference:
+          - Release 2026.11: cli/Command_Line_Interface_202611.md
           - Release 2026.06: cli/Command_Line_Interface_202606.md
           - Release 2026.04: cli/Command_Line_Interface_202604.md
           - Release 2026.01: cli/Command_Line_Interface_202601.md
@@ -151,6 +152,13 @@ nav:
   # every locale under docs/<locale>/sdk/; what mkdocstrings emits from the
   # `:::` directives stays English, because it is generated from the SDK source.
   - SDK Reference:
+      - Release 2026.11:
+          - Overview: "sdk/Release 2026.11/index.md"
+          - Quickstart: "sdk/Release 2026.11/quickstart.md"
+          - Resources: "sdk/Release 2026.11/resources.md"
+          - Models: "sdk/Release 2026.11/models.md"
+          - Errors: "sdk/Release 2026.11/errors.md"
+          - API Reference: "sdk/Release 2026.11/reference.md"
       - Release 2026.06:
           - Overview: "sdk/Release 2026.06/index.md"
           - Quickstart: "sdk/Release 2026.06/quickstart.md"
@@ -160,6 +168,7 @@ nav:
           - API Reference: "sdk/Release 2026.06/reference.md"
 
   - Changelog:
+          - Release 2026.11: changelog/Release_202611.md
           - Release 2026.06: changelog/Release_202606.md
           - Release 2026.04: changelog/Release_202604.md
           - Release 2026.01: changelog/Release_202601.md
