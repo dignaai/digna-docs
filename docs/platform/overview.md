@@ -40,6 +40,8 @@ By combining automated anomaly detection, rule-based validation, and data struct
 | **Data Validation** | Rule-based checks | Enforces **exact values, ranges, thresholds, or reference lists** — with full audit trail and reproducibility |
 | **Timeliness** | Delivery monitoring | Uses AI-learned **expected arrival times** and user-defined schedules to detect **late or missing data** |
 | **Schema Tracker** | Structural monitoring | Detects **schema drift**, such as new or removed columns, renamed fields, or datatype changes |
+| **[Data Reconciliation](data_reconciliation/Introduction.md)** | Source-to-target consistency | Compares a target with the data sources it was built from — **exact rules** for known controls, **AI rules** for complex flows such as ETL processes |
+| **[digna Agentic](agentic/Introduction.md)** | AI agents | Lets Claude and other AI agents **answer business questions**, investigate alerts and configure digna through the **digna MCP Server** |
 
 ---
 
@@ -51,6 +53,10 @@ Each digna module addresses a specific dimension of the **quality of data** and 
 - **Data Validation** ensures correctness through rule enforcement.  
 - **Timeliness** safeguards data delivery and freshness.  
 - **Schema Tracker** protects structure and metadata integrity.  
+- **Data Reconciliation** confirms that data arrived completely between systems.  
+- **digna Agentic** opens all of the above to AI agents — see [Connect an AI Agent](agentic/connect_ai_agent.md).  
+
+By default, all modules profile data in the source database. A database connection can instead use the [digna Engine](profiling/profiling_location.md).
 
 Together, they create a complete **Data Observability and Quality Control Framework** operating entirely within your environment — **on-premises or private cloud**.
 
