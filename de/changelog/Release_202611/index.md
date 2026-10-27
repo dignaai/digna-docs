@@ -2,8 +2,8 @@
 
 Release 2026.11 steht im Zeichen von drei großen Neuerungen:
 
-- **digna Data Reconciliation (Beta)**: prüft, ob Daten konsistent bleiben, während sie zwischen Systemen übertragen werden  
-- **digna Agentic (Beta)**: öffnet digna über den digna MCP Server für KI-Agenten  
+- **digna Data Reconciliation**: prüft, ob Daten konsistent bleiben, während sie zwischen Systemen übertragen werden  
+- **digna Agentic**: öffnet digna über den digna MCP Server für KI-Agenten  
 - **digna Engine**: profiliert Daten optional innerhalb von digna und ermöglicht Prüfungen der referenziellen Integrität zwischen unterschiedlichen Datenbanktechnologien  
 
 ---
@@ -11,7 +11,7 @@ Release 2026.11 steht im Zeichen von drei großen Neuerungen:
 ## Neue Funktionen  
 
 ### digna Data Reconciliation (Beta) – Konsistenz von der Quelle bis zum Ziel  
-Daten durchlaufen oft mehrere Systeme, bevor sie in einem Bericht ankommen. digna Data Reconciliation (Beta) vergleicht eine **Ziel**-Datenquelle mit den **Quellen**, aus denen sie erstellt wurde, und alarmiert, sobald diese nicht mehr übereinstimmen.
+Daten durchlaufen oft mehrere Systeme, bevor sie in einem Bericht ankommen. digna Data Reconciliation vergleicht eine **Ziel**-Datenquelle mit den **Quellen**, aus denen sie erstellt wurde, und alarmiert, sobald diese nicht mehr übereinstimmen.
 
 - Konfiguriert als benannte Regeln auf dem neuen Tab **Data Reconciliation** der Ziel-Datenquelle  
 - Jede Datenquelle des Projekts mit eingeschalteter Data Reconciliation kann als Quelle dienen  
@@ -40,7 +40,7 @@ Abgleichsprüfungen erscheinen auf dem Dashboard mit einer Zeitleiste pro Regel.
 ---
 
 ### digna Agentic (Beta) – digna für KI-Agenten  
-Die erste Version von digna Agentic (Beta). KI-Agenten können jetzt mit digna arbeiten, Geschäftsfragen zu Ihren Daten beantworten und Ihnen helfen, Ihre Konfiguration zu verbessern.
+Die erste Version von digna Agentic. KI-Agenten können jetzt mit digna arbeiten, Geschäftsfragen zu Ihren Daten beantworten und Ihnen helfen, Ihre Konfiguration zu verbessern.
 
 **digna MCP Server**: Ermöglicht Claude und anderen KI-Agenten, über das Model Context Protocol mit digna zu arbeiten.
 
@@ -95,11 +95,11 @@ Dieses Release gibt Nutzern außerdem mehr Kontrolle darüber, was und wie profi
 
 ## Wer profitiert von dieser Version  
 
-- **Data Engineers:** Validierung von ETL-Ergebnissen mit digna Data Reconciliation (Beta)  
-- **Finanz-, Risiko- & Controlling-Teams:** Standardisierte Abstimmungsverfahren als Exakt-Regeln in digna Data Reconciliation (Beta)  
+- **Data Engineers:** Validierung von ETL-Ergebnissen mit digna Data Reconciliation  
+- **Finanz-, Risiko- & Controlling-Teams:** Standardisierte Abstimmungsverfahren als Exakt-Regeln in digna Data Reconciliation  
 - **Data-Quality- & Governance-Teams:** Referenzielle Integrität über Datenbanktechnologien hinweg mit der digna Engine  
-- **Fachanwender:** Geschäftsfragen zu Daten, beantwortet von KI-Agenten mit digna Agentic (Beta)  
-- **KI- & Automatisierungsteams:** KI-Agenten, die über digna Agentic (Beta) mit digna arbeiten  
+- **Fachanwender:** Geschäftsfragen zu Daten, beantwortet von KI-Agenten mit digna Agentic  
+- **KI- & Automatisierungsteams:** KI-Agenten, die über digna Agentic mit digna arbeiten  
 
 ---
 

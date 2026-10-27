@@ -12,6 +12,7 @@
 - [Як це працює](https://docs.digna.ai/uk/platform/profiling/how_it_works/): The mechanics of digna profiling — the snapshot query and the
 - [Статистики](https://docs.digna.ai/uk/platform/profiling/statistics/): The complete reference of statistics digna computes while profiling a data source — Row Count, Null Count, Sum, Average, string lengths, distribution counts — which attribute category enables each one, and how each is translated into SQL.
 - [Набори даних](https://docs.digna.ai/uk/platform/profiling/datasets/): How digna Datasets split a data source into independently monitored subsets. Static datasets filter with a WHERE condition, Dynamic datasets group with GROUP BY, Hybrid datasets do both — plus relevance rules that suppress a status without suppressing measurement.
+- [Profiling Location](https://docs.digna.ai/uk/platform/profiling/profiling_location/): Choose where digna profiles your data. By default, profiling runs in the source database. With the digna Engine, digna exports the inspected data and profiles it inside your digna installation, which also enables referential integrity checks between different database connections and technologies.
 
 ### digna Data Anomalies
 
@@ -42,6 +43,18 @@
 - [Вступ](https://docs.digna.ai/uk/platform/schema_tracker/Introduction/): Дізнайтеся, як digna Data Schema Tracker відстежує зміни стовпців, оновлення типів даних та дрейф схеми. Отримуйте сповіщення про умисні та ненавмисні зміни, щоб запобігти збоям ETL та помилкам на дашбордах.
 - [Як це працює](https://docs.digna.ai/uk/platform/schema_tracker/how_it_works/): How digna Schema Tracker works — a stored column baseline compared on every inspection, the three change events it reports, why a rename appears as a removal plus an addition, and how the baseline advances.
 - [Сценарії використання](https://docs.digna.ai/uk/platform/schema_tracker/use_cases/): Real-world use cases for digna Schema Tracker. Detect added columns, removed columns, and data type changes before they break pipelines, dashboards, and downstream reports — with a timestamped, attributed change history.
+
+### digna Data Reconciliation
+
+- [Вступ](https://docs.digna.ai/uk/platform/data_reconciliation/Introduction/): Learn how digna Data Reconciliation compares a target data source with the sources it was built from. Exact rules enforce known reconciliation controls, AI rules observe complex flows such as ETL processes, and both alert when source and target no longer match.
+- [Як це працює](https://docs.digna.ai/uk/platform/data_reconciliation/how_it_works/): How digna Data Reconciliation works — source and target data sources, exact rules with absolute and relative tolerances, AI rules that predict a target from its sources, dataset matching, evaluation during the target's inspection, statuses and notifications.
+- [Сценарії використання](https://docs.digna.ai/uk/platform/data_reconciliation/use_cases/): Practical use cases for digna Data Reconciliation. Standard reconciliation procedures in finance and regulatory reporting, validation of ETL processes, data migrations and replications, with exact rules for known controls and AI rules for complex flows.
+
+### digna Agentic
+
+- [Вступ](https://docs.digna.ai/uk/platform/agentic/Introduction/): Learn how digna Agentic lets Claude and other AI agents work with digna through the digna MCP Server. Ask business questions about your data, investigate alerts, and let agents suggest and apply configuration changes.
+- [Як це працює](https://docs.digna.ai/uk/platform/agentic/how_it_works/): How digna Agentic works — the digna MCP Server, what AI agents can read and change in digna, how descriptions on data sources and attributes help agents interpret data, permissions, and how agents investigate alerts and suggest configuration changes.
+- [Connect an AI Agent](https://docs.digna.ai/uk/platform/agentic/connect_ai_agent/): Connect Claude or another AI agent to digna through the digna MCP Server. Create an API key, find the MCP endpoint of your digna installation, and add it to Claude Code or any MCP client that supports streamable HTTP.
 
 ## Установка та розгортання
 
@@ -133,7 +146,7 @@
 
 ## Changelog
 
-- [Release 2026.11](https://docs.digna.ai/uk/changelog/Release_202611/): Дізнайтеся про нове в digna Release 2026.11. Ця версія приносить три важливі нововведення - digna Data Reconciliation (Beta), digna Agentic (Beta) з digna MCP Server, а також digna Engine, що дає змогу виконувати перевірки референтної цілісності між різними технологіями баз даних.
+- [Release 2026.11](https://docs.digna.ai/uk/changelog/Release_202611/): Дізнайтеся про нове в digna Release 2026.11. Ця версія приносить три важливі нововведення - digna Data Reconciliation, digna Agentic з digna MCP Server, а також digna Engine, що дає змогу виконувати перевірки референтної цілісності між різними технологіями баз даних.
 - [Release 2026.06](https://docs.digna.ai/uk/changelog/Release_202606/): Дізнайтеся про нове в digna Release 2026.06. У цій версії представлено новий **digna Python SDK**, офіційну підтримку **Docker**, оновлений інтерфейс панелі та розширені можливості імпорту/експорту правил валідації.
 - [Release 2026.04](https://docs.digna.ai/uk/changelog/Release_202604/): Дізнайтеся про нове в релізі digna 2026.04. У цій версії з'явився розширений аналіз часових рядів за допомогою Analytics Chart, багаторазові шаблони правил валідації, перелічення (enumerations) для дозволених значень та умови релевантності на рівні стовпця.
 - [Release 2026.01](https://docs.digna.ai/uk/changelog/Release_202601/): Дізнайтеся, що нового у випуску digna 2026.01. У цій версії додано глобальні підключення до баз даних, логічні джерела даних, умови релевантності аномалій, експорт у CSV та розширену валідацію даних, включно з перевірками референтної цілісності.

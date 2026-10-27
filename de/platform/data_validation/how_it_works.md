@@ -72,6 +72,8 @@ Given a set of columns here and a matching set on another table, digna keeps the
 
 The two column lists must be the same length. A mismatch is rejected outright rather than silently checking a weaker condition — a two-column key compared against one column would let through records the full key would have caught.
 
+The two data sources can be on **different database connections**, even on different database technologies. digna then compares the key columns of both in the [digna Engine](../profiling/profiling_location.md#referential-integrity-across-connections). The failing records of such a check can't be listed.
+
 ---
 
 ## Thresholds
@@ -114,7 +116,9 @@ From **Release 2026.06**, validation rules can be exported and imported. That tu
 
 ## Where It Runs
 
-Like every digna module, validation executes **inside the source database**. digna sends SQL and receives counts, plus the failing rows when you ask for them. No table is copied out to be checked.
+By default, like every digna module, validation executes **inside the source database**. digna sends SQL and receives counts, plus the failing rows when you ask for them. No table is copied out to be checked.
+
+A database connection can instead use the **digna Engine** as its [profiling location](../profiling/profiling_location.md). digna then exports the inspected data once and runs rule and uniqueness checks inside digna.
 
 Validation is also **independent of the other modules**. It reads none of the [profiling statistics](../profiling/Introduction.md) — its rules are evaluated row by row against the same snapshot, in the same pass, but the two produce entirely separate results. A data source can therefore run validation with anomaly detection switched off, and its statuses roll up the same way: check → attribute → dataset → data source, worst result winning.
 

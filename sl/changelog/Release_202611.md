@@ -2,8 +2,8 @@
 
 Izdaja 2026.11 temelji na treh pomembnih novostih:
 
-- **digna Data Reconciliation (Beta)**: preverja, ali podatki ostanejo konsistentni, ko se premikajo med sistemi  
-- **digna Agentic (Beta)**: prek digna MCP Server odpre digno AI agentom  
+- **digna Data Reconciliation**: preverja, ali podatki ostanejo konsistentni, ko se premikajo med sistemi  
+- **digna Agentic**: prek digna MCP Server odpre digno AI agentom  
 - **digna Engine**: po želji profilira podatke znotraj digne in omogoča preverjanja referenčne celovitosti med različnimi tehnologijami baz podatkov  
 
 ---
@@ -11,7 +11,7 @@ Izdaja 2026.11 temelji na treh pomembnih novostih:
 ## Nove Funkcije  
 
 ### digna Data Reconciliation (Beta) – Konsistentnost od Vira do Cilja  
-Podatki pogosto potujejo skozi več sistemov, preden pridejo v poročilo. digna Data Reconciliation (Beta) primerja **ciljni** podatkovni vir z **viri**, iz katerih je bil zgrajen, in sproži opozorilo, ko se ne ujemajo več.
+Podatki pogosto potujejo skozi več sistemov, preden pridejo v poročilo. digna Data Reconciliation primerja **ciljni** podatkovni vir z **viri**, iz katerih je bil zgrajen, in sproži opozorilo, ko se ne ujemajo več.
 
 - Konfigurira se kot poimenovana pravila na novem zavihku **Data Reconciliation** ciljnega podatkovnega vira  
 - Vir je lahko kateri koli podatkovni vir projekta, ki ima vklopljen Data Reconciliation  
@@ -40,7 +40,7 @@ Preverjanja usklajevanja so prikazana na Dashboardu s časovnico za vsako pravil
 ---
 
 ### digna Agentic (Beta) – digna za AI Agente  
-Prva različica digna Agentic (Beta). AI agenti lahko zdaj delajo z digno, odgovarjajo na poslovna vprašanja o vaših podatkih in pomagajo izboljšati vašo konfiguracijo.
+Prva različica digna Agentic. AI agenti lahko zdaj delajo z digno, odgovarjajo na poslovna vprašanja o vaših podatkih in pomagajo izboljšati vašo konfiguracijo.
 
 **digna MCP Server**: Omogoča, da Claude in drugi AI agenti delajo z digno prek Model Context Protocol.
 
@@ -95,11 +95,11 @@ Ta izdaja uporabnikom daje tudi več nadzora nad tem, kaj se profilira in kako.
 
 ## Kdo Ima Koristi od Te Izdaje  
 
-- **Data Engineers:** validacija rezultatov ETL z digna Data Reconciliation (Beta)  
-- **Ekipe za finance, tveganja in kontroling:** standardni postopki usklajevanja kot pravila Exact v digna Data Reconciliation (Beta)  
+- **Data Engineers:** validacija rezultatov ETL z digna Data Reconciliation  
+- **Ekipe za finance, tveganja in kontroling:** standardni postopki usklajevanja kot pravila Exact v digna Data Reconciliation  
 - **Data Quality & Governance Teams:** referenčna celovitost med tehnologijami baz podatkov z digna Engine  
-- **Poslovni uporabniki:** poslovna vprašanja o podatkih, na katera odgovarjajo AI agenti z digna Agentic (Beta)  
-- **Ekipe za AI in avtomatizacijo:** AI agenti, ki delajo z digno prek digna Agentic (Beta)  
+- **Poslovni uporabniki:** poslovna vprašanja o podatkih, na katera odgovarjajo AI agenti z digna Agentic  
+- **Ekipe za AI in avtomatizacijo:** AI agenti, ki delajo z digno prek digna Agentic  
 
 ---
 

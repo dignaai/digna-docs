@@ -2,8 +2,8 @@
 
 Release 2026.11 stojí na třech zásadních novinkách:
 
-- **digna Data Reconciliation (Beta)**: kontroluje, že data zůstávají konzistentní při přesunu mezi systémy  
-- **digna Agentic (Beta)**: otevírá digna AI agentům prostřednictvím digna MCP Server  
+- **digna Data Reconciliation**: kontroluje, že data zůstávají konzistentní při přesunu mezi systémy  
+- **digna Agentic**: otevírá digna AI agentům prostřednictvím digna MCP Server  
 - **digna Engine**: volitelně profiluje data přímo v digna a umožňuje kontroly referenční integrity mezi různými databázovými technologiemi  
 
 ---
@@ -11,7 +11,7 @@ Release 2026.11 stojí na třech zásadních novinkách:
 ## Nové funkce  
 
 ### digna Data Reconciliation (Beta) – Konzistence od zdroje k cíli  
-Než se data dostanou do reportu, často projdou několika systémy. digna Data Reconciliation (Beta) porovnává **cílový** datový zdroj se **zdroji**, ze kterých vznikl, a upozorní, když spolu přestanou souhlasit.
+Než se data dostanou do reportu, často projdou několika systémy. digna Data Reconciliation porovnává **cílový** datový zdroj se **zdroji**, ze kterých vznikl, a upozorní, když spolu přestanou souhlasit.
 
 - Konfiguruje se jako pojmenovaná pravidla na nové záložce **Data Reconciliation** cílového datového zdroje  
 - Zdrojem může být jakýkoli datový zdroj projektu se zapnutou funkcí Data Reconciliation  
@@ -40,7 +40,7 @@ Rekonciliační kontroly se zobrazují na dashboardu s časovou osou pro každé
 ---
 
 ### digna Agentic (Beta) – digna pro AI agenty  
-První verze digna Agentic (Beta). AI agenti nyní mohou s digna pracovat, odpovídat na obchodní otázky o vašich datech a pomáhat vylepšovat vaši konfiguraci.
+První verze digna Agentic. AI agenti nyní mohou s digna pracovat, odpovídat na obchodní otázky o vašich datech a pomáhat vylepšovat vaši konfiguraci.
 
 **digna MCP Server**: umožňuje Claude a dalším AI agentům pracovat s digna prostřednictvím Model Context Protocol.
 
@@ -95,11 +95,11 @@ Toto vydání také dává uživatelům větší kontrolu nad tím, co a jak se 
 
 ## Pro koho je toto vydání určeno  
 
-- **Datoví inženýři:** validace výsledků ETL pomocí digna Data Reconciliation (Beta)  
-- **Finanční, rizikové a controllingové týmy:** standardní rekonciliační postupy jako pravidla Exact v digna Data Reconciliation (Beta)  
+- **Datoví inženýři:** validace výsledků ETL pomocí digna Data Reconciliation  
+- **Finanční, rizikové a controllingové týmy:** standardní rekonciliační postupy jako pravidla Exact v digna Data Reconciliation  
 - **Týmy pro kvalitu dat a Data Governance:** referenční integrita napříč databázovými technologiemi pomocí digna Engine  
-- **Obchodní uživatelé:** odpovědi AI agentů na obchodní otázky o datech pomocí digna Agentic (Beta)  
-- **Týmy pro AI a automatizaci:** AI agenti pracující s digna prostřednictvím digna Agentic (Beta)  
+- **Obchodní uživatelé:** odpovědi AI agentů na obchodní otázky o datech pomocí digna Agentic  
+- **Týmy pro AI a automatizaci:** AI agenti pracující s digna prostřednictvím digna Agentic  
 
 ---
 

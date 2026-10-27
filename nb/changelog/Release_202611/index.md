@@ -2,8 +2,8 @@
 
 Release 2026.11 er bygget rundt tre store nyheter:
 
-- **digna Data Reconciliation (Beta)**: kontrollerer at data forblir konsistente når de flyttes mellom systemer  
-- **digna Agentic (Beta)**: åpner digna for AI-agenter gjennom digna MCP Server  
+- **digna Data Reconciliation**: kontrollerer at data forblir konsistente når de flyttes mellom systemer  
+- **digna Agentic**: åpner digna for AI-agenter gjennom digna MCP Server  
 - **digna Engine**: profilerer valgfritt data inne i digna, og muliggjør kontroller av referanseintegritet mellom ulike databaseteknologier  
 
 ---
@@ -11,7 +11,7 @@ Release 2026.11 er bygget rundt tre store nyheter:
 ## Nye funksjoner  
 
 ### digna Data Reconciliation (Beta) – Konsistens fra kilde til mål  
-Data passerer ofte gjennom flere systemer før de havner i en rapport. digna Data Reconciliation (Beta) sammenligner en **mål**-datakilde med **kildene** den ble bygget fra, og varsler når de ikke lenger stemmer overens.
+Data passerer ofte gjennom flere systemer før de havner i en rapport. digna Data Reconciliation sammenligner en **mål**-datakilde med **kildene** den ble bygget fra, og varsler når de ikke lenger stemmer overens.
 
 - Konfigureres som navngitte regler på den nye fanen **Data Reconciliation** i måldatakilden  
 - Enhver datakilde i prosjektet der Data Reconciliation er slått på, kan være en kilde  
@@ -40,7 +40,7 @@ Avstemmingskontroller vises på Dashboard med en tidslinje per regel. De teller 
 ---
 
 ### digna Agentic (Beta) – digna for AI-agenter  
-Den første versjonen av digna Agentic (Beta). AI-agenter kan nå jobbe med digna, svare på forretningsspørsmål om dataene dine og hjelpe til med å forbedre konfigurasjonen din.
+Den første versjonen av digna Agentic. AI-agenter kan nå jobbe med digna, svare på forretningsspørsmål om dataene dine og hjelpe til med å forbedre konfigurasjonen din.
 
 **digna MCP Server**: Lar Claude og andre AI-agenter jobbe med digna gjennom Model Context Protocol.
 
@@ -95,11 +95,11 @@ Denne utgivelsen gir også brukerne mer kontroll over hva som profileres og hvor
 
 ## Hvem drar nytte av denne utgivelsen  
 
-- **Dataingeniører:** Validering av ETL-resultater med digna Data Reconciliation (Beta)  
-- **Økonomi-, risiko- og controllingteam:** Standard avstemmingsrutiner som eksakte regler i digna Data Reconciliation (Beta)  
+- **Dataingeniører:** Validering av ETL-resultater med digna Data Reconciliation  
+- **Økonomi-, risiko- og controllingteam:** Standard avstemmingsrutiner som eksakte regler i digna Data Reconciliation  
 - **Team for datakvalitet og datastyring:** Referanseintegritet på tvers av databaseteknologier med digna Engine  
-- **Forretningsbrukere:** Forretningsspørsmål om data besvart av AI-agenter med digna Agentic (Beta)  
-- **AI- og automatiseringsteam:** AI-agenter som jobber med digna gjennom digna Agentic (Beta)  
+- **Forretningsbrukere:** Forretningsspørsmål om data besvart av AI-agenter med digna Agentic  
+- **AI- og automatiseringsteam:** AI-agenter som jobber med digna gjennom digna Agentic  
 
 ---
 

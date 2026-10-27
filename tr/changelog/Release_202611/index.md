@@ -2,8 +2,8 @@
 
 Sürüm 2026.11 üç önemli yenilik etrafında şekilleniyor:
 
-- **digna Data Reconciliation (Beta)**: verilerin sistemler arasında taşınırken tutarlı kalıp kalmadığını kontrol eder  
-- **digna Agentic (Beta)**: digna MCP Server aracılığıyla digna'yı AI ajanlarına açar  
+- **digna Data Reconciliation**: verilerin sistemler arasında taşınırken tutarlı kalıp kalmadığını kontrol eder  
+- **digna Agentic**: digna MCP Server aracılığıyla digna'yı AI ajanlarına açar  
 - **digna Engine**: isteğe bağlı olarak verileri digna içinde profiller ve farklı veritabanı teknolojileri arasında referans bütünlüğü kontrollerini mümkün kılar  
 
 ---
@@ -11,7 +11,7 @@ Sürüm 2026.11 üç önemli yenilik etrafında şekilleniyor:
 ## Yeni Özellikler  
 
 ### digna Data Reconciliation (Beta) – Kaynaktan Hedefe Tutarlılık  
-Veriler bir rapora ulaşmadan önce çoğu zaman birkaç sistemden geçer. digna Data Reconciliation (Beta), bir **hedef** veri kaynağını onu oluşturan **kaynaklarla** karşılaştırır ve artık eşleşmediklerinde alarm verir.
+Veriler bir rapora ulaşmadan önce çoğu zaman birkaç sistemden geçer. digna Data Reconciliation, bir **hedef** veri kaynağını onu oluşturan **kaynaklarla** karşılaştırır ve artık eşleşmediklerinde alarm verir.
 
 - Hedef veri kaynağının yeni **Data Reconciliation** sekmesinde adlandırılmış kurallar olarak yapılandırılır  
 - Projede Data Reconciliation özelliği açık olan her veri kaynağı bir kaynak olabilir  
@@ -40,7 +40,7 @@ Mutabakat kontrolleri Dashboard'da kural başına bir zaman çizelgesiyle görü
 ---
 
 ### digna Agentic (Beta) – AI Ajanları için digna  
-digna Agentic (Beta)'nın ilk sürümü. AI ajanları artık digna ile çalışabilir, verileriniz hakkındaki iş sorularını yanıtlayabilir ve yapılandırmanızı iyileştirmenize yardımcı olabilir.
+digna Agentic'in ilk sürümü. AI ajanları artık digna ile çalışabilir, verileriniz hakkındaki iş sorularını yanıtlayabilir ve yapılandırmanızı iyileştirmenize yardımcı olabilir.
 
 **digna MCP Server**: Claude ve diğer AI ajanlarının Model Context Protocol aracılığıyla digna ile çalışmasını sağlar.
 
@@ -95,11 +95,11 @@ Bu sürüm ayrıca kullanıcılara neyin ve nasıl profilleneceği üzerinde dah
 
 ## Bu Sürümden Kim Yararlanır  
 
-- **Veri Mühendisleri:** digna Data Reconciliation (Beta) ile ETL sonuçlarının doğrulanması  
-- **Finans, Risk ve Controlling Ekipleri:** digna Data Reconciliation (Beta) içinde Exact kurallar olarak standart mutabakat prosedürleri  
+- **Veri Mühendisleri:** digna Data Reconciliation ile ETL sonuçlarının doğrulanması  
+- **Finans, Risk ve Controlling Ekipleri:** digna Data Reconciliation içinde Exact kurallar olarak standart mutabakat prosedürleri  
 - **Veri Kalitesi ve Yönetişim Ekipleri:** digna Engine ile veritabanı teknolojileri arasında referans bütünlüğü  
-- **İş Kullanıcıları:** digna Agentic (Beta) ile AI ajanları tarafından yanıtlanan, verilerle ilgili iş soruları  
-- **AI ve Otomasyon Ekipleri:** digna Agentic (Beta) aracılığıyla digna ile çalışan AI ajanları  
+- **İş Kullanıcıları:** digna Agentic ile AI ajanları tarafından yanıtlanan, verilerle ilgili iş soruları  
+- **AI ve Otomasyon Ekipleri:** digna Agentic aracılığıyla digna ile çalışan AI ajanları  
 
 ---
 

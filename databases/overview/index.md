@@ -252,6 +252,11 @@ The mode decides what the connection user must be allowed to do:
 access. **Work Schema** is only read for *Permanent*, but it is worth filling in anyway so the
 connection keeps working if the mode is changed later.
 
+The profiling mode applies when the connection's **Profiling Location** is **Source Database**,
+the default. With **digna Engine**, *digna* exports the inspected data and profiles it inside
+*digna* instead, and the profiling mode is not used. See
+[Profiling Location](../platform/profiling/profiling_location.md).
+
 ---
 
 ## Using a DSN Instead {: #using-a-dsn-instead }

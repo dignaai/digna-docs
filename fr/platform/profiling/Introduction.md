@@ -50,6 +50,8 @@ Profiling is executed **inside your database**. digna sends SQL and receives num
 
 What comes back is aggregates — a count, a sum, an average, a count per category. **No rows are copied out, and no raw values are transmitted or stored by digna.** The one exception is deliberate and user-initiated: when a validation rule fails, you can ask to see the records that failed it, because a count alone is not something anyone can act on.
 
+This is the default. A database connection can instead export the inspected data and profile it in the **digna Engine**, inside your digna installation. See [Profiling Location](profiling_location.md).
+
 This is the property that makes digna usable on regulated data — clinical records, transaction data, personal data under GDPR — and it is a consequence of the architecture rather than a policy layered on top. digna is installed on-premises or in your private cloud, so there is no external service for data to be sent to.
 
 ---

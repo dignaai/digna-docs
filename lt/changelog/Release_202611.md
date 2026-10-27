@@ -2,8 +2,8 @@
 
 Leidimas 2026.11 sukurtas aplink tris svarbius papildymus:
 
-- **digna Data Reconciliation (Beta)**: tikrina, ar duomenys išlieka nuoseklūs keliaudami tarp sistemų  
-- **digna Agentic (Beta)**: atveria digna AI agentams per digna MCP Server  
+- **digna Data Reconciliation**: tikrina, ar duomenys išlieka nuoseklūs keliaudami tarp sistemų  
+- **digna Agentic**: atveria digna AI agentams per digna MCP Server  
 - **digna Engine**: pasirinktinai profiliuoja duomenis pačioje digna ir leidžia tikrinti nuorodinį vientisumą tarp skirtingų duomenų bazių technologijų  
 
 ---
@@ -11,7 +11,7 @@ Leidimas 2026.11 sukurtas aplink tris svarbius papildymus:
 ## Naujos funkcijos  
 
 ### digna Data Reconciliation (Beta) – Šaltinio ir tikslo nuoseklumas  
-Prieš pasiekdami ataskaitą, duomenys dažnai pereina per kelias sistemas. digna Data Reconciliation (Beta) palygina **tikslinį** duomenų šaltinį su **šaltiniais**, iš kurių jis buvo sukurtas, ir įspėja, kai jie nebesutampa.
+Prieš pasiekdami ataskaitą, duomenys dažnai pereina per kelias sistemas. digna Data Reconciliation palygina **tikslinį** duomenų šaltinį su **šaltiniais**, iš kurių jis buvo sukurtas, ir įspėja, kai jie nebesutampa.
 
 - Konfigūruojama kaip pavadintos taisyklės naujame tikslinio duomenų šaltinio skirtuke **Data Reconciliation**  
 - Šaltiniu gali būti bet kuris projekto duomenų šaltinis, kuriame įjungta Data Reconciliation  
@@ -40,7 +40,7 @@ Suderinimo patikros rodomos dashboard su atskira laiko juosta kiekvienai taisykl
 ---
 
 ### digna Agentic (Beta) – digna AI agentams  
-Pirmoji digna Agentic (Beta) versija. AI agentai dabar gali dirbti su digna, atsakyti į verslo klausimus apie jūsų duomenis ir padėti patobulinti jūsų konfigūraciją.
+Pirmoji digna Agentic versija. AI agentai dabar gali dirbti su digna, atsakyti į verslo klausimus apie jūsų duomenis ir padėti patobulinti jūsų konfigūraciją.
 
 **digna MCP Server**: leidžia Claude ir kitiems AI agentams dirbti su digna per Model Context Protocol.
 
@@ -95,11 +95,11 @@ Pagal numatytuosius nustatymus digna profiliuoja duomenis ten, kur jie yra, – 
 
 ## Kam naudingas šis leidimas  
 
-- **Duomenų inžinieriams:** ETL rezultatų validavimas su digna Data Reconciliation (Beta)  
-- **Finansų, rizikos ir kontrolingo komandoms:** standartinės suderinimo procedūros kaip Exact taisyklės digna Data Reconciliation (Beta)  
+- **Duomenų inžinieriams:** ETL rezultatų validavimas su digna Data Reconciliation  
+- **Finansų, rizikos ir kontrolingo komandoms:** standartinės suderinimo procedūros kaip Exact taisyklės digna Data Reconciliation  
 - **Duomenų kokybės ir valdymo (governance) komandoms:** nuorodinis vientisumas tarp duomenų bazių technologijų su digna Engine  
-- **Verslo naudotojams:** į verslo klausimus apie duomenis atsako AI agentai su digna Agentic (Beta)  
-- **AI ir automatizavimo komandoms:** AI agentai, dirbantys su digna per digna Agentic (Beta)  
+- **Verslo naudotojams:** į verslo klausimus apie duomenis atsako AI agentai su digna Agentic  
+- **AI ir automatizavimo komandoms:** AI agentai, dirbantys su digna per digna Agentic  
 
 ---
 

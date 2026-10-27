@@ -25,8 +25,11 @@ This guide shows the minimal steps to add a datasource to your project.
 5. **Define Snapshot Query**  
    Define Snapshot Query. Snapshot query defines how *digna* will access one day of your data.
 
-6. **Preview**
+6. **Describe the Datasource (optional)**  
+   Enter a **Description** of what the datasource contains, e.g. *"Booked orders, one row per order line, loaded nightly from SAP"*. AI agents use it to interpret your data, see [digna Agentic](../platform/agentic/how_it_works.md#descriptions).
+
+7. **Preview**
    CLick preview to verify if the snapshot query was defined correctly.
 
-7. **Create datasource**
+8. **Create datasource**
    If everything was configured properly, you can save your configuration.

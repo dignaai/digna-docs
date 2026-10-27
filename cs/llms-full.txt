@@ -628,8 +628,8 @@ Source: https://docs.digna.ai/cs/changelog/Release_202611/
 
 Release 2026.11 stojí na třech zásadních novinkách:
 
-- **digna Data Reconciliation (Beta)**: kontroluje, že data zůstávají konzistentní při přesunu mezi systémy  
-- **digna Agentic (Beta)**: otevírá digna AI agentům prostřednictvím digna MCP Server  
+- **digna Data Reconciliation**: kontroluje, že data zůstávají konzistentní při přesunu mezi systémy  
+- **digna Agentic**: otevírá digna AI agentům prostřednictvím digna MCP Server  
 - **digna Engine**: volitelně profiluje data přímo v digna a umožňuje kontroly referenční integrity mezi různými databázovými technologiemi  
 
 ---
@@ -637,7 +637,7 @@ Release 2026.11 stojí na třech zásadních novinkách:
 ## Nové funkce  
 
 ### digna Data Reconciliation (Beta) – Konzistence od zdroje k cíli  
-Než se data dostanou do reportu, často projdou několika systémy. digna Data Reconciliation (Beta) porovnává **cílový** datový zdroj se **zdroji**, ze kterých vznikl, a upozorní, když spolu přestanou souhlasit.
+Než se data dostanou do reportu, často projdou několika systémy. digna Data Reconciliation porovnává **cílový** datový zdroj se **zdroji**, ze kterých vznikl, a upozorní, když spolu přestanou souhlasit.
 
 - Konfiguruje se jako pojmenovaná pravidla na nové záložce **Data Reconciliation** cílového datového zdroje  
 - Zdrojem může být jakýkoli datový zdroj projektu se zapnutou funkcí Data Reconciliation  
@@ -666,7 +666,7 @@ Rekonciliační kontroly se zobrazují na dashboardu s časovou osou pro každé
 ---
 
 ### digna Agentic (Beta) – digna pro AI agenty  
-První verze digna Agentic (Beta). AI agenti nyní mohou s digna pracovat, odpovídat na obchodní otázky o vašich datech a pomáhat vylepšovat vaši konfiguraci.
+První verze digna Agentic. AI agenti nyní mohou s digna pracovat, odpovídat na obchodní otázky o vašich datech a pomáhat vylepšovat vaši konfiguraci.
 
 **digna MCP Server**: umožňuje Claude a dalším AI agentům pracovat s digna prostřednictvím Model Context Protocol.
 
@@ -721,11 +721,11 @@ Toto vydání také dává uživatelům větší kontrolu nad tím, co a jak se 
 
 ## Pro koho je toto vydání určeno  
 
-- **Datoví inženýři:** validace výsledků ETL pomocí digna Data Reconciliation (Beta)  
-- **Finanční, rizikové a controllingové týmy:** standardní rekonciliační postupy jako pravidla Exact v digna Data Reconciliation (Beta)  
+- **Datoví inženýři:** validace výsledků ETL pomocí digna Data Reconciliation  
+- **Finanční, rizikové a controllingové týmy:** standardní rekonciliační postupy jako pravidla Exact v digna Data Reconciliation  
 - **Týmy pro kvalitu dat a Data Governance:** referenční integrita napříč databázovými technologiemi pomocí digna Engine  
-- **Obchodní uživatelé:** odpovědi AI agentů na obchodní otázky o datech pomocí digna Agentic (Beta)  
-- **Týmy pro AI a automatizaci:** AI agenti pracující s digna prostřednictvím digna Agentic (Beta)  
+- **Obchodní uživatelé:** odpovědi AI agentů na obchodní otázky o datech pomocí digna Agentic  
+- **Týmy pro AI a automatizaci:** AI agenti pracující s digna prostřednictvím digna Agentic  
 
 ---
 
@@ -14260,6 +14260,260 @@ Na kartě **Access** nebyla žádné populace nebo skupiny udělena přístup.
 
 ---
 
+# Úvod
+Source: https://docs.digna.ai/cs/platform/agentic/Introduction/
+
+# digna Agentic – AI Agents for Data Quality
+
+**digna Agentic** was introduced in [Release 2026.11](../../changelog/Release_202611.md) as a beta version.
+
+---
+
+## Purpose
+
+digna measures your data every day and keeps the results: statistics, predictions, rule outcomes and alerts. **digna Agentic** makes that knowledge available to AI agents, so you can work with it in plain language instead of navigating the dashboard.
+
+An AI agent connected to digna can:
+
+- **Answer business questions** about your data from what digna monitors
+- **Investigate alerts**, from a red data source down to the single check and value behind it
+- **Configure digna**: create data sources, datasets, rules and schedules
+- **Suggest improvements** when digna's current configuration can't answer a question
+
+---
+
+## Ask Business Questions
+
+With descriptions on your data sources and attributes, an AI agent understands what your tables contain and can answer questions such as:
+
+- *"Did yesterday's load of the orders table arrive complete?"*
+- *"Which regions had unusually low sales last week?"*
+- *"Why is the Banking project red today?"*
+- *"Is the number of new customers growing compared with last quarter?"*
+
+If digna doesn't measure what a question needs, the agent says so and suggests a change, for example a new dataset that splits the orders table by region. If your role in the project allows it, the agent can apply the change once you agree.
+
+---
+
+## Components
+
+### digna MCP Server
+
+The **digna MCP Server** connects AI agents to digna through the [Model Context Protocol](https://modelcontextprotocol.io), an open standard supported by Claude and many other AI tools. It is part of the digna backend, so there is nothing extra to install. See [Connect an AI Agent](connect_ai_agent.md).
+
+### Descriptions on data sources and attributes
+
+Every data source and attribute has a **Description** field. A plain-language description, such as *"Booked orders, one row per order line, loaded nightly from SAP"*, is what lets an agent connect a business question to the right table and column.
+
+---
+
+## Technical Overview
+
+- **Same permissions as in the dashboard** – An agent signs in with a user's API key and can see and change only what that user can.
+- **Monitoring results, not raw data** – The MCP server exposes digna's configuration, statistics and results. It does not give agents access to the rows of your tables.
+- **Runs in your environment** – The MCP server is part of your digna installation, on-premises or in your private cloud. Which AI agent connects to it is your choice. What the agent reads from digna is processed by the AI model behind that agent, so choose one your data policies allow.
+
+---
+
+## Related Pages
+
+- [digna Agentic – How It Works](how_it_works.md)
+- [Connect an AI Agent](connect_ai_agent.md)
+- [Changelog – Release 2026.11](../../changelog/Release_202611.md)
+
+---
+
+# Connect an AI Agent
+Source: https://docs.digna.ai/cs/platform/agentic/connect_ai_agent/
+
+# Connect an AI Agent
+
+This page connects an AI agent to the **digna MCP Server**. You need three things: the address of the MCP server, an API key, and an MCP client that supports remote servers over **streamable HTTP** with a custom header.
+
+---
+
+## 1. Find the MCP Endpoint {: #1-find-the-mcp-endpoint }
+
+The MCP server is part of the digna backend. Its endpoint is the backend's address followed by `/mcp`, the same address the [Python SDK](../../sdk/Release%202026.11/quickstart.md) uses as `base_url`:
+
+```text
+https://digna.example.com/mcp
+```
+
+The machine the AI agent runs on must be able to reach this address. Use HTTPS whenever the agent connects over a network, because every request carries an API key.
+
+---
+
+## 2. Create an API Key {: #2-create-an-api-key }
+
+An agent authenticates with the API key of a digna user and acts with that user's permissions (see [Permissions](how_it_works.md#permissions)).
+
+1. Log in to digna.
+2. Open your user profile in the bottom-left corner.
+3. Click **API Keys**, then **Add API Key**.
+4. Enter a name that says what the key is for, e.g. *Claude Code – Marcin*, and choose when it expires.
+5. Copy the key. It is shown only once.
+
+Create one key per agent and per person, so you can revoke a single key without affecting the others. Keep the key out of source code and shared configuration files.
+
+---
+
+## 3. Add the Server to Your Client {: #3-add-the-server-to-your-client }
+
+Every request to the MCP server sends the key in an `Authorization` header:
+
+```text
+Authorization: Bearer <api key>
+```
+
+### Claude Code {: #claude-code }
+
+```bash
+claude mcp add --transport http digna https://digna.example.com/mcp --header "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+Start Claude Code and run `/mcp` to confirm that the `digna` server is connected.
+
+### Other MCP clients {: #other-mcp-clients }
+
+Most clients that support remote MCP servers read a JSON configuration like this one. Check your client's documentation for the exact file and key names:
+
+```json
+{
+  "mcpServers": {
+    "digna": {
+      "type": "http",
+      "url": "https://digna.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <api key>"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 4. Try It {: #4-try-it }
+
+Ask the agent something only digna can answer:
+
+- *"List my digna projects."*
+- *"Which data sources in project X are not green today?"*
+- *"Explain the latest failed check of data source Y."*
+
+If the agent lists your projects, the connection works.
+
+---
+
+## Troubleshooting {: #troubleshooting }
+
+### The client reports 401 Unauthorized
+
+The API key is missing, wrong or expired. Check that the header reads `Authorization: Bearer <api key>` with a single space, and create a new key if the old one expired.
+
+### Every request fails with an invalid license error
+
+The digna license has expired. The MCP server stops answering together with the dashboard until a new license is installed.
+
+### The agent can read but not change configuration
+
+The user behind the API key does not have the editor role in that project. Use a key of a user with the editor role, or ask a project administrator to change the role.
+
+### The client cannot connect at all
+
+The machine the agent runs on cannot reach the digna backend. Open the endpoint's address from that machine, and check firewalls, proxies and the certificate.
+
+---
+
+## Related Pages
+
+- [digna Agentic – Introduction](Introduction.md)
+- [digna Agentic – How It Works](how_it_works.md)
+- [Python SDK Quickstart](../../sdk/Release%202026.11/quickstart.md)
+
+---
+
+# Jak to funguje
+Source: https://docs.digna.ai/cs/platform/agentic/how_it_works/
+
+# digna Agentic – How It Works
+
+---
+
+## The digna MCP Server
+
+The **digna MCP Server** is part of the digna backend and is served at the `/mcp` path of the same address the [Python SDK](../../sdk/Release%202026.11/index.md) uses. It speaks the [Model Context Protocol](https://modelcontextprotocol.io) over streamable HTTP.
+
+An AI agent sees the server as a set of **tools**: named actions with a description, such as *list the data sources of a project* or *get the anomaly check statuses of a data source*. The agent decides which tools to call to answer your request, calls them, and works with the results.
+
+Every tool call is a separate request, authenticated with an API key (see [Connect an AI Agent](connect_ai_agent.md)).
+
+---
+
+## What an Agent Can Do
+
+The tools cover the same ground as the dashboard. Grouped by what an agent does with them:
+
+| Area | What the agent can do |
+|---|---|
+| **Explore** | List projects, data sources and their attributes; browse the catalogs, schemas, tables and columns of a database connection; read the statistics and the column profile of an attribute |
+| **Configure** | Create and change projects, data sources, attributes and datasets; Data Validation, Data Analytics and Data Reconciliation rules; validation rule templates; anomaly model, threshold and notification settings; Timeliness and Schema Tracker settings |
+| **Run** | Create, change and delete inspection schedules; start an inspection, follow its progress and stop it |
+| **Read results** | Read inspection statuses for a project, data source or dataset, and the check statuses of every module down to the single check, with its value |
+| **Notify** | Create and change subscriptions; test a notification channel |
+
+Some areas are read-only on purpose. Database connections, notification channels and SMTP connections hold credentials, so an agent can list them and test them, but not create or change them.
+
+---
+
+## Descriptions
+
+Every data source and attribute has a **Description** field. AI agents read it: the description is returned with the data source or attribute, and it is often the only place where the business meaning of a table or column is written down.
+
+Good descriptions answer what an agent can't guess from a name:
+
+| Field | Weak | Strong |
+|---|---|---|
+| Data source `T_ORD_L` | *Orders* | *Booked orders, one row per order line, loaded nightly from SAP. Cancelled orders are deleted, not flagged.* |
+| Attribute `AMT_NET` | *Amount* | *Net order line amount in EUR, after discounts, before VAT* |
+
+An agent can write descriptions too. Asking it to *"suggest descriptions for the attributes of this data source"* is a quick way to start, as long as someone who knows the data reviews the result.
+
+---
+
+## Answering a Business Question
+
+A typical question, *"Which regions had unusually low sales last week?"*, is answered in steps:
+
+1. The agent uses the descriptions to find the data source and attribute that hold sales.
+2. It checks how digna measures them, e.g. whether the data source is split into datasets per region.
+3. It reads the anomaly check statuses and values for last week and reports the regions outside their expected range.
+
+When step 2 shows that digna doesn't measure what the question needs, for example because the data source isn't split by region, the agent says so and **suggests a configuration change**: here, a dataset per region. Once you agree, it can apply the change, and the next inspections answer the question.
+
+---
+
+## Permissions
+
+An agent acts as the user whose API key it uses:
+
+- It sees only the projects that user can access.
+- It can change configuration only where that user's project role allows it. Without the editor role, write tools are refused.
+- What an agent changes is visible in the dashboard immediately, like a change made by that user.
+
+Give an agent a key of a user with the role it needs. An agent that only answers questions doesn't need the editor role.
+
+---
+
+## Related Pages
+
+- [digna Agentic – Introduction](Introduction.md)
+- [Connect an AI Agent](connect_ai_agent.md)
+- [Changelog – Release 2026.11](../../changelog/Release_202611.md)
+
+---
+
 # Jak to funguje
 Source: https://docs.digna.ai/cs/platform/data_analytics/how_it_works/
 
@@ -14736,6 +14990,275 @@ A practical starting point:
 
 ---
 
+# Úvod
+Source: https://docs.digna.ai/cs/platform/data_reconciliation/Introduction/
+
+# Data Reconciliation – Source-to-Target Consistency
+
+**digna Data Reconciliation** was introduced in [Release 2026.11](../../changelog/Release_202611.md) as a beta version.
+
+---
+
+## Purpose
+
+Data rarely stays in one place. It is loaded from operational systems into a staging area, transformed into a data warehouse, aggregated into data marts, migrated to new platforms and replicated between sites. Every step can lose rows, duplicate them or change values, and each table can still look perfectly healthy on its own.
+
+**Data Reconciliation** checks the step between tables. It compares a **target** data source with the **sources** it was built from, and alerts when they no longer match.
+
+---
+
+## Two Types of Rules
+
+Reconciliation is configured as named rules on the target data source. Each rule is one of two types.
+
+### Exact rules – reconciliation as a data quality rule
+
+You define exactly what must match between **one source and one target**: the row count of a replicated table, the sum of an amount column before and after a load, the number of distinct customers in two systems. Each pair is compared with a tolerance, either absolute (e.g. ± 10) or relative to the source (e.g. ± 0.5 %).
+
+Exact rules are deterministic. They suit reconciliation procedures that a controller, an auditor or a regulator expects to see written down.
+
+### AI rules – reconciliation as data observability
+
+For a target built from **several sources** by joins, filters and aggregations, the relationship is often unknown or too complex to write down. An AI rule learns it instead. digna observes how the target has followed its sources in the past, predicts what the target should be today from the sources' values of the same day, and alerts when the target leaves the expected range.
+
+AI rules suit ETL processes and other flows where you know which tables feed the target, but not the exact logic between them.
+
+---
+
+## Technical Overview
+
+- **Built on profiling** – Reconciliation compares the statistics digna already measures for each data source, such as row counts, sums and distinct counts. It sends no extra queries to compare tables.
+- **Segment by segment** – When the target is split into [datasets](../profiling/datasets.md), each dataset is compared with the source dataset of the same name, e.g. region by region.
+- **Part of the inspection** – Reconciliation runs in the target's inspection, once every source has been inspected for the same date. Its results count towards the inspection status and trigger notifications like every other module.
+- **Timeline per rule** – The Dashboard shows each reconciliation check over time: the compared values, the difference and the tolerance or expected range.
+
+---
+
+## Related Pages
+
+- [Data Reconciliation – How It Works](how_it_works.md)
+- [Data Reconciliation – Use Cases](use_cases.md)
+- [Data Validation – Introduction](../data_validation/Introduction.md)
+- [Changelog – Release 2026.11](../../changelog/Release_202611.md)
+
+---
+
+# Jak to funguje
+Source: https://docs.digna.ai/cs/platform/data_reconciliation/how_it_works/
+
+# Data Reconciliation – How It Works
+
+---
+
+## Sources and Target
+
+Every reconciliation rule belongs to its **target**: the data source whose correctness you want to confirm. The rule names one or more **sources**, the data sources the target was built from.
+
+- Rules are configured on the target's **Data Reconciliation** tab.
+- **Data Reconciliation** must be switched on for the target and for every source. Only data sources with the module switched on can be chosen as sources.
+- Sources and target belong to the same project. They can be on different database connections.
+
+A rule compares **checks**: the statistic of an attribute that digna measures in every inspection, such as the row count of the table or the sum of an amount column. Reconciliation reuses these values, so it adds no queries against your databases.
+
+---
+
+## Exact Rules
+
+An exact rule compares **one source** data source with the target. It consists of pairs, and each pair compares one target check with one source check of the same statistic.
+
+| Pair | Example |
+|---|---|
+| Row count ↔ row count | Every order in the source arrives in the target |
+| Sum of `amount` ↔ sum of `amount` | No value is lost or doubled during the load |
+| Distinct count of `customer_id` ↔ distinct count of `customer_id` | No customer goes missing |
+
+Each pair has a tolerance:
+
+| Tolerance type | Passes when | Suits |
+|---|---|---|
+| **Absolute** | `|target − source|` ≤ the tolerance value | Small fixed differences, e.g. ± 10 rows |
+| **Relative** | `|target − source|` ≤ the tolerance value, in % of the source | Tables of any size, e.g. ± 0.5 % |
+
+A tolerance of 0 requires an exact match. With a relative tolerance, a source value of 0 passes only when the target is 0 as well.
+
+An exact pair is either **Passed** or **Failed**. A pair also fails when the target or the source has no value for the inspected date.
+
+---
+
+## AI Rules
+
+An AI rule combines checks from **several source** data sources with one or more checks of the target. It needs no description of the logic between them.
+
+### How the prediction works
+
+For each target check, digna learns from history how the target has followed its sources **on the same day**. It then predicts today's target value from today's source values and compares the prediction with the value the target actually has.
+
+- The model learns from the **365 days** before the inspected date.
+- It is trained again for every prediction, so it follows changes in the relationship without a separate training step.
+- Single days with broken data do not distort it: the model is fitted robustly, so outliers in the history carry little weight.
+
+### The expected range
+
+How far the target may deviate from the prediction is not set by hand. digna stores every prediction it makes and measures how far each one was from the value that followed. The expected range is derived from these past errors: a rule whose sources explain the target well gets a narrow range, a noisy relationship gets a wide one.
+
+| Target value | Status |
+|---|---|
+| Inside the expected range | **Passed** |
+| Outside the inner range | **Uncertain** |
+| Outside the outer range | **Failed** |
+
+### History needed
+
+A new AI rule needs history before it can judge:
+
+- at least **30 days** on which the target and its sources all have values, to learn from, and
+- at least **10 past predictions**, to derive the expected range.
+
+Until then the rule's checks have no status. digna fills in predictions for past dates over the next inspections, so a rule over sources with existing history becomes active after a few inspections.
+
+### Model settings
+
+Each AI rule has its own **Model settings**:
+
+| Setting | Values | Effect |
+|---|---|---|
+| **Sensitivity** | Very Low … Very High (default: Moderate) | How readily the rule alerts. Higher sensitivity narrows the expected range. |
+| **Memory** | Short, Moderate, Long (default: Moderate) | How fast old history stops counting, both for learning and for the expected range. |
+| **Model Complexity** | 0.0 … 1.0 (default: 0.5) | How elaborate a relationship between sources and target the model may assume. |
+
+---
+
+## Matching Datasets
+
+When the target is split into [datasets](../profiling/datasets.md), each target dataset is compared with the source dataset **of the same name**, e.g. the target's `region = 'North'` dataset with the source's `region = 'North'` dataset.
+
+- **Exact rules** need a source dataset with the same name. If there is none, the pair fails.
+- **AI rules** can also learn from a source that is not split: if a source has a single whole-table dataset, it feeds every target dataset.
+
+A dataset excluded by its relevance rules gets no reconciliation status.
+
+---
+
+## When Reconciliation Runs
+
+Reconciliation is evaluated in the **target's inspection**, after the target's own checks, and only when every source of the rule has been inspected successfully for the same date. If a source has not been inspected yet, digna writes nothing for that date. This is not a failure: the date simply isn't ready to be reconciled.
+
+- When sources and target are inspected in the same inspection request, digna inspects the sources first.
+- Inspecting only a source again does not re-evaluate the target. Inspect the target again to reconcile against the new source values.
+
+---
+
+## Statuses and Notifications
+
+Reconciliation results roll up like every other module's: check → attribute → dataset → data source, and the worst result wins. They count towards the overall inspection status, so a failed reconciliation turns the data source red on the Dashboard.
+
+On the Dashboard, each reconciliation check opens a timeline per rule: for exact rules the source value, the target value and the difference against the tolerance; for AI rules the target value against the prediction and its expected range.
+
+Failed reconciliation checks are notified through your subscriptions, like failures of the other modules.
+
+---
+
+## Related Pages
+
+- [Data Reconciliation – Introduction](Introduction.md)
+- [Data Reconciliation – Use Cases](use_cases.md)
+- [Datasets](../profiling/datasets.md)
+- [Statistics](../profiling/statistics.md)
+- [Changelog – Release 2026.11](../../changelog/Release_202611.md)
+
+---
+
+# Případy použití
+Source: https://docs.digna.ai/cs/platform/data_reconciliation/use_cases/
+
+# Data Reconciliation – Use Cases
+
+---
+
+## When to Reach for This Module
+
+Use **Data Reconciliation** when the question is not "is this table healthy?" but "did this table receive what it should have?". The other modules look at one data source at a time. Reconciliation looks at the step between data sources.
+
+| Situation | Rule type |
+|---|---|
+| The target should match one source, and you know how | **Exact** |
+| A reconciliation control must be documented and auditable | **Exact** |
+| The target is built from several sources by logic you don't want to rewrite | **AI** |
+| The relationship changes slowly over time, e.g. with growing volumes | **AI** |
+
+---
+
+## Standard Reconciliation Procedures
+
+Finance, risk and controlling teams reconcile data as part of their regular close and reporting processes. These controls are known in advance, which makes them **exact rules**.
+
+### Totals between the ledger and the reporting layer
+
+Compare the sum of booked amounts in the general ledger with the sum in the reporting data mart, per entity or per currency (using [datasets](../profiling/datasets.md)). A relative tolerance of 0 % means every cent must arrive. A small absolute tolerance allows for known rounding.
+
+### Record counts before regulatory submission
+
+Before a regulatory report is submitted, confirm that the number of contracts, positions or transactions in the reporting table matches the source system. A failed check on the day of submission is a reason to stop and investigate, not a finding for next month.
+
+### Evidence for auditors
+
+Each exact check is stored per date with both values, the difference and the tolerance. That history shows that the control was performed every day, and what it found.
+
+---
+
+## Validating ETL Processes
+
+A target table in a data warehouse is often built from several source tables: orders joined with customers, filtered by status, aggregated per day. Rewriting that logic as a reconciliation query duplicates the ETL and breaks whenever the ETL changes. **AI rules** avoid both.
+
+### A fact table built from several sources
+
+Select the row counts and amount sums of the source tables as source checks, and the row count and amount sum of the fact table as target checks. digna learns how the fact table follows its sources. When a join suddenly drops rows or a filter changes, the target no longer matches what today's sources predict, and the check turns **Uncertain** or **Failed**.
+
+### Loads that grow with their sources
+
+When volumes grow, a fixed threshold either alerts constantly or never. An AI rule predicts the target from the same day's source values, so growth in the sources is expected growth in the target. Only a break in the relationship alerts.
+
+---
+
+## Migrations and Replications
+
+### Platform migration
+
+During a migration, the old and the new platform run side by side. An **exact rule** per migrated table compares row counts, sums and distinct counts between the two, with the old platform as the source. Because sources and target can be on different database connections, the old and new platforms don't need to be the same technology.
+
+### Replication between sites
+
+For a replica that should match its primary exactly, an exact rule on the row count with a tolerance of 0 detects replication lag and lost records on the first inspection after they occur.
+
+---
+
+## Designing Rules That Stay Useful
+
+- **Start with exact rules where you can.** If you can write the relationship down, an exact rule is simpler to explain and to audit.
+- **Choose a few strong checks.** Row counts and sums of key amounts catch most losses. Comparing every statistic of every column adds noise, not coverage.
+- **Segment the target the way the business reads it.** Datasets per region, entity or product line show where a difference is, not just that one exists.
+- **Give AI rules time.** A new AI rule needs about a month of shared history before it judges. Use the first weeks to check that the predictions look plausible.
+- **Inspect sources before the target.** Reconciliation waits for every source to be inspected for the date, so schedule the target's inspection after its sources'.
+
+---
+
+## Where This Module Fits
+
+- **Data Validation** checks rules inside one data source, and referential integrity between two. Reconciliation compares aggregated values between data sources.
+- **Data Anomalies** learns how one series behaves over time. AI reconciliation learns how one data source behaves **relative to others** on the same day.
+- **Timeliness** tells you whether the data arrived. Reconciliation tells you whether all of it arrived.
+
+---
+
+## Related Pages
+
+- [Data Reconciliation – Introduction](Introduction.md)
+- [Data Reconciliation – How It Works](how_it_works.md)
+- [Data Validation – Use Cases](../data_validation/use_cases.md)
+- [Changelog – Release 2026.11](../../changelog/Release_202611.md)
+
+---
+
 # Jak to funguje
 Source: https://docs.digna.ai/cs/platform/data_timeliness/how_it_works/
 
@@ -15060,6 +15583,8 @@ Given a set of columns here and a matching set on another table, digna keeps the
 
 The two column lists must be the same length. A mismatch is rejected outright rather than silently checking a weaker condition — a two-column key compared against one column would let through records the full key would have caught.
 
+The two data sources can be on **different database connections**, even on different database technologies. digna then compares the key columns of both in the [digna Engine](../profiling/profiling_location.md#referential-integrity-across-connections). The failing records of such a check can't be listed.
+
 ---
 
 ## Thresholds
@@ -15102,7 +15627,9 @@ From **Release 2026.06**, validation rules can be exported and imported. That tu
 
 ## Where It Runs
 
-Like every digna module, validation executes **inside the source database**. digna sends SQL and receives counts, plus the failing rows when you ask for them. No table is copied out to be checked.
+By default, like every digna module, validation executes **inside the source database**. digna sends SQL and receives counts, plus the failing rows when you ask for them. No table is copied out to be checked.
+
+A database connection can instead use the **digna Engine** as its [profiling location](../profiling/profiling_location.md). digna then exports the inspected data once and runs rule and uniqueness checks inside digna.
 
 Validation is also **independent of the other modules**. It reads none of the [profiling statistics](../profiling/Introduction.md) — its rules are evaluated row by row against the same snapshot, in the same pass, but the two produce entirely separate results. A data source can therefore run validation with anomaly detection switched off, and its statuses roll up the same way: check → attribute → dataset → data source, worst result winning.
 
@@ -15296,6 +15823,8 @@ See [Statistics](statistics.md) for the full list of what can be measured, and [
 Profiling is executed **inside your database**. digna sends SQL and receives numbers.
 
 What comes back is aggregates — a count, a sum, an average, a count per category. **No rows are copied out, and no raw values are transmitted or stored by digna.** The one exception is deliberate and user-initiated: when a validation rule fails, you can ask to see the records that failed it, because a count alone is not something anyone can act on.
+
+This is the default. A database connection can instead export the inspected data and profile it in the **digna Engine**, inside your digna installation. See [Profiling Location](profiling_location.md).
 
 This is the property that makes digna usable on regulated data — clinical records, transaction data, personal data under GDPR — and it is a consequence of the architecture rather than a policy layered on top. digna is installed on-premises or in your private cloud, so there is no external service for data to be sent to.
 
@@ -15619,6 +16148,95 @@ Before writing, an inspection removes its own previous results for the dates in 
 - [Data Anomalies – How It Works](../data_anomalies/how_it_works.md)
 
 ---
+
+---
+
+# Profiling Location
+Source: https://docs.digna.ai/cs/platform/profiling/profiling_location/
+
+# Profiling Location – Source Database or digna Engine
+
+Every database connection has a **Profiling Location**. It decides where digna calculates the statistics and checks of the data sources that read through that connection:
+
+| Profiling Location | Where the work happens |
+|---|---|
+| **Source Database** (default) | In your database. digna sends SQL and receives aggregated results. |
+| **digna Engine** | In digna. digna exports the inspected data and profiles it in the digna Engine. |
+
+The **digna Engine** was introduced in [Release 2026.11](../../changelog/Release_202611.md). It is optional: profiling in the source database remains the default and works as before.
+
+---
+
+## Source Database {: #source-database }
+
+digna profiles data where it lives. Every statistic and every check is a query that runs in your database, and only aggregates come back: a count, a sum, a count per category. See [How Profiling Works](how_it_works.md).
+
+With this location, the connection's **Profiling Mode** (Standard, Permanent or Session) decides whether digna works on the source tables directly or on a copy in a work table inside your database. See [Profiling Mode and Work Schema](../../databases/overview.md#profiling-mode-and-work-schema).
+
+---
+
+## digna Engine {: #digna-engine }
+
+For the case you'd rather export the data and profile it outside the source database, digna profiles it in the **digna Engine**, an engine built into digna:
+
+1. For each data source and inspected date, digna reads the inspected data with **one query** on the source database.
+2. It loads the result into the digna Engine.
+3. Profiling and the checks run in the digna Engine.
+4. When the data source's inspection is done, the copy is discarded. Only the results are stored, as with the source database.
+
+The data leaves the source database, but not your environment: the digna Engine runs inside your digna installation, on-premises or in your private cloud.
+
+What runs where:
+
+| Module | With the digna Engine |
+|---|---|
+| Profiling, Data Anomalies, Data Analytics | In the digna Engine |
+| Data Validation rules and uniqueness checks | In the digna Engine |
+| Referential integrity within one connection | In the source database |
+| Referential integrity across connections | In the digna Engine (see below) |
+| Timeliness, Schema Tracker | Unchanged: they read metadata, not the data |
+
+Things to know:
+
+- The **Profiling Mode** is not used with the digna Engine, and a connection that profiles in the digna Engine can be saved without one.
+- Dataset definitions and validation rule conditions are written in the source database's SQL dialect, as before. digna evaluates them on the source, as part of the one query.
+- The digna Engine works with memory and, when a data source doesn't fit, with temporary files on the digna host. Plan memory and disk space on that host for the largest inspected date of the data sources that use it. If the data doesn't fit even then, the inspection of that data source fails rather than falling back to the source database.
+- The digna Engine is available for every supported database technology.
+
+---
+
+## Referential Integrity Across Connections {: #referential-integrity-across-connections }
+
+Some checks need data from two places. A [referential integrity check](../data_validation/how_it_works.md#referential-integrity) whose two data sources are on **different database connections**, possibly on different database technologies (e.g. Oracle and PostgreSQL), can't run as one query in either database.
+
+The digna Engine makes these checks possible, whatever the connection's Profiling Location:
+
+- With **digna Engine**, the check runs on the exported data, together with the other checks.
+- With **Source Database**, everything else still runs in the source database. Only for the cross-connection checks, digna exports the **key columns** of both data sources into the digna Engine and runs those checks there.
+
+The dashboard shows a note on such a check. The failing records of a cross-connection check can't be listed.
+
+---
+
+## Choosing a Location {: #choosing-a-location }
+
+| Choose | When |
+|---|---|
+| **Source Database** | Data must not leave the source database, or digna has read-only access and the database handles the profiling queries well |
+| **digna Engine** | You'd rather export the data and profile it in digna, e.g. to keep the profiling work off the source database |
+
+Cross-connection referential integrity works with both, so it is no reason to change the location.
+
+The location is set per database connection, in **Admin → DB Connections**. Changing it applies from the next inspection of the data sources that use the connection.
+
+---
+
+## Related Pages
+
+- [How Profiling Works](how_it_works.md)
+- [Database Connections Overview](../../databases/overview.md)
+- [Data Validation – How It Works](../data_validation/how_it_works.md)
+- [Changelog – Release 2026.11](../../changelog/Release_202611.md)
 
 ---
 

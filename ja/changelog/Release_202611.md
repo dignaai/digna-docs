@@ -2,8 +2,8 @@
 
 Release 2026.11 は、3 つの主要な追加機能を中心に構成されています:
 
-- **digna Data Reconciliation (Beta)**: システム間を移動するデータの一貫性が保たれていることをチェックします  
-- **digna Agentic (Beta)**: digna MCP Server を通じて digna を AI エージェントに開放します  
+- **digna Data Reconciliation**: システム間を移動するデータの一貫性が保たれていることをチェックします  
+- **digna Agentic**: digna MCP Server を通じて digna を AI エージェントに開放します  
 - **digna Engine**: オプションで digna 内部でデータをプロファイリングし、異なるデータベース技術間の参照整合性チェックを可能にします  
 
 ---
@@ -11,7 +11,7 @@ Release 2026.11 は、3 つの主要な追加機能を中心に構成されて�
 ## 新機能  
 
 ### digna Data Reconciliation (Beta) – ソースからターゲットまでの一貫性  
-データはレポートに届くまでに、複数のシステムを経由することがよくあります。digna Data Reconciliation (Beta) は、**ターゲット**のデータソースを、その作成元となった**ソース**と比較し、両者が一致しなくなったときにアラートを出します。
+データはレポートに届くまでに、複数のシステムを経由することがよくあります。digna Data Reconciliation は、**ターゲット**のデータソースを、その作成元となった**ソース**と比較し、両者が一致しなくなったときにアラートを出します。
 
 - ターゲットデータソースの新しい **Data Reconciliation** タブで、名前付きルールとして設定します  
 - Data Reconciliation を有効にしたプロジェクト内のどのデータソースもソースにできます  
@@ -40,7 +40,7 @@ Release 2026.11 は、3 つの主要な追加機能を中心に構成されて�
 ---
 
 ### digna Agentic (Beta) – AI エージェントのための digna  
-digna Agentic (Beta) の最初のバージョンです。AI エージェントが digna と連携し、データに関するビジネス上の質問に答え、設定の改善を支援できるようになりました。
+digna Agentic の最初のバージョンです。AI エージェントが digna と連携し、データに関するビジネス上の質問に答え、設定の改善を支援できるようになりました。
 
 **digna MCP Server**: Claude などの AI エージェントが、Model Context Protocol を通じて digna と連携できるようにします。
 
@@ -95,11 +95,11 @@ digna はデフォルトで、データが存在する場所、つまりソー�
 
 ## 本リリースの恩恵を受ける人  
 
-- **データエンジニア:** digna Data Reconciliation (Beta) による ETL 結果の検証  
-- **財務・リスク・コントローリングチーム:** digna Data Reconciliation (Beta) の Exact ルールとしての標準的な照合手続き  
+- **データエンジニア:** digna Data Reconciliation による ETL 結果の検証  
+- **財務・リスク・コントローリングチーム:** digna Data Reconciliation の Exact ルールとしての標準的な照合手続き  
 - **データ品質＆ガバナンスチーム:** digna Engine によるデータベース技術をまたいだ参照整合性  
-- **ビジネスユーザー:** digna Agentic (Beta) を使った AI エージェントによる、データに関するビジネス上の質問への回答  
-- **AI・自動化チーム:** digna Agentic (Beta) を通じて digna と連携する AI エージェント  
+- **ビジネスユーザー:** digna Agentic を使った AI エージェントによる、データに関するビジネス上の質問への回答  
+- **AI・自動化チーム:** digna Agentic を通じて digna と連携する AI エージェント  
 
 ---
 

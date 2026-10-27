@@ -2,8 +2,8 @@
 
 Release 2026.11 rakentuu kolmen merkittävän lisäyksen ympärille:
 
-- **digna Data Reconciliation (Beta)**: tarkistaa, että data pysyy yhdenmukaisena, kun se siirtyy järjestelmästä toiseen  
-- **digna Agentic (Beta)**: avaa dignan tekoälyagenteille digna MCP Serverin kautta  
+- **digna Data Reconciliation**: tarkistaa, että data pysyy yhdenmukaisena, kun se siirtyy järjestelmästä toiseen  
+- **digna Agentic**: avaa dignan tekoälyagenteille digna MCP Serverin kautta  
 - **digna Engine**: profiloi datan valinnaisesti dignan sisällä ja mahdollistaa viite-eheyden tarkistukset eri tietokantateknologioiden välillä  
 
 ---
@@ -11,7 +11,7 @@ Release 2026.11 rakentuu kolmen merkittävän lisäyksen ympärille:
 ## Uudet ominaisuudet  
 
 ### digna Data Reconciliation (Beta) – Yhdenmukaisuus lähteestä kohteeseen  
-Data kulkee usein useiden järjestelmien läpi ennen kuin se päätyy raporttiin. digna Data Reconciliation (Beta) vertaa **kohde**tietolähdettä niihin **lähteisiin**, joista se on muodostettu, ja hälyttää, kun ne eivät enää täsmää.
+Data kulkee usein useiden järjestelmien läpi ennen kuin se päätyy raporttiin. digna Data Reconciliation vertaa **kohde**tietolähdettä niihin **lähteisiin**, joista se on muodostettu, ja hälyttää, kun ne eivät enää täsmää.
 
 - Määritetään nimettyinä sääntöinä kohdetietolähteen uudella **Data Reconciliation** -välilehdellä  
 - Mikä tahansa projektin tietolähde, jossa Data Reconciliation on käytössä, voi toimia lähteenä  
@@ -40,7 +40,7 @@ Täsmäytystarkistukset näkyvät Dashboardilla, ja jokaisella säännöllä on 
 ---
 
 ### digna Agentic (Beta) – digna tekoälyagenteille  
-digna Agenticin (Beta) ensimmäinen versio. Tekoälyagentit voivat nyt työskennellä dignan kanssa, vastata dataasi koskeviin liiketoimintakysymyksiin ja auttaa parantamaan konfiguraatiotasi.
+digna Agenticin ensimmäinen versio. Tekoälyagentit voivat nyt työskennellä dignan kanssa, vastata dataasi koskeviin liiketoimintakysymyksiin ja auttaa parantamaan konfiguraatiotasi.
 
 **digna MCP Server**: Antaa Clauden ja muiden tekoälyagenttien työskennellä dignan kanssa Model Context Protocolin kautta.
 
@@ -95,11 +95,11 @@ Tämä julkaisu antaa käyttäjille myös enemmän hallintaa siihen, mitä profi
 
 ## Ketä tämä julkaisu hyödyttää  
 
-- **Data-insinöörit:** ETL-tulosten validointi digna Data Reconciliationilla (Beta)  
-- **Talous-, riski- ja controlling-tiimit:** Vakiintuneet täsmäytysmenettelyt tarkkoina sääntöinä digna Data Reconciliationissa (Beta)  
+- **Data-insinöörit:** ETL-tulosten validointi digna Data Reconciliationilla  
+- **Talous-, riski- ja controlling-tiimit:** Vakiintuneet täsmäytysmenettelyt tarkkoina sääntöinä digna Data Reconciliationissa  
 - **Datan laadun ja hallinnan tiimit:** Viite-eheys eri tietokantateknologioiden välillä digna Enginen avulla  
-- **Liiketoimintakäyttäjät:** Tekoälyagentit vastaavat dataa koskeviin liiketoimintakysymyksiin digna Agenticin (Beta) avulla  
-- **Tekoäly- ja automaatiotiimit:** Tekoälyagentit työskentelevät dignan kanssa digna Agenticin (Beta) kautta  
+- **Liiketoimintakäyttäjät:** Tekoälyagentit vastaavat dataa koskeviin liiketoimintakysymyksiin digna Agenticin avulla  
+- **Tekoäly- ja automaatiotiimit:** Tekoälyagentit työskentelevät dignan kanssa digna Agenticin kautta  
 
 ---
 

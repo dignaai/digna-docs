@@ -2,8 +2,8 @@
 
 릴리스 2026.11은 세 가지 주요 추가 기능을 중심으로 구성됩니다:
 
-- **digna Data Reconciliation (Beta)**: 데이터가 시스템 간에 이동하는 동안 일관성을 유지하는지 검사합니다  
-- **digna Agentic (Beta)**: digna MCP Server를 통해 AI 에이전트에게 digna를 개방합니다  
+- **digna Data Reconciliation**: 데이터가 시스템 간에 이동하는 동안 일관성을 유지하는지 검사합니다  
+- **digna Agentic**: digna MCP Server를 통해 AI 에이전트에게 digna를 개방합니다  
 - **digna Engine**: 선택적으로 digna 내부에서 데이터를 프로파일링하고, 서로 다른 데이터베이스 기술 간의 참조 무결성 검사를 가능하게 합니다  
 
 ---
@@ -11,7 +11,7 @@
 ## 새로운 기능  
 
 ### digna Data Reconciliation (Beta) – 소스에서 대상까지의 일관성  
-데이터는 보고서에 도달하기 전에 여러 시스템을 거치는 경우가 많습니다. digna Data Reconciliation (Beta)은 **대상** 데이터 소스를 그것이 만들어진 **소스**와 비교하고, 둘이 더 이상 일치하지 않으면 알림을 보냅니다.
+데이터는 보고서에 도달하기 전에 여러 시스템을 거치는 경우가 많습니다. digna Data Reconciliation은 **대상** 데이터 소스를 그것이 만들어진 **소스**와 비교하고, 둘이 더 이상 일치하지 않으면 알림을 보냅니다.
 
 - 대상 데이터 소스의 새 **Data Reconciliation** 탭에서 이름이 지정된 규칙으로 구성합니다  
 - Data Reconciliation이 활성화된 프로젝트의 모든 데이터 소스를 소스로 사용할 수 있습니다  
@@ -40,7 +40,7 @@
 ---
 
 ### digna Agentic (Beta) – AI 에이전트를 위한 digna  
-digna Agentic (Beta)의 첫 번째 버전입니다. 이제 AI 에이전트가 digna와 함께 작업하고, 데이터에 대한 비즈니스 질문에 답하며, 구성 개선을 도울 수 있습니다.
+digna Agentic의 첫 번째 버전입니다. 이제 AI 에이전트가 digna와 함께 작업하고, 데이터에 대한 비즈니스 질문에 답하며, 구성 개선을 도울 수 있습니다.
 
 **digna MCP Server**: Claude 및 기타 AI 에이전트가 Model Context Protocol을 통해 digna와 함께 작업할 수 있게 합니다.
 
@@ -95,11 +95,11 @@ digna Agentic (Beta)의 첫 번째 버전입니다. 이제 AI 에이전트가 di
 
 ## 이 릴리스의 혜택 대상  
 
-- **데이터 엔지니어:** digna Data Reconciliation (Beta)을 통한 ETL 결과 검증  
-- **재무, 리스크 및 컨트롤링 팀:** digna Data Reconciliation (Beta)의 Exact 규칙으로 구현하는 표준 대사 절차  
+- **데이터 엔지니어:** digna Data Reconciliation을 통한 ETL 결과 검증  
+- **재무, 리스크 및 컨트롤링 팀:** digna Data Reconciliation의 Exact 규칙으로 구현하는 표준 대사 절차  
 - **데이터 품질 및 거버넌스 팀:** digna Engine을 통한 데이터베이스 기술 간 참조 무결성  
-- **비즈니스 사용자:** digna Agentic (Beta)으로 AI 에이전트가 답하는 데이터 관련 비즈니스 질문  
-- **AI 및 자동화 팀:** digna Agentic (Beta)을 통해 digna와 함께 작업하는 AI 에이전트  
+- **비즈니스 사용자:** digna Agentic으로 AI 에이전트가 답하는 데이터 관련 비즈니스 질문  
+- **AI 및 자동화 팀:** digna Agentic을 통해 digna와 함께 작업하는 AI 에이전트  
 
 ---
 

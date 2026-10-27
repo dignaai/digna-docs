@@ -2,8 +2,8 @@
 
 Väljalase 2026.11 keskendub kolmele suurele lisandusele:
 
-- **digna Data Reconciliation (Beta)**: kontrollib, et andmed püsiksid süsteemide vahel liikudes kooskõlas  
-- **digna Agentic (Beta)**: avab digna AI-agentidele digna MCP Serveri kaudu  
+- **digna Data Reconciliation**: kontrollib, et andmed püsiksid süsteemide vahel liikudes kooskõlas  
+- **digna Agentic**: avab digna AI-agentidele digna MCP Serveri kaudu  
 - **digna Engine**: profileerib soovi korral andmeid digna sees ja võimaldab viiteterviklikkuse kontrolle eri andmebaasitehnoloogiate vahel  
 
 ---
@@ -11,7 +11,7 @@ Väljalase 2026.11 keskendub kolmele suurele lisandusele:
 ## Uued funktsioonid  
 
 ### digna Data Reconciliation (Beta) – allika ja sihi kooskõla  
-Enne aruandesse jõudmist läbivad andmed sageli mitu süsteemi. digna Data Reconciliation (Beta) võrdleb **siht**-andmeallikat **allikatega**, millest see on koostatud, ja annab märku, kui need enam ei klapi.
+Enne aruandesse jõudmist läbivad andmed sageli mitu süsteemi. digna Data Reconciliation võrdleb **siht**-andmeallikat **allikatega**, millest see on koostatud, ja annab märku, kui need enam ei klapi.
 
 - Seadistatakse nimeliste reeglitena siht-andmeallika uuel vahekaardil **Data Reconciliation**  
 - Allikaks võib olla projekti mis tahes andmeallikas, millel on Data Reconciliation sisse lülitatud  
@@ -40,7 +40,7 @@ Kooskõlastuskontrollid kuvatakse dashboardil, iga reegli kohta oma ajajoonega. 
 ---
 
 ### digna Agentic (Beta) – digna AI-agentidele  
-digna Agentic (Beta) esimene versioon. AI-agendid saavad nüüd dignaga töötada, vastata äriküsimustele teie andmete kohta ja aidata teie konfiguratsiooni parandada.
+digna Agentic esimene versioon. AI-agendid saavad nüüd dignaga töötada, vastata äriküsimustele teie andmete kohta ja aidata teie konfiguratsiooni parandada.
 
 **digna MCP Server**: võimaldab Claude'il ja teistel AI-agentidel dignaga töötada Model Context Protocoli kaudu.
 
@@ -95,11 +95,11 @@ See väljalase annab kasutajatele ka rohkem kontrolli selle üle, mida ja kuidas
 
 ## Kellele see väljalase kasulik on  
 
-- **Andmeinsenerid:** ETL-tulemuste valideerimine digna Data Reconciliation (Beta) abil  
-- **Finants-, riski- ja kontrollingumeeskonnad:** standardsed kooskõlastusprotseduurid Exact-reeglitena digna Data Reconciliation (Beta) abil  
+- **Andmeinsenerid:** ETL-tulemuste valideerimine digna Data Reconciliation abil  
+- **Finants-, riski- ja kontrollingumeeskonnad:** standardsed kooskõlastusprotseduurid Exact-reeglitena digna Data Reconciliation abil  
 - **Andmekvaliteedi ja andmehalduse meeskonnad:** viiteterviklikkus eri andmebaasitehnoloogiate vahel digna Engine'i abil  
-- **Ärikasutajad:** AI-agendid vastavad andmeid puudutavatele äriküsimustele digna Agentic (Beta) abil  
-- **AI- ja automatiseerimismeeskonnad:** AI-agendid töötavad dignaga digna Agentic (Beta) kaudu  
+- **Ärikasutajad:** AI-agendid vastavad andmeid puudutavatele äriküsimustele digna Agentic abil  
+- **AI- ja automatiseerimismeeskonnad:** AI-agendid töötavad dignaga digna Agentic kaudu  
 
 ---
 

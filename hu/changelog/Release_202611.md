@@ -2,8 +2,8 @@
 
 A 2026.11-es kiadás három jelentős újdonságra épül:
 
-- **digna Data Reconciliation (Beta)**: ellenőrzi, hogy az adatok konzisztensek maradnak-e, miközben rendszerek között mozognak  
-- **digna Agentic (Beta)**: a digna MCP Serveren keresztül megnyitja a dignát az AI-ágensek előtt  
+- **digna Data Reconciliation**: ellenőrzi, hogy az adatok konzisztensek maradnak-e, miközben rendszerek között mozognak  
+- **digna Agentic**: a digna MCP Serveren keresztül megnyitja a dignát az AI-ágensek előtt  
 - **digna Engine**: opcionálisan a dignán belül profilozza az adatokat, és lehetővé teszi a referenciális integritás ellenőrzését különböző adatbázis-technológiák között  
 
 ---
@@ -11,7 +11,7 @@ A 2026.11-es kiadás három jelentős újdonságra épül:
 ## Új funkciók  
 
 ### digna Data Reconciliation (Beta) – Konzisztencia a forrástól a célig  
-Az adatok gyakran több rendszeren haladnak át, mielőtt egy riportba kerülnek. A digna Data Reconciliation (Beta) összehasonlít egy **cél** adatforrást azokkal a **forrásokkal**, amelyekből előállt, és riaszt, ha már nem egyeznek.
+Az adatok gyakran több rendszeren haladnak át, mielőtt egy riportba kerülnek. A digna Data Reconciliation összehasonlít egy **cél** adatforrást azokkal a **forrásokkal**, amelyekből előállt, és riaszt, ha már nem egyeznek.
 
 - Elnevezett szabályokként konfigurálható a cél adatforrás új **Data Reconciliation** lapján  
 - A projekt bármely adatforrása lehet forrás, amelyen a Data Reconciliation be van kapcsolva  
@@ -40,7 +40,7 @@ Az egyeztetési ellenőrzések a Dashboardon szabályonként egy idővonallal je
 ---
 
 ### digna Agentic (Beta) – digna AI-ágenseknek  
-A digna Agentic (Beta) első verziója. Az AI-ágensek mostantól együtt tudnak dolgozni a dignával, üzleti kérdésekre válaszolnak az adataidról, és segítenek javítani a konfigurációdat.
+A digna Agentic első verziója. Az AI-ágensek mostantól együtt tudnak dolgozni a dignával, üzleti kérdésekre válaszolnak az adataidról, és segítenek javítani a konfigurációdat.
 
 **digna MCP Server**: Lehetővé teszi, hogy Claude és más AI-ágensek a Model Context Protocolon keresztül dolgozzanak a dignával.
 
@@ -95,11 +95,11 @@ Ez a kiadás azt is jobban a felhasználók kezébe adja, hogy mi és hogyan leg
 
 ## Kiknek hasznos ez a kiadás  
 
-- **Data Engineers:** ETL-eredmények validálása a digna Data Reconciliation (Beta) segítségével  
-- **Pénzügyi, kockázatkezelési és kontrolling csapatok:** Szabványos egyeztetési eljárások Exact szabályokként a digna Data Reconciliation (Beta) modulban  
+- **Data Engineers:** ETL-eredmények validálása a digna Data Reconciliation segítségével  
+- **Pénzügyi, kockázatkezelési és kontrolling csapatok:** Szabványos egyeztetési eljárások Exact szabályokként a digna Data Reconciliation modulban  
 - **Data Quality & Governance csapatok:** Referenciális integritás különböző adatbázis-technológiák között a digna Engine segítségével  
-- **Üzleti felhasználók:** Az adatokkal kapcsolatos üzleti kérdésekre AI-ágensek válaszolnak a digna Agentic (Beta) segítségével  
-- **AI- és automatizálási csapatok:** A dignával dolgozó AI-ágensek a digna Agentic (Beta) révén  
+- **Üzleti felhasználók:** Az adatokkal kapcsolatos üzleti kérdésekre AI-ágensek válaszolnak a digna Agentic segítségével  
+- **AI- és automatizálási csapatok:** A dignával dolgozó AI-ágensek a digna Agentic révén  
 
 ---
 
