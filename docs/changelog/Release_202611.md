@@ -1,6 +1,6 @@
 ---
-title: digna Release 2026.11 | Data Reconciliation (Beta), digna Agentic (Beta) & digna Engine
-description: Learn what's new in digna Release 2026.11. This version introduces three major additions - digna Data Reconciliation (Beta), digna Agentic (Beta) with the digna MCP Server, and the digna Engine, which enables referential integrity checks between different database technologies.
+title: digna Release 2026.11 | Data Reconciliation, digna Agentic & digna Engine
+description: Learn what's new in digna Release 2026.11. This version introduces three major additions - digna Data Reconciliation, digna Agentic with the digna MCP Server, and the digna Engine, which enables referential integrity checks between different database technologies.
 keywords: digna Release 2026.11, digna changelog, digna Data Reconciliation, data reconciliation, ETL validation, source to target reconciliation, digna Agentic, digna MCP Server, AI agents data quality, digna Engine, cross-connection referential integrity, query attributes, data profiling, data observability
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 Release 2026.11 is built around three major additions:
 
-- **digna Data Reconciliation (Beta)**: checks that data stays consistent as it moves between systems  
-- **digna Agentic (Beta)**: opens digna to AI agents through the digna MCP Server  
+- **digna Data Reconciliation**: checks that data stays consistent as it moves between systems  
+- **digna Agentic**: opens digna to AI agents through the digna MCP Server  
 - **digna Engine**: optionally profiles data inside digna, and enables referential integrity checks between different database technologies  
 
 ---
@@ -18,7 +18,7 @@ Release 2026.11 is built around three major additions:
 ## New Features  
 
 ### digna Data Reconciliation (Beta) – Source-to-Target Consistency  
-Data often passes through several systems before it reaches a report. digna Data Reconciliation (Beta) compares a **target** data source with the **sources** it was built from, and alerts when they no longer match.
+Data often passes through several systems before it reaches a report. digna Data Reconciliation compares a **target** data source with the **sources** it was built from, and alerts when they no longer match.
 
 - Configured as named rules on the new **Data Reconciliation** tab of the target data source  
 - Any data source of the project with Data Reconciliation switched on can be a source  
@@ -47,7 +47,7 @@ Reconciliation checks appear on the Dashboard with a timeline per rule. They cou
 ---
 
 ### digna Agentic (Beta) – digna for AI Agents  
-The first version of digna Agentic (Beta). AI agents can now work with digna, answer business questions about your data, and help improve your configuration.
+The first version of digna Agentic. AI agents can now work with digna, answer business questions about your data, and help improve your configuration.
 
 **digna MCP Server**: Lets Claude and other AI agents work with digna through the Model Context Protocol.
 
@@ -102,11 +102,11 @@ This release also gives users more control over what is profiled and how.
 
 ## Who Benefits from This Release  
 
-- **Data Engineers:** Validation of ETL results with digna Data Reconciliation (Beta)  
-- **Finance, Risk & Controlling Teams:** Standard reconciliation procedures as exact rules in digna Data Reconciliation (Beta)  
+- **Data Engineers:** Validation of ETL results with digna Data Reconciliation  
+- **Finance, Risk & Controlling Teams:** Standard reconciliation procedures as exact rules in digna Data Reconciliation  
 - **Data Quality & Governance Teams:** Referential integrity across database technologies with the digna Engine  
-- **Business Users:** Business questions about data answered by AI agents with digna Agentic (Beta)  
-- **AI & Automation Teams:** AI agents working with digna through digna Agentic (Beta)  
+- **Business Users:** Business questions about data answered by AI agents with digna Agentic  
+- **AI & Automation Teams:** AI agents working with digna through digna Agentic  
 
 ---
 

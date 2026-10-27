@@ -1,6 +1,6 @@
 ---
-title: digna Release 2026.11 | Data Reconciliation (Beta), digna Agentic (Beta) & digna Engine
-description: Saiba o que há de novo na digna Release 2026.11. Esta versão apresenta três grandes novidades - digna Data Reconciliation (Beta), digna Agentic (Beta) com o digna MCP Server e o digna Engine, que possibilita verificações de integridade referencial entre diferentes tecnologias de banco de dados.
+title: digna Release 2026.11 | Data Reconciliation, digna Agentic & digna Engine
+description: Saiba o que há de novo na digna Release 2026.11. Esta versão apresenta três grandes novidades - digna Data Reconciliation, digna Agentic com o digna MCP Server e o digna Engine, que possibilita verificações de integridade referencial entre diferentes tecnologias de banco de dados.
 keywords: digna Release 2026.11, registro de alterações digna, digna Data Reconciliation, reconciliação de dados, validação de ETL, reconciliação de origem para destino, digna Agentic, digna MCP Server, agentes de IA qualidade de dados, digna Engine, integridade referencial entre conexões, atributos de consulta, perfilamento de dados, observabilidade de dados
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 A Release 2026.11 é construída em torno de três grandes novidades:
 
-- **digna Data Reconciliation (Beta)**: verifica se os dados permanecem consistentes à medida que se movem entre sistemas  
-- **digna Agentic (Beta)**: abre a digna para agentes de IA por meio do digna MCP Server  
+- **digna Data Reconciliation**: verifica se os dados permanecem consistentes à medida que se movem entre sistemas  
+- **digna Agentic**: abre a digna para agentes de IA por meio do digna MCP Server  
 - **digna Engine**: opcionalmente faz o perfilamento dos dados dentro da digna e possibilita verificações de integridade referencial entre diferentes tecnologias de banco de dados  
 
 ---
@@ -18,7 +18,7 @@ A Release 2026.11 é construída em torno de três grandes novidades:
 ## Novos Recursos  
 
 ### digna Data Reconciliation (Beta) – Consistência da Origem ao Destino  
-Os dados costumam passar por vários sistemas antes de chegar a um relatório. O digna Data Reconciliation (Beta) compara uma fonte de dados de **destino** com as **origens** a partir das quais ela foi construída e emite um alerta quando elas deixam de corresponder.
+Os dados costumam passar por vários sistemas antes de chegar a um relatório. O digna Data Reconciliation compara uma fonte de dados de **destino** com as **origens** a partir das quais ela foi construída e emite um alerta quando elas deixam de corresponder.
 
 - Configurado como regras nomeadas na nova aba **Data Reconciliation** da fonte de dados de destino  
 - Qualquer fonte de dados do projeto com o Data Reconciliation ativado pode ser uma origem  
@@ -47,7 +47,7 @@ As verificações de reconciliação aparecem no Dashboard com uma linha do temp
 ---
 
 ### digna Agentic (Beta) – digna para Agentes de IA  
-A primeira versão do digna Agentic (Beta). Agentes de IA agora podem trabalhar com a digna, responder a perguntas de negócio sobre seus dados e ajudar a melhorar sua configuração.
+A primeira versão do digna Agentic. Agentes de IA agora podem trabalhar com a digna, responder a perguntas de negócio sobre seus dados e ajudar a melhorar sua configuração.
 
 **digna MCP Server**: Permite que o Claude e outros agentes de IA trabalhem com a digna por meio do Model Context Protocol.
 
@@ -102,11 +102,11 @@ Esta versão também dá aos usuários mais controle sobre o que é perfilado e 
 
 ## Quem se Beneficia Desta Versão  
 
-- **Data Engineers:** Validação de resultados de ETL com o digna Data Reconciliation (Beta)  
-- **Equipes de Finanças, Risco e Controladoria:** Procedimentos padrão de reconciliação como regras exatas no digna Data Reconciliation (Beta)  
+- **Data Engineers:** Validação de resultados de ETL com o digna Data Reconciliation  
+- **Equipes de Finanças, Risco e Controladoria:** Procedimentos padrão de reconciliação como regras exatas no digna Data Reconciliation  
 - **Equipes de Qualidade e Governança de Dados:** Integridade referencial entre tecnologias de banco de dados com o digna Engine  
-- **Usuários de Negócio:** Perguntas de negócio sobre os dados respondidas por agentes de IA com o digna Agentic (Beta)  
-- **Equipes de IA e Automação:** Agentes de IA trabalhando com a digna por meio do digna Agentic (Beta)  
+- **Usuários de Negócio:** Perguntas de negócio sobre os dados respondidas por agentes de IA com o digna Agentic  
+- **Equipes de IA e Automação:** Agentes de IA trabalhando com a digna por meio do digna Agentic  
 
 ---
 

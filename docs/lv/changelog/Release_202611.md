@@ -1,6 +1,6 @@
 ---
-title: digna izlaidums 2026.11 | Data Reconciliation (Beta), digna Agentic (Beta) un digna Engine
-description: Uzziniet, kas jauns digna izlaidumā 2026.11. Šī versija ievieš trīs lielus papildinājumus - digna Data Reconciliation (Beta), digna Agentic (Beta) ar digna MCP Server un digna Engine, kas ļauj veikt referenciālās integritātes pārbaudes starp dažādām datu bāzu tehnoloģijām.
+title: digna izlaidums 2026.11 | Data Reconciliation, digna Agentic un digna Engine
+description: Uzziniet, kas jauns digna izlaidumā 2026.11. Šī versija ievieš trīs lielus papildinājumus - digna Data Reconciliation, digna Agentic ar digna MCP Server un digna Engine, kas ļauj veikt referenciālās integritātes pārbaudes starp dažādām datu bāzu tehnoloģijām.
 keywords: digna izlaidums 2026.11, digna izmaiņu žurnāls, digna Data Reconciliation, datu saskaņošana, ETL validācija, avota un mērķa saskaņošana, digna Agentic, digna MCP Server, AI aģenti datu kvalitāte, digna Engine, referenciālā integritāte starp savienojumiem, vaicājumu atribūti, datu profilēšana, datu novērošana
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 Izlaidums 2026.11 ir veidots ap trim lieliem papildinājumiem:
 
-- **digna Data Reconciliation (Beta)**: pārbauda, vai dati paliek saskaņoti, pārvietojoties starp sistēmām  
-- **digna Agentic (Beta)**: atver digna AI aģentiem, izmantojot digna MCP Server  
+- **digna Data Reconciliation**: pārbauda, vai dati paliek saskaņoti, pārvietojoties starp sistēmām  
+- **digna Agentic**: atver digna AI aģentiem, izmantojot digna MCP Server  
 - **digna Engine**: pēc izvēles profilē datus pašā digna un ļauj veikt referenciālās integritātes pārbaudes starp dažādām datu bāzu tehnoloģijām  
 
 ---
@@ -18,7 +18,7 @@ Izlaidums 2026.11 ir veidots ap trim lieliem papildinājumiem:
 ## Jaunumi  
 
 ### digna Data Reconciliation (Beta) – avota un mērķa saskaņotība  
-Pirms dati nonāk atskaitē, tie bieži iziet cauri vairākām sistēmām. digna Data Reconciliation (Beta) salīdzina **mērķa** datu avotu ar **avotiem**, no kuriem tas izveidots, un brīdina, ja tie vairs nesakrīt.
+Pirms dati nonāk atskaitē, tie bieži iziet cauri vairākām sistēmām. digna Data Reconciliation salīdzina **mērķa** datu avotu ar **avotiem**, no kuriem tas izveidots, un brīdina, ja tie vairs nesakrīt.
 
 - Konfigurē kā nosauktus noteikumus mērķa datu avota jaunajā cilnē **Data Reconciliation**  
 - Par avotu var būt jebkurš projekta datu avots, kuram ir ieslēgts Data Reconciliation  
@@ -47,7 +47,7 @@ Saskaņošanas pārbaudes tiek rādītas informācijas panelī ar atsevišķu la
 ---
 
 ### digna Agentic (Beta) – digna AI aģentiem  
-Pirmā digna Agentic (Beta) versija. AI aģenti tagad var strādāt ar digna, atbildēt uz biznesa jautājumiem par jūsu datiem un palīdzēt uzlabot jūsu konfigurāciju.
+Pirmā digna Agentic versija. AI aģenti tagad var strādāt ar digna, atbildēt uz biznesa jautājumiem par jūsu datiem un palīdzēt uzlabot jūsu konfigurāciju.
 
 **digna MCP Server**: ļauj Claude un citiem AI aģentiem strādāt ar digna, izmantojot Model Context Protocol.
 
@@ -102,11 +102,11 @@ Pēc noklusējuma digna profilē datus tur, kur tie atrodas, – avota datu bāz
 
 ## Kam šī versija noder  
 
-- **Datu inženieri:** ETL rezultātu validācija ar digna Data Reconciliation (Beta)  
-- **Finanšu, risku un kontrolinga komandas:** standarta saskaņošanas procedūras kā Exact noteikumi digna Data Reconciliation (Beta)  
+- **Datu inženieri:** ETL rezultātu validācija ar digna Data Reconciliation  
+- **Finanšu, risku un kontrolinga komandas:** standarta saskaņošanas procedūras kā Exact noteikumi digna Data Reconciliation  
 - **Datu kvalitātes un pārvaldības komandas:** referenciālā integritāte starp datu bāzu tehnoloģijām ar digna Engine  
-- **Biznesa lietotāji:** atbildes uz biznesa jautājumiem par datiem no AI aģentiem ar digna Agentic (Beta)  
-- **AI un automatizācijas komandas:** AI aģenti, kas strādā ar digna, izmantojot digna Agentic (Beta)  
+- **Biznesa lietotāji:** atbildes uz biznesa jautājumiem par datiem no AI aģentiem ar digna Agentic  
+- **AI un automatizācijas komandas:** AI aģenti, kas strādā ar digna, izmantojot digna Agentic  
 
 ---
 

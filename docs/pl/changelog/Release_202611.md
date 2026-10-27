@@ -1,6 +1,6 @@
 ---
-title: digna Wydanie 2026.11 | Data Reconciliation (Beta), digna Agentic (Beta) i digna Engine
-description: Poznaj nowości w wydaniu digna 2026.11. Ta wersja wprowadza trzy główne nowości - digna Data Reconciliation (Beta), digna Agentic (Beta) z digna MCP Server oraz digna Engine, który umożliwia kontrole integralności referencyjnej między różnymi technologiami baz danych.
+title: digna Wydanie 2026.11 | Data Reconciliation, digna Agentic i digna Engine
+description: Poznaj nowości w wydaniu digna 2026.11. Ta wersja wprowadza trzy główne nowości - digna Data Reconciliation, digna Agentic z digna MCP Server oraz digna Engine, który umożliwia kontrole integralności referencyjnej między różnymi technologiami baz danych.
 keywords: digna Wydanie 2026.11, changelog digna, digna Data Reconciliation, uzgadnianie danych, walidacja ETL, uzgadnianie źródła z celem, digna Agentic, digna MCP Server, agenci AI jakość danych, digna Engine, integralność referencyjna między połączeniami, atrybuty zapytań, profilowanie danych, obserwowalność danych
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 Wydanie 2026.11 koncentruje się na trzech głównych nowościach:
 
-- **digna Data Reconciliation (Beta)**: sprawdza, czy dane pozostają spójne podczas przepływu między systemami  
-- **digna Agentic (Beta)**: otwiera digna na agentów AI za pośrednictwem digna MCP Server  
+- **digna Data Reconciliation**: sprawdza, czy dane pozostają spójne podczas przepływu między systemami  
+- **digna Agentic**: otwiera digna na agentów AI za pośrednictwem digna MCP Server  
 - **digna Engine**: opcjonalnie profiluje dane wewnątrz digna i umożliwia kontrole integralności referencyjnej między różnymi technologiami baz danych  
 
 ---
@@ -18,7 +18,7 @@ Wydanie 2026.11 koncentruje się na trzech głównych nowościach:
 ## Nowe funkcje  
 
 ### digna Data Reconciliation (Beta) – Spójność od źródła do celu  
-Dane często przechodzą przez kilka systemów, zanim trafią do raportu. digna Data Reconciliation (Beta) porównuje **docelowe** źródło danych ze **źródłami**, z których zostało zbudowane, i alarmuje, gdy przestają się one zgadzać.
+Dane często przechodzą przez kilka systemów, zanim trafią do raportu. digna Data Reconciliation porównuje **docelowe** źródło danych ze **źródłami**, z których zostało zbudowane, i alarmuje, gdy przestają się one zgadzać.
 
 - Konfigurowane jako nazwane reguły na nowej karcie **Data Reconciliation** docelowego źródła danych  
 - Źródłem może być każde źródło danych projektu z włączonym modułem Data Reconciliation  
@@ -47,7 +47,7 @@ Kontrole uzgadniania pojawiają się na pulpicie z osią czasu dla każdej regu�
 ---
 
 ### digna Agentic (Beta) – digna dla agentów AI  
-Pierwsza wersja digna Agentic (Beta). Agenci AI mogą teraz pracować z digna, odpowiadać na pytania biznesowe dotyczące Twoich danych i pomagać w ulepszaniu Twojej konfiguracji.
+Pierwsza wersja digna Agentic. Agenci AI mogą teraz pracować z digna, odpowiadać na pytania biznesowe dotyczące Twoich danych i pomagać w ulepszaniu Twojej konfiguracji.
 
 **digna MCP Server**: Umożliwia Claude i innym agentom AI pracę z digna za pośrednictwem Model Context Protocol.
 
@@ -102,11 +102,11 @@ To wydanie daje też użytkownikom większą kontrolę nad tym, co i jak jest pr
 
 ## Kto skorzysta z tego wydania  
 
-- **Inżynierowie danych:** walidacja wyników ETL z digna Data Reconciliation (Beta)  
-- **Zespoły finansów, ryzyka i controllingu:** standardowe procedury uzgadniania jako reguły Dokładne w digna Data Reconciliation (Beta)  
+- **Inżynierowie danych:** walidacja wyników ETL z digna Data Reconciliation  
+- **Zespoły finansów, ryzyka i controllingu:** standardowe procedury uzgadniania jako reguły Dokładne w digna Data Reconciliation  
 - **Zespoły ds. jakości danych i governance:** integralność referencyjna między technologiami baz danych dzięki digna Engine  
-- **Użytkownicy biznesowi:** odpowiedzi agentów AI na pytania biznesowe o dane dzięki digna Agentic (Beta)  
-- **Zespoły AI i automatyzacji:** agenci AI pracujący z digna za pośrednictwem digna Agentic (Beta)  
+- **Użytkownicy biznesowi:** odpowiedzi agentów AI na pytania biznesowe o dane dzięki digna Agentic  
+- **Zespoły AI i automatyzacji:** agenci AI pracujący z digna za pośrednictwem digna Agentic  
 
 ---
 

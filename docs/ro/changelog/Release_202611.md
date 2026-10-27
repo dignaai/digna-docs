@@ -1,6 +1,6 @@
 ---
-title: digna Release 2026.11 | Data Reconciliation (Beta), digna Agentic (Beta) & digna Engine
-description: Aflați noutățile din digna Release 2026.11. Această versiune introduce trei adăugiri majore - digna Data Reconciliation (Beta), digna Agentic (Beta) cu digna MCP Server și digna Engine, care permite verificări de integritate referențială între tehnologii de baze de date diferite.
+title: digna Release 2026.11 | Data Reconciliation, digna Agentic & digna Engine
+description: Aflați noutățile din digna Release 2026.11. Această versiune introduce trei adăugiri majore - digna Data Reconciliation, digna Agentic cu digna MCP Server și digna Engine, care permite verificări de integritate referențială între tehnologii de baze de date diferite.
 keywords: digna Release 2026.11, jurnal de modificări digna, digna Data Reconciliation, reconcilierea datelor, validare ETL, reconciliere sursă-țintă, digna Agentic, digna MCP Server, agenți AI calitatea datelor, digna Engine, integritate referențială între conexiuni, atribute de interogare, profilarea datelor, observabilitatea datelor
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 Release 2026.11 este construit în jurul a trei adăugiri majore:
 
-- **digna Data Reconciliation (Beta)**: verifică dacă datele rămân consecvente pe măsură ce se deplasează între sisteme  
-- **digna Agentic (Beta)**: deschide digna către agenții AI prin digna MCP Server  
+- **digna Data Reconciliation**: verifică dacă datele rămân consecvente pe măsură ce se deplasează între sisteme  
+- **digna Agentic**: deschide digna către agenții AI prin digna MCP Server  
 - **digna Engine**: profilează opțional datele în interiorul digna și permite verificări de integritate referențială între tehnologii de baze de date diferite  
 
 ---
@@ -18,7 +18,7 @@ Release 2026.11 este construit în jurul a trei adăugiri majore:
 ## Funcționalități noi  
 
 ### digna Data Reconciliation (Beta) – Consecvență de la sursă la țintă  
-Datele trec adesea prin mai multe sisteme înainte să ajungă într-un raport. digna Data Reconciliation (Beta) compară o sursă de date **țintă** cu **sursele** din care a fost construită și emite o alertă atunci când acestea nu mai corespund.
+Datele trec adesea prin mai multe sisteme înainte să ajungă într-un raport. digna Data Reconciliation compară o sursă de date **țintă** cu **sursele** din care a fost construită și emite o alertă atunci când acestea nu mai corespund.
 
 - Se configurează ca reguli cu nume în noua filă **Data Reconciliation** a sursei de date țintă  
 - Orice sursă de date din proiect care are Data Reconciliation activat poate fi o sursă  
@@ -47,7 +47,7 @@ Verificările de reconciliere apar în Dashboard cu o cronologie pentru fiecare 
 ---
 
 ### digna Agentic (Beta) – digna pentru agenți AI  
-Prima versiune a digna Agentic (Beta). Agenții AI pot lucra acum cu digna, pot răspunde la întrebări de business despre datele dumneavoastră și vă pot ajuta să vă îmbunătățiți configurația.
+Prima versiune a digna Agentic. Agenții AI pot lucra acum cu digna, pot răspunde la întrebări de business despre datele dumneavoastră și vă pot ajuta să vă îmbunătățiți configurația.
 
 **digna MCP Server**: Permite lui Claude și altor agenți AI să lucreze cu digna prin Model Context Protocol.
 
@@ -102,11 +102,11 @@ Această versiune le oferă utilizatorilor și mai mult control asupra a ceea ce
 
 ## Cine beneficiază de această versiune  
 
-- **Data Engineers:** Validarea rezultatelor ETL cu digna Data Reconciliation (Beta)  
-- **Echipe de Finanțe, Risc și Controlling:** Proceduri standard de reconciliere sub formă de reguli Exact în digna Data Reconciliation (Beta)  
+- **Data Engineers:** Validarea rezultatelor ETL cu digna Data Reconciliation  
+- **Echipe de Finanțe, Risc și Controlling:** Proceduri standard de reconciliere sub formă de reguli Exact în digna Data Reconciliation  
 - **Echipe Calitate & Guvernanță a Datelor:** Integritate referențială între tehnologii de baze de date cu digna Engine  
-- **Utilizatori de business:** Întrebări de business despre date, la care răspund agenții AI cu digna Agentic (Beta)  
-- **Echipe AI & Automatizare:** Agenți AI care lucrează cu digna prin digna Agentic (Beta)  
+- **Utilizatori de business:** Întrebări de business despre date, la care răspund agenții AI cu digna Agentic  
+- **Echipe AI & Automatizare:** Agenți AI care lucrează cu digna prin digna Agentic  
 
 ---
 

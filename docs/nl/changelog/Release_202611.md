@@ -1,6 +1,6 @@
 ---
-title: digna Release 2026.11 | Data Reconciliation (Beta), digna Agentic (Beta) & digna Engine
-description: Lees wat er nieuw is in digna Release 2026.11. Deze versie introduceert drie grote toevoegingen - digna Data Reconciliation (Beta), digna Agentic (Beta) met de digna MCP Server, en de digna Engine, die controles op referentiële integriteit tussen verschillende databasetechnologieën mogelijk maakt.
+title: digna Release 2026.11 | Data Reconciliation, digna Agentic & digna Engine
+description: Lees wat er nieuw is in digna Release 2026.11. Deze versie introduceert drie grote toevoegingen - digna Data Reconciliation, digna Agentic met de digna MCP Server, en de digna Engine, die controles op referentiële integriteit tussen verschillende databasetechnologieën mogelijk maakt.
 keywords: digna Release 2026.11, digna-wijzigingslog, digna Data Reconciliation, datareconciliatie, ETL-validatie, reconciliatie van bron naar doel, digna Agentic, digna MCP Server, AI-agents datakwaliteit, digna Engine, referentiële integriteit tussen verbindingen, query-attributen, data profiling, data observability
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 Release 2026.11 draait om drie grote toevoegingen:
 
-- **digna Data Reconciliation (Beta)**: controleert of data consistent blijft terwijl deze tussen systemen wordt verplaatst  
-- **digna Agentic (Beta)**: stelt digna open voor AI-agents via de digna MCP Server  
+- **digna Data Reconciliation**: controleert of data consistent blijft terwijl deze tussen systemen wordt verplaatst  
+- **digna Agentic**: stelt digna open voor AI-agents via de digna MCP Server  
 - **digna Engine**: profileert data optioneel binnen digna en maakt controles op referentiële integriteit tussen verschillende databasetechnologieën mogelijk  
 
 ---
@@ -18,7 +18,7 @@ Release 2026.11 draait om drie grote toevoegingen:
 ## Nieuwe functies  
 
 ### digna Data Reconciliation (Beta) – Consistentie van bron naar doel  
-Data passeert vaak meerdere systemen voordat het in een rapport terechtkomt. digna Data Reconciliation (Beta) vergelijkt een **doel**-datasource met de **bronnen** waaruit deze is opgebouwd, en waarschuwt wanneer ze niet langer overeenkomen.
+Data passeert vaak meerdere systemen voordat het in een rapport terechtkomt. digna Data Reconciliation vergelijkt een **doel**-datasource met de **bronnen** waaruit deze is opgebouwd, en waarschuwt wanneer ze niet langer overeenkomen.
 
 - Geconfigureerd als benoemde regels op het nieuwe tabblad **Data Reconciliation** van de doel-datasource  
 - Elke datasource van het project waarvoor Data Reconciliation is ingeschakeld, kan als bron dienen  
@@ -47,7 +47,7 @@ Reconciliatiecontroles verschijnen op het dashboard met een tijdlijn per regel. 
 ---
 
 ### digna Agentic (Beta) – digna voor AI-agents  
-De eerste versie van digna Agentic (Beta). AI-agents kunnen nu met digna werken, zakelijke vragen over uw data beantwoorden en helpen uw configuratie te verbeteren.
+De eerste versie van digna Agentic. AI-agents kunnen nu met digna werken, zakelijke vragen over uw data beantwoorden en helpen uw configuratie te verbeteren.
 
 **digna MCP Server**: laat Claude en andere AI-agents met digna werken via het Model Context Protocol.
 
@@ -102,11 +102,11 @@ Deze release geeft gebruikers ook meer controle over wat er wordt geprofileerd e
 
 ## Wie profiteert van deze release  
 
-- **Data Engineers:** validatie van ETL-resultaten met digna Data Reconciliation (Beta)  
-- **Finance-, risk- en controllingteams:** standaard reconciliatieprocedures als Exact-regels in digna Data Reconciliation (Beta)  
+- **Data Engineers:** validatie van ETL-resultaten met digna Data Reconciliation  
+- **Finance-, risk- en controllingteams:** standaard reconciliatieprocedures als Exact-regels in digna Data Reconciliation  
 - **Datakwaliteit- en Data Governance-teams:** referentiële integriteit over databasetechnologieën heen met de digna Engine  
-- **Zakelijke gebruikers:** zakelijke vragen over data beantwoord door AI-agents met digna Agentic (Beta)  
-- **AI- en automatiseringsteams:** AI-agents die met digna werken via digna Agentic (Beta)  
+- **Zakelijke gebruikers:** zakelijke vragen over data beantwoord door AI-agents met digna Agentic  
+- **AI- en automatiseringsteams:** AI-agents die met digna werken via digna Agentic  
 
 ---
 

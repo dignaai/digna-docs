@@ -1,6 +1,6 @@
 ---
-title: digna الإصدار 2026.11 | Data Reconciliation (Beta) وdigna Agentic (Beta) وdigna Engine
-description: تعرّف على الجديد في digna الإصدار 2026.11. يقدّم هذا الإصدار ثلاث إضافات رئيسية - digna Data Reconciliation (Beta)، وdigna Agentic (Beta) مع digna MCP Server، وdigna Engine الذي يتيح فحوصات التكامل المرجعي بين تقنيات قواعد بيانات مختلفة.
+title: digna الإصدار 2026.11 | Data Reconciliation وdigna Agentic وdigna Engine
+description: تعرّف على الجديد في digna الإصدار 2026.11. يقدّم هذا الإصدار ثلاث إضافات رئيسية - digna Data Reconciliation، وdigna Agentic مع digna MCP Server، وdigna Engine الذي يتيح فحوصات التكامل المرجعي بين تقنيات قواعد بيانات مختلفة.
 keywords: digna Release 2026.11, digna changelog, digna Data Reconciliation, مطابقة البيانات, التحقق من ETL, المطابقة بين المصدر والهدف, digna Agentic, digna MCP Server, وكلاء الذكاء الاصطناعي لجودة البيانات, digna Engine, التكامل المرجعي عبر الاتصالات, سمات الاستعلام, تنميط البيانات, مراقبة البيانات
 image: /assets/logo_square.png
 ---
@@ -9,8 +9,8 @@ image: /assets/logo_square.png
 
 يتمحور الإصدار 2026.11 حول ثلاث إضافات رئيسية:
 
-- **digna Data Reconciliation (Beta)**: يتحقق من بقاء البيانات متسقة أثناء انتقالها بين الأنظمة  
-- **digna Agentic (Beta)**: يفتح digna أمام وكلاء الذكاء الاصطناعي عبر digna MCP Server  
+- **digna Data Reconciliation**: يتحقق من بقاء البيانات متسقة أثناء انتقالها بين الأنظمة  
+- **digna Agentic**: يفتح digna أمام وكلاء الذكاء الاصطناعي عبر digna MCP Server  
 - **digna Engine**: يُجري تنميط البيانات (profiling) اختياريًا داخل digna، ويتيح فحوصات التكامل المرجعي بين تقنيات قواعد بيانات مختلفة  
 
 ---
@@ -18,7 +18,7 @@ image: /assets/logo_square.png
 ## الميزات الجديدة  
 
 ### digna Data Reconciliation (Beta) – الاتساق من المصدر إلى الهدف  
-غالبًا ما تمر البيانات عبر عدة أنظمة قبل أن تصل إلى التقرير. يقارن digna Data Reconciliation (Beta) مصدر بيانات **هدفًا** مع **المصادر** التي بُني منها، وينبّه عندما لا تعود متطابقة.
+غالبًا ما تمر البيانات عبر عدة أنظمة قبل أن تصل إلى التقرير. يقارن digna Data Reconciliation مصدر بيانات **هدفًا** مع **المصادر** التي بُني منها، وينبّه عندما لا تعود متطابقة.
 
 - يُهيّأ على شكل قواعد مسمّاة في علامة التبويب الجديدة **Data Reconciliation** لمصدر البيانات الهدف  
 - يمكن لأي مصدر بيانات في المشروع مفعّل فيه Data Reconciliation أن يكون مصدرًا  
@@ -47,7 +47,7 @@ image: /assets/logo_square.png
 ---
 
 ### digna Agentic (Beta) – digna لوكلاء الذكاء الاصطناعي  
-الإصدار الأول من digna Agentic (Beta). أصبح بإمكان وكلاء الذكاء الاصطناعي الآن العمل مع digna، والإجابة عن أسئلة الأعمال المتعلقة ببياناتك، والمساعدة في تحسين إعداداتك.
+الإصدار الأول من digna Agentic. أصبح بإمكان وكلاء الذكاء الاصطناعي الآن العمل مع digna، والإجابة عن أسئلة الأعمال المتعلقة ببياناتك، والمساعدة في تحسين إعداداتك.
 
 **digna MCP Server**: يتيح لـ Claude ووكلاء الذكاء الاصطناعي الآخرين العمل مع digna عبر Model Context Protocol.
 
@@ -102,11 +102,11 @@ image: /assets/logo_square.png
 
 ## من المستفيدون من هذا الإصدار  
 
-- **مهندسو البيانات:** التحقق من نتائج ETL باستخدام digna Data Reconciliation (Beta)  
-- **فرق المالية والمخاطر والرقابة المالية:** إجراءات المطابقة القياسية كقواعد Exact في digna Data Reconciliation (Beta)  
+- **مهندسو البيانات:** التحقق من نتائج ETL باستخدام digna Data Reconciliation  
+- **فرق المالية والمخاطر والرقابة المالية:** إجراءات المطابقة القياسية كقواعد Exact في digna Data Reconciliation  
 - **فرق جودة البيانات والحوكمة:** التكامل المرجعي عبر تقنيات قواعد البيانات باستخدام digna Engine  
-- **مستخدمو الأعمال:** إجابات وكلاء الذكاء الاصطناعي عن أسئلة الأعمال حول البيانات باستخدام digna Agentic (Beta)  
-- **فرق الذكاء الاصطناعي والأتمتة:** وكلاء ذكاء اصطناعي يعملون مع digna عبر digna Agentic (Beta)  
+- **مستخدمو الأعمال:** إجابات وكلاء الذكاء الاصطناعي عن أسئلة الأعمال حول البيانات باستخدام digna Agentic  
+- **فرق الذكاء الاصطناعي والأتمتة:** وكلاء ذكاء اصطناعي يعملون مع digna عبر digna Agentic  
 
 ---
 
