@@ -6,11 +6,13 @@ Izdaja 2026.11 temelji na treh pomembnih novostih:
 - **digna Agentic**: prek digna MCP Server odpre digno AI agentom  
 - **digna Engine**: po želji profilira podatke znotraj digne in omogoča preverjanja referenčne celovitosti med različnimi tehnologijami baz podatkov  
 
+digna Data Reconciliation in digna Agentic sta na voljo v različici beta.
+
 ---
 
 ## Nove Funkcije  
 
-### digna Data Reconciliation (Beta) – Konsistentnost od Vira do Cilja  
+### digna Data Reconciliation – Konsistentnost od Vira do Cilja  
 Podatki pogosto potujejo skozi več sistemov, preden pridejo v poročilo. digna Data Reconciliation primerja **ciljni** podatkovni vir z **viri**, iz katerih je bil zgrajen, in sproži opozorilo, ko se ne ujemajo več.
 
 - Konfigurira se kot poimenovana pravila na novem zavihku **Data Reconciliation** ciljnega podatkovnega vira  
@@ -39,7 +41,7 @@ Preverjanja usklajevanja so prikazana na Dashboardu s časovnico za vsako pravil
 
 ---
 
-### digna Agentic (Beta) – digna za AI Agente  
+### digna Agentic – digna za AI Agente  
 Prva različica digna Agentic. AI agenti lahko zdaj delajo z digno, odgovarjajo na poslovna vprašanja o vaših podatkih in pomagajo izboljšati vašo konfiguracijo.
 
 **digna MCP Server**: Omogoča, da Claude in drugi AI agenti delajo z digno prek Model Context Protocol.

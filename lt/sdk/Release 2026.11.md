@@ -4,6 +4,8 @@
 
 SDK platinamas kaip paketas `digna-sdk` ir suteikia stabilų, versijuojamą ***digna*** REST API klientą.
 
+digna Data Reconciliation ir digna Agentic pateikiami kaip beta versijos.
+
 ---
 
 ## SDK pagrindai

@@ -633,11 +633,13 @@ La Release 2026.11 s'articule autour de trois ajouts majeurs :
 - **digna Agentic** : ouvre digna aux agents IA via le digna MCP Server  
 - **digna Engine** : profile, en option, les données au sein de digna et permet des contrôles d'intégrité référentielle entre différentes technologies de bases de données  
 
+digna Data Reconciliation et digna Agentic sont livrés en version bêta.
+
 ---
 
 ## Nouvelles fonctionnalités  
 
-### digna Data Reconciliation (Beta) – Cohérence de la source à la cible  
+### digna Data Reconciliation – Cohérence de la source à la cible  
 Les données transitent souvent par plusieurs systèmes avant d'arriver dans un rapport. digna Data Reconciliation compare une source de données **cible** avec les **sources** à partir desquelles elle a été construite, et alerte lorsqu'elles ne concordent plus.
 
 - Configurée sous forme de règles nommées dans le nouvel onglet **Data Reconciliation** de la source de données cible  
@@ -666,7 +668,7 @@ Les contrôles de rapprochement apparaissent sur le Dashboard avec une chronolog
 
 ---
 
-### digna Agentic (Beta) – digna pour les agents IA  
+### digna Agentic – digna pour les agents IA  
 Première version de digna Agentic. Les agents IA peuvent désormais travailler avec digna, répondre à des questions métier sur vos données et vous aider à améliorer votre configuration.
 
 **digna MCP Server** : permet à Claude et à d'autres agents IA de travailler avec digna via le Model Context Protocol.
@@ -5136,6 +5138,8 @@ Source: https://docs.digna.ai/fr/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 Cette page documente l'ensemble complet des commandes disponibles dans la version **2026.11** du CLI ***digna***, avec des exemples d'utilisation et les options.
+
+digna Data Reconciliation et digna Agentic sont livrés en version bêta.
 
 L'exécutable s'appelle `digna`.
 
@@ -12181,6 +12185,8 @@ Source: https://docs.digna.ai/fr/sdk/Release%202026.11/
 Cette section documente le SDK Python de ***digna***. Elle est organisée comme une référence multipage : utilisez cette vue d'ensemble pour comprendre le client, puis poursuivez avec les pages dédiées au démarrage rapide, aux ressources, aux modèles, aux erreurs et à la documentation d'API générée.
 
 Le SDK est publié sous la forme du paquet `digna-sdk` et expose un client stable et versionné pour l'API REST de ***digna***.
+
+digna Data Reconciliation et digna Agentic sont livrés en version bêta.
 
 ---
 

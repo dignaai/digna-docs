@@ -3,6 +3,8 @@
 
 Deze pagina documenteert de volledige set opdrachten die beschikbaar is in ***digna*** CLI-release **2026.11**, inclusief gebruiksvoorbeelden en opties.
 
+digna Data Reconciliation en digna Agentic worden geleverd als bètaversies.
+
 Het uitvoerbare bestand heet `digna`.
 
 ---

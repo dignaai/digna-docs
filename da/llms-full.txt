@@ -632,11 +632,13 @@ Release 2026.11 er bygget op omkring tre store nyheder:
 - **digna Agentic**: åbner digna for AI-agenter via digna MCP Server  
 - **digna Engine**: profilerer valgfrit data inde i digna og muliggør kontroller af referentiel integritet mellem forskellige databaseteknologier  
 
+digna Data Reconciliation og digna Agentic leveres som betaversioner.
+
 ---
 
 ## Nye funktioner  
 
-### digna Data Reconciliation (Beta) – Konsistens fra kilde til mål  
+### digna Data Reconciliation – Konsistens fra kilde til mål  
 Data passerer ofte gennem flere systemer, før de når frem til en rapport. digna Data Reconciliation sammenligner en **mål**-datakilde med de **kilder**, den er bygget ud fra, og advarer, når de ikke længere stemmer overens.
 
 - Konfigureres som navngivne regler på den nye fane **Data Reconciliation** i måldatakilden  
@@ -665,7 +667,7 @@ Afstemningskontroller vises på Dashboard med en tidslinje pr. regel. De tæller
 
 ---
 
-### digna Agentic (Beta) – digna til AI-agenter  
+### digna Agentic – digna til AI-agenter  
 Den første version af digna Agentic. AI-agenter kan nu arbejde med digna, besvare forretningsspørgsmål om dine data og hjælpe med at forbedre din konfiguration.
 
 **digna MCP Server**: Lader Claude og andre AI-agenter arbejde med digna via Model Context Protocol.
@@ -5157,6 +5159,8 @@ Source: https://docs.digna.ai/da/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 Denne side dokumenterer det fulde sæt kommandoer, der er tilgængelige i ***digna*** CLI-udgivelse **2026.11**, inklusive anvendelseseksempler og indstillinger.
+
+digna Data Reconciliation og digna Agentic leveres som betaversioner.
 
 Den eksekverbare fil hedder `digna`.
 
@@ -12217,6 +12221,8 @@ Source: https://docs.digna.ai/da/sdk/Release%202026.11/
 Dette afsnit dokumenterer Python-SDK'et til ***digna***. Det er bygget op som en reference over flere sider: brug denne oversigt til at forstå klienten, og fortsæt derefter på de særskilte sider om hurtig start, ressourcer, modeller, fejl og den genererede API-dokumentation.
 
 SDK'et udgives som pakken `digna-sdk` og stiller en stabil, versioneret klient til rådighed for ***digna***s REST-API.
+
+digna Data Reconciliation og digna Agentic leveres som betaversioner.
 
 ---
 

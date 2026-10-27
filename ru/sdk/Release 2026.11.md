@@ -4,6 +4,8 @@
 
 SDK публикуется в виде пакета `digna-sdk` и предоставляет стабильный версионированный клиент для REST API ***digna***.
 
+digna Data Reconciliation и digna Agentic поставляются в бета-версии.
+
 ---
 
 ## Основы SDK

@@ -632,11 +632,13 @@ Release 2026.11 は、3 つの主要な追加機能を中心に構成されて�
 - **digna Agentic**: digna MCP Server を通じて digna を AI エージェントに開放します  
 - **digna Engine**: オプションで digna 内部でデータをプロファイリングし、異なるデータベース技術間の参照整合性チェックを可能にします  
 
+digna Data Reconciliation と digna Agentic はベータ版として提供されます。
+
 ---
 
 ## 新機能  
 
-### digna Data Reconciliation (Beta) – ソースからターゲットまでの一貫性  
+### digna Data Reconciliation – ソースからターゲットまでの一貫性  
 データはレポートに届くまでに、複数のシステムを経由することがよくあります。digna Data Reconciliation は、**ターゲット**のデータソースを、その作成元となった**ソース**と比較し、両者が一致しなくなったときにアラートを出します。
 
 - ターゲットデータソースの新しい **Data Reconciliation** タブで、名前付きルールとして設定します  
@@ -665,7 +667,7 @@ Release 2026.11 は、3 つの主要な追加機能を中心に構成されて�
 
 ---
 
-### digna Agentic (Beta) – AI エージェントのための digna  
+### digna Agentic – AI エージェントのための digna  
 digna Agentic の最初のバージョンです。AI エージェントが digna と連携し、データに関するビジネス上の質問に答え、設定の改善を支援できるようになりました。
 
 **digna MCP Server**: Claude などの AI エージェントが、Model Context Protocol を通じて digna と連携できるようにします。
@@ -5139,6 +5141,8 @@ Source: https://docs.digna.ai/ja/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 このページでは、***digna*** CLI リリース **2026.11** で利用できるコマンドの全体像を、使用例とオプションを含めて説明します。
+
+digna Data Reconciliation と digna Agentic はベータ版として提供されます。
 
 実行ファイルの名前は `digna` です。
 
@@ -12036,6 +12040,8 @@ Source: https://docs.digna.ai/ja/sdk/Release%202026.11/
 このセクションでは ***digna*** の Python SDK について説明します。複数ページ構成のリファレンスになっており、まずこの概要でクライアントの全体像をつかみ、続いてクイックスタート、リソース、モデル、エラー、自動生成 API ドキュメントの各ページに進んでください。
 
 SDK は `digna-sdk` パッケージとして公開され、***digna*** REST API 用の安定したバージョン管理されたクライアントを提供します。
+
+digna Data Reconciliation と digna Agentic はベータ版として提供されます。
 
 ---
 

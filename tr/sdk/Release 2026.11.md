@@ -4,6 +4,8 @@ Bu bölüm ***digna*** için Python SDK'sını belgeler. Birden çok sayfadan ol
 
 SDK, `digna-sdk` paketi olarak yayımlanır ve ***digna*** REST API'si için kararlı, sürümlenmiş bir istemci sunar.
 
+digna Data Reconciliation ve digna Agentic beta sürüm olarak sunulmaktadır.
+
 ---
 
 ## SDK Temelleri

@@ -3,6 +3,8 @@
 
 Šajā lapā ir dokumentēts pilns komandu kopums, kas pieejams ***digna*** CLI **2026.11** laidienā, tostarp lietošanas piemēri un opcijas.
 
+digna Data Reconciliation un digna Agentic tiek piegādāti kā beta versijas.
+
 Izpildāmais fails saucas `digna`.
 
 ---

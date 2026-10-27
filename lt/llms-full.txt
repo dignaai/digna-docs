@@ -632,11 +632,13 @@ Leidimas 2026.11 sukurtas aplink tris svarbius papildymus:
 - **digna Agentic**: atveria digna AI agentams per digna MCP Server  
 - **digna Engine**: pasirinktinai profiliuoja duomenis pačioje digna ir leidžia tikrinti nuorodinį vientisumą tarp skirtingų duomenų bazių technologijų  
 
+digna Data Reconciliation ir digna Agentic pateikiami kaip beta versijos.
+
 ---
 
 ## Naujos funkcijos  
 
-### digna Data Reconciliation (Beta) – Šaltinio ir tikslo nuoseklumas  
+### digna Data Reconciliation – Šaltinio ir tikslo nuoseklumas  
 Prieš pasiekdami ataskaitą, duomenys dažnai pereina per kelias sistemas. digna Data Reconciliation palygina **tikslinį** duomenų šaltinį su **šaltiniais**, iš kurių jis buvo sukurtas, ir įspėja, kai jie nebesutampa.
 
 - Konfigūruojama kaip pavadintos taisyklės naujame tikslinio duomenų šaltinio skirtuke **Data Reconciliation**  
@@ -665,7 +667,7 @@ Suderinimo patikros rodomos dashboard su atskira laiko juosta kiekvienai taisykl
 
 ---
 
-### digna Agentic (Beta) – digna AI agentams  
+### digna Agentic – digna AI agentams  
 Pirmoji digna Agentic versija. AI agentai dabar gali dirbti su digna, atsakyti į verslo klausimus apie jūsų duomenis ir padėti patobulinti jūsų konfigūraciją.
 
 **digna MCP Server**: leidžia Claude ir kitiems AI agentams dirbti su digna per Model Context Protocol.
@@ -5156,6 +5158,8 @@ Source: https://docs.digna.ai/lt/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 Šiame puslapyje aprašomas visas komandų rinkinys, prieinamas ***digna*** CLI **2026.11** laidoje, kartu su naudojimo pavyzdžiais ir parinktimis.
+
+digna Data Reconciliation ir digna Agentic pateikiami kaip beta versijos.
 
 Vykdomasis failas vadinasi `digna`.
 
@@ -12216,6 +12220,8 @@ Source: https://docs.digna.ai/lt/sdk/Release%202026.11/
 Šiame skyriuje aprašomas ***digna*** Python SDK. Jis sudarytas kaip kelių puslapių žinynas: iš šios apžvalgos susipažinsite su klientu, o paskui galėsite tęsti atskiruose puslapiuose apie greitąją pradžią, išteklius, modelius, klaidas ir sugeneruotą API dokumentaciją.
 
 SDK platinamas kaip paketas `digna-sdk` ir suteikia stabilų, versijuojamą ***digna*** REST API klientą.
+
+digna Data Reconciliation ir digna Agentic pateikiami kaip beta versijos.
 
 ---
 

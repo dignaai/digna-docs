@@ -632,11 +632,13 @@ Release 2026.11 draait om drie grote toevoegingen:
 - **digna Agentic**: stelt digna open voor AI-agents via de digna MCP Server  
 - **digna Engine**: profileert data optioneel binnen digna en maakt controles op referentiële integriteit tussen verschillende databasetechnologieën mogelijk  
 
+digna Data Reconciliation en digna Agentic worden geleverd als bètaversies.
+
 ---
 
 ## Nieuwe functies  
 
-### digna Data Reconciliation (Beta) – Consistentie van bron naar doel  
+### digna Data Reconciliation – Consistentie van bron naar doel  
 Data passeert vaak meerdere systemen voordat het in een rapport terechtkomt. digna Data Reconciliation vergelijkt een **doel**-datasource met de **bronnen** waaruit deze is opgebouwd, en waarschuwt wanneer ze niet langer overeenkomen.
 
 - Geconfigureerd als benoemde regels op het nieuwe tabblad **Data Reconciliation** van de doel-datasource  
@@ -665,7 +667,7 @@ Reconciliatiecontroles verschijnen op het dashboard met een tijdlijn per regel. 
 
 ---
 
-### digna Agentic (Beta) – digna voor AI-agents  
+### digna Agentic – digna voor AI-agents  
 De eerste versie van digna Agentic. AI-agents kunnen nu met digna werken, zakelijke vragen over uw data beantwoorden en helpen uw configuratie te verbeteren.
 
 **digna MCP Server**: laat Claude en andere AI-agents met digna werken via het Model Context Protocol.
@@ -5154,6 +5156,8 @@ Source: https://docs.digna.ai/nl/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 Deze pagina documenteert de volledige set opdrachten die beschikbaar is in ***digna*** CLI-release **2026.11**, inclusief gebruiksvoorbeelden en opties.
+
+digna Data Reconciliation en digna Agentic worden geleverd als bètaversies.
 
 Het uitvoerbare bestand heet `digna`.
 
@@ -12243,6 +12247,8 @@ Source: https://docs.digna.ai/nl/sdk/Release%202026.11/
 Dit onderdeel documenteert de Python SDK voor ***digna***. Het is opgezet als een referentie over meerdere pagina's: gebruik dit overzicht om de client te begrijpen en ga daarna verder met de aparte pagina's over de snelstart, resources, modellen, fouten en de gegenereerde API-documentatie.
 
 De SDK wordt gepubliceerd als het pakket `digna-sdk` en biedt een stabiele, geversioneerde client voor de ***digna*** REST API.
+
+digna Data Reconciliation en digna Agentic worden geleverd als bètaversies.
 
 ---
 

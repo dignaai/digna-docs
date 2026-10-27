@@ -3,6 +3,8 @@
 
 Den här sidan dokumenterar hela uppsättningen kommandon som finns i ***digna*** CLI-release **2026.11**, inklusive användningsexempel och alternativ.
 
+digna Data Reconciliation och digna Agentic levereras som betaversioner.
+
 Den körbara filen heter `digna`.
 
 ---

@@ -3,6 +3,8 @@
 
 Această pagină documentează setul complet de comenzi disponibile în versiunea **2026.11** a CLI ***digna***, inclusiv exemple de utilizare și opțiuni.
 
+digna Data Reconciliation și digna Agentic sunt livrate în versiune beta.
+
 Executabilul se numește `digna`.
 
 ---

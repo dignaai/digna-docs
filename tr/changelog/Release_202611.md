@@ -6,11 +6,13 @@ Sürüm 2026.11 üç önemli yenilik etrafında şekilleniyor:
 - **digna Agentic**: digna MCP Server aracılığıyla digna'yı AI ajanlarına açar  
 - **digna Engine**: isteğe bağlı olarak verileri digna içinde profiller ve farklı veritabanı teknolojileri arasında referans bütünlüğü kontrollerini mümkün kılar  
 
+digna Data Reconciliation ve digna Agentic beta sürüm olarak sunulmaktadır.
+
 ---
 
 ## Yeni Özellikler  
 
-### digna Data Reconciliation (Beta) – Kaynaktan Hedefe Tutarlılık  
+### digna Data Reconciliation – Kaynaktan Hedefe Tutarlılık  
 Veriler bir rapora ulaşmadan önce çoğu zaman birkaç sistemden geçer. digna Data Reconciliation, bir **hedef** veri kaynağını onu oluşturan **kaynaklarla** karşılaştırır ve artık eşleşmediklerinde alarm verir.
 
 - Hedef veri kaynağının yeni **Data Reconciliation** sekmesinde adlandırılmış kurallar olarak yapılandırılır  
@@ -39,7 +41,7 @@ Mutabakat kontrolleri Dashboard'da kural başına bir zaman çizelgesiyle görü
 
 ---
 
-### digna Agentic (Beta) – AI Ajanları için digna  
+### digna Agentic – AI Ajanları için digna  
 digna Agentic'in ilk sürümü. AI ajanları artık digna ile çalışabilir, verileriniz hakkındaki iş sorularını yanıtlayabilir ve yapılandırmanızı iyileştirmenize yardımcı olabilir.
 
 **digna MCP Server**: Claude ve diğer AI ajanlarının Model Context Protocol aracılığıyla digna ile çalışmasını sağlar.

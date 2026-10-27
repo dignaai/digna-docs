@@ -4,6 +4,8 @@ See jaotis dokumenteerib ***digna*** Python SDK-d. See on üles ehitatud mitmele
 
 SDK avaldatakse paketina `digna-sdk` ning see pakub stabiilset versioonitud klienti ***digna*** REST API jaoks.
 
+digna Data Reconciliation ja digna Agentic tarnitakse beetaversioonidena.
+
 ---
 
 ## SDK alused

@@ -632,11 +632,13 @@ Source: https://docs.digna.ai/ko/changelog/Release_202611/
 - **digna Agentic**: digna MCP Server를 통해 AI 에이전트에게 digna를 개방합니다  
 - **digna Engine**: 선택적으로 digna 내부에서 데이터를 프로파일링하고, 서로 다른 데이터베이스 기술 간의 참조 무결성 검사를 가능하게 합니다  
 
+digna Data Reconciliation과 digna Agentic은 베타 버전으로 제공됩니다.
+
 ---
 
 ## 새로운 기능  
 
-### digna Data Reconciliation (Beta) – 소스에서 대상까지의 일관성  
+### digna Data Reconciliation – 소스에서 대상까지의 일관성  
 데이터는 보고서에 도달하기 전에 여러 시스템을 거치는 경우가 많습니다. digna Data Reconciliation은 **대상** 데이터 소스를 그것이 만들어진 **소스**와 비교하고, 둘이 더 이상 일치하지 않으면 알림을 보냅니다.
 
 - 대상 데이터 소스의 새 **Data Reconciliation** 탭에서 이름이 지정된 규칙으로 구성합니다  
@@ -665,7 +667,7 @@ Source: https://docs.digna.ai/ko/changelog/Release_202611/
 
 ---
 
-### digna Agentic (Beta) – AI 에이전트를 위한 digna  
+### digna Agentic – AI 에이전트를 위한 digna  
 digna Agentic의 첫 번째 버전입니다. 이제 AI 에이전트가 digna와 함께 작업하고, 데이터에 대한 비즈니스 질문에 답하며, 구성 개선을 도울 수 있습니다.
 
 **digna MCP Server**: Claude 및 기타 AI 에이전트가 Model Context Protocol을 통해 digna와 함께 작업할 수 있게 합니다.
@@ -5139,6 +5141,8 @@ Source: https://docs.digna.ai/ko/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 이 페이지는 ***digna*** CLI 릴리스 **2026.11**에서 사용할 수 있는 전체 명령을 사용 예시와 옵션과 함께 설명합니다.
+
+digna Data Reconciliation과 digna Agentic은 베타 버전으로 제공됩니다.
 
 실행 파일의 이름은 `digna`입니다.
 
@@ -12121,6 +12125,8 @@ Source: https://docs.digna.ai/ko/sdk/Release%202026.11/
 이 섹션에서는 ***digna***의 Python SDK를 설명합니다. 여러 페이지로 구성된 참조 문서이므로, 먼저 이 개요로 클라이언트를 파악한 다음 빠른 시작, 리소스, 모델, 오류, 자동 생성 API 문서 페이지로 이어서 살펴보세요.
 
 SDK는 `digna-sdk` 패키지로 배포되며 ***digna*** REST API를 위한 안정적인 버전 관리 클라이언트를 제공합니다.
+
+digna Data Reconciliation과 digna Agentic은 베타 버전으로 제공됩니다.
 
 ---
 

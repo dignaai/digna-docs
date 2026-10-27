@@ -631,11 +631,13 @@ Väljalase 2026.11 keskendub kolmele suurele lisandusele:
 - **digna Agentic**: avab digna AI-agentidele digna MCP Serveri kaudu  
 - **digna Engine**: profileerib soovi korral andmeid digna sees ja võimaldab viiteterviklikkuse kontrolle eri andmebaasitehnoloogiate vahel  
 
+digna Data Reconciliation ja digna Agentic tarnitakse beetaversioonidena.
+
 ---
 
 ## Uued funktsioonid  
 
-### digna Data Reconciliation (Beta) – allika ja sihi kooskõla  
+### digna Data Reconciliation – allika ja sihi kooskõla  
 Enne aruandesse jõudmist läbivad andmed sageli mitu süsteemi. digna Data Reconciliation võrdleb **siht**-andmeallikat **allikatega**, millest see on koostatud, ja annab märku, kui need enam ei klapi.
 
 - Seadistatakse nimeliste reeglitena siht-andmeallika uuel vahekaardil **Data Reconciliation**  
@@ -664,7 +666,7 @@ Kooskõlastuskontrollid kuvatakse dashboardil, iga reegli kohta oma ajajoonega. 
 
 ---
 
-### digna Agentic (Beta) – digna AI-agentidele  
+### digna Agentic – digna AI-agentidele  
 digna Agentic esimene versioon. AI-agendid saavad nüüd dignaga töötada, vastata äriküsimustele teie andmete kohta ja aidata teie konfiguratsiooni parandada.
 
 **digna MCP Server**: võimaldab Claude'il ja teistel AI-agentidel dignaga töötada Model Context Protocoli kaudu.
@@ -5155,6 +5157,8 @@ Source: https://docs.digna.ai/et/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 Sellel lehel on dokumenteeritud kõik käsud, mis on saadaval ***digna*** CLI versioonis **2026.11**, koos kasutusnäidete ja valikutega.
+
+digna Data Reconciliation ja digna Agentic tarnitakse beetaversioonidena.
 
 Käivitatav fail kannab nime `digna`.
 
@@ -12213,6 +12217,8 @@ Source: https://docs.digna.ai/et/sdk/Release%202026.11/
 See jaotis dokumenteerib ***digna*** Python SDK-d. See on üles ehitatud mitmeleheküljelise teatmikuna: kasuta seda ülevaadet kliendi mõistmiseks ning jätka seejärel eraldi lehtedega kiirjuhendi, ressursside, mudelite, vigade ja genereeritud API dokumentatsiooni kohta.
 
 SDK avaldatakse paketina `digna-sdk` ning see pakub stabiilset versioonitud klienti ***digna*** REST API jaoks.
+
+digna Data Reconciliation ja digna Agentic tarnitakse beetaversioonidena.
 
 ---
 

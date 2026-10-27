@@ -632,11 +632,13 @@ Release 2026.11 rakentuu kolmen merkittävän lisäyksen ympärille:
 - **digna Agentic**: avaa dignan tekoälyagenteille digna MCP Serverin kautta  
 - **digna Engine**: profiloi datan valinnaisesti dignan sisällä ja mahdollistaa viite-eheyden tarkistukset eri tietokantateknologioiden välillä  
 
+digna Data Reconciliation ja digna Agentic toimitetaan beetaversioina.
+
 ---
 
 ## Uudet ominaisuudet  
 
-### digna Data Reconciliation (Beta) – Yhdenmukaisuus lähteestä kohteeseen  
+### digna Data Reconciliation – Yhdenmukaisuus lähteestä kohteeseen  
 Data kulkee usein useiden järjestelmien läpi ennen kuin se päätyy raporttiin. digna Data Reconciliation vertaa **kohde**tietolähdettä niihin **lähteisiin**, joista se on muodostettu, ja hälyttää, kun ne eivät enää täsmää.
 
 - Määritetään nimettyinä sääntöinä kohdetietolähteen uudella **Data Reconciliation** -välilehdellä  
@@ -665,7 +667,7 @@ Täsmäytystarkistukset näkyvät Dashboardilla, ja jokaisella säännöllä on 
 
 ---
 
-### digna Agentic (Beta) – digna tekoälyagenteille  
+### digna Agentic – digna tekoälyagenteille  
 digna Agenticin ensimmäinen versio. Tekoälyagentit voivat nyt työskennellä dignan kanssa, vastata dataasi koskeviin liiketoimintakysymyksiin ja auttaa parantamaan konfiguraatiotasi.
 
 **digna MCP Server**: Antaa Clauden ja muiden tekoälyagenttien työskennellä dignan kanssa Model Context Protocolin kautta.
@@ -5152,6 +5154,8 @@ Source: https://docs.digna.ai/fi/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 Tämä sivu dokumentoi kaikki komennot, jotka ovat käytettävissä ***digna*** CLI -julkaisussa **2026.11**, mukaan lukien käyttöesimerkit ja valitsimet.
+
+digna Data Reconciliation ja digna Agentic toimitetaan beetaversioina.
 
 Suoritettavan tiedoston nimi on `digna`.
 
@@ -12214,6 +12218,8 @@ Source: https://docs.digna.ai/fi/sdk/Release%202026.11/
 Tämä osio dokumentoi ***digna***-palvelun Python SDK:n. Se on jäsennetty monisivuiseksi referenssiksi: tästä yleiskatsauksesta saa käsityksen asiakasohjelmasta, minkä jälkeen kannattaa jatkaa omille sivuille pikaoppaasta, resursseista, malleista, virheistä ja generoidusta API-dokumentaatiosta.
 
 SDK julkaistaan pakettina `digna-sdk`, ja se tarjoaa vakaan, versioidun asiakasohjelman ***digna***-palvelun REST-rajapintaan.
+
+digna Data Reconciliation ja digna Agentic toimitetaan beetaversioina.
 
 ---
 

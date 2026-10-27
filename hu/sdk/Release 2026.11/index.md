@@ -4,6 +4,8 @@ Ez a szakasz a ***digna*** Python SDK-ját mutatja be. Több oldalból álló re
 
 Az SDK a `digna-sdk` csomagként jelenik meg, és stabil, verziózott klienst nyújt a ***digna*** REST API-jához.
 
+A digna Data Reconciliation és a digna Agentic béta verzióként érhető el.
+
 ---
 
 ## Az SDK alapjai

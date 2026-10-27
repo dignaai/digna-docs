@@ -3,6 +3,8 @@
 
 Cette page documente l'ensemble complet des commandes disponibles dans la version **2026.11** du CLI ***digna***, avec des exemples d'utilisation et les options.
 
+digna Data Reconciliation et digna Agentic sont livrés en version bêta.
+
 L'exécutable s'appelle `digna`.
 
 ---

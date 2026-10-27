@@ -632,11 +632,13 @@ Source: https://docs.digna.ai/ar/changelog/Release_202611/
 - **digna Agentic**: يفتح digna أمام وكلاء الذكاء الاصطناعي عبر digna MCP Server  
 - **digna Engine**: يُجري تنميط البيانات (profiling) اختياريًا داخل digna، ويتيح فحوصات التكامل المرجعي بين تقنيات قواعد بيانات مختلفة  
 
+يتم تقديم digna Data Reconciliation وdigna Agentic كإصدارات تجريبية (بيتا).
+
 ---
 
 ## الميزات الجديدة  
 
-### digna Data Reconciliation (Beta) – الاتساق من المصدر إلى الهدف  
+### digna Data Reconciliation – الاتساق من المصدر إلى الهدف  
 غالبًا ما تمر البيانات عبر عدة أنظمة قبل أن تصل إلى التقرير. يقارن digna Data Reconciliation مصدر بيانات **هدفًا** مع **المصادر** التي بُني منها، وينبّه عندما لا تعود متطابقة.
 
 - يُهيّأ على شكل قواعد مسمّاة في علامة التبويب الجديدة **Data Reconciliation** لمصدر البيانات الهدف  
@@ -665,7 +667,7 @@ Source: https://docs.digna.ai/ar/changelog/Release_202611/
 
 ---
 
-### digna Agentic (Beta) – digna لوكلاء الذكاء الاصطناعي  
+### digna Agentic – digna لوكلاء الذكاء الاصطناعي  
 الإصدار الأول من digna Agentic. أصبح بإمكان وكلاء الذكاء الاصطناعي الآن العمل مع digna، والإجابة عن أسئلة الأعمال المتعلقة ببياناتك، والمساعدة في تحسين إعداداتك.
 
 **digna MCP Server**: يتيح لـ Claude ووكلاء الذكاء الاصطناعي الآخرين العمل مع digna عبر Model Context Protocol.
@@ -5155,6 +5157,8 @@ Source: https://docs.digna.ai/ar/cli/Command_Line_Interface_202611/
 **2026-10-27**
 
 توثّق هذه الصفحة المجموعة الكاملة من الأوامر المتاحة في إصدار ***digna*** CLI **2026.11**، بما في ذلك أمثلة الاستخدام والخيارات.
+
+يتم تقديم digna Data Reconciliation وdigna Agentic كإصدارات تجريبية (بيتا).
 
 الملف التنفيذي يُسمّى `digna`.
 
@@ -11882,6 +11886,8 @@ Source: https://docs.digna.ai/ar/sdk/Release%202026.11/
 يوثّق هذا القسم حزمة تطوير Python الخاصة بـ ***digna***. وهو منظَّم كمرجع متعدد الصفحات: استخدم هذه النظرة العامة لفهم العميل، ثم تابع في الصفحات المخصّصة للبدء السريع والموارد والنماذج والأخطاء ووثائق واجهة البرمجة المُولَّدة تلقائيًا.
 
 تُنشر الحزمة باسم `digna-sdk` وتوفّر عميلًا مستقرًا ومُصدَّرًا بإصدارات لواجهة REST الخاصة بـ ***digna***.
+
+يتم تقديم digna Data Reconciliation وdigna Agentic كإصدارات تجريبية (بيتا).
 
 ---
 

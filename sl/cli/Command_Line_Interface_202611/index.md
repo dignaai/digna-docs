@@ -3,6 +3,8 @@
 
 Ta stran dokumentira celoten nabor ukazov, ki so na voljo v izdaji **2026.11** vmesnika CLI ***digna***, vključno s primeri uporabe in možnostmi.
 
+digna Data Reconciliation in digna Agentic sta na voljo v različici beta.
+
 Izvršljiva datoteka se imenuje `digna`.
 
 ---
