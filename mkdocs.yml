@@ -59,6 +59,7 @@ nav:
           - How It Works: platform/profiling/how_it_works.md
           - Statistics: platform/profiling/statistics.md
           - Datasets: platform/profiling/datasets.md
+          - Profiling Location: platform/profiling/profiling_location.md
       - digna Data Anomalies:
           - Introduction: platform/data_anomalies/Introduction.md
           - How It Works: platform/data_anomalies/how_it_works.md
@@ -79,6 +80,14 @@ nav:
           - Introduction: platform/schema_tracker/Introduction.md
           - How It Works: platform/schema_tracker/how_it_works.md
           - Use Cases: platform/schema_tracker/use_cases.md
+      - digna Data Reconciliation:
+          - Introduction: platform/data_reconciliation/Introduction.md
+          - How It Works: platform/data_reconciliation/how_it_works.md
+          - Use Cases: platform/data_reconciliation/use_cases.md
+      - digna Agentic:
+          - Introduction: platform/agentic/Introduction.md
+          - How It Works: platform/agentic/how_it_works.md
+          - Connect an AI Agent: platform/agentic/connect_ai_agent.md
   - Installation & Deployment:
       # Platforms are grouped by kind and listed alphabetically within a group.
       # There is no default platform, so none is promoted to the top.
