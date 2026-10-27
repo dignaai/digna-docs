@@ -101,6 +101,7 @@
 
 ## CLI-referencia
 
+- [Release 2026.11](https://docs.digna.ai/hu/cli/Command_Line_Interface_202611/): Teljes referencia a digna CLI 2026.11 kiadásához
 - [Release 2026.06](https://docs.digna.ai/hu/cli/Command_Line_Interface_202606/): Teljes referencia a digna CLI 2026.06 kiadásához
 - [Release 2026.04](https://docs.digna.ai/hu/cli/Command_Line_Interface_202604/): Teljes referencia a digna CLI kiadásról 2026.04
 - [Release 2026.01](https://docs.digna.ai/hu/cli/Command_Line_Interface_202601/): Teljes referencia a digna CLI kiadásról 2026.01. Ismerje meg a felhasználók, adattárak és adatok kezelését olyan parancsokkal, mint az add-user, check-config, check-repo-connection, inspect, inspect-async és továbbiak.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/hu/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
 ## SDK-referencia
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/hu/sdk/Release%202026.11/): Teljes referencia a digna Python SDK 2026.11 kiadásához
+- [Quickstart](https://docs.digna.ai/hu/sdk/Release%202026.11/quickstart/): Gyors bevezető a digna Python SDK 2026.11 kiadásához
+- [Resources](https://docs.digna.ai/hu/sdk/Release%202026.11/resources/): Erőforrás-kliensek a digna Python SDK 2026.11 kiadásához
+- [Models](https://docs.digna.ai/hu/sdk/Release%202026.11/models/): Adatmodellek a digna Python SDK 2026.11 kiadásához
+- [Errors](https://docs.digna.ai/hu/sdk/Release%202026.11/errors/): Hibahierarchia a digna Python SDK 2026.11 kiadásához
+- [API Reference](https://docs.digna.ai/hu/sdk/Release%202026.11/reference/): Kliens API-referencia a digna Python SDK 2026.11 kiadásához
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/hu/changelog/Release_202611/): Ismerd meg, mi újság a digna 2026.11-es kiadásában. Ez a verzió három jelentős újdonságot hoz - a digna Data Reconciliation (Beta), a digna Agentic (Beta) a digna MCP Serverrel, valamint a digna Engine, amely különböző adatbázis-technológiák közötti referenciális integritás-ellenőrzéseket tesz lehetővé.
 - [Release 2026.06](https://docs.digna.ai/hu/changelog/Release_202606/): Ismerd meg, mi újság a digna 2026.06-os kiadásában. Ez a verzió bemutatja az új digna Python SDK-t, a Docker telepítési támogatást, az átdolgozott dashboard élményt és a bővített import/export lehetőségeket az érvényesítési szabályok kezeléséhez.
 - [Release 2026.04](https://docs.digna.ai/hu/changelog/Release_202604/): Tudja meg, mi újság a digna kiadásában 2026.04. Ez a verzió fejlett idősorelemzést vezet be az Analytics Chart segítségével, újrahasznosítható validációs szabály sablonokat, enumerációkat az engedélyezett értékekhez és oszlop szintű relevanciafeltételeket.
 - [Release 2026.01](https://docs.digna.ai/hu/changelog/Release_202601/): Ismerd meg, mi újság a digna 2026.01 kiadásában. Ez a verzió bevezeti a globális adatbázis-kapcsolatokat, logikai adatforrásokat, anomália relevancia feltételeket, CSV exportokat és fejlett adatellenőrzést, beleértve a referenciális integritás-ellenőrzéseket.

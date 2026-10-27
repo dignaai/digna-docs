@@ -101,6 +101,7 @@
 
 ## CLI referansı
 
+- [Release 2026.11](https://docs.digna.ai/tr/cli/Command_Line_Interface_202611/): digna CLI 2026.11 sürümü için eksiksiz başvuru kılavuzu
 - [Release 2026.06](https://docs.digna.ai/tr/cli/Command_Line_Interface_202606/): digna CLI 2026.06 sürümü için eksiksiz başvuru kılavuzu
 - [Release 2026.04](https://docs.digna.ai/tr/cli/Command_Line_Interface_202604/): digna CLI sürümü 2026.04 için eksiksiz başvuru
 - [Release 2026.01](https://docs.digna.ai/tr/cli/Command_Line_Interface_202601/): digna CLI 2026.01 sürümü için eksiksiz referans. add-user, check-config, check-repo-connection, inspect, inspect-async ve diğer komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/tr/cli/Command_Line_Interface_202409/): digna CLI sürümü 2024.09 için eksiksiz başvuru. add-user, check-repo-connection, upgrade-repo, inspect, tls-status ve daha fazlası gibi komutlarla kullanıcıları, depoları ve veriyi nasıl yöneteceğinizi öğrenin.
 
 ## SDK referansı
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/tr/sdk/Release%202026.11/): digna Python SDK 2026.11 sürümü için eksiksiz başvuru kılavuzu
+- [Quickstart](https://docs.digna.ai/tr/sdk/Release%202026.11/quickstart/): digna Python SDK 2026.11 sürümü için hızlı başlangıç kılavuzu
+- [Resources](https://docs.digna.ai/tr/sdk/Release%202026.11/resources/): digna Python SDK 2026.11 sürümü için kaynak istemcileri
+- [Models](https://docs.digna.ai/tr/sdk/Release%202026.11/models/): digna Python SDK 2026.11 sürümü için veri modelleri
+- [Errors](https://docs.digna.ai/tr/sdk/Release%202026.11/errors/): digna Python SDK 2026.11 sürümü için hata hiyerarşisi
+- [API Reference](https://docs.digna.ai/tr/sdk/Release%202026.11/reference/): digna Python SDK 2026.11 sürümü için istemci API başvurusu
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/tr/changelog/Release_202611/): digna Sürüm 2026.11'de neler yenilendi öğrenin. Bu sürüm üç önemli yenilik sunuyor - digna Data Reconciliation (Beta), digna MCP Server ile digna Agentic (Beta) ve farklı veritabanı teknolojileri arasında referans bütünlüğü kontrollerini mümkün kılan digna Engine.
 - [Release 2026.06](https://docs.digna.ai/tr/changelog/Release_202606/): digna Sürüm 2026.06'da neler yenilendi öğrenin. Bu sürüm yeni digna Python SDK'sını, Docker dağıtım desteğini, yenilenmiş bir dashboard deneyimini ve doğrulama kuralı yönetimi için genişletilmiş içe/dışa aktarma yeteneklerini tanıtıyor.
 - [Release 2026.04](https://docs.digna.ai/tr/changelog/Release_202604/): digna Sürüm 2026.04 ile gelen yenilikleri öğrenin. Bu sürüm, Analytics Chart ile gelişmiş zaman serisi analizi, yeniden kullanılabilir doğrulama kuralı şablonları, enumerations ile izin verilen değerlerin merkezi standardizasyonunu ve sütun düzeyinde alaka koşullarını tanıtıyor.
 - [Release 2026.01](https://docs.digna.ai/tr/changelog/Release_202601/): digna Sürüm 2026.01'de nelerin yeni olduğunu öğrenin. Bu sürüm küresel veritabanı bağlantıları, mantıksal veri kaynakları, anomali önem koşulları, CSV dışa aktarımları ve referans bütünlüğü kontrollerini içeren gelişmiş veri doğrulamayı tanıtır.

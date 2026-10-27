@@ -101,6 +101,7 @@
 
 ## CLI viide
 
+- [Release 2026.11](https://docs.digna.ai/et/cli/Command_Line_Interface_202611/): Täielik teatmik digna CLI versiooni 2026.11 kohta
 - [Release 2026.06](https://docs.digna.ai/et/cli/Command_Line_Interface_202606/): Täielik teatmik digna CLI versiooni 2026.06 kohta
 - [Release 2026.04](https://docs.digna.ai/et/cli/Command_Line_Interface_202604/): Täielik viide digna CLI väljaandele 2026.04
 - [Release 2026.01](https://docs.digna.ai/et/cli/Command_Line_Interface_202601/): Täielik viide digna CLI väljalaske 2026.01 kohta. Õpi, kuidas hallata kasutajaid, hoidlaid ja andmeid käskudega nagu add-user, check-config, check-repo-connection, inspect, inspect-async ja palju muud.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/et/cli/Command_Line_Interface_202409/): Täielik viide digna CLI väljalaskeversioonile 2024.09. Õpi, kuidas hallata kasutajaid, repositooriume ja andmeid käskudega nagu add-user, check-repo-connection, upgrade-repo, inspect, tls-status ja teised.
 
 ## SDK viide
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/et/sdk/Release%202026.11/): Täielik teatmik digna Python SDK versiooni 2026.11 kohta
+- [Quickstart](https://docs.digna.ai/et/sdk/Release%202026.11/quickstart/): Kiirjuhend digna Python SDK versiooni 2026.11 jaoks
+- [Resources](https://docs.digna.ai/et/sdk/Release%202026.11/resources/): Ressursikliendid digna Python SDK versiooni 2026.11 jaoks
+- [Models](https://docs.digna.ai/et/sdk/Release%202026.11/models/): Andmemudelid digna Python SDK versiooni 2026.11 jaoks
+- [Errors](https://docs.digna.ai/et/sdk/Release%202026.11/errors/): Veahierarhia digna Python SDK versiooni 2026.11 jaoks
+- [API Reference](https://docs.digna.ai/et/sdk/Release%202026.11/reference/): Kliendi API teatmik digna Python SDK versiooni 2026.11 jaoks
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/et/changelog/Release_202611/): Tutvuge, mis on uut digna väljalases 2026.11. See versioon toob kolm suurt lisandust - digna Data Reconciliation (Beta), digna Agentic (Beta) koos digna MCP Serveriga ning digna Engine, mis võimaldab viiteterviklikkuse kontrolle eri andmebaasitehnoloogiate vahel.
 - [Release 2026.06](https://docs.digna.ai/et/changelog/Release_202606/): Tutvuge, mis on uut digna väljalases 2026.06. See versioon toob kaasa uue digna Python SDK, ametliku Docker‑deploy toe, ümberkujundatud dashboardi kasutajakogemuse ja laiendatud import/eksport võimalused valideerimisreeglite haldamiseks.
 - [Release 2026.04](https://docs.digna.ai/et/changelog/Release_202604/): Tutvu, mis on uut digna väljalases 2026.04. See versioon lisab täiustatud ajaseeriate analüüsi Analytics Chartiga, taaskasutatavad valideerimisreeglite mallid, enumeratsioonid lubatud väärtuste jaoks ja veerutasemel asjakohasuskonditsioonid.
 - [Release 2026.01](https://docs.digna.ai/et/changelog/Release_202601/): Saa teada, mis on uut digna väljalases 2026.01. See versioon lisab globaalsed andmebaasiühendused, loogilised andmeallikad, anomaaliate asjakohasuse tingimused, CSV-eksporti ning täiustatud andmevalideerimise koos viitelise terviklikkuse kontrollidega.

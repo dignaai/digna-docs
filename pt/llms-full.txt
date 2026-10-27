@@ -622,6 +622,121 @@ Ambas podem ser restauradas aos seus padrões a qualquer momento. Veja [Configur
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/pt/changelog/Release_202611/
+
+# Registro de Alterações – Release 2026.11  
+
+A Release 2026.11 é construída em torno de três grandes novidades:
+
+- **digna Data Reconciliation (Beta)**: verifica se os dados permanecem consistentes à medida que se movem entre sistemas  
+- **digna Agentic (Beta)**: abre a digna para agentes de IA por meio do digna MCP Server  
+- **digna Engine**: opcionalmente faz o perfilamento dos dados dentro da digna e possibilita verificações de integridade referencial entre diferentes tecnologias de banco de dados  
+
+---
+
+## Novos Recursos  
+
+### digna Data Reconciliation (Beta) – Consistência da Origem ao Destino  
+Os dados costumam passar por vários sistemas antes de chegar a um relatório. O digna Data Reconciliation (Beta) compara uma fonte de dados de **destino** com as **origens** a partir das quais ela foi construída e emite um alerta quando elas deixam de corresponder.
+
+- Configurado como regras nomeadas na nova aba **Data Reconciliation** da fonte de dados de destino  
+- Qualquer fonte de dados do projeto com o Data Reconciliation ativado pode ser uma origem  
+- Os casos de uso incluem procedimentos padrão de reconciliação e a validação dos resultados de processos de ETL  
+- Dois tipos de regras: **Exact** e **AI**  
+
+**Regras Exact – Reconciliação como Regra de Qualidade de Dados**: Você define exatamente o que deve corresponder entre uma origem e um destino, como em uma regra de qualidade de dados.
+
+  - Compare uma fonte de dados de origem com uma fonte de dados de destino  
+  - Associe uma verificação do destino a uma verificação da origem por estatística e atributo, por exemplo, contagens de linhas ou a soma de uma coluna de valores  
+  - Permita uma diferença com uma tolerância **absolute** (por exemplo, ± 10) ou **relative** (por exemplo, ± 0,5 % da origem)  
+  - A linha do tempo mostra a diferença de cada dia em relação à tolerância  
+
+**Regras AI – Reconciliação como Observabilidade de Dados**: A digna aprende como um destino acompanha suas origens, da mesma forma que observa os dados em outros módulos, e emite um alerta quando essa relação se rompe.
+
+  - Combine verificações de várias fontes de dados de origem com as verificações de um destino  
+  - Não é preciso conhecer nem descrever a lógica entre elas (joins, filtros, agregações)  
+  - Um modelo aprende com o histórico como o destino acompanha suas origens no mesmo dia  
+  - Cada verificação do destino é prevista a partir dos valores das origens no dia, e a digna emite um alerta quando o destino sai da faixa formada pelos erros passados da própria regra  
+  - Cada regra tem suas próprias **Model settings**: **Sensitivity**, **Memory** e **Model Complexity**  
+
+As verificações de reconciliação aparecem no Dashboard com uma linha do tempo por regra. Elas contam para o status geral da inspeção e disparam notificações.
+
+**Impacto:** Cobre os dois lados da reconciliação. As regras Exact garantem controles conhecidos entre origem e destino, e as regras AI monitoram fluxos complexos, como processos de ETL, de modo que dados perdidos ou alterados no caminho sejam detectados sem SQL de reconciliação escrito à mão.
+
+---
+
+### digna Agentic (Beta) – digna para Agentes de IA  
+A primeira versão do digna Agentic (Beta). Agentes de IA agora podem trabalhar com a digna, responder a perguntas de negócio sobre seus dados e ajudar a melhorar sua configuração.
+
+**digna MCP Server**: Permite que o Claude e outros agentes de IA trabalhem com a digna por meio do Model Context Protocol.
+
+  - Gerencie projetos, fontes de dados, regras, agendamentos de inspeção e assinaturas  
+  - Leia os status de inspeção até o nível de cada verificação, para investigar alertas  
+
+**Descrições em Fontes de Dados e Atributos**: Descreva em linguagem simples o que uma fonte de dados ou um atributo contém.
+
+  - Os agentes de IA usam as descrições para interpretar seus dados  
+  - Faça perguntas de negócio sobre seus dados, e os agentes de IA as respondem com base no que a digna monitora  
+  - Se a configuração atual da digna não consegue responder a uma pergunta, o agente de IA sugere, quando possível, alterações na fonte de dados e em seus atributos, por exemplo, adicionar um novo conjunto de dados  
+
+**Impacto:** Permite fazer perguntas de negócio sobre seus dados em linguagem simples e permite que agentes de IA ajudem a configurar a digna e a investigar problemas de qualidade de dados.
+
+---
+
+### digna Engine – Perfilamento Onde Você Escolher  
+Por padrão, a digna faz o perfilamento dos dados onde eles estão, no banco de dados de origem. O digna Engine adiciona uma opção: a digna exporta os dados da origem e faz o perfilamento dentro do digna Engine.
+
+- Opcional, não obrigatório: o perfilamento no banco de dados de origem continua disponível  
+- Selecionado por conexão de banco de dados como seu **local de perfilamento**: **Source Database** ou **digna Engine**  
+- Disponível para todas as tecnologias de origem suportadas  
+
+**Integridade Referencial entre Conexões**: Algumas verificações exigem que os dados sejam exportados. O digna Engine estende o **digna Data Validation** para esses casos.
+
+  - **Verificações de Integridade Referencial** entre fontes de dados em **conexões de banco de dados diferentes**, inclusive de tecnologias de banco de dados diferentes (por exemplo, Oracle e PostgreSQL)  
+  - Funciona com os dois locais de perfilamento: para o Source Database, apenas as colunas-chave são exportadas para o digna Engine  
+  - O painel mostra quando uma verificação é executada entre duas conexões  
+
+**Impacto:** Permite escolher onde os dados são perfilados e garante as relações entre sistemas que rodam em tecnologias de banco de dados diferentes.
+
+---
+
+## Aprimoramentos de Perfilamento  
+
+Esta versão também dá aos usuários mais controle sobre o que é perfilado e como.
+
+### Atributos de Consulta – Colunas Definidas pelo Usuário  
+- Defina colunas artificiais: uma expressão SQL sobre uma ou mais colunas da fonte de dados  
+- Cada atributo de consulta tem seu próprio nome  
+- Perfilado e verificado como qualquer outro atributo  
+
+### Categoria de Coluna DATE  
+- Nova categoria **Date** para atributos  
+- Métricas relativas à data inspecionada  
+
+### Perfilamento Sob Demanda  
+- Faça o perfilamento de qualquer atributo sobre o snapshot completo de uma data, sem executar uma inspeção  
+- Ajuda a definir o tipo de coluna do atributo: **Numerical**, **Categorical**, **Date** ou **Unspecified**  
+
+---
+
+## Quem se Beneficia Desta Versão  
+
+- **Data Engineers:** Validação de resultados de ETL com o digna Data Reconciliation (Beta)  
+- **Equipes de Finanças, Risco e Controladoria:** Procedimentos padrão de reconciliação como regras exatas no digna Data Reconciliation (Beta)  
+- **Equipes de Qualidade e Governança de Dados:** Integridade referencial entre tecnologias de banco de dados com o digna Engine  
+- **Usuários de Negócio:** Perguntas de negócio sobre os dados respondidas por agentes de IA com o digna Agentic (Beta)  
+- **Equipes de IA e Automação:** Agentes de IA trabalhando com a digna por meio do digna Agentic (Beta)  
+
+---
+
+## Atualizações da CLI  
+- Sem alterações  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/pt/cli/Command_Line_Interface_202409/
 
@@ -4217,6 +4332,934 @@ digna version
 #### Exemplo de Saída
 ```text
 2026.06
+```
+
+---
+
+## Gerenciamento de Configuração
+
+---
+
+### config check
+
+O comando `config check` valida o arquivo de configuração (`config.toml`), verificando se todas as seções e configurações obrigatórias estão presentes e formatadas corretamente. Cada seção é validada isoladamente, de modo que uma seção `[app]` quebrada não oculte o estado de `[repo]`.
+
+As seções informadas são:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — opcional; uma chave ausente passa na verificação, uma lista presente porém malformada falha
+
+O comando deliberadamente não carrega a configuração da aplicação da mesma forma que os outros comandos, para que possa diagnosticar um `config.toml` que impediria completamente o ***digna*** de iniciar.
+
+#### Uso do Comando
+```bash
+digna config check [OPTIONS]
+```
+
+#### Opções
+- `--configpath`, `-c`: Caminho para o arquivo de configuração ou para um diretório que contenha `config.toml` (o padrão é `./config.toml`).
+- `--json`: Emite o relatório de validação em JSON. Tem precedência sobre `--quiet`.
+- `--quiet`, `-q`: Suprime o relatório e se baseia exclusivamente no código de saída.
+
+#### Exemplo
+```bash
+digna config check
+```
+
+Validar um arquivo de configuração específico e formatar a saída como JSON:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Exemplo de Saída
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+Um arquivo ausente ou um erro de sintaxe TOML não deixa nada a ser validado seção por seção e é relatado como um único erro em vez de um relatório, independentemente de `--quiet` ou `--json`.
+
+---
+
+## Gerenciamento de Repositório
+
+---
+
+### repo check
+
+O comando `repo check` testa a conexão com o banco de dados e verifica a instalação e a versão do repositório. Ele falha se o schema configurado não existir, ou se existir mas não contiver um repositório do ***digna***.
+
+A versão informada é a versão do schema do repositório, que é versionado separadamente da release do ***digna*** impressa por [`version`](#version).
+
+#### Uso do Comando
+```bash
+digna repo check
+```
+
+#### Exemplo de Saída
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+O comando `repo install` instala um novo repositório do ***digna*** no schema configurado em `config.toml`, criando todas as sequences, tabelas, índices, constraints e registros iniciais necessários.
+
+O schema em si **não** é criado por este comando — ele precisa existir previamente. O comando também se recusa a executar se já houver um repositório instalado nesse schema, e aponta para [`repo upgrade`](#repo-upgrade) se a versão instalada for mais antiga.
+
+#### Uso do Comando
+```bash
+digna repo install
+```
+
+#### Exemplo de Saída
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+O comando `repo upgrade` aplica migrações do schema do banco de dados para levar um repositório existente até a versão esperada pela release instalada. As atualizações são aplicadas um salto de versão por vez, ao longo de um caminho de upgrade fixo, e cada salto concluído é registrado no repositório.
+
+Se o repositório já estiver na versão esperada, o comando informa que nenhuma atualização é necessária e não faz alteração alguma.
+
+#### Uso do Comando
+```bash
+digna repo upgrade
+```
+
+#### Exemplo de Saída
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+O comando `repo prune` remove as linhas que sobreviveram ao projeto ou à fonte de dados a que
+pertenciam. Excluir um projeto ou uma fonte de dados remove o próprio objeto, mas deixa para trás
+seus perfis, previsões, status e contagens de linhas — uma escolha deliberada, já que uma exclusão
+que também varresse essas tabelas deixaria o usuário esperando. O `repo prune` é a rotina de
+limpeza que as remove, e é seguro executá-lo a qualquer momento: ele só remove linhas cujo projeto
+ou fonte de dados não existe mais.
+
+As linhas gravadas pelo backend Python em tabelas que a release atual não usa mais não são tocadas.
+
+#### Uso do Comando
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Opções
+- `--dry-run`: Informa o que seria removido, sem remover nada.
+
+Apenas as tabelas com linhas órfãs são listadas. Se não houver nenhuma, o comando informa
+`No orphaned rows found.` e encerra.
+
+#### Exemplo
+```bash
+digna repo prune
+```
+
+#### Exemplo de Saída
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Para ver o mesmo relatório sem remover nada:
+```bash
+digna repo prune --dry-run
+```
+
+As contagens de linhas são idênticas; apenas a linha final muda:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+## Gerenciamento de Criptografia
+
+---
+
+### crypt gen-key
+
+O comando `crypt gen-key` gera uma nova chave de criptografia AES-GCM, para uso como chave de criptografia em `config.toml`. Um `config.toml` carregável já precisa estar presente, ainda que a chave gerada não dependa dele.
+
+#### Uso do Comando
+```bash
+digna crypt gen-key
+```
+
+#### Exemplo de Saída
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+O comando `crypt encrypt` criptografa uma string (como a senha de um banco de dados) usando a chave AES-GCM configurada em `config.toml` e imprime o texto cifrado.
+
+#### Uso do Comando
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argumentos
+- **VALUE**: A string em texto simples a ser criptografada (obrigatório).
+
+#### Exemplo
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+O comando `crypt decrypt` descriptografa uma string criptografada com AES-GCM usando a chave configurada em `config.toml` e imprime o texto simples.
+
+#### Uso do Comando
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argumentos
+- **VALUE**: A string cifrada a ser descriptografada (obrigatório).
+
+#### Exemplo
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Gerenciamento de Usuários
+
+---
+
+### user add
+
+O comando `user add` cria uma nova conta de usuário no repositório do ***digna***. O comando falha se já existir um usuário com o endereço de e-mail informado.
+
+#### Uso do Comando
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumentos
+- **EMAIL**: O endereço de e-mail do usuário (obrigatório).
+- **PASSWORD**: A senha inicial do usuário (obrigatório).
+- **DISPLAY_NAME**: O nome de exibição completo do usuário (obrigatório).
+
+#### Opções
+- `--admin`, `-a`: Cria o usuário com privilégios de administrador (superusuário).
+
+#### Exemplo
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Para criar uma conta de administrador:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Exemplo de Saída
+```text
+User created with ID: 42
+```
+
+### user list
+
+O comando `user list` lista todos os usuários registrados em formato tabular, com ID, e-mail, nome de exibição e indicador de administrador.
+
+#### Uso do Comando
+```bash
+digna user list
+```
+
+#### Exemplo de Saída
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+O comando `user modify` atualiza o nome de exibição e os privilégios de administrador de uma conta de usuário existente, identificada pelo endereço de e-mail.
+
+Tanto o nome de exibição quanto o indicador de administrador são sempre gravados. `--admin` é um interruptor, não um valor: **omiti-lo revoga os privilégios de administrador**, portanto informe-o sempre que o usuário deva mantê-los ou obtê-los.
+
+#### Uso do Comando
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumentos
+- **EMAIL**: O e-mail do usuário a ser modificado (obrigatório).
+- **DISPLAY_NAME**: O nome de exibição atualizado (obrigatório).
+
+#### Opções
+- `--admin`, `-a`: Concede privilégios de administrador. Omita para revogá-los.
+- `--valid-until`, `-v`: Aceito por compatibilidade, mas **atualmente não aplicado**. Informá-lo exibe um aviso e não altera nada.
+
+#### Exemplo
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Exemplo de Saída
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+O comando `user modify-pwd` atualiza a senha de uma conta de usuário existente.
+
+#### Uso do Comando
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argumentos
+- **EMAIL**: O e-mail do usuário cuja senha deve ser atualizada (obrigatório).
+- **PASSWORD**: A nova senha (obrigatório).
+
+#### Exemplo
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+O comando `user delete` remove uma conta de usuário do sistema.
+
+#### Uso do Comando
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argumentos
+- **EMAIL**: O e-mail do usuário a ser excluído (obrigatório).
+
+#### Exemplo
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Gerenciamento de Projetos e Fontes de Dados
+
+---
+
+### project list
+
+O comando `project list` lista todos os projetos disponíveis no repositório, mostrando seu ID, nome e descrição.
+
+#### Uso do Comando
+```bash
+digna project list
+```
+
+#### Exemplo de Saída
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+O comando `project list-ds` lista todas as fontes de dados associadas a um determinado projeto, exibindo seu ID, nome, tipo, schema e nome da tabela.
+
+#### Uso do Comando
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argumentos
+- **PROJECT_NAME**: O nome do projeto cujas fontes de dados devem ser listadas (obrigatório). O nome precisa corresponder exatamente.
+
+#### Exemplo
+```bash
+digna project list-ds ProjectA
+```
+
+#### Exemplo de Saída
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+O comando `project export-ds` exporta as fontes de dados de um projeto para um documento JSON.
+
+Se nem `--table-name` nem `--table-id` forem informados, todas as fontes de dados do projeto são exportadas.
+
+#### Uso do Comando
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argumentos
+- **PROJECT_NAME**: O nome do projeto do qual exportar as fontes de dados (obrigatório).
+
+#### Opções
+- `--table-name`, `-n`: Nomes das fontes de dados a exportar. Vários nomes podem ser informados, separados por espaços.
+- `--table-id`, `-i`: IDs das fontes de dados a exportar. Vários IDs podem ser informados, separados por espaços.
+- `--exportfile`, `-f`: Caminho no qual salvar as fontes de dados exportadas (padrão: `data_sources_export.json`).
+
+#### Exemplo
+Para exportar todas as fontes de dados de `ProjectA`:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Para exportar tabelas específicas:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Exemplo de Saída
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+O comando `project import-ds` importa fontes de dados de um arquivo de exportação para um projeto de destino e informa, objeto a objeto, o que foi criado, atualizado ou ignorado.
+
+#### Uso do Comando
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumentos
+- **PROJECT_NAME**: Nome do projeto de destino para o qual importar (obrigatório).
+- **EXPORT_FILE**: Caminho para o arquivo JSON de exportação (obrigatório).
+
+#### Opções
+- `--output-file`, `-o`: Arquivo no qual gravar o relatório de importação. Sem ele, o relatório vai para stdout.
+- `--output-format`, `-f`: Formato do relatório de importação — `table`, `json` ou `csv` (padrão: `table`).
+
+#### Exemplo
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Para obter um relatório legível por máquina:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+O relatório abrange quatro níveis de objeto — fonte de dados, definição do conjunto de dados, atributo e regra de validação — cada um com sua ação de importação, o resultado, o ID do objeto resultante e eventuais informações adicionais.
+
+### project plan-import-ds
+
+O comando `project plan-import-ds` prevê uma importação de fontes de dados para um projeto de destino, mostrando quais objetos seriam criados, atualizados ou ignorados, sem alterar nada. Ele recebe o mesmo arquivo de exportação e as mesmas opções de relatório que [`project import-ds`](#project-import-ds), e acrescenta um número de etapa por objeto planejado.
+
+#### Uso do Comando
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumentos
+- **PROJECT_NAME**: Nome do projeto de destino (obrigatório).
+- **EXPORT_FILE**: Caminho para o arquivo de exportação (obrigatório).
+
+#### Opções
+- `--output-file`, `-o`: Arquivo no qual gravar o plano de importação. Sem ele, o plano vai para stdout.
+- `--output-format`, `-f`: Formato do plano de importação — `table`, `json` ou `csv` (padrão: `table`).
+
+#### Exemplo
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+O comando `project cleanup` remove os resultados de inspeção que um projeto acumulou em um
+intervalo de datas — perfis, previsões, contagens de linhas e todos os status de verificações,
+atributos, conjuntos de dados e fontes de dados. Ele remove exatamente o que uma inspeção dessas
+datas gravou, de modo que o intervalo pode ser inspecionado novamente depois para reconstruí-lo.
+
+O histórico de Timeliness e do Schema Tracker **não** é removido: ele registra o que o digna
+observou em um determinado dia, e não um resultado derivado disso, então a limpeza de um intervalo
+de datas passado o mantém intacto.
+
+Cada fonte de dados é limpa em sua própria transação, de modo que uma execução interrompida deixa
+fontes de dados inteiras, e não uma limpa pela metade.
+
+#### Uso do Comando
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentos
+- **PROJECT_NAME**: Projeto a ser limpo (obrigatório). Um projeto por execução.
+- **FROM_DATE**: Primeira data cujos resultados serão removidos, `YYYY-MM-DD` (obrigatório).
+- **TO_DATE**: Última data cujos resultados serão removidos, inclusive, `YYYY-MM-DD` (obrigatório).
+
+#### Opções
+- `--table-name`, `-n`: Limita a limpeza a estas fontes de dados. Vários nomes podem ser
+  informados, separados por espaços.
+- `--table-filter`: Limita a limpeza às fontes de dados cujo nome contém esta substring.
+- `--dry-run`: Lista as fontes de dados que seriam limpas, sem remover nada.
+- `--timing`: Exibe quanto tempo a limpeza levou.
+
+`--table-name` e `--table-filter` se combinam como um OU — uma fonte de dados é limpa se for
+nomeada ou se a substring corresponder. O comando falha se nenhuma fonte de dados corresponder, em
+vez de informar sucesso em uma limpeza que não fez nada.
+
+#### Exemplo
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Limitado a uma fonte de dados:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Exemplo de Saída
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Para ver quais fontes de dados seriam limpas sem remover nada:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Cada linha é marcada, de modo que uma simulação não pode ser confundida com uma execução real:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Gerenciamento de Inspeções
+
+---
+
+### inspection run
+
+O comando `inspection run` cria uma solicitação de inspeção para um projeto e um intervalo de datas e então — dependendo das opções informadas — espera por ela, retorna imediatamente ou a executa no próprio processo.
+
+Os três modos de execução são:
+
+- **Padrão (sem flag)**: a solicitação é enfileirada para o backend, e a CLI a consulta a cada dois segundos, imprimindo o progresso das tarefas até que a inspeção alcance um estado final. É necessário um `digna serve` em execução; caso contrário, nada retira a solicitação da fila.
+- **`--async-mode`**: a solicitação é enfileirada e seu ID é impresso imediatamente. Use [`inspection status`](#inspection-status) para acompanhá-la.
+- **`--bypass-backend`**: a inspeção é executada pelo próprio processo da CLI e não é enfileirada, portanto nenhum servidor em execução é necessário.
+
+`--async-mode` e `--bypass-backend` são mutuamente exclusivos.
+
+Em todos os modos, o comando termina com um código de saída diferente de zero se a inspeção não tiver sido concluída com sucesso.
+
+#### Uso do Comando
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argumentos
+- **PROJECT_NAME**: O nome do projeto de destino (obrigatório). O nome precisa corresponder exatamente.
+- **START_DATE**: Data inicial do intervalo de datas no formato `YYYY-MM-DD` (obrigatório).
+- **END_DATE**: Data final do intervalo de datas no formato `YYYY-MM-DD` (obrigatório).
+
+#### Opções
+- `--table-name`: Restringe a inspeção a uma única fonte de dados do projeto, informada pelo nome da fonte de dados. Sem essa opção, todas as fontes de dados do projeto são inspecionadas.
+- `--async-mode`: Enfileira a inspeção e imprime o ID da solicitação em vez de esperar por ela. Não pode ser combinada com `--bypass-backend`.
+- `--bypass-backend`: Executa a inspeção diretamente no processo da CLI em vez de enfileirá-la para o backend. Não pode ser combinada com `--async-mode`.
+
+#### Exemplo
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Para enviar uma inspeção assíncrona:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Para inspecionar uma única fonte de dados:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Exemplo de Saída
+Modo padrão:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Modo assíncrono:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+O comando `inspection status` consulta o estado e o progresso das tarefas de uma solicitação de inspeção pelo ID da solicitação.
+
+#### Uso do Comando
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argumentos
+- **INSPECTION_REQUEST_ID**: O ID numérico da solicitação de inspeção (obrigatório).
+
+#### Exemplo
+```bash
+digna inspection status 1024
+```
+
+#### Exemplo de Saída
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+O comando `inspection abort` solicita o cancelamento de solicitações de inspeção em execução ou pendentes. Ele registra um evento de parada para cada solicitação afetada; quem age sobre ele é o backend, portanto um aborto é um pedido de parada, e não um encerramento imediato.
+
+#### Uso do Comando
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argumentos
+- **INSPECTION_REQUEST_ID**: O ID da solicitação de inspeção a abortar. Obrigatório, a menos que `--killall` seja informado.
+
+#### Opções
+- `--killall`: Aborta todas as solicitações de inspeção em execução e pendentes. Tem precedência sobre um ID de solicitação informado junto com ela.
+
+#### Exemplo
+Para abortar uma solicitação específica:
+```bash
+digna inspection abort 1024
+```
+
+Para abortar todas as inspeções ativas e enfileiradas:
+```bash
+digna inspection abort --killall
+```
+
+#### Exemplo de Saída
+`--killall` informa o que fez; abortar uma única solicitação não produz saída e sinaliza o sucesso por meio do código de saída.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Gerenciamento de Licenças
+
+---
+
+### license check
+
+O comando `license check` valida o `license.toml`, verificando sua assinatura contra a chave pública distribuída com a instalação e conferindo que ele não expirou. Ele não lê nenhuma configuração da aplicação, portanto também funciona antes que o `config.toml` esteja configurado.
+
+#### Uso do Comando
+```bash
+digna license check
+```
+
+#### Exemplo de Saída
+```text
+License is valid
+```
+
+Uma assinatura inválida e uma licença expirada são relatadas como erros distintos, ambos com código de saída 1.
+
+---
+
+## Servidor e Serviços em Segundo Plano
+
+---
+
+### serve
+
+O comando `serve` inicia o servidor da API REST do ***digna*** junto com o agendador de inspeções e o gerenciador de inspeções em segundo plano. Na inicialização, ele também marca como falha qualquer inspeção que o repositório ainda registre como em execução, já que nada pode ter sobrevivido de um processo anterior.
+
+O comando é executado em primeiro plano até ser interrompido.
+
+#### Uso do Comando
+```bash
+digna serve [OPTIONS]
+```
+
+#### Opções
+- `--address`: Endereço de rede ao qual associar o servidor da API (padrão: `127.0.0.1`).
+- `--port`: Número da porta na qual escutar (padrão: `8000`).
+
+#### Exemplo
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Exemplo de Saída
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Gerenciamento do Serviço do Windows
+
+Disponível apenas no Windows. Os comandos registram o backend do ***digna*** no gerenciador de
+serviços do Windows e o controlam; o próprio serviço executa `serve` em segundo plano. Todos os
+comandos devem ser executados em um Prompt de Comando com privilégios elevados, e cada um aceita
+`--name` para que um serviço registrado com um nome diferente do padrão possa ser referenciado.
+
+---
+
+### windows install
+
+O comando `windows install` registra o ***digna*** como um serviço do Windows.
+
+O endereço e a porta informados aqui são gravados no registro do serviço e são aqueles aos quais o
+serviço se vincula — eles não são lidos do `config.toml`. Para alterá-los depois, desinstale o
+serviço e instale-o novamente.
+
+#### Uso do Comando
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Opções
+- `--name`: Nome com o qual o serviço é registrado (padrão: `digna`).
+- `--display-name`: Nome exibido no services.msc (padrão: `digna`).
+- `--description`: Descrição exibida no services.msc (padrão: `digna data quality backend`).
+- `--address`: Endereço ao qual o serviço vincula sua API (padrão: `127.0.0.1`).
+- `--port`: Porta à qual o serviço vincula sua API (padrão: `8000`).
+- `--working-dir`: Diretório que contém `config.toml` e `license.toml`, usado pelo serviço como
+  diretório de trabalho (padrão: o diretório do executável `digna`).
+- `--start-type`: Quando o serviço inicia — `auto` com o Windows, `manual` apenas quando
+  solicitado, `disabled` registrado, mas se recusa a iniciar (padrão: `auto`).
+- `--account`: Conta sob a qual o serviço é executado, por exemplo `DOMAIN\user` ou `.\user` (padrão: `LocalSystem`).
+- `--password`: Senha da `--account`.
+
+#### Exemplo
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registrar com um segundo nome, executando com uma conta de domínio:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+O comando `windows start` inicia um serviço registrado.
+
+#### Uso do Comando
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Opções
+- `--name`: Nome com o qual o serviço está registrado (padrão: `digna`).
+
+---
+
+### windows stop
+
+O comando `windows stop` para um serviço em execução. Pare o serviço antes de substituir qualquer
+arquivo da aplicação.
+
+#### Uso do Comando
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Opções
+- `--name`: Nome com o qual o serviço está registrado (padrão: `digna`).
+
+---
+
+### windows uninstall
+
+O comando `windows uninstall` remove o registro do serviço. Pare-o antes.
+
+#### Uso do Comando
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Opções
+- `--name`: Nome com o qual o serviço está registrado (padrão: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/pt/cli/Command_Line_Interface_202611/
+
+# Referência da CLI digna 2026.11
+**2026-10-27**
+
+Esta página documenta o conjunto completo de comandos disponíveis na versão **2026.11** da CLI do ***digna***, incluindo exemplos de uso e opções.
+
+O executável se chama `digna`.
+
+---
+
+## Noções Básicas da CLI
+
+---
+
+### Visão Geral e Sintaxe
+
+A CLI da versão **2026.11** usa uma hierarquia de comandos estruturada e baseada em categorias:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+`version` e `serve` são comandos únicos, sem subcomando:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Opções Globais
+
+As opções globais a seguir se aplicam a todos os comandos:
+
+- `--help`, `-h`: Exibe informações de ajuda sobre a CLI ou sobre uma categoria de comandos ou subcomando específico.
+- `--stacktrace`: Em caso de falha, exibe a cadeia completa de erros em vez de apenas a mensagem de nível mais alto.
+
+`--stacktrace` é uma opção global no sentido estrito: ela precisa ser informada **antes** da categoria de comando, e não depois dela.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+Não existe um flag `--version`. Em vez disso, use o comando [`version`](#version).
+
+### Pré-requisitos
+
+A maioria dos comandos precisa de um `config.toml` legível e válido; alguns exigem, além disso, uma licença válida.
+A tabela a seguir registra o que cada categoria de comandos carrega antes de fazer qualquer coisa:
+
+| Categoria de comandos | Precisa de `config.toml` | Precisa de licença válida |
+|---|---|---|
+| `version` | não | não |
+| `config check` | não (é justamente sobre isso que o comando informa) | não |
+| `license check` | não | ela *é* a verificação |
+| `crypt` | sim | não |
+| `serve` | sim | não |
+| `windows` | não (o serviço o lê quando inicia) | não |
+| `project` | sim | não |
+| `user` | sim | sim |
+| `inspection` | sim | sim |
+| `repo` | sim | sim |
+
+Onde uma licença é exigida, tanto sua assinatura quanto sua data de expiração são verificadas, e o comando é abortado antes de tocar no repositório se qualquer uma das duas falhar.
+
+### Códigos de Saída
+
+- `0`: o comando foi bem-sucedido.
+- `1`: o comando falhou. A mensagem de erro é gravada em stderr, prefixada com `Error: `.
+
+### help
+
+A opção `--help` fornece informações sobre as categorias de comandos, os subcomandos e as opções disponíveis:
+
+1. **Exibindo a ajuda geral:**
+   ```bash
+   digna --help
+   ```
+
+2. **Obtendo ajuda para categorias e comandos específicos:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **A saída inclui:**
+   - **Descrição do Comando:** Resumo da finalidade do comando.
+   - **Sintaxe:** Argumentos obrigatórios e opcionais.
+   - **Opções:** Flags e parâmetros específicos do comando.
+
+### version
+
+O comando `version` imprime a versão instalada do ***digna***. Ele não lê nenhuma configuração e não valida nenhuma licença, portanto também funciona em uma instalação cujo `config.toml` ou cuja licença esteja ausente ou inválida.
+
+A versão da release é independente da versão do schema do repositório informada por [`repo check`](#repo-check).
+
+#### Uso do Comando
+```bash
+digna version
+```
+
+#### Exemplo de Saída
+```text
+2026.11
 ```
 
 ---
@@ -12889,6 +13932,280 @@ Esta página documenta a API de cliente gerada do SDK Python do ***digna***. O `
 Source: https://docs.digna.ai/pt/sdk/Release%202026.06/resources/
 
 # Recursos do SDK Python digna 2026.06
+
+Esta página documenta os clientes de recursos expostos pelo SDK Python do ***digna***. Cada recurso encapsula os endpoints correspondentes da API estável em uma interface consistente e pythônica, com nomes de métodos previsíveis.
+
+O `DignaClient` expõe um objeto de recurso por área da API. Cada recurso encapsula
+os endpoints correspondentes da API estável com nomes de métodos pythônicos.
+
+| Recurso | Atributo | Endpoints |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/pt/sdk/Release%202026.11/
+
+# Referência do SDK Python digna 2026.11
+
+Esta seção documenta o SDK Python do ***digna***. Ela está organizada como uma referência de várias páginas: use esta visão geral para entender o cliente e continue nas páginas dedicadas a início rápido, recursos, modelos, erros e documentação de API gerada.
+
+O SDK é publicado como o pacote `digna-sdk` e expõe um cliente estável e versionado para a API REST do ***digna***.
+
+---
+
+## Noções Básicas do SDK
+
+---
+
+### Visão Geral
+
+O SDK adota um design de cliente orientado a recursos. Cada área da API é exposta como um cliente de primeira classe no `DignaClient` principal, com modelos de requisição e resposta tipados e tratamento de erros consistente.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Principais Funcionalidades
+
+- **Modelos tipados** — cada requisição e cada resposta é validada com pydantic, de modo que seu editor e seu verificador de tipos detectam erros antes de qualquer chamada de rede.
+- **Orientado a recursos** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` e `client.inspection_statuses` expõem métodos simples de `list` / `get` / `create` / `update` / `delete`.
+- **Erros claros** — erros da API levantam `DignaAPIError` (ou uma subclasse mais específica, como `DignaAuthenticationError`, `DignaAuthorizationError` ou `DignaNotFoundError`) em vez de retornar `None` silenciosamente.
+
+### Instalação
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Páginas de Referência
+
+Esta versão está organizada nas seguintes páginas:
+
+- [Início Rápido](quickstart.md) — conectar-se e fazer as primeiras chamadas.
+- [Recursos](resources.md) — a lista completa dos clientes de recursos disponíveis.
+- [Modelos](models.md) — os modelos pydantic usados para entrada e saída.
+- [Erros](errors.md) — a hierarquia de exceções.
+- [Referência da API](reference.md) — documentação de referência gerada automaticamente.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/pt/sdk/Release%202026.11/errors/
+
+# Erros do SDK Python digna 2026.11
+
+Esta página documenta a hierarquia de exceções exposta pelo SDK Python do ***digna***. Esses erros cobrem falhas da API, problemas de autenticação e autorização e situações de recurso não encontrado.
+
+Todos os erros levantados pelo SDK derivam de `DignaError`.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/pt/sdk/Release%202026.11/models/
+
+# Modelos do SDK Python digna 2026.11
+
+Esta página documenta os principais modelos de requisição e resposta usados pelo SDK Python do ***digna***. Todos os payloads são representados como modelos [pydantic](https://docs.pydantic.dev/) importados de `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/pt/sdk/Release%202026.11/quickstart/
+
+# Início Rápido do SDK Python digna 2026.11
+
+Esta página mostra a configuração mínima e os principais fluxos de trabalho do cliente do SDK Python do ***digna***. Use-a como ponto de partida antes de avançar para as páginas de referência de recursos, modelos e erros.
+
+## Criar uma Chave de API
+
+Crie uma chave de API no frontend do ***digna*** antes de se conectar com o SDK:
+
+1. Faça login no ***digna*** pelo frontend.
+2. Abra seu perfil de usuário no canto inferior esquerdo.
+3. No perfil de usuário, clique em **API Keys**.
+4. Clique em **Add API Key**.
+5. Informe um nome significativo e defina uma data de expiração. Você pode revogar ou excluir uma chave de API a qualquer momento.
+6. Copie a chave de API exibida para a área de transferência. A chave é mostrada apenas no momento da criação.
+
+Use a chave de API como token do SDK. Boas maneiras de fornecê-la ao seu aplicativo incluem:
+
+- Uma variável de ambiente, por exemplo `DIGNA_API_KEY`, para desenvolvimento local e automação.
+- O cofre de segredos do seu CI/CD, como os segredos do GitHub Actions, as variáveis de CI/CD do GitLab ou as variáveis secretas do Azure DevOps.
+- Um gerenciador de segredos em tempo de execução, como os segredos do Kubernetes, os segredos do Docker, o HashiCorp Vault ou o cofre de segredos de um provedor de nuvem.
+
+Evite escrever chaves de API diretamente no código-fonte, em notebooks, no histórico do shell ou em arquivos de configuração versionados.
+
+## Conectar
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Use `DignaClient` como gerenciador de contexto para que o pool de conexões
+subjacente seja fechado automaticamente:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Listar Projetos
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Criar uma Fonte de Dados
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Enviar uma Solicitação de Inspeção e Aguardar sua Conclusão
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Consulte `examples/inspection_flow.py` no repositório para ver o fluxo completo de envio → consulta → recuperação.
+
+## Tratar Erros
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/pt/sdk/Release%202026.11/reference/
+
+# Referência do Cliente do SDK Python digna 2026.11
+
+Esta página documenta a API de cliente gerada do SDK Python do ***digna***. O `DignaClient` é o principal ponto de entrada para as operações de recursos expostas pelo SDK.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/pt/sdk/Release%202026.11/resources/
+
+# Recursos do SDK Python digna 2026.11
 
 Esta página documenta os clientes de recursos expostos pelo SDK Python do ***digna***. Cada recurso encapsula os endpoints correspondentes da API estável em uma interface consistente e pythônica, com nomes de métodos previsíveis.
 

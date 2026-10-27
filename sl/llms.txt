@@ -101,6 +101,7 @@
 
 ## Referenca CLI
 
+- [Release 2026.11](https://docs.digna.ai/sl/cli/Command_Line_Interface_202611/): Popolna referenca za izdajo digna CLI 2026.11
 - [Release 2026.06](https://docs.digna.ai/sl/cli/Command_Line_Interface_202606/): Popolna referenca za izdajo digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/sl/cli/Command_Line_Interface_202604/): Celovita referenca za digna CLI izdajo 2026.04
 - [Release 2026.01](https://docs.digna.ai/sl/cli/Command_Line_Interface_202601/): Complete reference for digna CLI release 2026.01 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/sl/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
 ## Referenca SDK
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/sl/sdk/Release%202026.11/): Popolna referenca za izdajo SDK Python digna 2026.11
+- [Quickstart](https://docs.digna.ai/sl/sdk/Release%202026.11/quickstart/): Vodnik za hitri začetek z izdajo SDK Python digna 2026.11
+- [Resources](https://docs.digna.ai/sl/sdk/Release%202026.11/resources/): Odjemalci virov za izdajo SDK Python digna 2026.11
+- [Models](https://docs.digna.ai/sl/sdk/Release%202026.11/models/): Podatkovni modeli za izdajo SDK Python digna 2026.11
+- [Errors](https://docs.digna.ai/sl/sdk/Release%202026.11/errors/): Hierarhija napak za izdajo SDK Python digna 2026.11
+- [API Reference](https://docs.digna.ai/sl/sdk/Release%202026.11/reference/): Referenca odjemalčevega API za izdajo SDK Python digna 2026.11
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/sl/changelog/Release_202611/): Ugotovite, kaj je novega v digna Izdaji 2026.11. Ta različica uvaja tri pomembne novosti - digna Data Reconciliation (Beta), digna Agentic (Beta) z digna MCP Server in digna Engine, ki omogoča preverjanja referenčne celovitosti med različnimi tehnologijami baz podatkov.
 - [Release 2026.06](https://docs.digna.ai/sl/changelog/Release_202606/): Ugotovite, kaj je novega v digna Izdaji 2026.06. Ta različica uvaja nov **digna Python SDK**, uradno **Docker podporo za namestitev**, osveženo izkušnjo nadzorne plošče in razširljive možnosti za uvoz/izvoz pravil validacije.
 - [Release 2026.04](https://docs.digna.ai/sl/changelog/Release_202604/): Spoznajte novosti v digna izdaji 2026.04. Ta različica uvaja napredno analizo časovnih vrst z Analytics Chart, ponovno uporabne predloge pravil za validacijo, enumeracije za dovoljene vrednosti in pogoje relevantnosti na ravni stolpcev.
 - [Release 2026.01](https://docs.digna.ai/sl/changelog/Release_202601/): Izvedite, kaj je novega v digna Release 2026.01. Ta različica uvaja globalne povezave do baz podatkov, logične podatkovne vire, pogoje relevantnosti anomalij, izvoz CSV in napredno Data Validation vključno s preverjanjem referenčne celovitosti.

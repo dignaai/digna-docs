@@ -101,6 +101,7 @@
 
 ## Αναφορά CLI
 
+- [Release 2026.11](https://docs.digna.ai/el/cli/Command_Line_Interface_202611/): Πλήρης οδηγός αναφοράς για την έκδοση digna CLI 2026.11
 - [Release 2026.06](https://docs.digna.ai/el/cli/Command_Line_Interface_202606/): Πλήρης οδηγός αναφοράς για την έκδοση digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/el/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
 - [Release 2026.01](https://docs.digna.ai/el/cli/Command_Line_Interface_202601/): Πλήρης αναφορά για την έκδοση digna CLI 2026.01. Μάθετε πώς να διαχειρίζεστε χρήστες, αποθετήρια και δεδομένα με εντολές όπως add-user, check-config, check-repo-connection, inspect, inspect-async και άλλες.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/el/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
 ## Αναφορά SDK
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/el/sdk/Release%202026.11/): Πλήρης οδηγός αναφοράς για την έκδοση digna Python SDK 2026.11
+- [Quickstart](https://docs.digna.ai/el/sdk/Release%202026.11/quickstart/): Οδηγός γρήγορης εκκίνησης για την έκδοση digna Python SDK 2026.11
+- [Resources](https://docs.digna.ai/el/sdk/Release%202026.11/resources/): Clients πόρων για την έκδοση digna Python SDK 2026.11
+- [Models](https://docs.digna.ai/el/sdk/Release%202026.11/models/): Μοντέλα δεδομένων για την έκδοση digna Python SDK 2026.11
+- [Errors](https://docs.digna.ai/el/sdk/Release%202026.11/errors/): Ιεραρχία σφαλμάτων για την έκδοση digna Python SDK 2026.11
+- [API Reference](https://docs.digna.ai/el/sdk/Release%202026.11/reference/): Αναφορά του API του client για την έκδοση digna Python SDK 2026.11
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/el/changelog/Release_202611/): Μάθετε τι νέο υπάρχει στην digna Έκδοση 2026.11. Αυτή η έκδοση εισάγει τρεις σημαντικές προσθήκες - το digna Data Reconciliation (Beta), το digna Agentic (Beta) με τον digna MCP Server και το digna Engine, που επιτρέπει ελέγχους αναφορικής ακεραιότητας μεταξύ διαφορετικών τεχνολογιών βάσεων δεδομένων.
 - [Release 2026.06](https://docs.digna.ai/el/changelog/Release_202606/): Μάθετε τι νέο υπάρχει στην digna Έκδοση 2026.06. Αυτή η έκδοση εισάγει το νέο **digna Python SDK**, επίσημη υποστήριξη **Docker deployment**, μια ανανεωμένη εμπειρία dashboard και βελτιωμένη φορητότητα για τη διαχείριση κανόνων επικύρωσης.
 - [Release 2026.04](https://docs.digna.ai/el/changelog/Release_202604/): Μάθετε τι νέο υπάρχει στην έκδοση digna Release 2026.04. Αυτή η έκδοση εισάγει προηγμένη ανάλυση χρονικών σειρών με το Analytics Chart, επαναχρησιμοποιήσιμα πρότυπα κανόνων επικύρωσης, enumerations για επιτρεπτές τιμές και συνθήκες σχετικότητας σε επίπεδο στήλης.
 - [Release 2026.01](https://docs.digna.ai/el/changelog/Release_202601/): Μάθετε τι νέο υπάρχει στην digna Έκδοση 2026.01. Αυτή η έκδοση εισάγει παγκόσμιες συνδέσεις βάσεων δεδομένων, λογικές πηγές δεδομένων, συνθήκες σχετικότητας ανωμαλιών, εξαγωγές CSV και προηγμένη Data Validation που περιλαμβάνει ελέγχους αναφορικής ακεραιότητας.

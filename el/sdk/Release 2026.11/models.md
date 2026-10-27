@@ -1,0 +1,25 @@
+# Μοντέλα digna Python SDK 2026.11
+
+Αυτή η σελίδα τεκμηριώνει τα βασικά μοντέλα αιτήματος και απόκρισης που χρησιμοποιεί το Python SDK του ***digna***. Όλα τα payloads αναπαρίστανται ως μοντέλα [pydantic](https://docs.pydantic.dev/) που εισάγονται από το `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus

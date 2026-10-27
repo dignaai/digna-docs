@@ -621,6 +621,121 @@ Beide kunnen op elk moment worden teruggezet naar hun standaardwaarden. Zie [Mod
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/nl/changelog/Release_202611/
+
+# Wijzigingslog – Release 2026.11  
+
+Release 2026.11 draait om drie grote toevoegingen:
+
+- **digna Data Reconciliation (Beta)**: controleert of data consistent blijft terwijl deze tussen systemen wordt verplaatst  
+- **digna Agentic (Beta)**: stelt digna open voor AI-agents via de digna MCP Server  
+- **digna Engine**: profileert data optioneel binnen digna en maakt controles op referentiële integriteit tussen verschillende databasetechnologieën mogelijk  
+
+---
+
+## Nieuwe functies  
+
+### digna Data Reconciliation (Beta) – Consistentie van bron naar doel  
+Data passeert vaak meerdere systemen voordat het in een rapport terechtkomt. digna Data Reconciliation (Beta) vergelijkt een **doel**-datasource met de **bronnen** waaruit deze is opgebouwd, en waarschuwt wanneer ze niet langer overeenkomen.
+
+- Geconfigureerd als benoemde regels op het nieuwe tabblad **Data Reconciliation** van de doel-datasource  
+- Elke datasource van het project waarvoor Data Reconciliation is ingeschakeld, kan als bron dienen  
+- Toepassingen zijn onder meer standaard reconciliatieprocedures en het valideren van de resultaten van ETL-processen  
+- Twee soorten regels: **Exact** en **AI**  
+
+**Exact-regels – Reconciliatie als datakwaliteitsregel**: u definieert precies wat er tussen één bron en één doel moet overeenkomen, net als bij een datakwaliteitsregel.
+
+  - Vergelijk één bron-datasource met één doel-datasource  
+  - Koppel een controle op het doel aan een controle op de bron via statistiek en attribuut, bijv. aantallen rijen of de som van een bedragkolom  
+  - Sta een verschil toe met een **absolute** tolerantie (bijv. ± 10) of een **relative** tolerantie (bijv. ± 0,5 % van de bron)  
+  - De tijdlijn toont het verschil van elke dag ten opzichte van de tolerantie  
+
+**AI-regels – Reconciliatie als data observability**: digna leert hoe een doel zijn bronnen volgt, op dezelfde manier waarop digna data in andere modules observeert, en waarschuwt wanneer die relatie verbroken wordt.
+
+  - Combineer controles van meerdere bron-datasources met de controles van één doel  
+  - De logica ertussen (joins, filters, aggregaties) hoeft u niet te kennen of uit te schrijven  
+  - Een model leert uit de historie hoe het doel zijn bronnen op dezelfde dag volgt  
+  - Elke controle op het doel wordt voorspeld op basis van de bronwaarden van die dag, en digna waarschuwt wanneer het doel buiten de band van de eigen eerdere fouten van de regel valt  
+  - Elke regel heeft zijn eigen **Model settings**: **Sensitivity**, **Memory** en **Model Complexity**  
+
+Reconciliatiecontroles verschijnen op het dashboard met een tijdlijn per regel. Ze tellen mee voor de algehele inspectiestatus en activeren meldingen.
+
+**Impact:** Dekt beide kanten van reconciliatie af. Exact-regels handhaven bekende controles tussen bron en doel, en AI-regels bewaken complexe stromen zoals ETL-processen, zodat data die onderweg verloren gaat of verandert wordt opgemerkt zonder handgeschreven reconciliatie-SQL.
+
+---
+
+### digna Agentic (Beta) – digna voor AI-agents  
+De eerste versie van digna Agentic (Beta). AI-agents kunnen nu met digna werken, zakelijke vragen over uw data beantwoorden en helpen uw configuratie te verbeteren.
+
+**digna MCP Server**: laat Claude en andere AI-agents met digna werken via het Model Context Protocol.
+
+  - Beheer projecten, datasources, regels, inspectieschema's en abonnementen  
+  - Lees inspectiestatussen tot op het niveau van de afzonderlijke controle, om alerts te onderzoeken  
+
+**Beschrijvingen bij datasources en attributen**: beschrijf in gewone taal wat een datasource of attribuut bevat.
+
+  - AI-agents gebruiken de beschrijvingen om uw data te interpreteren  
+  - Stel zakelijke vragen over uw data, en AI-agents beantwoorden ze op basis van wat digna monitort  
+  - Als de huidige configuratie van digna een vraag niet kan beantwoorden, stelt de AI-agent waar mogelijk wijzigingen aan de datasource en zijn attributen voor, bijv. het toevoegen van een nieuwe dataset  
+
+**Impact:** Hiermee stelt u zakelijke vragen over uw data in gewone taal, en helpen AI-agents digna te configureren en datakwaliteitsproblemen te onderzoeken.
+
+---
+
+### digna Engine – Profileer waar u wilt  
+Standaard profileert digna data waar deze zich bevindt: in de brondatabase. De digna Engine voegt een optie toe: digna exporteert de data uit de bron en profileert deze binnen de digna Engine.
+
+- Optioneel, niet verplicht: profiling in de brondatabase blijft beschikbaar  
+- Per databaseverbinding gekozen als **profileringslocatie**: **Source Database** of **digna Engine**  
+- Beschikbaar voor elke ondersteunde brontechnologie  
+
+**Referentiële integriteit tussen verbindingen**: sommige controles vereisen dat data wordt geëxporteerd. Voor deze gevallen breidt de digna Engine **digna Data Validation** uit.
+
+  - **Controles op referentiële integriteit** tussen datasources op **verschillende databaseverbindingen**, ook bij verschillende databasetechnologieën (bijv. Oracle en PostgreSQL)  
+  - Werkt met beide profileringslocaties: bij Source Database worden alleen de sleutelkolommen naar de digna Engine geëxporteerd  
+  - Het dashboard toont wanneer een controle over twee verbindingen loopt  
+
+**Impact:** Hiermee kiest u waar data wordt geprofileerd, en worden relaties afgedwongen tussen systemen die op verschillende databasetechnologieën draaien.
+
+---
+
+## Verbeteringen in profiling  
+
+Deze release geeft gebruikers ook meer controle over wat er wordt geprofileerd en hoe.
+
+### Query-attributen – Door de gebruiker gedefinieerde kolommen  
+- Definieer kunstmatige kolommen: een SQL-expressie over een of meer kolommen van de datasource  
+- Elk query-attribuut heeft een eigen naam  
+- Wordt geprofileerd en gecontroleerd zoals elk ander attribuut  
+
+### Kolomcategorie DATE  
+- Nieuwe categorie **Date** voor attributen  
+- Metrieken ten opzichte van de geïnspecteerde datum  
+
+### Profiling op aanvraag  
+- Profileer elk attribuut op basis van de volledige momentopname van één datum, zonder een inspectie uit te voeren  
+- Helpt bij het instellen van het kolomtype van het attribuut: **Numerical**, **Categorical**, **Date** of **Unspecified**  
+
+---
+
+## Wie profiteert van deze release  
+
+- **Data Engineers:** validatie van ETL-resultaten met digna Data Reconciliation (Beta)  
+- **Finance-, risk- en controllingteams:** standaard reconciliatieprocedures als Exact-regels in digna Data Reconciliation (Beta)  
+- **Datakwaliteit- en Data Governance-teams:** referentiële integriteit over databasetechnologieën heen met de digna Engine  
+- **Zakelijke gebruikers:** zakelijke vragen over data beantwoord door AI-agents met digna Agentic (Beta)  
+- **AI- en automatiseringsteams:** AI-agents die met digna werken via digna Agentic (Beta)  
+
+---
+
+## CLI-updates  
+- Geen wijzigingen  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/nl/cli/Command_Line_Interface_202409/
 
@@ -4210,6 +4325,933 @@ digna version
 #### Voorbeelduitvoer
 ```text
 2026.06
+```
+
+---
+
+## Configuratiebeheer
+
+---
+
+### config check
+
+De opdracht `config check` valideert het configuratiebestand (`config.toml`) en controleert of alle verplichte secties en instellingen aanwezig en correct opgemaakt zijn. Elke sectie wordt afzonderlijk gevalideerd, zodat een defecte `[app]`-sectie de toestand van `[repo]` niet verbergt.
+
+De gerapporteerde secties zijn:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — optioneel; een ontbrekende sleutel slaagt, een aanwezige maar onjuist opgemaakte lijst faalt
+
+De opdracht laadt de applicatieconfiguratie bewust niet op de manier waarop de andere opdrachten dat doen, zodat ze een `config.toml` kan diagnosticeren die ***digna*** volledig zou beletten te starten.
+
+#### Gebruik van de opdracht
+```bash
+digna config check [OPTIONS]
+```
+
+#### Opties
+- `--configpath`, `-c`: Pad naar het configuratiebestand of naar een map die `config.toml` bevat (standaard `./config.toml`).
+- `--json`: Geeft het validatierapport als JSON uit. Heeft voorrang op `--quiet`.
+- `--quiet`, `-q`: Onderdrukt het rapport en vertrouwt uitsluitend op de afsluitcode.
+
+#### Voorbeeld
+```bash
+digna config check
+```
+
+Een specifiek configuratiebestand valideren en de uitvoer als JSON opmaken:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Voorbeelduitvoer
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+Een ontbrekend bestand of een TOML-syntaxisfout laat niets over om sectie voor sectie te valideren en wordt als één enkele fout gerapporteerd in plaats van als een rapport, ongeacht `--quiet` of `--json`.
+
+---
+
+## Repositorybeheer
+
+---
+
+### repo check
+
+De opdracht `repo check` test de databaseverbinding en verifieert de installatie en versie van de repository. Ze mislukt als het geconfigureerde schema niet bestaat, of als het wel bestaat maar geen ***digna***-repository bevat.
+
+De gemelde versie is de versie van het repositoryschema, dat los van de door [`version`](#version) getoonde ***digna***-release wordt geversioneerd.
+
+#### Gebruik van de opdracht
+```bash
+digna repo check
+```
+
+#### Voorbeelduitvoer
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+De opdracht `repo install` installeert een nieuwe ***digna***-repository in het schema dat in `config.toml` is geconfigureerd en maakt daarbij alle vereiste sequenties, tabellen, indices, constraints en initiële records aan.
+
+Het schema zelf wordt **niet** door deze opdracht aangemaakt — het moet vooraf bestaan. De opdracht weigert ook te draaien als er al een repository in dat schema is geïnstalleerd, en verwijst naar [`repo upgrade`](#repo-upgrade) als de geïnstalleerde versie een oudere is.
+
+#### Gebruik van de opdracht
+```bash
+digna repo install
+```
+
+#### Voorbeelduitvoer
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+De opdracht `repo upgrade` past databaseschemamigraties toe om een bestaande repository op de versie te brengen die de geïnstalleerde release verwacht. Upgrades worden één versiestap tegelijk toegepast langs een vast upgradepad, en elke voltooide stap wordt in de repository vastgelegd.
+
+Als de repository al op de verwachte versie staat, meldt de opdracht dat er geen upgrade nodig is en brengt ze geen wijzigingen aan.
+
+#### Gebruik van de opdracht
+```bash
+digna repo upgrade
+```
+
+#### Voorbeelduitvoer
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+De opdracht `repo prune` verwijdert rijen die langer zijn blijven bestaan dan het project of de gegevensbron waartoe ze behoorden.
+Het verwijderen van een project of gegevensbron verwijdert het object zelf, maar laat de bijbehorende profielen, voorspellingen,
+statussen en rijaantallen achter — een bewuste afweging, want een verwijdering die ook die tabellen zou opruimen,
+zou de gebruiker laten wachten. `repo prune` is de opruimronde die ze verwijdert, en de opdracht kan veilig
+op elk moment worden uitgevoerd: ze verwijdert alleen rijen waarvan het project of de gegevensbron niet meer bestaat.
+
+Rijen die de Python-backend heeft geschreven in tabellen die de huidige release niet meer gebruikt, blijven ongemoeid.
+
+#### Gebruik van de opdracht
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Opties
+- `--dry-run`: Rapporteert wat zou worden verwijderd, zonder iets te verwijderen.
+
+Alleen tabellen met verweesde rijen worden weergegeven. Als er geen zijn, meldt de opdracht
+`No orphaned rows found.` en stopt ze.
+
+#### Voorbeeld
+```bash
+digna repo prune
+```
+
+#### Voorbeelduitvoer
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Om hetzelfde rapport te zien zonder iets te verwijderen:
+```bash
+digna repo prune --dry-run
+```
+
+De rijaantallen zijn identiek; alleen de slotregel verschilt:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+## Versleutelingsbeheer
+
+---
+
+### crypt gen-key
+
+De opdracht `crypt gen-key` genereert een nieuwe AES-GCM-versleutelingssleutel, bedoeld voor gebruik als versleutelingssleutel in `config.toml`. Er moet al een laadbare `config.toml` aanwezig zijn, ook al is de gegenereerde sleutel er niet van afhankelijk.
+
+#### Gebruik van de opdracht
+```bash
+digna crypt gen-key
+```
+
+#### Voorbeelduitvoer
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+De opdracht `crypt encrypt` versleutelt een tekenreeks (zoals een databasewachtwoord) met de AES-GCM-sleutel die in `config.toml` is geconfigureerd, en toont de versleutelde tekst.
+
+#### Gebruik van de opdracht
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argumenten
+- **VALUE**: De platte tekst die versleuteld moet worden (vereist).
+
+#### Voorbeeld
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+De opdracht `crypt decrypt` ontsleutelt een met AES-GCM versleutelde tekenreeks met de sleutel die in `config.toml` is geconfigureerd, en toont de platte tekst.
+
+#### Gebruik van de opdracht
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argumenten
+- **VALUE**: De versleutelde tekenreeks die ontsleuteld moet worden (vereist).
+
+#### Voorbeeld
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Gebruikersbeheer
+
+---
+
+### user add
+
+De opdracht `user add` maakt een nieuw gebruikersaccount aan in de ***digna***-repository. De opdracht mislukt als er al een gebruiker met het opgegeven e-mailadres bestaat.
+
+#### Gebruik van de opdracht
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de gebruiker (vereist).
+- **PASSWORD**: Het initiële wachtwoord van de gebruiker (vereist).
+- **DISPLAY_NAME**: De volledige weergavenaam van de gebruiker (vereist).
+
+#### Opties
+- `--admin`, `-a`: Maakt de gebruiker aan met beheerdersrechten (superuser).
+
+#### Voorbeeld
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Een beheerdersaccount aanmaken:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Voorbeelduitvoer
+```text
+User created with ID: 42
+```
+
+### user list
+
+De opdracht `user list` toont alle geregistreerde gebruikers in tabelvorm met ID, e-mailadres, weergavenaam en beheerdersvlag.
+
+#### Gebruik van de opdracht
+```bash
+digna user list
+```
+
+#### Voorbeelduitvoer
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+De opdracht `user modify` werkt de weergavenaam en de beheerdersrechten van een bestaand gebruikersaccount bij, geïdentificeerd op e-mailadres.
+
+Zowel de weergavenaam als de beheerdersvlag worden altijd weggeschreven. `--admin` is een schakelaar, geen waarde: **wanneer u hem weglaat, worden de beheerdersrechten ingetrokken**, dus geef hem mee telkens wanneer de gebruiker die rechten moet behouden of krijgen.
+
+#### Gebruik van de opdracht
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de te wijzigen gebruiker (vereist).
+- **DISPLAY_NAME**: De bijgewerkte weergavenaam (vereist).
+
+#### Opties
+- `--admin`, `-a`: Kent beheerdersrechten toe. Weglaten om ze in te trekken.
+- `--valid-until`, `-v`: Wordt om compatibiliteitsredenen geaccepteerd, maar **momenteel niet toegepast**. Meegeven levert een waarschuwing op en verandert niets.
+
+#### Voorbeeld
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Voorbeelduitvoer
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+De opdracht `user modify-pwd` werkt het wachtwoord van een bestaand gebruikersaccount bij.
+
+#### Gebruik van de opdracht
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de gebruiker wiens wachtwoord bijgewerkt moet worden (vereist).
+- **PASSWORD**: Het nieuwe wachtwoord (vereist).
+
+#### Voorbeeld
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+De opdracht `user delete` verwijdert een gebruikersaccount uit het systeem.
+
+#### Gebruik van de opdracht
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argumenten
+- **EMAIL**: Het e-mailadres van de te verwijderen gebruiker (vereist).
+
+#### Voorbeeld
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Project- en gegevensbronbeheer
+
+---
+
+### project list
+
+De opdracht `project list` toont alle beschikbare projecten in de repository, met hun ID, naam en beschrijving.
+
+#### Gebruik van de opdracht
+```bash
+digna project list
+```
+
+#### Voorbeelduitvoer
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+De opdracht `project list-ds` toont alle gegevensbronnen die bij een bepaald project horen, met hun ID, naam, soort, schema en tabelnaam.
+
+#### Gebruik van de opdracht
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argumenten
+- **PROJECT_NAME**: De naam van het project waarvan de gegevensbronnen getoond moeten worden (vereist). De naam moet exact overeenkomen.
+
+#### Voorbeeld
+```bash
+digna project list-ds ProjectA
+```
+
+#### Voorbeelduitvoer
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+De opdracht `project export-ds` exporteert gegevensbronnen van een project naar een JSON-document.
+
+Als noch `--table-name` noch `--table-id` wordt opgegeven, worden alle gegevensbronnen van het project geëxporteerd.
+
+#### Gebruik van de opdracht
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argumenten
+- **PROJECT_NAME**: De naam van het project waaruit gegevensbronnen geëxporteerd moeten worden (vereist).
+
+#### Opties
+- `--table-name`, `-n`: Namen van de te exporteren gegevensbronnen. Meerdere namen kunnen gescheiden door spaties worden opgegeven.
+- `--table-id`, `-i`: ID's van de te exporteren gegevensbronnen. Meerdere ID's kunnen gescheiden door spaties worden opgegeven.
+- `--exportfile`, `-f`: Pad waarnaar de geëxporteerde gegevensbronnen worden opgeslagen (standaard: `data_sources_export.json`).
+
+#### Voorbeeld
+Om alle gegevensbronnen uit `ProjectA` te exporteren:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Om specifieke tabellen te exporteren:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Voorbeelduitvoer
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+De opdracht `project import-ds` importeert gegevensbronnen uit een exportbestand in een doelproject en rapporteert per object wat er is aangemaakt, bijgewerkt of overgeslagen.
+
+#### Gebruik van de opdracht
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumenten
+- **PROJECT_NAME**: Naam van het doelproject waarin geïmporteerd wordt (vereist).
+- **EXPORT_FILE**: Pad naar het JSON-exportbestand (vereist).
+
+#### Opties
+- `--output-file`, `-o`: Bestand waarnaar het importrapport wordt geschreven. Zonder deze optie gaat het rapport naar stdout.
+- `--output-format`, `-f`: Formaat van het importrapport — `table`, `json` of `csv` (standaard: `table`).
+
+#### Voorbeeld
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Om een machineleesbaar rapport vast te leggen:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+Het rapport beslaat vier objectniveaus — gegevensbron, definitie van de gegevensset, attribuut en validatieregel — elk met de bijbehorende importactie, het resultaat, het resulterende object-ID en eventuele aanvullende informatie.
+
+### project plan-import-ds
+
+De opdracht `project plan-import-ds` toont een voorbeeld van een gegevensbronimport in een doelproject en laat zien welke objecten zouden worden aangemaakt, bijgewerkt of overgeslagen, zonder iets te wijzigen. Ze neemt hetzelfde exportbestand en dezelfde rapportageopties als [`project import-ds`](#project-import-ds), en voegt per gepland object een stapnummer toe.
+
+#### Gebruik van de opdracht
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumenten
+- **PROJECT_NAME**: Naam van het doelproject (vereist).
+- **EXPORT_FILE**: Pad naar het exportbestand (vereist).
+
+#### Opties
+- `--output-file`, `-o`: Bestand waarnaar het importplan wordt geschreven. Zonder deze optie gaat het plan naar stdout.
+- `--output-format`, `-f`: Formaat van het importplan — `table`, `json` of `csv` (standaard: `table`).
+
+#### Voorbeeld
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+De opdracht `project cleanup` verwijdert de inspectieresultaten die een project over een datumbereik
+heeft verzameld — profielen, voorspellingen, rijaantallen en elke status van controles, attributen, gegevenssets en
+gegevensbronnen. Ze verwijdert precies wat een inspectie van die datums heeft geschreven, zodat het bereik
+daarna opnieuw kan worden geïnspecteerd om het weer op te bouwen.
+
+De geschiedenis van Timeliness en Schema Tracker wordt **niet** verwijderd: die legt vast wat digna op een
+bepaalde dag heeft waargenomen, en niet een daarvan afgeleid resultaat, dus een opschoning van een datumbereik in het verleden
+laat die intact.
+
+Elke gegevensbron wordt in een eigen transactie opgeschoond, zodat een onderbroken uitvoering alleen volledige gegevensbronnen
+achterlaat en nooit een half opgeschoonde.
+
+#### Gebruik van de opdracht
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenten
+- **PROJECT_NAME**: Project dat moet worden opgeschoond (vereist). Eén project per aanroep.
+- **FROM_DATE**: Eerste datum waarvoor resultaten worden verwijderd, `YYYY-MM-DD` (vereist).
+- **TO_DATE**: Laatste datum waarvoor resultaten worden verwijderd, inclusief, `YYYY-MM-DD` (vereist).
+
+#### Opties
+- `--table-name`, `-n`: Beperkt de opschoning tot deze gegevensbronnen. Meerdere namen kunnen
+  gescheiden door spaties worden opgegeven.
+- `--table-filter`: Beperkt de opschoning tot gegevensbronnen waarvan de naam deze substring bevat.
+- `--dry-run`: Toont de gegevensbronnen die zouden worden opgeschoond, zonder iets te verwijderen.
+- `--timing`: Toont hoe lang de opschoning heeft geduurd.
+
+`--table-name` en `--table-filter` worden gecombineerd als een OF — een gegevensbron wordt opgeschoond als deze wordt genoemd of
+als de substring overeenkomt. De opdracht mislukt als geen enkele gegevensbron overeenkomt, in plaats van succes te melden
+voor een opschoning die niets heeft gedaan.
+
+#### Voorbeeld
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Beperkt tot één gegevensbron:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Voorbeelduitvoer
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Om te zien welke gegevensbronnen zouden worden opgeschoond, zonder iets te verwijderen:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Elke regel is gemarkeerd, zodat een proefuitvoering niet voor een echte kan worden aangezien:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Inspectiebeheer
+
+---
+
+### inspection run
+
+De opdracht `inspection run` maakt een inspectieverzoek aan voor een project en een datumbereik, en wacht er vervolgens — afhankelijk van de opgegeven opties — op, keert onmiddellijk terug of voert het uit binnen het eigen proces.
+
+De drie uitvoeringsmodi zijn:
+
+- **Standaard (geen vlag)**: het verzoek wordt in de wachtrij geplaatst voor de backend, en de CLI pollt het elke twee seconden en toont de voortgang van de taken totdat de inspectie een eindtoestand bereikt. Een draaiende `digna serve` is vereist, anders pikt niets het verzoek op.
+- **`--async-mode`**: het verzoek wordt in de wachtrij geplaatst en het ID wordt onmiddellijk getoond. Gebruik [`inspection status`](#inspection-status) om het te volgen.
+- **`--bypass-backend`**: de inspectie wordt door het CLI-proces zelf uitgevoerd en niet in de wachtrij geplaatst, zodat er geen draaiende server nodig is.
+
+`--async-mode` en `--bypass-backend` sluiten elkaar uit.
+
+In elke modus eindigt de opdracht met een afsluitcode die niet nul is als de inspectie niet succesvol is afgerond.
+
+#### Gebruik van de opdracht
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argumenten
+- **PROJECT_NAME**: De naam van het doelproject (vereist). De naam moet exact overeenkomen.
+- **START_DATE**: Begindatum van het datumbereik in de notatie `YYYY-MM-DD` (vereist).
+- **END_DATE**: Einddatum van het datumbereik in de notatie `YYYY-MM-DD` (vereist).
+
+#### Opties
+- `--table-name`: Beperkt de inspectie tot één gegevensbron van het project, opgegeven met de naam van die gegevensbron. Zonder deze optie worden alle gegevensbronnen van het project geïnspecteerd.
+- `--async-mode`: Plaatst de inspectie in de wachtrij en toont het verzoek-ID in plaats van erop te wachten. Kan niet worden gecombineerd met `--bypass-backend`.
+- `--bypass-backend`: Voert de inspectie rechtstreeks uit in het CLI-proces in plaats van ze in de wachtrij te plaatsen voor de backend. Kan niet worden gecombineerd met `--async-mode`.
+
+#### Voorbeeld
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Om een asynchrone inspectie in te dienen:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Om één enkele gegevensbron te inspecteren:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Voorbeelduitvoer
+Standaardmodus:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Asynchrone modus:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+De opdracht `inspection status` vraagt de toestand en de taakvoortgang van een inspectieverzoek op aan de hand van het verzoek-ID.
+
+#### Gebruik van de opdracht
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argumenten
+- **INSPECTION_REQUEST_ID**: Het numerieke ID van het inspectieverzoek (vereist).
+
+#### Voorbeeld
+```bash
+digna inspection status 1024
+```
+
+#### Voorbeelduitvoer
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+De opdracht `inspection abort` vraagt de annulering aan van lopende of wachtende inspectieverzoeken. Ze legt voor elk betrokken verzoek een stopgebeurtenis vast; de backend handelt daarop, dus een afbreking is een verzoek om te stoppen en geen onmiddellijke beëindiging.
+
+#### Gebruik van de opdracht
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argumenten
+- **INSPECTION_REQUEST_ID**: Het ID van het af te breken inspectieverzoek. Vereist tenzij `--killall` wordt opgegeven.
+
+#### Opties
+- `--killall`: Breekt alle momenteel lopende en wachtende inspectieverzoeken af. Heeft voorrang op een verzoek-ID dat er tegelijk mee wordt opgegeven.
+
+#### Voorbeeld
+Om een specifiek verzoek af te breken:
+```bash
+digna inspection abort 1024
+```
+
+Om alle actieve en in de wachtrij staande inspecties af te breken:
+```bash
+digna inspection abort --killall
+```
+
+#### Voorbeelduitvoer
+`--killall` rapporteert wat het heeft gedaan; het afbreken van één enkel verzoek levert geen uitvoer op en meldt succes via de afsluitcode.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Licentiebeheer
+
+---
+
+### license check
+
+De opdracht `license check` valideert `license.toml`, verifieert de handtekening ervan aan de hand van de openbare sleutel die met de installatie wordt meegeleverd, en controleert of de licentie niet is verlopen. Ze leest geen applicatieconfiguratie, dus ze werkt ook voordat `config.toml` is ingesteld.
+
+#### Gebruik van de opdracht
+```bash
+digna license check
+```
+
+#### Voorbeelduitvoer
+```text
+License is valid
+```
+
+Een ongeldige handtekening en een verlopen licentie worden als afzonderlijke fouten gerapporteerd, beide met afsluitcode 1.
+
+---
+
+## Server- en achtergrondservices
+
+---
+
+### serve
+
+De opdracht `serve` start de ***digna*** REST API-server samen met de achtergrondplanner voor inspecties en de inspectiebeheerder. Bij het opstarten laat ze ook elke inspectie mislukken die de repository nog als lopend registreert, aangezien niets een eerder proces kan hebben overleefd.
+
+De opdracht draait op de voorgrond totdat ze wordt gestopt.
+
+#### Gebruik van de opdracht
+```bash
+digna serve [OPTIONS]
+```
+
+#### Opties
+- `--address`: Netwerkadres waaraan de API-server wordt gebonden (standaard: `127.0.0.1`).
+- `--port`: Poortnummer waarop geluisterd wordt (standaard: `8000`).
+
+#### Voorbeeld
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Voorbeelduitvoer
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Windows-servicebeheer
+
+Alleen beschikbaar op Windows. De opdrachten registreren de ***digna***-backend bij de Windows-
+servicebeheerder en besturen hem; de service zelf voert `serve` op de achtergrond uit. Elke opdracht
+moet worden uitgevoerd vanuit een Opdrachtprompt met verhoogde rechten, en elke opdracht accepteert `--name`, zodat een service
+die onder een andere dan de standaardnaam is geregistreerd, kan worden aangesproken.
+
+---
+
+### windows install
+
+De opdracht `windows install` registreert ***digna*** als Windows-service.
+
+Het adres en de poort die hier worden opgegeven, worden vastgelegd in de serviceregistratie en bepalen waaraan de
+service zich bindt — ze worden niet uit `config.toml` gelezen. Om ze achteraf te wijzigen, verwijdert u
+de service en installeert u deze opnieuw.
+
+#### Gebruik van de opdracht
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service wordt geregistreerd (standaard: `digna`).
+- `--display-name`: Naam die in services.msc wordt getoond (standaard: `digna`).
+- `--description`: Beschrijving die in services.msc wordt getoond (standaard: `digna data quality backend`).
+- `--address`: Adres waaraan de service zijn API bindt (standaard: `127.0.0.1`).
+- `--port`: Poort waaraan de service zijn API bindt (standaard: `8000`).
+- `--working-dir`: Map met `config.toml` en `license.toml`, die de service als
+  werkmap gebruikt (standaard: de map van het `digna`-uitvoerbare bestand).
+- `--start-type`: Wanneer de service start — `auto` met Windows, `manual` alleen op verzoek,
+  `disabled` geregistreerd maar weigert te starten (standaard: `auto`).
+- `--account`: Account waaronder de service draait, bijv. `DOMAIN\user` of `.\user` (standaard: `LocalSystem`).
+- `--password`: Wachtwoord van `--account`.
+
+#### Voorbeeld
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registreren onder een tweede naam, draaiend onder een domeinaccount:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+De opdracht `windows start` start een geregistreerde service.
+
+#### Gebruik van de opdracht
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service is geregistreerd (standaard: `digna`).
+
+---
+
+### windows stop
+
+De opdracht `windows stop` stopt een draaiende service. Stop de service voordat u een
+applicatiebestand vervangt.
+
+#### Gebruik van de opdracht
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service is geregistreerd (standaard: `digna`).
+
+---
+
+### windows uninstall
+
+De opdracht `windows uninstall` deregistreert de service. Stop deze eerst.
+
+#### Gebruik van de opdracht
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Opties
+- `--name`: Naam waaronder de service is geregistreerd (standaard: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/nl/cli/Command_Line_Interface_202611/
+
+# digna CLI-referentie 2026.11
+**2026-10-27**
+
+Deze pagina documenteert de volledige set opdrachten die beschikbaar is in ***digna*** CLI-release **2026.11**, inclusief gebruiksvoorbeelden en opties.
+
+Het uitvoerbare bestand heet `digna`.
+
+---
+
+## CLI-basisprincipes
+
+---
+
+### Overzicht & syntaxis
+
+De CLI van release **2026.11** gebruikt een gestructureerde, op categorieën gebaseerde opdrachthiërarchie:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+`version` en `serve` zijn losse opdrachten zonder subopdracht:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Globale opties
+
+De volgende globale opties gelden voor alle opdrachten:
+
+- `--help`, `-h`: Toont hulpinformatie over de CLI of over een specifieke opdrachtcategorie of subopdracht.
+- `--stacktrace`: Toont bij een fout de volledige foutketen in plaats van alleen het bovenste bericht.
+
+`--stacktrace` is in strikte zin een globale optie: hij moet **vóór** de opdrachtcategorie worden opgegeven, niet erna.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+Er is geen `--version`-vlag. Gebruik in plaats daarvan de opdracht [`version`](#version).
+
+### Vereisten
+
+De meeste opdrachten hebben een leesbare, geldige `config.toml` nodig; sommige vereisen daarnaast een geldige licentie.
+De volgende tabel legt vast wat elke opdrachtcategorie laadt voordat ze ook maar iets doet:
+
+| Opdrachtcategorie | Vereist `config.toml` | Vereist een geldige licentie |
+|---|---|---|
+| `version` | nee | nee |
+| `config check` | nee (het is precies waarover de opdracht rapporteert) | nee |
+| `license check` | nee | het *is* de controle |
+| `crypt` | ja | nee |
+| `serve` | ja | nee |
+| `windows` | nee (de service leest het bij het starten) | nee |
+| `project` | ja | nee |
+| `user` | ja | ja |
+| `inspection` | ja | ja |
+| `repo` | ja | ja |
+
+Waar een licentie vereist is, worden zowel de handtekening als de vervaldatum gecontroleerd, en de opdracht breekt af voordat ze de repository aanraakt als een van beide faalt.
+
+### Afsluitcodes
+
+- `0`: de opdracht is geslaagd.
+- `1`: de opdracht is mislukt. Het foutbericht wordt naar stderr geschreven, voorafgegaan door `Error: `.
+
+### help
+
+De optie `--help` geeft informatie over beschikbare opdrachtcategorieën, subopdrachten en opties:
+
+1. **Algemene hulp weergeven:**
+   ```bash
+   digna --help
+   ```
+
+2. **Hulp opvragen voor specifieke categorieën en opdrachten:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **De uitvoer bevat:**
+   - **Opdrachtbeschrijving:** Samenvatting van het doel van de opdracht.
+   - **Syntaxis:** Vereiste en optionele argumenten.
+   - **Opties:** Vlaggen en parameters die specifiek zijn voor de opdracht.
+
+### version
+
+De opdracht `version` toont de geïnstalleerde ***digna***-release. Ze leest geen configuratie en valideert geen licentie, dus ze werkt ook op een installatie waarvan de `config.toml` of de licentie ontbreekt of ongeldig is.
+
+De releaseversie staat los van de versie van het repositoryschema die door [`repo check`](#repo-check) wordt gemeld.
+
+#### Gebruik van de opdracht
+```bash
+digna version
+```
+
+#### Voorbeelduitvoer
+```text
+2026.11
 ```
 
 ---
@@ -11158,6 +12200,280 @@ Deze pagina documenteert de gegenereerde client-API van de ***digna*** Python SD
 Source: https://docs.digna.ai/nl/sdk/Release%202026.06/resources/
 
 # digna Python SDK-resources 2026.06
+
+Deze pagina documenteert de resourceclients die de ***digna*** Python SDK aanbiedt. Elke resource verpakt de bijbehorende endpoints van de stabiele API in een consistente, pythonische interface met voorspelbare methodenamen.
+
+`DignaClient` biedt één resourceobject per API-gebied. Elke resource verpakt
+de bijbehorende endpoints van de stabiele API met pythonische methodenamen.
+
+| Resource | Attribuut | Endpoints |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/nl/sdk/Release%202026.11/
+
+# digna Python SDK-referentie 2026.11
+
+Dit onderdeel documenteert de Python SDK voor ***digna***. Het is opgezet als een referentie over meerdere pagina's: gebruik dit overzicht om de client te begrijpen en ga daarna verder met de aparte pagina's over de snelstart, resources, modellen, fouten en de gegenereerde API-documentatie.
+
+De SDK wordt gepubliceerd als het pakket `digna-sdk` en biedt een stabiele, geversioneerde client voor de ***digna*** REST API.
+
+---
+
+## SDK-basis
+
+---
+
+### Overzicht
+
+De SDK volgt een resourcegericht clientontwerp. Elk API-gebied wordt als volwaardige client aangeboden op de bovenliggende `DignaClient`, met getypeerde request- en responsmodellen en consistente foutafhandeling.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Belangrijkste functies
+
+- **Getypeerde modellen** — elk request en elke response wordt gevalideerd met pydantic, zodat uw editor en typechecker fouten opmerken voordat er netwerkverkeer plaatsvindt.
+- **Resourcegericht** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` en `client.inspection_statuses` bieden elk eenvoudige `list` / `get` / `create` / `update` / `delete`-methoden.
+- **Duidelijke fouten** — API-fouten werpen `DignaAPIError` op (of een specifiekere subklasse zoals `DignaAuthenticationError`, `DignaAuthorizationError` of `DignaNotFoundError`) in plaats van stilzwijgend `None` terug te geven.
+
+### Installatie
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Referentiepagina's
+
+Deze release is verdeeld over de volgende pagina's:
+
+- [Snelstart](quickstart.md) — verbinding maken en de eerste aanroepen doen.
+- [Resources](resources.md) — de volledige lijst met beschikbare resourceclients.
+- [Modellen](models.md) — de pydantic-modellen die voor invoer en uitvoer worden gebruikt.
+- [Fouten](errors.md) — de hiërarchie van excepties.
+- [API-referentie](reference.md) — automatisch gegenereerde referentiedocumentatie.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/nl/sdk/Release%202026.11/errors/
+
+# digna Python SDK-fouten 2026.11
+
+Deze pagina documenteert de exceptiehiërarchie die de ***digna*** Python SDK aanbiedt. Deze fouten dekken API-fouten, problemen met authenticatie en autorisatie en situaties waarin een resource niet wordt gevonden.
+
+Alle fouten die de SDK opwerpt, zijn afgeleid van `DignaError`.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/nl/sdk/Release%202026.11/models/
+
+# digna Python SDK-modellen 2026.11
+
+Deze pagina documenteert de belangrijkste request- en responsmodellen die de ***digna*** Python SDK gebruikt. Alle payloads worden weergegeven als [pydantic](https://docs.pydantic.dev/)-modellen die uit `digna_sdk.models` worden geïmporteerd.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/nl/sdk/Release%202026.11/quickstart/
+
+# digna Python SDK-snelstart 2026.11
+
+Deze pagina toont de minimale configuratie en de belangrijkste clientworkflows voor de ***digna*** Python SDK. Gebruik deze pagina als startpunt voordat u verdergaat met de referentiepagina's over resources, modellen en fouten.
+
+## Een API-sleutel aanmaken
+
+Maak in de ***digna***-frontend een API-sleutel aan voordat u verbinding maakt met de SDK:
+
+1. Meld u in de frontend aan bij ***digna***.
+2. Open uw gebruikersprofiel linksonder.
+3. Klik in het gebruikersprofiel op **API Keys**.
+4. Klik op **Add API Key**.
+5. Geef een duidelijke naam op en stel een vervaldatum in. U kunt een API-sleutel op elk moment intrekken of verwijderen.
+6. Kopieer de getoonde API-sleutel naar het klembord. De sleutel wordt alleen bij het aanmaken weergegeven.
+
+Gebruik de API-sleutel als SDK-token. Goede manieren om die aan uw toepassing door te geven zijn:
+
+- Een omgevingsvariabele, bijvoorbeeld `DIGNA_API_KEY`, voor lokale ontwikkeling en automatisering.
+- De secretsopslag van uw CI/CD, zoals GitHub Actions-secrets, GitLab CI/CD-variabelen of geheime variabelen in Azure DevOps.
+- Een secretsmanager tijdens runtime, zoals Kubernetes-secrets, Docker-secrets, HashiCorp Vault of de secretsopslag van een cloudprovider.
+
+Zet API-sleutels niet hard in broncode, notebooks, shellgeschiedenis of ingecheckte configuratiebestanden.
+
+## Verbinding maken
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Gebruik `DignaClient` als contextmanager, zodat de onderliggende connectiepool
+automatisch wordt gesloten:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Projecten weergeven
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Een gegevensbron aanmaken
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Een inspectieverzoek indienen en op de voltooiing wachten
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Zie `examples/inspection_flow.py` in de repository voor de volledige flow van indienen → pollen → ophalen.
+
+## Fouten afhandelen
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/nl/sdk/Release%202026.11/reference/
+
+# digna Python SDK-clientreferentie 2026.11
+
+Deze pagina documenteert de gegenereerde client-API van de ***digna*** Python SDK. `DignaClient` is het primaire startpunt voor de resourcebewerkingen die de SDK aanbiedt.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/nl/sdk/Release%202026.11/resources/
+
+# digna Python SDK-resources 2026.11
 
 Deze pagina documenteert de resourceclients die de ***digna*** Python SDK aanbiedt. Elke resource verpakt de bijbehorende endpoints van de stabiele API in een consistente, pythonische interface met voorspelbare methodenamen.
 

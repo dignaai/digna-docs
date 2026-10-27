@@ -101,6 +101,7 @@
 
 ## CLI nuoroda
 
+- [Release 2026.11](https://docs.digna.ai/lt/cli/Command_Line_Interface_202611/): Išsamus digna CLI 2026.11 laidos žinynas
 - [Release 2026.06](https://docs.digna.ai/lt/cli/Command_Line_Interface_202606/): Išsamus digna CLI 2026.06 laidos žinynas
 - [Release 2026.04](https://docs.digna.ai/lt/cli/Command_Line_Interface_202604/): Pilnas digna CLI leidimo 2026.04 komandas aprašantis vadovas
 - [Release 2026.01](https://docs.digna.ai/lt/cli/Command_Line_Interface_202601/): Išsami digna CLI versijos 2026.01 nuoroda. Sužinokite, kaip valdyti vartotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-config, check-repo-connection, inspect, inspect-async ir kt.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/lt/cli/Command_Line_Interface_202409/): Pilnas digna CLI 2024.09 leidimo žinynas. Sužinokite, kaip valdyti vartotojus, saugyklas ir duomenis naudojant komandas, tokias kaip add-user, check-repo-connection, upgrade-repo, inspect, tls-status ir kt.
 
 ## SDK nuoroda
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/lt/sdk/Release%202026.11/): Išsamus digna Python SDK 2026.11 laidos žinynas
+- [Quickstart](https://docs.digna.ai/lt/sdk/Release%202026.11/quickstart/): Greitosios pradžios vadovas digna Python SDK 2026.11 laidai
+- [Resources](https://docs.digna.ai/lt/sdk/Release%202026.11/resources/): Išteklių klientai digna Python SDK 2026.11 laidai
+- [Models](https://docs.digna.ai/lt/sdk/Release%202026.11/models/): Duomenų modeliai digna Python SDK 2026.11 laidai
+- [Errors](https://docs.digna.ai/lt/sdk/Release%202026.11/errors/): Klaidų hierarchija digna Python SDK 2026.11 laidai
+- [API Reference](https://docs.digna.ai/lt/sdk/Release%202026.11/reference/): Kliento API žinynas digna Python SDK 2026.11 laidai
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/lt/changelog/Release_202611/): Sužinokite, kas naujo digna leidime 2026.11. Ši versija pristato tris svarbius papildymus - digna Data Reconciliation (Beta), digna Agentic (Beta) su digna MCP Server ir digna Engine, leidžiantį tikrinti nuorodinį vientisumą tarp skirtingų duomenų bazių technologijų.
 - [Release 2026.06](https://docs.digna.ai/lt/changelog/Release_202606/): Sužinokite, kas naujo digna leidime 2026.06. Ši versija pristato naują **digna Python SDK**, oficialią **Docker** diegimo palaikymą, atnaujintą dashboard patirtį ir išplėstą validacijos taisyklių importo/eksporto funkcionalumą.
 - [Release 2026.04](https://docs.digna.ai/lt/changelog/Release_202604/): Sužinokite, kas naujo digna Release 2026.04. Ši versija pristato pažangią laiko eilučių analizę su Analytics Chart, pakartotinai naudojamus validacijos taisyklių šablonus, enumeracijas leistinų reikšmių centralizavimui ir stulpelio lygio aktualumo sąlygas.
 - [Release 2026.01](https://docs.digna.ai/lt/changelog/Release_202601/): Sužinokite, kas naujo digna Išleidime 2026.01. Ši versija pristato globalias duomenų bazės jungtis, loginius duomenų šaltinius, anomalijų reikšmingumo sąlygas, CSV eksporto galimybę ir išplėstinę Data Validation, įskaitant nuorodų vientisumo patikras.

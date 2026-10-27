@@ -621,6 +621,121 @@ Obě lze kdykoli vrátit na výchozí hodnoty. Jak každé z nich působí, najd
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/cs/changelog/Release_202611/
+
+# Změny – Release 2026.11  
+
+Release 2026.11 stojí na třech zásadních novinkách:
+
+- **digna Data Reconciliation (Beta)**: kontroluje, že data zůstávají konzistentní při přesunu mezi systémy  
+- **digna Agentic (Beta)**: otevírá digna AI agentům prostřednictvím digna MCP Server  
+- **digna Engine**: volitelně profiluje data přímo v digna a umožňuje kontroly referenční integrity mezi různými databázovými technologiemi  
+
+---
+
+## Nové funkce  
+
+### digna Data Reconciliation (Beta) – Konzistence od zdroje k cíli  
+Než se data dostanou do reportu, často projdou několika systémy. digna Data Reconciliation (Beta) porovnává **cílový** datový zdroj se **zdroji**, ze kterých vznikl, a upozorní, když spolu přestanou souhlasit.
+
+- Konfiguruje se jako pojmenovaná pravidla na nové záložce **Data Reconciliation** cílového datového zdroje  
+- Zdrojem může být jakýkoli datový zdroj projektu se zapnutou funkcí Data Reconciliation  
+- Mezi případy použití patří standardní rekonciliační postupy a validace výsledků ETL procesů  
+- Dva typy pravidel: **Exact** a **AI**  
+
+**Pravidla Exact – Rekonciliace jako pravidlo kvality dat**: přesně definujete, co musí souhlasit mezi jedním zdrojem a jedním cílem, stejně jako u pravidla kvality dat.
+
+  - Porovnání jednoho zdrojového datového zdroje s jedním cílovým datovým zdrojem  
+  - Spárování kontroly cíle s kontrolou zdroje podle statistiky a atributu, např. počty řádků nebo součet sloupce s částkou  
+  - Povolení rozdílu s **absolute** tolerancí (např. ± 10) nebo **relative** tolerancí (např. ± 0,5 % hodnoty zdroje)  
+  - Časová osa zobrazuje rozdíl za každý den vůči toleranci  
+
+**Pravidla AI – Rekonciliace jako observabilita dat**: digna se učí, jak cíl sleduje své zdroje, stejně jako digna pozoruje data v ostatních modulech, a upozorní, když se tento vztah naruší.
+
+  - Kombinace kontrol z několika zdrojových datových zdrojů s kontrolami jednoho cíle  
+  - Logiku mezi nimi (joiny, filtry, agregace) není třeba znát ani zapisovat  
+  - Model se z historie učí, jak cíl sleduje své zdroje v tentýž den  
+  - Každá kontrola cíle je predikována z hodnot zdrojů za daný den a digna upozorní, když cíl opustí pásmo vlastních minulých chyb pravidla  
+  - Každé pravidlo má vlastní **Model settings**: **Sensitivity**, **Memory** a **Model Complexity**  
+
+Rekonciliační kontroly se zobrazují na dashboardu s časovou osou pro každé pravidlo. Započítávají se do celkového stavu inspekce a spouštějí notifikace.
+
+**Dopad:** Pokrývá obě strany rekonciliace. Pravidla Exact vynucují známé kontroly mezi zdrojem a cílem a pravidla AI monitorují složité toky, jako jsou ETL procesy, takže data ztracená nebo změněná po cestě jsou zachycena bez ručně psaného rekonciliačního SQL.
+
+---
+
+### digna Agentic (Beta) – digna pro AI agenty  
+První verze digna Agentic (Beta). AI agenti nyní mohou s digna pracovat, odpovídat na obchodní otázky o vašich datech a pomáhat vylepšovat vaši konfiguraci.
+
+**digna MCP Server**: umožňuje Claude a dalším AI agentům pracovat s digna prostřednictvím Model Context Protocol.
+
+  - Správa projektů, datových zdrojů, pravidel, plánů inspekcí a odběrů  
+  - Čtení stavů inspekcí až na úroveň jednotlivé kontroly pro vyšetřování alertů  
+
+**Popisy datových zdrojů a atributů**: popište běžným jazykem, co datový zdroj nebo atribut obsahuje.
+
+  - AI agenti používají popisy k interpretaci vašich dat  
+  - Pokládejte obchodní otázky o svých datech a AI agenti na ně odpovědí na základě toho, co digna monitoruje  
+  - Pokud současná konfigurace digna na otázku odpovědět nedokáže, AI agent tam, kde je to možné, navrhne změny datového zdroje a jeho atributů, např. přidání nového datasetu  
+
+**Dopad:** Umožňuje pokládat obchodní otázky o vašich datech běžným jazykem a nechat AI agenty pomáhat s konfigurací digna a s vyšetřováním problémů s kvalitou dat.
+
+---
+
+### digna Engine – Profilujte tam, kde si zvolíte  
+Ve výchozím nastavení digna profiluje data tam, kde se nacházejí, tedy ve zdrojové databázi. digna Engine přidává další možnost: digna data ze zdroje exportuje a profiluje je uvnitř digna Engine.
+
+- Volitelné, nikoli povinné: profilování ve zdrojové databázi zůstává k dispozici  
+- Volí se pro každé databázové připojení jako jeho **místo profilování**: **Source Database** nebo **digna Engine**  
+- K dispozici pro všechny podporované zdrojové technologie  
+
+**Referenční integrita napříč připojeními**: některé kontroly vyžadují export dat. Pro tyto případy digna Engine rozšiřuje **digna Data Validation**.
+
+  - **Kontroly referenční integrity** mezi datovými zdroji na **různých databázových připojeních**, včetně různých databázových technologií (např. Oracle a PostgreSQL)  
+  - Funguje s oběma místy profilování: u Source Database se do digna Engine exportují pouze klíčové sloupce  
+  - Dashboard zobrazuje, když kontrola běží napříč dvěma připojeními  
+
+**Dopad:** Umožňuje zvolit, kde se data profilují, a vynucuje vztahy mezi systémy, které běží na různých databázových technologiích.
+
+---
+
+## Vylepšení profilování  
+
+Toto vydání také dává uživatelům větší kontrolu nad tím, co a jak se profiluje.
+
+### Dotazové atributy – Uživatelsky definované sloupce  
+- Definice umělých sloupců: SQL výraz nad jedním nebo více sloupci datového zdroje  
+- Každý dotazový atribut má vlastní název  
+- Profiluje se a kontroluje jako jakýkoli jiný atribut  
+
+### Kategorie sloupců DATE  
+- Nová kategorie **Date** pro atributy  
+- Metriky vztažené k inspektovanému datu  
+
+### Profilování na vyžádání  
+- Profilování libovolného atributu nad úplným snímkem jednoho data, bez spuštění inspekce  
+- Pomáhá nastavit typ sloupce atributu: **Numerical**, **Categorical**, **Date** nebo **Unspecified**  
+
+---
+
+## Pro koho je toto vydání určeno  
+
+- **Datoví inženýři:** validace výsledků ETL pomocí digna Data Reconciliation (Beta)  
+- **Finanční, rizikové a controllingové týmy:** standardní rekonciliační postupy jako pravidla Exact v digna Data Reconciliation (Beta)  
+- **Týmy pro kvalitu dat a Data Governance:** referenční integrita napříč databázovými technologiemi pomocí digna Engine  
+- **Obchodní uživatelé:** odpovědi AI agentů na obchodní otázky o datech pomocí digna Agentic (Beta)  
+- **Týmy pro AI a automatizaci:** AI agenti pracující s digna prostřednictvím digna Agentic (Beta)  
+
+---
+
+## Aktualizace CLI  
+- Beze změn  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/cs/cli/Command_Line_Interface_202409/
 
@@ -4215,6 +4330,932 @@ digna version
 #### Ukázkový výstup
 ```text
 2026.06
+```
+
+---
+
+## Správa konfigurace
+
+---
+
+### config check
+
+Příkaz `config check` ověřuje konfigurační soubor (`config.toml`) a kontroluje, zda jsou všechny povinné sekce a nastavení přítomné a správně naformátované. Každá sekce se ověřuje samostatně, takže poškozená sekce `[app]` nezakryje stav sekce `[repo]`.
+
+Hlášené sekce jsou:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — volitelné; chybějící klíč projde, přítomný, ale chybně zapsaný seznam selže
+
+Příkaz záměrně nenačítá konfiguraci aplikace stejným způsobem jako ostatní příkazy, aby dokázal diagnostikovat `config.toml`, který by ***digna*** vůbec zabránil ve spuštění.
+
+#### Použití příkazu
+```bash
+digna config check [OPTIONS]
+```
+
+#### Volby
+- `--configpath`, `-c`: Cesta ke konfiguračnímu souboru nebo k adresáři obsahujícímu `config.toml` (výchozí `./config.toml`).
+- `--json`: Vypíše ověřovací zprávu ve formátu JSON. Má přednost před `--quiet`.
+- `--quiet`, `-q`: Potlačí zprávu a spoléhá pouze na návratový kód.
+
+#### Příklad
+```bash
+digna config check
+```
+
+Ověření konkrétního konfiguračního souboru a výstup ve formátu JSON:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Ukázkový výstup
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+Chybějící soubor nebo syntaktická chyba v TOML nezanechá nic, co by šlo ověřovat sekci po sekci, a je hlášena jako jediná chyba místo zprávy, bez ohledu na `--quiet` či `--json`.
+
+---
+
+## Správa repozitáře
+
+---
+
+### repo check
+
+Příkaz `repo check` otestuje připojení k databázi a ověří instalaci a verzi repozitáře. Selže, pokud nakonfigurované schéma neexistuje, nebo pokud existuje, ale neobsahuje žádný repozitář ***digna***.
+
+Hlášená verze je verze schématu repozitáře, které je verzováno odděleně od vydání ***digna***, jež vypisuje [`version`](#version).
+
+#### Použití příkazu
+```bash
+digna repo check
+```
+
+#### Ukázkový výstup
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+Příkaz `repo install` nainstaluje nový repozitář ***digna*** do schématu nakonfigurovaného v `config.toml` a vytvoří všechny potřebné sekvence, tabulky, indexy, omezení a počáteční záznamy.
+
+Samotné schéma tento příkaz **nevytváří** — musí existovat předem. Příkaz se rovněž odmítne spustit, pokud je v daném schématu repozitář již nainstalován, a odkáže na [`repo upgrade`](#repo-upgrade), je-li nainstalovaná verze starší.
+
+#### Použití příkazu
+```bash
+digna repo install
+```
+
+#### Ukázkový výstup
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+Příkaz `repo upgrade` aplikuje migrace databázového schématu, aby povýšil existující repozitář na verzi očekávanou nainstalovaným vydáním. Povýšení se aplikují po jednom verzním kroku podél pevně dané cesty a každý dokončený krok se zaznamenává do repozitáře.
+
+Pokud je repozitář již na očekávané verzi, příkaz oznámí, že povýšení není potřeba, a neprovede žádné změny.
+
+#### Použití příkazu
+```bash
+digna repo upgrade
+```
+
+#### Ukázkový výstup
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Příkaz `repo prune` odstraňuje řádky, které přežily projekt nebo zdroj dat, ke kterému patřily.
+Smazání projektu nebo zdroje dat odstraní samotný objekt, ale ponechá jeho profily, predikce,
+stavy a počty řádků — jde o záměrný kompromis, protože mazání, které by vyčistilo i tyto tabulky,
+by nechalo uživatele čekat. `repo prune` je úklidový průchod, který je odstraní, a lze jej bezpečně
+spustit kdykoli: odstraňuje pouze řádky, jejichž projekt nebo zdroj dat již neexistuje.
+
+Řádky, které backend v Pythonu zapsal do tabulek, jež aktuální verze již nepoužívá, zůstávají nedotčeny.
+
+#### Použití příkazu
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Volby
+- `--dry-run`: Vypíše, co by bylo odstraněno, aniž by cokoli odstranil.
+
+Uvedeny jsou pouze tabulky s osiřelými řádky. Pokud žádné nejsou, příkaz vypíše
+`No orphaned rows found.` a skončí.
+
+#### Příklad
+```bash
+digna repo prune
+```
+
+#### Ukázkový výstup
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Zobrazení stejné zprávy bez odstranění čehokoli:
+```bash
+digna repo prune --dry-run
+```
+
+Počty řádků jsou totožné; liší se pouze závěrečný řádek:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+## Správa šifrování
+
+---
+
+### crypt gen-key
+
+Příkaz `crypt gen-key` vygeneruje nový šifrovací klíč AES-GCM určený k použití jako šifrovací klíč v `config.toml`. Načitatelný soubor `config.toml` už musí existovat, přestože na něm vygenerovaný klíč nezávisí.
+
+#### Použití příkazu
+```bash
+digna crypt gen-key
+```
+
+#### Ukázkový výstup
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+Příkaz `crypt encrypt` zašifruje řetězec (například heslo k databázi) pomocí klíče AES-GCM nakonfigurovaného v `config.toml` a vypíše šifrový text.
+
+#### Použití příkazu
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argumenty
+- **VALUE**: Otevřený text, který se má zašifrovat (povinné).
+
+#### Příklad
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+Příkaz `crypt decrypt` dešifruje řetězec zašifrovaný algoritmem AES-GCM pomocí klíče nakonfigurovaného v `config.toml` a vypíše otevřený text.
+
+#### Použití příkazu
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argumenty
+- **VALUE**: Zašifrovaný řetězec, který se má dešifrovat (povinné).
+
+#### Příklad
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Správa uživatelů
+
+---
+
+### user add
+
+Příkaz `user add` vytvoří v repozitáři ***digna*** nový uživatelský účet. Příkaz selže, pokud uživatel se zadanou e-mailovou adresou již existuje.
+
+#### Použití příkazu
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumenty
+- **EMAIL**: E-mailová adresa uživatele (povinné).
+- **PASSWORD**: Počáteční heslo uživatele (povinné).
+- **DISPLAY_NAME**: Celé zobrazované jméno uživatele (povinné).
+
+#### Volby
+- `--admin`, `-a`: Vytvoří uživatele s právy administrátora (superuživatele).
+
+#### Příklad
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Vytvoření účtu administrátora:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Ukázkový výstup
+```text
+User created with ID: 42
+```
+
+### user list
+
+Příkaz `user list` vypíše všechny registrované uživatele v tabulkové podobě s ID, e-mailem, zobrazovaným jménem a příznakem administrátora.
+
+#### Použití příkazu
+```bash
+digna user list
+```
+
+#### Ukázkový výstup
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+Příkaz `user modify` aktualizuje zobrazované jméno a práva administrátora u existujícího uživatelského účtu určeného e-mailovou adresou.
+
+Zobrazované jméno i příznak administrátora se zapisují vždy oba. `--admin` je přepínač, nikoli hodnota: **jeho vynechání administrátorská práva odebere**, uvádějte jej tedy vždy, když si má uživatel práva ponechat nebo je získat.
+
+#### Použití příkazu
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumenty
+- **EMAIL**: E-mail uživatele, který se má změnit (povinné).
+- **DISPLAY_NAME**: Aktualizované zobrazované jméno (povinné).
+
+#### Volby
+- `--admin`, `-a`: Udělí práva administrátora. Vynechejte pro jejich odebrání.
+- `--valid-until`, `-v`: Přijímán kvůli kompatibilitě, ale **aktuálně se neuplatňuje**. Jeho předání vypíše varování a nic nezmění.
+
+#### Příklad
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Ukázkový výstup
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+Příkaz `user modify-pwd` aktualizuje heslo existujícího uživatelského účtu.
+
+#### Použití příkazu
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argumenty
+- **EMAIL**: E-mail uživatele, jehož heslo se má aktualizovat (povinné).
+- **PASSWORD**: Nové heslo (povinné).
+
+#### Příklad
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+Příkaz `user delete` odstraní uživatelský účet ze systému.
+
+#### Použití příkazu
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argumenty
+- **EMAIL**: E-mail uživatele, který se má smazat (povinné).
+
+#### Příklad
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Správa projektů a zdrojů dat
+
+---
+
+### project list
+
+Příkaz `project list` vypíše všechny projekty dostupné v repozitáři a zobrazí jejich ID, název a popis.
+
+#### Použití příkazu
+```bash
+digna project list
+```
+
+#### Ukázkový výstup
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+Příkaz `project list-ds` vypíše všechny zdroje dat přiřazené danému projektu a zobrazí jejich ID, název, druh, schéma a název tabulky.
+
+#### Použití příkazu
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Název projektu, jehož zdroje dat se mají vypsat (povinné). Název musí přesně odpovídat.
+
+#### Příklad
+```bash
+digna project list-ds ProjectA
+```
+
+#### Ukázkový výstup
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+Příkaz `project export-ds` exportuje zdroje dat z projektu do dokumentu JSON.
+
+Pokud není zadáno ani `--table-name`, ani `--table-id`, exportují se všechny zdroje dat projektu.
+
+#### Použití příkazu
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Název projektu, ze kterého se mají zdroje dat exportovat (povinné).
+
+#### Volby
+- `--table-name`, `-n`: Názvy zdrojů dat k exportu. Více názvů lze zadat oddělených mezerami.
+- `--table-id`, `-i`: ID zdrojů dat k exportu. Více ID lze zadat oddělených mezerami.
+- `--exportfile`, `-f`: Cesta pro uložení exportovaných zdrojů dat (výchozí: `data_sources_export.json`).
+
+#### Příklad
+Export všech zdrojů dat z projektu `ProjectA`:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Export konkrétních tabulek:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Ukázkový výstup
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+Příkaz `project import-ds` importuje zdroje dat z exportního souboru do cílového projektu a u každého objektu hlásí, co bylo vytvořeno, aktualizováno nebo přeskočeno.
+
+#### Použití příkazu
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Název cílového projektu, do kterého se importuje (povinné).
+- **EXPORT_FILE**: Cesta k exportnímu souboru JSON (povinné).
+
+#### Volby
+- `--output-file`, `-o`: Soubor, do kterého se zapíše zpráva o importu. Bez něj jde zpráva na stdout.
+- `--output-format`, `-f`: Formát zprávy o importu — `table`, `json` nebo `csv` (výchozí: `table`).
+
+#### Příklad
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Získání strojově čitelné zprávy:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+Zpráva pokrývá čtyři úrovně objektů — zdroj dat, definici datové sady, atribut a validační pravidlo — u každé s importní akcí, výsledkem, ID výsledného objektu a případnými doplňujícími informacemi.
+
+### project plan-import-ds
+
+Příkaz `project plan-import-ds` zobrazí náhled importu zdrojů dat do cílového projektu a ukáže, které objekty by byly vytvořeny, aktualizovány nebo přeskočeny, aniž by cokoli změnil. Přijímá stejný exportní soubor a stejné volby výstupu jako [`project import-ds`](#project-import-ds) a přidává číslo kroku ke každému plánovanému objektu.
+
+#### Použití příkazu
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Název cílového projektu (povinné).
+- **EXPORT_FILE**: Cesta k exportnímu souboru (povinné).
+
+#### Volby
+- `--output-file`, `-o`: Soubor, do kterého se zapíše plán importu. Bez něj jde plán na stdout.
+- `--output-format`, `-f`: Formát plánu importu — `table`, `json` nebo `csv` (výchozí: `table`).
+
+#### Příklad
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+Příkaz `project cleanup` odstraní výsledky inspekcí, které projekt nashromáždil za určité období
+— profily, predikce, počty řádků a všechny stavy kontrol, atributů, datových sad a zdrojů dat.
+Odstraní přesně to, co zapsala inspekce těchto dat, takže období lze poté znovu podrobit inspekci
+a výsledky obnovit.
+
+Historie Timeliness a Schema Tracker se **neodstraňuje**: zaznamenává, co digna v daný den
+zjistila, nikoli výsledek z toho odvozený, takže vyčištění minulého období ji ponechá
+nedotčenou.
+
+Každý zdroj dat se čistí ve vlastní transakci, takže přerušený běh zanechá celé zdroje dat,
+nikoli napůl vyčištěný zdroj.
+
+#### Použití příkazu
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Projekt, který se má vyčistit (povinné). Jeden projekt na jedno spuštění.
+- **FROM_DATE**: První datum, pro které se výsledky odstraní, `YYYY-MM-DD` (povinné).
+- **TO_DATE**: Poslední datum, pro které se výsledky odstraní, včetně, `YYYY-MM-DD` (povinné).
+
+#### Volby
+- `--table-name`, `-n`: Omezí vyčištění na tyto zdroje dat. Lze zadat více názvů
+  oddělených mezerami.
+- `--table-filter`: Omezí vyčištění na zdroje dat, jejichž název obsahuje tento podřetězec.
+- `--dry-run`: Vypíše zdroje dat, které by byly vyčištěny, aniž by cokoli odstranil.
+- `--timing`: Zobrazí, jak dlouho vyčištění trvalo.
+
+`--table-name` a `--table-filter` se kombinují jako OR — zdroj dat se vyčistí, pokud je uveden
+jménem nebo pokud odpovídá podřetězec. Pokud žádný zdroj dat neodpovídá, příkaz selže, místo
+aby hlásil úspěch u vyčištění, které nic neudělalo.
+
+#### Příklad
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Omezení na jeden zdroj dat:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Ukázkový výstup
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Zobrazení zdrojů dat, které by byly vyčištěny, bez odstranění čehokoli:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Každý řádek je označen, takže zkušební běh nelze zaměnit se skutečným:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Správa inspekcí
+
+---
+
+### inspection run
+
+Příkaz `inspection run` vytvoří požadavek na inspekci pro projekt a rozsah dat a poté — podle zadaných voleb — buď na něj čeká, ihned se vrátí, nebo jej provede přímo ve vlastním procesu.
+
+Tři režimy provádění jsou:
+
+- **Výchozí (bez přepínače)**: požadavek se zařadí do fronty pro backend a CLI jej každé dvě sekundy dotazuje a vypisuje průběh úloh, dokud inspekce nedosáhne konečného stavu. Je nutné běžící `digna serve`, jinak požadavek nikdo nepřevezme.
+- **`--async-mode`**: požadavek se zařadí do fronty a jeho ID se ihned vypíše. Pro sledování použijte [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: inspekci provede samotný proces CLI a do fronty se nezařazuje, takže není potřeba běžící server.
+
+Volby `--async-mode` a `--bypass-backend` se vzájemně vylučují.
+
+Ve všech režimech končí příkaz nenulovým návratovým kódem, pokud inspekce neproběhla úspěšně.
+
+#### Použití příkazu
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argumenty
+- **PROJECT_NAME**: Název cílového projektu (povinné). Název musí přesně odpovídat.
+- **START_DATE**: Počáteční datum rozsahu ve formátu `YYYY-MM-DD` (povinné).
+- **END_DATE**: Koncové datum rozsahu ve formátu `YYYY-MM-DD` (povinné).
+
+#### Volby
+- `--table-name`: Omezí inspekci na jediný zdroj dat projektu zadaný jeho názvem. Bez této volby se kontrolují všechny zdroje dat projektu.
+- `--async-mode`: Zařadí inspekci do fronty a vypíše ID požadavku místo čekání na dokončení. Nelze kombinovat s `--bypass-backend`.
+- `--bypass-backend`: Provede inspekci přímo v procesu CLI místo zařazení do fronty pro backend. Nelze kombinovat s `--async-mode`.
+
+#### Příklad
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Odeslání asynchronní inspekce:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Kontrola jediného zdroje dat:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Ukázkový výstup
+Výchozí režim:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Asynchronní režim:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+Příkaz `inspection status` zjišťuje stav a průběh úloh požadavku na inspekci podle jeho ID.
+
+#### Použití příkazu
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argumenty
+- **INSPECTION_REQUEST_ID**: Číselné ID požadavku na inspekci (povinné).
+
+#### Příklad
+```bash
+digna inspection status 1024
+```
+
+#### Ukázkový výstup
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+Příkaz `inspection abort` požaduje zrušení běžících nebo čekajících požadavků na inspekci. Pro každý dotčený požadavek zaznamená událost zastavení; jedná na jejím základě backend, takže přerušení je žádostí o zastavení, nikoli okamžitým ukončením.
+
+#### Použití příkazu
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argumenty
+- **INSPECTION_REQUEST_ID**: ID požadavku na inspekci, který se má přerušit. Povinné, pokud není zadáno `--killall`.
+
+#### Volby
+- `--killall`: Přeruší všechny aktuálně běžící a čekající požadavky na inspekci. Má přednost před ID požadavku zadaným zároveň s ním.
+
+#### Příklad
+Přerušení konkrétního požadavku:
+```bash
+digna inspection abort 1024
+```
+
+Přerušení všech aktivních a zařazených inspekcí:
+```bash
+digna inspection abort --killall
+```
+
+#### Ukázkový výstup
+`--killall` hlásí, co provedl; přerušení jediného požadavku nevypíše nic a úspěch hlásí návratovým kódem.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Správa licencí
+
+---
+
+### license check
+
+Příkaz `license check` ověřuje soubor `license.toml`, kontroluje jeho podpis proti veřejnému klíči dodanému s instalací a ověřuje, že licence nevypršela. Nenačítá žádnou konfiguraci aplikace, takže funguje i dříve, než je `config.toml` nastaven.
+
+#### Použití příkazu
+```bash
+digna license check
+```
+
+#### Ukázkový výstup
+```text
+License is valid
+```
+
+Neplatný podpis a vypršelá licence jsou hlášeny jako dvě odlišné chyby, obě s návratovým kódem 1.
+
+---
+
+## Server a služby na pozadí
+
+---
+
+### serve
+
+Příkaz `serve` spustí server REST API ***digna*** spolu s plánovačem inspekcí na pozadí a správcem inspekcí. Při startu rovněž označí za neúspěšnou každou inspekci, kterou repozitář stále eviduje jako běžící, protože z dřívějšího procesu nemohlo nic přežít.
+
+Příkaz běží v popředí, dokud není zastaven.
+
+#### Použití příkazu
+```bash
+digna serve [OPTIONS]
+```
+
+#### Volby
+- `--address`: Síťová adresa, na kterou se má server API navázat (výchozí: `127.0.0.1`).
+- `--port`: Číslo portu, na kterém se naslouchá (výchozí: `8000`).
+
+#### Příklad
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Ukázkový výstup
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Správa služby Windows
+
+K dispozici pouze ve Windows. Příkazy registrují backend ***digna*** ve správci služeb Windows
+a ovládají jej; samotná služba spouští `serve` na pozadí. Každý příkaz musí být spuštěn
+z Příkazového řádku se zvýšenými oprávněními a každý přijímá `--name`, aby bylo možné pracovat
+se službou registrovanou pod jiným než výchozím názvem.
+
+---
+
+### windows install
+
+Příkaz `windows install` registruje ***digna*** jako službu Windows.
+
+Zde zadaná adresa a port se zaznamenají do registrace služby a služba se na ně naváže — nenačítají
+se z `config.toml`. Chcete-li je později změnit, službu odinstalujte a nainstalujte znovu.
+
+#### Použití příkazu
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým se služba registruje (výchozí: `digna`).
+- `--display-name`: Název zobrazený v services.msc (výchozí: `digna`).
+- `--description`: Popis zobrazený v services.msc (výchozí: `digna data quality backend`).
+- `--address`: Adresa, na kterou služba naváže své API (výchozí: `127.0.0.1`).
+- `--port`: Port, na který služba naváže své API (výchozí: `8000`).
+- `--working-dir`: Adresář obsahující `config.toml` a `license.toml`, který služba použije jako
+  svůj pracovní adresář (výchozí: adresář spustitelného souboru `digna`).
+- `--start-type`: Kdy se služba spouští — `auto` spolu s Windows, `manual` pouze na vyžádání,
+  `disabled` je registrována, ale odmítne se spustit (výchozí: `auto`).
+- `--account`: Účet, pod kterým služba běží, např. `DOMAIN\user` nebo `.\user` (výchozí: `LocalSystem`).
+- `--password`: Heslo účtu `--account`.
+
+#### Příklad
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registrace pod druhým názvem se spuštěním pod doménovým účtem:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Příkaz `windows start` spustí registrovanou službu.
+
+#### Použití příkazu
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým je služba registrována (výchozí: `digna`).
+
+---
+
+### windows stop
+
+Příkaz `windows stop` zastaví běžící službu. Před nahrazením jakéhokoli souboru aplikace
+službu zastavte.
+
+#### Použití příkazu
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým je služba registrována (výchozí: `digna`).
+
+---
+
+### windows uninstall
+
+Příkaz `windows uninstall` odregistruje službu. Nejprve ji zastavte.
+
+#### Použití příkazu
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Volby
+- `--name`: Název, pod kterým je služba registrována (výchozí: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/cs/cli/Command_Line_Interface_202611/
+
+# Referenční příručka digna CLI 2026.11
+**2026-10-27**
+
+Tato stránka dokumentuje úplnou sadu příkazů dostupných ve vydání ***digna*** CLI **2026.11**, včetně příkladů použití a voleb.
+
+Spustitelný soubor se jmenuje `digna`.
+
+---
+
+## Základy CLI
+
+---
+
+### Přehled a syntaxe
+
+CLI vydání **2026.11** používá strukturovanou hierarchii příkazů založenou na kategoriích:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+Příkazy `version` a `serve` jsou samostatné příkazy bez podpříkazu:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Globální volby
+
+Následující globální volby platí pro všechny příkazy:
+
+- `--help`, `-h`: Zobrazí nápovědu k CLI nebo ke konkrétní kategorii příkazů či podpříkazu.
+- `--stacktrace`: Při selhání zobrazí celý řetězec chyb místo pouhé zprávy nejvyšší úrovně.
+
+Volba `--stacktrace` je globální v úzkém slova smyslu: musí být uvedena **před** kategorií příkazu, nikoli za ní.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+Přepínač `--version` neexistuje. Použijte místo něj příkaz [`version`](#version).
+
+### Předpoklady
+
+Většina příkazů potřebuje čitelný a platný soubor `config.toml`; některé navíc vyžadují platnou licenci.
+Následující tabulka zaznamenává, co každá kategorie příkazů načte, než cokoli udělá:
+
+| Kategorie příkazu | Potřebuje `config.toml` | Potřebuje platnou licenci |
+|---|---|---|
+| `version` | ne | ne |
+| `config check` | ne (je právě tím, o čem příkaz podává zprávu) | ne |
+| `license check` | ne | *je* tou kontrolou |
+| `crypt` | ano | ne |
+| `serve` | ano | ne |
+| `windows` | ne (služba jej načte při svém spuštění) | ne |
+| `project` | ano | ne |
+| `user` | ano | ano |
+| `inspection` | ano | ano |
+| `repo` | ano | ano |
+
+Tam, kde je licence vyžadována, se kontroluje jak její podpis, tak datum expirace, a pokud kterákoli z kontrol selže, příkaz se ukončí dříve, než se dotkne repozitáře.
+
+### Návratové kódy
+
+- `0`: příkaz uspěl.
+- `1`: příkaz selhal. Chybová zpráva se zapisuje na stderr s předponou `Error: `.
+
+### help
+
+Volba `--help` poskytuje informace o dostupných kategoriích příkazů, podpříkazech a volbách:
+
+1. **Zobrazení obecné nápovědy:**
+   ```bash
+   digna --help
+   ```
+
+2. **Získání nápovědy ke konkrétním kategoriím a příkazům:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **Výstup obsahuje:**
+   - **Popis příkazu:** Shrnutí účelu příkazu.
+   - **Syntaxe:** Povinné a volitelné argumenty.
+   - **Volby:** Přepínače a parametry specifické pro daný příkaz.
+
+### version
+
+Příkaz `version` vypíše nainstalované vydání ***digna***. Nenačítá žádnou konfiguraci ani neověřuje licenci, takže funguje i na instalaci, jejíž `config.toml` nebo licence chybí nebo je neplatná.
+
+Verze vydání je nezávislá na verzi schématu repozitáře, kterou hlásí [`repo check`](#repo-check).
+
+#### Použití příkazu
+```bash
+digna version
+```
+
+#### Ukázkový výstup
+```text
+2026.11
 ```
 
 ---
@@ -11135,6 +12176,280 @@ Tato stránka dokumentuje vygenerované klientské API Python SDK ***digna***. `
 Source: https://docs.digna.ai/cs/sdk/Release%202026.06/resources/
 
 # Zdroje digna Python SDK 2026.06
+
+Tato stránka dokumentuje klienty zdrojů, které poskytuje Python SDK ***digna***. Každý zdroj zabaluje odpovídající koncové body stabilního API do jednotného, pythonovského rozhraní s předvídatelnými názvy metod.
+
+`DignaClient` poskytuje jeden objekt zdroje pro každou oblast API. Každý zdroj zabaluje
+odpovídající koncové body stabilního API pythonovskými názvy metod.
+
+| Zdroj | Atribut | Koncové body |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/cs/sdk/Release%202026.11/
+
+# Referenční příručka digna Python SDK 2026.11
+
+Tato sekce dokumentuje Python SDK pro ***digna***. Je uspořádána jako vícestránková referenční příručka: tento přehled slouží k pochopení klienta, poté pokračujte na samostatných stránkách o rychlém startu, zdrojích, modelech, chybách a vygenerované dokumentaci API.
+
+SDK se publikuje jako balíček `digna-sdk` a poskytuje stabilního, verzovaného klienta pro REST API ***digna***.
+
+---
+
+## Základy SDK
+
+---
+
+### Přehled
+
+SDK vychází z návrhu klienta orientovaného na zdroje. Každá oblast API je dostupná jako samostatný klient na nadřazeném objektu `DignaClient`, s typovanými modely požadavků a odpovědí a jednotným zpracováním chyb.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Hlavní vlastnosti
+
+- **Typované modely** — každý požadavek i každá odpověď se validují pomocí pydantic, takže editor a kontrola typů odhalí chyby dříve, než dojde k síťovému volání.
+- **Orientace na zdroje** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` a `client.inspection_statuses` nabízejí jednoduché metody `list` / `get` / `create` / `update` / `delete`.
+- **Srozumitelné chyby** — chyby API vyvolají výjimku `DignaAPIError` (nebo konkrétnější podtřídu, například `DignaAuthenticationError`, `DignaAuthorizationError` či `DignaNotFoundError`) místo toho, aby tiše vrátily `None`.
+
+### Instalace
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Referenční stránky
+
+Toto vydání je rozděleno do následujících stránek:
+
+- [Rychlý start](quickstart.md) — připojení a první volání.
+- [Zdroje](resources.md) — úplný seznam dostupných klientů zdrojů.
+- [Modely](models.md) — modely pydantic používané pro vstup a výstup.
+- [Chyby](errors.md) — hierarchie výjimek.
+- [Referenční příručka API](reference.md) — automaticky generovaná referenční dokumentace.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/cs/sdk/Release%202026.11/errors/
+
+# Chyby digna Python SDK 2026.11
+
+Tato stránka dokumentuje hierarchii výjimek, kterou poskytuje Python SDK ***digna***. Tyto chyby pokrývají selhání API, problémy s ověřováním a autorizací a situace, kdy zdroj nebyl nalezen.
+
+Všechny chyby vyvolané SDK jsou odvozeny od `DignaError`.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/cs/sdk/Release%202026.11/models/
+
+# Modely digna Python SDK 2026.11
+
+Tato stránka dokumentuje hlavní modely požadavků a odpovědí, které Python SDK ***digna*** používá. Všechna data jsou reprezentována jako modely [pydantic](https://docs.pydantic.dev/) importované z `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/cs/sdk/Release%202026.11/quickstart/
+
+# Rychlý start digna Python SDK 2026.11
+
+Tato stránka ukazuje minimální nastavení a základní pracovní postupy klienta Python SDK ***digna***. Použijte ji jako výchozí bod, než přejdete na referenční stránky o zdrojích, modelech a chybách.
+
+## Vytvoření klíče API
+
+Před připojením pomocí SDK vytvořte v rozhraní ***digna*** klíč API:
+
+1. Přihlaste se do ***digna*** v rozhraní.
+2. V levém dolním rohu otevřete svůj uživatelský profil.
+3. V uživatelském profilu klikněte na **API Keys**.
+4. Klikněte na **Add API Key**.
+5. Zadejte srozumitelný název a nastavte datum vypršení platnosti. Klíč API můžete kdykoli odvolat nebo smazat.
+6. Zkopírujte zobrazený klíč API do schránky. Klíč se zobrazí pouze při vytvoření.
+
+Použijte klíč API jako token SDK. Vhodné způsoby, jak jej předat aplikaci:
+
+- Proměnná prostředí, například `DIGNA_API_KEY`, pro lokální vývoj a automatizaci.
+- Úložiště tajemství vašeho CI/CD, například tajemství GitHub Actions, proměnné CI/CD v GitLabu nebo tajné proměnné Azure DevOps.
+- Správce tajemství za běhu, například tajemství Kubernetes, tajemství Dockeru, HashiCorp Vault nebo úložiště tajemství poskytovatele cloudu.
+
+Nezapisujte klíče API napevno do zdrojového kódu, notebooků, historie shellu ani do konfiguračních souborů uložených ve verzovacím systému.
+
+## Připojení
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Používejte `DignaClient` jako kontextový manažer, aby se podkladový
+fond připojení zavíral automaticky:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Výpis projektů
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Vytvoření zdroje dat
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Odeslání požadavku na kontrolu a čekání na jeho dokončení
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Kompletní postup odeslání → dotazování → načtení najdete v souboru `examples/inspection_flow.py` v repozitáři.
+
+## Zpracování chyb
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/cs/sdk/Release%202026.11/reference/
+
+# Referenční příručka klienta digna Python SDK 2026.11
+
+Tato stránka dokumentuje vygenerované klientské API Python SDK ***digna***. `DignaClient` je hlavním vstupním bodem pro operace se zdroji, které SDK poskytuje.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/cs/sdk/Release%202026.11/resources/
+
+# Zdroje digna Python SDK 2026.11
 
 Tato stránka dokumentuje klienty zdrojů, které poskytuje Python SDK ***digna***. Každý zdroj zabaluje odpovídající koncové body stabilního API do jednotného, pythonovského rozhraní s předvídatelnými názvy metod.
 

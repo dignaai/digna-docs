@@ -1,0 +1,25 @@
+# Modelos del SDK de Python de digna 2026.11
+
+Esta página documenta los principales modelos de solicitud y respuesta que usa el SDK de Python de ***digna***. Todas las cargas útiles se representan como modelos de [pydantic](https://docs.pydantic.dev/) importados desde `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus

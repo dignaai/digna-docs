@@ -621,6 +621,121 @@ Etkisi: Kuruluş genelinde ölçeklenebilir ve tutarlı veri kalite yönetişimi
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/tr/changelog/Release_202611/
+
+# Sürüm Notları – 2026.11  
+
+Sürüm 2026.11 üç önemli yenilik etrafında şekilleniyor:
+
+- **digna Data Reconciliation (Beta)**: verilerin sistemler arasında taşınırken tutarlı kalıp kalmadığını kontrol eder  
+- **digna Agentic (Beta)**: digna MCP Server aracılığıyla digna'yı AI ajanlarına açar  
+- **digna Engine**: isteğe bağlı olarak verileri digna içinde profiller ve farklı veritabanı teknolojileri arasında referans bütünlüğü kontrollerini mümkün kılar  
+
+---
+
+## Yeni Özellikler  
+
+### digna Data Reconciliation (Beta) – Kaynaktan Hedefe Tutarlılık  
+Veriler bir rapora ulaşmadan önce çoğu zaman birkaç sistemden geçer. digna Data Reconciliation (Beta), bir **hedef** veri kaynağını onu oluşturan **kaynaklarla** karşılaştırır ve artık eşleşmediklerinde alarm verir.
+
+- Hedef veri kaynağının yeni **Data Reconciliation** sekmesinde adlandırılmış kurallar olarak yapılandırılır  
+- Projede Data Reconciliation özelliği açık olan her veri kaynağı bir kaynak olabilir  
+- Kullanım alanları arasında standart mutabakat prosedürleri ve ETL süreçlerinin sonuçlarının doğrulanması yer alır  
+- İki kural türü: **Exact** ve **AI**  
+
+**Exact Kuralları – Veri Kalitesi Kuralı Olarak Mutabakat**: Bir kaynak ile bir hedef arasında tam olarak neyin eşleşmesi gerektiğini, tıpkı bir veri kalitesi kuralında olduğu gibi siz tanımlarsınız.
+
+  - Bir kaynak veri kaynağını bir hedef veri kaynağıyla karşılaştırma  
+  - Bir hedef kontrolünü, istatistik ve özniteliğe göre bir kaynak kontrolüyle eşleştirme, ör. satır sayıları veya bir tutar sütununun toplamı  
+  - Farka **absolute** bir toleransla (ör. ± 10) veya **relative** bir toleransla (ör. kaynağın ± %0,5'i) izin verme  
+  - Zaman çizelgesi her günün farkını toleransa göre gösterir  
+
+**AI Kuralları – Veri Gözlemlenebilirliği Olarak Mutabakat**: digna, diğer modüllerde verileri gözlemlediği şekilde bir hedefin kaynaklarını nasıl takip ettiğini öğrenir ve bu ilişki bozulduğunda alarm verir.
+
+  - Birden fazla kaynak veri kaynağının kontrollerini tek bir hedefin kontrolleriyle birleştirme  
+  - Aralarındaki mantığı (join'ler, filtreler, toplulaştırmalar) bilmeniz veya yazmanız gerekmez  
+  - Bir model, hedefin aynı gündeki kaynaklarını nasıl takip ettiğini geçmiş verilerden öğrenir  
+  - Her hedef kontrolü o günün kaynak değerlerinden tahmin edilir ve hedef, kuralın kendi geçmiş hatalarından oluşan bandın dışına çıktığında digna alarm verir  
+  - Her kuralın kendi **Model settings** ayarları vardır: **Sensitivity**, **Memory** ve **Model Complexity**  
+
+Mutabakat kontrolleri Dashboard'da kural başına bir zaman çizelgesiyle görünür. Genel inceleme durumuna dahil edilir ve bildirimleri tetikler.
+
+**Etkisi:** Mutabakatın her iki tarafını da kapsar. Exact kurallar kaynak ile hedef arasındaki bilinen kontrolleri uygular, AI kurallar ise ETL süreçleri gibi karmaşık akışları izler; böylece yolda kaybolan veya değişen veriler, elle yazılmış mutabakat SQL'ine gerek kalmadan yakalanır.
+
+---
+
+### digna Agentic (Beta) – AI Ajanları için digna  
+digna Agentic (Beta)'nın ilk sürümü. AI ajanları artık digna ile çalışabilir, verileriniz hakkındaki iş sorularını yanıtlayabilir ve yapılandırmanızı iyileştirmenize yardımcı olabilir.
+
+**digna MCP Server**: Claude ve diğer AI ajanlarının Model Context Protocol aracılığıyla digna ile çalışmasını sağlar.
+
+  - Projeleri, veri kaynaklarını, kuralları, inceleme zamanlamalarını ve abonelikleri yönetme  
+  - Uyarıları araştırmak için inceleme durumlarını tek tek kontrollere kadar okuma  
+
+**Veri Kaynakları ve Öznitelikler için Açıklamalar**: Bir veri kaynağının veya özniteliğin ne içerdiğini sade bir dille açıklayın.
+
+  - AI ajanları verilerinizi yorumlamak için bu açıklamaları kullanır  
+  - Verileriniz hakkında iş soruları sorun; AI ajanları bunları digna'nın izlediği verilerden yanıtlar  
+  - digna'nın mevcut yapılandırması bir soruyu yanıtlayamıyorsa, AI ajanı mümkün olduğunda veri kaynağında ve özniteliklerinde değişiklikler önerir, ör. yeni bir veri seti eklenmesi  
+
+**Etkisi:** Verileriniz hakkında sade bir dille iş soruları sormanızı sağlar ve AI ajanlarının digna'yı yapılandırmanıza ve veri kalitesi sorunlarını araştırmanıza yardımcı olmasına olanak tanır.
+
+---
+
+### digna Engine – Profillemeyi Seçtiğiniz Yerde Yapın  
+Varsayılan olarak digna, verileri bulundukları yerde, yani kaynak veritabanında profiller. digna Engine yeni bir seçenek ekler: digna verileri kaynaktan dışa aktarır ve digna Engine içinde profiller.
+
+- Zorunlu değil, isteğe bağlı: kaynak veritabanında profilleme kullanılmaya devam edebilir  
+- Her veritabanı bağlantısı için **profilleme konumu** olarak seçilir: **Source Database** veya **digna Engine**  
+- Desteklenen tüm kaynak teknolojileri için kullanılabilir  
+
+**Bağlantılar Arası Referans Bütünlüğü**: Bazı kontroller verilerin dışa aktarılmasını gerektirir. digna Engine, bu durumlar için **digna Data Validation**'ı genişletir.
+
+  - **Farklı veritabanı bağlantılarındaki** veri kaynakları arasında, farklı veritabanı teknolojileri de dahil olmak üzere (ör. Oracle ve PostgreSQL) **Referans Bütünlüğü Kontrolleri**  
+  - Her iki profilleme konumuyla da çalışır: Source Database için yalnızca anahtar sütunlar digna Engine'e aktarılır  
+  - Dashboard, bir kontrolün iki bağlantı arasında çalıştığını gösterir  
+
+**Etkisi:** Verilerin nerede profilleneceğini seçmenizi sağlar ve farklı veritabanı teknolojileri üzerinde çalışan sistemler arasındaki ilişkileri uygular.
+
+---
+
+## Profilleme Geliştirmeleri  
+
+Bu sürüm ayrıca kullanıcılara neyin ve nasıl profilleneceği üzerinde daha fazla kontrol sağlar.
+
+### Sorgu Öznitelikleri – Kullanıcı Tanımlı Sütunlar  
+- Yapay sütunlar tanımlayın: veri kaynağının bir veya daha fazla sütunu üzerinde bir SQL ifadesi  
+- Her sorgu özniteliğinin kendi adı vardır  
+- Diğer tüm öznitelikler gibi profillenir ve kontrol edilir  
+
+### DATE Sütun Kategorisi  
+- Öznitelikler için yeni **Date** kategorisi  
+- İncelenen tarihe göreli metrikler  
+
+### İsteğe Bağlı Profilleme  
+- Bir inceleme çalıştırmadan, herhangi bir özniteliği tek bir tarihin tam anlık görüntüsü üzerinde profilleyin  
+- Özniteliğin sütun türünü belirlemeye yardımcı olur: **Numerical**, **Categorical**, **Date** veya **Unspecified**  
+
+---
+
+## Bu Sürümden Kim Yararlanır  
+
+- **Veri Mühendisleri:** digna Data Reconciliation (Beta) ile ETL sonuçlarının doğrulanması  
+- **Finans, Risk ve Controlling Ekipleri:** digna Data Reconciliation (Beta) içinde Exact kurallar olarak standart mutabakat prosedürleri  
+- **Veri Kalitesi ve Yönetişim Ekipleri:** digna Engine ile veritabanı teknolojileri arasında referans bütünlüğü  
+- **İş Kullanıcıları:** digna Agentic (Beta) ile AI ajanları tarafından yanıtlanan, verilerle ilgili iş soruları  
+- **AI ve Otomasyon Ekipleri:** digna Agentic (Beta) aracılığıyla digna ile çalışan AI ajanları  
+
+---
+
+## CLI Güncellemeleri  
+- Değişiklik yok  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/tr/cli/Command_Line_Interface_202409/
 
@@ -4213,6 +4328,932 @@ digna version
 #### Örnek Çıktı
 ```text
 2026.06
+```
+
+---
+
+## Yapılandırma Yönetimi
+
+---
+
+### config check
+
+`config check` komutu, yapılandırma dosyasını (`config.toml`) doğrular ve zorunlu tüm bölümlerin ve ayarların mevcut ve doğru biçimlendirilmiş olup olmadığını denetler. Her bölüm kendi başına doğrulanır; böylece bozuk bir `[app]` bölümü, `[repo]` bölümünün durumunu gizlemez.
+
+Raporlanan bölümler şunlardır:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — isteğe bağlıdır; anahtarın bulunmaması denetimi geçer, bulunup da hatalı biçimlendirilmiş bir liste ise geçmez
+
+Komut, diğer komutların yaptığı biçimde uygulama yapılandırmasını bilinçli olarak yüklemez; böylece ***digna***'nın hiç başlamamasına yol açacak bir `config.toml` dosyasını tanılayabilir.
+
+#### Komut Kullanımı
+```bash
+digna config check [OPTIONS]
+```
+
+#### Seçenekler
+- `--configpath`, `-c`: Yapılandırma dosyasının ya da `config.toml` içeren bir dizinin yolu (varsayılan `./config.toml`).
+- `--json`: Doğrulama raporunu JSON olarak verir. `--quiet` seçeneğine göre önceliklidir.
+- `--quiet`, `-q`: Raporu bastırır ve yalnızca çıkış koduna dayanır.
+
+#### Örnek
+```bash
+digna config check
+```
+
+Belirli bir yapılandırma dosyasını doğrulamak ve çıktıyı JSON olarak biçimlendirmek için:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Örnek Çıktı
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+Eksik bir dosya veya bir TOML söz dizimi hatası, bölüm bölüm doğrulanacak hiçbir şey bırakmaz ve `--quiet` ya da `--json` seçeneklerinden bağımsız olarak rapor yerine tek bir hata olarak bildirilir.
+
+---
+
+## Depo Yönetimi
+
+---
+
+### repo check
+
+`repo check` komutu veritabanı bağlantısını sınar, deponun kurulumunu ve sürümünü doğrular. Yapılandırılan şema yoksa ya da var olup da içinde bir ***digna*** deposu barındırmıyorsa başarısız olur.
+
+Bildirilen sürüm, depo şemasının sürümüdür; bu sürüm, [`version`](#version) komutunun yazdırdığı ***digna*** sürümünden ayrı olarak numaralandırılır.
+
+#### Komut Kullanımı
+```bash
+digna repo check
+```
+
+#### Örnek Çıktı
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+`repo install` komutu, `config.toml` dosyasında yapılandırılan şemaya yeni bir ***digna*** deposu kurar ve gereken tüm dizileri, tabloları, dizinleri, kısıtlamaları ve başlangıç kayıtlarını oluşturur.
+
+Şemanın kendisi bu komut tarafından **oluşturulmaz** — önceden var olmalıdır. Ayrıca söz konusu şemada zaten bir depo kuruluysa komut çalışmayı reddeder ve kurulu sürüm daha eskiyse [`repo upgrade`](#repo-upgrade) komutuna yönlendirir.
+
+#### Komut Kullanımı
+```bash
+digna repo install
+```
+
+#### Örnek Çıktı
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+`repo upgrade` komutu, mevcut bir depoyu kurulu sürümün beklediği sürüme getirmek için veritabanı şeması geçişlerini uygular. Yükseltmeler, sabit bir yükseltme yolu boyunca her seferinde bir sürüm adımı olarak uygulanır ve tamamlanan her adım depoya kaydedilir.
+
+Depo zaten beklenen sürümdeyse komut, yükseltmeye gerek olmadığını bildirir ve hiçbir değişiklik yapmaz.
+
+#### Komut Kullanımı
+```bash
+digna repo upgrade
+```
+
+#### Örnek Çıktı
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+`repo prune` komutu, ait oldukları projeden veya veri kaynağından daha uzun süre kalmış satırları kaldırır.
+Bir projeyi veya veri kaynağını silmek nesnenin kendisini kaldırır, ancak profillerini, tahminlerini,
+durumlarını ve satır sayılarını geride bırakır — bu bilinçli bir tercihtir, çünkü bu tabloları da temizleyen bir silme işlemi
+kullanıcıyı bekletirdi. `repo prune`, bunları temizleyen bakım adımıdır ve herhangi bir zamanda güvenle
+çalıştırılabilir: yalnızca projesi veya veri kaynağı artık mevcut olmayan satırları kaldırır.
+
+Python arka ucunun, geçerli sürümün artık kullanmadığı tablolara yazdığı satırlara dokunulmaz.
+
+#### Komut Kullanımı
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Seçenekler
+- `--dry-run`: Hiçbir şeyi kaldırmadan nelerin kaldırılacağını raporlar.
+
+Yalnızca sahipsiz satırlar içeren tablolar listelenir. Hiç yoksa komut
+`No orphaned rows found.` bildirir ve sonlanır.
+
+#### Örnek
+```bash
+digna repo prune
+```
+
+#### Örnek Çıktı
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Hiçbir şeyi kaldırmadan aynı raporu görmek için:
+```bash
+digna repo prune --dry-run
+```
+
+Satır sayıları aynıdır; yalnızca son satır farklıdır:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+## Şifreleme Yönetimi
+
+---
+
+### crypt gen-key
+
+`crypt gen-key` komutu, `config.toml` içinde şifreleme anahtarı olarak kullanılmak üzere yeni bir AES-GCM şifreleme anahtarı üretir. Üretilen anahtar ona bağlı olmasa da, yüklenebilir bir `config.toml` dosyasının önceden bulunması gerekir.
+
+#### Komut Kullanımı
+```bash
+digna crypt gen-key
+```
+
+#### Örnek Çıktı
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+`crypt encrypt` komutu, bir dizeyi (örneğin bir veritabanı parolasını) `config.toml` içinde yapılandırılmış AES-GCM anahtarıyla şifreler ve şifreli metni yazdırır.
+
+#### Komut Kullanımı
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argümanlar
+- **VALUE**: Şifrelenecek düz metin dizesi (zorunlu).
+
+#### Örnek
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+`crypt decrypt` komutu, AES-GCM ile şifrelenmiş bir dizeyi `config.toml` içinde yapılandırılmış anahtarla çözer ve düz metni yazdırır.
+
+#### Komut Kullanımı
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argümanlar
+- **VALUE**: Çözülecek şifreli metin dizesi (zorunlu).
+
+#### Örnek
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Kullanıcı Yönetimi
+
+---
+
+### user add
+
+`user add` komutu, ***digna*** deposunda yeni bir kullanıcı hesabı oluşturur. Verilen e-posta adresine sahip bir kullanıcı zaten varsa komut başarısız olur.
+
+#### Komut Kullanımı
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argümanlar
+- **EMAIL**: Kullanıcının e-posta adresi (zorunlu).
+- **PASSWORD**: Kullanıcının başlangıç parolası (zorunlu).
+- **DISPLAY_NAME**: Kullanıcının tam görünen adı (zorunlu).
+
+#### Seçenekler
+- `--admin`, `-a`: Kullanıcıyı yönetici (superuser) ayrıcalıklarıyla oluşturur.
+
+#### Örnek
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Bir yönetici hesabı oluşturmak için:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Örnek Çıktı
+```text
+User created with ID: 42
+```
+
+### user list
+
+`user list` komutu, kayıtlı tüm kullanıcıları ID, e-posta, görünen ad ve yönetici bayrağıyla birlikte tablo biçiminde listeler.
+
+#### Komut Kullanımı
+```bash
+digna user list
+```
+
+#### Örnek Çıktı
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+`user modify` komutu, e-posta adresiyle belirlenen mevcut bir kullanıcı hesabının görünen adını ve yönetici ayrıcalıklarını günceller.
+
+Görünen ad da yönetici bayrağı da her zaman yazılır. `--admin` bir değer değil, bir anahtardır: **belirtilmemesi yönetici ayrıcalıklarını geri alır**, bu yüzden kullanıcının bu ayrıcalıkları koruması ya da kazanması gerektiği her durumda bu seçeneği verin.
+
+#### Komut Kullanımı
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argümanlar
+- **EMAIL**: Değiştirilecek kullanıcının e-posta adresi (zorunlu).
+- **DISPLAY_NAME**: Güncellenmiş görünen ad (zorunlu).
+
+#### Seçenekler
+- `--admin`, `-a`: Yönetici ayrıcalıkları verir. Geri almak için belirtmeyin.
+- `--valid-until`, `-v`: Uyumluluk için kabul edilir, ancak **şu anda uygulanmaz**. Verildiğinde bir uyarı yazdırılır ve hiçbir şey değişmez.
+
+#### Örnek
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Örnek Çıktı
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+`user modify-pwd` komutu, mevcut bir kullanıcı hesabının parolasını günceller.
+
+#### Komut Kullanımı
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argümanlar
+- **EMAIL**: Parolası güncellenecek kullanıcının e-posta adresi (zorunlu).
+- **PASSWORD**: Yeni parola (zorunlu).
+
+#### Örnek
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+`user delete` komutu, bir kullanıcı hesabını sistemden kaldırır.
+
+#### Komut Kullanımı
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argümanlar
+- **EMAIL**: Silinecek kullanıcının e-posta adresi (zorunlu).
+
+#### Örnek
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Proje ve Veri Kaynağı Yönetimi
+
+---
+
+### project list
+
+`project list` komutu, depodaki tüm kullanılabilir projeleri ID, ad ve açıklamalarıyla birlikte listeler.
+
+#### Komut Kullanımı
+```bash
+digna project list
+```
+
+#### Örnek Çıktı
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+`project list-ds` komutu, belirli bir projeyle ilişkili tüm veri kaynaklarını ID, ad, tür, şema ve tablo adlarını göstererek listeler.
+
+#### Komut Kullanımı
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: Veri kaynakları listelenecek projenin adı (zorunlu). Ad birebir eşleşmelidir.
+
+#### Örnek
+```bash
+digna project list-ds ProjectA
+```
+
+#### Örnek Çıktı
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+`project export-ds` komutu, bir projedeki veri kaynaklarını bir JSON belgesine aktarır.
+
+Ne `--table-name` ne de `--table-id` verilirse, projenin tüm veri kaynakları dışa aktarılır.
+
+#### Komut Kullanımı
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: Veri kaynaklarının dışa aktarılacağı projenin adı (zorunlu).
+
+#### Seçenekler
+- `--table-name`, `-n`: Dışa aktarılacak veri kaynaklarının adları. Birden çok ad boşlukla ayrılarak verilebilir.
+- `--table-id`, `-i`: Dışa aktarılacak veri kaynaklarının ID'leri. Birden çok ID boşlukla ayrılarak verilebilir.
+- `--exportfile`, `-f`: Dışa aktarılan veri kaynaklarının kaydedileceği yol (varsayılan: `data_sources_export.json`).
+
+#### Örnek
+`ProjectA` içindeki tüm veri kaynaklarını dışa aktarmak için:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Belirli tabloları dışa aktarmak için:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Örnek Çıktı
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+`project import-ds` komutu, bir dışa aktarma dosyasındaki veri kaynaklarını hedef bir projeye aktarır ve her nesne için neyin oluşturulduğunu, güncellendiğini veya atlandığını bildirir.
+
+#### Komut Kullanımı
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: İçe aktarmanın yapılacağı hedef projenin adı (zorunlu).
+- **EXPORT_FILE**: JSON dışa aktarma dosyasının yolu (zorunlu).
+
+#### Seçenekler
+- `--output-file`, `-o`: İçe aktarma raporunun yazılacağı dosya. Bu seçenek olmadan rapor stdout'a gider.
+- `--output-format`, `-f`: İçe aktarma raporunun biçimi — `table`, `json` veya `csv` (varsayılan: `table`).
+
+#### Örnek
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Makine tarafından okunabilir bir rapor almak için:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+Rapor dört nesne düzeyini kapsar — veri kaynağı, veri kümesi tanımı, öznitelik ve doğrulama kuralı — ve her biri için içe aktarma eylemini, sonucu, ortaya çıkan nesnenin ID'sini ve varsa ek bilgileri içerir.
+
+### project plan-import-ds
+
+`project plan-import-ds` komutu, hedef bir projeye yapılacak veri kaynağı içe aktarımının ön izlemesini sunar; hangi nesnelerin oluşturulacağını, güncelleneceğini veya atlanacağını hiçbir şeyi değiştirmeden gösterir. [`project import-ds`](#project-import-ds) ile aynı dışa aktarma dosyasını ve aynı raporlama seçeneklerini alır ve planlanan her nesne için bir adım numarası ekler.
+
+#### Komut Kullanımı
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: Hedef projenin adı (zorunlu).
+- **EXPORT_FILE**: Dışa aktarma dosyasının yolu (zorunlu).
+
+#### Seçenekler
+- `--output-file`, `-o`: İçe aktarma planının yazılacağı dosya. Bu seçenek olmadan plan stdout'a gider.
+- `--output-format`, `-f`: İçe aktarma planının biçimi — `table`, `json` veya `csv` (varsayılan: `table`).
+
+#### Örnek
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+`project cleanup` komutu, bir projenin belirli bir tarih aralığında biriktirdiği denetim sonuçlarını kaldırır —
+profiller, tahminler, satır sayıları ve tüm kontrol, öznitelik, veri kümesi ve veri kaynağı
+durumları. Yalnızca bu tarihlere ait bir denetimin yazdıklarını kaldırır; böylece aralık daha sonra
+yeniden denetlenerek sonuçlar yeniden oluşturulabilir.
+
+Timeliness ve Schema Tracker geçmişi **kaldırılmaz**: bunlar, ***digna***'nın belirli bir günde gözlemlediklerini
+kaydeder, o günden türetilmiş bir sonucu değil; bu nedenle geçmiş bir tarih aralığının temizlenmesi bunlara dokunmaz.
+
+Her veri kaynağı kendi işleminde (transaction) temizlenir; böylece yarıda kesilen bir çalıştırma, yarısı temizlenmiş bir veri kaynağı
+değil, bütün veri kaynakları bırakır.
+
+#### Komut Kullanımı
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: Temizlenecek proje (zorunlu). Her çağrıda bir proje.
+- **FROM_DATE**: Sonuçların kaldırılacağı ilk tarih, `YYYY-MM-DD` (zorunlu).
+- **TO_DATE**: Sonuçların kaldırılacağı son tarih (dahil), `YYYY-MM-DD` (zorunlu).
+
+#### Seçenekler
+- `--table-name`, `-n`: Temizliği bu veri kaynaklarıyla sınırlar. Birden çok ad boşlukla
+  ayrılarak verilebilir.
+- `--table-filter`: Temizliği, adı bu alt dizeyi içeren veri kaynaklarıyla sınırlar.
+- `--dry-run`: Hiçbir şeyi kaldırmadan temizlenecek veri kaynaklarını listeler.
+- `--timing`: Temizliğin ne kadar sürdüğünü görüntüler.
+
+`--table-name` ve `--table-filter` VEYA mantığıyla birleşir — bir veri kaynağı, adı verilmişse ya da
+alt dize eşleşiyorsa temizlenir. Hiçbir veri kaynağı eşleşmezse komut, hiçbir şey yapmamış bir temizlik için
+başarı bildirmek yerine başarısız olur.
+
+#### Örnek
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Tek bir veri kaynağıyla sınırlı olarak:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Örnek Çıktı
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Hiçbir şeyi kaldırmadan hangi veri kaynaklarının temizleneceğini görmek için:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Her satır işaretlenir; böylece bir deneme çalıştırması gerçek bir çalıştırmayla karıştırılamaz:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Denetim Yönetimi
+
+---
+
+### inspection run
+
+`inspection run` komutu, bir proje ve bir tarih aralığı için denetim isteği oluşturur ve ardından — verilen seçeneklere bağlı olarak — ya isteği bekler, ya hemen geri döner ya da denetimi kendi süreci içinde çalıştırır.
+
+Üç çalıştırma modu şunlardır:
+
+- **Varsayılan (bayrak yok)**: istek arka uç için kuyruğa alınır ve CLI, denetim son bir duruma ulaşana kadar isteği iki saniyede bir yoklayarak görev ilerlemesini yazdırır. Çalışan bir `digna serve` gereklidir; aksi hâlde isteği alacak hiçbir şey olmaz.
+- **`--async-mode`**: istek kuyruğa alınır ve ID'si hemen yazdırılır. İsteği izlemek için [`inspection status`](#inspection-status) komutunu kullanın.
+- **`--bypass-backend`**: denetim, CLI sürecinin kendisi tarafından yürütülür ve kuyruğa alınmaz; bu nedenle çalışan bir sunucuya gerek yoktur.
+
+`--async-mode` ile `--bypass-backend` birlikte kullanılamaz.
+
+Denetim başarıyla tamamlanmadıysa komut, her modda sıfırdan farklı bir çıkış koduyla sonlanır.
+
+#### Komut Kullanımı
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argümanlar
+- **PROJECT_NAME**: Hedef projenin adı (zorunlu). Ad birebir eşleşmelidir.
+- **START_DATE**: Tarih aralığının `YYYY-MM-DD` biçimindeki başlangıç tarihi (zorunlu).
+- **END_DATE**: Tarih aralığının `YYYY-MM-DD` biçimindeki bitiş tarihi (zorunlu).
+
+#### Seçenekler
+- `--table-name`: Denetimi, veri kaynağı adıyla belirtilen tek bir proje veri kaynağıyla sınırlar. Bu seçenek olmadan projenin tüm veri kaynakları denetlenir.
+- `--async-mode`: Denetimi kuyruğa alır ve beklemek yerine istek ID'sini yazdırır. `--bypass-backend` ile birlikte kullanılamaz.
+- `--bypass-backend`: Denetimi arka uç için kuyruğa almak yerine doğrudan CLI sürecinde çalıştırır. `--async-mode` ile birlikte kullanılamaz.
+
+#### Örnek
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Asenkron bir denetim göndermek için:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Tek bir veri kaynağını denetlemek için:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Örnek Çıktı
+Varsayılan mod:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Asenkron mod:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+`inspection status` komutu, bir denetim isteğinin durumunu ve görev ilerlemesini istek ID'si üzerinden sorgular.
+
+#### Komut Kullanımı
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argümanlar
+- **INSPECTION_REQUEST_ID**: Denetim isteğinin sayısal ID'si (zorunlu).
+
+#### Örnek
+```bash
+digna inspection status 1024
+```
+
+#### Örnek Çıktı
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+`inspection abort` komutu, çalışan veya bekleyen denetim isteklerinin iptalini talep eder. Etkilenen her istek için bir durdurma olayı kaydeder; bu olaya göre arka uç hareket ettiğinden, iptal anında bir sonlandırma değil, durdurma talebidir.
+
+#### Komut Kullanımı
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argümanlar
+- **INSPECTION_REQUEST_ID**: İptal edilecek denetim isteğinin ID'si. `--killall` verilmediği sürece zorunludur.
+
+#### Seçenekler
+- `--killall`: Çalışmakta olan ve bekleyen tüm denetim isteklerini iptal eder. Yanında verilen bir istek ID'sine göre önceliklidir.
+
+#### Örnek
+Belirli bir isteği iptal etmek için:
+```bash
+digna inspection abort 1024
+```
+
+Etkin ve kuyruktaki tüm denetimleri iptal etmek için:
+```bash
+digna inspection abort --killall
+```
+
+#### Örnek Çıktı
+`--killall` ne yaptığını bildirir; tek bir isteğin iptali herhangi bir çıktı üretmez ve başarıyı çıkış koduyla bildirir.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Lisans Yönetimi
+
+---
+
+### license check
+
+`license check` komutu, `license.toml` dosyasını doğrular; imzasını kurulumla birlikte gelen genel anahtara karşı denetler ve süresinin dolmadığını kontrol eder. Hiçbir uygulama yapılandırması okumaz; bu nedenle `config.toml` henüz kurulmadan önce de çalışır.
+
+#### Komut Kullanımı
+```bash
+digna license check
+```
+
+#### Örnek Çıktı
+```text
+License is valid
+```
+
+Geçersiz bir imza ile süresi dolmuş bir lisans, ikisi de çıkış kodu 1 ile olmak üzere ayrı hatalar olarak bildirilir.
+
+---
+
+## Sunucu ve Arka Plan Hizmetleri
+
+---
+
+### serve
+
+`serve` komutu, ***digna*** REST API sunucusunu, arka planda çalışan denetim zamanlayıcısı ve denetim yöneticisiyle birlikte başlatır. Başlangıçta ayrıca, deponun hâlâ çalışıyor olarak kaydettiği tüm denetimleri başarısız olarak işaretler; çünkü önceki bir süreçten hiçbir şey ayakta kalmış olamaz.
+
+Komut, durdurulana kadar ön planda çalışır.
+
+#### Komut Kullanımı
+```bash
+digna serve [OPTIONS]
+```
+
+#### Seçenekler
+- `--address`: API sunucusunun bağlanacağı ağ adresi (varsayılan: `127.0.0.1`).
+- `--port`: Dinlenecek bağlantı noktası numarası (varsayılan: `8000`).
+
+#### Örnek
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Örnek Çıktı
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Windows Hizmet Yönetimi
+
+Yalnızca Windows'ta kullanılabilir. Bu komutlar ***digna*** arka ucunu Windows hizmet yöneticisine
+kaydeder ve denetler; hizmetin kendisi `serve` komutunu arka planda çalıştırır. Her komut
+yükseltilmiş (yönetici olarak açılmış) bir Komut İstemi'nden çalıştırılmalıdır ve varsayılan olmayan bir adla kaydedilmiş bir hizmete
+erişilebilmesi için her biri `--name` seçeneğini kabul eder.
+
+---
+
+### windows install
+
+`windows install` komutu, ***digna***'yı bir Windows hizmeti olarak kaydeder.
+
+Burada verilen adres ve bağlantı noktası hizmet kaydına yazılır ve hizmetin bağlandığı değerler bunlardır —
+`config.toml` dosyasından okunmazlar. Bunları sonradan değiştirmek için hizmeti kaldırın
+ve yeniden yükleyin.
+
+#### Komut Kullanımı
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kaydedileceği ad (varsayılan: `digna`).
+- `--display-name`: services.msc'de gösterilen ad (varsayılan: `digna`).
+- `--description`: services.msc'de gösterilen açıklama (varsayılan: `digna data quality backend`).
+- `--address`: Hizmetin API'sini bağladığı adres (varsayılan: `127.0.0.1`).
+- `--port`: Hizmetin API'sini bağladığı bağlantı noktası (varsayılan: `8000`).
+- `--working-dir`: `config.toml` ve `license.toml` dosyalarını içeren ve hizmetin çalışma dizini olarak
+  kullandığı dizin (varsayılan: `digna` çalıştırılabilir dosyasının bulunduğu dizin).
+- `--start-type`: Hizmetin ne zaman başlayacağı — `auto` Windows ile birlikte, `manual` yalnızca istendiğinde,
+  `disabled` kayıtlıdır ancak başlamayı reddeder (varsayılan: `auto`).
+- `--account`: Hizmetin çalışacağı hesap, ör. `DOMAIN\user` veya `.\user` (varsayılan: `LocalSystem`).
+- `--password`: `--account` hesabının parolası.
+
+#### Örnek
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+İkinci bir adla, bir etki alanı hesabıyla çalışacak şekilde kaydetmek için:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+`windows start` komutu, kayıtlı bir hizmeti başlatır.
+
+#### Komut Kullanımı
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kayıtlı olduğu ad (varsayılan: `digna`).
+
+---
+
+### windows stop
+
+`windows stop` komutu, çalışan bir hizmeti durdurur. Herhangi bir uygulama dosyasını değiştirmeden önce
+hizmeti durdurun.
+
+#### Komut Kullanımı
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kayıtlı olduğu ad (varsayılan: `digna`).
+
+---
+
+### windows uninstall
+
+`windows uninstall` komutu, hizmetin kaydını kaldırır. Önce hizmeti durdurun.
+
+#### Komut Kullanımı
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Seçenekler
+- `--name`: Hizmetin kayıtlı olduğu ad (varsayılan: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/tr/cli/Command_Line_Interface_202611/
+
+# digna CLI Başvurusu 2026.11
+**2026-10-27**
+
+Bu sayfa, ***digna*** CLI **2026.11** sürümünde bulunan komutların tamamını, kullanım örnekleri ve seçenekleriyle birlikte belgeler.
+
+Çalıştırılabilir dosyanın adı `digna`.
+
+---
+
+## CLI Temelleri
+
+---
+
+### Genel Bakış ve Söz Dizimi
+
+**2026.11** sürümünün CLI'si, kategori tabanlı ve yapılandırılmış bir komut hiyerarşisi kullanır:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+`version` ve `serve`, alt komutu olmayan tek başına komutlardır:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Genel Seçenekler
+
+Aşağıdaki genel seçenekler tüm komutlar için geçerlidir:
+
+- `--help`, `-h`: CLI'ye ya da belirli bir komut kategorisine veya alt komuta ilişkin yardım bilgilerini görüntüler.
+- `--stacktrace`: Hata durumunda yalnızca en üst düzey iletiyi değil, hata zincirinin tamamını görüntüler.
+
+`--stacktrace` tam anlamıyla genel bir seçenektir: komut kategorisinden **önce** verilmelidir, sonra değil.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+`--version` diye bir bayrak yoktur. Bunun yerine [`version`](#version) komutunu kullanın.
+
+### Ön Koşullar
+
+Komutların çoğu okunabilir ve geçerli bir `config.toml` dosyasına ihtiyaç duyar; bazıları buna ek olarak geçerli bir lisans gerektirir.
+Aşağıdaki tablo, her komut kategorisinin herhangi bir işlem yapmadan önce neleri yüklediğini gösterir:
+
+| Komut kategorisi | `config.toml` gerekir mi | Geçerli lisans gerekir mi |
+|---|---|---|
+| `version` | hayır | hayır |
+| `config check` | hayır (komutun raporladığı şeyin ta kendisidir) | hayır |
+| `license check` | hayır | denetimin *kendisidir* |
+| `crypt` | evet | hayır |
+| `serve` | evet | hayır |
+| `windows` | hayır (hizmet, başlarken okur) | hayır |
+| `project` | evet | hayır |
+| `user` | evet | evet |
+| `inspection` | evet | evet |
+| `repo` | evet | evet |
+
+Lisansın gerekli olduğu yerlerde hem imzası hem de son kullanma tarihi denetlenir ve bunlardan herhangi biri başarısız olursa komut, depoya dokunmadan önce sonlanır.
+
+### Çıkış Kodları
+
+- `0`: komut başarılı oldu.
+- `1`: komut başarısız oldu. Hata iletisi, başına `Error: ` öneki eklenerek stderr'e yazılır.
+
+### help
+
+`--help` seçeneği, kullanılabilir komut kategorileri, alt komutlar ve seçenekler hakkında bilgi verir:
+
+1. **Genel yardımı görüntüleme:**
+   ```bash
+   digna --help
+   ```
+
+2. **Belirli kategoriler ve komutlar için yardım alma:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **Çıktı şunları içerir:**
+   - **Komut Açıklaması:** Komutun amacının özeti.
+   - **Söz Dizimi:** Zorunlu ve isteğe bağlı argümanlar.
+   - **Seçenekler:** Komuta özgü bayraklar ve parametreler.
+
+### version
+
+`version` komutu, kurulu ***digna*** sürümünü yazdırır. Hiçbir yapılandırma okumaz ve hiçbir lisansı doğrulamaz; bu nedenle `config.toml` dosyası ya da lisansı eksik veya geçersiz olan bir kurulumda da çalışır.
+
+Sürüm numarası, [`repo check`](#repo-check) tarafından bildirilen depo şeması sürümünden bağımsızdır.
+
+#### Komut Kullanımı
+```bash
+digna version
+```
+
+#### Örnek Çıktı
+```text
+2026.11
 ```
 
 ---
@@ -12855,6 +13896,280 @@ Bu sayfa, ***digna*** Python SDK'sının otomatik oluşturulan istemci API'sini 
 Source: https://docs.digna.ai/tr/sdk/Release%202026.06/resources/
 
 # digna Python SDK Kaynakları 2026.06
+
+Bu sayfa, ***digna*** Python SDK'sının sunduğu kaynak istemcilerini belgeler. Her kaynak, kararlı API'nin ilgili uç noktalarını tutarlı ve Python'a uygun bir arabirimle, öngörülebilir yöntem adları kullanarak sarmalar.
+
+`DignaClient`, her API alanı için bir kaynak nesnesi sunar. Her kaynak,
+kararlı API'nin ilgili uç noktalarını Python'a uygun yöntem adlarıyla sarmalar.
+
+| Kaynak | Öznitelik | Uç noktalar |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/tr/sdk/Release%202026.11/
+
+# digna Python SDK Başvurusu 2026.11
+
+Bu bölüm ***digna*** için Python SDK'sını belgeler. Birden çok sayfadan oluşan bir başvuru kılavuzu olarak düzenlenmiştir: istemciyi anlamak için bu genel bakışı kullanın, ardından hızlı başlangıç, kaynaklar, modeller, hatalar ve otomatik oluşturulan API belgeleri için ayrı sayfalarla devam edin.
+
+SDK, `digna-sdk` paketi olarak yayımlanır ve ***digna*** REST API'si için kararlı, sürümlenmiş bir istemci sunar.
+
+---
+
+## SDK Temelleri
+
+---
+
+### Genel Bakış
+
+SDK, kaynak odaklı bir istemci tasarımını izler. Her API alanı, üst düzey `DignaClient` üzerinde birinci sınıf bir istemci olarak sunulur; istek ve yanıt modelleri türlendirilmiştir ve hata yönetimi tutarlıdır.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Temel Özellikler
+
+- **Türlendirilmiş modeller** — her istek ve yanıt pydantic ile doğrulanır; böylece düzenleyiciniz ve tür denetleyiciniz hataları ağ çağrısından önce yakalar.
+- **Kaynak odaklı** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` ve `client.inspection_statuses` istemcilerinin her biri basit `list` / `get` / `create` / `update` / `delete` yöntemleri sunar.
+- **Açık hatalar** — API hataları sessizce `None` döndürmek yerine `DignaAPIError` (ya da `DignaAuthenticationError`, `DignaAuthorizationError` veya `DignaNotFoundError` gibi daha özel bir alt sınıf) fırlatır.
+
+### Kurulum
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Başvuru Sayfaları
+
+Bu sürüm aşağıdaki sayfalara ayrılmıştır:
+
+- [Hızlı Başlangıç](quickstart.md) — bağlanın ve ilk çağrılarınızı yapın.
+- [Kaynaklar](resources.md) — kullanılabilir kaynak istemcilerinin tam listesi.
+- [Modeller](models.md) — giriş ve çıkış için kullanılan pydantic modelleri.
+- [Hatalar](errors.md) — istisna hiyerarşisi.
+- [API Başvurusu](reference.md) — otomatik oluşturulan başvuru belgeleri.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/tr/sdk/Release%202026.11/errors/
+
+# digna Python SDK Hataları 2026.11
+
+Bu sayfa, ***digna*** Python SDK'sının sunduğu istisna hiyerarşisini belgeler. Bu hatalar API başarısızlıklarını, kimlik doğrulama ve yetkilendirme sorunlarını ve kaynağın bulunamadığı durumları kapsar.
+
+SDK tarafından fırlatılan tüm hatalar `DignaError` sınıfından türetilir.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/tr/sdk/Release%202026.11/models/
+
+# digna Python SDK Modelleri 2026.11
+
+Bu sayfa, ***digna*** Python SDK'sının kullandığı başlıca istek ve yanıt modellerini belgeler. Tüm veri yükleri, `digna_sdk.models` modülünden içe aktarılan [pydantic](https://docs.pydantic.dev/) modelleri olarak temsil edilir.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/tr/sdk/Release%202026.11/quickstart/
+
+# digna Python SDK Hızlı Başlangıç 2026.11
+
+Bu sayfa, ***digna*** Python SDK'sı için en temel kurulumu ve başlıca istemci iş akışlarını gösterir. Kaynak, model ve hata başvuru sayfalarına geçmeden önce başlangıç noktası olarak kullanın.
+
+## API Anahtarı Oluşturma
+
+SDK ile bağlanmadan önce ***digna*** arayüzünde bir API anahtarı oluşturun:
+
+1. Arayüzde ***digna*** oturumunuzu açın.
+2. Sol alt köşedeki kullanıcı profilinizi açın.
+3. Kullanıcı profilinde **API Keys** bağlantısına tıklayın.
+4. **Add API Key** düğmesine tıklayın.
+5. Anlamlı bir ad verin ve bir son kullanma tarihi belirleyin. Bir API anahtarını istediğiniz zaman iptal edebilir veya silebilirsiniz.
+6. Görüntülenen API anahtarını panoya kopyalayın. Anahtar yalnızca oluşturulduğu anda gösterilir.
+
+API anahtarını SDK belirteci olarak kullanın. Uygulamanıza iletmenin iyi yolları şunlardır:
+
+- Yerel geliştirme ve otomasyon için bir ortam değişkeni, örneğin `DIGNA_API_KEY`.
+- CI/CD gizli bilgi deponuz; örneğin GitHub Actions gizli bilgileri, GitLab CI/CD değişkenleri veya Azure DevOps gizli değişkenleri.
+- Çalışma zamanı gizli bilgi yöneticisi; örneğin Kubernetes gizli bilgileri, Docker gizli bilgileri, HashiCorp Vault veya bir bulut sağlayıcısının gizli bilgi deposu.
+
+API anahtarlarını kaynak koda, not defterlerine, kabuk geçmişine veya sürüm denetimine eklenen yapılandırma dosyalarına sabit olarak yazmaktan kaçının.
+
+## Bağlanma
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Alttaki bağlantı havuzunun otomatik olarak kapatılması için `DignaClient` sınıfını
+bağlam yöneticisi olarak kullanın:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Projeleri Listeleme
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Veri Kaynağı Oluşturma
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## İnceleme İsteği Gönderme ve Tamamlanmasını Bekleme
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Gönderme → yoklama → alma akışının tamamı için depodaki `examples/inspection_flow.py` dosyasına bakın.
+
+## Hataları Ele Alma
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/tr/sdk/Release%202026.11/reference/
+
+# digna Python SDK İstemci Başvurusu 2026.11
+
+Bu sayfa, ***digna*** Python SDK'sının otomatik oluşturulan istemci API'sini belgeler. `DignaClient`, SDK'nın sunduğu kaynak işlemleri için birincil giriş noktasıdır.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/tr/sdk/Release%202026.11/resources/
+
+# digna Python SDK Kaynakları 2026.11
 
 Bu sayfa, ***digna*** Python SDK'sının sunduğu kaynak istemcilerini belgeler. Her kaynak, kararlı API'nin ilgili uç noktalarını tutarlı ve Python'a uygun bir arabirimle, öngörülebilir yöntem adları kullanarak sarmalar.
 

@@ -101,6 +101,7 @@
 
 ## CLI-referanse
 
+- [Release 2026.11](https://docs.digna.ai/nb/cli/Command_Line_Interface_202611/): Komplett referanse for digna CLI-utgivelse 2026.11
 - [Release 2026.06](https://docs.digna.ai/nb/cli/Command_Line_Interface_202606/): Komplett referanse for digna CLI-utgivelse 2026.06
 - [Release 2026.04](https://docs.digna.ai/nb/cli/Command_Line_Interface_202604/): Komplett referanse for digna CLI-utgave 2026.04
 - [Release 2026.01](https://docs.digna.ai/nb/cli/Command_Line_Interface_202601/): Fullstendig referanse for digna CLI-utgivelsen 2026.01. Lær hvordan du administrerer brukere, repositories og data med kommandoer som add-user, check-config, check-repo-connection, inspect, inspect-async med mer.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/nb/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
 ## SDK-referanse
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/nb/sdk/Release%202026.11/): Komplett referanse for digna Python SDK-utgivelse 2026.11
+- [Quickstart](https://docs.digna.ai/nb/sdk/Release%202026.11/quickstart/): Hurtigstartveiledning for digna Python SDK-utgivelse 2026.11
+- [Resources](https://docs.digna.ai/nb/sdk/Release%202026.11/resources/): Ressursklienter for digna Python SDK-utgivelse 2026.11
+- [Models](https://docs.digna.ai/nb/sdk/Release%202026.11/models/): Datamodeller for digna Python SDK-utgivelse 2026.11
+- [Errors](https://docs.digna.ai/nb/sdk/Release%202026.11/errors/): Feilhierarki for digna Python SDK-utgivelse 2026.11
+- [API Reference](https://docs.digna.ai/nb/sdk/Release%202026.11/reference/): Klient-API-referanse for digna Python SDK-utgivelse 2026.11
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/nb/changelog/Release_202611/): Lær hva som er nytt i digna Release 2026.11. Denne versjonen introduserer tre store nyheter - digna Data Reconciliation (Beta), digna Agentic (Beta) med digna MCP Server, og digna Engine, som muliggjør kontroller av referanseintegritet mellom ulike databaseteknologier.
 - [Release 2026.06](https://docs.digna.ai/nb/changelog/Release_202606/): Lær hva som er nytt i digna Release 2026.06. Denne versjonen introduserer det nye digna Python SDK, Docker-distribusjonsstøtte, en omdesignet dashboard-opplevelse og utvidede import-/eksportmuligheter for valideringsregler.
 - [Release 2026.04](https://docs.digna.ai/nb/changelog/Release_202604/): Lær hva som er nytt i digna Release 2026.04. Denne versjonen introduserer avansert tidsserieanalyse med Analytics Chart, gjenbrukbare maler for valideringsregler, enumerasjoner for tillatte verdier og relevansbetingelser på kolonnenivå.
 - [Release 2026.01](https://docs.digna.ai/nb/changelog/Release_202601/): Lær hva som er nytt i digna Utgivelse 2026.01. Denne versjonen introduserer globale databasetilkoblinger, logiske datakilder, betingelser for anomalirelevans, CSV-eksport og avansert datavalidering inkludert kontroller for referanseintegritet.

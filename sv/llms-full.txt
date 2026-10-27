@@ -621,6 +621,121 @@ Påverkan: Möjliggör skalbar och konsekvent styrning av datakvalitet i hela or
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/sv/changelog/Release_202611/
+
+# Ändringslogg – Release 2026.11  
+
+Release 2026.11 är uppbyggd kring tre stora tillägg:
+
+- **digna Data Reconciliation (Beta)**: kontrollerar att data förblir konsekventa när de flyttas mellan system  
+- **digna Agentic (Beta)**: öppnar digna för AI-agenter via digna MCP Server  
+- **digna Engine**: profilerar valfritt data inuti digna och möjliggör kontroller av referensintegritet mellan olika databastekniker  
+
+---
+
+## Nya funktioner  
+
+### digna Data Reconciliation (Beta) – Konsekvens från källa till mål  
+Data passerar ofta flera system innan de når en rapport. digna Data Reconciliation (Beta) jämför en **mål**-datakälla med de **källor** den byggdes från och larmar när de inte längre stämmer överens.
+
+- Konfigureras som namngivna regler på den nya fliken **Data Reconciliation** i måldatakällan  
+- Varje datakälla i projektet där Data Reconciliation är aktiverat kan vara en källa  
+- Användningsområden är bland annat standardiserade avstämningsrutiner och validering av resultaten från ETL-processer  
+- Två typer av regler: **Exact** och **AI**  
+
+**Exact-regler – Avstämning som en datakvalitetsregel**: Du definierar exakt vad som måste stämma överens mellan en källa och ett mål, som i en datakvalitetsregel.
+
+  - Jämför en källdatakälla med en måldatakälla  
+  - Para ihop en kontroll i målet med en kontroll i källan efter statistik och attribut, t.ex. radantal eller summan av en beloppskolumn  
+  - Tillåt en differens med en **absolute** tolerans (t.ex. ± 10) eller en **relative** tolerans (t.ex. ± 0,5 % av källan)  
+  - Tidslinjen visar varje dags differens mot toleransen  
+
+**AI-regler – Avstämning som data observability**: digna lär sig hur ett mål följer sina källor, på samma sätt som digna observerar data i andra moduler, och larmar när sambandet bryts.
+
+  - Kombinera kontroller från flera källdatakällor med kontrollerna i ett mål  
+  - Du behöver inte känna till eller skriva ner logiken mellan dem (joins, filter, aggregeringar)  
+  - En modell lär sig av historiken hur målet följer sina källor samma dag  
+  - Varje kontroll i målet prediceras från dagens källvärden, och digna larmar när målet lämnar bandet som bildas av regelns egna tidigare fel  
+  - Varje regel har egna **Model settings**: **Sensitivity**, **Memory** och **Model Complexity**  
+
+Avstämningskontroller visas på Dashboard med en tidslinje per regel. De räknas in i den övergripande inspektionsstatusen och utlöser notifieringar.
+
+**Påverkan:** Täcker båda sidorna av avstämningen. Exact-regler upprätthåller kända kontroller mellan källa och mål, och AI-regler övervakar komplexa flöden som ETL-processer, så att data som går förlorade eller ändras på vägen upptäcks utan handskriven avstämnings-SQL.
+
+---
+
+### digna Agentic (Beta) – digna för AI-agenter  
+Den första versionen av digna Agentic (Beta). AI-agenter kan nu arbeta med digna, besvara affärsfrågor om dina data och hjälpa till att förbättra din konfiguration.
+
+**digna MCP Server**: Låter Claude och andra AI-agenter arbeta med digna via Model Context Protocol.
+
+  - Hantera projekt, datakällor, regler, inspektionsscheman och prenumerationer  
+  - Läs inspektionsstatus ner till den enskilda kontrollen för att utreda larm  
+
+**Beskrivningar av datakällor och attribut**: Beskriv med vanligt språk vad en datakälla eller ett attribut innehåller.
+
+  - AI-agenter använder beskrivningarna för att tolka dina data  
+  - Ställ affärsfrågor om dina data, så besvarar AI-agenter dem utifrån det som digna övervakar  
+  - Om dignas nuvarande konfiguration inte kan besvara en fråga föreslår AI-agenten där det är möjligt ändringar av datakällan och dess attribut, t.ex. att lägga till ett nytt dataset  
+
+**Påverkan:** Låter dig ställa affärsfrågor om dina data med vanligt språk, och låter AI-agenter hjälpa till att konfigurera digna och utreda datakvalitetsproblem.
+
+---
+
+### digna Engine – Profilera där du väljer  
+Som standard profilerar digna data där de finns, i källdatabasen. digna Engine lägger till ett alternativ: digna exporterar data från källan och profilerar dem inuti digna Engine.
+
+- Valfritt, inte obligatoriskt: profilering i källdatabasen finns kvar  
+- Väljs per databasanslutning som dess **profileringsplats**: **Source Database** eller **digna Engine**  
+- Tillgängligt för alla källtekniker som stöds  
+
+**Referensintegritet mellan anslutningar**: Vissa kontroller kräver att data exporteras. digna Engine utökar **digna Data Validation** för dessa fall.
+
+  - **Kontroller av referensintegritet** mellan datakällor på **olika databasanslutningar**, även med olika databastekniker (t.ex. Oracle och PostgreSQL)  
+  - Fungerar med båda profileringsplatserna: för Source Database exporteras endast nyckelkolumnerna till digna Engine  
+  - Dashboarden visar när en kontroll körs över två anslutningar  
+
+**Påverkan:** Låter dig välja var data profileras, och upprätthåller relationer mellan system som körs på olika databastekniker.
+
+---
+
+## Förbättringar av profilering  
+
+Den här releasen ger också användarna mer kontroll över vad som profileras och hur.
+
+### Frågeattribut – Användardefinierade kolumner  
+- Definiera artificiella kolumner: ett SQL-uttryck över en eller flera kolumner i datakällan  
+- Varje frågeattribut har ett eget namn  
+- Profileras och kontrolleras som vilket annat attribut som helst  
+
+### Kolumnkategorin DATE  
+- Ny kategori **Date** för attribut  
+- Mätvärden relativa till det inspekterade datumet  
+
+### Profilering på begäran  
+- Profilera valfritt attribut mot en dags fullständiga ögonblicksbild, utan att köra en inspektion  
+- Hjälper dig att ställa in attributets kolumntyp: **Numerical**, **Categorical**, **Date** eller **Unspecified**  
+
+---
+
+## Vem gynnas av denna release  
+
+- **Dataingenjörer:** Validering av ETL-resultat med digna Data Reconciliation (Beta)  
+- **Ekonomi-, risk- och controllingteam:** Standardiserade avstämningsrutiner som exakta regler i digna Data Reconciliation (Beta)  
+- **Team för datakvalitet och data governance:** Referensintegritet över databastekniker med digna Engine  
+- **Affärsanvändare:** Affärsfrågor om data som besvaras av AI-agenter med digna Agentic (Beta)  
+- **AI- och automationsteam:** AI-agenter som arbetar med digna via digna Agentic (Beta)  
+
+---
+
+## CLI-uppdateringar  
+- Inga ändringar  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/sv/cli/Command_Line_Interface_202409/
 
@@ -4210,6 +4325,932 @@ digna version
 #### Exempelutdata
 ```text
 2026.06
+```
+
+---
+
+## Konfigurationshantering
+
+---
+
+### config check
+
+Kommandot `config check` validerar konfigurationsfilen (`config.toml`) och kontrollerar att alla obligatoriska sektioner och inställningar finns och är korrekt formaterade. Varje sektion valideras för sig, så att en trasig `[app]`-sektion inte döljer tillståndet för `[repo]`.
+
+De sektioner som rapporteras är:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — valfri; en nyckel som saknas godkänns, medan en lista som finns men är felformad underkänns
+
+Kommandot läser medvetet inte in applikationskonfigurationen på det sätt som de andra kommandona gör, så att det kan diagnostisera en `config.toml` som skulle hindra ***digna*** från att starta över huvud taget.
+
+#### Kommandoanvändning
+```bash
+digna config check [OPTIONS]
+```
+
+#### Alternativ
+- `--configpath`, `-c`: Sökväg till konfigurationsfilen, eller till en katalog som innehåller `config.toml` (standard är `./config.toml`).
+- `--json`: Skriver ut valideringsrapporten som JSON. Har företräde framför `--quiet`.
+- `--quiet`, `-q`: Undertrycker rapporten och förlitar sig enbart på slutkoden.
+
+#### Exempel
+```bash
+digna config check
+```
+
+Validera en specifik konfigurationsfil och formatera utdata som JSON:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Exempelutdata
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+En fil som saknas eller ett TOML-syntaxfel lämnar ingenting att validera sektion för sektion och rapporteras som ett enda fel i stället för som en rapport, oavsett `--quiet` eller `--json`.
+
+---
+
+## Repositoryhantering
+
+---
+
+### repo check
+
+Kommandot `repo check` testar databasanslutningen och verifierar repositoryts installation och version. Det misslyckas om det konfigurerade schemat inte finns, eller om det finns men inte innehåller något ***digna***-repository.
+
+Den version som rapporteras är versionen av repositoryschemat, som versionshanteras separat från den ***digna***-release som skrivs ut av [`version`](#version).
+
+#### Kommandoanvändning
+```bash
+digna repo check
+```
+
+#### Exempelutdata
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+Kommandot `repo install` installerar ett nytt ***digna***-repository i det schema som konfigurerats i `config.toml` och skapar alla sekvenser, tabeller, index, villkor och initiala poster som krävs.
+
+Själva schemat skapas **inte** av det här kommandot — det måste finnas i förväg. Kommandot vägrar också köra om ett repository redan är installerat i det schemat, och hänvisar till [`repo upgrade`](#repo-upgrade) om den installerade versionen är äldre.
+
+#### Kommandoanvändning
+```bash
+digna repo install
+```
+
+#### Exempelutdata
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+Kommandot `repo upgrade` tillämpar migreringar av databasschemat för att lyfta ett befintligt repository till den version som den installerade releasen förväntar sig. Uppgraderingar tillämpas ett versionssteg i taget längs en fast uppgraderingsväg, och varje avslutat steg registreras i repositoryt.
+
+Om repositoryt redan har den förväntade versionen rapporterar kommandot att ingen uppgradering behövs och gör inga ändringar.
+
+#### Kommandoanvändning
+```bash
+digna repo upgrade
+```
+
+#### Exempelutdata
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+### repo prune
+
+Kommandot `repo prune` tar bort rader som har överlevt det projekt eller den datakälla de tillhörde.
+När ett projekt eller en datakälla tas bort försvinner själva objektet, men dess profiler, prediktioner,
+statusar och radantal lämnas kvar — ett medvetet val, eftersom en borttagning som också rensade de tabellerna
+skulle låta användaren vänta. `repo prune` är den städning som rensar bort dem, och det är säkert att
+köra när som helst: det tar bara bort rader vars projekt eller datakälla inte längre finns.
+
+Rader som Python-backend skrivit till tabeller som den aktuella releasen inte längre använder lämnas orörda.
+
+#### Kommandoanvändning
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Alternativ
+- `--dry-run`: Rapportera vad som skulle tas bort utan att ta bort något.
+
+Endast tabeller med föräldralösa rader listas. Om det inte finns några rapporterar kommandot
+`No orphaned rows found.` och avslutas.
+
+#### Exempel
+```bash
+digna repo prune
+```
+
+#### Exempelutdata
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Så här ser du samma rapport utan att ta bort något:
+```bash
+digna repo prune --dry-run
+```
+
+Radantalen är identiska; bara den avslutande raden skiljer sig:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+---
+
+## Krypteringshantering
+
+---
+
+### crypt gen-key
+
+Kommandot `crypt gen-key` genererar en ny AES-GCM-krypteringsnyckel, avsedd att användas som krypteringsnyckel i `config.toml`. En läsbar `config.toml` måste redan finnas, även om den genererade nyckeln inte är beroende av den.
+
+#### Kommandoanvändning
+```bash
+digna crypt gen-key
+```
+
+#### Exempelutdata
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+Kommandot `crypt encrypt` krypterar en sträng (till exempel ett databaslösenord) med den AES-GCM-nyckel som konfigurerats i `config.toml` och skriver ut chiffertexten.
+
+#### Kommandoanvändning
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argument
+- **VALUE**: Klartextsträngen som ska krypteras (obligatoriskt).
+
+#### Exempel
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+Kommandot `crypt decrypt` dekrypterar en AES-GCM-krypterad sträng med den nyckel som konfigurerats i `config.toml` och skriver ut klartexten.
+
+#### Kommandoanvändning
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argument
+- **VALUE**: Den krypterade chiffertextsträng som ska dekrypteras (obligatoriskt).
+
+#### Exempel
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Användarhantering
+
+---
+
+### user add
+
+Kommandot `user add` skapar ett nytt användarkonto i ***digna***-repositoryt. Kommandot misslyckas om en användare med den angivna e-postadressen redan finns.
+
+#### Kommandoanvändning
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argument
+- **EMAIL**: Användarens e-postadress (obligatoriskt).
+- **PASSWORD**: Användarens initiala lösenord (obligatoriskt).
+- **DISPLAY_NAME**: Användarens fullständiga visningsnamn (obligatoriskt).
+
+#### Alternativ
+- `--admin`, `-a`: Skapar användaren med administratörsbehörighet (superanvändare).
+
+#### Exempel
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Så här skapar du ett administratörskonto:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Exempelutdata
+```text
+User created with ID: 42
+```
+
+### user list
+
+Kommandot `user list` listar alla registrerade användare i tabellform med ID, e-postadress, visningsnamn och administratörsflagga.
+
+#### Kommandoanvändning
+```bash
+digna user list
+```
+
+#### Exempelutdata
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+Kommandot `user modify` uppdaterar visningsnamn och administratörsbehörighet för ett befintligt användarkonto, identifierat via e-postadress.
+
+Både visningsnamnet och administratörsflaggan skrivs alltid. `--admin` är en brytare, inte ett värde: **att utelämna den återkallar administratörsbehörigheten**, så ange den varje gång användaren ska behålla eller få den.
+
+#### Kommandoanvändning
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argument
+- **EMAIL**: E-postadressen för den användare som ska ändras (obligatoriskt).
+- **DISPLAY_NAME**: Det uppdaterade visningsnamnet (obligatoriskt).
+
+#### Alternativ
+- `--admin`, `-a`: Ger administratörsbehörighet. Utelämna den för att återkalla den.
+- `--valid-until`, `-v`: Accepteras av kompatibilitetsskäl men **tillämpas för närvarande inte**. Om den anges skrivs en varning ut och ingenting ändras.
+
+#### Exempel
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Exempelutdata
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+Kommandot `user modify-pwd` uppdaterar lösenordet för ett befintligt användarkonto.
+
+#### Kommandoanvändning
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argument
+- **EMAIL**: E-postadressen för den användare vars lösenord ska uppdateras (obligatoriskt).
+- **PASSWORD**: Det nya lösenordet (obligatoriskt).
+
+#### Exempel
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+Kommandot `user delete` tar bort ett användarkonto från systemet.
+
+#### Kommandoanvändning
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argument
+- **EMAIL**: E-postadressen för den användare som ska tas bort (obligatoriskt).
+
+#### Exempel
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Projekt- och datakällhantering
+
+---
+
+### project list
+
+Kommandot `project list` listar alla tillgängliga projekt i repositoryt och visar deras ID, namn och beskrivning.
+
+#### Kommandoanvändning
+```bash
+digna project list
+```
+
+#### Exempelutdata
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+Kommandot `project list-ds` listar alla datakällor som hör till ett visst projekt och visar deras ID, namn, typ, schema och tabellnamn.
+
+#### Kommandoanvändning
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argument
+- **PROJECT_NAME**: Namnet på det projekt vars datakällor ska listas (obligatoriskt). Namnet måste stämma exakt.
+
+#### Exempel
+```bash
+digna project list-ds ProjectA
+```
+
+#### Exempelutdata
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+Kommandot `project export-ds` exporterar datakällor från ett projekt till ett JSON-dokument.
+
+Om varken `--table-name` eller `--table-id` anges exporteras alla datakällor i projektet.
+
+#### Kommandoanvändning
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argument
+- **PROJECT_NAME**: Namnet på det projekt vars datakällor ska exporteras (obligatoriskt).
+
+#### Alternativ
+- `--table-name`, `-n`: Namn på de datakällor som ska exporteras. Flera namn kan anges åtskilda med mellanslag.
+- `--table-id`, `-i`: ID:n för de datakällor som ska exporteras. Flera ID:n kan anges åtskilda med mellanslag.
+- `--exportfile`, `-f`: Sökväg där de exporterade datakällorna ska sparas (standard: `data_sources_export.json`).
+
+#### Exempel
+Så här exporterar du alla datakällor från `ProjectA`:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Så här exporterar du specifika tabeller:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Exempelutdata
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+Kommandot `project import-ds` importerar datakällor från en exportfil till ett målprojekt och rapporterar per objekt vad som skapades, uppdaterades eller hoppades över.
+
+#### Kommandoanvändning
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argument
+- **PROJECT_NAME**: Namnet på det målprojekt som ska importeras till (obligatoriskt).
+- **EXPORT_FILE**: Sökväg till JSON-exportfilen (obligatoriskt).
+
+#### Alternativ
+- `--output-file`, `-o`: Fil att skriva importrapporten till. Utan den går rapporten till stdout.
+- `--output-format`, `-f`: Format på importrapporten — `table`, `json` eller `csv` (standard: `table`).
+
+#### Exempel
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Så här fångar du en maskinläsbar rapport:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+Rapporten täcker fyra objektnivåer — datakälla, datamängdsdefinition, attribut och valideringsregel — var och en med sin importåtgärd, sitt resultat, det resulterande objektets ID och eventuell ytterligare information.
+
+### project plan-import-ds
+
+Kommandot `project plan-import-ds` förhandsvisar en import av datakällor till ett målprojekt och visar vilka objekt som skulle skapas, uppdateras eller hoppas över, utan att ändra någonting. Det tar samma exportfil och samma rapportalternativ som [`project import-ds`](#project-import-ds), och lägger till ett stegnummer per planerat objekt.
+
+#### Kommandoanvändning
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argument
+- **PROJECT_NAME**: Namnet på målprojektet (obligatoriskt).
+- **EXPORT_FILE**: Sökväg till exportfilen (obligatoriskt).
+
+#### Alternativ
+- `--output-file`, `-o`: Fil att skriva importplanen till. Utan den går planen till stdout.
+- `--output-format`, `-f`: Format på importplanen — `table`, `json` eller `csv` (standard: `table`).
+
+#### Exempel
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+Kommandot `project cleanup` tar bort de inspektionsresultat som ett projekt har samlat på sig under ett datumintervall
+— profiler, prediktioner, radantal och varje status för kontroller, attribut, datamängder och datakällor. Det tar bort
+exakt det som en inspektion av de datumen skrev, så att intervallet kan inspekteras på nytt efteråt för att bygga upp det igen.
+
+Historik för Timeliness och Schema Tracker tas **inte** bort: den registrerar vad digna observerade en
+viss dag snarare än ett resultat som härletts ur det, så en rensning av ett tidigare datumintervall lämnar den
+orörd.
+
+Varje datakälla rensas i en egen transaktion, så en avbruten körning lämnar hela datakällor
+i stället för en halvt rensad.
+
+#### Kommandoanvändning
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argument
+- **PROJECT_NAME**: Projekt som ska rensas (obligatoriskt). Ett projekt per anrop.
+- **FROM_DATE**: Första datum som resultat ska tas bort för, `YYYY-MM-DD` (obligatoriskt).
+- **TO_DATE**: Sista datum som resultat ska tas bort för, inklusive, `YYYY-MM-DD` (obligatoriskt).
+
+#### Alternativ
+- `--table-name`, `-n`: Begränsa rensningen till dessa datakällor. Flera namn kan anges
+  åtskilda med mellanslag.
+- `--table-filter`: Begränsa rensningen till datakällor vars namn innehåller denna delsträng.
+- `--dry-run`: Lista de datakällor som skulle rensas utan att ta bort något.
+- `--timing`: Visa hur lång tid rensningen tog.
+
+`--table-name` och `--table-filter` kombineras som ett ELLER — en datakälla rensas om den anges med namn eller
+om delsträngen matchar. Kommandot misslyckas om ingen datakälla matchar, i stället för att rapportera
+framgång för en rensning som inte gjorde någonting.
+
+#### Exempel
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Begränsat till en datakälla:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Exempelutdata
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Så här ser du vilka datakällor som skulle rensas utan att ta bort något:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Varje rad är markerad, så att en testkörning inte kan förväxlas med en riktig:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Inspektionshantering
+
+---
+
+### inspection run
+
+Kommandot `inspection run` skapar en inspektionsbegäran för ett projekt och ett datumintervall och — beroende på vilka alternativ som anges — antingen väntar på den, återvänder omedelbart eller kör den i den egna processen.
+
+De tre körlägena är:
+
+- **Standard (ingen flagga)**: begäran köas för backend, och CLI:t pollar den varannan sekund och skriver ut uppgifternas förlopp tills inspektionen når ett sluttillstånd. Ett körande `digna serve` krävs, annars är det ingenting som plockar upp begäran.
+- **`--async-mode`**: begäran köas och dess ID skrivs ut omedelbart. Använd [`inspection status`](#inspection-status) för att följa den.
+- **`--bypass-backend`**: inspektionen körs av CLI-processen själv och köas inte, så ingen körande server behövs.
+
+`--async-mode` och `--bypass-backend` utesluter varandra.
+
+I samtliga lägen avslutas kommandot med en slutkod som inte är noll om inspektionen inte slutfördes utan fel.
+
+#### Kommandoanvändning
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argument
+- **PROJECT_NAME**: Namnet på målprojektet (obligatoriskt). Namnet måste stämma exakt.
+- **START_DATE**: Startdatum för datumintervallet i formatet `YYYY-MM-DD` (obligatoriskt).
+- **END_DATE**: Slutdatum för datumintervallet i formatet `YYYY-MM-DD` (obligatoriskt).
+
+#### Alternativ
+- `--table-name`: Begränsar inspektionen till en enda datakälla i projektet, angiven med datakällans namn. Utan den inspekteras alla datakällor i projektet.
+- `--async-mode`: Köar inspektionen och skriver ut begärans ID i stället för att vänta på den. Kan inte kombineras med `--bypass-backend`.
+- `--bypass-backend`: Kör inspektionen direkt i CLI-processen i stället för att köa den för backend. Kan inte kombineras med `--async-mode`.
+
+#### Exempel
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Så här skickar du en asynkron inspektion:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Så här inspekterar du en enda datakälla:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Exempelutdata
+Standardläge:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Asynkront läge:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+Kommandot `inspection status` frågar efter tillstånd och uppgiftsförlopp för en inspektionsbegäran med hjälp av dess begäran-ID.
+
+#### Kommandoanvändning
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argument
+- **INSPECTION_REQUEST_ID**: Det numeriska ID:t för inspektionsbegäran (obligatoriskt).
+
+#### Exempel
+```bash
+digna inspection status 1024
+```
+
+#### Exempelutdata
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+Kommandot `inspection abort` begär att körande eller väntande inspektionsbegäranden avbryts. Det registrerar en stopphändelse för varje berörd begäran; det är backend som agerar på den, så ett avbrott är en begäran om att stoppa snarare än ett omedelbart avslut.
+
+#### Kommandoanvändning
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argument
+- **INSPECTION_REQUEST_ID**: ID:t för den inspektionsbegäran som ska avbrytas. Obligatoriskt om inte `--killall` anges.
+
+#### Alternativ
+- `--killall`: Avbryter alla inspektionsbegäranden som körs eller väntar. Har företräde framför ett begäran-ID som anges tillsammans med den.
+
+#### Exempel
+Så här avbryter du en specifik begäran:
+```bash
+digna inspection abort 1024
+```
+
+Så här avbryter du alla aktiva och köade inspektioner:
+```bash
+digna inspection abort --killall
+```
+
+#### Exempelutdata
+`--killall` rapporterar vad den gjorde; att avbryta en enskild begäran ger ingen utdata och signalerar att det gick bra via slutkoden.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Licenshantering
+
+---
+
+### license check
+
+Kommandot `license check` validerar `license.toml` genom att verifiera dess signatur mot den publika nyckel som följer med installationen och kontrollera att den inte har gått ut. Det läser ingen applikationskonfiguration, så det fungerar även innan `config.toml` är uppsatt.
+
+#### Kommandoanvändning
+```bash
+digna license check
+```
+
+#### Exempelutdata
+```text
+License is valid
+```
+
+En ogiltig signatur och en utgången licens rapporteras som två skilda fel, båda med slutkod 1.
+
+---
+
+## Server & bakgrundstjänster
+
+---
+
+### serve
+
+Kommandot `serve` startar ***digna*** REST API-servern tillsammans med schemaläggaren för inspektioner och inspektionshanteraren som körs i bakgrunden. Vid uppstart markerar det också varje inspektion som repositoryt fortfarande registrerar som körande som misslyckad, eftersom ingenting kan ha överlevt från en tidigare process.
+
+Kommandot körs i förgrunden tills det stoppas.
+
+#### Kommandoanvändning
+```bash
+digna serve [OPTIONS]
+```
+
+#### Alternativ
+- `--address`: Nätverksadress som API-servern ska bindas till (standard: `127.0.0.1`).
+- `--port`: Portnummer att lyssna på (standard: `8000`).
+
+#### Exempel
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Exempelutdata
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Hantering av Windows-tjänsten
+
+Endast tillgängligt på Windows. Kommandona registrerar ***digna***-backend hos Windows
+tjänsthanterare och styr den; själva tjänsten kör `serve` i bakgrunden. Varje kommando
+måste köras från en upphöjd kommandotolk, och alla accepterar `--name` så att en tjänst
+som registrerats under ett annat namn än standardnamnet kan adresseras.
+
+---
+
+### windows install
+
+Kommandot `windows install` registrerar ***digna*** som en Windows-tjänst.
+
+Adressen och porten som anges här sparas i tjänstregistreringen och är det som
+tjänsten binder till — de läses inte från `config.toml`. För att ändra dem i efterhand avinstallerar du
+tjänsten och installerar den igen.
+
+#### Kommandoanvändning
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Alternativ
+- `--name`: Namn som tjänsten ska registreras under (standard: `digna`).
+- `--display-name`: Namn som visas i services.msc (standard: `digna`).
+- `--description`: Beskrivning som visas i services.msc (standard: `digna data quality backend`).
+- `--address`: Adress som tjänsten binder sitt API till (standard: `127.0.0.1`).
+- `--port`: Port som tjänsten binder sitt API till (standard: `8000`).
+- `--working-dir`: Katalog som innehåller `config.toml` och `license.toml`, och som tjänsten gör
+  till sin arbetskatalog (standard: katalogen där den körbara filen `digna` ligger).
+- `--start-type`: När tjänsten startar — `auto` med Windows, `manual` bara när den begärs,
+  `disabled` registrerad men vägrar starta (standard: `auto`).
+- `--account`: Konto att köra som, t.ex. `DOMAIN\user` eller `.\user` (standard: `LocalSystem`).
+- `--password`: Lösenord för `--account`.
+
+#### Exempel
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registrera under ett andra namn och kör som ett domänkonto:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Kommandot `windows start` startar en registrerad tjänst.
+
+#### Kommandoanvändning
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Alternativ
+- `--name`: Namn som tjänsten är registrerad under (standard: `digna`).
+
+---
+
+### windows stop
+
+Kommandot `windows stop` stoppar en tjänst som körs. Stoppa tjänsten innan du ersätter någon
+programfil.
+
+#### Kommandoanvändning
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Alternativ
+- `--name`: Namn som tjänsten är registrerad under (standard: `digna`).
+
+---
+
+### windows uninstall
+
+Kommandot `windows uninstall` avregistrerar tjänsten. Stoppa den först.
+
+#### Kommandoanvändning
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Alternativ
+- `--name`: Namn som tjänsten är registrerad under (standard: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/sv/cli/Command_Line_Interface_202611/
+
+# digna CLI-referens 2026.11
+**2026-10-27**
+
+Den här sidan dokumenterar hela uppsättningen kommandon som finns i ***digna*** CLI-release **2026.11**, inklusive användningsexempel och alternativ.
+
+Den körbara filen heter `digna`.
+
+---
+
+## CLI-grunder
+
+---
+
+### Översikt & syntax
+
+CLI:t i release **2026.11** använder en strukturerad, kategoribaserad kommandohierarki:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+`version` och `serve` är fristående kommandon utan underkommando:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Globala alternativ
+
+Följande globala alternativ gäller för samtliga kommandon:
+
+- `--help`, `-h`: Visar hjälpinformation för CLI:t eller för en specifik kommandokategori eller ett underkommando.
+- `--stacktrace`: Visar hela felkedjan vid fel i stället för enbart meddelandet på översta nivån.
+
+`--stacktrace` är ett globalt alternativ i strikt mening: det måste anges **före** kommandokategorin, inte efter den.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+Det finns ingen flagga `--version`. Använd kommandot [`version`](#version) i stället.
+
+### Förutsättningar
+
+De flesta kommandon behöver en läsbar, giltig `config.toml`; vissa kräver dessutom en giltig licens.
+Följande tabell visar vad varje kommandokategori läser in innan den gör något över huvud taget:
+
+| Kommandokategori | Behöver `config.toml` | Behöver giltig licens |
+|---|---|---|
+| `version` | nej | nej |
+| `config check` | nej (det är just den kommandot rapporterar om) | nej |
+| `license check` | nej | det *är* kontrollen |
+| `crypt` | ja | nej |
+| `serve` | ja | nej |
+| `windows` | nej (tjänsten läser den när den startar) | nej |
+| `project` | ja | nej |
+| `user` | ja | ja |
+| `inspection` | ja | ja |
+| `repo` | ja | ja |
+
+Där en licens krävs kontrolleras både dess signatur och dess utgångsdatum, och kommandot avbryts innan det rör repositoryt om någon av dem underkänns.
+
+### Slutkoder
+
+- `0`: kommandot lyckades.
+- `1`: kommandot misslyckades. Felmeddelandet skrivs till stderr, med prefixet `Error: `.
+
+### help
+
+Alternativet `--help` ger information om tillgängliga kommandokategorier, underkommandon och alternativ:
+
+1. **Visa allmän hjälp:**
+   ```bash
+   digna --help
+   ```
+
+2. **Hämta hjälp för specifika kategorier och kommandon:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **Utdata omfattar:**
+   - **Kommandobeskrivning:** Sammanfattning av kommandots syfte.
+   - **Syntax:** Obligatoriska och valfria argument.
+   - **Alternativ:** Flaggor och parametrar som är specifika för kommandot.
+
+### version
+
+Kommandot `version` skriver ut den installerade ***digna***-releasen. Det läser ingen konfiguration och validerar ingen licens, så det fungerar även på en installation vars `config.toml` eller licens saknas eller är ogiltig.
+
+Releaseversionen är oberoende av den version av repositoryschemat som rapporteras av [`repo check`](#repo-check).
+
+#### Kommandoanvändning
+```bash
+digna version
+```
+
+#### Exempelutdata
+```text
+2026.11
 ```
 
 ---
@@ -12808,6 +13849,280 @@ Den här sidan dokumenterar det genererade klient-API:t för ***digna*** Python 
 Source: https://docs.digna.ai/sv/sdk/Release%202026.06/resources/
 
 # digna Python SDK-resurser 2026.06
+
+Den här sidan dokumenterar de resursklienter som ***digna*** Python SDK exponerar. Varje resurs kapslar in motsvarande endpoints i det stabila API:t bakom ett enhetligt, pythoniskt gränssnitt med förutsägbara metodnamn.
+
+`DignaClient` exponerar ett resursobjekt per API-område. Varje resurs kapslar in
+motsvarande endpoints i det stabila API:t med pythoniska metodnamn.
+
+| Resurs | Attribut | Endpoints |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/sv/sdk/Release%202026.11/
+
+# digna Python SDK-referens 2026.11
+
+Det här avsnittet dokumenterar Python-SDK:t för ***digna***. Det är upplagt som en referens över flera sidor: använd översikten för att förstå klienten och fortsätt sedan till de egna sidorna om snabbstart, resurser, modeller, fel och den genererade API-dokumentationen.
+
+SDK:t publiceras som paketet `digna-sdk` och tillhandahåller en stabil, versionshanterad klient för ***digna***s REST-API.
+
+---
+
+## SDK-grunder
+
+---
+
+### Översikt
+
+SDK:t bygger på en resursorienterad klientdesign. Varje API-område exponeras som en egen klient på den överordnade `DignaClient`, med typade request- och response-modeller och enhetlig felhantering.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Huvudfunktioner
+
+- **Typade modeller** — varje request och response valideras med pydantic, så att din editor och din typkontroll fångar misstag innan anropet når nätverket.
+- **Resursorienterat** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` och `client.inspection_statuses` exponerar var för sig enkla metoder för `list` / `get` / `create` / `update` / `delete`.
+- **Tydliga fel** — API-fel ger `DignaAPIError` (eller en mer specifik subklass som `DignaAuthenticationError`, `DignaAuthorizationError` eller `DignaNotFoundError`) i stället för att tyst returnera `None`.
+
+### Installation
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Referenssidor
+
+Den här releasen är uppdelad på följande sidor:
+
+- [Snabbstart](quickstart.md) — anslut och gör dina första anrop.
+- [Resurser](resources.md) — hela listan över tillgängliga resursklienter.
+- [Modeller](models.md) — de pydantic-modeller som används för in- och utdata.
+- [Fel](errors.md) — hierarkin av undantag.
+- [API-referens](reference.md) — automatiskt genererad referensdokumentation.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/sv/sdk/Release%202026.11/errors/
+
+# digna Python SDK-fel 2026.11
+
+Den här sidan dokumenterar den undantagshierarki som ***digna*** Python SDK exponerar. Felen täcker API-fel, problem med autentisering och auktorisering samt fall där en resurs inte hittas.
+
+Alla fel som SDK:t kastar ärver från `DignaError`.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/sv/sdk/Release%202026.11/models/
+
+# digna Python SDK-modeller 2026.11
+
+Den här sidan dokumenterar de viktigaste request- och response-modellerna som ***digna*** Python SDK använder. Alla payloads representeras som [pydantic](https://docs.pydantic.dev/)-modeller importerade från `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/sv/sdk/Release%202026.11/quickstart/
+
+# digna Python SDK-snabbstart 2026.11
+
+Den här sidan visar den minimala konfigurationen och de centrala klientflödena för ***digna*** Python SDK. Använd den som utgångspunkt innan du går vidare till referenssidorna om resurser, modeller och fel.
+
+## Skapa en API-nyckel
+
+Skapa en API-nyckel i ***digna***-gränssnittet innan du ansluter med SDK:t:
+
+1. Logga in i ***digna*** i gränssnittet.
+2. Öppna din användarprofil längst ned till vänster.
+3. Klicka på **API Keys** i användarprofilen.
+4. Klicka på **Add API Key**.
+5. Ange ett tydligt namn och sätt ett utgångsdatum. Du kan när som helst återkalla eller ta bort en API-nyckel.
+6. Kopiera den visade API-nyckeln till urklipp. Nyckeln visas bara när den skapas.
+
+Använd API-nyckeln som SDK-token. Bra sätt att göra den tillgänglig för din applikation:
+
+- En miljövariabel, till exempel `DIGNA_API_KEY`, för lokal utveckling och automatisering.
+- Ditt CI/CD-hemlighetsarkiv, som GitHub Actions-secrets, GitLab CI/CD-variabler eller hemliga variabler i Azure DevOps.
+- En hemlighetshanterare i körtid, som Kubernetes-secrets, Docker-secrets, HashiCorp Vault eller en molnleverantörs hemlighetsarkiv.
+
+Undvik att hårdkoda API-nycklar i källkod, notebooks, shell-historik eller incheckade konfigurationsfiler.
+
+## Anslut
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Använd `DignaClient` som kontexthanterare så att den underliggande
+anslutningspoolen stängs automatiskt:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Lista projekt
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Skapa en datakälla
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Skicka en inspektionsbegäran och vänta tills den är klar
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Se `examples/inspection_flow.py` i repot för hela flödet skicka → polla → hämta.
+
+## Hantera fel
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/sv/sdk/Release%202026.11/reference/
+
+# digna Python SDK-klientreferens 2026.11
+
+Den här sidan dokumenterar det genererade klient-API:t för ***digna*** Python SDK. `DignaClient` är den primära ingångspunkten för de resursoperationer som SDK:t exponerar.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/sv/sdk/Release%202026.11/resources/
+
+# digna Python SDK-resurser 2026.11
 
 Den här sidan dokumenterar de resursklienter som ***digna*** Python SDK exponerar. Varje resurs kapslar in motsvarande endpoints i det stabila API:t bakom ett enhetligt, pythoniskt gränssnitt med förutsägbara metodnamn.
 

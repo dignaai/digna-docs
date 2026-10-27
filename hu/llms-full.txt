@@ -621,6 +621,121 @@ Hatás: Lehetővé teszi az adatminőség skálázható és következetes irány
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/hu/changelog/Release_202611/
+
+# Változáslista – Kiadás 2026.11  
+
+A 2026.11-es kiadás három jelentős újdonságra épül:
+
+- **digna Data Reconciliation (Beta)**: ellenőrzi, hogy az adatok konzisztensek maradnak-e, miközben rendszerek között mozognak  
+- **digna Agentic (Beta)**: a digna MCP Serveren keresztül megnyitja a dignát az AI-ágensek előtt  
+- **digna Engine**: opcionálisan a dignán belül profilozza az adatokat, és lehetővé teszi a referenciális integritás ellenőrzését különböző adatbázis-technológiák között  
+
+---
+
+## Új funkciók  
+
+### digna Data Reconciliation (Beta) – Konzisztencia a forrástól a célig  
+Az adatok gyakran több rendszeren haladnak át, mielőtt egy riportba kerülnek. A digna Data Reconciliation (Beta) összehasonlít egy **cél** adatforrást azokkal a **forrásokkal**, amelyekből előállt, és riaszt, ha már nem egyeznek.
+
+- Elnevezett szabályokként konfigurálható a cél adatforrás új **Data Reconciliation** lapján  
+- A projekt bármely adatforrása lehet forrás, amelyen a Data Reconciliation be van kapcsolva  
+- Felhasználási területek: szabványos egyeztetési eljárások és az ETL-folyamatok eredményeinek validálása  
+- Kétféle szabály: **Exact** és **AI**  
+
+**Exact szabályok – Egyeztetés adatminőségi szabályként**: Pontosan meghatározod, minek kell egyeznie egy forrás és egy cél között, akárcsak egy adatminőségi szabálynál.
+
+  - Egy forrás adatforrás összehasonlítása egy cél adatforrással  
+  - Egy cél-ellenőrzés párosítása egy forrás-ellenőrzéssel statisztika és attribútum szerint, pl. a sorok száma vagy egy összegoszlop összege  
+  - Eltérés engedélyezése **absolute** tűréssel (pl. ± 10) vagy **relative** tűréssel (pl. a forrás ± 0,5 %-a)  
+  - Az idővonal minden napra megmutatja az eltérést a tűréshez képest  
+
+**AI szabályok – Egyeztetés adatmegfigyelhetőségként**: A digna megtanulja, hogyan követi a cél a forrásait – ugyanúgy, ahogy más modulokban is megfigyeli az adatokat –, és riaszt, ha ez a kapcsolat megszakad.
+
+  - Több forrás adatforrás ellenőrzéseinek kombinálása egy cél ellenőrzéseivel  
+  - Nem kell ismerni vagy leírni a köztük lévő logikát (joinok, szűrők, aggregációk)  
+  - Egy modell az előzményekből tanulja meg, hogyan követi a cél ugyanazon a napon a forrásait  
+  - Minden cél-ellenőrzés értékét a nap forrásértékeiből jelzi előre a modell, és a digna riaszt, ha a cél kilép a szabály saját korábbi hibáiból képzett sávból  
+  - Minden szabálynak saját **Model settings** beállításai vannak: **Sensitivity**, **Memory** és **Model Complexity**  
+
+Az egyeztetési ellenőrzések a Dashboardon szabályonként egy idővonallal jelennek meg. Beleszámítanak az inspekció összesített állapotába, és értesítéseket váltanak ki.
+
+**Hatás:** Az egyeztetés mindkét oldalát lefedi. Az Exact szabályok ismert kontrollokat érvényesítenek a forrás és a cél között, az AI szabályok pedig összetett folyamatokat, például ETL-folyamatokat figyelnek, így az útközben elveszett vagy megváltozott adatok kézzel írt egyeztető SQL nélkül is kiderülnek.
+
+---
+
+### digna Agentic (Beta) – digna AI-ágenseknek  
+A digna Agentic (Beta) első verziója. Az AI-ágensek mostantól együtt tudnak dolgozni a dignával, üzleti kérdésekre válaszolnak az adataidról, és segítenek javítani a konfigurációdat.
+
+**digna MCP Server**: Lehetővé teszi, hogy Claude és más AI-ágensek a Model Context Protocolon keresztül dolgozzanak a dignával.
+
+  - Projektek, adatforrások, szabályok, inspekciós ütemezések és feliratkozások kezelése  
+  - Inspekciós állapotok olvasása egészen az egyes ellenőrzésekig, a riasztások kivizsgálásához  
+
+**Leírások adatforrásokhoz és attribútumokhoz**: Írd le közérthető nyelven, mit tartalmaz egy adatforrás vagy attribútum.
+
+  - Az AI-ágensek a leírások alapján értelmezik az adataidat  
+  - Tegyél fel üzleti kérdéseket az adataidról, és az AI-ágensek abból válaszolnak, amit a digna monitoroz  
+  - Ha a digna jelenlegi konfigurációja nem tud megválaszolni egy kérdést, az AI-ágens lehetőség szerint módosításokat javasol az adatforráson és annak attribútumain, pl. egy új adatkészlet hozzáadását  
+
+**Hatás:** Közérthető nyelven tehetsz fel üzleti kérdéseket az adataidról, az AI-ágensek pedig segítenek a digna konfigurálásában és az adatminőségi problémák kivizsgálásában.
+
+---
+
+### digna Engine – Profilozás ott, ahol te választod  
+Alapértelmezés szerint a digna ott profilozza az adatokat, ahol azok vannak: a forrásadatbázisban. A digna Engine új lehetőséget ad: a digna exportálja az adatokat a forrásból, és a digna Engine-en belül profilozza őket.
+
+- Opcionális, nem kötelező: a forrásadatbázisban történő profilozás továbbra is elérhető  
+- Adatbázis-kapcsolatonként választható ki **profilozási helyként**: **Source Database** vagy **digna Engine**  
+- Minden támogatott forrástechnológiához elérhető  
+
+**Kapcsolatokon átívelő referenciális integritás**: Egyes ellenőrzésekhez exportálni kell az adatokat. A digna Engine ezekre az esetekre kibővíti a **digna Data Validation** modult.
+
+  - **Referential Integrity Checks** **különböző adatbázis-kapcsolatokon** lévő adatforrások között, beleértve a különböző adatbázis-technológiákat is (pl. Oracle és PostgreSQL)  
+  - Mindkét profilozási hellyel működik: Source Database esetén csak a kulcsoszlopok kerülnek exportálásra a digna Engine-be  
+  - A dashboard jelzi, ha egy ellenőrzés két kapcsolaton átívelően fut  
+
+**Hatás:** Te választhatod meg, hol történjen az adatok profilozása, és érvényesíthetők a kapcsolatok olyan rendszerek között, amelyek különböző adatbázis-technológiákon futnak.
+
+---
+
+## Profilozási fejlesztések  
+
+Ez a kiadás azt is jobban a felhasználók kezébe adja, hogy mi és hogyan legyen profilozva.
+
+### Lekérdezési attribútumok – Felhasználó által definiált oszlopok  
+- Mesterséges oszlopok definiálása: SQL-kifejezés az adatforrás egy vagy több oszlopa felett  
+- Minden lekérdezési attribútumnak saját neve van  
+- Ugyanúgy profilozható és ellenőrizhető, mint bármely más attribútum  
+
+### DATE oszlopkategória  
+- Új **Date** kategória az attribútumokhoz  
+- Az inspektált dátumhoz viszonyított metrikák  
+
+### Igény szerinti profilozás  
+- Bármely attribútum profilozása egy adott dátum teljes pillanatképén, inspekció futtatása nélkül  
+- Segít beállítani az attribútum oszloptípusát: **Numerical**, **Categorical**, **Date** vagy **Unspecified**  
+
+---
+
+## Kiknek hasznos ez a kiadás  
+
+- **Data Engineers:** ETL-eredmények validálása a digna Data Reconciliation (Beta) segítségével  
+- **Pénzügyi, kockázatkezelési és kontrolling csapatok:** Szabványos egyeztetési eljárások Exact szabályokként a digna Data Reconciliation (Beta) modulban  
+- **Data Quality & Governance csapatok:** Referenciális integritás különböző adatbázis-technológiák között a digna Engine segítségével  
+- **Üzleti felhasználók:** Az adatokkal kapcsolatos üzleti kérdésekre AI-ágensek válaszolnak a digna Agentic (Beta) segítségével  
+- **AI- és automatizálási csapatok:** A dignával dolgozó AI-ágensek a digna Agentic (Beta) révén  
+
+---
+
+## CLI frissítések  
+- Nincs változás  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/hu/cli/Command_Line_Interface_202409/
 
@@ -4210,6 +4325,932 @@ digna version
 #### Példakimenet
 ```text
 2026.06
+```
+
+---
+
+## Konfigurációkezelés
+
+---
+
+### config check
+
+A `config check` parancs ellenőrzi a konfigurációs fájlt (`config.toml`), meggyőződve arról, hogy minden kötelező szakasz és beállítás jelen van és megfelelően formázott. Minden szakasz külön kerül ellenőrzésre, így egy hibás `[app]` szakasz nem fedi el a `[repo]` állapotát.
+
+A jelentésben szereplő szakaszok:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — opcionális; a hiányzó kulcs átmegy az ellenőrzésen, a jelen lévő, de hibás formátumú lista viszont megbukik
+
+A parancs szándékosan nem úgy tölti be az alkalmazás konfigurációját, ahogyan a többi parancs, hogy olyan `config.toml` fájlt is diagnosztizálni tudjon, amely a ***digna*** elindulását teljesen megakadályozná.
+
+#### A parancs használata
+```bash
+digna config check [OPTIONS]
+```
+
+#### Beállítások
+- `--configpath`, `-c`: A konfigurációs fájl vagy a `config.toml` fájlt tartalmazó könyvtár elérési útja (alapértelmezés: `./config.toml`).
+- `--json`: Az ellenőrzési jelentést JSON formátumban adja ki. Elsőbbséget élvez a `--quiet` beállítással szemben.
+- `--quiet`, `-q`: Elnyomja a jelentést, és kizárólag a kilépési kódra hagyatkozik.
+
+#### Példa
+```bash
+digna config check
+```
+
+Adott konfigurációs fájl ellenőrzése és a kimenet JSON formátumban:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Példakimenet
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+A hiányzó fájl vagy a TOML szintaktikai hiba nem hagy semmit, amit szakaszonként ellenőrizni lehetne, ezért egyetlen hibaként jelenik meg jelentés helyett, függetlenül a `--quiet` vagy `--json` beállítástól.
+
+---
+
+## Tárolókezelés
+
+---
+
+### repo check
+
+A `repo check` parancs teszteli az adatbázis-kapcsolatot, és ellenőrzi a tároló telepítését és verzióját. Meghiúsul, ha a beállított séma nem létezik, vagy ha létezik ugyan, de nem tartalmaz ***digna*** tárolót.
+
+A jelentett verzió a tároló sémájának verziója, amely a [`version`](#version) által kiírt ***digna*** kiadástól függetlenül van verziózva.
+
+#### A parancs használata
+```bash
+digna repo check
+```
+
+#### Példakimenet
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+A `repo install` parancs új ***digna*** tárolót telepít a `config.toml` fájlban beállított sémába, létrehozva minden szükséges szekvenciát, táblát, indexet, megszorítást és kezdeti rekordot.
+
+Magát a sémát ez a parancs **nem** hozza létre — annak előzetesen léteznie kell. A parancs továbbá megtagadja a futást, ha az adott sémában már van telepített tároló, és a [`repo upgrade`](#repo-upgrade) parancsra irányít, ha a telepített verzió régebbi.
+
+#### A parancs használata
+```bash
+digna repo install
+```
+
+#### Példakimenet
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+A `repo upgrade` parancs adatbázisséma-migrációkat alkalmaz, hogy a meglévő tárolót a telepített kiadás által elvárt verzióra emelje. A frissítések rögzített frissítési útvonal mentén, egyszerre egy verzióugrással kerülnek alkalmazásra, és minden befejezett ugrás rögzül a tárolóban.
+
+Ha a tároló már az elvárt verzión van, a parancs jelzi, hogy nincs szükség frissítésre, és nem hajt végre változtatást.
+
+#### A parancs használata
+```bash
+digna repo upgrade
+```
+
+#### Példakimenet
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+A `repo prune` parancs eltávolítja azokat a sorokat, amelyek túlélték azt a projektet vagy adatforrást, amelyhez tartoztak.
+Egy projekt vagy adatforrás törlése magát az objektumot eltávolítja, de a hozzá tartozó profilokat, előrejelzéseket,
+állapotokat és sorszámokat meghagyja — ez tudatos kompromisszum, mert egy olyan törlés, amely ezeket a táblákat is
+kitakarítaná, megvárakoztatná a felhasználót. A `repo prune` az a karbantartási lépés, amely ezeket kitakarítja, és
+bármikor biztonságosan futtatható: kizárólag olyan sorokat távolít el, amelyek projektje vagy adatforrása már nem létezik.
+
+A Python-háttérrendszer által olyan táblákba írt sorokat, amelyeket a jelenlegi kiadás már nem használ, a parancs érintetlenül hagyja.
+
+#### A parancs használata
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Beállítások
+- `--dry-run`: Kiírja, mi kerülne eltávolításra, anélkül hogy bármit eltávolítana.
+
+Csak az árva sorokat tartalmazó táblák jelennek meg. Ha nincs ilyen, a parancs a
+`No orphaned rows found.` üzenetet írja ki, és kilép.
+
+#### Példa
+```bash
+digna repo prune
+```
+
+#### Példakimenet
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Ugyanez a jelentés, anélkül hogy bármi eltávolításra kerülne:
+```bash
+digna repo prune --dry-run
+```
+
+A sorszámok azonosak, csak a záró sor különbözik:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+## Titkosításkezelés
+
+---
+
+### crypt gen-key
+
+A `crypt gen-key` parancs új AES-GCM titkosítókulcsot állít elő, amelyet a `config.toml` fájlban titkosítókulcsként lehet használni. Betölthető `config.toml` fájlnak már léteznie kell, még akkor is, ha az előállított kulcs nem függ tőle.
+
+#### A parancs használata
+```bash
+digna crypt gen-key
+```
+
+#### Példakimenet
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+A `crypt encrypt` parancs egy karakterláncot (például adatbázisjelszót) titkosít a `config.toml` fájlban beállított AES-GCM kulccsal, és kiírja a titkosított szöveget.
+
+#### A parancs használata
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argumentumok
+- **VALUE**: A titkosítandó nyílt szöveges karakterlánc (kötelező).
+
+#### Példa
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+A `crypt decrypt` parancs egy AES-GCM titkosítású karakterláncot fejt vissza a `config.toml` fájlban beállított kulccsal, és kiírja a nyílt szöveget.
+
+#### A parancs használata
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argumentumok
+- **VALUE**: A visszafejtendő titkosított karakterlánc (kötelező).
+
+#### Példa
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Felhasználókezelés
+
+---
+
+### user add
+
+A `user add` parancs új felhasználói fiókot hoz létre a ***digna*** tárolóban. A parancs meghiúsul, ha a megadott e-mail-címmel már létezik felhasználó.
+
+#### A parancs használata
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumentumok
+- **EMAIL**: A felhasználó e-mail-címe (kötelező).
+- **PASSWORD**: A felhasználó kezdeti jelszava (kötelező).
+- **DISPLAY_NAME**: A felhasználó teljes megjelenítendő neve (kötelező).
+
+#### Beállítások
+- `--admin`, `-a`: A felhasználót rendszergazdai (superuser) jogosultságokkal hozza létre.
+
+#### Példa
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Rendszergazdai fiók létrehozása:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Példakimenet
+```text
+User created with ID: 42
+```
+
+### user list
+
+A `user list` parancs táblázatos formában felsorolja az összes regisztrált felhasználót az azonosítóval, az e-mail-címmel, a megjelenítendő névvel és a rendszergazdai jelzővel.
+
+#### A parancs használata
+```bash
+digna user list
+```
+
+#### Példakimenet
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+A `user modify` parancs egy meglévő, e-mail-cím alapján azonosított felhasználói fiók megjelenítendő nevét és rendszergazdai jogosultságait frissíti.
+
+A megjelenítendő nevet és a rendszergazdai jelzőt a rendszer mindig egyszerre írja. Az `--admin` kapcsoló, nem érték: **elhagyása visszavonja a rendszergazdai jogosultságokat**, ezért adja meg minden olyan esetben, amikor a felhasználónak meg kell tartania vagy meg kell szereznie azokat.
+
+#### A parancs használata
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumentumok
+- **EMAIL**: A módosítandó felhasználó e-mail-címe (kötelező).
+- **DISPLAY_NAME**: A frissített megjelenítendő név (kötelező).
+
+#### Beállítások
+- `--admin`, `-a`: Rendszergazdai jogosultságokat ad. Hagyja el a visszavonásukhoz.
+- `--valid-until`, `-v`: Kompatibilitási okokból elfogadott, de **jelenleg nem érvényesül**. Megadása figyelmeztetést ír ki, és semmit sem változtat.
+
+#### Példa
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Példakimenet
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+A `user modify-pwd` parancs egy meglévő felhasználói fiók jelszavát frissíti.
+
+#### A parancs használata
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argumentumok
+- **EMAIL**: Annak a felhasználónak az e-mail-címe, akinek a jelszavát frissíteni kell (kötelező).
+- **PASSWORD**: Az új jelszó (kötelező).
+
+#### Példa
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+A `user delete` parancs eltávolít egy felhasználói fiókot a rendszerből.
+
+#### A parancs használata
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argumentumok
+- **EMAIL**: A törlendő felhasználó e-mail-címe (kötelező).
+
+#### Példa
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Projektek és adatforrások kezelése
+
+---
+
+### project list
+
+A `project list` parancs felsorolja a tárolóban elérhető összes projektet, megjelenítve azonosítójukat, nevüket és leírásukat.
+
+#### A parancs használata
+```bash
+digna project list
+```
+
+#### Példakimenet
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+A `project list-ds` parancs felsorolja az adott projekthez tartozó összes adatforrást, megjelenítve azonosítójukat, nevüket, típusukat, sémájukat és táblanevüket.
+
+#### A parancs használata
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: Annak a projektnek a neve, amelynek az adatforrásait fel kell sorolni (kötelező). A névnek pontosan egyeznie kell.
+
+#### Példa
+```bash
+digna project list-ds ProjectA
+```
+
+#### Példakimenet
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+A `project export-ds` parancs egy projekt adatforrásait JSON dokumentumba exportálja.
+
+Ha sem a `--table-name`, sem a `--table-id` nincs megadva, a projekt összes adatforrása exportálásra kerül.
+
+#### A parancs használata
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: Annak a projektnek a neve, amelyből az adatforrásokat exportálni kell (kötelező).
+
+#### Beállítások
+- `--table-name`, `-n`: Az exportálandó adatforrások nevei. Több név is megadható szóközzel elválasztva.
+- `--table-id`, `-i`: Az exportálandó adatforrások azonosítói. Több azonosító is megadható szóközzel elválasztva.
+- `--exportfile`, `-f`: Az az elérési út, ahová az exportált adatforrások mentésre kerülnek (alapértelmezés: `data_sources_export.json`).
+
+#### Példa
+A `ProjectA` összes adatforrásának exportálása:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Adott táblák exportálása:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Példakimenet
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+A `project import-ds` parancs adatforrásokat importál egy exportfájlból a célprojektbe, és objektumonként jelenti, mi jött létre, mi frissült és mi maradt ki.
+
+#### A parancs használata
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: A célprojekt neve, amelybe az importálás történik (kötelező).
+- **EXPORT_FILE**: A JSON exportfájl elérési útja (kötelező).
+
+#### Beállítások
+- `--output-file`, `-o`: Az a fájl, amelybe az importjelentés íródik. Nélküle a jelentés a stdout kimenetre kerül.
+- `--output-format`, `-f`: Az importjelentés formátuma — `table`, `json` vagy `csv` (alapértelmezés: `table`).
+
+#### Példa
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Géppel olvasható jelentés rögzítése:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+A jelentés négy objektumszintet fed le — adatforrás, adathalmaz-definíció, attribútum és érvényesítési szabály —, mindegyiket az importművelettel, az eredménnyel, a létrejött objektum azonosítójával és az esetleges további információkkal együtt.
+
+### project plan-import-ds
+
+A `project plan-import-ds` parancs előnézetet ad az adatforrások célprojektbe történő importálásáról, megmutatva, mely objektumok jönnének létre, frissülnének vagy maradnának ki, anélkül hogy bármit megváltoztatna. Ugyanazt az exportfájlt és ugyanazokat a jelentési beállításokat fogadja el, mint a [`project import-ds`](#project-import-ds), és tervezett objektumonként lépésszámmal egészíti ki.
+
+#### A parancs használata
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: A célprojekt neve (kötelező).
+- **EXPORT_FILE**: Az exportfájl elérési útja (kötelező).
+
+#### Beállítások
+- `--output-file`, `-o`: Az a fájl, amelybe az importterv íródik. Nélküle a terv a stdout kimenetre kerül.
+- `--output-format`, `-f`: Az importterv formátuma — `table`, `json` vagy `csv` (alapértelmezés: `table`).
+
+#### Példa
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+A `project cleanup` parancs eltávolítja azokat az ellenőrzési eredményeket, amelyeket egy projekt egy dátumtartományban
+felhalmozott — a profilokat, előrejelzéseket, sorszámokat, valamint minden ellenőrzési, attribútum-, adathalmaz- és adatforrás-állapotot.
+Pontosan azt távolítja el, amit az adott dátumokra vonatkozó ellenőrzés írt, így a tartomány utána újra ellenőrizhető
+az eredmények újraépítéséhez.
+
+A Timeliness és a Schema Tracker előzményei **nem** kerülnek eltávolításra: ezek azt rögzítik, amit a digna egy adott
+napon megfigyelt, nem pedig egy abból származtatott eredményt, ezért egy múltbeli dátumtartomány tisztítása érintetlenül hagyja őket.
+
+Minden adatforrás tisztítása saját tranzakcióban történik, így egy megszakított futás teljes adatforrásokat hagy maga után,
+nem pedig félig kitisztítottat.
+
+#### A parancs használata
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: A tisztítandó projekt (kötelező). Hívásonként egy projekt.
+- **FROM_DATE**: Az első dátum, amelyre vonatkozóan az eredmények eltávolításra kerülnek, `YYYY-MM-DD` formátumban (kötelező).
+- **TO_DATE**: Az utolsó dátum (a tartományba beleértve), amelyre vonatkozóan az eredmények eltávolításra kerülnek, `YYYY-MM-DD` formátumban (kötelező).
+
+#### Beállítások
+- `--table-name`, `-n`: A tisztítást ezekre az adatforrásokra korlátozza. Több név is megadható
+  szóközzel elválasztva.
+- `--table-filter`: A tisztítást azokra az adatforrásokra korlátozza, amelyek neve tartalmazza ezt a részkarakterláncot.
+- `--dry-run`: Felsorolja a tisztításra kerülő adatforrásokat, anélkül hogy bármit eltávolítana.
+- `--timing`: Megjeleníti, mennyi ideig tartott a tisztítás.
+
+A `--table-name` és a `--table-filter` VAGY kapcsolatban áll — egy adatforrás akkor kerül tisztításra, ha meg van nevezve,
+vagy ha a részkarakterlánc illeszkedik rá. Ha egyetlen adatforrás sem illeszkedik, a parancs hibával leáll, ahelyett hogy
+sikert jelentene egy olyan tisztításról, amely semmit sem csinált.
+
+#### Példa
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Egyetlen adatforrásra korlátozva:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Példakimenet
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Annak megtekintése, mely adatforrások kerülnének tisztításra, anélkül hogy bármi eltávolításra kerülne:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Minden sor meg van jelölve, így egy próbafuttatás nem téveszthető össze egy valódival:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Ellenőrzések kezelése
+
+---
+
+### inspection run
+
+Az `inspection run` parancs ellenőrzési kérést hoz létre egy projekthez és egy dátumtartományhoz, majd — a megadott beállításoktól függően — vagy megvárja, vagy azonnal visszatér, vagy saját folyamatán belül futtatja le.
+
+A három végrehajtási mód:
+
+- **Alapértelmezett (kapcsoló nélkül)**: a kérés a háttérrendszer várólistájára kerül, a CLI pedig kétmásodpercenként lekérdezi, és kiírja a feladatok haladását, amíg az ellenőrzés végállapotba nem jut. Futó `digna serve` szükséges, különben senki sem veszi fel a kérést.
+- **`--async-mode`**: a kérés várólistára kerül, azonosítóját pedig a rendszer azonnal kiírja. A követéséhez használja az [`inspection status`](#inspection-status) parancsot.
+- **`--bypass-backend`**: az ellenőrzést maga a CLI folyamat hajtja végre, és nem kerül várólistára, így nincs szükség futó kiszolgálóra.
+
+Az `--async-mode` és a `--bypass-backend` kölcsönösen kizárják egymást.
+
+Minden módban a parancs nem nulla kilépési kóddal zárul, ha az ellenőrzés nem fejeződött be sikeresen.
+
+#### A parancs használata
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argumentumok
+- **PROJECT_NAME**: A célprojekt neve (kötelező). A névnek pontosan egyeznie kell.
+- **START_DATE**: A dátumtartomány kezdődátuma `YYYY-MM-DD` formátumban (kötelező).
+- **END_DATE**: A dátumtartomány záródátuma `YYYY-MM-DD` formátumban (kötelező).
+
+#### Beállítások
+- `--table-name`: Az ellenőrzést a projekt egyetlen adatforrására korlátozza, amelyet az adatforrás neve határoz meg. Nélküle a projekt összes adatforrása ellenőrzésre kerül.
+- `--async-mode`: Várólistára teszi az ellenőrzést, és kiírja a kérés azonosítóját ahelyett, hogy megvárná. Nem kombinálható a `--bypass-backend` beállítással.
+- `--bypass-backend`: Az ellenőrzést közvetlenül a CLI folyamatában futtatja ahelyett, hogy a háttérrendszer várólistájára tenné. Nem kombinálható az `--async-mode` beállítással.
+
+#### Példa
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Aszinkron ellenőrzés beküldése:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Egyetlen adatforrás ellenőrzése:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Példakimenet
+Alapértelmezett mód:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Aszinkron mód:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+Az `inspection status` parancs egy ellenőrzési kérés állapotát és feladathaladását kérdezi le a kérés azonosítója alapján.
+
+#### A parancs használata
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argumentumok
+- **INSPECTION_REQUEST_ID**: Az ellenőrzési kérés numerikus azonosítója (kötelező).
+
+#### Példa
+```bash
+digna inspection status 1024
+```
+
+#### Példakimenet
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+Az `inspection abort` parancs a futó vagy függőben lévő ellenőrzési kérések megszakítását kéri. Minden érintett kéréshez leállítási eseményt rögzít; ez alapján a háttérrendszer jár el, így a megszakítás leállítási kérés, nem pedig azonnali kilövés.
+
+#### A parancs használata
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argumentumok
+- **INSPECTION_REQUEST_ID**: A megszakítandó ellenőrzési kérés azonosítója. Kötelező, hacsak nincs megadva a `--killall`.
+
+#### Beállítások
+- `--killall`: Megszakítja az összes jelenleg futó és függőben lévő ellenőrzési kérést. Elsőbbséget élvez a mellette megadott kérésazonosítóval szemben.
+
+#### Példa
+Adott kérés megszakítása:
+```bash
+digna inspection abort 1024
+```
+
+Az összes aktív és várólistán lévő ellenőrzés megszakítása:
+```bash
+digna inspection abort --killall
+```
+
+#### Példakimenet
+A `--killall` jelenti, mit tett; egyetlen kérés megszakítása nem ad kimenetet, és a sikerről a kilépési kódjával számol be.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Licenckezelés
+
+---
+
+### license check
+
+A `license check` parancs ellenőrzi a `license.toml` fájlt: aláírását a telepítéssel szállított nyilvános kulccsal veti össze, és megvizsgálja, hogy nem járt-e le. Nem olvas alkalmazáskonfigurációt, ezért még a `config.toml` beállítása előtt is működik.
+
+#### A parancs használata
+```bash
+digna license check
+```
+
+#### Példakimenet
+```text
+License is valid
+```
+
+Az érvénytelen aláírás és a lejárt licenc külön hibaként jelenik meg, mindkettő 1-es kilépési kóddal.
+
+---
+
+## Kiszolgáló és háttérszolgáltatások
+
+---
+
+### serve
+
+A `serve` parancs elindítja a ***digna*** REST API kiszolgálót a háttérben futó ellenőrzésütemezővel és ellenőrzéskezelővel együtt. Indításkor sikertelenné nyilvánít minden olyan ellenőrzést is, amelyet a tároló még futóként tart nyilván, mivel egy korábbi folyamatból semmi sem maradhatott fenn.
+
+A parancs előtérben fut, amíg le nem állítják.
+
+#### A parancs használata
+```bash
+digna serve [OPTIONS]
+```
+
+#### Beállítások
+- `--address`: Az a hálózati cím, amelyhez az API-kiszolgáló kötődik (alapértelmezés: `127.0.0.1`).
+- `--port`: A figyelt port száma (alapértelmezés: `8000`).
+
+#### Példa
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Példakimenet
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Windows-szolgáltatás kezelése
+
+Csak Windows rendszeren érhető el. A parancsok regisztrálják a ***digna*** háttérrendszert a Windows
+szolgáltatáskezelőjében, és vezérlik azt; maga a szolgáltatás a háttérben a `serve` parancsot futtatja. Minden parancsot
+emelt jogosultságú (rendszergazdaként megnyitott) Parancssorból kell futtatni, és mindegyik elfogadja a `--name` beállítást,
+így egy nem alapértelmezett néven regisztrált szolgáltatás is megcímezhető.
+
+---
+
+### windows install
+
+A `windows install` parancs Windows-szolgáltatásként regisztrálja a ***digna*** alkalmazást.
+
+Az itt megadott cím és port a szolgáltatás regisztrációjában rögzül, és a szolgáltatás ezekhez kötődik —
+nem a `config.toml` fájlból olvassa be őket. Ha később módosítani szeretné őket, távolítsa el
+a szolgáltatást, és telepítse újra.
+
+#### A parancs használata
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva lesz (alapértelmezés: `digna`).
+- `--display-name`: A services.msc-ben megjelenő név (alapértelmezés: `digna`).
+- `--description`: A services.msc-ben megjelenő leírás (alapértelmezés: `digna data quality backend`).
+- `--address`: Az a cím, amelyhez a szolgáltatás az API-ját köti (alapértelmezés: `127.0.0.1`).
+- `--port`: Az a port, amelyhez a szolgáltatás az API-ját köti (alapértelmezés: `8000`).
+- `--working-dir`: A `config.toml` és a `license.toml` fájlt tartalmazó könyvtár, amelyet a szolgáltatás
+  munkakönyvtárként használ (alapértelmezés: a `digna` futtatható állomány könyvtára).
+- `--start-type`: Mikor indul a szolgáltatás — `auto` a Windows-zal együtt, `manual` csak kérésre,
+  `disabled` regisztrálva van, de nem hajlandó elindulni (alapértelmezés: `auto`).
+- `--account`: A fiók, amelynek nevében a szolgáltatás fut, pl. `DOMAIN\user` vagy `.\user` (alapértelmezés: `LocalSystem`).
+- `--password`: A `--account` fiók jelszava.
+
+#### Példa
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Regisztrálás egy második néven, tartományi fiókkal futtatva:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+A `windows start` parancs elindít egy regisztrált szolgáltatást.
+
+#### A parancs használata
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva van (alapértelmezés: `digna`).
+
+---
+
+### windows stop
+
+A `windows stop` parancs leállít egy futó szolgáltatást. Bármely alkalmazásfájl cseréje előtt állítsa le
+a szolgáltatást.
+
+#### A parancs használata
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva van (alapértelmezés: `digna`).
+
+---
+
+### windows uninstall
+
+A `windows uninstall` parancs törli a szolgáltatás regisztrációját. Előbb állítsa le a szolgáltatást.
+
+#### A parancs használata
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Beállítások
+- `--name`: A név, amelyen a szolgáltatás regisztrálva van (alapértelmezés: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/hu/cli/Command_Line_Interface_202611/
+
+# digna CLI referencia 2026.11
+**2026-10-27**
+
+Ez az oldal a ***digna*** CLI **2026.11** kiadásában elérhető parancsok teljes körét dokumentálja, használati példákkal és beállításokkal együtt.
+
+A futtatható állomány neve `digna`.
+
+---
+
+## A CLI alapjai
+
+---
+
+### Áttekintés és szintaxis
+
+A **2026.11** kiadás CLI-je strukturált, kategóriaalapú parancshierarchiát használ:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+A `version` és a `serve` önálló parancsok, alparancs nélkül:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Globális beállítások
+
+A következő globális beállítások minden parancsra érvényesek:
+
+- `--help`, `-h`: Súgóinformációt jelenít meg a CLI-ről vagy egy adott parancskategóriáról, illetve alparancsról.
+- `--stacktrace`: Hiba esetén a teljes hibaláncot jeleníti meg a legfelső szintű üzenet helyett.
+
+A `--stacktrace` szigorú értelemben globális beállítás: a parancskategória **elé** kell írni, nem utána.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+Nincs `--version` kapcsoló. Használja helyette a [`version`](#version) parancsot.
+
+### Előfeltételek
+
+A legtöbb parancshoz olvasható, érvényes `config.toml` szükséges; egyeseknek ezen felül érvényes licenc is kell.
+Az alábbi táblázat rögzíti, hogy az egyes parancskategóriák mit töltenek be, mielőtt bármit is tennének:
+
+| Parancskategória | Szükséges hozzá a `config.toml` | Szükséges hozzá érvényes licenc |
+|---|---|---|
+| `version` | nem | nem |
+| `config check` | nem (éppen ez az, amiről a parancs jelentést ad) | nem |
+| `license check` | nem | ez *maga* az ellenőrzés |
+| `crypt` | igen | nem |
+| `serve` | igen | nem |
+| `windows` | nem (a szolgáltatás indításkor olvassa be) | nem |
+| `project` | igen | nem |
+| `user` | igen | igen |
+| `inspection` | igen | igen |
+| `repo` | igen | igen |
+
+Ahol licenc szükséges, ott az aláírását és a lejárati dátumát egyaránt ellenőrzi a rendszer, és a parancs még azelőtt megszakad, hogy hozzányúlna a tárolóhoz, ha bármelyik ellenőrzés sikertelen.
+
+### Kilépési kódok
+
+- `0`: a parancs sikeres volt.
+- `1`: a parancs meghiúsult. A hibaüzenet a stderr kimenetre kerül, `Error: ` előtaggal.
+
+### help
+
+A `--help` beállítás az elérhető parancskategóriákról, alparancsokról és beállításokról nyújt információt:
+
+1. **Általános súgó megjelenítése:**
+   ```bash
+   digna --help
+   ```
+
+2. **Súgó lekérése adott kategóriákhoz és parancsokhoz:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **A kimenet tartalmazza:**
+   - **A parancs leírását:** A parancs céljának összefoglalását.
+   - **A szintaxist:** A kötelező és opcionális argumentumokat.
+   - **A beállításokat:** A parancsra jellemző kapcsolókat és paramétereket.
+
+### version
+
+A `version` parancs kiírja a telepített ***digna*** kiadást. Nem olvas be konfigurációt és nem ellenőriz licencet, így olyan telepítésen is működik, amelynek a `config.toml` fájlja vagy licence hiányzik, illetve érvénytelen.
+
+A kiadás verziója független a tároló sémájának verziójától, amelyet a [`repo check`](#repo-check) jelent.
+
+#### A parancs használata
+```bash
+digna version
+```
+
+#### Példakimenet
+```text
+2026.11
 ```
 
 ---
@@ -11196,6 +12237,280 @@ Ez az oldal a ***digna*** Python SDK generált kliens API-ját mutatja be. A `Di
 Source: https://docs.digna.ai/hu/sdk/Release%202026.06/resources/
 
 # digna Python SDK erőforrások 2026.06
+
+Ez az oldal a ***digna*** Python SDK erőforrás-klienseit mutatja be. Minden erőforrás a stabil API megfelelő végpontjait csomagolja egységes, pythonos felületbe, kiszámítható metódusnevekkel.
+
+A `DignaClient` API-területenként egy erőforrás-objektumot tesz elérhetővé. Minden erőforrás
+a stabil API megfelelő végpontjait csomagolja pythonos metódusnevekkel.
+
+| Erőforrás | Attribútum | Végpontok |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/hu/sdk/Release%202026.11/
+
+# digna Python SDK referencia 2026.11
+
+Ez a szakasz a ***digna*** Python SDK-ját mutatja be. Több oldalból álló referenciaként épül fel: ez az áttekintés a kliens megismerését szolgálja, majd a gyors bevezetőnek, az erőforrásoknak, a modelleknek, a hibáknak és a generált API-dokumentációnak külön oldalai vannak.
+
+Az SDK a `digna-sdk` csomagként jelenik meg, és stabil, verziózott klienst nyújt a ***digna*** REST API-jához.
+
+---
+
+## Az SDK alapjai
+
+---
+
+### Áttekintés
+
+Az SDK erőforrás-központú klienstervezést követ. Minden API-terület önálló kliensként jelenik meg a legfelső szintű `DignaClient` objektumon, tipizált kérés- és válaszmodellekkel, egységes hibakezeléssel.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Fő jellemzők
+
+- **Tipizált modellek** — minden kérést és választ a pydantic ellenőriz, így a szerkesztő és a típusellenőrző még a hálózati hívás előtt kiszűri a hibákat.
+- **Erőforrás-központú felépítés** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` és `client.inspection_statuses` egyaránt egyszerű `list` / `get` / `create` / `update` / `delete` metódusokat kínál.
+- **Egyértelmű hibák** — az API-hibák `DignaAPIError` kivételt váltanak ki (vagy egy pontosabb alosztályt, például `DignaAuthenticationError`, `DignaAuthorizationError` vagy `DignaNotFoundError`) ahelyett, hogy csendben `None` értéket adnának vissza.
+
+### Telepítés
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Referenciaoldalak
+
+Ez a kiadás a következő oldalakra tagolódik:
+
+- [Gyors bevezető](quickstart.md) — csatlakozás és az első hívások.
+- [Erőforrások](resources.md) — az elérhető erőforrás-kliensek teljes listája.
+- [Modellek](models.md) — a bemenethez és kimenethez használt pydantic modellek.
+- [Hibák](errors.md) — a kivételek hierarchiája.
+- [API-referencia](reference.md) — automatikusan generált referenciadokumentáció.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/hu/sdk/Release%202026.11/errors/
+
+# digna Python SDK hibák 2026.11
+
+Ez az oldal a ***digna*** Python SDK kivételhierarchiáját mutatja be. Ezek a hibák az API-hívások meghiúsulását, a hitelesítési és jogosultsági problémákat, valamint a nem található erőforrás eseteit fedik le.
+
+Az SDK által kiváltott összes hiba a `DignaError` osztályból származik.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/hu/sdk/Release%202026.11/models/
+
+# digna Python SDK modellek 2026.11
+
+Ez az oldal a ***digna*** Python SDK által használt legfontosabb kérés- és válaszmodelleket mutatja be. Minden adatcsomagot [pydantic](https://docs.pydantic.dev/) modell képvisel, amelyet a `digna_sdk.models` modulból kell importálni.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/hu/sdk/Release%202026.11/quickstart/
+
+# digna Python SDK gyors bevezető 2026.11
+
+Ez az oldal a ***digna*** Python SDK minimális beállítását és a kliens legfontosabb munkafolyamatait mutatja be. Kiindulópontként használható, mielőtt az erőforrások, a modellek és a hibák referenciaoldalaira lépne.
+
+## API-kulcs létrehozása
+
+Hozzon létre egy API-kulcsot a ***digna*** felületén, mielőtt az SDK-val csatlakozna:
+
+1. Jelentkezzen be a ***digna*** felületére.
+2. Nyissa meg a felhasználói profilját a bal alsó sarokban.
+3. A felhasználói profilban kattintson az **API Keys** elemre.
+4. Kattintson az **Add API Key** gombra.
+5. Adjon meg beszédes nevet, és állítson be lejárati dátumot. Az API-kulcs bármikor visszavonható vagy törölhető.
+6. Másolja a megjelenített API-kulcsot a vágólapra. A kulcs csak a létrehozáskor látható.
+
+Használja az API-kulcsot az SDK tokenjeként. Jó megoldások az alkalmazásnak való átadására:
+
+- Környezeti változó, például `DIGNA_API_KEY`, helyi fejlesztéshez és automatizáláshoz.
+- A CI/CD titkos tárolója, például GitHub Actions-titkok, GitLab CI/CD-változók vagy Azure DevOps titkos változók.
+- Futásidejű titokkezelő, például Kubernetes-titkok, Docker-titkok, HashiCorp Vault vagy egy felhőszolgáltató titkos tárolója.
+
+Kerülje az API-kulcsok beégetését a forráskódba, a notebookokba, a parancsértelmező előzményeibe vagy a verziókövetett konfigurációs fájlokba.
+
+## Csatlakozás
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Használja a `DignaClient` osztályt környezetkezelőként, hogy a mögöttes
+kapcsolatkészlet automatikusan lezáruljon:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Projektek listázása
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Adatforrás létrehozása
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Ellenőrzési kérés beküldése és a befejezés megvárása
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+A teljes beküldés → lekérdezés → letöltés folyamatot a tárolóban lévő `examples/inspection_flow.py` fájl mutatja be.
+
+## Hibakezelés
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/hu/sdk/Release%202026.11/reference/
+
+# digna Python SDK kliensreferencia 2026.11
+
+Ez az oldal a ***digna*** Python SDK generált kliens API-ját mutatja be. A `DignaClient` az SDK által kínált erőforrás-műveletek elsődleges belépési pontja.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/hu/sdk/Release%202026.11/resources/
+
+# digna Python SDK erőforrások 2026.11
 
 Ez az oldal a ***digna*** Python SDK erőforrás-klienseit mutatja be. Minden erőforrás a stabil API megfelelő végpontjait csomagolja egységes, pythonos felületbe, kiszámítható metódusnevekkel.
 

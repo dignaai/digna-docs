@@ -101,6 +101,7 @@
 
 ## Referenční příručka CLI
 
+- [Release 2026.11](https://docs.digna.ai/cs/cli/Command_Line_Interface_202611/): Kompletní referenční příručka k vydání digna CLI 2026.11
 - [Release 2026.06](https://docs.digna.ai/cs/cli/Command_Line_Interface_202606/): Kompletní referenční příručka k vydání digna CLI 2026.06
 - [Release 2026.04](https://docs.digna.ai/cs/cli/Command_Line_Interface_202604/): Kompletní reference pro digna CLI verzi 2026.04
 - [Release 2026.01](https://docs.digna.ai/cs/cli/Command_Line_Interface_202601/): Kompletní reference pro digna CLI verzi 2026.01. Naučte se spravovat uživatele, repozitáře a data pomocí příkazů jako add-user, check-config, check-repo-connection, inspect, inspect-async a dalších.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/cs/cli/Command_Line_Interface_202409/): Kompletní reference pro vydání digna CLI 2024.09. Naučte se spravovat uživatele, repozitáře a data pomocí příkazů jako add-user, check-repo-connection, upgrade-repo, inspect, tls-status a dalších.
 
 ## Referenční příručka SDK
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/cs/sdk/Release%202026.11/): Kompletní referenční příručka k vydání digna Python SDK 2026.11
+- [Quickstart](https://docs.digna.ai/cs/sdk/Release%202026.11/quickstart/): Průvodce rychlým startem k vydání digna Python SDK 2026.11
+- [Resources](https://docs.digna.ai/cs/sdk/Release%202026.11/resources/): Klienti zdrojů k vydání digna Python SDK 2026.11
+- [Models](https://docs.digna.ai/cs/sdk/Release%202026.11/models/): Datové modely k vydání digna Python SDK 2026.11
+- [Errors](https://docs.digna.ai/cs/sdk/Release%202026.11/errors/): Hierarchie chyb k vydání digna Python SDK 2026.11
+- [API Reference](https://docs.digna.ai/cs/sdk/Release%202026.11/reference/): Referenční příručka klientského API k vydání digna Python SDK 2026.11
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/cs/changelog/Release_202611/): Zjistěte, co je nového v digna Release 2026.11. Tato verze přináší tři zásadní novinky - digna Data Reconciliation (Beta), digna Agentic (Beta) s digna MCP Server a digna Engine, který umožňuje kontroly referenční integrity mezi různými databázovými technologiemi.
 - [Release 2026.06](https://docs.digna.ai/cs/changelog/Release_202606/): Zjistěte, co je nového v digna Release 2026.06. Tato verze přináší nový digna Python SDK, podporu nasazení v Dockeru, přepracované rozhraní dashboardu a rozšířené možnosti importu/exportu validačních pravidel.
 - [Release 2026.04](https://docs.digna.ai/cs/changelog/Release_202604/): Zjistěte, co je nového ve vydání digna 2026.04. Tato verze přináší pokročilou analýzu časových řad pomocí Analytics Chart, znovupoužitelné šablony validačních pravidel, enumerations pro povolené hodnoty a podmínky relevance na úrovni sloupců.
 - [Release 2026.01](https://docs.digna.ai/cs/changelog/Release_202601/): Zjistěte, co je nového ve vydání digna 2026.01. Tato verze přináší globální připojení k databázím, logické zdroje dat, podmínky relevance anomálií, exporty CSV a pokročilou validaci dat včetně kontrol referenční integrity.

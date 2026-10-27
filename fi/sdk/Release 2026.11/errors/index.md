@@ -1,0 +1,7 @@
+# digna Python SDK -virheet 2026.11
+
+Tämä sivu dokumentoi ***digna*** Python SDK:n tarjoaman poikkeushierarkian. Nämä virheet kattavat rajapintakutsujen epäonnistumiset, todennuksen ja valtuutuksen ongelmat sekä tilanteet, joissa resurssia ei löydy.
+
+Kaikki SDK:n nostamat virheet periytyvät luokasta `DignaError`.
+
+::: digna_sdk.exceptions

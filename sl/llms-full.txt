@@ -622,6 +622,121 @@ Obe nastavitvi je mogoče kadar koli vrniti na privzeti vrednosti. Kako deluje p
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/sl/changelog/Release_202611/
+
+# Changelog – Izdaja 2026.11  
+
+Izdaja 2026.11 temelji na treh pomembnih novostih:
+
+- **digna Data Reconciliation (Beta)**: preverja, ali podatki ostanejo konsistentni, ko se premikajo med sistemi  
+- **digna Agentic (Beta)**: prek digna MCP Server odpre digno AI agentom  
+- **digna Engine**: po želji profilira podatke znotraj digne in omogoča preverjanja referenčne celovitosti med različnimi tehnologijami baz podatkov  
+
+---
+
+## Nove Funkcije  
+
+### digna Data Reconciliation (Beta) – Konsistentnost od Vira do Cilja  
+Podatki pogosto potujejo skozi več sistemov, preden pridejo v poročilo. digna Data Reconciliation (Beta) primerja **ciljni** podatkovni vir z **viri**, iz katerih je bil zgrajen, in sproži opozorilo, ko se ne ujemajo več.
+
+- Konfigurira se kot poimenovana pravila na novem zavihku **Data Reconciliation** ciljnega podatkovnega vira  
+- Vir je lahko kateri koli podatkovni vir projekta, ki ima vklopljen Data Reconciliation  
+- Primeri uporabe vključujejo standardne postopke usklajevanja in validacijo rezultatov procesov ETL  
+- Dve vrsti pravil: **Exact** in **AI**  
+
+**Pravila Exact – usklajevanje kot pravilo kakovosti podatkov**: Natančno določite, kaj se mora ujemati med enim virom in enim ciljem, podobno kot pri pravilu kakovosti podatkov.
+
+  - Primerjava enega izvornega podatkovnega vira z enim ciljnim podatkovnim virom  
+  - Povezovanje preverjanja cilja s preverjanjem vira po statistiki in atributu, npr. število vrstic ali vsota stolpca z zneski  
+  - Dovoljeno odstopanje z **absolute** toleranco (npr. ± 10) ali **relative** toleranco (npr. ± 0,5 % vira)  
+  - Časovnica za vsak dan prikazuje odstopanje glede na toleranco  
+
+**Pravila AI – usklajevanje kot opazovanje podatkov**: digna se nauči, kako cilj sledi svojim virom, na enak način, kot opazuje podatke v drugih modulih, in sproži opozorilo, ko se ta odnos prekine.
+
+  - Združevanje preverjanj iz več izvornih podatkovnih virov s preverjanji enega cilja  
+  - Logike med njimi (joini, filtri, agregacije) ni treba poznati ali zapisati  
+  - Model se iz zgodovine nauči, kako cilj na isti dan sledi svojim virom  
+  - Vsako preverjanje cilja je napovedano iz vrednosti virov tistega dne, digna pa sproži opozorilo, ko cilj zapusti pas lastnih preteklih napak pravila  
+  - Vsako pravilo ima lastne **Model settings**: **Sensitivity**, **Memory** in **Model Complexity**  
+
+Preverjanja usklajevanja so prikazana na Dashboardu s časovnico za vsako pravilo. Štejejo v skupni status inšpekcije in sprožajo obvestila.
+
+**Vpliv:** Pokriva obe strani usklajevanja. Pravila Exact uveljavljajo znane kontrole med virom in ciljem, pravila AI pa nadzorujejo kompleksne tokove, kot so procesi ETL, tako da so podatki, ki se na poti izgubijo ali spremenijo, zaznani brez ročno napisanega SQL za usklajevanje.
+
+---
+
+### digna Agentic (Beta) – digna za AI Agente  
+Prva različica digna Agentic (Beta). AI agenti lahko zdaj delajo z digno, odgovarjajo na poslovna vprašanja o vaših podatkih in pomagajo izboljšati vašo konfiguracijo.
+
+**digna MCP Server**: Omogoča, da Claude in drugi AI agenti delajo z digno prek Model Context Protocol.
+
+  - Upravljanje projektov, podatkovnih virov, pravil, urnikov inšpekcij in naročnin  
+  - Branje statusov inšpekcij vse do posameznega preverjanja za preiskovanje opozoril  
+
+**Opisi podatkovnih virov in atributov**: Z navadnim jezikom opišite, kaj vsebuje podatkovni vir ali atribut.
+
+  - AI agenti uporabljajo opise za interpretacijo vaših podatkov  
+  - Postavljajte poslovna vprašanja o svojih podatkih, AI agenti pa nanje odgovorijo na podlagi tega, kar nadzoruje digna  
+  - Če trenutna konfiguracija digne ne more odgovoriti na vprašanje, AI agent, kjer je mogoče, predlaga spremembe podatkovnega vira in njegovih atributov, npr. dodajanje novega dataseta  
+
+**Vpliv:** Omogoča vam, da v navadnem jeziku postavljate poslovna vprašanja o svojih podatkih, AI agentom pa, da pomagajo konfigurirati digno in preiskovati težave s kakovostjo podatkov.
+
+---
+
+### digna Engine – Profiliranje Tam, Kjer Izberete  
+Privzeto digna profilira podatke tam, kjer so, v izvorni bazi podatkov. digna Engine doda možnost: digna izvozi podatke iz vira in jih profilira znotraj digna Engine.
+
+- Izbirno, ne obvezno: profiliranje v izvorni bazi podatkov ostaja na voljo  
+- Izbere se za vsako povezavo do baze podatkov kot njena **lokacija profiliranja**: **Source Database** ali **digna Engine**  
+- Na voljo za vse podprte izvorne tehnologije  
+
+**Referenčna celovitost med povezavami**: Nekatera preverjanja zahtevajo izvoz podatkov. digna Engine za te primere razširi **digna Data Validation**.
+
+  - **Preverjanja referenčne celovitosti** med podatkovnimi viri na **različnih povezavah do baz podatkov**, vključno z različnimi tehnologijami baz podatkov (npr. Oracle in PostgreSQL)  
+  - Deluje z obema lokacijama profiliranja: pri Source Database se v digna Engine izvozijo le ključni stolpci  
+  - Nadzorna plošča prikaže, kdaj se preverjanje izvaja prek dveh povezav  
+
+**Vpliv:** Omogoča izbiro, kje se podatki profilirajo, in uveljavlja odnose med sistemi, ki delujejo na različnih tehnologijah baz podatkov.
+
+---
+
+## Izboljšave Profiliranja  
+
+Ta izdaja uporabnikom daje tudi več nadzora nad tem, kaj se profilira in kako.
+
+### Poizvedbeni Atributi – Uporabniško Definirani Stolpci  
+- Definirajte umetne stolpce: izraz SQL nad enim ali več stolpci podatkovnega vira  
+- Vsak poizvedbeni atribut ima svoje ime  
+- Profilira in preverja se kot kateri koli drug atribut  
+
+### Kategorija Stolpcev DATE  
+- Nova kategorija **Date** za atribute  
+- Metrike glede na datum inšpekcije  
+
+### Profiliranje na Zahtevo  
+- Profilirajte kateri koli atribut na celotnem posnetku enega datuma, brez zagona inšpekcije  
+- Pomaga nastaviti vrsto stolpca atributa: **Numerical**, **Categorical**, **Date** ali **Unspecified**  
+
+---
+
+## Kdo Ima Koristi od Te Izdaje  
+
+- **Data Engineers:** validacija rezultatov ETL z digna Data Reconciliation (Beta)  
+- **Ekipe za finance, tveganja in kontroling:** standardni postopki usklajevanja kot pravila Exact v digna Data Reconciliation (Beta)  
+- **Data Quality & Governance Teams:** referenčna celovitost med tehnologijami baz podatkov z digna Engine  
+- **Poslovni uporabniki:** poslovna vprašanja o podatkih, na katera odgovarjajo AI agenti z digna Agentic (Beta)  
+- **Ekipe za AI in avtomatizacijo:** AI agenti, ki delajo z digno prek digna Agentic (Beta)  
+
+---
+
+## Posodobitve CLI  
+- Brez sprememb  
+
+---
+
+---
+
 # Release 2024.09
 Source: https://docs.digna.ai/sl/cli/Command_Line_Interface_202409/
 
@@ -4215,6 +4330,933 @@ digna version
 #### Primer izpisa
 ```text
 2026.06
+```
+
+---
+
+## Upravljanje konfiguracije
+
+---
+
+### config check
+
+Ukaz `config check` preveri konfiguracijsko datoteko (`config.toml`) in ugotovi, ali so vsi obvezni razdelki in nastavitve prisotni ter pravilno oblikovani. Vsak razdelek se preveri zase, tako da pokvarjen razdelek `[app]` ne prekrije stanja razdelka `[repo]`.
+
+Poročani razdelki so:
+
+- `App config` (`[app]`)
+- `Repository config` (`[repo]`)
+- `Base config` (`[base]`)
+- `Logging config` (`[logging]`)
+- `Encryption config` (`[encryption]`)
+- `OIDC config(s)` (`oidc_clients`) — neobvezen; manjkajoč ključ preverjanje prestane, prisoten, a napačno oblikovan seznam pa ne
+
+Ukaz namenoma ne naloži konfiguracije aplikacije tako, kot to storijo drugi ukazi, da lahko diagnosticira datoteko `config.toml`, ki bi ***digna*** sploh preprečila zagon.
+
+#### Uporaba ukaza
+```bash
+digna config check [OPTIONS]
+```
+
+#### Možnosti
+- `--configpath`, `-c`: Pot do konfiguracijske datoteke ali do imenika, ki vsebuje `config.toml` (privzeto `./config.toml`).
+- `--json`: Izpiše poročilo o preverjanju v obliki JSON. Ima prednost pred `--quiet`.
+- `--quiet`, `-q`: Zatre poročilo in se opira izključno na izhodno kodo.
+
+#### Primer
+```bash
+digna config check
+```
+
+Preverjanje določene konfiguracijske datoteke z izpisom v obliki JSON:
+```bash
+digna config check --configpath /etc/digna/config.toml --json
+```
+
+#### Primer izpisa
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: FAILED
+    missing field `aes_gcm_key`
+ - OIDC config(s): OK
+
+Overall: FAILED
+```
+
+Manjkajoča datoteka ali skladenjska napaka TOML ne pusti ničesar, kar bi bilo mogoče preveriti razdelek za razdelkom, in je sporočena kot ena sama napaka namesto poročila, ne glede na `--quiet` ali `--json`.
+
+---
+
+## Upravljanje repozitorija
+
+---
+
+### repo check
+
+Ukaz `repo check` preizkusi povezavo z zbirko podatkov ter preveri namestitev in različico repozitorija. Ne uspe, če nastavljena shema ne obstaja ali če obstaja, a ne vsebuje repozitorija ***digna***.
+
+Javljena različica je različica sheme repozitorija, ki se različicira ločeno od izdaje ***digna***, ki jo izpiše [`version`](#version).
+
+#### Uporaba ukaza
+```bash
+digna repo check
+```
+
+#### Primer izpisa
+```text
+Repo version 3.0.0 installed
+```
+
+### repo install
+
+Ukaz `repo install` namesti nov repozitorij ***digna*** v shemo, nastavljeno v `config.toml`, in pri tem ustvari vsa potrebna zaporedja, tabele, indekse, omejitve in začetne zapise.
+
+Sheme same ta ukaz **ne** ustvari — obstajati mora že prej. Ukaz se prav tako ne izvede, če je v tej shemi repozitorij že nameščen, in napoti na [`repo upgrade`](#repo-upgrade), če je nameščena različica starejša.
+
+#### Uporaba ukaza
+```bash
+digna repo install
+```
+
+#### Primer izpisa
+```text
+Installing repo version 3.0.0
+✅ Sequences created.
+✅ Tables and Indices created.
+✅ Constraints created.
+✅ Records inserted.
+✅ Repo version 3.0.0 successfully installed.
+```
+
+### repo upgrade
+
+Ukaz `repo upgrade` uveljavi migracije sheme zbirke podatkov, da obstoječi repozitorij posodobi na različico, ki jo pričakuje nameščena izdaja. Nadgradnje se uveljavljajo po en preskok različice naenkrat po ustaljeni poti nadgradnje, vsak dokončan preskok pa se zabeleži v repozitoriju.
+
+Če je repozitorij že v pričakovani različici, ukaz sporoči, da nadgradnja ni potrebna, in ne spremeni ničesar.
+
+#### Uporaba ukaza
+```bash
+digna repo upgrade
+```
+
+#### Primer izpisa
+```text
+Upgrading from 2.3.1 to 2.3.2...
+Upgrading from 2.3.2 to 3.0.0...
+✅ Repo successfully upgraded to version 3.0.0.
+```
+
+---
+
+### repo prune
+
+Ukaz `repo prune` odstrani vrstice, ki so preživele projekt ali podatkovni vir, kateremu so pripadale.
+Brisanje projekta ali podatkovnega vira odstrani sam objekt, ne pa tudi njegovih profilov, napovedi,
+statusov in števil vrstic — to je premišljen kompromis, saj bi brisanje, ki bi hkrati počistilo še te tabele,
+uporabnika pustilo čakati. `repo prune` je vzdrževalni korak, ki jih počisti, in ga je varno
+zagnati kadar koli: odstrani izključno vrstice, katerih projekt ali podatkovni vir ne obstaja več.
+
+Vrstic, ki jih je zaledje Python zapisalo v tabele, ki jih trenutna izdaja ne uporablja več, se ne dotakne.
+
+#### Uporaba ukaza
+```bash
+digna repo prune [OPTIONS]
+```
+
+#### Možnosti
+- `--dry-run`: Sporoči, kaj bi bilo odstranjeno, ne da bi kar koli odstranil.
+
+Navedene so samo tabele z osirotelimi vrsticami. Če jih ni, ukaz sporoči
+`No orphaned rows found.` in se konča.
+
+#### Primer
+```bash
+digna repo prune
+```
+
+#### Primer izpisa
+```text
+"check"                                 29342
+check_profile                           29342
+check_prediction                        29342
+check_status                            29342
+column_status                              32
+inspection_query                          253
+---------------------------------------------
+total                                  117854
+
+✅ Removed 117854 orphaned row(s).
+```
+
+Za enako poročilo brez odstranjevanja:
+```bash
+digna repo prune --dry-run
+```
+
+Števila vrstic so enaka; razlikuje se le zaključna vrstica:
+```text
+---------------------------------------------
+total                                  117854
+
+Dry run - nothing was removed.
+```
+
+---
+
+## Upravljanje šifriranja
+
+---
+
+### crypt gen-key
+
+Ukaz `crypt gen-key` ustvari nov šifrirni ključ AES-GCM, namenjen uporabi kot šifrirni ključ v `config.toml`. Datoteka `config.toml`, ki jo je mogoče naložiti, mora že obstajati, čeprav ustvarjeni ključ od nje ni odvisen.
+
+#### Uporaba ukaza
+```bash
+digna crypt gen-key
+```
+
+#### Primer izpisa
+```text
+Encryption key: <base64-encoded key>
+```
+
+### crypt encrypt
+
+Ukaz `crypt encrypt` šifrira niz (na primer geslo za zbirko podatkov) s ključem AES-GCM, nastavljenim v `config.toml`, in izpiše šifrirano besedilo.
+
+#### Uporaba ukaza
+```bash
+digna crypt encrypt <VALUE>
+```
+
+#### Argumenti
+- **VALUE**: Nešifriran niz, ki naj se šifrira (obvezno).
+
+#### Primer
+```bash
+digna crypt encrypt mysecretpassword
+```
+
+### crypt decrypt
+
+Ukaz `crypt decrypt` dešifrira niz, šifriran z AES-GCM, s ključem, nastavljenim v `config.toml`, in izpiše nešifrirano besedilo.
+
+#### Uporaba ukaza
+```bash
+digna crypt decrypt <VALUE>
+```
+
+#### Argumenti
+- **VALUE**: Šifrirani niz, ki naj se dešifrira (obvezno).
+
+#### Primer
+```bash
+digna crypt decrypt "encrypted_string_here"
+```
+
+---
+
+## Upravljanje uporabnikov
+
+---
+
+### user add
+
+Ukaz `user add` ustvari nov uporabniški račun v repozitoriju ***digna***. Ukaz ne uspe, če uporabnik z navedenim e-poštnim naslovom že obstaja.
+
+#### Uporaba ukaza
+```bash
+digna user add <EMAIL> <PASSWORD> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika (obvezno).
+- **PASSWORD**: Začetno geslo uporabnika (obvezno).
+- **DISPLAY_NAME**: Polno prikazno ime uporabnika (obvezno).
+
+#### Možnosti
+- `--admin`, `-a`: Ustvari uporabnika s skrbniškimi pravicami (superuporabnik).
+
+#### Primer
+```bash
+digna user add jdoe@example.com "SecurePass123!" "John Doe"
+```
+
+Za ustvarjanje skrbniškega računa:
+```bash
+digna user add admin@example.com "AdminPass123!" "Admin User" --admin
+```
+
+#### Primer izpisa
+```text
+User created with ID: 42
+```
+
+### user list
+
+Ukaz `user list` v obliki tabele izpiše vse registrirane uporabnike z ID-jem, e-poštnim naslovom, prikaznim imenom in skrbniško zastavico.
+
+#### Uporaba ukaza
+```bash
+digna user list
+```
+
+#### Primer izpisa
+```text
+ID                   EMAIL                          DISPLAY NAME                   ADMIN
+-----------------------------------------------------------------------------------------------
+42                   jdoe@example.com               John Doe                       false
+43                   admin@example.com              Admin User                     true
+```
+
+### user modify
+
+Ukaz `user modify` posodobi prikazno ime in skrbniške pravice obstoječega uporabniškega računa, določenega z e-poštnim naslovom.
+
+Tako prikazno ime kot skrbniška zastavica se zapišeta vsakič. `--admin` je stikalo in ne vrednost: **če ga izpustite, se skrbniške pravice odvzamejo**, zato ga navedite vsakič, ko naj jih uporabnik obdrži ali pridobi.
+
+#### Uporaba ukaza
+```bash
+digna user modify <EMAIL> <DISPLAY_NAME> [OPTIONS]
+```
+
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika, ki ga želite spremeniti (obvezno).
+- **DISPLAY_NAME**: Posodobljeno prikazno ime (obvezno).
+
+#### Možnosti
+- `--admin`, `-a`: Dodeli skrbniške pravice. Izpustite, da jih odvzamete.
+- `--valid-until`, `-v`: Sprejeto zaradi združljivosti, vendar se **trenutno ne uporablja**. Če ga navedete, se izpiše opozorilo in ne spremeni se nič.
+
+#### Primer
+```bash
+digna user modify jdoe@example.com "Johnathan Doe" --admin
+```
+
+#### Primer izpisa
+```text
+User jdoe@example.com modified successfully
+```
+
+### user modify-pwd
+
+Ukaz `user modify-pwd` posodobi geslo obstoječega uporabniškega računa.
+
+#### Uporaba ukaza
+```bash
+digna user modify-pwd <EMAIL> <PASSWORD>
+```
+
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika, čigar geslo naj se posodobi (obvezno).
+- **PASSWORD**: Novo geslo (obvezno).
+
+#### Primer
+```bash
+digna user modify-pwd jdoe@example.com "NewSecurePass456!"
+```
+
+### user delete
+
+Ukaz `user delete` odstrani uporabniški račun iz sistema.
+
+#### Uporaba ukaza
+```bash
+digna user delete <EMAIL>
+```
+
+#### Argumenti
+- **EMAIL**: E-poštni naslov uporabnika, ki naj se izbriše (obvezno).
+
+#### Primer
+```bash
+digna user delete jdoe@example.com
+```
+
+---
+
+## Upravljanje projektov in podatkovnih virov
+
+---
+
+### project list
+
+Ukaz `project list` izpiše vse projekte, ki so na voljo v repozitoriju, skupaj z njihovim ID-jem, imenom in opisom.
+
+#### Uporaba ukaza
+```bash
+digna project list
+```
+
+#### Primer izpisa
+```text
+ID                   NAME                           DESCRIPTION
+------------------------------------------------------------------------------------------------------
+7                    ProjectA                       Sales data quality
+8                    ProjectB                       Finance data quality
+```
+
+### project list-ds
+
+Ukaz `project list-ds` izpiše vse podatkovne vire, povezane z danim projektom, in prikaže njihov ID, ime, vrsto, shemo in ime tabele.
+
+#### Uporaba ukaza
+```bash
+digna project list-ds <PROJECT_NAME>
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Ime projekta, katerega podatkovne vire je treba izpisati (obvezno). Ime se mora ujemati natanko.
+
+#### Primer
+```bash
+digna project list-ds ProjectA
+```
+
+#### Primer izpisa
+```text
+ID                   NAME                           KIND            SCHEMA               TABLE
+-------------------------------------------------------------------------------------------------------------
+101                  orders                         Table           sales                orders
+102                  customers                      Table           sales                customers
+```
+
+### project export-ds
+
+Ukaz `project export-ds` izvozi podatkovne vire projekta v dokument JSON.
+
+Če nista navedena ne `--table-name` ne `--table-id`, se izvozijo vsi podatkovni viri projekta.
+
+#### Uporaba ukaza
+```bash
+digna project export-ds <PROJECT_NAME> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Ime projekta, iz katerega naj se izvozijo podatkovni viri (obvezno).
+
+#### Možnosti
+- `--table-name`, `-n`: Imena podatkovnih virov za izvoz. Navedete lahko več imen, ločenih s presledki.
+- `--table-id`, `-i`: ID-ji podatkovnih virov za izvoz. Navedete lahko več ID-jev, ločenih s presledki.
+- `--exportfile`, `-f`: Pot, na katero naj se shranijo izvoženi podatkovni viri (privzeto: `data_sources_export.json`).
+
+#### Primer
+Za izvoz vseh podatkovnih virov iz projekta `ProjectA`:
+```bash
+digna project export-ds ProjectA --exportfile my_export.json
+```
+
+Za izvoz določenih tabel:
+```bash
+digna project export-ds ProjectA --table-name users orders -f users_orders_export.json
+```
+
+#### Primer izpisa
+```text
+Successfully exported 2 data source(s) to users_orders_export.json
+```
+
+### project import-ds
+
+Ukaz `project import-ds` uvozi podatkovne vire iz izvozne datoteke v ciljni projekt in za vsak objekt sporoči, kaj je bilo ustvarjeno, posodobljeno ali preskočeno.
+
+#### Uporaba ukaza
+```bash
+digna project import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Ime ciljnega projekta, v katerega naj se uvozi (obvezno).
+- **EXPORT_FILE**: Pot do izvozne datoteke JSON (obvezno).
+
+#### Možnosti
+- `--output-file`, `-o`: Datoteka, v katero naj se zapiše poročilo o uvozu. Brez nje gre poročilo na stdout.
+- `--output-format`, `-f`: Oblika poročila o uvozu — `table`, `json` ali `csv` (privzeto: `table`).
+
+#### Primer
+```bash
+digna project import-ds ProjectB my_export.json
+```
+
+Za strojno berljivo poročilo:
+```bash
+digna project import-ds ProjectB my_export.json --output-format json --output-file import_report.json
+```
+
+Poročilo zajema štiri ravni objektov — podatkovni vir, definicijo podatkovnega niza, atribut in pravilo preverjanja — vsako z njeno uvozno akcijo, rezultatom, ID-jem nastalega objekta in morebitnimi dodatnimi informacijami.
+
+### project plan-import-ds
+
+Ukaz `project plan-import-ds` predogleda uvoz podatkovnih virov v ciljni projekt in pokaže, kateri objekti bi bili ustvarjeni, posodobljeni ali preskočeni, ne da bi kar koli spremenil. Sprejme isto izvozno datoteko in iste možnosti poročanja kot [`project import-ds`](#project-import-ds), poleg tega pa doda še številko koraka za vsak načrtovani objekt.
+
+#### Uporaba ukaza
+```bash
+digna project plan-import-ds <PROJECT_NAME> <EXPORT_FILE> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Ime ciljnega projekta (obvezno).
+- **EXPORT_FILE**: Pot do izvozne datoteke (obvezno).
+
+#### Možnosti
+- `--output-file`, `-o`: Datoteka, v katero naj se zapiše načrt uvoza. Brez nje gre načrt na stdout.
+- `--output-format`, `-f`: Oblika načrta uvoza — `table`, `json` ali `csv` (privzeto: `table`).
+
+#### Primer
+```bash
+digna project plan-import-ds ProjectB my_export.json
+```
+
+---
+
+### project cleanup
+
+Ukaz `project cleanup` odstrani rezultate pregledov, ki jih je projekt nabral v določenem časovnem
+obdobju — profile, napovedi, števila vrstic ter vse statuse preverjanj, atributov, podatkovnih nizov in podatkovnih virov.
+Odstrani natanko tisto, kar je zapisal pregled teh datumov, zato je mogoče obdobje nato
+ponovno pregledati in rezultate znova zgraditi.
+
+Zgodovina Timeliness in Schema Tracker se **ne** odstrani: ta beleži, kaj je digna opazila na
+določen dan, in ne rezultata, izpeljanega iz tega, zato čiščenje preteklega časovnega obdobja
+zgodovino pusti nedotaknjeno.
+
+Vsak podatkovni vir se počisti v lastni transakciji, zato prekinjen zagon pusti za seboj cele podatkovne vire
+in nikoli napol počiščenega.
+
+#### Uporaba ukaza
+```bash
+digna project cleanup <PROJECT_NAME> <FROM_DATE> <TO_DATE> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Projekt, ki naj se počisti (obvezno). En projekt na klic.
+- **FROM_DATE**: Prvi datum, za katerega naj se odstranijo rezultati, `YYYY-MM-DD` (obvezno).
+- **TO_DATE**: Zadnji datum, za katerega naj se odstranijo rezultati, vključno, `YYYY-MM-DD` (obvezno).
+
+#### Možnosti
+- `--table-name`, `-n`: Omeji čiščenje na te podatkovne vire. Navedete lahko več imen,
+  ločenih s presledki.
+- `--table-filter`: Omeji čiščenje na podatkovne vire, katerih ime vsebuje ta podniz.
+- `--dry-run`: Navede podatkovne vire, ki bi bili počiščeni, ne da bi kar koli odstranil.
+- `--timing`: Prikaže, koliko časa je trajalo čiščenje.
+
+`--table-name` in `--table-filter` se združita z logičnim ALI — podatkovni vir se počisti, če je naveden po imenu ali
+če se ujema podniz. Če se ne ujema noben podatkovni vir, ukaz ne uspe, namesto da bi sporočil
+uspeh čiščenja, ki ni storilo ničesar.
+
+#### Primer
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30
+```
+
+Omejeno na en podatkovni vir:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --table-name Table1
+```
+
+#### Primer izpisa
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1
+- Table2
+- Table3
+
+✅ Cleaned up 3 data source(s).
+```
+
+Za prikaz podatkovnih virov, ki bi bili počiščeni, brez odstranjevanja:
+```bash
+digna project cleanup ProjectA 2026-01-01 2026-06-30 --dry-run
+```
+
+Vsaka vrstica je označena, zato poskusnega zagona ni mogoče zamenjati s pravim:
+```text
+Cleaning up project 'ProjectA' from 2026-01-01 to 2026-06-30:
+- Table1 (dry run, nothing removed)
+- Table2 (dry run, nothing removed)
+- Table3 (dry run, nothing removed)
+
+Dry run - 3 data source(s) would be cleaned up.
+```
+
+---
+
+## Upravljanje pregledov
+
+---
+
+### inspection run
+
+Ukaz `inspection run` ustvari zahtevo za pregled za projekt in datumski razpon, nato pa — odvisno od navedenih možnosti — bodisi počaka nanjo, se takoj vrne ali jo izvede v lastnem procesu.
+
+Trije načini izvajanja so:
+
+- **Privzeti (brez zastavice)**: zahteva se uvrsti v čakalno vrsto za zaledje, CLI pa jo vsaki dve sekundi poizveduje in izpisuje napredek opravil, dokler pregled ne doseže končnega stanja. Potreben je zagnan `digna serve`, sicer zahteve ne prevzame nič.
+- **`--async-mode`**: zahteva se uvrsti v čakalno vrsto, njen ID pa se izpiše takoj. Za spremljanje uporabite [`inspection status`](#inspection-status).
+- **`--bypass-backend`**: pregled izvede sam proces CLI in se ne uvrsti v čakalno vrsto, zato zagnan strežnik ni potreben.
+
+`--async-mode` in `--bypass-backend` se medsebojno izključujeta.
+
+V vseh načinih se ukaz konča z izhodno kodo, različno od nič, če se pregled ni uspešno zaključil.
+
+#### Uporaba ukaza
+```bash
+digna inspection run <PROJECT_NAME> <START_DATE> <END_DATE> [OPTIONS]
+```
+
+#### Argumenti
+- **PROJECT_NAME**: Ime ciljnega projekta (obvezno). Ime se mora ujemati natanko.
+- **START_DATE**: Začetni datum razpona v obliki `YYYY-MM-DD` (obvezno).
+- **END_DATE**: Končni datum razpona v obliki `YYYY-MM-DD` (obvezno).
+
+#### Možnosti
+- `--table-name`: Omeji pregled na en sam podatkovni vir projekta, določen z imenom tega podatkovnega vira. Brez nje se pregledajo vsi podatkovni viri projekta.
+- `--async-mode`: Uvrsti pregled v čakalno vrsto in izpiše ID zahteve, namesto da bi čakal nanjo. Ni ga mogoče kombinirati z `--bypass-backend`.
+- `--bypass-backend`: Izvede pregled neposredno v procesu CLI, namesto da bi ga uvrstil v čakalno vrsto za zaledje. Ni ga mogoče kombinirati z `--async-mode`.
+
+#### Primer
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31
+```
+
+Za oddajo asinhronega pregleda:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --async-mode
+```
+
+Za pregled enega samega podatkovnega vira:
+```bash
+digna inspection run ProjectA 2024-01-01 2024-01-31 --table-name orders
+```
+
+#### Primer izpisa
+Privzeti način:
+```text
+Inspection request submitted. Waiting for completion (Request ID: 1024)...
+Progress: 3/10 tasks completed (0 failed)
+Progress: 10/10 tasks completed (0 failed)
+Inspection completed successfully.
+Inspection successful for project: ProjectA
+```
+
+Asinhroni način:
+```text
+Inspection request submitted successfully. Request ID: 1024
+```
+
+### inspection status
+
+Ukaz `inspection status` po ID-ju zahteve poizve o stanju in napredku opravil zahteve za pregled.
+
+#### Uporaba ukaza
+```bash
+digna inspection status <INSPECTION_REQUEST_ID>
+```
+
+#### Argumenti
+- **INSPECTION_REQUEST_ID**: Številčni ID zahteve za pregled (obvezno).
+
+#### Primer
+```bash
+digna inspection status 1024
+```
+
+#### Primer izpisa
+```text
+Inspection Request ID: 1024
+Status: Running
+Project ID: 7
+Date Range: 2024-01-01 to 2024-01-31
+Progress: 3/10 tasks completed (0 failed)
+```
+
+### inspection abort
+
+Ukaz `inspection abort` zahteva preklic pregledov, ki se izvajajo ali čakajo. Za vsako prizadeto zahtevo zabeleži dogodek ustavitve; nanj se odzove zaledje, zato je prekinitev prošnja za ustavitev in ne takojšnja prekinitev procesa.
+
+#### Uporaba ukaza
+```bash
+digna inspection abort [INSPECTION_REQUEST_ID] [OPTIONS]
+```
+
+#### Argumenti
+- **INSPECTION_REQUEST_ID**: ID zahteve za pregled, ki naj se prekine. Obvezen, razen če je naveden `--killall`.
+
+#### Možnosti
+- `--killall`: Prekine vse trenutno izvajane in čakajoče zahteve za pregled. Ima prednost pred ID-jem zahteve, navedenim skupaj z njim.
+
+#### Primer
+Za prekinitev določene zahteve:
+```bash
+digna inspection abort 1024
+```
+
+Za prekinitev vseh dejavnih in čakajočih pregledov:
+```bash
+digna inspection abort --killall
+```
+
+#### Primer izpisa
+`--killall` sporoči, kaj je storil; prekinitev ene same zahteve ne izpiše ničesar in o uspehu poroča z izhodno kodo.
+```text
+All running and pending inspections have been aborted.
+```
+
+---
+
+## Upravljanje licenc
+
+---
+
+### license check
+
+Ukaz `license check` preveri datoteko `license.toml`: njen podpis preveri z javnim ključem, priloženim namestitvi, in ugotovi, ali ni potekla. Ne bere nobene konfiguracije aplikacije, zato deluje tudi, preden je `config.toml` nastavljen.
+
+#### Uporaba ukaza
+```bash
+digna license check
+```
+
+#### Primer izpisa
+```text
+License is valid
+```
+
+Neveljaven podpis in potekla licenca sta sporočena kot ločeni napaki, obe z izhodno kodo 1.
+
+---
+
+## Strežnik in storitve v ozadju
+
+---
+
+### serve
+
+Ukaz `serve` zažene strežnik REST API ***digna*** skupaj z razporejevalnikom pregledov in upravljalnikom pregledov, ki tečeta v ozadju. Ob zagonu tudi označi kot neuspešen vsak pregled, ki ga repozitorij še vedno beleži kot izvajan, saj iz prejšnjega procesa ni moglo nič preživeti.
+
+Ukaz teče v ospredju, dokler ga ne ustavite.
+
+#### Uporaba ukaza
+```bash
+digna serve [OPTIONS]
+```
+
+#### Možnosti
+- `--address`: Omrežni naslov, na katerega naj se veže strežnik API (privzeto: `127.0.0.1`).
+- `--port`: Številka vrat, na katerih posluša (privzeto: `8000`).
+
+#### Primer
+```bash
+digna serve --address 0.0.0.0 --port 8000
+```
+
+#### Primer izpisa
+```text
+Server running on http://0.0.0.0:8000
+```
+
+---
+
+## Upravljanje storitve Windows
+
+Na voljo samo v sistemu Windows. Ukazi registrirajo zaledje ***digna*** v upravitelju storitev
+Windows in ga upravljajo; sama storitev v ozadju izvaja `serve`. Vsak ukaz je treba
+zagnati iz ukaznega poziva s skrbniškimi pravicami, in vsak sprejme `--name`, tako da je mogoče nasloviti tudi storitev,
+registrirano pod imenom, ki ni privzeto.
+
+---
+
+### windows install
+
+Ukaz `windows install` registrira ***digna*** kot storitev Windows.
+
+Naslov in vrata, navedena tukaj, se zabeležijo v registraciji storitve in nanje se storitev
+veže — ne preberejo se iz `config.toml`. Če ju želite pozneje spremeniti, storitev odstranite
+in jo znova namestite.
+
+#### Uporaba ukaza
+```bash
+digna windows install [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim naj se registrira storitev (privzeto: `digna`).
+- `--display-name`: Ime, prikazano v services.msc (privzeto: `digna`).
+- `--description`: Opis, prikazan v services.msc (privzeto: `digna data quality backend`).
+- `--address`: Naslov, na katerega storitev veže svoj API (privzeto: `127.0.0.1`).
+- `--port`: Vrata, na katera storitev veže svoj API (privzeto: `8000`).
+- `--working-dir`: Imenik z datotekama `config.toml` in `license.toml`, ki ga storitev uporabi
+  kot svoj delovni imenik (privzeto: imenik izvršljive datoteke `digna`).
+- `--start-type`: Kdaj se storitev zažene — `auto` skupaj z Windows, `manual` samo na zahtevo,
+  `disabled` registrirana, vendar se ne zažene (privzeto: `auto`).
+- `--account`: Račun, pod katerim teče, npr. `DOMAIN\user` ali `.\user` (privzeto: `LocalSystem`).
+- `--password`: Geslo računa `--account`.
+
+#### Primer
+```bash
+digna windows install --address 0.0.0.0 --port 8082
+```
+
+Registracija pod drugim imenom, z izvajanjem pod domenskim računom:
+```bash
+digna windows install --name digna-test --display-name "digna (test)" --account DOMAIN\svc_digna --password <password>
+```
+
+---
+
+### windows start
+
+Ukaz `windows start` zažene registrirano storitev.
+
+#### Uporaba ukaza
+```bash
+digna windows start [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim je storitev registrirana (privzeto: `digna`).
+
+---
+
+### windows stop
+
+Ukaz `windows stop` ustavi delujočo storitev. Preden zamenjate katero koli
+datoteko aplikacije, storitev ustavite.
+
+#### Uporaba ukaza
+```bash
+digna windows stop [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim je storitev registrirana (privzeto: `digna`).
+
+---
+
+### windows uninstall
+
+Ukaz `windows uninstall` odjavi storitev. Najprej jo ustavite.
+
+#### Uporaba ukaza
+```bash
+digna windows uninstall [OPTIONS]
+```
+
+#### Možnosti
+- `--name`: Ime, pod katerim je storitev registrirana (privzeto: `digna`).
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/sl/cli/Command_Line_Interface_202611/
+
+# Referenca CLI digna 2026.11
+**2026-10-27**
+
+Ta stran dokumentira celoten nabor ukazov, ki so na voljo v izdaji **2026.11** vmesnika CLI ***digna***, vključno s primeri uporabe in možnostmi.
+
+Izvršljiva datoteka se imenuje `digna`.
+
+---
+
+## Osnove CLI
+
+---
+
+### Pregled in sintaksa
+
+CLI izdaje **2026.11** uporablja strukturirano hierarhijo ukazov, urejeno po kategorijah:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND_CATEGORY> <SUBCOMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+`version` in `serve` sta samostojna ukaza brez podukaza:
+
+```bash
+digna [GLOBAL_OPTIONS] <COMMAND> [OPTIONS] [ARGUMENTS]
+```
+
+### Globalne možnosti
+
+Naslednje globalne možnosti veljajo za vse ukaze:
+
+- `--help`, `-h`: Prikaže pomoč za CLI ali za določeno kategorijo ukazov oziroma podukaz.
+- `--stacktrace`: Ob napaki prikaže celotno verigo napak namesto zgolj sporočila najvišje ravni.
+
+`--stacktrace` je globalna možnost v strogem pomenu besede: navesti jo je treba **pred** kategorijo ukaza, ne za njo.
+
+```bash
+digna --stacktrace repo check     # correct
+digna repo check --stacktrace     # rejected: unknown argument
+```
+
+Zastavice `--version` ni. Namesto nje uporabite ukaz [`version`](#version).
+
+### Predpogoji
+
+Večina ukazov potrebuje berljivo in veljavno datoteko `config.toml`; nekateri poleg tega zahtevajo veljavno licenco.
+Naslednja tabela beleži, kaj vsaka kategorija ukazov naloži, preden sploh kaj stori:
+
+| Kategorija ukazov | Potrebuje `config.toml` | Potrebuje veljavno licenco |
+|---|---|---|
+| `version` | ne | ne |
+| `config check` | ne (prav o tem ukaz poroča) | ne |
+| `license check` | ne | to *je* preverjanje |
+| `crypt` | da | ne |
+| `serve` | da | ne |
+| `windows` | ne (storitev jo prebere ob zagonu) | ne |
+| `project` | da | ne |
+| `user` | da | da |
+| `inspection` | da | da |
+| `repo` | da | da |
+
+Kjer je licenca zahtevana, se preverita tako njen podpis kot datum poteka, in če katero koli od tega ne uspe, se ukaz prekine, še preden se dotakne repozitorija.
+
+### Izhodne kode
+
+- `0`: ukaz je uspel.
+- `1`: ukaz ni uspel. Sporočilo o napaki se izpiše na stderr s predpono `Error: `.
+
+### help
+
+Možnost `--help` ponuja informacije o razpoložljivih kategorijah ukazov, podukazih in možnostih:
+
+1. **Prikaz splošne pomoči:**
+   ```bash
+   digna --help
+   ```
+
+2. **Pridobivanje pomoči za določene kategorije in ukaze:**
+   ```bash
+   digna user --help
+   digna user add --help
+   ```
+
+   **Izpis vključuje:**
+   - **Opis ukaza:** Povzetek namena ukaza.
+   - **Sintakso:** Obvezne in neobvezne argumente.
+   - **Možnosti:** Zastavice in parametre, značilne za ukaz.
+
+### version
+
+Ukaz `version` izpiše nameščeno izdajo ***digna***. Ne bere nobene konfiguracije in ne preverja licence, zato deluje tudi v namestitvi, v kateri datoteka `config.toml` ali licenca manjka oziroma je neveljavna.
+
+Različica izdaje je neodvisna od različice sheme repozitorija, ki jo javi [`repo check`](#repo-check).
+
+#### Uporaba ukaza
+```bash
+digna version
+```
+
+#### Primer izpisa
+```text
+2026.11
 ```
 
 ---
@@ -12854,6 +13896,280 @@ Ta stran dokumentira samodejno ustvarjeni odjemalčev API za SDK Python ***digna
 Source: https://docs.digna.ai/sl/sdk/Release%202026.06/resources/
 
 # Viri SDK Python digna 2026.06
+
+Ta stran dokumentira odjemalce virov, ki jih ponuja SDK Python ***digna***. Vsak vir ovije ustrezne končne točke stabilnega API v enoten, pythonovski vmesnik s predvidljivimi imeni metod.
+
+`DignaClient` za vsako področje API ponuja en objekt vira. Vsak vir ovije
+ustrezne končne točke stabilnega API s pythonovskimi imeni metod.
+
+| Vir | Atribut | Končne točke |
+|---|---|---|
+| [`ProjectsResource`][digna_sdk.resources.projects.ProjectsResource] | `client.projects` | `/v1/projects` |
+| [`DataSourcesResource`][digna_sdk.resources.data_sources.DataSourcesResource] | `client.data_sources` | `/v1/data-sources` |
+| [`DataSetsResource`][digna_sdk.resources.data_sets.DataSetsResource] | `client.data_sets` | `/v1/data-sets` |
+| [`AttributesResource`][digna_sdk.resources.attributes.AttributesResource] | `client.attributes` | `/v1/attributes` |
+| [`CheckDefinitionsResource`][digna_sdk.resources.check_definitions.CheckDefinitionsResource] | `client.check_definitions` | `/v1/check-definitions` |
+| [`DbConnectionsResource`][digna_sdk.resources.db_connections.DbConnectionsResource] | `client.db_connections` | `/v1/db-connections` |
+| [`InspectionRequestsResource`][digna_sdk.resources.inspection_requests.InspectionRequestsResource] | `client.inspection_requests` | `/v1/inspection-requests` |
+| [`InspectionStatusesResource`][digna_sdk.resources.inspection_statuses.InspectionStatusesResource] | `client.inspection_statuses` | `/v1/inspection-statuses/*` |
+
+::: digna_sdk.resources.projects.ProjectsResource
+
+::: digna_sdk.resources.data_sources.DataSourcesResource
+
+::: digna_sdk.resources.data_sets.DataSetsResource
+
+::: digna_sdk.resources.attributes.AttributesResource
+
+::: digna_sdk.resources.check_definitions.CheckDefinitionsResource
+
+::: digna_sdk.resources.db_connections.DbConnectionsResource
+
+::: digna_sdk.resources.inspection_requests.InspectionRequestsResource
+
+::: digna_sdk.resources.inspection_statuses.InspectionStatusesResource
+
+---
+
+# Overview
+Source: https://docs.digna.ai/sl/sdk/Release%202026.11/
+
+# Referenca SDK Python digna 2026.11
+
+Ta razdelek dokumentira SDK Python za ***digna***. Urejen je kot večstranska referenca: ta pregled pomaga razumeti odjemalca, nato pa nadaljujte na posebnih straneh o hitrem začetku, virih, modelih, napakah in samodejno ustvarjeni dokumentaciji API.
+
+SDK je objavljen kot paket `digna-sdk` in ponuja stabilnega, verzioniranega odjemalca za REST API ***digna***.
+
+---
+
+## Osnove SDK
+
+---
+
+### Pregled
+
+SDK temelji na zasnovi odjemalca, usmerjeni v vire. Vsako področje API je na vrhnjem objektu `DignaClient` na voljo kot samostojen odjemalec, s tipiziranimi modeli zahtev in odzivov ter enotnim obravnavanjem napak.
+
+```python
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="https://your-digna-instance",
+    token="...",
+)
+```
+
+### Ključne zmogljivosti
+
+- **Tipizirani modeli** — vsaka zahteva in vsak odziv sta preverjena s pydantic, zato urejevalnik in preverjevalnik tipov napake odkrijeta še pred omrežnim klicem.
+- **Usmerjenost v vire** — `client.projects`, `client.data_sources`, `client.data_sets`, `client.attributes`, `client.check_definitions`, `client.db_connections`, `client.inspection_requests` in `client.inspection_statuses` ponujajo preproste metode `list` / `get` / `create` / `update` / `delete`.
+- **Jasne napake** — napake API sprožijo `DignaAPIError` (ali natančnejši podrazred, na primer `DignaAuthenticationError`, `DignaAuthorizationError` ali `DignaNotFoundError`), namesto da bi tiho vrnile `None`.
+
+### Namestitev
+
+```bash
+pip install digna-sdk
+```
+
+---
+
+## Referenčne strani
+
+Ta izdaja je razdeljena na naslednje strani:
+
+- [Hitri začetek](quickstart.md) — povezava in prvi klici.
+- [Viri](resources.md) — celoten seznam razpoložljivih odjemalcev virov.
+- [Modeli](models.md) — modeli pydantic, uporabljeni za vhod in izhod.
+- [Napake](errors.md) — hierarhija izjem.
+- [Referenca API](reference.md) — samodejno ustvarjena referenčna dokumentacija.
+
+---
+
+# Errors
+Source: https://docs.digna.ai/sl/sdk/Release%202026.11/errors/
+
+# Napake SDK Python digna 2026.11
+
+Ta stran dokumentira hierarhijo izjem, ki jo ponuja SDK Python ***digna***. Te napake zajemajo neuspele klice API, težave s preverjanjem pristnosti in pooblastili ter primere, ko vir ni najden.
+
+Vse napake, ki jih sproži SDK, izhajajo iz `DignaError`.
+
+::: digna_sdk.exceptions
+
+---
+
+# Models
+Source: https://docs.digna.ai/sl/sdk/Release%202026.11/models/
+
+# Modeli SDK Python digna 2026.11
+
+Ta stran dokumentira glavne modele zahtev in odzivov, ki jih uporablja SDK Python ***digna***. Vse vsebine so predstavljene kot modeli [pydantic](https://docs.pydantic.dev/), uvoženi iz `digna_sdk.models`.
+
+::: digna_sdk.models
+    options:
+      members:
+        - NamedRef
+        - DatasetRef
+        - StatisticRef
+        - InspectionMetric
+        - Project
+        - DbConnection
+        - DataSourceModules
+        - DataSourceObject
+        - DataSource
+        - DataSet
+        - AttributeCheckDefinition
+        - Attribute
+        - CheckDefinition
+        - InspectionRequestStatus
+        - SubmittedInspectionRequest
+        - DatasetInspectionStatus
+        - DataSourceInspectionStatus
+        - ProjectInspectionStatus
+
+---
+
+# Quickstart
+Source: https://docs.digna.ai/sl/sdk/Release%202026.11/quickstart/
+
+# Hitri začetek SDK Python digna 2026.11
+
+Ta stran prikazuje najmanjšo potrebno nastavitev in osrednje delovne tokove odjemalca za SDK Python ***digna***. Uporabite jo kot izhodišče, preden nadaljujete na referenčne strani o virih, modelih in napakah.
+
+## Ustvarjanje ključa API
+
+Preden se povežete s SDK, v vmesniku ***digna*** ustvarite ključ API:
+
+1. Prijavite se v ***digna*** v vmesniku.
+2. V spodnjem levem kotu odprite svoj uporabniški profil.
+3. V uporabniškem profilu kliknite **API Keys**.
+4. Kliknite **Add API Key**.
+5. Vnesite razumljivo ime in nastavite datum poteka. Ključ API lahko kadar koli prekličete ali izbrišete.
+6. Prikazani ključ API kopirajte v odložišče. Ključ je prikazan samo ob ustvarjanju.
+
+Ključ API uporabite kot žeton SDK. Primerni načini, kako ga posredovati aplikaciji:
+
+- Spremenljivka okolja, na primer `DIGNA_API_KEY`, za lokalni razvoj in avtomatizacijo.
+- Shramba skrivnosti vašega CI/CD, na primer skrivnosti GitHub Actions, spremenljivke CI/CD v GitLabu ali skrite spremenljivke v Azure DevOps.
+- Upravitelj skrivnosti med izvajanjem, na primer skrivnosti Kubernetes, skrivnosti Docker, HashiCorp Vault ali shramba skrivnosti ponudnika oblaka.
+
+Ključev API ne vpisujte neposredno v izvorno kodo, beležnice, zgodovino lupine ali konfiguracijske datoteke, ki so v sistemu za upravljanje različic.
+
+## Povezovanje
+
+```python
+import os
+
+from digna_sdk import DignaClient
+
+client = DignaClient(
+    base_url="http://localhost:8000",  # your on-premises Digna backend
+    token=os.environ["DIGNA_API_KEY"],
+)
+```
+
+Uporabite `DignaClient` kot upravitelja konteksta, da se osnovni
+nabor povezav samodejno zapre:
+
+```python
+with DignaClient(base_url="http://localhost:8000", token="<token>") as client:
+    projects = client.projects.list()
+```
+
+## Izpis projektov
+
+```python
+for project in client.projects.list():
+    print(project.id, project.name)
+```
+
+## Ustvarjanje vira podatkov
+
+```python
+from digna_sdk.models import (
+    DataSourceModules,
+    DataSourceObject,
+    StableDataSourceKind,
+    StableDataSourceQueryMode,
+)
+
+data_source = client.data_sources.create(
+    project_id=1,
+    db_connection_id=10,
+    name="orders_table",
+    kind=StableDataSourceKind.TABLE,
+    query_mode=StableDataSourceQueryMode.SINGLE,
+    object=DataSourceObject(catalog_name="prod", schema_name="public", table_name="orders"),
+    modules=DataSourceModules(
+        data_analytics=True,
+        data_anomaly=True,
+        data_validation=True,
+        schema_tracker=False,
+        timeliness=False,
+    ),
+)
+```
+
+## Oddaja zahteve za pregled in čakanje na zaključek
+
+```python
+import datetime
+from digna_sdk import DignaInspectionRequestFailed
+from digna_sdk.models import StableInspectionRequestMode
+
+request = client.inspection_requests.submit(
+    project_id=1,
+    data_source_ids=[data_source.id],
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+    mode=StableInspectionRequestMode.DAILY,
+)
+
+try:
+    client.inspection_requests.wait_until_finished(request.id, poll_interval=2.0, timeout=300.0)
+except DignaInspectionRequestFailed as exc:
+    print(f"Inspection failed: {exc.status.value}")
+
+# Once finished, retrieve the resulting statuses.
+statuses = client.inspection_statuses.for_data_sources(
+    data_source_id=data_source.id,
+    start_date=datetime.date(2026, 1, 1),
+    end_date=datetime.date(2026, 1, 31),
+)
+```
+
+Celoten potek oddaja → poizvedovanje → prevzem je prikazan v datoteki `examples/inspection_flow.py` v repozitoriju.
+
+## Obravnavanje napak
+
+```python
+from digna_sdk import DignaAPIError, DignaNotFoundError
+
+try:
+    client.projects.get(999)
+except DignaNotFoundError:
+    print("no such project")
+except DignaAPIError as exc:
+    print(f"API error {exc.status_code}: {exc.message}")
+```
+
+---
+
+# API Reference
+Source: https://docs.digna.ai/sl/sdk/Release%202026.11/reference/
+
+# Referenca odjemalca SDK Python digna 2026.11
+
+Ta stran dokumentira samodejno ustvarjeni odjemalčev API za SDK Python ***digna***. `DignaClient` je glavna vstopna točka za operacije nad viri, ki jih ponuja SDK.
+
+::: digna_sdk.client.DignaClient
+
+---
+
+# Resources
+Source: https://docs.digna.ai/sl/sdk/Release%202026.11/resources/
+
+# Viri SDK Python digna 2026.11
 
 Ta stran dokumentira odjemalce virov, ki jih ponuja SDK Python ***digna***. Vsak vir ovije ustrezne končne točke stabilnega API v enoten, pythonovski vmesnik s predvidljivimi imeni metod.
 

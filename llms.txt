@@ -101,6 +101,7 @@
 
 ## CLI Reference
 
+- [Release 2026.11](https://docs.digna.ai/cli/Command_Line_Interface_202611/): Complete reference for digna CLI release 2026.11
 - [Release 2026.06](https://docs.digna.ai/cli/Command_Line_Interface_202606/): Complete reference for digna CLI release 2026.06
 - [Release 2026.04](https://docs.digna.ai/cli/Command_Line_Interface_202604/): Complete reference for digna CLI release 2026.04
 - [Release 2026.01](https://docs.digna.ai/cli/Command_Line_Interface_202601/): Complete reference for digna CLI release 2026.01 Learn how to manage users, repositories, and data with commands such as add-user, check-config, check-repo-connection, inspect, inspect-async, and more.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
 ## SDK Reference
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/sdk/Release%202026.11/): Complete reference for digna Python SDK release 2026.11
+- [Quickstart](https://docs.digna.ai/sdk/Release%202026.11/quickstart/): Quickstart guide for the digna Python SDK release 2026.11
+- [Resources](https://docs.digna.ai/sdk/Release%202026.11/resources/): Resource clients for the digna Python SDK release 2026.11
+- [Models](https://docs.digna.ai/sdk/Release%202026.11/models/): Data models for the digna Python SDK release 2026.11
+- [Errors](https://docs.digna.ai/sdk/Release%202026.11/errors/): Error hierarchy for the digna Python SDK release 2026.11
+- [API Reference](https://docs.digna.ai/sdk/Release%202026.11/reference/): Client API reference for the digna Python SDK release 2026.11
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/changelog/Release_202611/): Learn what's new in digna Release 2026.11. This version introduces three major additions - digna Data Reconciliation (Beta), digna Agentic (Beta) with the digna MCP Server, and the digna Engine, which enables referential integrity checks between different database technologies.
 - [Release 2026.06](https://docs.digna.ai/changelog/Release_202606/): Learn what’s new in digna Release 2026.06. This version introduces the new digna Python SDK, Docker deployment support, a redesigned dashboard experience, and extended import/export capabilities for data validation rules.
 - [Release 2026.04](https://docs.digna.ai/changelog/Release_202604/): Learn what’s new in digna Release 2026.04. This version introduces advanced time-series analysis with Analytics Chart, reusable validation rule templates, enumerations for allowed values, and column-level relevance conditions.
 - [Release 2026.01](https://docs.digna.ai/changelog/Release_202601/): Learn what’s new in digna Release 2026.01. This version introduces global database connections, logical datasources, anomaly relevance conditions, CSV exports, and advanced data validation including referential integrity checks.

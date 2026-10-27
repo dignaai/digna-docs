@@ -101,6 +101,7 @@
 
 ## Referință CLI
 
+- [Release 2026.11](https://docs.digna.ai/ro/cli/Command_Line_Interface_202611/): Referință completă pentru versiunea 2026.11 a CLI digna
 - [Release 2026.06](https://docs.digna.ai/ro/cli/Command_Line_Interface_202606/): Referință completă pentru versiunea 2026.06 a CLI digna
 - [Release 2026.04](https://docs.digna.ai/ro/cli/Command_Line_Interface_202604/): Referință completă pentru digna CLI versiunea 2026.04
 - [Release 2026.01](https://docs.digna.ai/ro/cli/Command_Line_Interface_202601/): Referință completă pentru digna CLI release 2026.01. Aflați cum să gestionați utilizatori, repository-uri și date cu comenzi precum add-user, check-config, check-repo-connection, inspect, inspect-async și altele.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/ro/cli/Command_Line_Interface_202409/): Referință completă pentru digna CLI release 2024.09. Aflați cum să gestionați utilizatorii, repository-urile și datele cu comenzi precum add-user, check-repo-connection, upgrade-repo, inspect, tls-status și altele.
 
 ## Referință SDK
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/ro/sdk/Release%202026.11/): Referință completă pentru versiunea 2026.11 a SDK-ului Python digna
+- [Quickstart](https://docs.digna.ai/ro/sdk/Release%202026.11/quickstart/): Ghid de pornire rapidă pentru versiunea 2026.11 a SDK-ului Python digna
+- [Resources](https://docs.digna.ai/ro/sdk/Release%202026.11/resources/): Clienți de resurse pentru versiunea 2026.11 a SDK-ului Python digna
+- [Models](https://docs.digna.ai/ro/sdk/Release%202026.11/models/): Modele de date pentru versiunea 2026.11 a SDK-ului Python digna
+- [Errors](https://docs.digna.ai/ro/sdk/Release%202026.11/errors/): Ierarhia erorilor pentru versiunea 2026.11 a SDK-ului Python digna
+- [API Reference](https://docs.digna.ai/ro/sdk/Release%202026.11/reference/): Referință API client pentru versiunea 2026.11 a SDK-ului Python digna
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/ro/changelog/Release_202611/): Aflați noutățile din digna Release 2026.11. Această versiune introduce trei adăugiri majore - digna Data Reconciliation (Beta), digna Agentic (Beta) cu digna MCP Server și digna Engine, care permite verificări de integritate referențială între tehnologii de baze de date diferite.
 - [Release 2026.06](https://docs.digna.ai/ro/changelog/Release_202606/): Afla noutățile din digna Release 2026.06. Această versiune introduce noul **digna Python SDK**, suport oficial pentru **Docker deployment**, o experiență de dashboard reproiectată și capabilități extinse de import/export pentru regulile de validare a datelor.
 - [Release 2026.04](https://docs.digna.ai/ro/changelog/Release_202604/): Află noutățile din digna Versiunea 2026.04. Această versiune introduce analiză avansată de serii temporale cu Analytics Chart, șabloane reutilizabile pentru reguli de validare, enumerations pentru valori permise și condiții de relevanță la nivel de coloană.
 - [Release 2026.01](https://docs.digna.ai/ro/changelog/Release_202601/): Află noutățile din digna Release 2026.01. Această versiune introduce conexiuni globale la baze de date, surse de date logice, condiții de relevanță pentru anomalii, exporturi CSV și validare avansată a datelor, inclusiv verificări de integritate referențială.

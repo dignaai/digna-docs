@@ -101,6 +101,7 @@
 
 ## CLI atsauce
 
+- [Release 2026.11](https://docs.digna.ai/lv/cli/Command_Line_Interface_202611/): Pilnīga digna CLI 2026.11 laidiena rokasgrāmata
 - [Release 2026.06](https://docs.digna.ai/lv/cli/Command_Line_Interface_202606/): Pilnīga digna CLI 2026.06 laidiena rokasgrāmata
 - [Release 2026.04](https://docs.digna.ai/lv/cli/Command_Line_Interface_202604/): Pilna atsauce par digna CLI laidienu 2026.04
 - [Release 2026.01](https://docs.digna.ai/lv/cli/Command_Line_Interface_202601/): Pilna atsauce par digna CLI izlaidumu 2026.01. Uzziniet, kā pārvaldīt lietotājus, repozitorijus un datus ar komandām, piemēram, add-user, check-config, check-repo-connection, inspect, inspect-async un citām.
@@ -111,6 +112,15 @@
 - [Release 2024.09](https://docs.digna.ai/lv/cli/Command_Line_Interface_202409/): Complete reference for digna CLI release 2024.09. Learn how to manage users, repositories, and data with commands such as add-user, check-repo-connection, upgrade-repo, inspect, tls-status, and more.
 
 ## SDK atsauce
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/lv/sdk/Release%202026.11/): Pilnīga digna Python SDK 2026.11 laidiena rokasgrāmata
+- [Quickstart](https://docs.digna.ai/lv/sdk/Release%202026.11/quickstart/): Ātrā sākuma rokasgrāmata digna Python SDK 2026.11 laidienam
+- [Resources](https://docs.digna.ai/lv/sdk/Release%202026.11/resources/): Resursu klienti digna Python SDK 2026.11 laidienam
+- [Models](https://docs.digna.ai/lv/sdk/Release%202026.11/models/): Datu modeļi digna Python SDK 2026.11 laidienam
+- [Errors](https://docs.digna.ai/lv/sdk/Release%202026.11/errors/): Kļūdu hierarhija digna Python SDK 2026.11 laidienam
+- [API Reference](https://docs.digna.ai/lv/sdk/Release%202026.11/reference/): Klienta API rokasgrāmata digna Python SDK 2026.11 laidienam
 
 ### Release 2026.06
 
@@ -123,6 +133,7 @@
 
 ## Changelog
 
+- [Release 2026.11](https://docs.digna.ai/lv/changelog/Release_202611/): Uzziniet, kas jauns digna izlaidumā 2026.11. Šī versija ievieš trīs lielus papildinājumus - digna Data Reconciliation (Beta), digna Agentic (Beta) ar digna MCP Server un digna Engine, kas ļauj veikt referenciālās integritātes pārbaudes starp dažādām datu bāzu tehnoloģijām.
 - [Release 2026.06](https://docs.digna.ai/lv/changelog/Release_202606/): Uzziniet, kas jauns digna izlaidumā 2026.06. Šī versija ievieš jauno digna Python SDK, Docker izvietošanas atbalstu, pārdizainētu informācijas paneļa pieredzi un paplašinātas importēšanas/eksportēšanas iespējas datu validācijas noteikumiem.
 - [Release 2026.04](https://docs.digna.ai/lv/changelog/Release_202604/): Uzziniet, kas jauns digna izlaidumā 2026.04. Šajā versijā ir pievienota uzlabota laika rindu analīze ar Analytics Chart, atkārtoti izmantojami validācijas noteikumu veidnes, enumerācijas atļautajām vērtībām un kolonnu līmeņa relevances nosacījumi.
 - [Release 2026.01](https://docs.digna.ai/lv/changelog/Release_202601/): Uzziniet, kas jauns digna izlaidumā 2026.01. Šī versija ievieš globālas datubāzu savienojumu konfigurācijas, loģiskos datu avotus, anomāliju nozīmības nosacījumu, CSV eksportus un uzlabotu datu validāciju, ieskaitot referenciālās integritātes pārbaudes.
