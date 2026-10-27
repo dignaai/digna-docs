@@ -6,11 +6,13 @@ Release 2026.11 is built around three major additions:
 - **digna Agentic**: opens digna to AI agents through the digna MCP Server  
 - **digna Engine**: optionally profiles data inside digna, and enables referential integrity checks between different database technologies  
 
+digna Data Reconciliation and digna Agentic are delivered as beta versions.
+
 ---
 
 ## New Features  
 
-### digna Data Reconciliation (Beta) – Source-to-Target Consistency  
+### digna Data Reconciliation – Source-to-Target Consistency  
 Data often passes through several systems before it reaches a report. digna Data Reconciliation compares a **target** data source with the **sources** it was built from, and alerts when they no longer match.
 
 - Configured as named rules on the new **Data Reconciliation** tab of the target data source  
@@ -39,7 +41,7 @@ Reconciliation checks appear on the Dashboard with a timeline per rule. They cou
 
 ---
 
-### digna Agentic (Beta) – digna for AI Agents  
+### digna Agentic – digna for AI Agents  
 The first version of digna Agentic. AI agents can now work with digna, answer business questions about your data, and help improve your configuration.
 
 **digna MCP Server**: Lets Claude and other AI agents work with digna through the Model Context Protocol.
