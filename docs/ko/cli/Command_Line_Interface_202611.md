@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 이 페이지는 ***digna*** CLI 릴리스 **2026.11**에서 사용할 수 있는 전체 명령을 사용 예시와 옵션과 함께 설명합니다.
 
+digna Data Reconciliation과 digna Agentic은 베타 버전으로 제공됩니다.
+
 실행 파일의 이름은 `digna`입니다.
 
 ---

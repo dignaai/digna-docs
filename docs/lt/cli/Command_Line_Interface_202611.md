@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Šiame puslapyje aprašomas visas komandų rinkinys, prieinamas ***digna*** CLI **2026.11** laidoje, kartu su naudojimo pavyzdžiais ir parinktimis.
 
+digna Data Reconciliation ir digna Agentic pateikiami kaip beta versijos.
+
 Vykdomasis failas vadinasi `digna`.
 
 ---

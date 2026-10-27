@@ -10,6 +10,8 @@ Tämä osio dokumentoi ***digna***-palvelun Python SDK:n. Se on jäsennetty moni
 
 SDK julkaistaan pakettina `digna-sdk`, ja se tarjoaa vakaan, versioidun asiakasohjelman ***digna***-palvelun REST-rajapintaan.
 
+digna Data Reconciliation ja digna Agentic toimitetaan beetaversioina.
+
 ---
 
 ## SDK:n perusteet

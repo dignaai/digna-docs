@@ -13,11 +13,13 @@ Väljalase 2026.11 keskendub kolmele suurele lisandusele:
 - **digna Agentic**: avab digna AI-agentidele digna MCP Serveri kaudu  
 - **digna Engine**: profileerib soovi korral andmeid digna sees ja võimaldab viiteterviklikkuse kontrolle eri andmebaasitehnoloogiate vahel  
 
+digna Data Reconciliation ja digna Agentic tarnitakse beetaversioonidena.
+
 ---
 
 ## Uued funktsioonid  
 
-### digna Data Reconciliation (Beta) – allika ja sihi kooskõla  
+### digna Data Reconciliation – allika ja sihi kooskõla  
 Enne aruandesse jõudmist läbivad andmed sageli mitu süsteemi. digna Data Reconciliation võrdleb **siht**-andmeallikat **allikatega**, millest see on koostatud, ja annab märku, kui need enam ei klapi.
 
 - Seadistatakse nimeliste reeglitena siht-andmeallika uuel vahekaardil **Data Reconciliation**  
@@ -46,7 +48,7 @@ Kooskõlastuskontrollid kuvatakse dashboardil, iga reegli kohta oma ajajoonega. 
 
 ---
 
-### digna Agentic (Beta) – digna AI-agentidele  
+### digna Agentic – digna AI-agentidele  
 digna Agentic esimene versioon. AI-agendid saavad nüüd dignaga töötada, vastata äriküsimustele teie andmete kohta ja aidata teie konfiguratsiooni parandada.
 
 **digna MCP Server**: võimaldab Claude'il ja teistel AI-agentidel dignaga töötada Model Context Protocoli kaudu.

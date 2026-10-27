@@ -10,6 +10,8 @@ image: /assets/logo_square.png
 
 تُنشر الحزمة باسم `digna-sdk` وتوفّر عميلًا مستقرًا ومُصدَّرًا بإصدارات لواجهة REST الخاصة بـ ***digna***.
 
+يتم تقديم digna Data Reconciliation وdigna Agentic كإصدارات تجريبية (بيتا).
+
 ---
 
 ## أساسيات حزمة التطوير

@@ -10,6 +10,8 @@ Esta seção documenta o SDK Python do ***digna***. Ela está organizada como um
 
 O SDK é publicado como o pacote `digna-sdk` e expõe um cliente estável e versionado para a API REST do ***digna***.
 
+digna Data Reconciliation e digna Agentic são entregues em versão beta.
+
 ---
 
 ## Noções Básicas do SDK

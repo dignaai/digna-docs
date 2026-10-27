@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Ez az oldal a ***digna*** CLI **2026.11** kiadásában elérhető parancsok teljes körét dokumentálja, használati példákkal és beállításokkal együtt.
 
+A digna Data Reconciliation és a digna Agentic béta verzióként érhető el.
+
 A futtatható állomány neve `digna`.
 
 ---

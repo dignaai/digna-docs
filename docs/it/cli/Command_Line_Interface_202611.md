@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Questa pagina documenta l'insieme completo dei comandi disponibili nella versione **2026.11** della CLI di ***digna***, inclusi esempi d'uso e opzioni.
 
+digna Data Reconciliation e digna Agentic sono rilasciati in versione beta.
+
 L'eseguibile si chiama `digna`.
 
 ---

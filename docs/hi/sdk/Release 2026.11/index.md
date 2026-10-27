@@ -10,6 +10,8 @@ image: /assets/logo_square.png
 
 SDK को `digna-sdk` पैकेज के रूप में प्रकाशित किया जाता है और यह ***digna*** REST API के लिए एक स्थिर, संस्करणित क्लाइंट उपलब्ध कराता है।
 
+digna Data Reconciliation और digna Agentic बीटा संस्करण के रूप में उपलब्ध कराए गए हैं।
+
 ---
 
 ## SDK की मूल बातें

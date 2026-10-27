@@ -13,11 +13,13 @@ Release 2026.11 stojí na třech zásadních novinkách:
 - **digna Agentic**: otevírá digna AI agentům prostřednictvím digna MCP Server  
 - **digna Engine**: volitelně profiluje data přímo v digna a umožňuje kontroly referenční integrity mezi různými databázovými technologiemi  
 
+digna Data Reconciliation a digna Agentic jsou dodávány jako beta verze.
+
 ---
 
 ## Nové funkce  
 
-### digna Data Reconciliation (Beta) – Konzistence od zdroje k cíli  
+### digna Data Reconciliation – Konzistence od zdroje k cíli  
 Než se data dostanou do reportu, často projdou několika systémy. digna Data Reconciliation porovnává **cílový** datový zdroj se **zdroji**, ze kterých vznikl, a upozorní, když spolu přestanou souhlasit.
 
 - Konfiguruje se jako pojmenovaná pravidla na nové záložce **Data Reconciliation** cílového datového zdroje  
@@ -46,7 +48,7 @@ Rekonciliační kontroly se zobrazují na dashboardu s časovou osou pro každé
 
 ---
 
-### digna Agentic (Beta) – digna pro AI agenty  
+### digna Agentic – digna pro AI agenty  
 První verze digna Agentic. AI agenti nyní mohou s digna pracovat, odpovídat na obchodní otázky o vašich datech a pomáhat vylepšovat vaši konfiguraci.
 
 **digna MCP Server**: umožňuje Claude a dalším AI agentům pracovat s digna prostřednictvím Model Context Protocol.

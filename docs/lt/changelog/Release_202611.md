@@ -13,11 +13,13 @@ Leidimas 2026.11 sukurtas aplink tris svarbius papildymus:
 - **digna Agentic**: atveria digna AI agentams per digna MCP Server  
 - **digna Engine**: pasirinktinai profiliuoja duomenis pačioje digna ir leidžia tikrinti nuorodinį vientisumą tarp skirtingų duomenų bazių technologijų  
 
+digna Data Reconciliation ir digna Agentic pateikiami kaip beta versijos.
+
 ---
 
 ## Naujos funkcijos  
 
-### digna Data Reconciliation (Beta) – Šaltinio ir tikslo nuoseklumas  
+### digna Data Reconciliation – Šaltinio ir tikslo nuoseklumas  
 Prieš pasiekdami ataskaitą, duomenys dažnai pereina per kelias sistemas. digna Data Reconciliation palygina **tikslinį** duomenų šaltinį su **šaltiniais**, iš kurių jis buvo sukurtas, ir įspėja, kai jie nebesutampa.
 
 - Konfigūruojama kaip pavadintos taisyklės naujame tikslinio duomenų šaltinio skirtuke **Data Reconciliation**  
@@ -46,7 +48,7 @@ Suderinimo patikros rodomos dashboard su atskira laiko juosta kiekvienai taisykl
 
 ---
 
-### digna Agentic (Beta) – digna AI agentams  
+### digna Agentic – digna AI agentams  
 Pirmoji digna Agentic versija. AI agentai dabar gali dirbti su digna, atsakyti į verslo klausimus apie jūsų duomenis ir padėti patobulinti jūsų konfigūraciją.
 
 **digna MCP Server**: leidžia Claude ir kitiems AI agentams dirbti su digna per Model Context Protocol.

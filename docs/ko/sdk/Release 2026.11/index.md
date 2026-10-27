@@ -10,6 +10,8 @@ image: /assets/logo_square.png
 
 SDK는 `digna-sdk` 패키지로 배포되며 ***digna*** REST API를 위한 안정적인 버전 관리 클라이언트를 제공합니다.
 
+digna Data Reconciliation과 digna Agentic은 베타 버전으로 제공됩니다.
+
 ---
 
 ## SDK 기본 사항

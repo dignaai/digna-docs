@@ -10,6 +10,8 @@ Det här avsnittet dokumenterar Python-SDK:t för ***digna***. Det är upplagt s
 
 SDK:t publiceras som paketet `digna-sdk` och tillhandahåller en stabil, versionshanterad klient för ***digna***s REST-API.
 
+digna Data Reconciliation och digna Agentic levereras som betaversioner.
+
 ---
 
 ## SDK-grunder

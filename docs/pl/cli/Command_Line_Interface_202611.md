@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Ta strona dokumentuje pełny zestaw poleceń dostępnych w wydaniu **2026.11** CLI ***digna***, wraz z przykładami użycia i opcjami.
 
+digna Data Reconciliation i digna Agentic są dostarczane w wersji beta.
+
 Plik wykonywalny nazywa się `digna`.
 
 ---

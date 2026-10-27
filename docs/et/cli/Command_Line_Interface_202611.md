@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Sellel lehel on dokumenteeritud kõik käsud, mis on saadaval ***digna*** CLI versioonis **2026.11**, koos kasutusnäidete ja valikutega.
 
+digna Data Reconciliation ja digna Agentic tarnitakse beetaversioonidena.
+
 Käivitatav fail kannab nime `digna`.
 
 ---

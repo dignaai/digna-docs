@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Bu sayfa, ***digna*** CLI **2026.11** sürümünde bulunan komutların tamamını, kullanım örnekleri ve seçenekleriyle birlikte belgeler.
 
+digna Data Reconciliation ve digna Agentic beta sürüm olarak sunulmaktadır.
+
 Çalıştırılabilir dosyanın adı `digna`.
 
 ---

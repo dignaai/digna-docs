@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Tämä sivu dokumentoi kaikki komennot, jotka ovat käytettävissä ***digna*** CLI -julkaisussa **2026.11**, mukaan lukien käyttöesimerkit ja valitsimet.
 
+digna Data Reconciliation ja digna Agentic toimitetaan beetaversioina.
+
 Suoritettavan tiedoston nimi on `digna`.
 
 ---

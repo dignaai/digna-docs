@@ -9,6 +9,8 @@ image: /assets/logo_square.png
 
 Tato stránka dokumentuje úplnou sadu příkazů dostupných ve vydání ***digna*** CLI **2026.11**, včetně příkladů použití a voleb.
 
+digna Data Reconciliation a digna Agentic jsou dodávány jako beta verze.
+
 Spustitelný soubor se jmenuje `digna`.
 
 ---
