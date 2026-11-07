@@ -191,12 +191,13 @@ label = "Login with Okta"
 
 ### Adım 1: OIDC Sağlayıcı Bölümlerini Ekleyin
 
-Her sağlayıcının kendine ayrılmış bir `[oidc_clients.<key>]` bölümü olmalıdır. Anahtar, `dashboard_config.toml` içinde tanımlanan `key` ile eşleşmelidir.
+Her sağlayıcı için ayrı bir `[[oidc_clients]]` girdisi gerekir. Bu girdinin `DIGNA_OIDC_KEY` değeri, `dashboard_config.toml` içinde tanımlanan `key` ile eşleşmelidir.
 
 ### Microsoft Yapılandırması
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -206,7 +207,8 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google Yapılandırması
 
 ```toml
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -217,6 +219,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 | Parametre | Tür | Zorunlu | Açıklama | Örnek |
 |---|---|---|---|---|
+| `DIGNA_OIDC_KEY` | string | Evet | Sağlayıcı anahtarı; `dashboard_config.toml` içindeki `key` ile eşleşmelidir | `microsoft` |
 | `DIGNA_OIDC_CLIENT_ID` | string | Evet | Kimlik sağlayıcıdan alınan istemci kimliği | `abc123xyz789` |
 | `DIGNA_OIDC_CLIENT_SECRET` | string | Evet | Kimlik sağlayıcıdan alınan istemci gizli anahtarı | `secret_xyz789abc123` |
 | `DIGNA_OIDC_REDIRECT_URI` | string | Evet | Kimlik doğrulamadan sonraki geri çağırma URL'si | `http://localhost:5173/oidc/callback` |
@@ -241,13 +244,15 @@ digna farklı bir alan adında barındırılıyorsa buna göre güncelleyin:
 ### Tam Örnek
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

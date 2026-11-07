@@ -191,12 +191,13 @@ label = "Login with Okta"
 
 ### 단계 1: OIDC 제공자 섹션 추가
 
-각 제공자는 전용 `[oidc_clients.<key>]` 섹션을 가져야 합니다. key는 `dashboard_config.toml`에 정의된 `key`와 일치해야 합니다.
+각 제공자마다 별도의 `[[oidc_clients]]` 항목이 필요합니다. 해당 항목의 `DIGNA_OIDC_KEY`는 `dashboard_config.toml`에 정의된 `key`와 일치해야 합니다.
 
 ### Microsoft 구성
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -206,7 +207,8 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google 구성
 
 ```toml
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -217,6 +219,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 | Parameter | Type | Required | Description | Example |
 |---|---|---|---|---|
+| `DIGNA_OIDC_KEY` | string | Yes | 제공자 키. `dashboard_config.toml`의 `key`와 일치해야 합니다 | `microsoft` |
 | `DIGNA_OIDC_CLIENT_ID` | string | Yes | 아이덴티티 제공자에서 발급한 클라이언트 ID | `abc123xyz789` |
 | `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | 아이덴티티 제공자에서 발급한 클라이언트 시크릿 | `secret_xyz789abc123` |
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | 인증 후 콜백 URL | `http://localhost:5173/oidc/callback` |
@@ -241,13 +244,15 @@ digna가 다른 도메인에서 호스팅되는 경우 적절히 업데이트하
 ### 전체 예시
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

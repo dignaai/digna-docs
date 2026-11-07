@@ -127,7 +127,8 @@ label = "Login with OneLogin"
 ### Konfigūracija: `config.toml`
 
 ```toml
-[oidc_clients.onelogin]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "onelogin"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

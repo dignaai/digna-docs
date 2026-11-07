@@ -125,7 +125,8 @@ label = "Accedi con Keycloak"
 ### `config.toml`
 
 ```toml
-[oidc_clients.keycloak]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "keycloak"
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
