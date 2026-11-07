@@ -14,7 +14,7 @@ your data, investigate alerts and help configure *digna*. See
 [digna Agentic](../platform/agentic/Introduction.md) for what agents can do.
 
 This page covers the *digna* side, which is the same for every AI client. The client guides then
-show where to enter it:
+show where to enter the endpoint and the key:
 
 - [Claude](claude_mcp_guide.md): Claude Code, Claude Desktop and custom connectors
 - [Gemini](gemini_mcp_guide.md): Antigravity and Gemini CLI
@@ -164,7 +164,7 @@ The response says why:
 | `Invalid API key` | The key is wrong, or it was deleted |
 | `API key expired` | The key has expired. Create a new one |
 
-### 403 Forbidden: the license does not include the agentic (MCP) feature
+### 403 Forbidden: `The license does not include the agentic (MCP) feature`
 
 The *digna* license has no digna Agentic entry, or that entry has expired. Ask the digna team for
 a license that includes digna Agentic, and install it as the installation guide for your operating
