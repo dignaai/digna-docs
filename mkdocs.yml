@@ -144,6 +144,12 @@ nav:
           - Okta: sso/okta_sso_guide.md
           - OneLogin: sso/onelogin_sso_guide.md
           - PingOne: sso/pingone_sso_guide.md
+      # Clients are alphabetical, as in the groups above. The Overview leads
+      # because it holds the digna-side setup (endpoint, API key) every client shares.
+      - AI Agents:
+          - Overview: ai_agents/overview.md
+          - Claude: ai_agents/claude_mcp_guide.md
+          - Gemini: ai_agents/gemini_mcp_guide.md
   - CLI Reference:
           - Release 2026.11: cli/Command_Line_Interface_202611.md
           - Release 2026.06: cli/Command_Line_Interface_202606.md
@@ -337,6 +343,7 @@ plugins:
             First Steps: Erste Schritte
             Scheduling: Scheduling
             Integration: Integration
+            AI Agents: KI-Agenten
             CLI Reference: CLI Doku
             SDK Reference: SDK Doku
 
@@ -364,6 +371,7 @@ plugins:
             First Steps: Premières étapes
             Scheduling: Planification
             Integration: Intégration
+            AI Agents: Agents IA
             CLI Reference: Référence CLI
             SDK Reference: Référence SDK
 
@@ -391,6 +399,7 @@ plugins:
              First Steps: Primeros pasos
              Scheduling: Programación
              Integration: Integración
+             AI Agents: Agentes de IA
              CLI Reference: Referencia CLI
              SDK Reference: Referencia SDK
 
@@ -418,6 +427,7 @@ plugins:
               First Steps: Primi passi
               Scheduling: Pianificazione
               Integration: Integrazione
+              AI Agents: Agenti IA
               CLI Reference: Riferimento CLI
               SDK Reference: Riferimento SDK
 
@@ -445,6 +455,7 @@ plugins:
             First Steps: Pierwsze kroki
             Scheduling: Harmonogram
             Integration: Integracja
+            AI Agents: Agenci AI
             CLI Reference: Dokumentacja CLI
             SDK Reference: Dokumentacja SDK
 
@@ -472,6 +483,7 @@ plugins:
             First Steps: Primeiros passos
             Scheduling: Agendamento
             Integration: Integração
+            AI Agents: Agentes de IA
             SDK Reference: Referência SDK
 
         - locale: "sv"
@@ -498,6 +510,7 @@ plugins:
               First Steps: Första stegen
               Scheduling: Schemaläggning
               Integration: Integration
+              AI Agents: AI-agenter
               CLI Reference: CLI-referens
               SDK Reference: SDK-referens
 
@@ -525,6 +538,7 @@ plugins:
             First Steps: Første steg
             Scheduling: Planlegging
             Integration: Integrasjon
+            AI Agents: AI-agenter
             CLI Reference: CLI-referanse
             SDK Reference: SDK-referanse
 
@@ -552,6 +566,7 @@ plugins:
             First Steps: Første trin
             Scheduling: Planlægning
             Integration: Integration
+            AI Agents: AI-agenter
             CLI Reference: CLI-reference
             SDK Reference: SDK-reference
 
@@ -579,6 +594,7 @@ plugins:
             First Steps: Ensiaskeleet
             Scheduling: Ajoitus
             Integration: Integraatio
+            AI Agents: Tekoälyagentit
             CLI Reference: CLI-viite
             SDK Reference: SDK-viite
 
@@ -606,6 +622,7 @@ plugins:
             First Steps: Esimesed sammud
             Scheduling: Ajastamine
             Integration: Integratsioon
+            AI Agents: AI-agendid
             CLI Reference: CLI viide
             SDK Reference: SDK viide
 
@@ -633,6 +650,7 @@ plugins:
             First Steps: Pirmieji žingsniai
             Scheduling: Planavimas
             Integration: Integracija
+            AI Agents: AI agentai
             CLI Reference: CLI nuoroda
             SDK Reference: SDK nuoroda
 
@@ -660,6 +678,7 @@ plugins:
             First Steps: Pirmie soļi
             Scheduling: Plānošana
             Integration: Integrācija
+            AI Agents: AI aģenti
             CLI Reference: CLI atsauce
             SDK Reference: SDK atsauce
 
@@ -687,6 +706,7 @@ plugins:
             First Steps: Eerste stappen
             Scheduling: Planning
             Integration: Integratie
+            AI Agents: AI-agents
             CLI Reference: CLI-referentie
             SDK Reference: SDK-referentie
 
@@ -714,6 +734,7 @@ plugins:
             First Steps: První kroky
             Scheduling: Plánování
             Integration: Integrace
+            AI Agents: AI agenti
             CLI Reference: Referenční příručka CLI
             SDK Reference: Referenční příručka SDK
 
@@ -741,6 +762,7 @@ plugins:
               First Steps: Első lépések
               Scheduling: Ütemezés
               Integration: Integráció
+              AI Agents: AI-ügynökök
               CLI Reference: CLI-referencia
               SDK Reference: SDK-referencia
 
@@ -768,6 +790,7 @@ plugins:
             First Steps: İlk adımlar
             Scheduling: Zamanlama
             Integration: Entegrasyon
+            AI Agents: Yapay Zekâ Ajanları
             CLI Reference: CLI referansı
             SDK Reference: SDK referansı
 
@@ -795,6 +818,7 @@ plugins:
             First Steps: Primii pași
             Scheduling: Programare
             Integration: Integrare
+            AI Agents: Agenți AI
             CLI Reference: Referință CLI
             SDK Reference: Referință SDK
 
@@ -822,6 +846,7 @@ plugins:
             First Steps: Prvi koraki
             Scheduling: Razporejanje
             Integration: Integracija
+            AI Agents: Agenti AI
             CLI Reference: Referenca CLI
             SDK Reference: Referenca SDK
 
@@ -849,6 +874,7 @@ plugins:
             First Steps: Πρώτα βήματα
             Scheduling: Προγραμματισμός
             Integration: Ενσωμάτωση
+            AI Agents: Πράκτορες AI
             CLI Reference: Αναφορά CLI
             SDK Reference: Αναφορά SDK
 
@@ -876,6 +902,7 @@ plugins:
             First Steps: Перші кроки
             Scheduling: Планування
             Integration: Інтеграція
+            AI Agents: ШІ-агенти
             CLI Reference: Довідник CLI
             SDK Reference: Довідник SDK
 
@@ -903,6 +930,7 @@ plugins:
             First Steps: Первые шаги
             Scheduling: Планирование
             Integration: Интеграция
+            AI Agents: ИИ-агенты
             CLI Reference: Справочник CLI
             SDK Reference: Справочник SDK
 
@@ -930,6 +958,7 @@ plugins:
             First Steps: 最初のステップ
             Scheduling: スケジューリング
             Integration: 統合
+            AI Agents: AI エージェント
             CLI Reference: CLI リファレンス
             SDK Reference: SDK リファレンス
 
@@ -957,6 +986,7 @@ plugins:
             First Steps: 첫 단계
             Scheduling: 스케줄링
             Integration: 통합
+            AI Agents: AI 에이전트
             CLI Reference: CLI 참고 문서
             SDK Reference: SDK 참고 문서
 
@@ -984,6 +1014,7 @@ plugins:
             First Steps: पहले कदम
             Scheduling: अनुसूची बनाना
             Integration: एकीकरण
+            AI Agents: AI एजेंट
             CLI Reference: CLI संदर्भ
             SDK Reference: SDK संदर्भ
 
@@ -1011,6 +1042,7 @@ plugins:
             First Steps: الخطوات الأولى
             Scheduling: الجدولة
             Integration: التكامل
+            AI Agents: وكلاء الذكاء الاصطناعي
             CLI Reference: مرجع CLI
             SDK Reference: مرجع SDK
 

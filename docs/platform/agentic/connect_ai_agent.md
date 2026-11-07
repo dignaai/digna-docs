@@ -53,6 +53,12 @@ Create one key per agent and per person, so you can revoke a single key without 
 
 ## 3. Add the Server to Your Client {: #3-add-the-server-to-your-client }
 
+!!! tip "Step-by-step guides"
+
+    The client guides under Integration cover each client in detail:
+    [Claude](../../ai_agents/claude_mcp_guide.md) (Claude Code, Claude Desktop, custom connectors)
+    and [Gemini](../../ai_agents/gemini_mcp_guide.md) (Antigravity, Gemini CLI).
+
 Every request to the MCP server sends the key in an `Authorization` header:
 
 ```text
