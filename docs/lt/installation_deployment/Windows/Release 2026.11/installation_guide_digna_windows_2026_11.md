@@ -1028,6 +1028,7 @@ Jei atnaujinote iš senesnio nei 2026.06 leidimo ir 1 žingsnyje išregistravote
 užregistruokite vykdomuoju failu `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

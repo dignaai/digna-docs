@@ -1023,6 +1023,7 @@ Se você atualizou a partir de uma release anterior à 2026.06 e removeu o regis
 registre-o novamente primeiro com o executável `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

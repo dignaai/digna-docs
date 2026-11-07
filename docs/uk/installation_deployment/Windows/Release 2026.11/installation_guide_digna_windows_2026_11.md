@@ -1023,6 +1023,7 @@ digna windows start
 зареєструйте її знову за допомогою виконуваного файлу `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

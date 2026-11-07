@@ -1023,6 +1023,7 @@ Si actualizaste desde una versión anterior a la 2026.06 y anulaste el registro 
 registrarlo primero con el ejecutable `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

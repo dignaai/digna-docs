@@ -1025,6 +1025,7 @@ digna windows start
 hizmeti `digna` yürütülebilir dosyasıyla yeniden kaydedin:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

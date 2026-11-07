@@ -1022,6 +1022,7 @@ Jeśli aktualizujesz z wydania wcześniejszego niż 2026.06 i w kroku 1 wyrejest
 zarejestruj ją ponownie za pomocą pliku wykonywalnego `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

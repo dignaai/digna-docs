@@ -1022,6 +1022,7 @@ Hvis du opgraderede fra en release før 2026.06 og afregistrerede servicen i Tri
 den først igen med den eksekverbare `digna`-fil:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

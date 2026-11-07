@@ -960,6 +960,7 @@ digna windows start
 Als u vanaf een release vóór 2026.06 hebt geüpgraded en de service in Stap 1 hebt gederegistreerd, registreer deze dan eerst opnieuw met het `digna`-uitvoerbare bestand:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

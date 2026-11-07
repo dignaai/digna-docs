@@ -1020,6 +1020,7 @@ Hvis du oppgraderte fra en utgivelse før 2026.06 og avregistrerte tjenesten i t
 registrere den på nytt med den kjørbare `digna`-filen:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

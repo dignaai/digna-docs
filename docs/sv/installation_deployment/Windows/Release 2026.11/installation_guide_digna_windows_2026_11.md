@@ -1020,6 +1020,7 @@ Om du uppgraderade från en release före 2026.06 och avregistrerade tjänsten i
 den först igen med den körbara filen `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

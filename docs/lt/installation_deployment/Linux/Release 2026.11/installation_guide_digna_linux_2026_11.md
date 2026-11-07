@@ -1346,6 +1346,7 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 Savo digna diegimo kataloge paleiskite:
 
 ```bash
+cd /opt/digna
 ./digna repo upgrade
 ```
 

@@ -1196,6 +1196,7 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 У каталозі встановлення digna виконайте:
 
 ```bash
+cd /opt/digna
 ./digna repo upgrade
 ```
 

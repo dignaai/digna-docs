@@ -959,6 +959,7 @@ digna windows start
 Ja jauninājāt no laidiena, kas vecāks par 2026.06, un 1. solī atreģistrējāt servisu, vispirms reģistrējiet to no jauna ar izpildāmo failu `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

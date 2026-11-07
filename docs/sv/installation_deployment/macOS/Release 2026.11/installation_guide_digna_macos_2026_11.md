@@ -1193,6 +1193,7 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 Kör i din digna-installationskatalog:
 
 ```bash
+cd /opt/digna
 ./digna repo upgrade
 ```
 

@@ -1024,6 +1024,7 @@ If you upgraded from a release before 2026.06 and unregistered the service in St
 it again with the `digna` executable first:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

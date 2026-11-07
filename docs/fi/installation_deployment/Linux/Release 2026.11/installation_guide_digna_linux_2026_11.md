@@ -1343,6 +1343,7 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 Suorita dignan asennushakemistossa:
 
 ```bash
+cd /opt/digna
 ./digna repo upgrade
 ```
 

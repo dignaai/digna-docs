@@ -1021,6 +1021,7 @@ Kui uuendasite väljalaskest, mis on vanem kui 2026.06, ja eemaldasite sammus 1 
 uuesti käivitatava failiga `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

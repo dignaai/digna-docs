@@ -1022,6 +1022,7 @@ Se avete aggiornato da una release precedente alla 2026.06 e avete deregistrato 
 registratelo prima di nuovo con l'eseguibile `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

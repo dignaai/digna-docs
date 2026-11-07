@@ -1346,6 +1346,7 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 In your digna installation directory, run:
 
 ```bash
+cd /opt/digna
 ./digna repo upgrade
 ```
 

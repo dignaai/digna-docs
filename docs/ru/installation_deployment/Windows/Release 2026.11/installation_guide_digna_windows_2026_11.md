@@ -1020,6 +1020,7 @@ digna windows start
 зарегистрируйте её заново с помощью исполняемого файла `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

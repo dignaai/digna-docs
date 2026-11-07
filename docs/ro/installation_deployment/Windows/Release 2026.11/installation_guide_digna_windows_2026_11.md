@@ -1030,6 +1030,7 @@ Dacă ați actualizat de la o versiune mai veche decât 2026.06 și ați anulat 
 Pasul 1, înregistrați-l mai întâi din nou cu executabilul `digna`:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```

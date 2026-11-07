@@ -1287,6 +1287,7 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 Savā digna instalācijas direktorijā palaidiet:
 
 ```bash
+cd /opt/digna
 ./digna repo upgrade
 ```
 

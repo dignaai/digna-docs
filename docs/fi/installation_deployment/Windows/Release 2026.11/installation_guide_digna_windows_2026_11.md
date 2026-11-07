@@ -1020,6 +1020,7 @@ Jos päivitit julkaisua 2026.06 vanhemmasta versiosta ja poistit palvelun rekist
 rekisteröi se ensin uudelleen `digna`-suoritustiedostolla:
 
 ```bash
+cd C:\path\to\digna
 digna windows install --address <address> --port <port>
 digna windows start
 ```
