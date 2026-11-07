@@ -93,10 +93,13 @@ nav:
       # There is no default platform, so none is promoted to the top.
       - Operating Systems:
           - Linux:
+              - Release 2026.11: installation_deployment/Linux/Release 2026.11/installation_guide_digna_linux_2026_11.md
               - Release 2026.06: installation_deployment/Linux/Release 2026.06/installation_guide_digna_linux_2026_06.md
           - macOS:
+              - Release 2026.11: installation_deployment/macOS/Release 2026.11/installation_guide_digna_macos_2026_11.md
               - Release 2026.06: installation_deployment/macOS/Release 2026.06/installation_guide_digna_macos_2026_06.md
           - Windows:
+              - Release 2026.11: installation_deployment/Windows/Release 2026.11/installation_guide_digna_windows_2026_11.md
               - Release 2026.06: installation_deployment/Windows/Release 2026.06/installation_guide_digna_windows_2026_06.md
       # Cloud Native guides (AWS, Azure, Hetzner, …) belong in a sibling group
       # here, alphabetical in the same way. A nav group cannot be empty, so it
