@@ -87,6 +87,574 @@ AI、完全なデータ主権、データベース内監視を組み合わせる
 
 ---
 
+# Claude
+Source: https://docs.digna.ai/ja/ai_agents/claude_mcp_guide/
+
+# Claude を digna に接続する
+
+このガイドでは、Claude を **digna MCP Server** に接続します。[AI エージェントの概要](overview.md) で
+説明しているとおり、*digna* インストール環境の MCP エンドポイントと API キーが必要です。
+
+例ではエンドポイントとして `https://digna.example.com/mcp` を使用しています。実際のエンドポイントに
+置き換えてください。
+
+## 接続方法を選ぶ {: #choose-how-to-connect }
+
+| Claude 製品 | 接続元 | 社内ネットワーク内の *digna* で動作するか |
+|---|---|---|
+| [Claude Code](#claude-code) | お使いのマシン | はい |
+| [ローカルブリッジを使う Claude Desktop](#claude-desktop-with-a-local-bridge) | お使いのマシン | はい |
+| claude.ai、Claude Desktop、Claude mobile の [カスタムコネクタ](#custom-connector) | Anthropic のクラウド | いいえ。エンドポイントにインターネットから到達できる必要があります |
+
+社内ネットワーク内で動作する *digna* のインストール環境では、Claude Code またはローカルブリッジを使う
+Claude Desktop を使用してください。
+
+---
+
+## Claude Code {: #claude-code }
+
+### 1. サーバーを追加する {: #1-add-the-server }
+
+API キーを環境変数に設定してから、サーバーを追加します。
+
+```bash
+export DIGNA_API_KEY='<api key>'
+claude mcp add --transport http --scope user digna https://digna.example.com/mcp --header "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+コマンドの実行時にシェルが `$DIGNA_API_KEY` を展開するため、Claude Code はキーを自身の設定に保存します。
+
+`--scope` は、サーバーを利用できる範囲を決めます。
+
+| スコープ | 利用できる範囲 |
+|---|---|
+| `local` (デフォルト) | 自分のみ、現在のプロジェクトのみ |
+| `user` | 自分のみ、すべてのプロジェクト |
+| `project` | プロジェクト内の `.mcp.json` ファイルを通じて、そのプロジェクトで作業する全員 |
+
+### 2. サーバーをチームと共有する (任意) {: #2-share-the-server-with-your-team }
+
+プロジェクトの全員に同じサーバーを提供するには、プロジェクトのルートに `.mcp.json` ファイルを追加します。
+キーはファイルに書き込まないでください。Claude Code は各自の環境から `${DIGNA_API_KEY}` を展開します。
+
+```json
+{
+  "mcpServers": {
+    "digna": {
+      "type": "http",
+      "url": "https://digna.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DIGNA_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+各自が `DIGNA_API_KEY` に自分のキーを設定します。Claude Code はこのファイルを初めて検出したときに、
+その中のサーバーを使用するかどうかを確認します。
+
+### 3. 接続を確認する {: #3-verify-the-connection }
+
+シェルから次を実行します。
+
+```bash
+claude mcp list
+```
+
+`digna` サーバーに `✔ Connected` と表示される必要があります。Claude Code のセッション内では、`/mcp` を
+実行するとサーバーとそのツールを確認できます。
+
+---
+
+## ローカルブリッジを使う Claude Desktop {: #claude-desktop-with-a-local-bridge }
+
+Claude Desktop の設定ファイルは、お使いのマシン上でローカル MCP サーバーを起動します。小さなブリッジである
+オープンソースの [`mcp-remote`](https://github.com/geelen/mcp-remote) パッケージがそこで動作し、すべての
+リクエストを API キーとともに *digna* のエンドポイントへ転送します。ブリッジはお使いのマシン上で動作する
+ため、社内ネットワーク内の *digna* でも使用できます。
+
+!!! note "コミュニティのパッケージ"
+
+    `mcp-remote` は Anthropic や digna ではなく、オープンソースコミュニティによって保守されています。
+    使用する前に、組織で利用が許可されているか確認してください。
+
+### 1. Node.js をインストールする {: #1-install-nodejs }
+
+ブリッジには [Node.js](https://nodejs.org) 18 以降が必要です。Claude Desktop はシステムにインストール
+されている Node.js のバージョンを使用します。次のコマンドで確認してください。
+
+```bash
+node --version
+```
+
+### 2. 設定ファイルを編集する {: #2-edit-the-configuration-file }
+
+`claude_desktop_config.json` を開きます。
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+`digna` サーバーを追加します。ファイルにすでに `mcpServers` セクションがある場合は、そこに `digna` の
+エントリを追加します。
+
+```json
+{
+  "mcpServers": {
+    "digna": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://digna.example.com/mcp",
+        "--transport",
+        "http-only",
+        "--header",
+        "Authorization:${AUTH_HEADER}"
+      ],
+      "env": {
+        "AUTH_HEADER": "Bearer <api key>"
+      }
+    }
+  }
+}
+```
+
+!!! warning "ヘッダーは示したとおりに記述する"
+
+    `Authorization:${AUTH_HEADER}` はスペースを入れずに記述し、`Bearer <api key>` は `env` に記述します。
+    Windows 版 Claude Desktop は `args` 内のスペースをエスケープしないため、そこにスペースがあるとヘッダーが
+    壊れます。
+
+### 3. Claude Desktop を再起動する {: #3-restart-claude-desktop }
+
+Claude Desktop を完全に終了してから、再度起動します。新しいチャットで **+** をクリックし、**Connectors** を
+開きます。`digna` が一覧に表示され、オンになっている必要があります。
+
+---
+
+## カスタムコネクタ {: #custom-connector }
+
+カスタムコネクタを使うと、ローカルでの設定なしに claude.ai、Claude Desktop、Claude モバイルアプリで
+*digna* を利用できます。エンドポイントに接続するのは Anthropic のクラウドなので、次の条件を満たす場合に
+のみ動作します。
+
+- *digna* のエンドポイントにインターネットから HTTPS で到達できる
+- お使いの Claude 組織の **Add custom connector** ダイアログに **Request headers** オプションがある。
+  Anthropic はこれを一部の組織にベータとして提供しています
+
+!!! warning "社内ネットワーク内の digna には使えない"
+
+    プライベートネットワーク内のサーバーに到達する Claude の MCP トンネルでは、MCP サーバー側で OAuth が
+    必要です。digna MCP Server は API キーで認証するため、トンネルは使用できません。代わりに
+    [Claude Code](#claude-code) または [ローカルブリッジを使う Claude Desktop](#claude-desktop-with-a-local-bridge) を使用してください。
+
+### 1. コネクタの設定を開く {: #1-open-the-connector-settings }
+
+- **Free、Pro、Max、Ultra プラン**: **Customize > Connectors** に移動し、**Add custom connector** を
+  クリックします。
+- **Team および Enterprise プラン**: Owner が **Organization settings > Connectors** に移動し、**Add**、
+  続いて **Custom** をクリックし、種類を尋ねられた場合は **Web** を選択します。
+
+### 2. コネクタの詳細を入力する {: #2-enter-the-connector-details }
+
+1. **MCP server URL**: `https://digna.example.com/mcp`
+2. **Authentication**: **No sign-in**
+3. **Request headers**: ヘッダー名として `authorization` を選び、値として `Bearer <api key>` を
+   `Bearer` という語とスペースを含めて入力し、**Required** にチェックを入れます。
+4. **Add** をクリックします。
+
+!!! warning "全員が同じキーを共有する"
+
+    コネクタを使用するメンバーは全員同じ API キーで、つまり同じ *digna* ユーザーとして作業します。
+    コネクタ専用の *digna* ユーザーを作成し、全員に許可してよいプロジェクトとロール (例: 閲覧者ロール)
+    だけを付与してください。
+
+Team および Enterprise プランでは、その後メンバーが **Customize > Connectors** で接続します。そこでは
+コネクタに **Custom** ラベルが付いています。
+
+Claude では既存のコネクタのヘッダーを変更できません。新しいキーを使うには、コネクタを削除してから
+追加し直してください。
+
+---
+
+## Claude のトラブルシューティング {: #troubleshooting-claude }
+
+### claude mcp list に Failed to connect と表示される
+
+`claude mcp get digna` を実行して原因を確認します。`401` はキーが拒否されたことを意味します。
+[401 Unauthorized](overview.md#troubleshooting) を参照してください。Claude Code は、キーの先頭や末尾に
+あるスペースや改行についても警告します。これらはコピー時によく紛れ込みます。
+
+### Claude Desktop に digna が表示されない
+
+- Node.js 18 以降がインストールされているか確認します: `node --version`。
+- `claude_desktop_config.json` が有効な JSON か確認します。カンマが 1 つ欠けているだけで、ファイル内の
+  すべてのサーバーが読み込まれなくなります。
+- ウィンドウを閉じるだけでなく Claude Desktop を完全に終了し、再度起動します。
+
+### カスタムコネクタがサーバーに到達できない
+
+Anthropic のクラウドからエンドポイントに到達できません。有効な証明書を使った HTTPS でインターネットから
+到達できるか確認するか、代わりに [Claude Code](#claude-code) で接続してください。
+
+---
+
+## 関連項目 {: #see-also }
+
+- [AI エージェントの概要](overview.md): エンドポイント、API キー、セキュリティ、一般的なトラブルシューティング
+- [Gemini](gemini_mcp_guide.md): Antigravity または Gemini CLI の接続
+- [digna Agentic](../platform/agentic/Introduction.md): AI エージェントが *digna* でできること
+
+---
+
+# Gemini
+Source: https://docs.digna.ai/ja/ai_agents/gemini_mcp_guide/
+
+# Gemini を digna に接続する
+
+このガイドでは、Google の Gemini ツールを **digna MCP Server** に接続します。
+[AI エージェントの概要](overview.md) で説明しているとおり、*digna* インストール環境の MCP エンドポイントと
+API キーが必要です。
+
+例ではエンドポイントとして `https://digna.example.com/mcp` を使用しています。実際のエンドポイントに
+置き換えてください。
+
+## ツールを選ぶ {: #choose-your-tool }
+
+| ツール | 対象 | 設定 |
+|---|---|---|
+| [Antigravity](#antigravity) CLI、IDE、アプリ | Google のエージェントツール。2026 年 6 月に、個人の Google アカウント向けには Antigravity CLI が Gemini CLI に取って代わりました | `mcp_config.json` |
+| [Gemini CLI](#gemini-cli) | Gemini Code Assist Standard および Enterprise ライセンス、有料の Gemini API キー | `settings.json` または `gemini mcp add` |
+| Gemini Enterprise アプリ | — | サポートされていません。そのカスタム MCP コネクタは OAuth または Google Cloud サービスアカウントでサインインしますが、digna MCP Server は API キーで認証します |
+
+これらのツールはすべて、それが動作しているマシンから接続します。そのため、そのマシンからエンドポイントに
+到達できる限り、社内ネットワーク内の *digna* でも動作します。
+
+---
+
+## Antigravity {: #antigravity }
+
+Antigravity は、CLI、IDE、アプリで共有される `mcp_config.json` から MCP サーバーを読み込みます。
+
+### 1. mcp_config.json を開く {: #1-open-mcp-config-json }
+
+| スコープ | ファイル |
+|---|---|
+| すべてのプロジェクト | `~/.gemini/config/mcp_config.json` |
+| 1 つのワークスペース | ワークスペース内の `.agents/mcp_config.json` |
+
+使用中のファイルを開くには:
+
+- **CLI**: `/mcp` と入力して ++enter++ を押し、MCP マネージャーを開きます。
+- **IDE**: エージェントのサイドパネルで **…** メニューを開き、**MCP Servers**、**Manage MCP Servers**、
+  **View raw config** の順に選択します。
+- **アプリ**: **Customizations** > **Installed** > **MCP Servers** に移動し、**Copy Config File Path** を
+  使用します。
+
+### 2. digna サーバーを追加する {: #2-add-the-digna-server }
+
+`digna` のエントリを追加します。ファイルにすでに `mcpServers` セクションがある場合は、そこに追加します。
+
+```json
+{
+  "mcpServers": {
+    "digna": {
+      "serverUrl": "https://digna.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <api key>"
+      }
+    }
+  }
+}
+```
+
+Antigravity はリモートサーバーに streamable HTTP でのみ接続します。digna MCP Server が使用するのも
+streamable HTTP です。エンドポイントは `serverUrl` として記述してください。Gemini CLI の `httpUrl` キーは
+サポートされていません。
+
+### 3. 接続を確認する {: #3-verify-the-connection }
+
+CLI で `/mcp` と入力します。MCP マネージャーに `digna` サーバーがその状態とツールとともに表示され、
+設定の再読み込みや接続ログの表示もできます。IDE では、サーバーは **Manage MCP Servers** に表示されます。
+
+!!! warning "ファイルを保護する"
+
+    `mcp_config.json` には API キーが平文で保存されます。ワークスペースの `.agents/mcp_config.json` は
+    バージョン管理に含めず、グローバルファイルは自分のアカウントだけが読み取れるようにしてください。
+
+---
+
+## Gemini CLI {: #gemini-cli }
+
+### 1. サーバーを追加する {: #1-add-the-server }
+
+API キーを環境変数に設定してから、サーバーを追加します。
+
+```bash
+export DIGNA_API_KEY='<api key>'
+gemini mcp add --transport http --scope user --header "Authorization: Bearer $DIGNA_API_KEY" digna https://digna.example.com/mcp
+```
+
+コマンドの実行時にシェルが `$DIGNA_API_KEY` を展開するため、Gemini CLI はキーを自身の設定に保存します。
+`--scope user` を指定しない場合、サーバーは現在のプロジェクトにのみ追加されます。
+
+### 2. または settings.json を編集する {: #2-or-edit-settings-json }
+
+上記のコマンドは `settings.json` に書き込みます。ファイルを自分で編集するには:
+
+| スコープ | ファイル |
+|---|---|
+| すべてのプロジェクト | `~/.gemini/settings.json` |
+| 1 つのプロジェクト | プロジェクト内の `.gemini/settings.json` |
+
+```json
+{
+  "mcpServers": {
+    "digna": {
+      "httpUrl": "https://digna.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <api key>"
+      }
+    }
+  }
+}
+```
+
+streamable HTTP 用のキーである `httpUrl` を使用してください。似た名前の `url` キーは古い SSE
+トランスポートを選択しますが、digna MCP Server は SSE を提供していません。サーバー名にアンダースコアを
+使用しないでください。
+
+!!! tip "trust はオフのままにする"
+
+    サーバーに `"trust": true` が設定されていない限り、Gemini CLI はツール呼び出しのたびに確認を求めます。
+    *digna* では `trust` をオフのままにして、エージェントが設定に加える変更をすべて確認できるように
+    してください。
+
+### 3. 接続を確認する {: #3-verify-the-connection-gemini-cli }
+
+シェルから次を実行します。
+
+```bash
+gemini mcp list
+```
+
+`digna` サーバーが接続済みと表示される必要があります。Gemini CLI のセッション内では、`/mcp` を実行すると
+サーバーとそのツールを確認できます。
+
+---
+
+## Gemini のトラブルシューティング {: #troubleshooting-gemini }
+
+### サーバーが切断状態と表示される
+
+- エンドポイントが `/mcp` で終わり、お使いのマシンから到達できるか確認します。
+- キー名を確認します: Antigravity では `serverUrl`、Gemini CLI では `httpUrl` です。
+- `401` はキーが拒否されたことを意味します。[401 Unauthorized](overview.md#troubleshooting) を参照してください。
+
+### 自分のアカウントで Gemini CLI が起動しなくなった
+
+2026 年 6 月以降、個人の Google アカウントでは Gemini CLI の代わりに Antigravity CLI を使用します。
+[Antigravity](#antigravity) の説明に従って `digna` のエントリを `mcp_config.json` に移し、`httpUrl` を
+`serverUrl` に名前変更してください。
+
+---
+
+## 関連項目 {: #see-also }
+
+- [AI エージェントの概要](overview.md): エンドポイント、API キー、セキュリティ、一般的なトラブルシューティング
+- [Claude](claude_mcp_guide.md): Claude Code、Claude Desktop、カスタムコネクタの接続
+- [digna Agentic](../platform/agentic/Introduction.md): AI エージェントが *digna* でできること
+
+---
+
+# Overview
+Source: https://docs.digna.ai/ja/ai_agents/overview/
+
+# AI エージェントを digna に接続する
+
+**digna MCP Server** を使うと、AI エージェントが [Model Context Protocol](https://modelcontextprotocol.io)
+(MCP) を通じて *digna* を操作できます。MCP は Claude、Gemini をはじめ多くの AI ツールがサポートする
+オープン標準です。*digna* に接続したエージェントは、データに関する質問に答えたり、アラートを調査したり、
+*digna* の設定を手伝ったりできます。エージェントにできることについては
+[digna Agentic](../platform/agentic/Introduction.md) を参照してください。
+
+このページでは、すべての AI クライアントで共通の *digna* 側の設定を説明します。各クライアントのガイドでは、
+その設定をどこに入力するかを説明します。
+
+- [Claude](claude_mcp_guide.md): Claude Code、Claude Desktop、カスタムコネクタ
+- [Gemini](gemini_mcp_guide.md): Antigravity と Gemini CLI
+
+!!! info "ベータ版"
+
+    digna Agentic と、それに含まれる digna MCP Server は、
+    [Release 2026.11](../changelog/Release_202611.md) でベータ版として提供されています。
+
+---
+
+## はじめる前に {: #before-you-start }
+
+必要なもの:
+
+- *digna* Release 2026.11 以降
+- **digna Agentic** を含むライセンス。これがない場合、MCP サーバーはすべてのリクエストを拒否します
+- *digna* のユーザーアカウント。エージェントは各プロジェクトでそのユーザーの権限で動作します。
+  [権限](../platform/agentic/how_it_works.md#permissions) を参照してください
+- **streamable HTTP** でリモート MCP サーバーに接続でき、`Authorization` ヘッダーを送信できる
+  AI クライアント
+
+---
+
+## 1. MCP エンドポイントを確認する {: #1-find-the-mcp-endpoint }
+
+MCP サーバーは *digna* バックエンドの一部なので、追加でインストールや起動を行う必要はありません。
+エンドポイントは、バックエンドのアドレスの後ろに `/mcp` を付けたものです。
+
+```text
+https://digna.example.com/mcp
+```
+
+たとえば `digna serve --address 0.0.0.0 --port 8082` のように、バックエンドがホストとポートで直接
+動作している場合、エンドポイントはそのアドレスに `/mcp` を付けたものです。
+
+```text
+http://digna-host:8082/mcp
+```
+
+バックエンドの前段にリバースプロキシがある場合は、`/mcp` を `Authorization` ヘッダーとともに
+バックエンドへ転送する必要があります。
+
+!!! warning "ネットワーク上では HTTPS を使用する"
+
+    すべてのリクエストには API キーが含まれます。AI クライアントと *digna* が同じマシン上にない場合は、
+    必ず HTTPS を使用してください。
+
+### 接続元について {: #where-the-connection-comes-from }
+
+ほとんどの AI クライアントは、それが動作しているマシンから接続します。Claude Code、ローカルブリッジを
+使う Claude Desktop、Antigravity、Gemini CLI がこれに当たります。これらの場合、*digna* はそのマシンから
+到達できれば十分で、たとえば社内ネットワーク内にあっても構いません。
+
+Claude の **カスタムコネクタ** は異なります。エンドポイントに接続するのは Anthropic のクラウドです。
+そのため、エンドポイントにインターネットから HTTPS で到達できる場合にのみ動作します。社内ネットワーク内
+からしか到達できない *digna* のインストール環境では、お使いのマシン上で動作するクライアントを使用して
+ください。
+
+---
+
+## 2. API キーを作成する {: #2-create-an-api-key }
+
+AI クライアントは、*digna* ユーザーの API キーで認証します。
+
+1. *digna* にログインします。
+2. 左下のユーザープロファイルを開きます。
+3. **API Keys** をクリックし、続いて **Add API Key** をクリックします。
+4. キーの用途がわかる名前 (例: *Claude Code – Marcin*) を入力し、有効期限を選択します。
+5. キーをコピーします。キーが表示されるのは一度だけです。
+
+MCP サーバーへのすべてのリクエストは、次のヘッダーでキーを送信します。
+
+```text
+Authorization: Bearer <api key>
+```
+
+`Bearer` という語とその後のスペースも、ヘッダー値の一部です。
+
+---
+
+## 3. AI クライアントを接続する {: #3-connect-your-ai-client }
+
+| AI クライアント | 接続元 | ガイド |
+|---|---|---|
+| Claude Code | お使いのマシン | [Claude](claude_mcp_guide.md#claude-code) |
+| ローカルブリッジを使う Claude Desktop | お使いのマシン | [Claude](claude_mcp_guide.md#claude-desktop-with-a-local-bridge) |
+| Claude のカスタムコネクタ (claude.ai、Claude Desktop、Claude mobile) | Anthropic のクラウド | [Claude](claude_mcp_guide.md#custom-connector) |
+| Antigravity CLI、IDE、アプリ | お使いのマシン | [Gemini](gemini_mcp_guide.md#antigravity) |
+| Gemini CLI | お使いのマシン | [Gemini](gemini_mcp_guide.md#gemini-cli) |
+
+その他の MCP クライアントも、カスタムヘッダー付きの streamable HTTP によるリモートサーバーをサポート
+していれば動作します。多くのクライアントは次のような設定を読み込みます。正確なファイル名とキー名は、
+お使いのクライアントのドキュメントで確認してください。
+
+```json
+{
+  "mcpServers": {
+    "digna": {
+      "type": "http",
+      "url": "https://digna.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <api key>"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 4. 試してみる {: #4-try-it }
+
+*digna* でなければ答えられない質問をエージェントにしてみましょう。
+
+- *「digna のプロジェクトを一覧表示して。」*
+- *「プロジェクト X のデータソースのうち、今日グリーンでないものはどれ?」*
+- *「データソース Y の直近の失敗したチェックについて説明して。」*
+
+エージェントがプロジェクトを一覧表示すれば、接続は成功しています。
+
+---
+
+## セキュリティ {: #security }
+
+- **1 人・1 クライアントにつき 1 つのキー。** そうすれば、**Delete API Key** で 1 つのキーだけを
+  失効させても、他の人には影響しません。
+- **ユーザーは慎重に選ぶ。** エージェントは、キーのユーザーができることをすべて実行できます。データの
+  調査だけが目的なら、プロジェクトで閲覧者ロールを持つユーザーを使用してください。
+- **キーを共有ファイルに入れない。** キーを含む設定ファイルをコミットしないでください。クライアントが
+  対応している場合は、環境変数からキーを読み込んでください。
+- **有効期限を設定する。** 古いキーの有効期限が切れる前に新しいキーを作成し、クライアントを更新して
+  ください。
+- **ツール呼び出しを確認する。** 少なくとも設定を変更する呼び出しについては、クライアントのツール
+  呼び出し確認を有効のままにしてください。
+
+---
+
+## トラブルシューティング {: #troubleshooting }
+
+### 401 Unauthorized
+
+レスポンスに理由が示されます。
+
+| メッセージ | 原因 |
+|---|---|
+| `Missing or malformed Authorization header` | ヘッダーが送信されていないか、値が `Bearer ` で始まっていません |
+| `Invalid API key` | キーが間違っているか、削除されています |
+| `API key expired` | キーの有効期限が切れています。新しいキーを作成してください |
+
+### 403 Forbidden: `The license does not include the agentic (MCP) feature`
+
+*digna* のライセンスに digna Agentic のエントリがないか、そのエントリの有効期限が切れています。
+digna チームに digna Agentic を含むライセンスを依頼し、お使いのオペレーティングシステム向けの
+インストールガイドに従ってインストールしてください。
+
+### すべてのリクエストが無効なライセンスのエラーで失敗する
+
+*digna* のライセンス自体の有効期限が切れています。新しいライセンスがインストールされるまで、MCP サーバーは
+ダッシュボードとともに応答を停止します。
+
+### エージェントが設定を読み取れるが変更できない
+
+API キーのユーザーが、そのプロジェクトで編集者ロールを持っていません。編集者ロールを持つユーザーのキーを
+使用するか、プロジェクト管理者にロールの変更を依頼してください。
+
+### クライアントがまったく接続できない
+
+接続するマシンからエンドポイントに到達できません。そのマシンからエンドポイントのアドレスを開き、
+ファイアウォール、プロキシ、証明書を確認してください。Claude のカスタムコネクタの場合、そのマシンは
+Anthropic のクラウド上にあります。[接続元について](#where-the-connection-comes-from) を参照してください。
+
+---
+
 # Release 2024.12
 Source: https://docs.digna.ai/ja/changelog/Release_202412/
 
@@ -9084,6 +9652,1368 @@ sudo journalctl -u digna -n 100
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/ja/installation_deployment/Linux/Release%202026.11/installation_guide_digna_linux_2026_11/
+
+# digna リリース 2026.11 の Linux インストールガイド
+
+**リリース:** 2026.11
+
+**最終更新:** 2026年11月7日
+
+
+---
+
+## 目次
+
+1. [はじめに](#introduction)
+2. [システム要件](#system-requirements)
+3. [事前準備](#pre-installation-setup)
+4. [PostgreSQL サーバーのセットアップ](#postgresql-server-setup)
+5. [Web サーバーの構成](#web-server-configuration)
+6. [初回インストール](#initial-installation)
+7. [バックエンドの設定](#backend-configuration)
+8. [ダッシュボードの設定](#dashboard-configuration)
+9. [digna を systemd サービスとして実行する](#running-digna-as-a-systemd-service)
+10. [新しいリリースへのアップグレード](#upgrading-to-a-new-release)
+
+---
+
+## はじめに {: #introduction }
+
+### digna について
+
+digna は、ウェアハウス、データレイク、レイクハウスなど様々なデータ環境におけるデータ品質管理を最適化するために設計された包括的な AI 駆動プラットフォームです。高いスケーラビリティと適応性を備え、自動化、リアルタイム監視、および異常検知を通じて現代のデータ課題に対処します。
+
+digna は主に次の2つのコンポーネントで構成されています:
+
+- **digna**: アプリケーションの中核であり、データの処理と品質チェックの実行を担います。バックエンドとコマンドラインインターフェイスを単一の実行ファイルに統合し、以前のリリースで別々だった `dignabackend` と `dignacli` を置き換えます。
+- **dignadashboard**: Web サーバー上でホストされる、digna プラットフォームとやり取りしデータ品質指標を可視化するための Web ベースのインターフェース
+
+### リリース 2026.11 の新機能
+
+このリリースでは、digna Data Reconciliation、digna MCP Server を備えた digna Agentic、そして digna Engine が追加されました。digna Engine は digna の内部でデータをプロファイリングし、異なるデータベース技術間の参照整合性をチェックできます。詳細は[リリースノート](../../../changelog/Release_202611.md)を参照してください。
+
+インストールに関しては、本リリースで新しいリポジトリのマイグレーション機構、digna Engine 用の `config.toml` のオプションの `[duckdb]` セクション、そして新しいライセンスファイルが導入されます。それぞれについては[アップグレードのセクション](#upgrading-to-a-new-release)で説明します。
+
+### Windows や macOS をお探しですか？
+
+本ガイドは Linux 向けです。他のプラットフォームについては、[Windows インストールガイド](../../Windows/Release%202026.11/installation_guide_digna_windows_2026_11.md) または [macOS インストールガイド](../../macOS/Release%202026.11/installation_guide_digna_macos_2026_11.md) を参照してください。
+
+### 本ガイドはどのディストリビューション向けですか？
+
+手順は、最も一般的なサーバーファミリ 2 種に対して書かれています。両者で差がある場合は両方のコマンドを記載しています:
+
+- **Debian 系** — Debian、Ubuntu。パッケージマネージャ: `apt`
+- **RHEL 系** — Red Hat Enterprise Linux、Rocky Linux、AlmaLinux、Fedora。パッケージマネージャ: `dnf`
+
+`systemd` を採用している現代的なディストリビューションであれば動作します。変更されるのはパッケージ名と一部の設定パスだけです。
+
+---
+
+## システム要件 {: #system-requirements }
+
+インストールを開始する前に、システムが次の最小要件を満たしていることを確認してください:
+
+| 要件 | 仕様 |
+|---|---|
+| **オペレーティングシステム** | Ubuntu 22.04 LTS 以降、Debian 12 以降、RHEL 9 / Rocky 9 / AlmaLinux 9 以降 |
+| **アーキテクチャ** | x86_64 (amd64) または arm64 |
+| **Init システム** | systemd |
+| **メモリ（最小構成）** | 16 GB RAM |
+| **ディスク容量** | 10 GB の空きストレージ |
+| **データベース** | PostgreSQL Server 12 以降 |
+| **Web サーバー** | nginx、Apache httpd、または同等のもの |
+
+!!! info "digna Engine"
+
+    プロファイリングの場所として digna Engine を使用するデータベース接続は、digna ホスト自体でプロファイリングされます。そのためのメモリとディスク容量を追加で見込んでください。参照: [\[duckdb\] セクション](#duckdb-section)。
+
+### データベースのインストール オプション
+
+**PostgreSQL が既にインストールされている場合:**
+既存の PostgreSQL サーバーに対して digna 用の新しいデータベースを追加できます。
+
+**digna と同じマシンに PostgreSQL をインストールする場合:**
+
+!!! info "推奨仕様"
+
+    - **メモリ**: 32 GB RAM（16 GB の代わりに）
+    - **ディスク容量**: 50 GB の空きストレージ（10 GB の代わりに）
+
+    これらの高めの仕様は、digna と PostgreSQL データベースが同一マシン上で同時に動作することを想定したものです。
+
+### ディストリビューションとアーキテクチャの確認
+
+本ガイドのいくつかのコマンドは Debian 系と RHEL 系で異なります。どちらを使用しているかを確認するには、次を実行してください:
+
+```bash
+cat /etc/os-release
+uname -m
+```
+
+- `ID=ubuntu` または `ID=debian` — `apt` コマンドを使用
+- `ID=rhel`、`rocky`、`almalinux` または `fedora` — `dnf` コマンドを使用
+- `x86_64` または `aarch64` — 必要なインストールパッケージのアーキテクチャ
+
+---
+
+## 事前準備 {: #pre-installation-setup }
+
+digna をインストールする前に、次の 2 つの主要な前提条件が整っていることを確認してください:
+
+1. **PostgreSQL サーバー** – 計算されたメトリクスやパフォーマンスデータを格納するため
+2. **Web サーバー** – digna Dashboard をホストするため
+
+これらのコンポーネントがまだセットアップされていない場合は、以下のセクションに従ってインストールと構成を行ってください。
+
+### パッケージインデックスの更新
+
+何かをインストールする前にパッケージリストを更新してください:
+
+```bash
+sudo apt update
+```
+```bash
+sudo dnf check-update
+```
+
+!!! note "注意"
+
+    本ガイド全体で、2 行並んだコマンドの最初の行は **Debian 系**、2 行目は **RHEL 系** 向けです。ご自身の環境に合う方だけを実行してください。
+
+---
+
+## PostgreSQL サーバーのセットアップ {: #postgresql-server-setup }
+
+### 既に PostgreSQL をお持ちの場合
+
+PostgreSQL がローカルで既にインストール済みで稼働している場合、またはマネージドなリモート PostgreSQL サーバーを使用している場合は、[次のセクション](#web-server-configuration)に進んでください。
+
+### PostgreSQL のインストール
+
+#### ステップ 1: サーバーパッケージのインストール
+
+```bash
+sudo apt install -y postgresql postgresql-contrib
+```
+```bash
+sudo dnf install -y postgresql-server postgresql-contrib
+```
+
+!!! tip "ヒント"
+
+    ディストリビューションのパッケージは最新の PostgreSQL リリースに追従していないことがあります。特定の新しいバージョンが必要な場合は、公式の [PostgreSQL apt または yum リポジトリ](https://www.postgresql.org/download/linux/) を使用してください。
+
+#### ステップ 2: データベースクラスタの初期化
+
+**Debian 系**では、パッケージが自動的にクラスタを作成して起動します — 次のステップへ進んでください。
+
+**RHEL 系**では、クラスタを明示的に作成する必要があります:
+
+```bash
+sudo postgresql-setup --initdb
+```
+
+#### ステップ 3: サービスの起動と有効化
+
+```bash
+sudo systemctl enable --now postgresql
+```
+
+これにより PostgreSQL が直ちに起動し、ブート時に自動的に再起動するよう設定されます。
+
+#### ステップ 4: インストールの確認
+
+```bash
+psql --version
+sudo systemctl status postgresql
+```
+
+PostgreSQL のバージョンと `active (running)` のサービスが表示されるはずです。
+
+#### ステップ 5: サーバーへの接続
+
+Linux の PostgreSQL パッケージは、クラスタを所有する `postgres` システムアカウントを作成します。次のようにして接続します:
+
+```bash
+sudo -u postgres psql
+```
+
+!!! note "注意 — ここは Windows と異なります"
+
+    Windows のインストーラーはセットアップ中に `postgres` スーパーユーザーのパスワードを設定するよう促します。Linux パッケージではそうではありません。代わりに、ローカル接続は **peer authentication** で認証されます: `postgres` OS ユーザーはパスワードなしで `postgres` データベースユーザーとして接続できます。
+
+    これが上記コマンドに `sudo -u postgres` を使う理由です。digna バックエンドは TCP 経由でユーザー名とパスワードで接続するため、[初回インストール](#initial-installation) で明示的な digna ユーザーを作成します。
+
+#### ステップ 6: ポートの確認
+
+デフォルトの PostgreSQL ポートは `5432` です。サーバーがどのポートで待ち受けているか確認するには:
+
+```bash
+sudo -u postgres psql -c "SHOW port;"
+```
+
+値を控えておいてください — digna バックエンドの設定時に必要です。
+
+#### ステップ 7: digna ユーザーのためのパスワード認証を有効にする
+
+digna は `digna_user` として TCP 経由で PostgreSQL に接続します。これは peer 認証ではなくパスワード認証が必要です。`pg_hba.conf` がそれを許可しているか確認してください。
+
+ファイルの場所を確認するには:
+
+```bash
+sudo -u postgres psql -c "SHOW hba_file;"
+```
+
+エディタで開き、ローカル TCP 行が `ident` ではなく `scram-sha-256`（古いサーバーでは `md5`）を使用していることを確認します:
+
+```
+# TYPE  DATABASE  USER  ADDRESS         METHOD
+host    all       all   127.0.0.1/32    scram-sha-256
+host    all       all   ::1/128         scram-sha-256
+```
+
+変更を行ったら PostgreSQL をリロードしてください:
+
+```bash
+sudo systemctl reload postgresql
+```
+
+!!! warning "重要"
+
+    digna が `FATAL: Ident authentication failed for user "digna_user"` を報告する場合、この設定が原因です。
+
+#### ステップ 8: PostgreSQL が別マシンで動作している場合
+
+異なるホストからの接続を受け入れるには、`postgresql.conf` の `listen_addresses` を設定し、`pg_hba.conf` にネットワークに一致する `host` 行を追加します:
+
+```
+listen_addresses = '*'
+```
+
+その後ファイアウォールでポートを開け、サービスを再起動します:
+
+```bash
+sudo ufw allow 5432/tcp
+```
+```bash
+sudo firewall-cmd --permanent --add-port=5432/tcp && sudo firewall-cmd --reload
+```
+```bash
+sudo systemctl restart postgresql
+```
+
+---
+
+## Web サーバーの構成 {: #web-server-configuration }
+
+digna はダッシュボードをホストするために Web サーバーを必要とします。次のオプションのいずれかを選択してください:
+
+- [nginx](#nginx-setup) — 軽量で推奨
+- [Apache httpd](#apache-setup) — 広く採用されている代替
+
+これらのうち **いずれか一つ** をインストールして構成すれば十分です。
+
+両セクションともダッシュボードが依存する次の 2 つを構成します:
+
+- **シングルページアプリケーションのフォールバック** — ダッシュボードの URL をリロードしても 404 が返らないようにする
+- **`.md` の MIME タイプ** — Markdown ファイルを正しく配信するため
+
+### nginx のセットアップ {: #nginx-setup }
+
+#### 概要
+
+nginx は静的な digna ダッシュボードの配信に適した軽量で高性能な Web サーバーです。
+
+#### インストール
+
+```bash
+sudo apt install -y nginx
+```
+```bash
+sudo dnf install -y nginx
+```
+
+#### nginx の起動
+
+```bash
+sudo systemctl enable --now nginx
+```
+
+#### インストールの確認
+
+1. ブラウザを開く
+2. `http://localhost` にアクセス
+3. nginx のウェルカムページが表示されるはずです
+
+#### ファイアウォールの開放
+
+サーバーが他のマシンから到達される場合、HTTP トラフィックを許可します:
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+```bash
+sudo firewall-cmd --permanent --add-service=http && sudo firewall-cmd --reload
+```
+
+#### ダッシュボード用のサイトを構成する
+
+nginx は両ディストリビューションファミリで `conf.d` ディレクトリ内のすべてのファイルを読み込みます。digna 用の専用設定ファイルを作成してください:
+
+```bash
+sudo nano /etc/nginx/conf.d/digna.conf
+```
+
+抽出した `dashboard` フォルダの実際のパスにある `/opt/digna/dashboard` を置き換えながら、以下を貼り付けてください:
+
+```nginx
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+
+    root   /opt/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "重要"
+
+    `try_files` ディレクティブがないと、ルート URL 以外のダッシュボードページをリロードすると 404 が返されます。これは Windows の IIS で必要な URL Rewrite モジュールに相当する nginx の設定です。
+
+#### デフォルトサイトを無効化する
+
+同じポートで `default_server` であるサーバーブロックは 1 つだけにできます。**Debian 系**では、パッケージ付属のデフォルトを削除して競合を避けてください:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+```
+
+**RHEL 系**では、`/etc/nginx/nginx.conf` 内の `server { ... }` ブロックをコメントアウトするか削除してください。
+
+#### 設定を反映する
+
+構文エラーがないかテストし、nginx をリロードします:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+### Apache httpd のセットアップ {: #apache-setup }
+
+#### 概要
+
+Apache httpd はサポートされるすべてのディストリビューションのデフォルトリポジトリで利用可能です。パッケージ名は Debian 系では `apache2`、RHEL 系では `httpd` です。
+
+#### インストール
+
+```bash
+sudo apt install -y apache2
+```
+```bash
+sudo dnf install -y httpd
+```
+
+#### Apache の起動
+
+```bash
+sudo systemctl enable --now apache2
+```
+```bash
+sudo systemctl enable --now httpd
+```
+
+#### インストールの確認
+
+1. ブラウザを開く
+2. `http://localhost` にアクセス
+3. ディストリビューションのデフォルトの Apache ページが表示されるはずです
+
+#### 必須: mod_rewrite を有効にする
+
+ダッシュボードは URL 書き換えを必要とします。
+
+**Debian 系**ではモジュールを有効化して再起動します:
+
+```bash
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
+
+**RHEL 系**では `mod_rewrite` はデフォルトで読み込まれています。確認するには:
+
+```bash
+httpd -M | grep rewrite
+```
+
+#### 必須: .htaccess の許可を有効にする
+
+ドキュメントルートの設定ファイルを開きます:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+```bash
+sudo nano /etc/httpd/conf/httpd.conf
+```
+
+ドキュメントルートをカバーする `<Directory>` ブロック（両ファミリとも `/var/www/html`）を見つけ、次のように変更します:
+
+```apache
+AllowOverride None
+```
+
+を:
+
+```apache
+AllowOverride All
+```
+
+#### 必須: Markdown ファイルの MIME タイプ
+
+同じファイルに次の行を追加して、Markdown ファイルが正しく配信されるようにします:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "重要"
+
+    この設定がないと、`.md` ファイルが正しく配信されない可能性があります。
+
+#### 設定を反映する
+
+構成の構文をチェックし、Apache を再起動します:
+
+```bash
+sudo apachectl configtest
+sudo systemctl restart apache2
+```
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
+
+---
+
+## 初回インストール {: #initial-installation }
+
+### ステップ 1: digna リポジトリのセットアップ
+
+digna リポジトリは、digna が計算するすべてのメトリクスを格納します。分析およびパフォーマンスデータの中央データベースとして機能します。
+
+#### リポジトリ用のスキーマとユーザーを作成する
+
+PostgreSQL クライアント（psql、pgAdmin など）を開き、以下の SQL コマンドを実行してください:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**以下のプレースホルダーを置き換えてください:**
+
+- `<digna_repo_schema>` — 希望するスキーマ名（例: `dignarepo`）
+- `<digna_repo_user>` — 希望するユーザー名（例: `digna_user`）
+- `<digna_repo_password>` — このユーザーのための安全なパスワード
+
+**例:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+シェルから一度に実行するには:
+
+```bash
+sudo -u postgres psql
+```
+
+その後 `postgres=#` プロンプトに文を貼り付け、終了するには `\q` と入力してください。
+
+!!! tip "ベストプラクティス"
+
+    データベースユーザーには強力で複雑なパスワードを使用してください。簡単に推測される認証情報は避けてください。
+
+---
+
+### ステップ 2: digna インストールパッケージを展開する
+
+1. 提供された digna インストール ZIP ファイルを見つけます
+2. 希望するインストール先（例: `/opt/digna`）に展開します
+3. 展開後、次の項目が存在するはずです:
+   - `dashboard/` — Web ダッシュボードインターフェース
+   - `digna` — メイン実行ファイル（バックエンド + CLI 統合）
+
+!!! info "設定ファイルとライセンスファイルはパッケージに含まれていません"
+
+    `config.toml` も `dashboard/dashboard_config.toml` もインストールパッケージには含まれていません。どちらも [バックエンドの設定](#backend-configuration) と [ダッシュボードの設定](#dashboard-configuration) でご自身で作成します。`license.toml` も同梱されていません。ステップ 3 で説明するとおり、digna から別途提供されます。
+
+シェルから展開するには:
+
+```bash
+sudo mkdir -p /opt/digna
+sudo unzip digna-2026.11-linux-x86_64.zip -d /opt/digna
+```
+
+!!! note "注意"
+
+    `unzip` がインストールされていない場合は、`sudo apt install -y unzip` または `sudo dnf install -y unzip` で追加してください。
+
+#### 実行ファイルに実行権を付与する
+
+アーカイブの転送方法によっては実行ビットが失われることがあります。明示的に設定してください:
+
+```bash
+cd /opt/digna
+sudo chmod +x digna
+```
+
+#### サービスアカウントを作成する
+
+本番環境では、バックエンドを専用の特権のないユーザーで実行することを推奨します:
+
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! note "注意"
+
+    RHEL 系では同等のシェルパスは `/sbin/nologin` です。
+
+### ステップ 3: ライセンスファイルのインストール
+
+!!! warning "重要"
+
+    ライセンスファイルはインストールパッケージに含まれておらず、digna から別途提供されます。
+
+1. 提供された `license.toml` ファイルを見つけます
+2. それを digna のインストールルートディレクトリ（`config.toml` と `digna` 実行ファイルがある場所）にコピーします
+
+**なぜ重要か:**
+ライセンスファイルには顧客情報、ライセンスの有効期限、デジタル署名が含まれています。**このファイルを変更しないでください** — 変更すると無効になります。
+
+**セットアップ後のディレクトリ構成:**
+
+```
+/opt/digna/
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+├── bin/                (service management scripts)
+└── dashboard/          (web interface)
+    └── (dashboard files)
+```
+
+---
+
+## バックエンドの設定 {: #backend-configuration }
+
+### ステップ 1: 設定ファイルを作成・編集する
+
+`config_template.toml` ファイルが digna インストールディレクトリに含まれています。これを `config.toml` にリネームするだけです。
+
+```bash
+cd /opt/digna
+sudo mv config_template.toml config.toml
+```
+
+**場所:** `/opt/digna/config.toml`
+
+テキストエディタで `config.toml` を開き、以下の各セクションを設定してください。
+
+#### [app] セクション
+
+このセクションは、ダッシュボードとバックエンド間のクロスオリジンリソース共有（CORS）を構成します:
+
+```toml
+[app]
+DIGNA_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+DIGNA_APP_CORS_ALLOW_CREDENTIALS = true
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_APP_CORS_ALLOW_ORIGINS` | ダッシュボードの URL | ダッシュボードの配信元 URL。それ以外のオリジンからのブラウザーリクエストは拒否されます |
+| `DIGNA_APP_CORS_ALLOW_CREDENTIALS` | `true` | 必須。ブラウザーが各リクエストでセッションクッキーを送信するために必要です |
+
+!!! note "注意"
+
+    ダッシュボードをデフォルトの HTTP ポートで nginx や Apache から提供している場合、許可するオリジンは `http://localhost` です — またはダッシュボードが他のマシンから到達される場合はサーバーの公開 URL を指定してください。
+
+!!! info "[app] セクションは省略可能です"
+
+    リリース 2026.11 以降、両方のキー、そして `[app]` セクション全体を省略できます。リバースプロキシがダッシュボードとバックエンドを 1 つのオリジンで配信する場合は、これが適切な構成です。その場合、ブラウザーはクロスオリジンリクエストを行わず、デフォルトではいずれも許可されません。
+
+#### [repo] セクション
+
+このセクションは PostgreSQL データベースへの接続を構成します:
+
+```toml
+[repo]
+DIGNA_REPO_HOST = "localhost"
+DIGNA_REPO_PORT = 5432
+DIGNA_REPO_DB = "postgres"
+DIGNA_REPO_SCHEMA = "dignarepo"
+DIGNA_REPO_USER = "digna_user"
+DIGNA_REPO_PASSWORD = "YourSecurePassword123!"
+DIGNA_REPO_SSLMODE = "prefer"
+DIGNA_REPO_NUM_CONNS = 16
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_REPO_HOST` | `localhost` または IP | PostgreSQL サーバーのホスト名/IP |
+| `DIGNA_REPO_PORT` | `5432` (デフォルト) | PostgreSQL のポート |
+| `DIGNA_REPO_DB` | `postgres` | データベース名 |
+| `DIGNA_REPO_SCHEMA` | `dignarepo` | 先に作成したスキーマ |
+| `DIGNA_REPO_USER` | `digna_user` | PostgreSQL セットアップで作成したユーザー |
+| `DIGNA_REPO_PASSWORD` | ご自身のパスワード | スキーマ作成時に設定したパスワード |
+| `DIGNA_REPO_SSLMODE` | `prefer` (デフォルト) | 省略可能。PostgreSQL の SSL モード: `disable`、`allow`、`prefer`、`require`、`verify-ca` または `verify-full` |
+| `DIGNA_REPO_NUM_CONNS` | `16` (デフォルト) | 省略可能。digna がリポジトリに対して開いたままにする接続の数 |
+
+!!! tip "ベストプラクティス"
+
+    `config.toml` はプレーンテキストでデータベースパスワードを含みます。サービスアカウントのみが読めるように権限を制限してください:
+
+    ```bash
+    sudo chown digna:digna /opt/digna/config.toml
+    sudo chmod 600 /opt/digna/config.toml
+    ```
+
+#### [base] セクション
+
+このセクションにはセキュリティ、クッキー、検査の設定が含まれます:
+
+```toml
+[base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
+DIGNA_COOKIE_DOMAIN = "localhost"
+DIGNA_COOKIE_SECURE = false
+DIGNA_COOKIE_HTTPONLY = true
+DIGNA_TOKEN_EXPIRES_IN = 86400
+DIGNA_MAX_WORKERS = 4
+DIGNA_FRONTEND_BASEURL = "http://localhost/"
+DIGNA_SOURCE_QUERY_TIMEOUT_SEC = 3600
+DIGNA_SOURCE_LOGIN_TIMEOUT_SEC = 30
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_FERNET_KEY` | 上記の値 | 以前のリリースで使用されていた暗号化の鍵。必ず指定する必要があるため、上記の値をそのまま使用してください |
+| `DIGNA_COOKIE_DOMAIN` | `localhost` | ダッシュボードにアクセスする際のホスト。`""` を指定するとドメインは設定されません。ダッシュボードとバックエンドを 1 つのオリジンで配信するプロキシの背後では、これが適切な設定です |
+| `DIGNA_COOKIE_SECURE` | `false`（HTTP） / `true`（HTTPS） | digna を HTTPS で配信する場合は必ず `true` にしてください |
+| `DIGNA_COOKIE_HTTPONLY` | `true` | セッションクッキーをスクリプトから参照できないようにします |
+| `DIGNA_TOKEN_EXPIRES_IN` | `86400`（24 時間） | セッションのタイムアウト（秒） |
+| `DIGNA_MAX_WORKERS` | CPU コア数 - 1 | 同時に実行できる検査の数 |
+| `DIGNA_FRONTEND_BASEURL` | ダッシュボードの URL | 必須。通知メッセージ内のリンクに使用されるため、受信者が開ける URL である必要があります |
+| `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` | `3600` (デフォルト) | 省略可能。ソースデータベースに対する 1 つのクエリが中止されるまでに実行できる秒数。`0` でタイムアウトを無効にします |
+| `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` | `30` (デフォルト) | 省略可能。ソースデータベースへの接続を待機する秒数。`0` の場合は無期限に待機します |
+
+!!! tip "ヒント"
+
+    サーバー上の CPU コア数を確認するには `nproc` を実行してください。
+
+#### [encryption] セクション
+
+このセクションには、リポジトリに保存された機密値を暗号化するための鍵が含まれます。**必須**です。鍵が欠けている場合、`config check` は `[encryption]` セクションを FAILED として報告します。
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 エンコードされた鍵 | digna リポジトリに保存された機密値を暗号化します |
+
+!!! warning "config.toml を保護する"
+
+    この鍵は固定値で、すべての digna インストールで同一であり、リポジトリ内の機密値を復号するのはこの鍵です。`config.toml` へのアクセスを digna を実行するアカウントに限定し、バージョン管理や共有ドライブには置かず、リポジトリ本体より安全性の低い場所に保管されるバックアップからは除外してください。
+
+#### [logging] セクション
+
+このセクションはログ動作を設定します:
+
+```toml
+[logging]
+DIGNA_LOGGING_MODE = "INFO"
+DIGNA_LOGGING_DIR = "logs"
+DIGNA_LOGGING_MAX_FILES = 30
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_LOGGING_MODE` | `INFO` または `DEBUG` | 本番は `INFO`、トラブルシューティング時は `DEBUG`。`TRACE`、`WARN`、`ERROR` も指定できます |
+| `DIGNA_LOGGING_DIR` | `logs` (デフォルト) | 省略可能。ローテーションされるログファイルのディレクトリ（作業ディレクトリからの相対パス） |
+| `DIGNA_LOGGING_MAX_FILES` | `30` (デフォルト) | 省略可能。保持するローテーション済みログファイルの数 |
+
+#### [duckdb] セクション（省略可能） {: #duckdb-section }
+
+リリース 2026.11 の新機能です。このセクションでは **digna Engine** のリソースを設定します。digna Engine は、プロファイリングの場所が **digna Engine** であるデータベース接続について digna の内部でデータをプロファイリングし、異なるデータベース接続上のデータソース間で参照整合性チェックを実行します。参照:
+[プロファイリングの場所](../../../platform/profiling/profiling_location.md)。
+
+このセクションは省略可能です。省略した場合は、以下のデフォルトが適用されます。
+
+```toml
+[duckdb]
+DIGNA_DUCKDB_MEMORY_LIMIT_MB = 1024
+DIGNA_DUCKDB_TEMP_DIRECTORY = "/opt/digna/tmp"
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_DUCKDB_MEMORY_LIMIT_MB` | `1024` (デフォルト) | 1 回の digna Engine の実行が使用できるメモリ（MB）。同時に最大 `DIGNA_MAX_WORKERS` 個の実行がアクティブになります |
+| `DIGNA_DUCKDB_TEMP_DIRECTORY` | デフォルト: システムの一時ディレクトリ（`$TMPDIR`、未設定の場合は `/tmp`） | データがメモリに収まらない場合に一時ファイルを置くディレクトリ |
+
+!!! tip "digna Engine のサイジング"
+
+    digna 自体が使用するメモリに加えて、digna ホストに最大 `DIGNA_MAX_WORKERS` × `DIGNA_DUCKDB_MEMORY_LIMIT_MB` のメモリを見込んでください。また一時ディレクトリには、digna Engine を使用するデータソースのうち最大の検査対象日のデータを保持できるだけの空きディスク容量が必要です。`DIGNA_DUCKDB_TEMP_DIRECTORY` は、その容量があり、digna を実行するアカウントが書き込めるディスクを指すように設定してください:
+
+    ```bash
+    sudo mkdir -p /opt/digna/tmp
+    sudo chown digna:digna /opt/digna/tmp
+    ```
+
+    このセクションが必要なのは、少なくとも 1 つのデータベース接続が digna Engine を使用する場合、または参照整合性チェックが異なる接続上のデータソースを比較する場合のみです。
+
+---
+
+### ステップ 2: 構成を検証する
+
+リポジトリを初期化する前に、`config.toml` が完全で正しく構成されていることを確認します。digna のインストールディレクトリで次を実行します:
+
+```bash
+./digna config check
+```
+
+各セクションは個別に検証されるため、1 つの誤りが他のセクションの状態を隠すことはありません:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+ - Template overrides: OK
+ - Unknown keys: OK
+
+Overall: OK
+```
+
+FAILED と報告された箇所をすべて修正し、続行する前にコマンドを再実行してください。**Unknown keys** の下に表示される WARNING は、digna が読み取らない `config.toml` 内のキーを示します。これらは効果がないため、削除するかスペルを修正してください。オプションの完全な一覧は [CLI リファレンス](../../../cli/Command_Line_Interface_202611.md)にあります。
+
+### ステップ 3: リポジトリの初期化
+
+1. ターミナルを開く
+2. digna のインストールディレクトリ（`config.toml` と `digna` 実行ファイルがある場所）に移動
+3. 接続テストを実行:
+
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+新しいスキーマでは、コマンドは接続したうえで、リポジトリがまだインストールされていないことを報告します:
+
+```text
+Error: No repo installed. Use the 'digna repo upgrade' command to install it.
+```
+
+この時点ではこれが想定どおりの結果で、digna が PostgreSQL とスキーマに到達できることを示しています。代わりに接続エラーや認証エラーが表示される場合は、`[repo]` セクションまたは PostgreSQL のセットアップに原因があります。
+
+!!! note "注意"
+
+    Linux ではカレントディレクトリは PATH に含まれていないため、実行ファイルは `./digna` として呼び出します。どこでも短い形式を使いたい場合は、シンボリックリンクを追加してください:
+
+    ```bash
+    sudo ln -s /opt/digna/digna /usr/local/bin/digna
+    ```
+
+### ステップ 4: リポジトリスキーマのインストール
+
+同じディレクトリで次を実行します:
+
+```bash
+./digna repo upgrade
+```
+
+このコマンドはリポジトリスキーマに必要なテーブルをインストールし、最後に次のように表示します:
+
+```text
+✅ Repo schema 'dignarepo' is up to date.
+```
+
+!!! note "repo upgrade はインストールとアップグレードの両方を行います"
+
+    リリース 2026.11 以降、`repo upgrade` は新しいリポジトリのインストールと既存のリポジトリのアップグレードの両方を行います。`repo install` も同じコマンドの別名として引き続き使用できます。
+
+### ステップ 5: 管理者ユーザーの作成
+
+管理者ユーザーはリポジトリスキーマに対して直接作成されるため、この時点でサーバーを起動しておく必要はありません。digna のインストールディレクトリで次を実行します:
+
+```bash
+./digna user add <email> <password> "<display_name>" --admin
+```
+
+**例:**
+
+```bash
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
+```
+
+これにより、メールアドレス `admin@example.com` の管理者権限を持つユーザーが作成されます。
+
+!!! tip "ヒント"
+
+    パスワードはシングルクォートで囲んでください。`bash` や `zsh` は `!`、`$`、`*` などの文字を特別扱いするため、引用符なしだと正しく渡らないことがあります。
+
+!!! tip "ベストプラクティス"
+
+    大文字・小文字・数字・特殊文字を混ぜた強力なパスワードを使用してください。
+
+### ステップ 6: digna サーバーの起動
+
+digna インストールディレクトリでサーバーを起動します:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**パラメーター:**
+- `--address` — サーバーのホスト名/IP（デフォルト `127.0.0.1`）
+- `--port` — サーバーのポート（デフォルト `8000`）
+
+サーバーが起動すると、待ち受けているアドレスが表示されます:
+
+```text
+Server running on http://127.0.0.1:8082
+```
+
+!!! tip "ヒント"
+
+    ダッシュボードがバックエンドと別マシンで提供されている場合、API ポートもファイアウォールで開放してください:
+
+    ```bash
+    sudo ufw allow 8082/tcp
+    ```
+    ```bash
+    sudo firewall-cmd --permanent --add-port=8082/tcp && sudo firewall-cmd --reload
+    ```
+
+!!! note "サーバーはターミナルを占有します"
+
+    `serve` はフォアグラウンドで実行され、++ctrl+c++ で停止するまで動作し続けます。セットアップを終えるまで実行したままにしてください。起動時に自動的に開始する方法は次を参照してください: [digna を systemd サービスとして実行する](#running-digna-as-a-systemd-service).
+
+---
+
+## ダッシュボードの設定 {: #dashboard-configuration }
+
+### ステップ 1: ダッシュボードを Web サーバーにデプロイする
+
+digna ダッシュボードは独自の設定を `dashboard/dashboard_config.toml` から読み込みます。このファイルはインストールパッケージに含まれていないため、`dashboard/` ディレクトリ内にダッシュボードのファイルと並べて作成します。
+
+その内容は [シングルサインオン](../../../sso/overview.md) で説明しています。このファイルが必要になるのもそこです。このファイルには、ダッシュボードが提供するログイン方法と、マルチインスタンス構成の場合はバックエンドへの接続先が記述されます。
+
+利用する Web サーバーを選び、該当するデプロイ手順に従ってください。
+
+#### nginx にデプロイする場合
+
+[nginx のセットアップ](#nginx-setup) に従った場合、サーバーブロックはすでに `dashboard` フォルダを指しているのでコピーは不要です。
+
+1. **パスを確認**
+   - `/etc/nginx/conf.d/digna.conf` を開く
+   - `root` が展開した `dashboard` フォルダを指しているか確認
+
+2. **フォルダが読み取り可能であることを確認**
+   ```bash
+   sudo chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **nginx をリロード**
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+4. **インストールのテスト**
+   - ブラウザを開く
+   - `http://localhost`（または設定した URL）にアクセス
+   - digna ダッシュボードのログインページが表示されるはずです
+
+#### Apache httpd にデプロイする場合
+
+1. **ダッシュボードをドキュメントルートにコピー**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /var/www/html/digna
+   ```
+
+2. **リライトルールの追加**
+
+   ブラウザリロード時にダッシュボードのルートが生きるよう、デプロイ先フォルダに `.htaccess` ファイルを作成します:
+
+   ```bash
+   sudo nano /var/www/html/digna/.htaccess
+   ```
+
+   以下を貼り付けてください:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **Apache を再起動**
+   ```bash
+   sudo systemctl restart apache2
+   ```
+   ```bash
+   sudo systemctl restart httpd
+   ```
+
+4. **ダッシュボードにアクセス**
+   - ブラウザを開く
+   - `http://localhost/digna` にアクセス
+   - digna ダッシュボードのログインページが表示されるはずです
+
+### ステップ 2: SELinux (RHEL 系のみ)
+
+RHEL、Rocky、AlmaLinux、Fedora では SELinux がデフォルトで enforcing になっており、Web サーバーが想定外の場所にあるファイルを読めないようブロックすることがあります。以下でアクティブか確認してください:
+
+```bash
+getenforce
+```
+
+結果が `Enforcing` で、ダッシュボードを `/opt/digna/dashboard` から配信している場合、Web サーバーが読み取れるようディレクトリにラベルを付けてください:
+
+```bash
+sudo semanage fcontext -a -t httpd_sys_content_t "/opt/digna/dashboard(/.*)?"
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+!!! note "注意"
+
+    `semanage` が見つからない場合は、`sudo dnf install -y policycoreutils-python-utils` でインストールしてください。
+
+!!! warning "重要"
+
+    新規に構成した RHEL サーバーでダッシュボードが **403 Forbidden** を返す場合、多くはファイル権限の問題ではなく SELinux のラベリング問題です。`sudo ausearch -m avc -ts recent` で確認してください。
+
+---
+
+## digna を systemd サービスとして実行する {: #running-digna-as-a-systemd-service }
+
+### なぜ digna をサービスとして実行するのか？
+
+digna バックエンドを systemd サービスとして実行すると次のメリットがあります:
+
+- マシン起動時に自動で開始される
+- ターミナルを開いておく必要なくバックグラウンドで実行される
+- 障害発生時に自動で再起動される
+- 標準の Linux サービス管理ツールである `systemctl` で管理できる
+
+### サービス管理ファイル
+
+必要なファイルはすべて digna インストールディレクトリの `bin/` にあります。
+
+利用可能なシェルスクリプトは次の通りです:
+
+- `install_service.sh` — digna を systemd に登録
+- `uninstall_service.sh` — サービスを登録解除
+- `start_service.sh` — 登録済みサービスを起動
+- `stop_service.sh` — 実行中のサービスを停止
+
+!!! warning "ルート権限が必要"
+
+    サービスは起動時に読み込まれるユニットファイルを `/etc/systemd/system` に書き込むため、すべてのスクリプトは `sudo` で実行する必要があります。
+
+### スクリプトに実行権を付与する
+
+展開によって実行ビットが保持されないことがあります。初回使用前に:
+
+```bash
+cd /opt/digna/bin
+sudo chmod +x *.sh
+```
+
+### サービスのインストール
+
+1. **ターミナルを開く**
+
+2. **bin フォルダに移動**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **インストールスクリプトを実行**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+digna サーバーは systemd に登録され、自動起動が有効になります。サービスは直ちに開始されません — 起動方法は次のセクションを参照してください。
+
+### サービスの起動と停止
+
+#### サービスを開始するには
+
+1. ターミナルを開く
+2. `/opt/digna/bin` に移動
+3. 次を実行:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### サービスを停止するには
+
+1. ターミナルを開く
+2. `/opt/digna/bin` に移動
+3. 次を実行:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "ヒント"
+
+    アプリケーションファイルを更新する前は、必ずサービスを停止してください。
+
+### systemctl でのサービス管理
+
+登録後は、任意のディレクトリから標準の systemd コマンドでサービスを管理できます:
+
+```bash
+sudo systemctl start digna
+sudo systemctl stop digna
+sudo systemctl restart digna
+sudo systemctl status digna
+```
+
+### サービスの確認
+
+サービスが登録され、実行中であることを確認するには:
+
+```bash
+systemctl is-enabled digna
+systemctl is-active digna
+```
+
+`enabled` はブート時に開始されることを意味し、`active` は現在実行中であることを意味します。
+
+### サービスログの表示
+
+systemd はバックエンドがコンソールに出力する内容をすべてキャプチャします。ログを読むには:
+
+```bash
+sudo journalctl -u digna -n 100
+```
+
+問題を再現しながらログをリアルタイムで追うには:
+
+```bash
+sudo journalctl -u digna -f
+```
+
+!!! tip "ヒント"
+
+    サービスが起動してすぐ停止する問題を診断する最速の方法はこれです。リポジトリ接続失敗や `license.toml` の欠如はここに記録されます。
+
+### インストール先を移動する場合
+
+ユニットファイルには実行ファイルへの絶対パスが格納されるため、インストールを移動するにはサービスを再登録する必要があります:
+
+1. **現在のサービスをアンインストール**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **アプリケーションファイルを移動**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **サービスを再インストール**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **サービスを開始**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### サービスのアンインストール
+
+1. **実行中のサービスを停止**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **サービスをアンインストール**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+これで digna サーバーは systemd から登録解除されます。
+
+---
+
+## 新しいリリースへのアップグレード {: #upgrading-to-a-new-release }
+
+このセクションでは、リリース 2026.06 のインストールをリリース 2026.11 にアップグレードします。それより古いインストールの場合は、先に [リリース 2026.06 より前のリリースからのアップグレード](#upgrading-from-a-release-before-2026-06)をお読みください。
+
+### アップグレード前に
+
+**digna リポジトリのバックアップ作成は必須です**
+
+digna をアップグレードする前にリポジトリ（PostgreSQL）のバックアップを作成し、データ損失に備えてください。バックアップがあれば、アップグレード中に予期しない問題が発生しても復旧できます。
+
+シェルからバックアップを作成するには:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+**リリース 2026.11 用のライセンスファイルを依頼する**
+
+リリース 2026.11 には新しい `license.toml` が必要です。作業を始める前に digna チームに依頼し、[ステップ 7](#step-7-replace-the-license-file) で使えるよう準備しておいてください。
+
+### リリース 2026.06 より前のリリースからのアップグレード {: #upgrading-from-a-release-before-2026-06 }
+
+リリース 2026.06 では 3 つの変更が導入されました。古いインストールを 2026.11 に直接アップグレードする場合にも、これらは引き続き適用されます:
+
+- **ODBC のみ。** digna はすべてのソース技術に ODBC 経由で接続します。まだ ODBC を使用していないデータベース接続は、アップグレード後にすべて ODBC に変更する必要があります。自動変換はありません。事前に digna ホストに ODBC ドライバーをインストールし（参照: [digna ホストへの ODBC ドライバーのインストール](../../../databases/overview.md#install-the-driver)）、[技術別ガイド](../../../databases/overview.md#technology-guides) を参考に各接続のプロパティを用意しておいてください。Databricks Legacy コネクタは廃止されました。該当する接続は [Databricks](../../../databases/databricks_connector_guide.md) コネクタへ移行してください。
+- **単一の実行ファイル。** `dignabackend` と `dignacli` は、バックエンドと CLI を統合した単一の実行ファイル `digna` に置き換えられました。
+- **config.toml。** `[encryption]` セクションが必須となり、`DIGNA_APP_HOST` と `DIGNA_APP_PORT` は読み取られなくなりました。サーバーのアドレスとポートは `digna serve` から渡されます。ご自身のファイルを [バックエンドの設定](#backend-configuration)と比較してください。
+
+以下の手順では、古いインストールで異なる作業が必要な箇所を示します。ステップ 8 のリポジトリのアップグレードにより、以前のどのリリースのリポジトリも直接 2026.11 に更新されます。
+
+### アップグレード手順
+
+#### ステップ 1: digna サービスを停止する {: #step-1-stop-the-digna-service }
+
+digna が systemd サービスとして動作している場合、まず停止します:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+digna がフォアグラウンドで動作している場合は、そのターミナルウィンドウで ++ctrl+c++ を押してください。
+
+#### ステップ 2: 現在のインストールをバックアップする {: #step-2-backup-current-installation }
+
+digna のインストールディレクトリで、現在のインストールの実行ファイルとダッシュボードフォルダーの名前を変更し、新しいリリースを並べて配置できるようにします:
+
+```bash
+cd /opt/digna
+sudo mv digna digna_old
+sudo mv dashboard dashboard_old
+```
+
+`digna_old` はアップグレードを確認するまで、`dashboard_old` はそこから設定ファイルを復元するまで残してください（ステップ 4 を参照）。その後は両方とも削除してかまいません。
+
+!!! info "リリース 2026.06 より前のリリースからアップグレードする場合"
+
+    実行ファイルの代わりに、`dignabackend` と `dignacli` のフォルダー名を変更します:
+    `sudo mv dignabackend dignabackend_old` と `sudo mv dignacli dignacli_old`。どちらもリリース 2026.11 では使用されません。
+
+#### ステップ 3: 新バージョンの展開とデプロイ {: #step-3-extract-and-deploy-new-version }
+
+1. 新しい digna インストール ZIP ファイルを展開
+2. 新しい `digna` 実行ファイルと `dashboard` フォルダをインストールディレクトリにコピー
+3. 実行ビットとサービスアカウントの所有権を復元:
+
+```bash
+sudo chmod +x /opt/digna/digna
+sudo chown -R digna:digna /opt/digna
+```
+
+!!! warning "重要"
+
+    `config.toml` も `dashboard/dashboard_config.toml` も、インストール ZIP に含まれることは決してありません。digna チームはどちらのファイルも配布しません。そのため既存の設定はアップグレードの影響を受けず、名前を変更した `*_old` フォルダー内のコピーが手元にある唯一の設定になります。
+
+#### ステップ 4: 設定ファイルの復元 {: #step-4-restore-your-configuration-files }
+
+```bash
+sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+リリース 2026.11 では `config.toml` の変更は不要です。リリース 2026.06 で動作するファイルはそのまま動作し続けます。次の 2 つの変更は任意です:
+
+- データベース接続で digna Engine を使用し、そのデフォルトがホストに合わない場合は、[`[duckdb]` セクション](#duckdb-section) を追加します。
+- リバースプロキシがダッシュボードとバックエンドを 1 つのオリジンで配信する場合は、`[app]` セクションを省略します。
+
+!!! warning "digna が読み取らない設定"
+
+    本ガイドの以前の版には、digna が読み取らない設定がいくつか記載されていました。これらは効果がなく、ステップ 6 で `config check` が **Unknown keys** の下に一覧表示します。削除するか修正してください:
+
+    - `DIGNA_SCHEDULER_MAX_DELAY`、`DIGNA_CLEANUP_TIME`、`digna_COOKIE_PATH`、`digna_COOKIE_SAME_SITE`、`digna_APP_CORS_ALLOW_METHODS`、`digna_APP_CORS_ALLOW_HEADERS`、`digna_LOGGING_BACKUP_COUNT` は存在しません。削除してください。
+    - 設定名は大文字と小文字を区別します。digna が読み取るのは `DIGNA_REPO_HOST` であり、`digna_REPO_HOST` ではありません。[バックエンドの設定](#backend-configuration) と同様に、すべての名前を大文字で記述してください。
+
+!!! warning "シングルサインオン: [[oidc_clients]] を維持してください"
+
+    digna はシングルサインオンのプロバイダーを `[[oidc_clients]]` エントリのリストとして読み取ります。各エントリにはそれぞれ `DIGNA_OIDC_KEY` があります。本ガイドの以前の版に従ってプロバイダーを `[oidc_clients.<key>]` セクションに変更した場合は、元に戻してください。その形式が残っている間、`config check` は `OIDC config(s)` を FAILED と報告します:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    プロバイダーごとにこのエントリを繰り返し、各 `DIGNA_OIDC_KEY` を `dashboard_config.toml` の `key` と一致させてください。影響を受けるのはシングルサインオンを使用しているインストールのみです。
+
+#### ステップ 5: Web サーバーをリロードする {: #step-5-reload-the-web-server }
+
+ダッシュボードは静的ファイルの集まりであるため、Web サーバー（およびブラウザー）が以前のバージョンを配信し続けている可能性があります。`dashboard` フォルダーをホストしている Web サーバーをリロードまたは再起動し、ページをハードリフレッシュ（++ctrl+f5++）で再読み込みしてください。
+
+#### ステップ 6: 構成を検証する {: #step-6-validate-the-configuration }
+
+リポジトリに手を加える前に、`config.toml` が完全であることを確認します:
+
+```bash
+./digna config check
+```
+
+すべてのセクションが OK と報告される必要があります。FAILED と報告された箇所を修正し、**Unknown keys** の下に一覧表示されたキーを削除してから、続行する前にコマンドを再実行してください。
+
+#### ステップ 7: ライセンスファイルを置き換える {: #step-7-replace-the-license-file }
+
+通常、ライセンスファイルはリリースをまたいでそのまま使用できます。リリース 2026.11 は例外です。このリリースでは digna Data Reconciliation と digna Agentic という 2 つのライセンス対象モジュールが追加され、2026.11 より前に発行されたライセンスにはこれらが含まれていません。digna チームがリリース 2026.11 用に提供した `license.toml` をインストールディレクトリにコピーし、古いものを置き換えてください:
+
+```bash
+sudo cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "以前のライセンスを使い続けないでください"
+
+    以前のライセンスのままでも digna は起動しますが、digna Data Reconciliation と digna MCP Server は無効のままです。ライセンスを確認するすべてのコマンド（`user`、`inspection`、`repo`）は、確認に失敗するとリポジトリに手を加える前に中止されます。先に進む前に新しいライセンスを確認してください:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### ステップ 8: リポジトリスキーマのアップグレード {: #step-8-upgrade-the-repository-schema }
+
+digna のインストールディレクトリで次を実行します:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+リリース 2026.11 では、リポジトリスキーマをバージョン管理されたマイグレーションで管理します。以前のリリースからの最初のアップグレードでは、スキーマを従来方式の最終バージョンに更新し、それを起点として記録したうえで、リリース 2026.11 のマイグレーションを適用します。最後に次のように表示されます:
+
+```text
+✅ Baseline migration recorded as applied.
+✅ Repo schema 'dignarepo' is up to date.
+```
+
+既存のデータはすべて保持されます。リポジトリの状態はいつでも `./digna repo check` で確認できます。最後に適用されたマイグレーションと、保留中のマイグレーションが一覧表示されます。
+
+!!! warning "リポジトリが古いままでは digna は起動しません"
+
+    リリース 2026.11 以降、リポジトリのアップグレードが必要な間はサーバーが起動を拒否し、その旨を表示します。例:
+
+    ```text
+    Error: Legacy repo version 3.0.2 installed. Use the 'digna repo upgrade' command to upgrade it.
+    ```
+
+    サーバーまたはサービスを起動する前に `repo upgrade` を実行してください。
+
+#### ステップ 9: サービスの再起動 {: #step-9-restart-services }
+
+systemd サービスとして実行している場合:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+手動で実行している場合はサーバーを再起動します:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+nginx または Apache を使用している場合は、それぞれの Web サーバーをリロードしてください:
+
+```bash
+sudo systemctl reload nginx
+```
+```bash
+sudo systemctl restart apache2
+```
+
+RHEL 系で `dashboard` ディレクトリを置き換えた場合は、SELinux のラベリングを再適用してください:
+
+```bash
+sudo restorecon -Rv /opt/digna/dashboard
+```
+
+#### ステップ 10: アップグレードの確認 {: #step-10-verify-the-upgrade }
+
+1. 新しい実行ファイルのリリースを確認します:
+
+    ```bash
+    ./digna version
+    ```
+
+    1 行目が `Release: 2026.11` となっている必要があります。
+
+2. digna ダッシュボードにアクセスし、インターフェースが正しく読み込まれることを確認します。
+3. サーバーログにエラーがないか確認します:
+
+    ```bash
+    sudo journalctl -u digna -n 100
+    ```
+
+4. データベース接続をテストします。参照:
+   [接続のテスト](../../../databases/overview.md#testing-a-connection)。リリース 2026.06 より前のリリースからアップグレードした場合は、まだ ODBC を使用していなかった接続をすべて先に ODBC に切り替えてください。
+
+新しいモジュールを使い始めるには、[digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md)、digna MCP Server については [AI エージェントの接続](../../../platform/agentic/connect_ai_agent.md)、digna Engine については [プロファイリングの場所](../../../platform/profiling/profiling_location.md) を参照してください。
+
+---
+
 # Release 2026.06
 Source: https://docs.digna.ai/ja/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/
 
@@ -9993,6 +11923,982 @@ IIS や Tomcat を使用している場合は、それぞれの Web サーバー
 2. インターフェースが正しく読み込まれることを確認
 3. サーバーログにエラーがないか確認してください
 4. まだ ODBC を使っていなかった接続をすべて ODBC に切り替え、そのうえですべての接続をテストします。参照: [接続のテスト](../../../databases/overview.md#testing-a-connection)
+
+---
+
+# Release 2026.11
+Source: https://docs.digna.ai/ja/installation_deployment/Windows/Release%202026.11/installation_guide_digna_windows_2026_11/
+
+# Windows インストールガイド — digna リリース 2026.11
+
+**リリース:** 2026.11
+
+**最終更新日:** 2026年11月7日
+
+
+---
+
+## 目次
+
+1. [導入](#introduction)
+2. [システム要件](#system-requirements)
+3. [事前準備](#pre-installation-setup)
+4. [PostgreSQL サーバーのセットアップ](#postgresql-server-setup)
+5. [Web サーバーの設定](#web-server-configuration)
+6. [初期インストール](#initial-installation)
+7. [バックエンドの設定](#backend-configuration)
+8. [ダッシュボードの設定](#dashboard-configuration)
+9. [digna を Windows サービスとして実行する](#running-digna-as-a-windows-service)
+10. [新しいリリースへのアップグレード](#upgrading-to-a-new-release)
+
+---
+
+## 導入 {: #introduction }
+
+### digna について
+
+digna は、ウェアハウス、データレイク、レイクハウスなどさまざまなデータ環境におけるデータ品質管理を最適化するための包括的な AI 駆動プラットフォームです。高いスケーラビリティと適応性を備え、自動化、リアルタイム監視、および異常検知を通じて現代のデータ課題に対処します。
+
+digna は主に次の2つのコンポーネントで構成されています。
+
+- **digna**: アプリケーションの中核であり、データの処理と品質チェックの実行を担います。バックエンドとコマンドラインインターフェイスを単一の実行ファイルに統合し、以前のリリースで別々だった `dignabackend` と `dignacli` を置き換えます。
+- **dignadashboard**: Web サーバー上でホストされる Web ベースのインターフェースで、digna プラットフォームと対話しデータ品質メトリクスを可視化するためのユーザーフレンドリーな手段を提供します。
+
+### リリース 2026.11 の新機能
+
+このリリースでは、digna Data Reconciliation、digna MCP Server を備えた digna Agentic、そして digna Engine が追加されました。digna Engine は digna の内部でデータをプロファイリングし、異なるデータベース技術間の参照整合性をチェックできます。詳細は[リリースノート](../../../changelog/Release_202611.md)を参照してください。
+
+インストールに関しては、本リリースで新しいリポジトリのマイグレーション機構、digna Engine 用の `config.toml` のオプションの `[duckdb]` セクション、そして新しいライセンスファイルが導入されます。それぞれについては[アップグレードのセクション](#upgrading-to-a-new-release)で説明します。
+
+### macOS や Linux をお探しですか？
+
+本ガイドは Windows 向けです。他のプラットフォームについては、[macOS インストールガイド](../../macOS/Release%202026.11/installation_guide_digna_macos_2026_11.md) や [Linux インストールガイド](../../Linux/Release%202026.11/installation_guide_digna_linux_2026_11.md) を参照してください。
+
+---
+
+## システム要件 {: #system-requirements }
+
+インストールを始める前に、システムが以下の最小要件を満たしていることを確認してください。
+
+| 要件 | 仕様 |
+|---|---|
+| **オペレーティングシステム** | Windows Server または Windows 10/11 |
+| **メモリ（最小構成）** | 16 GB RAM |
+| **ディスク容量** | 10 GB の空きストレージ |
+| **データベース** | PostgreSQL Server 12 以上 |
+| **Web サーバー** | IIS、Apache Tomcat、または同等のもの |
+
+!!! info "digna Engine"
+
+    プロファイリングの場所として digna Engine を使用するデータベース接続は、digna ホスト自体でプロファイリングされます。そのためのメモリとディスク容量を追加で見込んでください。参照: [\[duckdb\] セクション](#duckdb-section)。
+
+### データベースのインストールオプション
+
+**既に PostgreSQL がインストール済みの場合:**
+既存の PostgreSQL サーバーに digna 用の新しいデータベースを追加できます。
+
+**digna と同じマシンに PostgreSQL をインストールする場合:**
+
+!!! info "推奨仕様"
+
+    - **メモリ**: 32 GB RAM（16 GB の代わり）
+    - **ディスク容量**: 50 GB の空きストレージ（10 GB の代わり）
+
+    これらの高めの仕様は、digna と PostgreSQL データベースの両方を同時に稼働させるために推奨されます。
+
+---
+
+## 事前準備 {: #pre-installation-setup }
+
+digna をインストールする前に、次の2つの重要な前提条件が整っていることを確認してください:
+
+1. **PostgreSQL サーバー** — 計算済みメトリクスとパフォーマンスデータの保存用
+2. **Web サーバー** — digna Dashboard のホスティング用
+
+これらのコンポーネントがまだセットアップされていない場合は、以下のセクションに従ってインストールおよび構成してください。
+
+---
+
+## PostgreSQL サーバーのセットアップ {: #postgresql-server-setup }
+
+### 既に PostgreSQL をお持ちの場合
+
+PostgreSQL がローカルで動作しているか、リモートで管理された PostgreSQL サーバーを使用している場合は、[次のセクション](#web-server-configuration)に進んでください。
+
+### PostgreSQL のインストール
+
+Windows に PostgreSQL をインストールする手順は次の通りです。
+
+#### ステップ 1: PostgreSQL をダウンロード
+
+1. [PostgreSQL Downloads page](https://www.postgresql.org/download/) にアクセス
+2. **Windows** を選択
+3. 最新のインストーラーをダウンロード
+
+#### ステップ 2: インストーラーを実行
+
+1. ダウンロードしたインストーラーをダブルクリック
+2. セットアップウィザードの指示に従う
+
+#### ステップ 3: インストール先ディレクトリを選択
+
+PostgreSQL をインストールするディレクトリを選択します。デフォルトの場所で問題ないことが多いです。
+
+#### ステップ 4: コンポーネントの選択
+
+標準的なセットアップでは、デフォルトのコンポーネントオプションのままで問題ありません。
+
+#### ステップ 5: PostgreSQL スーパーユーザーのパスワード設定
+
+PostgreSQL のスーパーユーザー（`postgres`）のパスワードを入力して確認します。**このパスワードは安全な場所に保管してください** — 後で必要になります。
+
+#### ステップ 6: ポート番号の設定
+
+デフォルトの PostgreSQL ポートは `5432` です。必要に応じてデフォルトのままか別のポートを指定できます。
+
+!!! tip "ヒント"
+
+    ポート 5432 が既に使用されている場合は、代替ポートを選択し、後で設定で使用するためにメモしておいてください。
+
+#### ステップ 7: ロケールの選択
+
+データベースのロケールを選択します。ほとんどのインストールではデフォルトで問題ありません。
+
+#### ステップ 8: インストールの完了
+
+残りのステップで **Next** をクリックし、完了したら **Finish** をクリックします。
+
+#### ステップ 9: インストールの確認
+
+コマンドプロンプトを開き、PostgreSQL がインストールされていることを確認します:
+
+```bash
+psql --version
+```
+
+インストールが成功していれば PostgreSQL のバージョンが表示されます。
+
+---
+
+## Web サーバーの設定 {: #web-server-configuration }
+
+digna はダッシュボードをホストするための Web サーバーを必要とします。次のいずれかを選択してください：
+
+- [Internet Information Services (IIS)](#iis-setup)
+- [Apache Tomcat](#apache-tomcat-setup)
+
+これらのうち **いずれか1つ** をインストールして構成すれば十分です。
+
+### IIS のセットアップ {: #iis-setup }
+
+#### 概要
+
+Internet Information Services (IIS) は、Web サイトや Web アプリケーションをホストするための Microsoft の Web サーバーです。
+
+#### IIS の有効化
+
+1. **コントロールパネルを開く**
+   - `Win + R` を押す
+   - `control` と入力して Enter
+
+2. **Windows の機能に移動**
+   - **プログラム** をクリック
+   - **Windows の機能の有効化または無効化** を選択
+
+3. **Internet Information Services を有効にする**
+   - リストを下にスクロールして **Internet Information Services (IIS)** を見つける
+   - チェックボックスをオンにして有効化する
+   - **+** をクリックして展開し、次のサブコンポーネントが選択されていることを確認します:
+     - **Web Management Tools**
+     - **World Wide Web Services**
+
+4. 変更を適用するには **OK** をクリック
+
+5. **IIS インストールの確認**
+   - ブラウザを開く
+   - `http://localhost` にアクセス
+   - IIS のウェルカムページが表示されるはずです
+
+#### 必須: URL Rewrite モジュール
+
+IIS には URL Rewrite コンポーネントが必要です。公式の Microsoft ページからダウンロードしてインストールしてください: [URL Rewrite モジュール](https://www.iis.net/downloads/microsoft/url-rewrite)
+
+#### 必須: Markdown ファイルの MIME タイプ
+
+IIS で Markdown ファイル（`.md`）を正しく配信するための設定:
+
+1. **IIS マネージャー** を開く（`Win + R` を押して `inetmgr` と入力して Enter）
+2. **該当サイト > MIME Types** に移動
+3. **Add...** をクリック
+4. 設定を行う:
+   - **File name extension**: `.md`
+   - **MIME type**: `text/markdown`
+
+!!! warning "重要"
+
+    この設定がないと、`.md` ファイルが正しく配信されない可能性があります。
+
+---
+
+### Apache Tomcat のセットアップ {: #apache-tomcat-setup }
+
+#### 概要
+
+Apache Tomcat はオープンソースの Java サーブレットコンテナ兼 Web サーバーです。
+
+#### インストール
+
+1. **Apache Tomcat をダウンロード**
+   - [Apache Tomcat Downloads](https://tomcat.apache.org/download-90.cgi) を参照
+   - Windows 用の ZIP 配布版をダウンロード
+
+2. **アーカイブを展開**
+   - ZIP ファイルをシステム上のディレクトリに展開
+   - 例: `C:\Program Files\Apache Tomcat`
+
+3. **Tomcat が動作していることを確認**
+   - ブラウザを開く
+   - `http://localhost:8080` にアクセス
+   - Apache Tomcat のウェルカムページが表示されるはずです
+
+!!! tip "ヒント"
+
+    Apache Tomcat は通常インストール後に自動的に起動します。起動していない場合は、`bin` フォルダに移動して `startup.bat` を実行してください。
+
+---
+
+## 初期インストール {: #initial-installation }
+
+### ステップ 1: digna リポジトリのセットアップ
+
+digna リポジトリは digna によって計算されたすべてのメトリクスを保存します。分析およびパフォーマンスデータの中央データベースとして機能します。
+
+#### リポジトリのスキーマとユーザーを作成
+
+PostgreSQL クライアント（pgAdmin、psql など）を開き、次の SQL コマンドを実行してください:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**以下のプレースホルダーを置き換えてください:**
+
+- `<digna_repo_schema>` — 希望するスキーマ名（例: `dignarepo`）
+- `<digna_repo_user>` — 希望するユーザー名（例: `digna_user`）
+- `<digna_repo_password>` — このユーザーの安全なパスワード
+
+**例:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+!!! tip "ベストプラクティス"
+
+    データベースユーザーには強力で複雑なパスワードを使用してください。簡単に推測できる資格情報は避けてください。
+
+---
+
+### ステップ 2: digna インストールパッケージを展開
+
+1. 提供された digna インストール ZIP ファイルを見つける
+2. 希望するインストール先に展開する
+3. 展開後、次の項目が存在するはずです:
+   - `dashboard/` — Web ダッシュボードインターフェース
+   - `digna` — メイン実行ファイル（バックエンド + CLI が統合）
+
+!!! info "設定ファイルとライセンスファイルはパッケージに含まれていません"
+
+    `config.toml` も `dashboard/dashboard_config.toml` もインストールパッケージには含まれていません。どちらも [バックエンドの設定](#backend-configuration) と [ダッシュボードの設定](#dashboard-configuration) でご自身で作成します。`license.toml` も同梱されていません。ステップ 3 で説明するとおり、digna から別途提供されます。
+
+### ステップ 3: ライセンスファイルをインストール
+
+!!! warning "重要"
+
+    ライセンスファイルはインストールパッケージに含まれていません。digna から別途提供されます。
+
+1. 提供された `license.toml` ファイルを見つける
+2. `config.toml` と `digna` 実行ファイルがある digna インストールディレクトリのルートにコピーする
+
+**これが重要な理由:**
+ライセンスファイルには顧客情報、ライセンスの有効期限、デジタル署名が含まれています。**このファイルを変更しないでください** — 変更すると無効になります。
+
+**セットアップ後のディレクトリ構成:**
+
+```
+digna_installation/
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+└── dashboard/          (web interface)
+    └── (dashboard files)
+```
+
+---
+
+## バックエンドの設定 {: #backend-configuration }
+
+### ステップ 1: 設定ファイルを作成して編集する
+
+`config_template.toml` ファイルが digna インストールディレクトリに同梱されています。これを `config.toml` にリネームしてください。
+
+**場所:** `digna_installation/config.toml`
+
+`config.toml` をテキストエディタで開き、以下の各セクションを設定します。
+
+#### [app] セクション
+
+このセクションは、ダッシュボードとバックエンド間のクロスオリジンリソース共有（CORS）を構成します:
+
+```toml
+[app]
+DIGNA_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+DIGNA_APP_CORS_ALLOW_CREDENTIALS = true
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_APP_CORS_ALLOW_ORIGINS` | ダッシュボードの URL | ダッシュボードの配信元 URL。それ以外のオリジンからのブラウザーリクエストは拒否されます |
+| `DIGNA_APP_CORS_ALLOW_CREDENTIALS` | `true` | 必須。ブラウザーが各リクエストでセッションクッキーを送信するために必要です |
+
+!!! info "[app] セクションは省略可能です"
+
+    リリース 2026.11 以降、両方のキー、そして `[app]` セクション全体を省略できます。リバースプロキシがダッシュボードとバックエンドを 1 つのオリジンで配信する場合は、これが適切な構成です。その場合、ブラウザーはクロスオリジンリクエストを行わず、デフォルトではいずれも許可されません。
+
+#### [repo] セクション
+
+このセクションは PostgreSQL データベースへの接続を設定します:
+
+```toml
+[repo]
+DIGNA_REPO_HOST = "localhost"
+DIGNA_REPO_PORT = 5432
+DIGNA_REPO_DB = "postgres"
+DIGNA_REPO_SCHEMA = "dignarepo"
+DIGNA_REPO_USER = "digna_user"
+DIGNA_REPO_PASSWORD = "YourSecurePassword123!"
+DIGNA_REPO_SSLMODE = "prefer"
+DIGNA_REPO_NUM_CONNS = 16
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_REPO_HOST` | `localhost` または IP | PostgreSQL サーバーのホスト名/IP |
+| `DIGNA_REPO_PORT` | `5432`（デフォルト） | PostgreSQL のポート |
+| `DIGNA_REPO_DB` | `postgres` | データベース名 |
+| `DIGNA_REPO_SCHEMA` | `dignarepo` | 先に作成したスキーマ |
+| `DIGNA_REPO_USER` | `digna_user` | PostgreSQL セットアップで作成したユーザー |
+| `DIGNA_REPO_PASSWORD` | あなたのパスワード | スキーマ作成時に設定したパスワード |
+| `DIGNA_REPO_SSLMODE` | `prefer`（デフォルト） | 省略可能。PostgreSQL の SSL モード: `disable`、`allow`、`prefer`、`require`、`verify-ca` または `verify-full` |
+| `DIGNA_REPO_NUM_CONNS` | `16`（デフォルト） | 省略可能。digna がリポジトリに対して開いたままにする接続の数 |
+
+#### [base] セクション
+
+このセクションはセキュリティ、クッキー、検査の設定を含みます:
+
+```toml
+[base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
+DIGNA_COOKIE_DOMAIN = "localhost"
+DIGNA_COOKIE_SECURE = false
+DIGNA_COOKIE_HTTPONLY = true
+DIGNA_TOKEN_EXPIRES_IN = 86400
+DIGNA_MAX_WORKERS = 4
+DIGNA_FRONTEND_BASEURL = "http://localhost/"
+DIGNA_SOURCE_QUERY_TIMEOUT_SEC = 3600
+DIGNA_SOURCE_LOGIN_TIMEOUT_SEC = 30
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_FERNET_KEY` | 上記の値 | 以前のリリースで使用されていた暗号化の鍵。必ず指定する必要があるため、上記の値をそのまま使用してください |
+| `DIGNA_COOKIE_DOMAIN` | `localhost` | ダッシュボードにアクセスする際のホスト。`""` を指定するとドメインは設定されません。ダッシュボードとバックエンドを 1 つのオリジンで配信するプロキシの背後では、これが適切な設定です |
+| `DIGNA_COOKIE_SECURE` | `false`（HTTP） / `true`（HTTPS） | digna を HTTPS で配信する場合は必ず `true` にしてください |
+| `DIGNA_COOKIE_HTTPONLY` | `true` | セッションクッキーをスクリプトから参照できないようにします |
+| `DIGNA_TOKEN_EXPIRES_IN` | `86400`（24 時間） | セッションの有効期限（秒） |
+| `DIGNA_MAX_WORKERS` | CPU コア数 - 1 | 同時に実行できる検査の数 |
+| `DIGNA_FRONTEND_BASEURL` | ダッシュボードの URL | 必須。通知メッセージ内のリンクに使用されるため、受信者が開ける URL である必要があります |
+| `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` | `3600`（デフォルト） | 省略可能。ソースデータベースに対する 1 つのクエリが中止されるまでに実行できる秒数。`0` でタイムアウトを無効にします |
+| `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` | `30`（デフォルト） | 省略可能。ソースデータベースへの接続を待機する秒数。`0` の場合は無期限に待機します |
+
+#### [encryption] セクション
+
+このセクションには、リポジトリに保存された機密値を暗号化するための鍵が含まれます。**必須**です。鍵が欠けている場合、`config check` は `[encryption]` セクションを FAILED として報告します。
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 エンコードされた鍵 | digna リポジトリに保存された機密値を暗号化します |
+
+!!! warning "config.toml を保護する"
+
+    この鍵は固定値で、すべての digna インストールで同一であり、リポジトリ内の機密値を復号するのはこの鍵です。`config.toml` へのアクセスを digna を実行するアカウントに限定し、バージョン管理や共有ドライブには置かず、リポジトリ本体より安全性の低い場所に保管されるバックアップからは除外してください。
+
+#### [logging] セクション
+
+このセクションはロギングの動作を設定します:
+
+```toml
+[logging]
+DIGNA_LOGGING_MODE = "INFO"
+DIGNA_LOGGING_DIR = "logs"
+DIGNA_LOGGING_MAX_FILES = 30
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_LOGGING_MODE` | `INFO` または `DEBUG` | 本番では `INFO`、トラブルシューティング時は `DEBUG`。`TRACE`、`WARN`、`ERROR` も指定できます |
+| `DIGNA_LOGGING_DIR` | `logs`（デフォルト） | 省略可能。ローテーションされるログファイルのディレクトリ（作業ディレクトリからの相対パス） |
+| `DIGNA_LOGGING_MAX_FILES` | `30`（デフォルト） | 省略可能。保持するローテーション済みログファイルの数 |
+
+!!! warning "サービスとして実行する場合はログディレクトリを維持してください"
+
+    Windows サービスにはコンソールがないため、ログファイルがサービスの動作を記録する唯一の手段です。`DIGNA_LOGGING_DIR` を空文字列に設定しないでください。空文字列にするとログファイルが無効になります。
+
+#### [duckdb] セクション（省略可能） {: #duckdb-section }
+
+リリース 2026.11 の新機能です。このセクションでは **digna Engine** のリソースを設定します。digna Engine は、プロファイリングの場所が **digna Engine** であるデータベース接続について digna の内部でデータをプロファイリングし、異なるデータベース接続上のデータソース間で参照整合性チェックを実行します。参照: [プロファイリングの場所](../../../platform/profiling/profiling_location.md)。
+
+このセクションは省略可能です。省略した場合は、以下のデフォルトが適用されます。
+
+```toml
+[duckdb]
+DIGNA_DUCKDB_MEMORY_LIMIT_MB = 1024
+DIGNA_DUCKDB_TEMP_DIRECTORY = "C:\\path\\to\\digna\\tmp"
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_DUCKDB_MEMORY_LIMIT_MB` | `1024`（デフォルト） | 1 回の digna Engine の実行が使用できるメモリ（MB）。同時に最大 `DIGNA_MAX_WORKERS` 個の実行がアクティブになります |
+| `DIGNA_DUCKDB_TEMP_DIRECTORY` | デフォルト: digna を実行するアカウントの一時ディレクトリ（`%TEMP%`） | データがメモリに収まらない場合に一時ファイルを置くディレクトリ |
+
+!!! tip "digna Engine のサイジング"
+
+    digna 自体が使用するメモリに加えて、digna ホストに最大 `DIGNA_MAX_WORKERS` × `DIGNA_DUCKDB_MEMORY_LIMIT_MB` のメモリを見込んでください。また一時ディレクトリには、digna Engine を使用するデータソースのうち最大の検査対象日のデータを保持できるだけの空きディスク容量が必要です。`DIGNA_DUCKDB_TEMP_DIRECTORY` は、その容量があり、digna を実行するアカウントが書き込めるディスクを指すように設定してください:
+
+    ```cmd
+    mkdir C:\path\to\digna\tmp
+    ```
+
+    このセクションが必要なのは、少なくとも 1 つのデータベース接続が digna Engine を使用する場合、または参照整合性チェックが異なる接続上のデータソースを比較する場合のみです。
+
+---
+
+### ステップ 2: 構成を検証する
+
+リポジトリを初期化する前に、`config.toml` が完全で正しく構成されていることを確認します。digna のインストールディレクトリで次を実行します:
+
+```bash
+digna config check
+```
+
+各セクションは個別に検証されるため、1 つの誤りが他のセクションの状態を隠すことはありません:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+ - Template overrides: OK
+ - Unknown keys: OK
+
+Overall: OK
+```
+
+FAILED と報告された箇所をすべて修正し、続行する前にコマンドを再実行してください。**Unknown keys** の下に表示される WARNING は、digna が読み取らない `config.toml` 内のキーを示します。これらは効果がないため、削除するかスペルを修正してください。オプションの完全な一覧は [CLI リファレンス](../../../cli/Command_Line_Interface_202611.md)にあります。
+
+### ステップ 3: リポジトリの初期接続確認
+
+1. コマンドプロンプトを開く
+2. digna のインストールディレクトリ（`config.toml` と `digna` 実行ファイルがある場所）に移動
+3. 接続テストを実行:
+
+```bash
+digna repo check
+```
+
+新しいスキーマでは、コマンドは接続したうえで、リポジトリがまだインストールされていないことを報告します:
+
+```text
+Error: No repo installed. Use the 'digna repo upgrade' command to install it.
+```
+
+この時点ではこれが想定どおりの結果で、digna が PostgreSQL とスキーマに到達できることを示しています。代わりに接続エラーや認証エラーが表示される場合は、`[repo]` セクションまたは PostgreSQL のセットアップに原因があります。
+
+### ステップ 4: リポジトリスキーマのインストール
+
+同じディレクトリで次を実行します:
+
+```bash
+digna repo upgrade
+```
+
+このコマンドはリポジトリスキーマに必要なテーブルをインストールし、最後に次のように表示します:
+
+```text
+✅ Repo schema 'dignarepo' is up to date.
+```
+
+!!! note "repo upgrade はインストールとアップグレードの両方を行います"
+
+    リリース 2026.11 以降、`repo upgrade` は新しいリポジトリのインストールと既存のリポジトリのアップグレードの両方を行います。`repo install` も同じコマンドの別名として引き続き使用できます。
+
+### ステップ 5: 管理者ユーザーを作成
+
+管理者ユーザーはリポジトリスキーマに対して直接作成されるため、この時点でサーバーを起動しておく必要はありません。digna インストールディレクトリで次を実行します:
+
+```bash
+digna user add <email> <password> "<display_name>" --admin
+```
+
+**例:**
+
+```bash
+digna user add admin@example.com "AdminPassword123!" "Admin User" --admin
+```
+
+これで完全な管理権限を持つユーザーが作成されます。
+
+!!! tip "ベストプラクティス"
+
+    大文字・小文字・数字・特殊文字を組み合わせた強力なパスワードを使用してください。
+
+### ステップ 6: digna サーバーを起動
+
+digna インストールディレクトリで、サーバーを次のように起動します:
+
+```bash
+digna serve --address <host> --port <port>
+```
+
+**パラメータ:**
+- `--address` — サーバーのホスト名/IP（デフォルト `127.0.0.1`）
+- `--port` — サーバーのポート（デフォルト `8000`）
+
+サーバーが起動すると、待ち受けているアドレスが表示されます:
+
+```text
+Server running on http://127.0.0.1:8082
+```
+
+!!! note "サーバーはターミナルを占有します"
+
+    `serve` はフォアグラウンドで実行され、++ctrl+c++ で停止するまで動作し続けます。セットアップを終えるまで実行したままにしてください。起動時に自動的に開始する方法は次を参照してください: [digna を Windows サービスとして実行する](#running-digna-as-a-windows-service).
+
+---
+
+## ダッシュボードの設定 {: #dashboard-configuration }
+
+### ステップ 1: ダッシュボードを Web サーバーにデプロイ
+
+digna ダッシュボードは独自の設定を `dashboard/dashboard_config.toml` から読み込みます。このファイルはインストールパッケージに含まれていないため、`dashboard/` ディレクトリ内にダッシュボードのファイルと並べて作成します。
+
+その内容は [シングルサインオン](../../../sso/overview.md) で説明しています。このファイルが必要になるのもそこです。このファイルには、ダッシュボードが提供するログイン方法と、マルチインスタンス構成の場合はバックエンドへの接続先が記述されます。
+
+使用する Web サーバーを選択し、該当するデプロイ手順に従ってください。
+
+#### IIS へデプロイする場合
+
+1. **IIS マネージャーを開く**
+   - `Win + R` を押して `inetmgr` と入力して Enter
+
+2. **新しいサイトを作成**
+   - 左側パネルで **Sites** を右クリック
+   - **Add Website...** を選択
+
+3. **サイトを構成**
+   - **Site Name**: 名前を入力（例: "dignaDashboard"）
+   - **Physical Path**: Browse をクリックして `dashboard` フォルダを選択
+   - **Binding**: IP アドレスとポートを設定（HTTP のデフォルトはポート 80、HTTPS は 443）
+
+4. **サイトを開始**
+   - **OK** をクリックしてサイトを作成
+   - 新しいサイトを右クリックして **Start** を選択
+
+5. **インストールのテスト**
+   - ブラウザを開く
+   - `http://localhost`（または設定した URL）にアクセス
+   - digna ダッシュボードのログインページが表示されるはずです
+
+#### Apache Tomcat へデプロイする場合
+
+1. **ダッシュボードを Tomcat にコピー**
+   - `dashboard` フォルダを Tomcat の `webapps` ディレクトリにコピー
+   - 必要に応じて名前を変更（例: `digna`）
+   - 例: `C:\Program Files\Apache Tomcat\webapps\digna`
+
+2. **デプロイの確認**
+   - Tomcat 管理ページ（http://localhost:8080）をリフレッシュまたはリロード
+   - 「digna」（または指定した名前）がデプロイ済みアプリケーションとして表示されるはずです
+
+3. **ダッシュボードへアクセス**
+   - ブラウザを開く
+   - `http://localhost:8080/digna` にアクセス
+   - digna ダッシュボードのログインページが表示されるはずです
+
+---
+
+## digna を Windows サービスとして実行する {: #running-digna-as-a-windows-service }
+
+### なぜ Windows サービスを使うのか？
+
+digna バックエンドを Windows サービスとして実行すると、次の利点があります:
+- サーバー起動時に自動的に開始される
+- 開いたコマンドプロンプトがなくてもバックグラウンドで実行される
+- クラッシュ時に自動で再起動される
+- Windows サービスから管理できる
+
+### `windows` コマンド
+
+サービスは `digna` 実行ファイル自体が `digna windows` サブコマンドを通じて管理します。実行するバッチファイルはありません。
+
+| コマンド | 用途 |
+|---|---|
+| `digna windows install` | digna を Windows サービスとして登録する |
+| `digna windows start` | 登録済みのサービスを開始する |
+| `digna windows stop` | 実行中のサービスを停止する |
+| `digna windows uninstall` | サービスの登録を解除する |
+
+!!! warning "管理者権限が必要"
+
+    4 つのコマンドはすべて、管理者として開いたコマンドプロンプトから実行する必要があります。
+
+どのコマンドも `--name` を受け付け、既定以外の名前で登録したサービスを指定できます。オプションの完全な一覧は [CLI リファレンス](../../../cli/Command_Line_Interface_202611.md) にあります。
+
+### サービスのインストール
+
+1. **管理者としてコマンドプロンプトを開く**
+   - コマンドプロンプトを右クリック
+   - 「管理者として実行」を選択
+
+2. **digna のインストールディレクトリに移動**
+   ```bash
+   cd C:\path\to\digna
+   ```
+
+3. **サービスを登録**
+   ```bash
+   digna windows install
+   ```
+
+!!! important "既定値が適さない場合はアドレスとポートを指定してください"
+
+    `install` はアドレスとポートをサービスの登録情報に記録し、サービスは記録されたとおりの値にバインドします。既定値は `127.0.0.1` と `8000` で、そのマシン自身からの接続しか受け付けません。別のホスト上のダッシュボードからは到達できないため、バックエンドが待ち受けるアドレスを指定してください:
+
+    ```bash
+    digna windows install --address 0.0.0.0 --port 8082
+    ```
+
+    これらの値は `config.toml` からは読み込まれません。後で変更するには、サービスをアンインストールし、新しい値で再度インストールしてください。
+
+サービスは**自動起動**で登録されるため、Windows とともに起動します。登録直後には開始されません — 次のセクションを参照してください。
+
+#### インストールオプション
+
+| オプション | 既定値 | 用途 |
+|---|---|---|
+| `--name` | `digna` | サービスを登録する名前 |
+| `--display-name` | `digna` | services.msc に表示される名前 |
+| `--description` | `digna data quality backend` | services.msc に表示される説明 |
+| `--address` | `127.0.0.1` | サービスが API をバインドするアドレス |
+| `--port` | `8000` | サービスが API をバインドするポート |
+| `--working-dir` | `digna` 実行ファイルのディレクトリ | `config.toml` と `license.toml` を格納するディレクトリ。サービスはこれを作業ディレクトリにします |
+| `--start-type` | `auto` | `auto` は Windows とともに起動、`manual` は要求されたときのみ起動、`disabled` はサービスを登録するが起動を拒否します |
+| `--account` | `LocalSystem` | 実行に使うアカウント（例: `DOMAIN\user` または `.\user`） |
+| `--password` | | `--account` のパスワード |
+
+!!! tip "ドメインアカウントで実行する場合"
+
+    `LocalSystem` にはネットワーク上の ID がないため、SQL Server に対する Windows 認証やネットワーク共有へのアクセスは失敗します。サービスが特定のユーザーとしてリソースにアクセスする必要がある場合は、`--account` と `--password` を指定してインストールしてください。
+
+### サービスの開始と停止
+
+#### サービスを開始するには
+
+```bash
+digna windows start
+```
+
+#### サービスを停止するには
+
+```bash
+digna windows stop
+```
+
+!!! tip "ヒント"
+
+    アプリケーションファイルを更新する前には必ずサービスを停止してください。
+
+### サービスを新しいディレクトリに移動する場合
+
+digna のインストールを移動する必要がある場合:
+
+1. **現在のサービスを停止して登録を解除**
+   ```bash
+   cd C:\old\path\digna
+   digna windows stop
+   digna windows uninstall
+   ```
+
+2. **アプリケーションファイルを移動**
+   - digna インストールフォルダ全体を新しい場所に移動
+
+3. **新しい場所からサービスを再登録**
+   ```bash
+   cd C:\new\path\digna
+   digna windows install
+   ```
+
+   初回に使用した `--address`、`--port`、`--account` の値を再度指定してください — 以前の登録情報は削除されています。
+
+4. **サービスを開始**
+   ```bash
+   digna windows start
+   ```
+
+### サービスのアンインストール
+
+1. **実行中のサービスを停止**
+   ```bash
+   cd C:\path\to\digna
+   digna windows stop
+   ```
+
+2. **サービスの登録を解除**
+   ```bash
+   digna windows uninstall
+   ```
+
+これで digna サーバーは Windows サービスとしての登録が解除されます。
+
+---
+
+## 新しいリリースへのアップグレード {: #upgrading-to-a-new-release }
+
+このセクションでは、リリース 2026.06 のインストールをリリース 2026.11 にアップグレードします。それより古いインストールの場合は、先に [リリース 2026.06 より前のリリースからのアップグレード](#upgrading-from-a-release-before-2026-06)をお読みください。
+
+### アップグレード前に
+
+**digna リポジトリのバックアップ作成は必須です**
+
+digna をアップグレードする前にリポジトリ（PostgreSQL）のバックアップを作成し、データ損失に備えてください。バックアップがあれば、アップグレード中に予期しない問題が発生しても復旧できます。
+
+**リリース 2026.11 用のライセンスファイルを依頼する**
+
+リリース 2026.11 には新しい `license.toml` が必要です。作業を始める前に digna チームに依頼し、[ステップ 7](#step-7-replace-the-license-file) で使えるよう準備しておいてください。
+
+### リリース 2026.06 より前のリリースからのアップグレード {: #upgrading-from-a-release-before-2026-06 }
+
+リリース 2026.06 では 3 つの変更が導入されました。古いインストールを 2026.11 に直接アップグレードする場合にも、これらは引き続き適用されます:
+
+- **ODBC のみ。** digna はすべてのソース技術に ODBC 経由で接続します。まだ ODBC を使用していないデータベース接続は、アップグレード後にすべて ODBC に変更する必要があります。自動変換はありません。事前に digna ホストに ODBC ドライバーをインストールし（参照: [digna ホストへの ODBC ドライバーのインストール](../../../databases/overview.md#install-the-driver)）、[技術別ガイド](../../../databases/overview.md#technology-guides) を参考に各接続のプロパティを用意しておいてください。Databricks Legacy コネクタは廃止されました。該当する接続は [Databricks](../../../databases/databricks_connector_guide.md) コネクタへ移行してください。
+- **単一の実行ファイル。** `dignabackend` と `dignacli` は、バックエンドと CLI を統合した単一の実行ファイル `digna` に置き換えられました。
+- **config.toml。** `[encryption]` セクションが必須となり、`DIGNA_APP_HOST` と `DIGNA_APP_PORT` は読み取られなくなりました。サーバーのアドレスとポートは `digna serve` から渡されます。ご自身のファイルを [バックエンドの設定](#backend-configuration)と比較してください。
+
+以下の手順では、古いインストールで異なる作業が必要な箇所を示します。ステップ 8 のリポジトリのアップグレードにより、以前のどのリリースのリポジトリも直接 2026.11 に更新されます。
+
+### アップグレード手順
+
+#### ステップ 1: digna サービスを停止する {: #step-1-stop-the-digna-service }
+
+管理者としてコマンドプロンプトを開き、現在のインストールの `digna` 実行ファイルでサービスを停止します:
+
+```bash
+cd C:\path\to\digna
+digna windows stop
+```
+
+サービスの登録はそのまま残ります。新しい実行ファイルは同じディレクトリで古い実行ファイルと置き換わるため、登録は引き続き正しいファイルを指します。
+
+digna がフォアグラウンドで動作している場合は、そのコマンドプロンプトウィンドウで ++ctrl+c++ を押してください。
+
+!!! warning "リリース 2026.06 より前のリリースからアップグレードする場合"
+
+    リリース 2026.06 より前のリリースでは、サービスはバッチファイルで登録されていました。ステップ 2 で何かの名前を変更する**前に**、現在のインストールのバッチファイルを使ってサービスを停止し、登録を解除してください:
+
+    ```bash
+    cd C:\path\to\digna\bin
+    stop_service.bat
+    uninstall_service.bat
+    ```
+
+    サービスを実行していたアカウントと、サービスが待ち受けていたアドレスとポートを控えておいてください。ステップ 9 でサービスを再登録します。
+
+#### ステップ 2: 現在のインストールをバックアップする {: #step-2-backup-current-installation }
+
+digna のインストールディレクトリで、現在のインストールの実行ファイルとダッシュボードフォルダーの名前を変更し、新しいリリースを並べて配置できるようにします:
+
+```bash
+cd C:\path\to\digna
+ren digna.exe digna_old.exe
+ren dashboard dashboard_old
+```
+
+`digna_old.exe` はアップグレードを確認するまで、`dashboard_old` はそこから設定ファイルを復元するまで残してください（ステップ 4 を参照）。その後は両方とも削除してかまいません。
+
+!!! info "リリース 2026.06 より前のリリースからアップグレードする場合"
+
+    実行ファイルの代わりに、`dignabackend` と `dignacli` のフォルダー名を変更します:
+    `ren dignabackend dignabackend_old` と `ren dignacli dignacli_old`。リリース 2026.11 では、どちらのフォルダーも、バッチファイルの入った `bin` フォルダーも使用されません。
+
+#### ステップ 3: 新バージョンの展開とデプロイ {: #step-3-extract-and-deploy-new-version }
+
+1. 新しい digna インストール ZIP ファイルを展開
+2. 新しい `digna` 実行ファイルと `dashboard` フォルダをインストールディレクトリにコピー
+
+!!! warning "重要"
+
+    `config.toml` も `dashboard/dashboard_config.toml` も、インストール ZIP に含まれることは決してありません。digna チームはどちらのファイルも配布しません。そのため既存の設定はアップグレードの影響を受けず、名前を変更した `*_old` フォルダー内のコピーが手元にある唯一の設定になります。
+
+#### ステップ 4: 設定ファイルの復元 {: #step-4-restore-your-configuration-files }
+
+```bash
+copy dashboard_old\dashboard_config.toml dashboard\dashboard_config.toml
+```
+
+リリース 2026.11 では `config.toml` の変更は不要です。リリース 2026.06 で動作するファイルはそのまま動作し続けます。次の 2 つの変更は任意です:
+
+- データベース接続で digna Engine を使用し、そのデフォルトがホストに合わない場合は、[`[duckdb]` セクション](#duckdb-section) を追加します。
+- リバースプロキシがダッシュボードとバックエンドを 1 つのオリジンで配信する場合は、`[app]` セクションを省略します。
+
+!!! warning "digna が読み取らない設定"
+
+    本ガイドの以前の版には、digna が読み取らない設定がいくつか記載されていました。これらは効果がなく、ステップ 6 で `config check` が **Unknown keys** の下に一覧表示します。削除するか修正してください:
+
+    - `DIGNA_SCHEDULER_MAX_DELAY`、`DIGNA_CLEANUP_TIME`、`digna_COOKIE_PATH`、`digna_COOKIE_SAME_SITE`、`digna_APP_CORS_ALLOW_METHODS`、`digna_APP_CORS_ALLOW_HEADERS`、`digna_LOGGING_BACKUP_COUNT` は存在しません。削除してください。
+    - 設定名は大文字と小文字を区別します。digna が読み取るのは `DIGNA_REPO_HOST` であり、`digna_REPO_HOST` ではありません。[バックエンドの設定](#backend-configuration) と同様に、すべての名前を大文字で記述してください。
+
+!!! warning "シングルサインオン: [[oidc_clients]] を維持してください"
+
+    digna はシングルサインオンのプロバイダーを `[[oidc_clients]]` エントリのリストとして読み取ります。各エントリにはそれぞれ `DIGNA_OIDC_KEY` があります。本ガイドの以前の版に従ってプロバイダーを `[oidc_clients.<key>]` セクションに変更した場合は、元に戻してください。その形式が残っている間、`config check` は `OIDC config(s)` を FAILED と報告します:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    プロバイダーごとにこのエントリを繰り返し、各 `DIGNA_OIDC_KEY` を `dashboard_config.toml` の `key` と一致させてください。影響を受けるのはシングルサインオンを使用しているインストールのみです。
+
+#### ステップ 5: Web サーバーをリロードする {: #step-5-reload-the-web-server }
+
+ダッシュボードは静的ファイルの集まりであるため、Web サーバー（およびブラウザー）が以前のバージョンを配信し続けている可能性があります。`dashboard` フォルダーをホストしている Web サーバーをリロードまたは再起動し、ページをハードリフレッシュ（++ctrl+f5++）で再読み込みしてください。
+
+#### ステップ 6: 構成を検証する {: #step-6-validate-the-configuration }
+
+リポジトリに手を加える前に、`config.toml` が完全であることを確認します:
+
+```bash
+digna config check
+```
+
+すべてのセクションが OK と報告される必要があります。FAILED と報告された箇所を修正し、**Unknown keys** の下に一覧表示されたキーを削除してから、続行する前にコマンドを再実行してください。
+
+#### ステップ 7: ライセンスファイルを置き換える {: #step-7-replace-the-license-file }
+
+通常、ライセンスファイルはリリースをまたいでそのまま使用できます。リリース 2026.11 は例外です。このリリースでは digna Data Reconciliation と digna Agentic という 2 つのライセンス対象モジュールが追加され、2026.11 より前に発行されたライセンスにはこれらが含まれていません。digna チームがリリース 2026.11 用に提供した `license.toml` をインストールディレクトリにコピーし、古いものを置き換えてください:
+
+```bash
+copy /Y C:\path\to\new\license.toml license.toml
+```
+
+!!! warning "以前のライセンスを使い続けないでください"
+
+    以前のライセンスのままでも digna は起動しますが、digna Data Reconciliation と digna MCP Server は無効のままです。ライセンスを確認するすべてのコマンド（`user`、`inspection`、`repo`）は、確認に失敗するとリポジトリに手を加える前に中止されます。先に進む前に新しいライセンスを確認してください:
+
+    ```bash
+    digna license check
+    ```
+
+#### ステップ 8: リポジトリスキーマのアップグレード {: #step-8-upgrade-the-repository-schema }
+
+digna のインストールディレクトリで次を実行します:
+
+```bash
+digna repo upgrade
+```
+
+リリース 2026.11 では、リポジトリスキーマをバージョン管理されたマイグレーションで管理します。以前のリリースからの最初のアップグレードでは、スキーマを従来方式の最終バージョンに更新し、それを起点として記録したうえで、リリース 2026.11 のマイグレーションを適用します。最後に次のように表示されます:
+
+```text
+✅ Baseline migration recorded as applied.
+✅ Repo schema 'dignarepo' is up to date.
+```
+
+既存のデータはすべて保持されます。リポジトリの状態はいつでも `digna repo check` で確認できます。最後に適用されたマイグレーションと、保留中のマイグレーションが一覧表示されます。
+
+!!! warning "リポジトリが古いままでは digna は起動しません"
+
+    リリース 2026.11 以降、リポジトリのアップグレードが必要な間はサーバーが起動を拒否し、その旨を表示します。例:
+
+    ```text
+    Error: Legacy repo version 3.0.2 installed. Use the 'digna repo upgrade' command to upgrade it.
+    ```
+
+    サーバーまたはサービスを起動する前に `repo upgrade` を実行してください。
+
+#### ステップ 9: サービスの再起動 {: #step-9-restart-services }
+
+digna を Windows サービスとして実行している場合は、再び起動します:
+
+```bash
+cd C:\path\to\digna
+digna windows start
+```
+
+リリース 2026.06 より前のリリースからアップグレードし、ステップ 1 でサービスの登録を解除した場合は、先に `digna` 実行ファイルでサービスを再登録します:
+
+```bash
+cd C:\path\to\digna
+digna windows install --address <address> --port <port>
+digna windows start
+```
+
+`--address` と `--port` には、デフォルトの `127.0.0.1` と `8000` を使用する場合を除き、以前のサービスが待ち受けていた値を指定してください。以前のサービスがドメインアカウントで実行されていた場合は、`--account` と `--password` を追加します。オプションの完全な一覧は [digna を Windows サービスとして実行する](#running-digna-as-a-windows-service) を参照してください。
+
+手動で実行している場合はサーバーを再起動します:
+
+```bash
+cd C:\path\to\digna
+digna serve --address <address> --port <port>
+```
+
+IIS または Tomcat を使用している場合は、それぞれの Web サーバーを再起動してください。
+
+#### ステップ 10: アップグレードの確認 {: #step-10-verify-the-upgrade }
+
+1. 新しい実行ファイルのリリースを確認します:
+
+    ```bash
+    digna version
+    ```
+
+    1 行目が `Release: 2026.11` となっている必要があります。
+
+2. digna ダッシュボードにアクセスし、インターフェースが正しく読み込まれることを確認します。
+3. インストールディレクトリの `logs` ディレクトリ内のファイルにエラーがないか確認します。
+4. データベース接続をテストします。参照:
+   [接続のテスト](../../../databases/overview.md#testing-a-connection)。リリース 2026.06 より前のリリースからアップグレードした場合は、まだ ODBC を使用していなかった接続をすべて先に ODBC に切り替えてください。
+
+新しいモジュールを使い始めるには、[digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md)、digna MCP Server については [AI エージェントの接続](../../../platform/agentic/connect_ai_agent.md)、digna Engine については [プロファイリングの場所](../../../platform/profiling/profiling_location.md) を参照してください。
 
 ---
 
@@ -11145,6 +14051,1207 @@ sudo apachectl restart
 
 ---
 
+# Release 2026.11
+Source: https://docs.digna.ai/ja/installation_deployment/macOS/Release%202026.11/installation_guide_digna_macos_2026_11/
+
+# macOS インストールガイド（digna Release 2026.11）
+
+**リリース:** 2026.11
+
+**最終更新日:** 2026年11月7日
+
+
+---
+
+## 目次
+
+1. [導入](#introduction)
+2. [システム要件](#system-requirements)
+3. [事前準備](#pre-installation-setup)
+4. [PostgreSQL サーバーのセットアップ](#postgresql-server-setup)
+5. [Web サーバーの設定](#web-server-configuration)
+6. [初期インストール](#initial-installation)
+7. [バックエンド構成](#backend-configuration)
+8. [ダッシュボード構成](#dashboard-configuration)
+9. [digna をバックグラウンドサービスとして実行する](#running-digna-as-a-background-service)
+10. [新しいリリースへのアップグレード](#upgrading-to-a-new-release)
+
+---
+
+## 導入 {: #introduction }
+
+### digna について
+
+digna は、データウェアハウス、データレイク、レイクハウスなどさまざまなデータ環境でのデータ品質管理を最適化するために設計された包括的な AI 駆動プラットフォームです。高いスケーラビリティと適応性を備え、自動化、リアルタイム監視、異常検知を通じて現代のデータ課題に対応します。
+
+digna は主に二つのコンポーネントで構成されています:
+
+- **digna**: アプリケーションの中核であり、データの処理と品質チェックの実行を担います。バックエンドとコマンドラインインターフェイスを単一の実行ファイルに統合し、以前のリリースで別々だった `dignabackend` と `dignacli` を置き換えます。
+- **dignadashboard**: Web サーバー上でホストされるウェブベースのインターフェースで、digna プラットフォームと対話し、データ品質指標を可視化するためのユーザーフレンドリーな画面を提供します
+
+### Release 2026.11 の新機能
+
+このリリースでは、digna Data Reconciliation、digna MCP Server を備えた digna Agentic、そして digna Engine が追加されました。digna Engine は digna の内部でデータをプロファイリングし、異なるデータベース技術間の参照整合性をチェックできます。詳細は[リリースノート](../../../changelog/Release_202611.md)を参照してください。
+
+インストールに関しては、本リリースで新しいリポジトリのマイグレーション機構、digna Engine 用の `config.toml` のオプションの `[duckdb]` セクション、そして新しいライセンスファイルが導入されます。それぞれについては[アップグレードのセクション](#upgrading-to-a-new-release)で説明します。
+
+### Windows や Linux をお探しですか？
+
+本ガイドは macOS 向けです。他のプラットフォームについては、[Windows Installation Guide](../../Windows/Release%202026.11/installation_guide_digna_windows_2026_11.md) または [Linux Installation Guide](../../Linux/Release%202026.11/installation_guide_digna_linux_2026_11.md) を参照してください。
+
+---
+
+## システム要件 {: #system-requirements }
+
+インストールを開始する前に、システムが以下の最小要件を満たしていることを確認してください。
+
+| 要件 | 仕様 |
+|---|---|
+| **オペレーティングシステム** | macOS 13 (Ventura) 以降 |
+| **アーキテクチャ** | Apple Silicon (arm64) または Intel (x86_64) |
+| **メモリ（最小構成）** | 16 GB RAM |
+| **ディスク容量** | 10 GB の空きストレージ |
+| **データベース** | PostgreSQL Server 12 以上 |
+| **Web サーバー** | nginx、Apache httpd、または同等 |
+| **コマンドラインツール** | Xcode Command Line Tools（Homebrew が必要とするため） |
+
+!!! info "digna Engine"
+
+    プロファイリングの場所として digna Engine を使用するデータベース接続は、digna ホスト自体でプロファイリングされます。そのためのメモリとディスク容量を追加で見込んでください。参照: [\[duckdb\] セクション](#duckdb-section)。
+
+### データベースのインストールオプション
+
+**PostgreSQL が既にインストールされている場合:**
+既存の PostgreSQL サーバーに digna 用の新しいデータベース（スキーマ）を追加できます。
+
+**digna と同じマシンに PostgreSQL をインストールする場合:**
+
+!!! info "推奨仕様"
+
+    - **メモリ**: 32 GB RAM（16 GB の代わりに推奨）
+    - **ディスク容量**: 50 GB の空きストレージ（10 GB の代わりに推奨）
+
+    これらの高い仕様は、digna と PostgreSQL データベースの両方を同時に稼働させることを想定しています。
+
+### アーキテクチャの確認
+
+このガイドのいくつかのパスは Apple Silicon と Intel の Mac で異なります。どちらのマシンかを確認するには、**Terminal** を開いて次を実行してください:
+
+```bash
+uname -m
+```
+
+- `arm64` — Apple Silicon。Homebrew は `/opt/homebrew` にインストールされます。
+- `x86_64` — Intel。Homebrew は `/usr/local` にインストールされます。
+
+!!! tip "ヒント"
+
+    どちらかのパスをハードコーディングする代わりに、このガイドでは `$(brew --prefix)` を使用します。これは両方のアーキテクチャで正しい場所に展開されます。コマンドはそのままコピーして使えます。
+
+---
+
+## 事前準備 {: #pre-installation-setup }
+
+digna をインストールする前に、次の 3 つの主要な前提条件が整っていることを確認してください:
+
+1. **Homebrew** – 本ガイドで以下のコンポーネントをインストールするためのパッケージマネージャ
+2. **PostgreSQL Server** – 計算されたメトリクスやパフォーマンスデータを格納するため
+3. **Web サーバー** – digna ダッシュボードをホストするため
+
+これらのコンポーネントがまだセットアップされていない場合は、以下のセクションに従ってインストールおよび構成してください。
+
+### Homebrew のインストール
+
+Homebrew は macOS の標準パッケージマネージャで、本ガイド全体で PostgreSQL や nginx をインストールするために使用します。
+
+#### ステップ 1: Homebrew が既にインストールされているか確認する
+
+**Terminal** を開き（`Cmd + Space` を押して `Terminal` を入力し、Enter）、次を実行します:
+
+```bash
+brew --version
+```
+
+バージョン番号が返ってきたら、[PostgreSQL サーバーのセットアップ](#postgresql-server-setup) セクションへ進んでください。
+
+#### ステップ 2: Homebrew をインストールする
+
+コマンドが見つからない場合は、[公式 Homebrew サイト](https://brew.sh) の指示に従って Homebrew をインストールしてください。インストーラーは Xcode Command Line Tools をまだインストールしていない場合、それもインストールします。
+
+#### ステップ 3: Homebrew を PATH に追加する
+
+Apple Silicon では、インストーラーがシェル環境に Homebrew を追加するための 2 つのコマンドを表示します。指示に従ってそれらを実行し、次で確認してください:
+
+```bash
+brew --prefix
+```
+
+Apple Silicon では `/opt/homebrew`、Intel では `/usr/local` が表示されるはずです。
+
+---
+
+## PostgreSQL サーバーのセットアップ {: #postgresql-server-setup }
+
+### 既に PostgreSQL をお使いの場合
+
+ローカルマシンで PostgreSQL が既にインストールおよび稼働している、または管理されたリモート PostgreSQL サーバーを使用している場合は、[次のセクション](#web-server-configuration)へ進んでください。
+
+### インストールの選択肢
+
+macOS では PostgreSQL のインストール方法が二通りあります。どちらか一方を選んでください:
+
+- [Homebrew](#postgresql-homebrew) — コマンドラインでのインストール、サーバー展開に推奨
+- [Postgres.app](#postgresql-app) — GUI ベースのインストール、ローカル評価に便利
+
+### Homebrew で PostgreSQL をインストールする {: #postgresql-homebrew }
+
+#### ステップ 1: PostgreSQL フォーミュラをインストール
+
+```bash
+brew install postgresql@16
+```
+
+#### ステップ 2: PostgreSQL を PATH に追加
+
+バージョン付きの PostgreSQL フォーミュラは *keg-only* であり、Homebrew は自動的にコマンドを PATH にリンクしません。自分で追加してください:
+
+```bash
+echo 'export PATH="'$(brew --prefix)'/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+!!! note "注意"
+
+    これは macOS のデフォルトの `zsh` シェルを想定しています。`bash` を使用している場合は、同じ行を `~/.bash_profile` に追加してください。
+
+#### ステップ 3: PostgreSQL サービスを起動
+
+```bash
+brew services start postgresql@16
+```
+
+これにより PostgreSQL が直ちに起動し、ログイン時に自動で再起動するように設定されます。
+
+#### ステップ 4: インストールを確認
+
+```bash
+psql --version
+```
+
+インストールが成功していれば PostgreSQL のバージョンが表示されます。
+
+#### ステップ 5: サーバーに接続
+
+```bash
+psql postgres
+```
+
+!!! warning "重要 — macOS はここで Windows と異なります"
+
+    Windows のインストーラーは `postgres` というスーパーユーザーとパスワードを作成するよう促します。Homebrew はそれを行いません。代わりに、macOS のアカウント名と同じ名前のスーパーユーザーを作成し、パスワードは設定されずローカルマシンからのみアクセス可能です。
+
+    つまり、新規の Homebrew インストールには `postgres` ロールが存在しません。スーパーユーザーが必要な場合は自分のアカウント名を使用し、[Initial Installation](#initial-installation) に記載されているように明示的に digna 用ユーザーを作成してください。
+
+#### ステップ 6: ポートの確認
+
+デフォルトの PostgreSQL ポートは `5432` です。サーバーがどのポートで待ち受けているか確認するには:
+
+```bash
+psql postgres -c "SHOW port;"
+```
+
+この値をメモしておいてください — digna バックエンドの設定時に必要になります。
+
+### Postgres.app を使って PostgreSQL をインストールする {: #postgresql-app }
+
+GUI によるインストールを好む場合:
+
+1. [Postgres.app](https://postgresapp.com) をダウンロードして **Applications** フォルダにドラッグします
+2. アプリを開き **Initialize** をクリックして新しいサーバーを作成します
+3. アプリの指示に従い、コマンドラインツールを PATH に追加します
+4. インストールを確認します:
+
+```bash
+psql --version
+```
+
+Postgres.app も macOS のアカウント名を持つスーパーユーザーを作成します。
+
+---
+
+## Web サーバーの設定 {: #web-server-configuration }
+
+digna はダッシュボードをホストするために Web サーバーを必要とします。次のいずれかを選択してください:
+
+- [nginx](#nginx-setup) — Homebrew 経由でインストール、推奨
+- [Apache httpd](#apache-setup) — macOS に同梱
+
+いずれか一方のサーバーだけをインストールして構成すれば十分です。
+
+両方のセクションではダッシュボードが依存する以下の 2 点を設定します:
+
+- **シングルページアプリケーション（SPA）フォールバック** — ダッシュボードの URL を更新しても 404 にならないようにする
+- **`.md` の MIME タイプ** — Markdown ファイルを正しく配信する
+
+### nginx のセットアップ {: #nginx-setup }
+
+#### 概要
+
+nginx は軽量で高性能の Web サーバーで、静的な digna ダッシュボードの配信に適しています。
+
+#### インストール
+
+```bash
+brew install nginx
+```
+
+#### nginx の起動
+
+```bash
+brew services start nginx
+```
+
+#### インストール確認
+
+1. ブラウザを開く
+2. `http://localhost:8080` にアクセス
+3. nginx のウェルカムページが表示されるはずです
+
+!!! note "注意 — デフォルトポートは 8080（80 ではない）"
+
+    Homebrew は nginx を管理者権限なしで実行できるようにポート `8080` をリッスンするように設定します。macOS でポート `80` や 1024 未満のポートをバインドするには root 権限が必要です。
+
+    ダッシュボードをポート 80 で提供するには、以下の設定で `listen 8080;` を `listen 80;` に変更し、`sudo brew services start nginx` で起動してください。
+
+#### ダッシュボード用サイトの設定
+
+Homebrew の nginx 設定は `servers` ディレクトリ内のすべてのファイルを読み込みます。そこに digna 用の専用設定ファイルを作成してください:
+
+```bash
+nano $(brew --prefix)/etc/nginx/servers/digna.conf
+```
+
+以下を貼り付け、`/path/to/digna/dashboard` を展開した `dashboard` フォルダへの実際のパスに置き換えてください:
+
+```nginx
+server {
+    listen       8080;
+    server_name  localhost;
+
+    root   /path/to/digna/dashboard;
+    index  index.html;
+
+    # Serve Markdown files with the correct MIME type.
+    types {
+        text/markdown  md;
+    }
+
+    # Single-page-application fallback: unknown paths return index.html
+    # instead of a 404, so dashboard routes survive a browser refresh.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+!!! warning "重要"
+
+    `try_files` ディレクティブがないと、ルート URL 以外のダッシュボードページをリロードすると 404 が返されます。これは Windows の IIS で必要な URL Rewrite モジュールに相当します。
+
+#### 設定の適用
+
+構文エラーがないかテストしてから nginx をリロードします:
+
+```bash
+nginx -t
+brew services restart nginx
+```
+
+---
+
+### Apache httpd のセットアップ {: #apache-setup }
+
+#### 概要
+
+macOS には Apache httpd が同梱されていますので、インストールは不要です。デフォルトでは無効になっています。
+
+#### Apache の起動
+
+```bash
+sudo apachectl start
+```
+
+#### インストール確認
+
+1. ブラウザを開く
+2. `http://localhost` にアクセス
+3. "It works!" というメッセージが表示されるはずです
+
+#### 必須: mod_rewrite を有効にする
+
+ダッシュボードは URL の書き換えを必要とします。Apache 設定を開いてください:
+
+```bash
+sudo nano /etc/apache2/httpd.conf
+```
+
+以下の行を探して、先頭の `#` を削除してコメント解除します:
+
+```apache
+LoadModule rewrite_module libexec/apache2/mod_rewrite.so
+```
+
+#### 必須: .htaccess のオーバーライドを許可する
+
+同じファイル内の `<Directory "/Library/WebServer/Documents">` ブロックを見つけ、次を変更してください:
+
+```apache
+AllowOverride None
+```
+
+から:
+
+```apache
+AllowOverride All
+```
+
+#### 必須: Markdown ファイルの MIME タイプ
+
+同じ `httpd.conf` に次の行を追加して、Markdown ファイルが正しく配信されるようにします:
+
+```apache
+AddType text/markdown .md
+```
+
+!!! warning "重要"
+
+    この設定がないと `.md` ファイルが正しく配信されない場合があります。
+
+#### 設定の適用
+
+構成の文法チェックを行い、Apache を再起動します:
+
+```bash
+sudo apachectl configtest
+sudo apachectl restart
+```
+
+---
+
+## 初期インストール {: #initial-installation }
+
+### ステップ 1: digna リポジトリのセットアップ
+
+digna リポジトリは、digna によって計算されるすべてのメトリクスを格納します。分析データやパフォーマンスデータの中央データベースとして機能します。
+
+#### リポジトリ用スキーマとユーザーの作成
+
+PostgreSQL クライアント（psql、pgAdmin など）を開き、以下の SQL コマンドを実行してください:
+
+```sql
+CREATE SCHEMA <digna_repo_schema>;
+
+CREATE USER <digna_repo_user> WITH PASSWORD '<digna_repo_password>';
+
+GRANT ALL PRIVILEGES ON SCHEMA <digna_repo_schema> TO <digna_repo_user>;
+```
+
+**以下のプレースホルダを置き換えてください:**
+
+- `<digna_repo_schema>` — 希望するスキーマ名（例: `dignarepo`）
+- `<digna_repo_user>` — 希望するユーザー名（例: `digna_user`）
+- `<digna_repo_password>` — このユーザー用の安全なパスワード
+
+**例:**
+
+```sql
+CREATE SCHEMA dignarepo;
+
+CREATE USER digna_user WITH PASSWORD 'YourSecurePassword123!';
+
+GRANT ALL PRIVILEGES ON SCHEMA dignarepo TO digna_user;
+```
+
+Terminal から一度に実行するには:
+
+```bash
+psql postgres
+```
+
+その後 `postgres=#` プロンプトに上記のステートメントを貼り付け、終了するには `\q` を入力してください。
+
+!!! tip "ベストプラクティス"
+
+    データベースユーザーには強力で複雑なパスワードを使用してください。推測されやすい認証情報は避けてください。
+
+---
+
+### ステップ 2: digna インストールパッケージの展開
+
+1. 提供された digna インストール ZIP ファイルを見つけます
+2. 希望するインストール場所（例: `/opt/digna` または `~/digna`）に展開します
+3. 展開後、以下のアイテムがあるはずです:
+   - `dashboard/` — Web ダッシュボードインターフェース
+   - `digna` — メイン実行ファイル（バックエンド + CLI 統合）
+
+!!! info "設定ファイルとライセンスファイルはパッケージに含まれていません"
+
+    `config.toml` も `dashboard/dashboard_config.toml` もインストールパッケージには含まれていません。どちらも [バックエンド構成](#backend-configuration) と [ダッシュボード構成](#dashboard-configuration) でご自身で作成します。`license.toml` も同梱されていません。ステップ 3 で説明するとおり、digna から別途提供されます。
+
+Terminal から展開するには:
+
+```bash
+unzip digna-2026.11-macos.zip -d /opt/digna
+```
+
+#### 実行可能ファイルに実行権を付与する
+
+アーカイブの転送方法によっては、実行ビットが失われることがあります。明示的に設定してください:
+
+```bash
+cd /opt/digna
+chmod +x digna
+```
+
+#### macOS がアプリケーションをブロックする場合
+
+ブラウザやメールクライアント経由でダウンロードされたファイルには検疫属性が付けられます。macOS が「開発元を確認できないため開けません」と報告する場合は、インストールディレクトリから属性を削除してください:
+
+```bash
+xattr -dr com.apple.quarantine /opt/digna
+```
+
+または、**System Settings → Privacy & Security** を開き、ページ下部にあるブロックされた項目を見つけて **Open Anyway** をクリックしてください。
+
+!!! note "注意"
+
+    この手順は、macOS が実際に実行ファイルをブロックした場合にのみ必要です。SSH で転送されたパッケージや内部ファイル共有からのファイルは通常検疫されません。
+
+### ステップ 3: ライセンスファイルのインストール
+
+!!! warning "重要"
+
+    ライセンスファイルはインストールパッケージに含まれておらず、digna から別途提供されます。
+
+1. 提供された `license.toml` ファイルを見つけます
+2. それを digna インストールのルートディレクトリ（`config.toml` と `digna` 実行ファイルがある場所）にコピーします
+
+**理由:**
+ライセンスファイルには顧客情報、ライセンス有効期限、デジタル署名が含まれます。**ファイルを変更しないでください** — 変更すると無効になります。
+
+**セットアップ後のディレクトリ構成:**
+
+```
+/opt/digna/
+├── config.toml         (configuration file)
+├── license.toml        (YOUR LICENSE FILE - copy here)
+├── digna               (main executable)
+├── bin/                (service management scripts)
+└── dashboard/          (web interface)
+    └── (dashboard files)
+```
+
+---
+
+## バックエンド構成 {: #backend-configuration }
+
+### ステップ 1: 設定ファイルの作成と編集
+
+`config_template.toml` ファイルが digna インストールディレクトリに同梱されています。これを `config.toml` にリネームしてください。
+
+```bash
+cd /opt/digna
+mv config_template.toml config.toml
+```
+
+**場所:** `/opt/digna/config.toml`
+
+テキストエディタで `config.toml` を開き、以下の各セクションを設定してください。
+
+#### [app] セクション
+
+このセクションは、ダッシュボードとバックエンド間のクロスオリジンリソース共有（CORS）を構成します:
+
+```toml
+[app]
+DIGNA_APP_CORS_ALLOW_ORIGINS = ["http://localhost:5173"]
+DIGNA_APP_CORS_ALLOW_CREDENTIALS = true
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_APP_CORS_ALLOW_ORIGINS` | ダッシュボードの URL | ダッシュボードの配信元 URL。それ以外のオリジンからのブラウザーリクエストは拒否されます |
+| `DIGNA_APP_CORS_ALLOW_CREDENTIALS` | `true` | 必須。ブラウザーが各リクエストでセッションクッキーを送信するために必要です |
+
+!!! note "注意"
+
+    Homebrew の nginx をデフォルトポートで提供している場合、許可すべきオリジンは `http://localhost:8080` です。
+
+!!! info "[app] セクションは省略可能です"
+
+    リリース 2026.11 以降、両方のキー、そして `[app]` セクション全体を省略できます。リバースプロキシがダッシュボードとバックエンドを 1 つのオリジンで配信する場合は、これが適切な構成です。その場合、ブラウザーはクロスオリジンリクエストを行わず、デフォルトではいずれも許可されません。
+
+#### [repo] セクション
+
+このセクションは PostgreSQL データベースへの接続を構成します:
+
+```toml
+[repo]
+DIGNA_REPO_HOST = "localhost"
+DIGNA_REPO_PORT = 5432
+DIGNA_REPO_DB = "postgres"
+DIGNA_REPO_SCHEMA = "dignarepo"
+DIGNA_REPO_USER = "digna_user"
+DIGNA_REPO_PASSWORD = "YourSecurePassword123!"
+DIGNA_REPO_SSLMODE = "prefer"
+DIGNA_REPO_NUM_CONNS = 16
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_REPO_HOST` | `localhost` または IP | PostgreSQL サーバーのホスト名/IP |
+| `DIGNA_REPO_PORT` | `5432`（デフォルト） | PostgreSQL のポート |
+| `DIGNA_REPO_DB` | `postgres` | データベース名 |
+| `DIGNA_REPO_SCHEMA` | `dignarepo` | 先に作成したスキーマ |
+| `DIGNA_REPO_USER` | `digna_user` | PostgreSQL で作成したユーザー |
+| `DIGNA_REPO_PASSWORD` | あなたのパスワード | スキーマ作成時に設定したパスワード |
+| `DIGNA_REPO_SSLMODE` | `prefer`（デフォルト） | 省略可能。PostgreSQL の SSL モード: `disable`、`allow`、`prefer`、`require`、`verify-ca` または `verify-full` |
+| `DIGNA_REPO_NUM_CONNS` | `16`（デフォルト） | 省略可能。digna がリポジトリに対して開いたままにする接続の数 |
+
+#### [base] セクション
+
+このセクションはセキュリティ、クッキー、検査の設定を含みます:
+
+```toml
+[base]
+DIGNA_FERNET_KEY = "DU4a0yJ-OqvbKCL4hNQn_CsknH-V1vWmHZqBUl-AY44="
+DIGNA_COOKIE_DOMAIN = "localhost"
+DIGNA_COOKIE_SECURE = false
+DIGNA_COOKIE_HTTPONLY = true
+DIGNA_TOKEN_EXPIRES_IN = 86400
+DIGNA_MAX_WORKERS = 4
+DIGNA_FRONTEND_BASEURL = "http://localhost/"
+DIGNA_SOURCE_QUERY_TIMEOUT_SEC = 3600
+DIGNA_SOURCE_LOGIN_TIMEOUT_SEC = 30
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_FERNET_KEY` | 上記の値 | 以前のリリースで使用されていた暗号化の鍵。必ず指定する必要があるため、上記の値をそのまま使用してください |
+| `DIGNA_COOKIE_DOMAIN` | `localhost` | ダッシュボードにアクセスする際のホスト。`""` を指定するとドメインは設定されません。ダッシュボードとバックエンドを 1 つのオリジンで配信するプロキシの背後では、これが適切な設定です |
+| `DIGNA_COOKIE_SECURE` | `false`（HTTP） / `true`（HTTPS） | digna を HTTPS で配信する場合は必ず `true` にしてください |
+| `DIGNA_COOKIE_HTTPONLY` | `true` | セッションクッキーをスクリプトから参照できないようにします |
+| `DIGNA_TOKEN_EXPIRES_IN` | `86400`（24 時間） | セッションの有効期限（秒） |
+| `DIGNA_MAX_WORKERS` | CPU コア数 - 1 | 同時に実行できる検査の数 |
+| `DIGNA_FRONTEND_BASEURL` | ダッシュボードの URL | 必須。通知メッセージ内のリンクに使用されるため、受信者が開ける URL である必要があります |
+| `DIGNA_SOURCE_QUERY_TIMEOUT_SEC` | `3600`（デフォルト） | 省略可能。ソースデータベースに対する 1 つのクエリが中止されるまでに実行できる秒数。`0` でタイムアウトを無効にします |
+| `DIGNA_SOURCE_LOGIN_TIMEOUT_SEC` | `30`（デフォルト） | 省略可能。ソースデータベースへの接続を待機する秒数。`0` の場合は無期限に待機します |
+
+!!! tip "ヒント"
+
+    Mac 上の CPU コア数を調べるには `sysctl -n hw.ncpu` を実行してください。
+
+#### [encryption] セクション
+
+このセクションには、リポジトリに保存された機密値を暗号化するための鍵が含まれます。**必須**です。鍵が欠けている場合、`config check` は `[encryption]` セクションを FAILED として報告します。
+
+```toml
+[encryption]
+DIGNA_ENCRYPTION_KEY = 'ycELf6IbcO55dYIZHpPv6kQv/bbnUXoIaHLh2bh1kMg='
+```
+
+| パラメーター | 値 | 注意 |
+|---|---|---|
+| `DIGNA_ENCRYPTION_KEY` | Base64 エンコードされた鍵 | digna リポジトリに保存された機密値を暗号化します |
+
+!!! warning "config.toml を保護する"
+
+    この鍵は固定値で、すべての digna インストールで同一であり、リポジトリ内の機密値を復号するのはこの鍵です。`config.toml` へのアクセスを digna を実行するアカウントに限定し、バージョン管理や共有ドライブには置かず、リポジトリ本体より安全性の低い場所に保管されるバックアップからは除外してください。
+
+#### [logging] セクション
+
+このセクションはログの動作を設定します:
+
+```toml
+[logging]
+DIGNA_LOGGING_MODE = "INFO"
+DIGNA_LOGGING_DIR = "logs"
+DIGNA_LOGGING_MAX_FILES = 30
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_LOGGING_MODE` | `INFO` または `DEBUG` | 本番では `INFO`、トラブルシューティング時は `DEBUG`。`TRACE`、`WARN`、`ERROR` も指定できます |
+| `DIGNA_LOGGING_DIR` | `logs`（デフォルト） | 省略可能。ローテーションされるログファイルのディレクトリ（作業ディレクトリからの相対パス） |
+| `DIGNA_LOGGING_MAX_FILES` | `30`（デフォルト） | 省略可能。保持するローテーション済みログファイルの数 |
+
+#### [duckdb] セクション（省略可能） {: #duckdb-section }
+
+リリース 2026.11 の新機能です。このセクションでは **digna Engine** のリソースを設定します。digna Engine は、プロファイリングの場所が **digna Engine** であるデータベース接続について digna の内部でデータをプロファイリングし、異なるデータベース接続上のデータソース間で参照整合性チェックを実行します。参照: [プロファイリングの場所](../../../platform/profiling/profiling_location.md)。
+
+このセクションは省略可能です。省略した場合は、以下のデフォルトが適用されます。
+
+```toml
+[duckdb]
+DIGNA_DUCKDB_MEMORY_LIMIT_MB = 1024
+DIGNA_DUCKDB_TEMP_DIRECTORY = "/opt/digna/tmp"
+```
+
+| パラメータ | 値 | 備考 |
+|---|---|---|
+| `DIGNA_DUCKDB_MEMORY_LIMIT_MB` | `1024`（デフォルト） | 1 回の digna Engine の実行が使用できるメモリ（MB）。同時に最大 `DIGNA_MAX_WORKERS` 個の実行がアクティブになります |
+| `DIGNA_DUCKDB_TEMP_DIRECTORY` | デフォルト: システムの一時ディレクトリ（digna を実行するアカウントの `$TMPDIR`） | データがメモリに収まらない場合に一時ファイルを置くディレクトリ |
+
+!!! tip "digna Engine のサイジング"
+
+    digna 自体が使用するメモリに加えて、digna ホストに最大 `DIGNA_MAX_WORKERS` × `DIGNA_DUCKDB_MEMORY_LIMIT_MB` のメモリを見込んでください。また一時ディレクトリには、digna Engine を使用するデータソースのうち最大の検査対象日のデータを保持できるだけの空きディスク容量が必要です。`DIGNA_DUCKDB_TEMP_DIRECTORY` は、その容量があり、digna を実行するアカウントが書き込めるディスクを指すように設定してください:
+
+    ```bash
+    mkdir -p /opt/digna/tmp
+    ```
+
+    このセクションが必要なのは、少なくとも 1 つのデータベース接続が digna Engine を使用する場合、または参照整合性チェックが異なる接続上のデータソースを比較する場合のみです。
+
+---
+
+### ステップ 2: 構成を検証する
+
+リポジトリを初期化する前に、`config.toml` が完全で正しく構成されていることを確認します。digna のインストールディレクトリで次を実行します:
+
+```bash
+./digna config check
+```
+
+各セクションは個別に検証されるため、1 つの誤りが他のセクションの状態を隠すことはありません:
+
+```text
+Configuration validation report (source: config.toml):
+ - App config: OK
+ - Repository config: OK
+ - Base config: OK
+ - Logging config: OK
+ - Encryption config: OK
+ - OIDC config(s): OK
+ - Template overrides: OK
+ - Unknown keys: OK
+
+Overall: OK
+```
+
+FAILED と報告された箇所をすべて修正し、続行する前にコマンドを再実行してください。**Unknown keys** の下に表示される WARNING は、digna が読み取らない `config.toml` 内のキーを示します。これらは効果がないため、削除するかスペルを修正してください。オプションの完全な一覧は [CLI リファレンス](../../../cli/Command_Line_Interface_202611.md)にあります。
+
+### ステップ 3: リポジトリの初期化
+
+1. **Terminal** を開く
+2. digna インストールディレクトリ（`config.toml` と `digna` 実行ファイルがある場所）に移動する
+3. 接続テストを実行:
+
+```bash
+cd /opt/digna
+./digna repo check
+```
+
+新しいスキーマでは、コマンドは接続したうえで、リポジトリがまだインストールされていないことを報告します:
+
+```text
+Error: No repo installed. Use the 'digna repo upgrade' command to install it.
+```
+
+この時点ではこれが想定どおりの結果で、digna が PostgreSQL とスキーマに到達できることを示しています。代わりに接続エラーや認証エラーが表示される場合は、`[repo]` セクションまたは PostgreSQL のセットアップに原因があります。
+
+!!! note "注意"
+
+    macOS ではカレントディレクトリのコマンドが PATH に含まれないため、実行ファイルは `digna` ではなく `./digna` として呼び出します。短い形式で使いたい場合は、インストールディレクトリを PATH に追加してください:
+
+    ```bash
+    echo 'export PATH="/opt/digna:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+
+### ステップ 4: リポジトリスキーマのインストール
+
+同じディレクトリで次を実行します:
+
+```bash
+./digna repo upgrade
+```
+
+このコマンドはリポジトリスキーマに必要なテーブルをインストールし、最後に次のように表示します:
+
+```text
+✅ Repo schema 'dignarepo' is up to date.
+```
+
+!!! note "repo upgrade はインストールとアップグレードの両方を行います"
+
+    リリース 2026.11 以降、`repo upgrade` は新しいリポジトリのインストールと既存のリポジトリのアップグレードの両方を行います。`repo install` も同じコマンドの別名として引き続き使用できます。
+
+### ステップ 5: 管理者ユーザーの作成
+
+管理者ユーザーはリポジトリスキーマに対して直接作成されるため、この時点でサーバーを起動しておく必要はありません。digna インストールディレクトリで次を実行します:
+
+```bash
+./digna user add <email> <password> "<display_name>" --admin
+```
+
+**例:**
+
+```bash
+./digna user add admin@example.com 'AdminPassword123!' "Admin User" --admin
+```
+
+これにより、メールアドレス `admin@example.com` の管理者権限を持つユーザーが作成されます。
+
+!!! tip "ヒント"
+
+    パスワードはシングルクォートで囲んでください。`zsh` は `!`、`$`、`*` などの文字を特殊扱いするため、クォートしないと意図したとおりに渡されないことがあります。
+
+!!! tip "ベストプラクティス"
+
+    大文字小文字、数字、特殊文字を組み合わせた強力なパスワードを使用してください。
+
+### ステップ 6: digna サーバーの起動
+
+digna インストールディレクトリでサーバーを起動します:
+
+```bash
+./digna serve --address <host> --port <port>
+```
+
+**パラメータ:**
+- `--address` — サーバーのホスト名/IP（デフォルト `127.0.0.1`）
+- `--port` — サーバーのポート（デフォルト `8000`）
+
+サーバーが起動すると、待ち受けているアドレスが表示されます:
+
+```text
+Server running on http://127.0.0.1:8082
+```
+
+!!! tip "ヒント"
+
+    サーバーを最初に起動すると、macOS が外部からのネットワーク接続を受け入れるかどうかを尋ねることがあります。ダッシュボードがバックエンドに接続できるように **Allow** をクリックしてください。
+
+!!! note "サーバーはターミナルを占有します"
+
+    `serve` はフォアグラウンドで実行され、++ctrl+c++ で停止するまで動作し続けます。セットアップを終えるまで実行したままにしてください。起動時に自動的に開始する方法は次を参照してください: [digna をバックグラウンドサービスとして実行する](#running-digna-as-a-background-service).
+
+---
+
+## ダッシュボード構成 {: #dashboard-configuration }
+
+### ステップ 1: ダッシュボードを Web サーバーにデプロイする
+
+digna ダッシュボードは独自の設定を `dashboard/dashboard_config.toml` から読み込みます。このファイルはインストールパッケージに含まれていないため、`dashboard/` ディレクトリ内にダッシュボードのファイルと並べて作成します。
+
+その内容は [シングルサインオン](../../../sso/overview.md) で説明しています。このファイルが必要になるのもそこです。このファイルには、ダッシュボードが提供するログイン方法と、マルチインスタンス構成の場合はバックエンドへの接続先が記述されます。
+
+使用する Web サーバーを選び、対応するデプロイ手順に従ってください。
+
+#### nginx にデプロイする場合
+
+[nginx セットアップ](#nginx-setup) に従った場合、サーバーブロックは既に `dashboard` フォルダを指しており、コピーは不要です。
+
+1. **パスを確認する**
+   - `$(brew --prefix)/etc/nginx/servers/digna.conf` を開く
+   - `root` が展開した `dashboard` フォルダを指していることを確認する
+
+2. **フォルダが読み取り可能であることを確認する**
+   ```bash
+   chmod -R a+rX /opt/digna/dashboard
+   ```
+
+3. **nginx をリロード**
+   ```bash
+   nginx -t
+   brew services restart nginx
+   ```
+
+4. **インストールのテスト**
+   - ブラウザを開く
+   - `http://localhost:8080`（または設定した URL）にアクセス
+   - digna ダッシュボードのログインページが表示されるはずです
+
+#### Apache httpd にデプロイする場合
+
+1. **ダッシュボードをドキュメントルートにコピーする**
+   ```bash
+   sudo cp -R /opt/digna/dashboard /Library/WebServer/Documents/digna
+   ```
+
+2. **リライトルールを追加する**
+
+   配備先フォルダ内に `.htaccess` ファイルを作成して、ブラウザのリロード時にルート以外のルートが維持されるようにします:
+
+   ```bash
+   sudo nano /Library/WebServer/Documents/digna/.htaccess
+   ```
+
+   以下を貼り付けてください:
+
+   ```apache
+   RewriteEngine On
+   RewriteBase /digna/
+
+   # Serve existing files and directories as-is.
+   RewriteCond %{REQUEST_FILENAME} -f [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   RewriteRule ^ - [L]
+
+   # Everything else falls back to the single-page application entry point.
+   RewriteRule ^ index.html [L]
+   ```
+
+3. **Apache を再起動**
+   ```bash
+   sudo apachectl restart
+   ```
+
+4. **ダッシュボードにアクセス**
+   - ブラウザを開く
+   - `http://localhost/digna` にアクセス
+   - digna ダッシュボードのログインページが表示されるはずです
+
+---
+
+## digna をバックグラウンドサービスとして実行する {: #running-digna-as-a-background-service }
+
+### サービスとして実行する理由
+
+digna バックエンドをバックグラウンドサービスとして実行することで、以下が可能になります:
+
+- マシン起動時に自動で開始する
+- ターミナルウィンドウを開かずにバックグラウンドで実行される
+- クラッシュした場合に自動で再起動される
+- macOS のサービス管理ツール `launchctl` を使って管理できる
+
+### サービス管理ファイル
+
+必要なファイルはすべて digna インストールディレクトリの `bin/` にあります。
+
+利用可能なシェルスクリプトは以下です:
+
+- `install_service.sh` — digna を launchd に登録
+- `uninstall_service.sh` — サービスの登録を解除
+- `start_service.sh` — 登録済みサービスを起動
+- `stop_service.sh` — 実行中のサービスを停止
+
+!!! warning "管理者権限が必要"
+
+    これらのスクリプトはすべて `sudo` で実行する必要があります。ブート時に開始するサービスを登録するには `/Library/LaunchDaemons` に書き込む必要があるためです。
+
+### スクリプトに実行権を付与する
+
+抽出時に実行ビットが保持されない場合があります。初回使用前に:
+
+```bash
+cd /opt/digna/bin
+chmod +x *.sh
+```
+
+### サービスのインストール
+
+1. **Terminal を開く**
+
+2. **bin フォルダに移動**
+   ```bash
+   cd /opt/digna/bin
+   ```
+
+3. **インストールスクリプトを実行**
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+これで digna サーバーは launchd に自動起動有効で登録されます。サービスはすぐには開始されません — 次のセクションで起動方法を説明します。
+
+### サービスの起動と停止
+
+#### サービスを開始するには
+
+1. Terminal を開く
+2. `/opt/digna/bin` に移動
+3. 実行:
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+#### サービスを停止するには
+
+1. Terminal を開く
+2. `/opt/digna/bin` に移動
+3. 実行:
+   ```bash
+   sudo ./stop_service.sh
+   ```
+
+!!! tip "ヒント"
+
+    アプリケーションファイルを更新する前に必ずサービスを停止してください。
+
+### サービスの確認
+
+サービスが登録されて稼働しているか確認するには:
+
+```bash
+sudo launchctl list | grep digna
+```
+
+先頭にプロセス ID がある行はサービスが実行中であることを示します。先頭が `-` の場合は登録済みだが停止中です。
+
+### インストール先ディレクトリを移動する場合
+
+launchd は実行ファイルの絶対パスを保存するため、インストール先を移動する場合はサービスの再登録が必要です:
+
+1. **現在のサービスをアンインストール**
+   ```bash
+   cd /old/path/digna/bin
+   sudo ./uninstall_service.sh
+   ```
+
+2. **アプリケーションファイルを移動**
+   ```bash
+   sudo mv /old/path/digna /new/path/digna
+   ```
+
+3. **サービスを再インストール**
+   ```bash
+   cd /new/path/digna/bin
+   sudo ./install_service.sh
+   ```
+
+4. **サービスを開始**
+   ```bash
+   sudo ./start_service.sh
+   ```
+
+### サービスのアンインストール
+
+1. **実行中のサービスを停止**
+   ```bash
+   cd /opt/digna/bin
+   sudo ./stop_service.sh
+   ```
+
+2. **サービスをアンインストール**
+   ```bash
+   sudo ./uninstall_service.sh
+   ```
+
+これで digna サーバーは launchd から登録解除されます。
+
+---
+
+## 新しいリリースへのアップグレード {: #upgrading-to-a-new-release }
+
+このセクションでは、リリース 2026.06 のインストールをリリース 2026.11 にアップグレードします。それより古いインストールの場合は、先に [リリース 2026.06 より前のリリースからのアップグレード](#upgrading-from-a-release-before-2026-06)をお読みください。
+
+### アップグレード前に
+
+**digna リポジトリのバックアップ作成は必須です**
+
+digna をアップグレードする前にリポジトリ（PostgreSQL）のバックアップを作成し、データ損失に備えてください。バックアップがあれば、アップグレード中に予期しない問題が発生しても復旧できます。
+
+Terminal からバックアップを作成するには:
+
+```bash
+pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_backup.sql
+```
+
+**リリース 2026.11 用のライセンスファイルを依頼する**
+
+リリース 2026.11 には新しい `license.toml` が必要です。作業を始める前に digna チームに依頼し、[ステップ 7](#step-7-replace-the-license-file) で使えるよう準備しておいてください。
+
+### リリース 2026.06 より前のリリースからのアップグレード {: #upgrading-from-a-release-before-2026-06 }
+
+リリース 2026.06 では 3 つの変更が導入されました。古いインストールを 2026.11 に直接アップグレードする場合にも、これらは引き続き適用されます:
+
+- **ODBC のみ。** digna はすべてのソース技術に ODBC 経由で接続します。まだ ODBC を使用していないデータベース接続は、アップグレード後にすべて ODBC に変更する必要があります。自動変換はありません。事前に digna ホストに ODBC ドライバーをインストールし（参照: [digna ホストへの ODBC ドライバーのインストール](../../../databases/overview.md#install-the-driver)）、[技術別ガイド](../../../databases/overview.md#technology-guides) を参考に各接続のプロパティを用意しておいてください。Databricks Legacy コネクタは廃止されました。該当する接続は [Databricks](../../../databases/databricks_connector_guide.md) コネクタへ移行してください。
+- **単一の実行ファイル。** `dignabackend` と `dignacli` は、バックエンドと CLI を統合した単一の実行ファイル `digna` に置き換えられました。
+- **config.toml。** `[encryption]` セクションが必須となり、`DIGNA_APP_HOST` と `DIGNA_APP_PORT` は読み取られなくなりました。サーバーのアドレスとポートは `digna serve` から渡されます。ご自身のファイルを [バックエンド構成](#backend-configuration)と比較してください。
+
+以下の手順では、古いインストールで異なる作業が必要な箇所を示します。ステップ 8 のリポジトリのアップグレードにより、以前のどのリリースのリポジトリも直接 2026.11 に更新されます。
+
+### アップグレード手順
+
+#### ステップ 1: digna サービスを停止する {: #step-1-stop-the-digna-service }
+
+digna がバックグラウンドサービスとして動作している場合、まず停止します:
+
+```bash
+cd /opt/digna/bin
+sudo ./stop_service.sh
+```
+
+digna がフォアグラウンドで動作している場合は、その Terminal ウィンドウで ++ctrl+c++ を押してください。
+
+#### ステップ 2: 現在のインストールをバックアップする {: #step-2-backup-current-installation }
+
+digna のインストールディレクトリで、現在のインストールの実行ファイルとダッシュボードフォルダーの名前を変更し、新しいリリースを並べて配置できるようにします:
+
+```bash
+cd /opt/digna
+mv digna digna_old
+mv dashboard dashboard_old
+```
+
+`digna_old` はアップグレードを確認するまで、`dashboard_old` はそこから設定ファイルを復元するまで残してください（ステップ 4 を参照）。その後は両方とも削除してかまいません。
+
+!!! info "リリース 2026.06 より前のリリースからアップグレードする場合"
+
+    実行ファイルの代わりに、`dignabackend` と `dignacli` のフォルダー名を変更します:
+    `mv dignabackend dignabackend_old` と `mv dignacli dignacli_old`。どちらもリリース 2026.11 では使用されません。
+
+#### ステップ 3: 新バージョンの展開とデプロイ {: #step-3-extract-and-deploy-new-version }
+
+1. 新しい digna インストール ZIP ファイルを展開
+2. 新しい `digna` 実行ファイルと `dashboard` フォルダをインストールディレクトリにコピー
+3. 実行ビットを復元し、必要に応じて検疫属性を削除:
+
+```bash
+chmod +x /opt/digna/digna
+xattr -dr com.apple.quarantine /opt/digna
+```
+
+!!! warning "重要"
+
+    `config.toml` も `dashboard/dashboard_config.toml` も、インストール ZIP に含まれることは決してありません。digna チームはどちらのファイルも配布しません。そのため既存の設定はアップグレードの影響を受けず、名前を変更した `*_old` フォルダー内のコピーが手元にある唯一の設定になります。
+
+#### ステップ 4: 設定ファイルの復元 {: #step-4-restore-your-configuration-files }
+
+```bash
+cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
+```
+
+リリース 2026.11 では `config.toml` の変更は不要です。リリース 2026.06 で動作するファイルはそのまま動作し続けます。次の 2 つの変更は任意です:
+
+- データベース接続で digna Engine を使用し、そのデフォルトがホストに合わない場合は、[`[duckdb]` セクション](#duckdb-section) を追加します。
+- リバースプロキシがダッシュボードとバックエンドを 1 つのオリジンで配信する場合は、`[app]` セクションを省略します。
+
+!!! warning "digna が読み取らない設定"
+
+    本ガイドの以前の版には、digna が読み取らない設定がいくつか記載されていました。これらは効果がなく、ステップ 6 で `config check` が **Unknown keys** の下に一覧表示します。削除するか修正してください:
+
+    - `DIGNA_SCHEDULER_MAX_DELAY`、`DIGNA_CLEANUP_TIME`、`digna_COOKIE_PATH`、`digna_COOKIE_SAME_SITE`、`digna_APP_CORS_ALLOW_METHODS`、`digna_APP_CORS_ALLOW_HEADERS`、`digna_LOGGING_BACKUP_COUNT` は存在しません。削除してください。
+    - 設定名は大文字と小文字を区別します。digna が読み取るのは `DIGNA_REPO_HOST` であり、`digna_REPO_HOST` ではありません。[バックエンド構成](#backend-configuration) と同様に、すべての名前を大文字で記述してください。
+
+!!! warning "シングルサインオン: [[oidc_clients]] を維持してください"
+
+    digna はシングルサインオンのプロバイダーを `[[oidc_clients]]` エントリのリストとして読み取ります。各エントリにはそれぞれ `DIGNA_OIDC_KEY` があります。本ガイドの以前の版に従ってプロバイダーを `[oidc_clients.<key>]` セクションに変更した場合は、元に戻してください。その形式が残っている間、`config check` は `OIDC config(s)` を FAILED と報告します:
+
+    ```toml
+    [[oidc_clients]]
+    DIGNA_OIDC_KEY = 'microsoft'
+    DIGNA_OIDC_CLIENT_ID = '<client_id>'
+    DIGNA_OIDC_CLIENT_SECRET = '<client_secret>'
+    DIGNA_OIDC_REDIRECT_URI = 'http://localhost:3000/oidc/callback'
+    DIGNA_OIDC_CONFIGURATION_URL = 'https://login.microsoftonline.com/<tenant_id>/v2.0/.well-known/openid-configuration'
+    ```
+
+    プロバイダーごとにこのエントリを繰り返し、各 `DIGNA_OIDC_KEY` を `dashboard_config.toml` の `key` と一致させてください。影響を受けるのはシングルサインオンを使用しているインストールのみです。
+
+#### ステップ 5: Web サーバーをリロードする {: #step-5-reload-the-web-server }
+
+ダッシュボードは静的ファイルの集まりであるため、Web サーバー（およびブラウザー）が以前のバージョンを配信し続けている可能性があります。`dashboard` フォルダーをホストしている Web サーバーをリロードまたは再起動し、ページをハードリフレッシュ（++cmd+shift+r++）で再読み込みしてください。
+
+#### ステップ 6: 構成を検証する {: #step-6-validate-the-configuration }
+
+リポジトリに手を加える前に、`config.toml` が完全であることを確認します:
+
+```bash
+./digna config check
+```
+
+すべてのセクションが OK と報告される必要があります。FAILED と報告された箇所を修正し、**Unknown keys** の下に一覧表示されたキーを削除してから、続行する前にコマンドを再実行してください。
+
+#### ステップ 7: ライセンスファイルを置き換える {: #step-7-replace-the-license-file }
+
+通常、ライセンスファイルはリリースをまたいでそのまま使用できます。リリース 2026.11 は例外です。このリリースでは digna Data Reconciliation と digna Agentic という 2 つのライセンス対象モジュールが追加され、2026.11 より前に発行されたライセンスにはこれらが含まれていません。digna チームがリリース 2026.11 用に提供した `license.toml` をインストールディレクトリにコピーし、古いものを置き換えてください:
+
+```bash
+cp /path/to/new/license.toml /opt/digna/license.toml
+```
+
+!!! warning "以前のライセンスを使い続けないでください"
+
+    以前のライセンスのままでも digna は起動しますが、digna Data Reconciliation と digna MCP Server は無効のままです。ライセンスを確認するすべてのコマンド（`user`、`inspection`、`repo`）は、確認に失敗するとリポジトリに手を加える前に中止されます。先に進む前に新しいライセンスを確認してください:
+
+    ```bash
+    ./digna license check
+    ```
+
+#### ステップ 8: リポジトリスキーマのアップグレード {: #step-8-upgrade-the-repository-schema }
+
+digna のインストールディレクトリで次を実行します:
+
+```bash
+cd /opt/digna
+./digna repo upgrade
+```
+
+リリース 2026.11 では、リポジトリスキーマをバージョン管理されたマイグレーションで管理します。以前のリリースからの最初のアップグレードでは、スキーマを従来方式の最終バージョンに更新し、それを起点として記録したうえで、リリース 2026.11 のマイグレーションを適用します。最後に次のように表示されます:
+
+```text
+✅ Baseline migration recorded as applied.
+✅ Repo schema 'dignarepo' is up to date.
+```
+
+既存のデータはすべて保持されます。リポジトリの状態はいつでも `./digna repo check` で確認できます。最後に適用されたマイグレーションと、保留中のマイグレーションが一覧表示されます。
+
+!!! warning "リポジトリが古いままでは digna は起動しません"
+
+    リリース 2026.11 以降、リポジトリのアップグレードが必要な間はサーバーが起動を拒否し、その旨を表示します。例:
+
+    ```text
+    Error: Legacy repo version 3.0.2 installed. Use the 'digna repo upgrade' command to upgrade it.
+    ```
+
+    サーバーまたはサービスを起動する前に `repo upgrade` を実行してください。
+
+#### ステップ 9: サービスの再起動 {: #step-9-restart-services }
+
+バックグラウンドサービスとして実行している場合:
+
+```bash
+cd /opt/digna/bin
+sudo ./start_service.sh
+```
+
+手動で実行している場合はサーバーを再起動します:
+
+```bash
+cd /opt/digna
+./digna serve --address <address> --port <port>
+```
+
+nginx または Apache を使用している場合は、それぞれの Web サーバーを再起動してください:
+
+```bash
+brew services restart nginx
+```
+```bash
+sudo apachectl restart
+```
+
+#### ステップ 10: アップグレードの確認 {: #step-10-verify-the-upgrade }
+
+1. 新しい実行ファイルのリリースを確認します:
+
+    ```bash
+    ./digna version
+    ```
+
+    1 行目が `Release: 2026.11` となっている必要があります。
+
+2. digna ダッシュボードにアクセスし、インターフェースが正しく読み込まれることを確認します。
+3. サーバーの出力と `logs` ディレクトリ内のファイルにエラーがないか確認します。
+4. データベース接続をテストします。参照:
+   [接続のテスト](../../../databases/overview.md#testing-a-connection)。リリース 2026.06 より前のリリースからアップグレードした場合は、まだ ODBC を使用していなかった接続をすべて先に ODBC に切り替えてください。
+
+新しいモジュールを使い始めるには、[digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md)、digna MCP Server については [AI エージェントの接続](../../../platform/agentic/connect_ai_agent.md)、digna Engine については [プロファイリングの場所](../../../platform/profiling/profiling_location.md) を参照してください。
+
+---
+
 # Overview
 Source: https://docs.digna.ai/ja/platform/overview/
 
@@ -11755,6 +15862,177 @@ The **Data Schema Tracker** はデータベース構造がどのように進化�
 
 1. **Snapshot Collection** – digna が現在のスキーマメタデータをキャプチャします。  
 2. **Comparison** – 新しいスナップショットは比較され
+
+---
+
+# Overview
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/
+
+# digna REST API 2026.11
+
+*digna* REST API を使うと、独自のツールやパイプラインから HTTP と JSON で *digna* を操作できます。
+プロジェクトとインスペクション結果の読み取り、データソース・データセット・属性の管理、そしてデータロードの
+完了時などにインスペクションを開始できます。[Python SDK](../../sdk/Release%202026.11/index.md)
+も同じ API を使用しています。
+
+このページでは、すべてのリクエストに共通する事項を説明します。各リソースのページには、エンドポイントごとに
+パラメーター、リクエストボディ、レスポンス、スキーマが記載されています。
+
+| リソース | エンドポイント |
+|---|---|
+| [Projects](projects.md) | プロジェクトの読み取り |
+| [DB Connections](db_connections.md) | データベース接続の読み取り |
+| [Data Sources](data_sources.md) | データソースの作成、読み取り、更新、削除 |
+| [Data Sets](data_sets.md) | データセットの作成、読み取り、更新、削除 |
+| [Attributes](attributes.md) | 属性の作成、読み取り、更新、削除 |
+| [Check Definitions](check_definitions.md) | チェック定義の読み取り |
+| [Inspection Requests](inspection_requests.md) | インスペクションの開始と進行状況の追跡 |
+| [Inspection Statuses](inspection_statuses.md) | プロジェクト、データソース、データセットごとのインスペクション結果の読み取り |
+
+---
+
+## ベース URL {: #base-url }
+
+この API は *digna* バックエンドの一部です。すべてのパスは、バックエンドのアドレスに続く `/v1` で始まります。
+
+```text
+https://digna.example.com/v1/projects
+```
+
+バックエンドのアドレスはダッシュボードが使用するものと同じで、`dashboard/dashboard_config.toml` の
+`[api]` セクションにある `baseUrl` です。呼び出し元と *digna* が同じマシン上にない場合は、必ず HTTPS
+を使用してください。すべてのリクエストに API キーが含まれるためです。
+
+---
+
+## 認証 {: #authentication }
+
+すべてのリクエストは、*digna* ユーザーの API キーを `Authorization` ヘッダーで送信します。
+
+```text
+Authorization: Bearer <api key>
+```
+
+キーを作成するには、ダッシュボードの左下にあるユーザープロファイルを開き、**API Keys**、続いて
+**Add API Key** をクリックして、キーをコピーします。キーが表示されるのは一度だけです。同じキーは
+[digna MCP Server](../../ai_agents/overview.md) でも使用できます。
+
+リクエストは、キーの所有ユーザーの権限で実行されます。作成、変更、削除にはそのプロジェクトでの編集者ロールが
+必要です。ロールがない場合、リクエストは `403` とメッセージ
+`You don't have permission to edit this project` で拒否されます。
+
+!!! tip "自動化には専用ユーザーを使用する"
+
+    統合ごとに *digna* ユーザーを作成し、必要なプロジェクトとロールだけを付与して、有効期限付きのキーを
+    作成します。こうしておけば、キーを削除するだけで 1 つの統合のアクセスを取り消すことができ、
+    他のユーザーには影響しません。
+
+---
+
+## リクエストの送信 {: #making-a-request }
+
+```bash
+export DIGNA_API_KEY='<api key>'
+curl https://digna.example.com/v1/projects -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+レスポンスは JSON です。リストは JSON 配列として返されます。リクエストボディも JSON で、
+`Content-Type: application/json` を付けて送信します。
+
+---
+
+## 上限とフィルター {: #limits-and-filters }
+
+リスト系のエンドポイントが返す項目は最大 `limit` 件です。既定値は 200 件、上限は 5000 件です。この範囲外の
+値は `400` で拒否されます。オフセットやページトークンはないため、代わりにフィルターでリストを絞り込んで
+ください。たとえば `project_id`、`data_source_id`、インスペクションステータスでは `start_date` と
+`end_date` を使用します。
+
+60 秒を超えるリクエストは `408 Request Timeout` でキャンセルされます。
+
+---
+
+## エラー {: #errors }
+
+エラーレスポンスには、コードとメッセージを含む JSON ボディが付きます。
+
+```json
+{
+  "code": "NOT_FOUND",
+  "message": "Data set not found"
+}
+```
+
+| ステータス | コード | 意味 |
+|---|---|---|
+| `400` | `BAD_REQUEST` | リクエストが無効です (例: `limit` が範囲外) |
+| `401` | `NOT_AUTHENTICATED` | API キーがない、形式が正しくない、不明、または期限切れです |
+| `403` | `NOT_AUTHORIZED` | キーのユーザーに、このリクエストに必要なロールがありません |
+| `403` | `INVALID_LICENSE` | *digna* のライセンスの有効期限が切れています |
+| `404` | `NOT_FOUND` | プロジェクト、データソース、またはその他の項目が存在しません |
+| `500` | `INTERNAL_ERROR` | *digna* で予期しないエラーが発生しました。詳細はバックエンドのログにあります |
+
+`401` の `message` は、キーの何が問題かを示します。
+
+| メッセージ | 原因 |
+|---|---|
+| `Missing Authorization header` | `Authorization` ヘッダーが送信されていません |
+| `Invalid Authorization header format` | 値が `Bearer ` で始まっていません |
+| `Invalid API key` | キーが間違っているか、削除されています |
+| `API key expired` | キーの有効期限が切れています。新しいキーを作成してください |
+
+---
+
+## インスペクションの実行 {: #running-an-inspection }
+
+一般的な統合では、データロードの完了時にインスペクションを開始し、その完了を待ってから結果を読み取ります。
+
+1. [`POST /v1/inspection-requests`](inspection_requests.md#submit-inspection-request) で**インスペクションを開始します**。
+   レスポンスにはリクエストの `id` が含まれます。
+2. [`GET /v1/inspection-requests/{inspection_request_id}`](inspection_requests.md#get-inspection-request) で**進行状況を追跡します**。
+   `status` は `PENDING` から `RUNNING` を経て `COMPLETED` に進むか、`FAILED`、`ABORTED`、
+   `CANCELLED` のいずれかで終了します。値が変わらなくなるまで、数秒ごとに問い合わせてください。
+3. 検査した日付について [`GET /v1/inspection-statuses/data-sources`](inspection_statuses.md#get-data-source-inspection-statuses) で**結果を読み取ります**。
+   各項目には全体の `status` として `0` (OK)、`1` (警告)、`2` (重大)、`-1` (ステータスなし) の
+   いずれかがあり、さらにモジュールごとのステータスと、合格・不確定・不合格のチェック数が含まれます。
+
+```bash
+curl -X POST https://digna.example.com/v1/inspection-requests \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "project_id": 1,
+    "include_all_data_sources": true,
+    "data_source_ids": [],
+    "start_date": "2026-11-06",
+    "end_date": "2026-11-06",
+    "mode": "DAILY",
+    "weekly_mode_weekdays": [],
+    "monthly_mode_days": [],
+    "use_notification": true
+  }'
+```
+
+---
+
+## OpenAPI ドキュメント {: #openapi-document }
+
+すべての *digna* インストールは、この API を OpenAPI 3.1 ドキュメントで記述しており、それに対して
+リクエストを試せる対話型の Swagger UI も提供しています。
+
+| 内容 | アドレス |
+|---|---|
+| OpenAPI ドキュメント | `https://digna.example.com/api-docs/stable/v1/openapi.json` |
+| Swagger UI | `https://digna.example.com/v1/swagger-ui` |
+
+Release 2026.11 のドキュメントはこちらからも入手できます: [openapi.json](openapi.json)。これを使って、
+他の言語のクライアントを生成できます。
+
+!!! note "対象は /v1 エンドポイントのみ"
+
+    ダッシュボードは、これ以外の内部エンドポイントを通じてもバックエンドと通信します。それらはこの API
+    には含まれず、どのリリースでも変更される可能性があるため、統合は `/v1` エンドポイントのみに基づいて
+    構築してください。
 
 ---
 
@@ -12433,7 +16711,8 @@ label = "Active Directory でログイン"
 ### `config.toml`
 
 ```toml
-[oidc_clients.adfs]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "adfs"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the shared secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -12591,7 +16870,8 @@ label = "Login with Auth0"
 ### `config.toml`
 
 ```toml
-[oidc_clients.auth0]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "auth0"
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -12732,7 +17012,8 @@ label = "Login with Google"
 ### `config.toml`
 
 ```toml
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -12899,7 +17180,8 @@ label = "Login with Keycloak"
 ### `config.toml`
 
 ```toml
-[oidc_clients.keycloak]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "keycloak"
 DIGNA_OIDC_CLIENT_ID = "digna"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13058,7 +17340,8 @@ label = "Login with Microsoft"
 ### `config.toml`
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13212,7 +17495,8 @@ label = "Login with Okta"
 ### `config.toml`
 
 ```toml
-[oidc_clients.okta]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "okta"
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13381,7 +17665,8 @@ label = "Login with OneLogin"
 ### `config.toml`
 
 ```toml
-[oidc_clients.onelogin]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "onelogin"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d0-1234-5678-9abc-def012345678"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 4>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -13598,12 +17883,13 @@ label = "Login with Okta"
 
 ### ステップ 1: OIDC プロバイダーセクションの追加
 
-各プロバイダーごとに専用の `[oidc_clients.<key>]` セクションを作成します。key は `dashboard_config.toml` で定義した `key` と一致する必要があります。
+プロバイダーごとに `[[oidc_clients]]` エントリーを 1 つずつ作成します。その `DIGNA_OIDC_KEY` は `dashboard_config.toml` で定義した `key` と一致する必要があります。
 
 ### Microsoft の設定
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -13613,7 +17899,8 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/<tenant_id>/v2
 ### Google の設定
 
 ```toml
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "<client_id>"
 DIGNA_OIDC_CLIENT_SECRET = "<client_secret>"
 DIGNA_OIDC_REDIRECT_URI = "http://localhost:5173/oidc/callback"
@@ -13624,6 +17911,7 @@ DIGNA_OIDC_CONFIGURATION_URL = "https://accounts.google.com/.well-known/openid-c
 
 | Parameter | Type | Required | Description | Example |
 |---|---|---|---|---|
+| `DIGNA_OIDC_KEY` | string | Yes | プロバイダーのキー。`dashboard_config.toml` の `key` と一致させます | `microsoft` |
 | `DIGNA_OIDC_CLIENT_ID` | string | Yes | アイデンティティプロバイダーからのクライアント ID | `abc123xyz789` |
 | `DIGNA_OIDC_CLIENT_SECRET` | string | Yes | アイデンティティプロバイダーからのクライアントシークレット | `secret_xyz789abc123` |
 | `DIGNA_OIDC_REDIRECT_URI` | string | Yes | 認証後のコールバック URL | `http://localhost:5173/oidc/callback` |
@@ -13648,13 +17936,15 @@ digna を別ドメインでホストしている場合は適宜更新してく�
 ### 完全な例
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "abc123xyz789def456ghi"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
 DIGNA_OIDC_CONFIGURATION_URL = "https://login.microsoftonline.com/12345678-1234-1234-1234-123456789012/v2.0/.well-known/openid-configuration"
 
-[oidc_clients.google]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "google"
 DIGNA_OIDC_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com"
 DIGNA_OIDC_CLIENT_SECRET = "google_secret_xyz789"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -14035,7 +18325,8 @@ label = "Login with PingOne"
 ### `config.toml`
 
 ```toml
-[oidc_clients.pingone]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "pingone"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 6>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"
@@ -14182,6 +18473,12 @@ Create one key per agent and per person, so you can revoke a single key without 
 ---
 
 ## 3. Add the Server to Your Client {: #3-add-the-server-to-your-client }
+
+!!! tip "Step-by-step guides"
+
+    The client guides under Integration cover each client in detail:
+    [Claude](../../ai_agents/claude_mcp_guide.md) (Claude Code, Claude Desktop, custom connectors)
+    and [Gemini](../../ai_agents/gemini_mcp_guide.md) (Antigravity, Gemini CLI).
 
 Every request to the MCP server sends the key in an `Authorization` header:
 
@@ -16389,3 +20686,1644 @@ Structural monitoring works across the data platforms *digna* connects to — Te
 - [How to connect a database to a data project](../../getting_started/how_to_connect_database_to_data_project.md)
 
 ---
+
+---
+
+# Attributes
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/attributes/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Attributes
+
+Attributes are the columns, and the query attributes, that *digna* profiles in a data source. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/attributes` | [List attributes](#get-attributes) |
+| `POST` | `/v1/attributes` | [Create an attribute](#create-attribute) |
+| `GET` | `/v1/attributes/{attribute_id}` | [Get an attribute](#get-attribute) |
+| `PUT` | `/v1/attributes/{attribute_id}` | [Update an attribute](#update-attribute) |
+| `DELETE` | `/v1/attributes/{attribute_id}` | [Delete an attribute](#delete-attribute) |
+
+---
+
+## List attributes {: #get-attributes }
+
+```http
+GET /v1/attributes
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | query | integer | Yes | Filter by data source ID |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | List attributes | array of [Attribute](#attribute) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/attributes?data_source_id=<data_source_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Create an attribute {: #create-attribute }
+
+```http
+POST /v1/attributes
+```
+
+**Request body**: [CreateAttributeRequest](#createattributerequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `201` | Create an attribute | [Attribute](#attribute) |
+| `400` | Invalid attribute definition | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X POST 'https://digna.example.com/v1/attributes' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "category": "NUMERICAL",
+    "data_source_id": 1,
+    "name": "<name>",
+    "statistic_ids": [
+      1
+    ]
+  }'
+```
+
+---
+
+## Get an attribute {: #get-attribute }
+
+```http
+GET /v1/attributes/{attribute_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `attribute_id` | path | integer | Yes | Attribute ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get an attribute | [Attribute](#attribute) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `404` | Attribute not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/attributes/<attribute_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Update an attribute {: #update-attribute }
+
+```http
+PUT /v1/attributes/{attribute_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `attribute_id` | path | integer | Yes | Attribute ID |
+
+**Request body**: [UpdateAttributeRequest](#updateattributerequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Update an attribute | [Attribute](#attribute) |
+| `400` | Invalid attribute definition | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Attribute not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X PUT 'https://digna.example.com/v1/attributes/<attribute_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "category": "NUMERICAL",
+    "name": "<name>",
+    "statistic_ids": [
+      1
+    ]
+  }'
+```
+
+---
+
+## Delete an attribute {: #delete-attribute }
+
+```http
+DELETE /v1/attributes/{attribute_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `attribute_id` | path | integer | Yes | Attribute ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `204` | Delete an attribute | — |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Attribute not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X DELETE 'https://digna.example.com/v1/attributes/<attribute_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### CreateAttributeRequest {: #createattributerequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `category` | [StableAttributeCategory](#stableattributecategory) | Yes |  |
+| `column` | string, nullable | No | COLUMN only: the source column to read. Defaults to `name`. |
+| `data_source_id` | integer | Yes |  |
+| `data_type` | string | No | Stored empty for a QUERY attribute, whatever is sent. |
+| `description` | string, nullable | No | Business meaning of the attribute. Defaults to an empty string. |
+| `expression` | string, nullable | No | QUERY only: the SQL expression to read. |
+| `kind` | [StableAttributeKind](#stableattributekind), nullable | No | COLUMN or QUERY. Without it, an `expression` makes the attribute QUERY and anything else COLUMN. |
+| `name` | string | Yes | The label, unique within the data source. |
+| `statistic_ids` | array of integer | Yes |  |
+
+### UpdateAttributeRequest {: #updateattributerequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `category` | [StableAttributeCategory](#stableattributecategory) | Yes |  |
+| `column` | string, nullable | No | COLUMN only: the source column to read. Defaults to `name`. |
+| `data_type` | string | No | Stored empty for a QUERY attribute, whatever is sent. |
+| `description` | string, nullable | No | Business meaning of the attribute. Omit to keep the stored value. |
+| `expression` | string, nullable | No | QUERY only: the SQL expression to read. |
+| `kind` | [StableAttributeKind](#stableattributekind), nullable | No | COLUMN or QUERY. Without it, an `expression` makes the attribute QUERY and anything else COLUMN. |
+| `name` | string | Yes | The label, unique within the data source. |
+| `statistic_ids` | array of integer | Yes |  |
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### Attribute {: #attribute }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `category` | [StableAttributeCategory](#stableattributecategory) | Yes |  |
+| `check_definitions` | array of [AttributeCheckDefinition](#attributecheckdefinition) | Yes |  |
+| `column` | string | Yes | The source column of a COLUMN attribute, empty for QUERY. |
+| `data_source` | [AttributeDataSource](#attributedatasource) | Yes |  |
+| `data_type` | string | Yes |  |
+| `description` | string | Yes | Business meaning of the attribute. Empty when none was given. |
+| `expression` | string | Yes | The SQL expression of a QUERY attribute, empty for COLUMN. |
+| `id` | integer | Yes |  |
+| `kind` | [StableAttributeKind](#stableattributekind) | Yes |  |
+| `name` | string | Yes | The label, unique within the data source. |
+| `project` | [AttributeProject](#attributeproject) | Yes |  |
+
+### StableAttributeCategory {: #stableattributecategory }
+
+One of: `NUMERICAL`, `CATEGORICAL`, `OTHER`, `DATE`, `CUSTOM`.
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### AttributeDataSource {: #attributedatasource }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### StableAttributeKind {: #stableattributekind }
+
+One of: `COLUMN`, `QUERY`.
+
+### AttributeProject {: #attributeproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### AttributeCheckDefinition {: #attributecheckdefinition }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `statistic` | [AttributeCheckDefinitionStatistic](#attributecheckdefinitionstatistic) | Yes |  |
+
+### AttributeCheckDefinitionStatistic {: #attributecheckdefinitionstatistic }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+---
+
+# Check Definitions
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/check_definitions/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Check Definitions
+
+Check definitions are the statistics *digna* calculates and checks for a data source. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/check-definitions` | [List check definitions](#get-check-definitions) |
+
+---
+
+## List check definitions {: #get-check-definitions }
+
+```http
+GET /v1/check-definitions
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | query | integer | Yes | Filter by data source ID |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | List check definitions | array of [CheckDefinition](#checkdefinition) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/check-definitions?data_source_id=<data_source_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### CheckDefinition {: #checkdefinition }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `attribute` | [CheckDefinitionAttribute](#checkdefinitionattribute), nullable | No |  |
+| `data_anomaly_enabled` | boolean | Yes |  |
+| `data_source` | [CheckDefinitionDataSource](#checkdefinitiondatasource) | Yes |  |
+| `id` | integer | Yes |  |
+| `lower_limit` | number (double), nullable | No |  |
+| `max_threshold` | number (double), nullable | No |  |
+| `min_threshold` | number (double), nullable | No |  |
+| `project` | [CheckDefinitionProject](#checkdefinitionproject) | Yes |  |
+| `statistic` | [CheckDefinitionStatistic](#checkdefinitionstatistic) | Yes |  |
+| `upper_limit` | number (double), nullable | No |  |
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### CheckDefinitionDataSource {: #checkdefinitiondatasource }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### CheckDefinitionProject {: #checkdefinitionproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### CheckDefinitionStatistic {: #checkdefinitionstatistic }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `macro_name` | string | Yes |  |
+| `name` | string | Yes |  |
+
+### CheckDefinitionAttribute {: #checkdefinitionattribute }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+---
+
+# Data Sets
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/data_sets/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Data Sets
+
+Datasets split a data source into segments that *digna* monitors separately. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/data-sets` | [List data sets](#get-data-sets) |
+| `POST` | `/v1/data-sets` | [Create a data set](#create-data-set) |
+| `GET` | `/v1/data-sets/{dataset_id}` | [Get a data set](#get-data-set) |
+| `PUT` | `/v1/data-sets/{dataset_id}` | [Update a data set](#update-data-set) |
+| `DELETE` | `/v1/data-sets/{dataset_id}` | [Delete a data set](#delete-data-set) |
+
+---
+
+## List data sets {: #get-data-sets }
+
+```http
+GET /v1/data-sets
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | query | integer | Yes | Filter by data source ID |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | List data sets | array of [DataSet](#dataset) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/data-sets?data_source_id=<data_source_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Create a data set {: #create-data-set }
+
+```http
+POST /v1/data-sets
+```
+
+**Request body**: [CreateDataSetRequest](#createdatasetrequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `201` | Create a data set | [DataSet](#dataset) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X POST 'https://digna.example.com/v1/data-sets' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data_source_id": 1,
+    "filter_expression": "<filter_expression>",
+    "grouping_expression": "<grouping_expression>",
+    "kind": "STATIC",
+    "name": "<name>"
+  }'
+```
+
+---
+
+## Get a data set {: #get-data-set }
+
+```http
+GET /v1/data-sets/{dataset_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `dataset_id` | path | integer | Yes | Data set ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get a data set | [DataSet](#dataset) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `404` | Data set not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/data-sets/<dataset_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Update a data set {: #update-data-set }
+
+```http
+PUT /v1/data-sets/{dataset_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `dataset_id` | path | integer | Yes | Data set ID |
+
+**Request body**: [UpdateDataSetRequest](#updatedatasetrequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Update a data set | [DataSet](#dataset) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Data set not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X PUT 'https://digna.example.com/v1/data-sets/<dataset_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "filter_expression": "<filter_expression>",
+    "grouping_expression": "<grouping_expression>",
+    "kind": "STATIC",
+    "name": "<name>"
+  }'
+```
+
+---
+
+## Delete a data set {: #delete-data-set }
+
+```http
+DELETE /v1/data-sets/{dataset_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `dataset_id` | path | integer | Yes | Data set ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `204` | Delete a data set | — |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Data set not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X DELETE 'https://digna.example.com/v1/data-sets/<dataset_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### CreateDataSetRequest {: #createdatasetrequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `data_source_id` | integer | Yes |  |
+| `filter_expression` | string | Yes |  |
+| `grouping_expression` | string | Yes |  |
+| `kind` | [StableDataSetKind](#stabledatasetkind) | Yes |  |
+| `name` | string | Yes |  |
+
+### UpdateDataSetRequest {: #updatedatasetrequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `filter_expression` | string | Yes |  |
+| `grouping_expression` | string | Yes |  |
+| `kind` | [StableDataSetKind](#stabledatasetkind) | Yes |  |
+| `name` | string | Yes |  |
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### DataSet {: #dataset }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `data_source` | [DataSetDataSource](#datasetdatasource) | Yes |  |
+| `filter_expression` | string | Yes |  |
+| `grouping_expression` | string | Yes |  |
+| `id` | integer | Yes |  |
+| `kind` | [StableDataSetKind](#stabledatasetkind) | Yes |  |
+| `name` | string | Yes |  |
+| `project` | [DataSetProject](#datasetproject) | Yes |  |
+
+### StableDataSetKind {: #stabledatasetkind }
+
+One of: `STATIC`, `DYNAMIC`, `HYBRID`.
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### DataSetDataSource {: #datasetdatasource }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DataSetProject {: #datasetproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+---
+
+# Data Sources
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/data_sources/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Data Sources
+
+Data sources are the tables, views and queries *digna* inspects. Create, read, update and delete them. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/data-sources` | [List data sources](#get-data-sources) |
+| `POST` | `/v1/data-sources` | [Create a data source](#create-data-source) |
+| `GET` | `/v1/data-sources/{data_source_id}` | [Get a data source](#get-data-source) |
+| `PUT` | `/v1/data-sources/{data_source_id}` | [Update a data source](#update-data-source) |
+| `DELETE` | `/v1/data-sources/{data_source_id}` | [Delete a data source](#delete-data-source) |
+
+---
+
+## List data sources {: #get-data-sources }
+
+```http
+GET /v1/data-sources
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `project_id` | query | integer | Yes | Filter by project ID |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | List data sources | array of [DataSource](#datasource) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/data-sources?project_id=<project_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Create a data source {: #create-data-source }
+
+```http
+POST /v1/data-sources
+```
+
+**Request body**: [CreateDataSourceRequest](#createdatasourcerequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `201` | Create a data source | [DataSource](#datasource) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X POST 'https://digna.example.com/v1/data-sources' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "db_connection_id": 1,
+    "kind": "TABLE",
+    "modules": {
+      "data_analytics": false,
+      "data_anomaly": false,
+      "data_validation": false,
+      "schema_tracker": false,
+      "timeliness": false
+    },
+    "name": "<name>",
+    "object": {
+      "catalog_name": "<catalog_name>",
+      "schema_name": "<schema_name>",
+      "table_name": "<table_name>"
+    },
+    "project_id": 1,
+    "query_mode": "single",
+    "report_empty_datasets": false,
+    "snapshot_filter": "<snapshot_filter>",
+    "snapshot_query": "<snapshot_query>"
+  }'
+```
+
+---
+
+## Get a data source {: #get-data-source }
+
+```http
+GET /v1/data-sources/{data_source_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | path | integer | Yes | Data source ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get a data source | [DataSource](#datasource) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `404` | Data source not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/data-sources/<data_source_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Update a data source {: #update-data-source }
+
+```http
+PUT /v1/data-sources/{data_source_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | path | integer | Yes | Data source ID |
+
+**Request body**: [UpdateDataSourceRequest](#updatedatasourcerequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Update a data source | [DataSource](#datasource) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Data source not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X PUT 'https://digna.example.com/v1/data-sources/<data_source_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "db_connection_id": 1,
+    "kind": "TABLE",
+    "modules": {
+      "data_analytics": false,
+      "data_anomaly": false,
+      "data_validation": false,
+      "schema_tracker": false,
+      "timeliness": false
+    },
+    "name": "<name>",
+    "object": {
+      "catalog_name": "<catalog_name>",
+      "schema_name": "<schema_name>",
+      "table_name": "<table_name>"
+    },
+    "query_mode": "single",
+    "report_empty_datasets": false,
+    "snapshot_filter": "<snapshot_filter>",
+    "snapshot_query": "<snapshot_query>"
+  }'
+```
+
+---
+
+## Delete a data source {: #delete-data-source }
+
+```http
+DELETE /v1/data-sources/{data_source_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | path | integer | Yes | Data source ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `204` | Delete a data source | — |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Data source not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X DELETE 'https://digna.example.com/v1/data-sources/<data_source_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### CreateDataSourceRequest {: #createdatasourcerequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `db_connection_id` | integer | Yes |  |
+| `description` | string, nullable | No | Business meaning of the data source. Defaults to an empty string. |
+| `kind` | [StableDataSourceKind](#stabledatasourcekind) | Yes |  |
+| `modules` | [DataSourceModules](#datasourcemodules) | Yes |  |
+| `name` | string | Yes |  |
+| `object` | [DataSourceObject](#datasourceobject) | Yes |  |
+| `project_id` | integer | Yes |  |
+| `query_mode` | [StableDataSourceQueryMode](#stabledatasourcequerymode) | Yes |  |
+| `report_empty_datasets` | boolean | Yes |  |
+| `snapshot_filter` | string | Yes |  |
+| `snapshot_query` | string | Yes |  |
+
+### UpdateDataSourceRequest {: #updatedatasourcerequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `db_connection_id` | integer | Yes |  |
+| `description` | string, nullable | No | Business meaning of the data source. Omit to keep the stored value. |
+| `kind` | [StableDataSourceKind](#stabledatasourcekind) | Yes |  |
+| `modules` | [DataSourceModules](#datasourcemodules) | Yes |  |
+| `name` | string | Yes |  |
+| `object` | [DataSourceObject](#datasourceobject) | Yes |  |
+| `query_mode` | [StableDataSourceQueryMode](#stabledatasourcequerymode) | Yes |  |
+| `report_empty_datasets` | boolean | Yes |  |
+| `snapshot_filter` | string | Yes |  |
+| `snapshot_query` | string | Yes |  |
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### DataSource {: #datasource }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `db_connection` | [DataSourceDbConnection](#datasourcedbconnection) | Yes |  |
+| `description` | string | Yes | Business meaning of the data source. Empty when none was given. |
+| `id` | integer | Yes |  |
+| `kind` | [StableDataSourceKind](#stabledatasourcekind) | Yes |  |
+| `modules` | [DataSourceModules](#datasourcemodules) | Yes |  |
+| `name` | string | Yes |  |
+| `object` | [DataSourceObject](#datasourceobject) | Yes |  |
+| `project` | [DataSourceProject](#datasourceproject) | Yes |  |
+| `query_mode` | [StableDataSourceQueryMode](#stabledatasourcequerymode) | Yes |  |
+| `report_empty_datasets` | boolean | Yes |  |
+| `snapshot_filter` | string | Yes |  |
+| `snapshot_query` | string | Yes |  |
+
+### StableDataSourceKind {: #stabledatasourcekind }
+
+One of: `TABLE`, `QUERY`, `VIEW`.
+
+### DataSourceModules {: #datasourcemodules }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `data_analytics` | boolean | Yes |  |
+| `data_anomaly` | boolean | Yes |  |
+| `data_validation` | boolean | Yes |  |
+| `schema_tracker` | boolean | Yes |  |
+| `timeliness` | boolean | Yes |  |
+
+### DataSourceObject {: #datasourceobject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `catalog_name` | string | Yes |  |
+| `schema_name` | string | Yes |  |
+| `table_name` | string | Yes |  |
+
+### StableDataSourceQueryMode {: #stabledatasourcequerymode }
+
+One of: `single`, `combined`.
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### DataSourceDbConnection {: #datasourcedbconnection }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DataSourceProject {: #datasourceproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+---
+
+# DB Connections
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/db_connections/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# DB Connections
+
+Database connections of a project. The API reads them, without connection properties or secrets; create and change them in the dashboard. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/db-connections` | [List db connections](#get-db-connections) |
+| `GET` | `/v1/db-connections/{db_connection_id}` | [Get a db connection](#get-db-connection) |
+
+---
+
+## List db connections {: #get-db-connections }
+
+```http
+GET /v1/db-connections
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | List db connections | array of [DbConnection](#dbconnection) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/db-connections' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Get a db connection {: #get-db-connection }
+
+```http
+GET /v1/db-connections/{db_connection_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `db_connection_id` | path | integer | Yes | Db connection ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get a db connection | [DbConnection](#dbconnection) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `404` | Db connection not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/db-connections/<db_connection_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### DbConnection {: #dbconnection }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+| `profiling_location` | [StableProfilingLocation](#stableprofilinglocation) | Yes |  |
+| `profiling_mode` | [StableDbConnectionProfilingMode](#stabledbconnectionprofilingmode) | Yes |  |
+| `technology` | [StableDbConnectionTechnology](#stabledbconnectiontechnology) | Yes |  |
+| `work_schema` | string | Yes |  |
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### StableProfilingLocation {: #stableprofilinglocation }
+
+One of: `source-database`, `digna-engine`.
+
+### StableDbConnectionProfilingMode {: #stabledbconnectionprofilingmode }
+
+One of: `permanent`, `session`, `standard`.
+
+### StableDbConnectionTechnology {: #stabledbconnectiontechnology }
+
+One of: `hive`, `postgres`, `oracle`, `sqlserver`, `databricks`, `teradata`, `netezza`, `snowflake`, `impala`.
+
+---
+
+# Inspection Requests
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/inspection_requests/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Inspection Requests
+
+Inspection requests run inspections for a range of dates, like an inspection started from the Inspection Hub. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/v1/inspection-requests` | [Submit an inspection request](#submit-inspection-request) |
+| `GET` | `/v1/inspection-requests/{inspection_request_id}` | [Inspection request status](#get-inspection-request) |
+
+---
+
+## Submit an inspection request {: #submit-inspection-request }
+
+```http
+POST /v1/inspection-requests
+```
+
+**Request body**: [SubmitInspectionRequest](#submitinspectionrequest)
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Submit an inspection request | [SubmitInspectionRequestResponse](#submitinspectionrequestresponse) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X POST 'https://digna.example.com/v1/inspection-requests' \
+  -H "Authorization: Bearer $DIGNA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "data_source_ids": [
+      1
+    ],
+    "end_date": "2026-11-01",
+    "include_all_data_sources": false,
+    "mode": "DAILY",
+    "monthly_mode_days": [
+      1
+    ],
+    "project_id": 1,
+    "start_date": "2026-11-01",
+    "use_notification": false,
+    "weekly_mode_weekdays": [
+      "MONDAY"
+    ]
+  }'
+```
+
+---
+
+## Inspection request status {: #get-inspection-request }
+
+```http
+GET /v1/inspection-requests/{inspection_request_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `inspection_request_id` | path | integer | Yes | Inspection request ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Inspection request status | [InspectionRequestStatusResponse](#inspectionrequeststatusresponse) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `403` | Not authorized | [ApiError](#apierror) |
+| `404` | Inspection request not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/inspection-requests/<inspection_request_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### SubmitInspectionRequest {: #submitinspectionrequest }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `data_source_ids` | array of integer | Yes |  |
+| `end_date` | string (date) | Yes |  |
+| `include_all_data_sources` | boolean | Yes |  |
+| `inspection_job_id` | integer, nullable | No |  |
+| `mode` | [StableInspectionRequestMode](#stableinspectionrequestmode) | Yes |  |
+| `monthly_mode_days` | array of integer | Yes |  |
+| `project_id` | integer | Yes |  |
+| `start_date` | string (date) | Yes |  |
+| `use_notification` | boolean | Yes |  |
+| `weekly_mode_weekdays` | array of [StableInspectionRequestWeekday](#stableinspectionrequestweekday) | Yes |  |
+
+### SubmitInspectionRequestResponse {: #submitinspectionrequestresponse }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### InspectionRequestStatusResponse {: #inspectionrequeststatusresponse }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `status` | [StableInspectionOperationStatus](#stableinspectionoperationstatus) | Yes |  |
+
+### StableInspectionRequestMode {: #stableinspectionrequestmode }
+
+One of: `DAILY`, `WEEKLY`, `MONTHLY`.
+
+### StableInspectionRequestWeekday {: #stableinspectionrequestweekday }
+
+One of: `MONDAY`, `TUESDAY`, `WEDNESDAY`, `THURSDAY`, `FRIDAY`, `SATURDAY`, `SUNDAY`.
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### StableInspectionOperationStatus {: #stableinspectionoperationstatus }
+
+One of: `PENDING`, `RUNNING`, `COMPLETED`, `FAILED`, `ABORTED`, `CANCELLED`.
+
+---
+
+# Inspection Statuses
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/inspection_statuses/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Inspection Statuses
+
+Inspection statuses report the result of each inspected day per project, data source and dataset. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/inspection-statuses/data-sets` | [Get data set inspection statuses](#get-data-set-inspection-statuses) |
+| `GET` | `/v1/inspection-statuses/data-sources` | [Get data source inspection statuses](#get-data-source-inspection-statuses) |
+| `GET` | `/v1/inspection-statuses/projects` | [Get project inspection statuses](#get-project-inspection-statuses) |
+
+---
+
+## Get data set inspection statuses {: #get-data-set-inspection-statuses }
+
+```http
+GET /v1/inspection-statuses/data-sets
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `data_source_id` | query | integer | Yes | Filter by data source ID |
+| `dataset_id` | query | integer | No | Filter by data set ID |
+| `start_date` | query | string | Yes | Start date (YYYY-MM-DD) |
+| `end_date` | query | string | Yes | End date (YYYY-MM-DD) |
+| `data_volume_status` | query | integer | No | Filter by data volume status |
+| `data_anomaly_status` | query | integer | No | Filter by data anomaly status |
+| `data_validation_status` | query | integer | No | Filter by data validation status |
+| `data_analytics_status` | query | integer | No | Filter by data analytics status |
+| `inspection_status` | query | integer | No | Filter by inspection status |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get data set inspection statuses | array of [DatasetInspectionStatus](#datasetinspectionstatus) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/inspection-statuses/data-sets?data_source_id=<data_source_id>&start_date=<start_date>&end_date=<end_date>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Get data source inspection statuses {: #get-data-source-inspection-statuses }
+
+```http
+GET /v1/inspection-statuses/data-sources
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `project_id` | query | integer | No | Filter by project ID |
+| `data_source_id` | query | integer | No | Filter by data source ID |
+| `start_date` | query | string | Yes | Start date (YYYY-MM-DD) |
+| `end_date` | query | string | Yes | End date (YYYY-MM-DD) |
+| `data_source_name_like` | query | string | No | Filter by data source name |
+| `is_inspected` | query | boolean | No | Filter by inspected state |
+| `data_anomaly_status` | query | integer | No | Filter by data anomaly status |
+| `data_volume_status` | query | integer | No | Filter by data volume status |
+| `data_validation_status` | query | integer | No | Filter by data validation status |
+| `data_analytics_status` | query | integer | No | Filter by data analytics status |
+| `inspection_status` | query | integer | No | Filter by inspection status |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get data source inspection statuses | array of [DataSourceInspectionStatus](#datasourceinspectionstatus) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/inspection-statuses/data-sources?start_date=<start_date>&end_date=<end_date>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Get project inspection statuses {: #get-project-inspection-statuses }
+
+```http
+GET /v1/inspection-statuses/projects
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `project_id` | query | integer | Yes | Project ID |
+| `start_date` | query | string | Yes | Start date (YYYY-MM-DD) |
+| `end_date` | query | string | Yes | End date (YYYY-MM-DD) |
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get project inspection statuses | array of [ProjectInspectionStatus](#projectinspectionstatus) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/inspection-statuses/projects?project_id=<project_id>&start_date=<start_date>&end_date=<end_date>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### DatasetInspectionStatus {: #datasetinspectionstatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `data_analytics_status` | [DatasetInspectionStatusDataAnalyticsStatus](#datasetinspectionstatusdataanalyticsstatus), nullable | No |  |
+| `data_anomaly_status` | [DatasetInspectionStatusDataAnomalyStatus](#datasetinspectionstatusdataanomalystatus), nullable | No |  |
+| `data_source` | [DatasetInspectionStatusDataSource](#datasetinspectionstatusdatasource) | Yes |  |
+| `data_validation_status` | [DatasetInspectionStatusDataValidationStatus](#datasetinspectionstatusdatavalidationstatus), nullable | No |  |
+| `data_volume_status` | [DatasetInspectionStatusDataVolumeStatus](#datasetinspectionstatusdatavolumestatus), nullable | No |  |
+| `dataset` | [DatasetInspectionStatusDataset](#datasetinspectionstatusdataset) | Yes |  |
+| `dataset_definition` | [DatasetInspectionStatusDatasetDefinition](#datasetinspectionstatusdatasetdefinition) | Yes |  |
+| `project` | [DatasetInspectionStatusProject](#datasetinspectionstatusproject) | Yes |  |
+| `status` | [InspectionStatus](#inspectionstatus) | Yes |  |
+| `valid_date` | string (date) | Yes |  |
+
+### DataSourceInspectionStatus {: #datasourceinspectionstatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `data_analytics_status` | [DataSourceInspectionStatusDataAnalyticsDataSourceStatus](#datasourceinspectionstatusdataanalyticsdatasourcestatus), nullable | No |  |
+| `data_anomaly_status` | [DataSourceInspectionStatusDataAnomalyStatus](#datasourceinspectionstatusdataanomalystatus), nullable | No |  |
+| `data_source` | [DataSourceInspectionStatusDataSource](#datasourceinspectionstatusdatasource) | Yes |  |
+| `data_validation_status` | [DataSourceInspectionStatusDataValidationStatus](#datasourceinspectionstatusdatavalidationstatus), nullable | No |  |
+| `data_volume_status` | [DataSourceInspectionStatusDataVolumeStatus](#datasourceinspectionstatusdatavolumestatus), nullable | No |  |
+| `inspected_at` | string (date-time), nullable | No |  |
+| `is_analyzed` | boolean | Yes | Whether someone has marked this date as reviewed. |
+| `is_anomaly` | boolean | Yes | Whether someone has marked this date as a known anomaly, which keeps its error out of the data anomaly alert bound. |
+| `is_inspected` | boolean | Yes |  |
+| `project` | [DataSourceInspectionStatusProject](#datasourceinspectionstatusproject) | Yes |  |
+| `row_count` | integer, nullable | No | Rows the data source held on `valid_date`, `None` for a date it was not profiled on. |
+| `status` | [InspectionStatus](#inspectionstatus) | Yes |  |
+| `valid_date` | string (date) | Yes |  |
+
+### ProjectInspectionStatus {: #projectinspectionstatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `project` | [ProjectInspectionStatusProject](#projectinspectionstatusproject) | Yes |  |
+| `status` | [InspectionStatus](#inspectionstatus) | Yes |  |
+| `valid_date` | string (date) | Yes |  |
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### DatasetInspectionStatusDataSource {: #datasetinspectionstatusdatasource }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DatasetInspectionStatusDataset {: #datasetinspectionstatusdataset }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `full_name` | string | Yes |  |
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DatasetInspectionStatusDatasetDefinition {: #datasetinspectionstatusdatasetdefinition }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DatasetInspectionStatusProject {: #datasetinspectionstatusproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### InspectionStatus {: #inspectionstatus }
+
+One of: `-1` (no status), `0` (OK), `1` (warning), `2` (critical).
+
+### DataSourceInspectionStatusDataSource {: #datasourceinspectionstatusdatasource }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DataSourceInspectionStatusProject {: #datasourceinspectionstatusproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### ProjectInspectionStatusProject {: #projectinspectionstatusproject }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### DatasetInspectionStatusDataAnalyticsStatus {: #datasetinspectionstatusdataanalyticsstatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_failed` | integer | Yes |  |
+| `num_not_relevant` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DatasetInspectionStatusDataAnomalyStatus {: #datasetinspectionstatusdataanomalystatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_checks` | integer | Yes |  |
+| `num_failed` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `num_uncertain` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DatasetInspectionStatusDataValidationStatus {: #datasetinspectionstatusdatavalidationstatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_failed` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `num_uncertain` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DatasetInspectionStatusDataVolumeStatus {: #datasetinspectionstatusdatavolumestatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `row_count` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DataSourceInspectionStatusDataAnalyticsDataSourceStatus {: #datasourceinspectionstatusdataanalyticsdatasourcestatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_failed` | integer | Yes |  |
+| `num_not_relevant` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DataSourceInspectionStatusDataAnomalyStatus {: #datasourceinspectionstatusdataanomalystatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_checks` | integer | Yes |  |
+| `num_failed` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `num_uncertain` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DataSourceInspectionStatusDataValidationStatus {: #datasourceinspectionstatusdatavalidationstatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_failed` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `num_uncertain` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### DataSourceInspectionStatusDataVolumeStatus {: #datasourceinspectionstatusdatavolumestatus }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `num_checks` | integer | Yes |  |
+| `num_failed` | integer | Yes |  |
+| `num_passed` | integer | Yes |  |
+| `status` | [TestStatus](#teststatus) | Yes |  |
+
+### TestStatus {: #teststatus }
+
+One of: `-1` (not tested), `0` (passed), `1` (uncertain), `2` (failed).
+
+---
+
+# Projects
+Source: https://docs.digna.ai/ja/rest_api/Release%202026.11/projects/
+
+<!-- Generated by scripts/gen_rest_api_reference.py from openapi.json. Do not edit. -->
+
+# Projects
+
+Projects group database connections and data sources. The API reads projects; create and change them in the dashboard. Authentication, pagination and errors are described in the [Overview](index.md).
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/v1/projects` | [List projects](#get-projects) |
+| `GET` | `/v1/projects/{project_id}` | [Get a project](#get-project) |
+
+---
+
+## List projects {: #get-projects }
+
+```http
+GET /v1/projects
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `limit` | query | integer | No | Maximum number of rows to return (default: 200, max: 5000) |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | List projects | array of [Project](#project) |
+| `400` | Invalid limit | [ApiError](#apierror) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/projects' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Get a project {: #get-project }
+
+```http
+GET /v1/projects/{project_id}
+```
+
+**Parameters**
+
+| Name | In | Type | Required | Description |
+|---|---|---|---|---|
+| `project_id` | path | integer | Yes | Project ID |
+
+**Responses**
+
+| Status | Description | Body |
+|---|---|---|
+| `200` | Get a project | [Project](#project) |
+| `401` | Not authenticated | [ApiError](#apierror) |
+| `404` | Project not found | [ApiError](#apierror) |
+| `500` | Internal error | [ApiError](#apierror) |
+
+**Example**
+
+```bash
+curl -X GET 'https://digna.example.com/v1/projects/<project_id>' \
+  -H "Authorization: Bearer $DIGNA_API_KEY"
+```
+
+---
+
+## Schemas {: #schemas }
+
+### ApiError {: #apierror }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `code` | [ApiErrorCode](#apierrorcode) | Yes |  |
+| `message` | string | Yes |  |
+
+### Project {: #project }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `db_connections` | array of [ProjectDbConnection](#projectdbconnection) | Yes |  |
+| `description` | string | Yes |  |
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |
+
+### ApiErrorCode {: #apierrorcode }
+
+One of: `INTERNAL_ERROR`, `INVALID_CREDENTIALS`, `NOT_FOUND`, `NOT_AUTHENTICATED`, `NOT_AUTHORIZED`, `INVALID_LICENSE`, `BAD_REQUEST`.
+
+### ProjectDbConnection {: #projectdbconnection }
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | integer | Yes |  |
+| `name` | string | Yes |  |

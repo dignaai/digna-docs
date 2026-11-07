@@ -23,7 +23,7 @@ Denne guiden dekker **Entra ID-siden**: registrering av applikasjonen og innhent
 3. Klikk **New registration**
 4. Konfigurer:
    - **Name**: `digna` (vises for brukerne på samtykkeskjermen)
-   - **Supported account types**: *Accounts in this organizational directory only* for a single-tenant deployment
+   - **Supported account types**: *Accounts in this organizational directory only* for en installasjon med én tenant
 5. Under **Redirect URI**, velg plattform **Web** og skriv inn din digna callback-URL:
 
 ```
@@ -106,7 +106,8 @@ label = "Login with Microsoft"
 ### `config.toml`
 
 ```toml
-[oidc_clients.microsoft]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "microsoft"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<the Value copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

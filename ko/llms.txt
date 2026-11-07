@@ -62,14 +62,17 @@
 
 ### Linux
 
+- [Release 2026.11](https://docs.digna.ai/ko/installation_deployment/Linux/Release%202026.11/installation_guide_digna_linux_2026_11/): Linux에 digna 릴리스 2026.11을 설치하는 단계별 가이드 — 시스템 요구사항, PostgreSQL 설정, nginx 또는 Apache 구성, 백엔드 및 대시보드 구성, digna를 systemd 서비스로 실행하는 방법, 릴리스 2026.06에서 업그레이드하는 방법
 - [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): Linux에 digna 릴리스 2026.06을 설치하는 단계별 가이드 — 시스템 요구사항, PostgreSQL 설정, nginx 또는 Apache 구성, 백엔드 및 대시보드 구성, digna를 systemd 서비스로 실행하는 방법, 새 릴리스로 업그레이드하는 방법
 
 ### macOS
 
+- [Release 2026.11](https://docs.digna.ai/ko/installation_deployment/macOS/Release%202026.11/installation_guide_digna_macos_2026_11/): macOS에 digna Release 2026.11을 설치하는 단계별 안내 — 시스템 요구사항, Homebrew 및 PostgreSQL 설정, nginx 또는 Apache 구성, 백엔드 및 대시보드 설정, digna를 백그라운드 서비스로 실행 및 릴리스 2026.06에서 업그레이드하는 방법.
 - [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): macOS에 digna Release 2026.06을 설치하는 단계별 안내 — 시스템 요구사항, Homebrew 및 PostgreSQL 설정, nginx 또는 Apache 구성, 백엔드 및 대시보드 설정, digna를 백그라운드 서비스로 실행 및 새 릴리스로 업그레이드 방법.
 
 ### Windows
 
+- [Release 2026.11](https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.11/installation_guide_digna_windows_2026_11/): Windows에 digna 릴리스 2026.11을 설치하는 단계별 안내 — 시스템 요구사항, PostgreSQL 설정, 웹 서버 구성, 백엔드 및 대시보드 설정, Windows 서비스로서의 digna 실행 및 릴리스 2026.06에서 업그레이드하는 방법.
 - [Release 2026.06](https://docs.digna.ai/ko/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): Windows에 digna 릴리스 2026.06을 설치하는 단계별 안내 — 시스템 요구사항, PostgreSQL 설정, 웹 서버 구성, 백엔드 및 대시보드 설정, Windows 서비스로서의 digna 실행 및 릴리스 업그레이드 방법.
 
 ## 시작하기
@@ -112,6 +115,12 @@
 - [OneLogin](https://docs.digna.ai/ko/sso/onelogin_sso_guide/): OpenID Connect를 사용해 OneLogin으로 digna의 Single Sign-On을 구성합니다 — OIDC 앱 생성, 리디렉션 URI, 클라이언트 자격증명, 토큰 엔드포인트 인증 및 대응하는 digna 설정을 다룹니다.
 - [PingOne](https://docs.digna.ai/ko/sso/pingone_sso_guide/): OpenID Connect를 사용하여 PingOne으로 digna의 Single Sign-On을 구성합니다 — OIDC 웹 앱 설정, 리디렉트 URI, 클라이언트 자격 증명, 환경 ID, 지역 도메인 및 대응하는 digna 구성.
 
+### AI 에이전트
+
+- [Overview](https://docs.digna.ai/ko/ai_agents/overview/): digna MCP Server를 통해 Claude, Gemini 및 기타 AI 에이전트를 digna에 연결합니다. MCP 엔드포인트를 찾고, API 키를 만들고, 라이선스와 네트워크 요구사항을 확인한 뒤 사용하는 AI 클라이언트에 맞는 가이드를 선택하세요.
+- [Claude](https://docs.digna.ai/ko/ai_agents/claude_mcp_guide/): digna MCP Server를 통해 Claude를 digna에 연결합니다 — 명령줄 또는 공유 .mcp.json을 사용하는 Claude Code, 로컬 브리지를 사용하는 Claude Desktop, claude.ai의 사용자 지정 커넥터를 다루며, Authorization 헤더에 API 키를 사용합니다.
+- [Gemini](https://docs.digna.ai/ko/ai_agents/gemini_mcp_guide/): digna MCP Server를 통해 Google의 Gemini 도구를 digna에 연결합니다 — mcp_config.json을 사용하는 Antigravity CLI, IDE 및 앱, 그리고 settings.json 또는 gemini mcp add를 사용하는 Gemini CLI를 다루며, Authorization 헤더에 API 키를 사용합니다.
+
 ## CLI 참고 문서
 
 - [Release 2026.11](https://docs.digna.ai/ko/cli/Command_Line_Interface_202611/): digna CLI 릴리스 2026.11의 전체 참조 문서
@@ -143,6 +152,20 @@
 - [Models](https://docs.digna.ai/ko/sdk/Release%202026.06/models/): digna Python SDK 릴리스 2026.06의 데이터 모델
 - [Errors](https://docs.digna.ai/ko/sdk/Release%202026.06/errors/): digna Python SDK 릴리스 2026.06의 오류 계층 구조
 - [API Reference](https://docs.digna.ai/ko/sdk/Release%202026.06/reference/): digna Python SDK 릴리스 2026.06의 클라이언트 API 참조
+
+## REST API 참고 문서
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/ko/rest_api/Release%202026.11/): digna REST API v1로 프로젝트와 검사 결과를 읽고, 데이터 소스·데이터 세트·속성을 관리하고, 검사를 시작합니다. 기본 URL, API 키 인증, 목록 한도, 오류, OpenAPI 문서를 설명합니다.
+- [Projects](https://docs.digna.ai/ko/rest_api/Release%202026.11/projects/): digna REST API v1 reference for projects — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [DB Connections](https://docs.digna.ai/ko/rest_api/Release%202026.11/db_connections/): digna REST API v1 reference for db connections — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Data Sources](https://docs.digna.ai/ko/rest_api/Release%202026.11/data_sources/): digna REST API v1 reference for data sources — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Data Sets](https://docs.digna.ai/ko/rest_api/Release%202026.11/data_sets/): digna REST API v1 reference for data sets — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Attributes](https://docs.digna.ai/ko/rest_api/Release%202026.11/attributes/): digna REST API v1 reference for attributes — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Check Definitions](https://docs.digna.ai/ko/rest_api/Release%202026.11/check_definitions/): digna REST API v1 reference for check definitions — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Inspection Requests](https://docs.digna.ai/ko/rest_api/Release%202026.11/inspection_requests/): digna REST API v1 reference for inspection requests — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Inspection Statuses](https://docs.digna.ai/ko/rest_api/Release%202026.11/inspection_statuses/): digna REST API v1 reference for inspection statuses — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
 
 ## Changelog
 

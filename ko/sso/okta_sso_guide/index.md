@@ -105,7 +105,8 @@ label = "Okta로 로그인"
 ### `config.toml`
 
 ```toml
-[oidc_clients.okta]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "okta"
 DIGNA_OIDC_CLIENT_ID = "0oa1b2c3d4EXAMPLE5"
 DIGNA_OIDC_CLIENT_SECRET = "<3단계에서 복사한 클라이언트 시크릿>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

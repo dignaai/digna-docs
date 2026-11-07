@@ -62,14 +62,17 @@
 
 ### Linux
 
+- [Release 2026.11](https://docs.digna.ai/ar/installation_deployment/Linux/Release%202026.11/installation_guide_digna_linux_2026_11/): دليل خطوة بخطوة لتثبيت digna إصدار 2026.11 على Linux — متطلبات النظام، إعداد PostgreSQL، تهيئة nginx أو Apache، تكوين الbackend و الdashboard، تشغيل digna كخدمة systemd، والترقية من الإصدار 2026.06.
 - [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): دليل خطوة بخطوة لتثبيت digna إصدار 2026.06 على Linux — متطلبات النظام، إعداد PostgreSQL، تهيئة nginx أو Apache، تكوين الbackend و الdashboard، تشغيل digna كخدمة systemd، والترقية إلى إصدار جديد.
 
 ### macOS
 
+- [Release 2026.11](https://docs.digna.ai/ar/installation_deployment/macOS/Release%202026.11/installation_guide_digna_macos_2026_11/): دليل خطوة بخطوة لتثبيت إصدار digna 2026.11 على macOS — متطلبات النظام، إعداد Homebrew و PostgreSQL، تكوين nginx أو Apache، إعداد الbackend واللوحة، تشغيل digna كخدمة في الخلفية، والترقية من الإصدار 2026.06.
 - [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): دليل خطوة بخطوة لتثبيت إصدار digna 2026.06 على macOS — متطلبات النظام، إعداد Homebrew و PostgreSQL، تكوين nginx أو Apache، إعداد الbackend واللوحة، تشغيل digna كخدمة في الخلفية، والترقية إلى إصدار جديد.
 
 ### Windows
 
+- [Release 2026.11](https://docs.digna.ai/ar/installation_deployment/Windows/Release%202026.11/installation_guide_digna_windows_2026_11/): دليل خطوة بخطوة لتثبيت digna إصدار 2026.11 على Windows — متطلبات النظام، إعداد PostgreSQL، تكوين خادم الويب، إعداد الواجهة الخلفية واللوحة، تشغيل digna كخدمة Windows، والترقية من الإصدار 2026.06.
 - [Release 2026.06](https://docs.digna.ai/ar/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): دليل خطوة بخطوة لتثبيت digna إصدار 2026.06 على Windows — متطلبات النظام، إعداد PostgreSQL، تكوين خادم الويب، إعداد الواجهة الخلفية واللوحة، تشغيل digna كخدمة Windows، والترقية إلى إصدار جديد.
 
 ## البدء
@@ -112,6 +115,12 @@
 - [OneLogin](https://docs.digna.ai/ar/sso/onelogin_sso_guide/): قم بتكوين تسجيل الدخول الموحد (Single Sign-On) لـ digna باستخدام OneLogin عبر OpenID Connect — إنشاء تطبيق OIDC، عناوين إعادة التوجيه، بيانات اعتماد العميل، مصادقة نقطة نهاية التوكن وتكوين digna المطابق.
 - [PingOne](https://docs.digna.ai/ar/sso/pingone_sso_guide/): إعداد تسجيل الدخول الموحد لـ digna مع PingOne باستخدام OpenID Connect — إعداد تطبيق OIDC على الويب، عناوين إعادة التوجيه، بيانات اعتماد العميل، معرف البيئة، المجالات الإقليمية وتطابق إعداد digna.
 
+### وكلاء الذكاء الاصطناعي
+
+- [Overview](https://docs.digna.ai/ar/ai_agents/overview/): اربط Claude وGemini ووكلاء الذكاء الاصطناعي الآخرين بـ digna عبر digna MCP Server. اعثر على نقطة نهاية MCP، وأنشئ مفتاح API، وتحقق من متطلبات الترخيص والشبكة، واختر الدليل المناسب لعميل الذكاء الاصطناعي لديك.
+- [Claude](https://docs.digna.ai/ar/ai_agents/claude_mcp_guide/): اربط Claude بـ digna عبر digna MCP Server — Claude Code من سطر الأوامر أو من ملف .mcp.json مشترك، وClaude Desktop مع جسر محلي، والموصلات المخصصة في claude.ai، مع مفتاح API في الترويسة Authorization.
+- [Gemini](https://docs.digna.ai/ar/ai_agents/gemini_mcp_guide/): اربط أدوات Gemini من Google بـ digna عبر digna MCP Server — Antigravity CLI وIDE والتطبيق باستخدام mcp_config.json، وGemini CLI باستخدام settings.json أو gemini mcp add، مع مفتاح API في الترويسة Authorization.
+
 ## مرجع CLI
 
 - [Release 2026.11](https://docs.digna.ai/ar/cli/Command_Line_Interface_202611/): مرجع كامل لإصدار digna CLI 2026.11
@@ -143,6 +152,20 @@
 - [Models](https://docs.digna.ai/ar/sdk/Release%202026.06/models/): نماذج البيانات لإصدار digna Python SDK 2026.06
 - [Errors](https://docs.digna.ai/ar/sdk/Release%202026.06/errors/): التسلسل الهرمي للأخطاء في إصدار digna Python SDK 2026.06
 - [API Reference](https://docs.digna.ai/ar/sdk/Release%202026.06/reference/): مرجع واجهة برمجة العميل لإصدار digna Python SDK 2026.06
+
+## مرجع REST API
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/ar/rest_api/Release%202026.11/): استخدم digna REST API v1 لقراءة المشاريع ونتائج الفحص، وإدارة مصادر البيانات ومجموعات البيانات والسمات، وبدء عمليات الفحص — عنوان URL الأساسي، والمصادقة بمفتاح API، وحدود القوائم، والأخطاء، ومستند OpenAPI.
+- [Projects](https://docs.digna.ai/ar/rest_api/Release%202026.11/projects/): digna REST API v1 reference for projects — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [DB Connections](https://docs.digna.ai/ar/rest_api/Release%202026.11/db_connections/): digna REST API v1 reference for db connections — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Data Sources](https://docs.digna.ai/ar/rest_api/Release%202026.11/data_sources/): digna REST API v1 reference for data sources — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Data Sets](https://docs.digna.ai/ar/rest_api/Release%202026.11/data_sets/): digna REST API v1 reference for data sets — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Attributes](https://docs.digna.ai/ar/rest_api/Release%202026.11/attributes/): digna REST API v1 reference for attributes — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Check Definitions](https://docs.digna.ai/ar/rest_api/Release%202026.11/check_definitions/): digna REST API v1 reference for check definitions — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Inspection Requests](https://docs.digna.ai/ar/rest_api/Release%202026.11/inspection_requests/): digna REST API v1 reference for inspection requests — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Inspection Statuses](https://docs.digna.ai/ar/rest_api/Release%202026.11/inspection_statuses/): digna REST API v1 reference for inspection statuses — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
 
 ## Changelog
 

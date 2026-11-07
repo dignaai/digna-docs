@@ -105,7 +105,8 @@ label = "Bejelentkezés Auth0-val"
 ### `config.toml`
 
 ```toml
-[oidc_clients.auth0]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "auth0"
 DIGNA_OIDC_CLIENT_ID = "aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
 DIGNA_OIDC_CLIENT_SECRET = "<the client secret copied in Step 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

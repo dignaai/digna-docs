@@ -120,7 +120,8 @@ label = "Zaloguj się przez Active Directory"
 ### `config.toml`
 
 ```toml
-[oidc_clients.adfs]
+[[oidc_clients]]
+DIGNA_OIDC_KEY = "adfs"
 DIGNA_OIDC_CLIENT_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 DIGNA_OIDC_CLIENT_SECRET = "<wspólny sekret skopiowany w Kroku 3>"
 DIGNA_OIDC_REDIRECT_URI = "https://digna.yourdomain.com/oidc/callback"

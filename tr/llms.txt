@@ -62,14 +62,17 @@
 
 ### Linux
 
+- [Release 2026.11](https://docs.digna.ai/tr/installation_deployment/Linux/Release%202026.11/installation_guide_digna_linux_2026_11/): digna Sürüm 2026.11'i Linux'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, PostgreSQL kurulumu, nginx veya Apache yapılandırması, backend ve dashboard yapılandırması, digna'yı systemd hizmeti olarak çalıştırma ve Sürüm 2026.06'dan yükseltme.
 - [Release 2026.06](https://docs.digna.ai/tr/installation_deployment/Linux/Release%202026.06/installation_guide_digna_linux_2026_06/): digna Sürüm 2026.06'yı Linux'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, PostgreSQL kurulumu, nginx veya Apache yapılandırması, backend ve dashboard yapılandırması, digna'yı systemd hizmeti olarak çalıştırma ve yeni sürüme yükseltme.
 
 ### macOS
 
+- [Release 2026.11](https://docs.digna.ai/tr/installation_deployment/macOS/Release%202026.11/installation_guide_digna_macos_2026_11/): digna Sürüm 2026.11'i macOS'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, Homebrew ve PostgreSQL kurulumu, nginx veya Apache yapılandırması, backend ve dashboard yapılandırması, digna'yı arka plan hizmeti olarak çalıştırma ve Sürüm 2026.06'dan yükseltme.
 - [Release 2026.06](https://docs.digna.ai/tr/installation_deployment/macOS/Release%202026.06/installation_guide_digna_macos_2026_06/): digna Sürüm 2026.06'yı macOS'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, Homebrew ve PostgreSQL kurulumu, nginx veya Apache yapılandırması, backend ve dashboard yapılandırması, digna'yı arka plan hizmeti olarak çalıştırma ve yeni sürüme yükseltme.
 
 ### Windows
 
+- [Release 2026.11](https://docs.digna.ai/tr/installation_deployment/Windows/Release%202026.11/installation_guide_digna_windows_2026_11/): digna Sürüm 2026.11'i Windows'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, PostgreSQL kurulumu, web sunucusu yapılandırması, backend ve dashboard yapılandırması, digna'yı Windows hizmeti olarak çalıştırma ve Sürüm 2026.06'dan yükseltme.
 - [Release 2026.06](https://docs.digna.ai/tr/installation_deployment/Windows/Release%202026.06/installation_guide_digna_windows_2026_06/): digna Sürüm 2026.06'i Windows'ta kurmaya yönelik adım adım rehber — sistem gereksinimleri, PostgreSQL kurulumu, web sunucusu yapılandırması, backend ve dashboard yapılandırması, digna'yı Windows hizmeti olarak çalıştırma ve yeni sürüme yükseltme.
 
 ## Başlarken
@@ -112,6 +115,12 @@
 - [OneLogin](https://docs.digna.ai/tr/sso/onelogin_sso_guide/): OpenID Connect kullanarak OneLogin ile digna için çoklu oturum açmayı yapılandırın: OIDC uygulaması oluşturma, yönlendirme URI'leri, istemci kimlik bilgileri, token uç noktası kimlik doğrulaması ve buna uygun digna yapılandırması.
 - [PingOne](https://docs.digna.ai/tr/sso/pingone_sso_guide/): OpenID Connect kullanarak PingOne ile digna için çoklu oturum açmayı yapılandırın: OIDC web uygulaması kurulumu, yönlendirme URI'leri, istemci kimlik bilgileri, ortam kimliği, bölgesel alan adları ve buna uygun digna yapılandırması.
 
+### Yapay Zekâ Ajanları
+
+- [Overview](https://docs.digna.ai/tr/ai_agents/overview/): Claude, Gemini ve diğer AI ajanlarını digna MCP Server üzerinden digna'ya bağlayın. MCP uç noktasını bulun, bir API anahtarı oluşturun, lisans ve ağ gereksinimlerini kontrol edin ve AI istemcinize uygun kılavuzu seçin.
+- [Claude](https://docs.digna.ai/tr/ai_agents/claude_mcp_guide/): Claude'u digna MCP Server üzerinden digna'ya bağlayın — komut satırından veya paylaşılan bir .mcp.json ile Claude Code, yerel köprülü Claude Desktop ve claude.ai'deki özel bağlayıcılar, Authorization başlığında bir API anahtarıyla.
+- [Gemini](https://docs.digna.ai/tr/ai_agents/gemini_mcp_guide/): Google'ın Gemini araçlarını digna MCP Server üzerinden digna'ya bağlayın — mcp_config.json ile Antigravity CLI, IDE ve uygulama, settings.json veya gemini mcp add ile Gemini CLI, Authorization başlığında bir API anahtarıyla.
+
 ## CLI referansı
 
 - [Release 2026.11](https://docs.digna.ai/tr/cli/Command_Line_Interface_202611/): digna CLI 2026.11 sürümü için eksiksiz başvuru kılavuzu
@@ -143,6 +152,20 @@
 - [Models](https://docs.digna.ai/tr/sdk/Release%202026.06/models/): digna Python SDK 2026.06 sürümü için veri modelleri
 - [Errors](https://docs.digna.ai/tr/sdk/Release%202026.06/errors/): digna Python SDK 2026.06 sürümü için hata hiyerarşisi
 - [API Reference](https://docs.digna.ai/tr/sdk/Release%202026.06/reference/): digna Python SDK 2026.06 sürümü için istemci API başvurusu
+
+## REST API referansı
+
+### Release 2026.11
+
+- [Overview](https://docs.digna.ai/tr/rest_api/Release%202026.11/): Projeleri ve denetim sonuçlarını okumak, veri kaynaklarını, veri kümelerini ve öznitelikleri yönetmek ve denetimleri başlatmak için digna REST API v1'i kullanın — temel URL, API anahtarıyla kimlik doğrulama, sayfalama, hatalar ve OpenAPI belgesi.
+- [Projects](https://docs.digna.ai/tr/rest_api/Release%202026.11/projects/): digna REST API v1 reference for projects — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [DB Connections](https://docs.digna.ai/tr/rest_api/Release%202026.11/db_connections/): digna REST API v1 reference for db connections — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Data Sources](https://docs.digna.ai/tr/rest_api/Release%202026.11/data_sources/): digna REST API v1 reference for data sources — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Data Sets](https://docs.digna.ai/tr/rest_api/Release%202026.11/data_sets/): digna REST API v1 reference for data sets — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Attributes](https://docs.digna.ai/tr/rest_api/Release%202026.11/attributes/): digna REST API v1 reference for attributes — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Check Definitions](https://docs.digna.ai/tr/rest_api/Release%202026.11/check_definitions/): digna REST API v1 reference for check definitions — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Inspection Requests](https://docs.digna.ai/tr/rest_api/Release%202026.11/inspection_requests/): digna REST API v1 reference for inspection requests — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
+- [Inspection Statuses](https://docs.digna.ai/tr/rest_api/Release%202026.11/inspection_statuses/): digna REST API v1 reference for inspection statuses — endpoints, parameters, request bodies, responses and schemas, generated from the API's OpenAPI document.
 
 ## Changelog
 
