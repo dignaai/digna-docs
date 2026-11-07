@@ -1419,6 +1419,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```bash
     sudo journalctl -u digna -n 100
     ```
+
 4. Test your database connections — see
    [Testing a Connection](../../../databases/overview.md#testing-a-connection). After an upgrade
    from a release before 2026.06, change every connection that did not already use ODBC over to

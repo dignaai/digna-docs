@@ -876,13 +876,13 @@ ren digna.exe digna_old.exe
 ren dashboard dashboard_old
 ```
 
-Keep `digna_old` until you have verified the upgrade, and `dashboard_old` until you have restored
+Keep `digna_old.exe` until you have verified the upgrade, and `dashboard_old` until you have restored
 your configuration files from it (see Step 4). Afterwards you can delete both.
 
 !!! info "Upgrading from a release before 2026.06"
 
     Rename the `dignabackend` and `dignacli` folders instead of the executable:
-    `ren dignabackend dignabackend_old` and `ren dignacli dignacli_old`; the `bin` folder of batch files is no longer used either. Neither is used by Release 2026.11.
+    `ren dignabackend dignabackend_old` and `ren dignacli dignacli_old`. Release 2026.11 uses neither folder, nor the `bin` folder of batch files.
 
 #### Step 3: Extract and Deploy New Version {: #step-3-extract-and-deploy-new-version }
 
