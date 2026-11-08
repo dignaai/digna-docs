@@ -1258,7 +1258,7 @@ Katrai sadaļai jāziņo OK. Izlabojiet visu, kas ziņots kā FAILED, noņemiet 
 
 #### 7. solis: Aizstāt licences failu {: #step-7-replace-the-license-file }
 
-Licences fails parasti tiek pārnests no viena laidiena uz nākamo. Release 2026.11 ir izņēmums: tas pievieno divus licencējamus moduļus, digna Data Reconciliation un digna Agentic, un licence, kas izsniegta pirms 2026.11, tos nesatur. Nokopējiet `license.toml`, ko digna komanda nodrošināja Release 2026.11, instalācijas direktorijā, aizstājot veco:
+Licences fails, kas izsniegts kādam agrākam laidienam, nedarbojas ar Release 2026.11. Nokopējiet `license.toml`, ko digna komanda nodrošināja Release 2026.11, instalācijas direktorijā, aizstājot veco:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1266,7 +1266,7 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Nepaturiet iepriekšējo licenci"
 
-    Ar iepriekšējo licenci digna joprojām startē, bet digna Data Reconciliation un digna MCP Server paliek izslēgti. Katra komanda, kas pārbauda licenci — `user`, `inspection`, `repo` —, tiek pārtraukta pirms pieskaršanās repozitorijam, ja pārbaude neizdodas. Pirms turpināt, pārbaudiet jauno licenci:
+    Ar iepriekšējo licenci katra komanda, kas pārbauda licenci — `serve`, `user`, `inspection`, `repo` —, beidzas ar kļūdu, tāpēc digna nestartē un repozitoriju nevar jaunināt. Pirms turpināt, pārbaudiet jauno licenci:
 
     ```bash
     ./digna license check
@@ -1348,6 +1348,6 @@ sudo restorecon -Rv /opt/digna/dashboard
     sudo journalctl -u digna -n 100
     ```
 
-4. Pārbaudiet savus datubāzes savienojumus — skatiet [Savienojuma pārbaude](../../../databases/overview.md#testing-a-connection). Pēc jaunināšanas no laidiena, kas vecāks par 2026.06, vispirms pārceliet uz ODBC katru savienojumu, kas vēl neizmantoja ODBC.
+4. Pārbaudiet savus datubāzes savienojumus — skatiet [Savienojuma pārbaude](../../../databases/overview.md#testing-a-connection).
 
 Lai sāktu darbu ar jaunajiem moduļiem, skatiet [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md), [AI aģenta pievienošana](../../../platform/agentic/connect_ai_agent.md) par digna MCP Server un [Profilēšanas vieta](../../../platform/profiling/profiling_location.md) par digna Engine.

@@ -1106,7 +1106,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 #### Βήμα 7: Αντικατάσταση του Αρχείου Άδειας {: #step-7-replace-the-license-file }
 
-Ένα αρχείο άδειας κανονικά μεταφέρεται από τη μία έκδοση στην επόμενη. Η Έκδοση 2026.11 αποτελεί εξαίρεση: προσθέτει δύο αδειοδοτούμενα modules, το digna Data Reconciliation και το digna Agentic, και μια άδεια που εκδόθηκε πριν από την 2026.11 δεν τα περιέχει. Αντιγράψτε το `license.toml` που σας παρείχε η ομάδα της digna για την Έκδοση 2026.11 στον κατάλογο εγκατάστασης, αντικαθιστώντας το παλιό:
+Ένα αρχείο άδειας που εκδόθηκε για προηγούμενη έκδοση δεν λειτουργεί με την Έκδοση 2026.11. Αντιγράψτε το `license.toml` που σας παρείχε η ομάδα της digna για την Έκδοση 2026.11 στον κατάλογο εγκατάστασης, αντικαθιστώντας το παλιό:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1114,7 +1114,7 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Μην κρατήσετε την προηγούμενη άδεια"
 
-    Με την προηγούμενη άδεια το digna εξακολουθεί να ξεκινά, αλλά το digna Data Reconciliation και ο digna MCP Server παραμένουν απενεργοποιημένα. Κάθε εντολή που ελέγχει την άδεια — `user`, `inspection`, `repo` — διακόπτεται πριν αγγίξει το repository όταν ο έλεγχος αποτύχει. Επαληθεύστε τη νέα άδεια πριν προχωρήσετε:
+    Με την προηγούμενη άδεια, κάθε εντολή που ελέγχει την άδεια — `serve`, `user`, `inspection`, `repo` — αποτυγχάνει, οπότε το digna δεν ξεκινά και το repository δεν μπορεί να αναβαθμιστεί. Επαληθεύστε τη νέα άδεια πριν προχωρήσετε:
 
     ```bash
     ./digna license check
@@ -1185,6 +1185,6 @@ sudo apachectl restart
 
 2. Ανοίξτε το digna dashboard και επιβεβαιώστε ότι η διεπαφή φορτώνει σωστά.
 3. Ελέγξτε την έξοδο του server και τα αρχεία στον κατάλογο `logs` για σφάλματα.
-4. Δοκιμάστε τις συνδέσεις βάσεων δεδομένων σας — δείτε [Δοκιμή σύνδεσης](../../../databases/overview.md#testing-a-connection). Μετά από αναβάθμιση από έκδοση πριν από την 2026.06, μεταφέρετε πρώτα σε ODBC κάθε σύνδεση που δεν το χρησιμοποιούσε ήδη.
+4. Δοκιμάστε τις συνδέσεις βάσεων δεδομένων σας — δείτε [Δοκιμή σύνδεσης](../../../databases/overview.md#testing-a-connection).
 
 Για να ξεκινήσετε με τα νέα modules, δείτε [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md), [Σύνδεση ενός AI Agent](../../../platform/agentic/connect_ai_agent.md) για τον digna MCP Server και [Τοποθεσία Profiling](../../../platform/profiling/profiling_location.md) για το digna Engine.

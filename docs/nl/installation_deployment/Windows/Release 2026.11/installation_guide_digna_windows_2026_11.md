@@ -885,7 +885,7 @@ Elke sectie moet OK melden. Los alles op wat als FAILED wordt gemeld, verwijder 
 
 #### Stap 7: Vervang het licentiebestand {: #step-7-replace-the-license-file }
 
-Een licentiebestand gaat normaal gesproken mee van de ene release naar de volgende. Release 2026.11 is een uitzondering: deze release voegt twee gelicentieerde modules toe, digna Data Reconciliation en digna Agentic, en een licentie die vóór 2026.11 is uitgegeven, bevat ze niet. Kopieer het `license.toml` dat het digna-team voor Release 2026.11 heeft geleverd naar de installatiemap, ter vervanging van het oude:
+Een licentiebestand dat voor een eerdere release is uitgegeven, werkt niet met Release 2026.11. Kopieer het `license.toml` dat het digna-team voor Release 2026.11 heeft geleverd naar de installatiemap, ter vervanging van het oude:
 
 ```bash
 copy /Y C:\path\to\new\license.toml license.toml
@@ -893,7 +893,7 @@ copy /Y C:\path\to\new\license.toml license.toml
 
 !!! warning "Behoud de vorige licentie niet"
 
-    Met de vorige licentie start digna nog wel, maar digna Data Reconciliation en de digna MCP Server blijven uitgeschakeld. Elk commando dat de licentie controleert — `user`, `inspection`, `repo` — breekt af voordat het de repository aanraakt wanneer de controle mislukt. Controleer de nieuwe licentie voordat u verdergaat:
+    Met de vorige licentie mislukt elk commando dat de licentie controleert — `serve`, `user`, `inspection`, `repo` —, waardoor digna niet start en de repository niet kan worden geüpgraded. Controleer de nieuwe licentie voordat u verdergaat:
 
     ```bash
     digna license check
@@ -956,6 +956,6 @@ Als u IIS of Tomcat gebruikt, herstart dan de betreffende webserver.
 
 2. Ga naar het digna-dashboard en controleer of de interface correct laadt.
 3. Controleer de bestanden in de map `logs` van de installatie op fouten.
-4. Test uw databaseverbindingen — zie [Een verbinding testen](../../../databases/overview.md#testing-a-connection). Zet na een upgrade vanaf een release vóór 2026.06 eerst elke verbinding die nog geen ODBC gebruikte om naar ODBC.
+4. Test uw databaseverbindingen — zie [Een verbinding testen](../../../databases/overview.md#testing-a-connection).
 
 Om met de nieuwe modules te beginnen, zie [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md), [Een AI-agent verbinden](../../../platform/agentic/connect_ai_agent.md) voor de digna MCP Server, en [Profileringslocatie](../../../platform/profiling/profiling_location.md) voor de digna Engine.

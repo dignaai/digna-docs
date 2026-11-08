@@ -1296,10 +1296,9 @@ Todas as seções devem informar OK. Corrija tudo o que for informado como FAILE
 
 #### Passo 7: Substituir o Arquivo de Licença {: #step-7-replace-the-license-file }
 
-Normalmente, um arquivo de licença continua valendo de uma release para a seguinte. A Release 2026.11 é uma
-exceção: ela adiciona dois módulos licenciados, o digna Data Reconciliation e o digna Agentic, e uma licença
-emitida antes da 2026.11 não os contém. Copie o `license.toml` que a equipe do digna forneceu para a
-Release 2026.11 para o diretório de instalação, substituindo o antigo:
+Um arquivo de licença emitido para uma release anterior não funciona com a Release 2026.11. Copie o
+`license.toml` que a equipe do digna forneceu para a Release 2026.11 para o diretório de instalação,
+substituindo o antigo:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1307,10 +1306,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Não mantenha a licença anterior"
 
-    Com a licença anterior, o digna ainda inicia, mas o digna Data Reconciliation e o digna
-    MCP Server permanecem desativados. Todo comando que verifica a licença — `user`,
-    `inspection`, `repo` — é interrompido antes de mexer no repositório quando a verificação falha.
-    Verifique a nova licença antes de prosseguir:
+    Com a licença anterior, todo comando que verifica a licença — `serve`, `user`, `inspection`,
+    `repo` — falha, então o digna não inicia e o repositório não pode ser atualizado. Verifique a
+    nova licença antes de prosseguir:
 
     ```bash
     ./digna license check
@@ -1397,9 +1395,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Teste suas conexões de banco de dados — consulte
-   [Testar uma Conexão](../../../databases/overview.md#testing-a-connection). Após uma atualização
-   a partir de uma release anterior à 2026.06, converta primeiro para ODBC todas as conexões que ainda
-   não o usavam.
+   [Testar uma Conexão](../../../databases/overview.md#testing-a-connection).
 
 Para começar a usar os novos módulos, consulte [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Conectar um Agente de IA](../../../platform/agentic/connect_ai_agent.md) para o digna MCP Server e

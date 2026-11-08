@@ -929,10 +929,9 @@ a parancsot.
 
 #### 7. lépés: Cseréld le a licencfájlt {: #step-7-replace-the-license-file }
 
-A licencfájl általában átvihető egyik kiadásról a másikra. A Release 2026.11 kivétel: két
-licencköteles modult vezet be, a digna Data Reconciliation-t és a digna Agentic-et, és a 2026.11 előtt
-kiállított licenc ezeket nem tartalmazza. Másold a digna csapat által a Release 2026.11-hez
-biztosított `license.toml` fájlt a telepítési könyvtárba, felülírva a régit:
+Egy korábbi kiadáshoz kiállított licencfájl nem működik a Release 2026.11 verzióval. Másold a
+digna csapat által a Release 2026.11-hez biztosított `license.toml` fájlt a telepítési könyvtárba,
+felülírva a régit:
 
 ```bash
 copy /Y C:\path\to\new\license.toml license.toml
@@ -940,10 +939,9 @@ copy /Y C:\path\to\new\license.toml license.toml
 
 !!! warning "Ne tartsd meg a korábbi licencet"
 
-    A korábbi licenccel a digna ugyan elindul, de a digna Data Reconciliation és a digna MCP Server
-    kikapcsolva marad. Minden parancs, amely ellenőrzi a licencet — `user`, `inspection`, `repo` —
-    megszakad, mielőtt az adattárhoz nyúlna, ha az ellenőrzés sikertelen. Ellenőrizd az új
-    licencet, mielőtt továbblépsz:
+    A korábbi licenccel minden parancs, amely ellenőrzi a licencet — `serve`, `user`,
+    `inspection`, `repo` — hibával leáll, így a digna nem indul el, és az adattár nem frissíthető.
+    Ellenőrizd az új licencet, mielőtt továbblépsz:
 
     ```bash
     digna license check
@@ -1011,9 +1009,7 @@ Ha IIS-t vagy Tomcatet használsz, indítsd újra a megfelelő webkiszolgálót.
 2. Nyisd meg a digna dashboardot, és ellenőrizd, hogy a felület helyesen töltődik-e be.
 3. Nézd át a telepítés `logs` könyvtárában lévő fájlokat esetleges hibákért.
 4. Teszteld az adatbázis-kapcsolatokat — lásd:
-   [Kapcsolat tesztelése](../../../databases/overview.md#testing-a-connection). Egy 2026.06-nál régebbi
-   kiadásról végzett frissítés után előbb állítsd át ODBC-re mindazokat a kapcsolatokat, amelyek
-   még nem ODBC-t használtak.
+   [Kapcsolat tesztelése](../../../databases/overview.md#testing-a-connection).
 
 Az új modulok használatának megkezdéséhez lásd: [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [AI-ügynök csatlakoztatása](../../../platform/agentic/connect_ai_agent.md) a digna MCP Serverhez, valamint

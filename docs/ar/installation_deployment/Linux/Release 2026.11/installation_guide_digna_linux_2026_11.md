@@ -1293,9 +1293,8 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 #### الخطوة 7: استبدال ملف الترخيص {: #step-7-replace-the-license-file }
 
-ينتقل ملف الترخيص عادةً من إصدار إلى الإصدار الذي يليه. الإصدار 2026.11 استثناء: فهو يضيف وحدتين
-مرخّصتين، digna Data Reconciliation وdigna Agentic، والترخيص الصادر قبل 2026.11 لا يتضمنهما. انسخ
-ملف `license.toml` الذي قدّمه فريق digna للإصدار 2026.11 إلى دليل التثبيت، ليحل محل الملف القديم:
+ملف الترخيص الصادر لإصدار سابق لا يعمل مع الإصدار 2026.11. انسخ ملف `license.toml` الذي قدّمه
+فريق digna للإصدار 2026.11 إلى دليل التثبيت، ليحل محل الملف القديم:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1303,10 +1302,8 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "لا تحتفظ بالترخيص السابق"
 
-    مع الترخيص السابق يبدأ digna، لكن digna Data Reconciliation وdigna
-    MCP Server يبقيان معطّلين. وكل أمر يتحقق من الترخيص — `user` و
-    `inspection` و`repo` — يتوقف قبل أن يمسّ المستودع عند فشل التحقق. تحقّق من
-    الترخيص الجديد قبل المتابعة:
+    مع الترخيص السابق يفشل كل أمر يتحقق من الترخيص — `serve` و`user` و`inspection` و`repo` —
+    فلا يبدأ digna ولا يمكن ترقية المستودع. تحقّق من الترخيص الجديد قبل المتابعة:
 
     ```bash
     ./digna license check
@@ -1393,8 +1390,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. اختبر اتصالات قواعد البيانات — انظر
-   [اختبار اتصال](../../../databases/overview.md#testing-a-connection). بعد الترقية من إصدار سابق
-   لـ 2026.06، حوّل أولًا إلى ODBC كل اتصال لم يكن يستخدمه بعد.
+   [اختبار اتصال](../../../databases/overview.md#testing-a-connection).
 
 للبدء مع الوحدات الجديدة، انظر [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md)،
 و[ربط وكيل ذكاء اصطناعي](../../../platform/agentic/connect_ai_agent.md) من أجل digna MCP Server،

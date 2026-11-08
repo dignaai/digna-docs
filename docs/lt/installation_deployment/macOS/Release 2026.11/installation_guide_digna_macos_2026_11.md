@@ -1149,10 +1149,8 @@ raktus, išvardytus ties **Unknown keys**, ir prieš tęsdami paleiskite komand�
 
 #### 7 žingsnis: pakeiskite licencijos failą {: #step-7-replace-the-license-file }
 
-Licencijos failas paprastai pereina iš vieno leidimo į kitą. Release 2026.11 yra išimtis: jis
-prideda du licencijuojamus modulius, digna Data Reconciliation ir digna Agentic, o licencijoje,
-išduotoje iki 2026.11, jų nėra. Nukopijuokite `license.toml`, kurį digna komanda pateikė
-Release 2026.11, į diegimo katalogą, pakeisdami senąjį:
+Licencijos failas, išduotas ankstesniam leidimui, su Release 2026.11 neveikia. Nukopijuokite
+`license.toml`, kurį digna komanda pateikė Release 2026.11, į diegimo katalogą, pakeisdami senąjį:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1160,10 +1158,9 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Nepalikite ankstesnės licencijos"
 
-    Su ankstesne licencija digna vis tiek pasileidžia, tačiau digna Data Reconciliation ir
-    digna MCP Server lieka išjungti. Kiekviena komanda, tikrinanti licenciją — `user`,
-    `inspection`, `repo` — nepavykus patikrinimui nutraukiama dar prieš paliečiant saugyklą. Prieš
-    tęsdami patikrinkite naująją licenciją:
+    Su ankstesne licencija kiekviena komanda, tikrinanti licenciją — `serve`, `user`,
+    `inspection`, `repo` — baigiasi klaida, todėl digna nepasileidžia, o saugyklos neįmanoma
+    atnaujinti. Prieš tęsdami patikrinkite naująją licenciją:
 
     ```bash
     ./digna license check
@@ -1239,8 +1236,7 @@ sudo apachectl restart
 2. Atidarykite digna dashboard ir patikrinkite, ar sąsaja įkeliama teisingai.
 3. Patikrinkite serverio išvestį ir `logs` katalogo failus, ar nėra klaidų.
 4. Išbandykite savo duomenų bazės ryšius — žr.
-   [Ryšio tikrinimas](../../../databases/overview.md#testing-a-connection). Po atnaujinimo iš
-   senesnio nei 2026.06 leidimo pirmiausia perkelkite į ODBC kiekvieną ryšį, kuris dar nenaudojo ODBC.
+   [Ryšio tikrinimas](../../../databases/overview.md#testing-a-connection).
 
 Norėdami pradėti dirbti su naujais moduliais, žr. [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [AI agento prijungimas](../../../platform/agentic/connect_ai_agent.md) – apie digna MCP Server, ir

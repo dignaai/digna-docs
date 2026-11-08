@@ -1106,7 +1106,7 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 #### ステップ 7: ライセンスファイルを置き換える {: #step-7-replace-the-license-file }
 
-通常、ライセンスファイルはリリースをまたいでそのまま使用できます。リリース 2026.11 は例外です。このリリースでは digna Data Reconciliation と digna Agentic という 2 つのライセンス対象モジュールが追加され、2026.11 より前に発行されたライセンスにはこれらが含まれていません。digna チームがリリース 2026.11 用に提供した `license.toml` をインストールディレクトリにコピーし、古いものを置き換えてください:
+以前のリリース用に発行されたライセンスファイルは、リリース 2026.11 では使用できません。digna チームがリリース 2026.11 用に提供した `license.toml` をインストールディレクトリにコピーし、古いものを置き換えてください:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1114,7 +1114,7 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "以前のライセンスを使い続けないでください"
 
-    以前のライセンスのままでも digna は起動しますが、digna Data Reconciliation と digna MCP Server は無効のままです。ライセンスを確認するすべてのコマンド（`user`、`inspection`、`repo`）は、確認に失敗するとリポジトリに手を加える前に中止されます。先に進む前に新しいライセンスを確認してください:
+    以前のライセンスのままでは、ライセンスを確認するすべてのコマンド（`serve`、`user`、`inspection`、`repo`）が失敗するため、digna は起動せず、リポジトリもアップグレードできません。先に進む前に新しいライセンスを確認してください:
 
     ```bash
     ./digna license check
@@ -1186,6 +1186,6 @@ sudo apachectl restart
 2. digna ダッシュボードにアクセスし、インターフェースが正しく読み込まれることを確認します。
 3. サーバーの出力と `logs` ディレクトリ内のファイルにエラーがないか確認します。
 4. データベース接続をテストします。参照:
-   [接続のテスト](../../../databases/overview.md#testing-a-connection)。リリース 2026.06 より前のリリースからアップグレードした場合は、まだ ODBC を使用していなかった接続をすべて先に ODBC に切り替えてください。
+   [接続のテスト](../../../databases/overview.md#testing-a-connection)。
 
 新しいモジュールを使い始めるには、[digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md)、digna MCP Server については [AI エージェントの接続](../../../platform/agentic/connect_ai_agent.md)、digna Engine については [プロファイリングの場所](../../../platform/profiling/profiling_location.md) を参照してください。

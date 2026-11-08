@@ -1151,10 +1151,9 @@ clés listées sous **Unknown keys**, et relancez la commande avant de continuer
 
 #### Étape 7 : Remplacer le fichier de licence {: #step-7-replace-the-license-file }
 
-Un fichier de licence est normalement repris d'une release à la suivante. La Release 2026.11 fait
-exception : elle ajoute deux modules sous licence, digna Data Reconciliation et digna Agentic, et
-une licence émise avant la 2026.11 ne les contient pas. Copiez le `license.toml` fourni par
-l'équipe digna pour la Release 2026.11 dans le répertoire d'installation, en remplaçant l'ancien :
+Un fichier de licence émis pour une release antérieure ne fonctionne pas avec la Release 2026.11.
+Copiez le `license.toml` fourni par l'équipe digna pour la Release 2026.11 dans le répertoire
+d'installation, en remplaçant l'ancien :
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1162,10 +1161,9 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Ne conservez pas la licence précédente"
 
-    Avec la licence précédente, digna démarre toujours, mais digna Data Reconciliation et le digna
-    MCP Server restent désactivés. Chaque commande qui vérifie la licence — `user`, `inspection`,
-    `repo` — s'interrompt avant de toucher au référentiel lorsque la vérification échoue. Vérifiez
-    la nouvelle licence avant d'aller plus loin :
+    Avec la licence précédente, chaque commande qui vérifie la licence — `serve`, `user`,
+    `inspection`, `repo` — échoue : digna ne démarre donc pas et le référentiel ne peut pas être mis
+    à niveau. Vérifiez la nouvelle licence avant d'aller plus loin :
 
     ```bash
     ./digna license check
@@ -1243,9 +1241,7 @@ sudo apachectl restart
 2. Accédez au tableau de bord digna et vérifiez que l'interface se charge correctement.
 3. Consultez la sortie du serveur et les fichiers du répertoire `logs` pour détecter des erreurs.
 4. Testez vos connexions de base de données — voir
-   [Tester une connexion](../../../databases/overview.md#testing-a-connection). Après une mise à
-   niveau depuis une release antérieure à 2026.06, convertissez d'abord à ODBC chaque connexion
-   qui ne l'utilisait pas encore.
+   [Tester une connexion](../../../databases/overview.md#testing-a-connection).
 
 Pour commencer avec les nouveaux modules, voir [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Connecter un agent IA](../../../platform/agentic/connect_ai_agent.md) pour le digna MCP Server, et

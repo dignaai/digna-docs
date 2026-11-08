@@ -1294,10 +1294,9 @@ Jokaisen osion on raportoitava OK. Korjaa kaikki, mikä raportoidaan tilassa FAI
 
 #### Vaihe 7: Vaihda lisenssitiedosto {: #step-7-replace-the-license-file }
 
-Lisenssitiedosto siirtyy yleensä julkaisusta seuraavaan. Release 2026.11 on
-poikkeus: se lisää kaksi lisensoitua moduulia, digna Data Reconciliationin ja digna Agenticin, eikä
-ennen versiota 2026.11 myönnetty lisenssi sisällä niitä. Kopioi digna-tiimin Release 2026.11:tä varten
-toimittama `license.toml` asennushakemistoon vanhan tiedoston tilalle:
+Aiempaa julkaisua varten myönnetty lisenssitiedosto ei toimi Release 2026.11:n kanssa. Kopioi
+digna-tiimin Release 2026.11:tä varten toimittama `license.toml` asennushakemistoon vanhan tiedoston
+tilalle:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1305,10 +1304,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Älä säilytä edellistä lisenssiä"
 
-    Edellisellä lisenssillä digna käynnistyy yhä, mutta digna Data Reconciliation ja digna
-    MCP Server pysyvät pois päältä. Jokainen komento, joka tarkistaa lisenssin — `user`,
-    `inspection`, `repo` — keskeytyy ennen repositorion koskettamista, jos tarkistus epäonnistuu. Tarkista
-    uusi lisenssi ennen kuin jatkat:
+    Edellisellä lisenssillä jokainen komento, joka tarkistaa lisenssin — `serve`, `user`,
+    `inspection`, `repo` — epäonnistuu, joten digna ei käynnisty eikä repositoriota voi päivittää.
+    Tarkista uusi lisenssi ennen kuin jatkat:
 
     ```bash
     ./digna license check
@@ -1395,9 +1393,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Testaa tietokantayhteytesi — katso
-   [Yhteyden testaaminen](../../../databases/overview.md#testing-a-connection). Jos päivitit
-   julkaisua 2026.06 vanhemmasta versiosta, muuta ensin jokainen yhteys, joka ei vielä käyttänyt ODBC:tä,
-   ODBC:ksi.
+   [Yhteyden testaaminen](../../../databases/overview.md#testing-a-connection).
 
 Uusien moduulien käytön aloittamiseen katso [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [AI-agentin yhdistäminen](../../../platform/agentic/connect_ai_agent.md) digna MCP Serveriä varten ja

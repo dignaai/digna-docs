@@ -1148,10 +1148,9 @@ v části **Unknown keys** a před pokračováním příkaz spusťte znovu.
 
 #### Krok 7: Nahraďte licenční soubor {: #step-7-replace-the-license-file }
 
-Licenční soubor se obvykle přenáší z jednoho vydání do dalšího. Release 2026.11 je výjimkou:
-přidává dva licencované moduly, digna Data Reconciliation a digna Agentic, a licence vydaná před
-2026.11 je neobsahuje. Zkopírujte soubor `license.toml`, který vám tým digna poskytl pro
-Release 2026.11, do instalačního adresáře a nahraďte jím ten starý:
+Licenční soubor vydaný pro dřívější vydání s Release 2026.11 nefunguje. Zkopírujte soubor
+`license.toml`, který vám tým digna poskytl pro Release 2026.11, do instalačního adresáře a nahraďte
+jím ten starý:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1159,10 +1158,9 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Nenechávejte si předchozí licenci"
 
-    S předchozí licencí se digna sice spustí, ale digna Data Reconciliation a digna MCP Server
-    zůstanou vypnuté. Každý příkaz, který licenci kontroluje — `user`, `inspection`, `repo` — se
-    při neúspěšné kontrole ukončí dříve, než se repozitáře dotkne. Než budete pokračovat, ověřte
-    novou licenci:
+    S předchozí licencí selže každý příkaz, který licenci kontroluje — `serve`, `user`,
+    `inspection`, `repo` —, takže se digna nespustí a repozitář nelze upgradovat. Než budete
+    pokračovat, ověřte novou licenci:
 
     ```bash
     ./digna license check
@@ -1238,9 +1236,7 @@ sudo apachectl restart
 2. Otevřete dashboard digna a ověřte, že se rozhraní načítá správně.
 3. Zkontrolujte výstup serveru a soubory v adresáři `logs`, zda neobsahují chyby.
 4. Otestujte databázová připojení — viz
-   [Testování připojení](../../../databases/overview.md#testing-a-connection). Po upgradu
-   z verze starší než 2026.06 nejprve převeďte na ODBC každé připojení, které ODBC dosud
-   nepoužívalo.
+   [Testování připojení](../../../databases/overview.md#testing-a-connection).
 
 Jak začít s novými moduly, popisují stránky [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Připojení AI agenta](../../../platform/agentic/connect_ai_agent.md) pro digna MCP Server a
