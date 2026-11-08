@@ -1288,10 +1288,9 @@ listelenen anahtarları kaldırın ve devam etmeden önce komutu yeniden çalı�
 
 #### Adım 7: Lisans Dosyasını Değiştirin {: #step-7-replace-the-license-file }
 
-Bir lisans dosyası normalde bir sürümden diğerine aktarılır. Sürüm 2026.11 bir istisnadır: iki
-lisanslı modül, digna Data Reconciliation ve digna Agentic ekler ve 2026.11'den önce verilmiş bir
-lisans bunları içermez. digna ekibinin Sürüm 2026.11 için sağladığı `license.toml` dosyasını
-kurulum dizinine kopyalayarak eskisinin yerine koyun:
+Daha önceki bir sürüm için verilmiş bir lisans dosyası Sürüm 2026.11 ile çalışmaz. digna ekibinin
+Sürüm 2026.11 için sağladığı `license.toml` dosyasını kurulum dizinine kopyalayarak eskisinin yerine
+koyun:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1299,9 +1298,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Önceki lisansı saklamayın"
 
-    Önceki lisansla digna yine başlar, ancak digna Data Reconciliation ve digna MCP Server kapalı
-    kalır. Lisansı denetleyen her komut — `user`, `inspection`, `repo` — denetim başarısız olduğunda
-    depoya dokunmadan önce sonlanır. Devam etmeden önce yeni lisansı doğrulayın:
+    Önceki lisansla, lisansı denetleyen her komut — `serve`, `user`, `inspection`, `repo` —
+    başarısız olur; bu nedenle digna başlamaz ve depo yükseltilemez. Devam etmeden önce yeni lisansı
+    doğrulayın:
 
     ```bash
     ./digna license check
@@ -1388,8 +1387,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Veritabanı bağlantılarınızı sınayın — bkz.
-   [Bağlantıyı Sınama](../../../databases/overview.md#testing-a-connection). 2026.06'dan önceki
-   bir sürümden yükselttiyseniz, önce henüz ODBC kullanmayan her bağlantıyı ODBC'ye taşıyın.
+   [Bağlantıyı Sınama](../../../databases/overview.md#testing-a-connection).
 
 Yeni modüllerle çalışmaya başlamak için bkz. [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 digna MCP Server için [Bir Yapay Zekâ Ajanı Bağlama](../../../platform/agentic/connect_ai_agent.md) ve

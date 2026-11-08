@@ -1294,10 +1294,9 @@ cheile enumerate la **Unknown keys** și rulați comanda din nou înainte de a c
 
 #### Pasul 7: Înlocuiți fișierul de licență {: #step-7-replace-the-license-file }
 
-În mod normal, un fișier de licență se păstrează de la o versiune la alta. Release 2026.11 este o
-excepție: adaugă două module licențiate, digna Data Reconciliation și digna Agentic, iar o licență
-emisă înainte de 2026.11 nu le conține. Copiați fișierul `license.toml` furnizat de echipa digna
-pentru Release 2026.11 în directorul de instalare, înlocuindu-l pe cel vechi:
+Un fișier de licență emis pentru o versiune anterioară nu funcționează cu Release 2026.11. Copiați
+fișierul `license.toml` furnizat de echipa digna pentru Release 2026.11 în directorul de instalare,
+înlocuindu-l pe cel vechi:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1305,10 +1304,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Nu păstrați licența anterioară"
 
-    Cu licența anterioară, digna pornește în continuare, dar digna Data Reconciliation și digna
-    MCP Server rămân dezactivate. Fiecare comandă care verifică licența — `user`,
-    `inspection`, `repo` — se oprește înainte de a atinge repository-ul atunci când verificarea
-    eșuează. Verificați noua licență înainte de a merge mai departe:
+    Cu licența anterioară, fiecare comandă care verifică licența — `serve`, `user`,
+    `inspection`, `repo` — eșuează, așa că digna nu pornește, iar repository-ul nu poate fi
+    actualizat. Verificați noua licență înainte de a merge mai departe:
 
     ```bash
     ./digna license check
@@ -1395,9 +1393,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Testați conexiunile la baze de date — consultați
-   [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection). După o
-   actualizare de la o versiune mai veche decât 2026.06, treceți mai întâi pe ODBC fiecare conexiune
-   care nu îl folosea încă.
+   [Testarea unei conexiuni](../../../databases/overview.md#testing-a-connection).
 
 Pentru a începe cu noile module, consultați [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Conectarea unui agent AI](../../../platform/agentic/connect_ai_agent.md) pentru digna MCP Server și

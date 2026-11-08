@@ -873,7 +873,7 @@ Vsaka sekcija mora javiti OK. Odpravite vse, kar je javljeno kot FAILED, odstran
 
 #### Korak 7: Zamenjajte licenčno datoteko {: #step-7-replace-the-license-file }
 
-Licenčna datoteka se običajno prenese iz ene izdaje v naslednjo. Izdaja 2026.11 je izjema: dodaja dva licencirana modula, digna Data Reconciliation in digna Agentic, licenca, izdana pred 2026.11, pa ju ne vsebuje. Datoteko `license.toml`, ki vam jo je ekipa digna posredovala za izdajo 2026.11, kopirajte v imenik namestitve in z njo zamenjajte staro:
+Licenčna datoteka, izdana za prejšnjo izdajo, z izdajo 2026.11 ne deluje. Datoteko `license.toml`, ki vam jo je ekipa digna posredovala za izdajo 2026.11, kopirajte v imenik namestitve in z njo zamenjajte staro:
 
 ```bash
 copy /Y C:\path\to\new\license.toml license.toml
@@ -881,7 +881,7 @@ copy /Y C:\path\to\new\license.toml license.toml
 
 !!! warning "Ne obdržite prejšnje licence"
 
-    S prejšnjo licenco se digna še vedno zažene, vendar digna Data Reconciliation in digna MCP Server ostaneta izklopljena. Vsak ukaz, ki preverja licenco — `user`, `inspection`, `repo` — se prekine, še preden se dotakne repozitorija, če preverjanje ne uspe. Preden nadaljujete, preverite novo licenco:
+    S prejšnjo licenco vsak ukaz, ki preverja licenco — `serve`, `user`, `inspection`, `repo` — ne uspe, zato se digna ne zažene in repozitorija ni mogoče nadgraditi. Preden nadaljujete, preverite novo licenco:
 
     ```bash
     digna license check
@@ -944,6 +944,6 @@ digna serve --address <address> --port <port>
 
 2. Odprite nadzorno ploščo digna in preverite, ali se vmesnik pravilno naloži.
 3. V datotekah v imeniku `logs` namestitve preverite, ali so se pojavile napake.
-4. Preizkusite svoje podatkovne povezave — glejte [Preizkušanje povezave](../../../databases/overview.md#testing-a-connection). Po nadgradnji z izdaje pred 2026.06 najprej vsako povezavo, ki še ni uporabljala ODBC, preklopite na ODBC.
+4. Preizkusite svoje podatkovne povezave — glejte [Preizkušanje povezave](../../../databases/overview.md#testing-a-connection).
 
 Za začetek dela z novimi moduli glejte [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md), [Povezava agenta AI](../../../platform/agentic/connect_ai_agent.md) za digna MCP Server in [Lokacija profiliranja](../../../platform/profiling/profiling_location.md) za digna Engine.

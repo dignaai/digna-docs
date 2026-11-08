@@ -911,10 +911,9 @@ Hver seksjon må rapportere OK. Rett alt som rapporteres som FAILED, fjern nøkl
 
 #### Trinn 7: Erstatt lisensfilen {: #step-7-replace-the-license-file }
 
-En lisensfil følger normalt med fra én utgivelse til den neste. Release 2026.11 er et
-unntak: den legger til to lisensierte moduler, digna Data Reconciliation og digna Agentic, og en
-lisens utstedt før 2026.11 inneholder dem ikke. Kopier `license.toml` som digna-teamet har levert
-for Release 2026.11, til installasjonskatalogen, slik at den erstatter den gamle:
+En lisensfil utstedt for en tidligere utgivelse fungerer ikke med Release 2026.11. Kopier
+`license.toml` som digna-teamet har levert for Release 2026.11, til installasjonskatalogen, slik at
+den erstatter den gamle:
 
 ```bash
 copy /Y C:\path\to\new\license.toml license.toml
@@ -922,10 +921,9 @@ copy /Y C:\path\to\new\license.toml license.toml
 
 !!! warning "Ikke behold den forrige lisensen"
 
-    Med den forrige lisensen starter digna fortsatt, men digna Data Reconciliation og digna
-    MCP Server forblir slått av. Alle kommandoer som kontrollerer lisensen — `user`,
-    `inspection`, `repo` — avbrytes før de berører repositoriet når kontrollen feiler. Verifiser
-    den nye lisensen før du går videre:
+    Med den forrige lisensen feiler alle kommandoer som kontrollerer lisensen — `serve`, `user`,
+    `inspection`, `repo` — slik at digna ikke starter og repositoriet ikke kan oppgraderes.
+    Verifiser den nye lisensen før du går videre:
 
     ```bash
     digna license check
@@ -993,9 +991,7 @@ Hvis du bruker IIS eller Tomcat, start den aktuelle webserveren på nytt.
 2. Åpne digna-dashboardet og bekreft at grensesnittet lastes inn riktig.
 3. Sjekk filene i installasjonens `logs`-katalog for feil.
 4. Test databasetilkoblingene dine — se
-   [Teste en tilkobling](../../../databases/overview.md#testing-a-connection). Etter en oppgradering
-   fra en utgivelse før 2026.06 legger du først om hver tilkobling som ikke allerede brukte ODBC, til
-   ODBC.
+   [Teste en tilkobling](../../../databases/overview.md#testing-a-connection).
 
 For å komme i gang med de nye modulene, se [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Koble til en AI-agent](../../../platform/agentic/connect_ai_agent.md) for digna MCP Server, og

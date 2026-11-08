@@ -11148,10 +11148,9 @@ Każda sekcja musi zgłosić OK. Popraw wszystko, co zostało zgłoszone jako FA
 
 #### Krok 7: Wymień plik licencji {: #step-7-replace-the-license-file }
 
-Plik licencji zwykle przechodzi bez zmian z jednego wydania do następnego. Wydanie 2026.11 jest
-wyjątkiem: dodaje dwa licencjonowane moduły, digna Data Reconciliation i digna Agentic, a licencja
-wystawiona przed wydaniem 2026.11 ich nie zawiera. Skopiuj plik `license.toml` dostarczony przez zespół digna
-dla wydania 2026.11 do katalogu instalacyjnego, zastępując stary:
+Plik licencji wystawiony dla wcześniejszego wydania nie działa z wydaniem 2026.11. Skopiuj plik
+`license.toml` dostarczony przez zespół digna dla wydania 2026.11 do katalogu instalacyjnego,
+zastępując stary:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -11159,10 +11158,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Nie zachowuj poprzedniej licencji"
 
-    Z poprzednią licencją digna nadal się uruchamia, ale digna Data Reconciliation i digna
-    MCP Server pozostają wyłączone. Każde polecenie, które sprawdza licencję — `user`,
-    `inspection`, `repo` — przerywa działanie, zanim dotknie repozytorium, jeśli kontrola się nie powiedzie.
-    Sprawdź nową licencję, zanim przejdziesz dalej:
+    Z poprzednią licencją każde polecenie, które sprawdza licencję — `serve`, `user`, `inspection`,
+    `repo` — kończy się błędem, więc digna się nie uruchamia, a repozytorium nie da się
+    zaktualizować. Sprawdź nową licencję, zanim przejdziesz dalej:
 
     ```bash
     ./digna license check
@@ -11249,9 +11247,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Przetestuj połączenia z bazami danych — zobacz
-   [Testowanie połączenia](../../../databases/overview.md#testing-a-connection). Po aktualizacji
-   z wydania wcześniejszego niż 2026.06 najpierw przestaw na ODBC każde połączenie, które jeszcze
-   z niego nie korzystało.
+   [Testowanie połączenia](../../../databases/overview.md#testing-a-connection).
 
 Aby zacząć pracę z nowymi modułami, zobacz [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Podłączanie agenta AI](../../../platform/agentic/connect_ai_agent.md) w przypadku digna MCP Server oraz
@@ -13120,10 +13116,9 @@ Każda sekcja musi zgłosić OK. Popraw wszystko, co zostało zgłoszone jako FA
 
 #### Krok 7: Wymień plik licencji {: #step-7-replace-the-license-file }
 
-Plik licencji zwykle przechodzi bez zmian z jednego wydania do następnego. Wydanie 2026.11 jest
-wyjątkiem: dodaje dwa licencjonowane moduły, digna Data Reconciliation i digna Agentic, a licencja
-wystawiona przed wydaniem 2026.11 ich nie zawiera. Skopiuj plik `license.toml` dostarczony przez zespół digna
-dla wydania 2026.11 do katalogu instalacyjnego, zastępując stary:
+Plik licencji wystawiony dla wcześniejszego wydania nie działa z wydaniem 2026.11. Skopiuj plik
+`license.toml` dostarczony przez zespół digna dla wydania 2026.11 do katalogu instalacyjnego,
+zastępując stary:
 
 ```bash
 copy /Y C:\path\to\new\license.toml license.toml
@@ -13131,10 +13126,9 @@ copy /Y C:\path\to\new\license.toml license.toml
 
 !!! warning "Nie zachowuj poprzedniej licencji"
 
-    Z poprzednią licencją digna nadal się uruchamia, ale digna Data Reconciliation i digna
-    MCP Server pozostają wyłączone. Każde polecenie, które sprawdza licencję — `user`,
-    `inspection`, `repo` — przerywa działanie, zanim dotknie repozytorium, jeśli kontrola się nie powiedzie.
-    Sprawdź nową licencję, zanim przejdziesz dalej:
+    Z poprzednią licencją każde polecenie, które sprawdza licencję — `serve`, `user`, `inspection`,
+    `repo` — kończy się błędem, więc digna się nie uruchamia, a repozytorium nie da się
+    zaktualizować. Sprawdź nową licencję, zanim przejdziesz dalej:
 
     ```bash
     digna license check
@@ -13202,9 +13196,7 @@ Jeśli korzystasz z IIS lub Tomcata, zrestartuj odpowiedni serwer WWW.
 2. Otwórz dashboard digna i sprawdź, czy interfejs ładuje się poprawnie.
 3. Sprawdź pliki w katalogu `logs` instalacji pod kątem błędów.
 4. Przetestuj połączenia z bazami danych — zobacz
-   [Testowanie połączenia](../../../databases/overview.md#testing-a-connection). Po aktualizacji
-   z wydania wcześniejszego niż 2026.06 najpierw przestaw na ODBC każde połączenie, które jeszcze
-   z niego nie korzystało.
+   [Testowanie połączenia](../../../databases/overview.md#testing-a-connection).
 
 Aby zacząć pracę z nowymi modułami, zobacz [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Podłączanie agenta AI](../../../platform/agentic/connect_ai_agent.md) w przypadku digna MCP Server oraz
@@ -15544,10 +15536,9 @@ Każda sekcja musi zgłosić OK. Popraw wszystko, co zostało zgłoszone jako FA
 
 #### Krok 7: Wymień plik licencji {: #step-7-replace-the-license-file }
 
-Plik licencji zwykle przechodzi bez zmian z jednego wydania do następnego. Wydanie 2026.11 jest
-wyjątkiem: dodaje dwa licencjonowane moduły, digna Data Reconciliation i digna Agentic, a licencja
-wystawiona przed wydaniem 2026.11 ich nie zawiera. Skopiuj plik `license.toml` dostarczony przez zespół digna
-dla wydania 2026.11 do katalogu instalacyjnego, zastępując stary:
+Plik licencji wystawiony dla wcześniejszego wydania nie działa z wydaniem 2026.11. Skopiuj plik
+`license.toml` dostarczony przez zespół digna dla wydania 2026.11 do katalogu instalacyjnego,
+zastępując stary:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -15555,10 +15546,9 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Nie zachowuj poprzedniej licencji"
 
-    Z poprzednią licencją digna nadal się uruchamia, ale digna Data Reconciliation i digna
-    MCP Server pozostają wyłączone. Każde polecenie, które sprawdza licencję — `user`,
-    `inspection`, `repo` — przerywa działanie, zanim dotknie repozytorium, jeśli kontrola się nie powiedzie.
-    Sprawdź nową licencję, zanim przejdziesz dalej:
+    Z poprzednią licencją każde polecenie, które sprawdza licencję — `serve`, `user`, `inspection`,
+    `repo` — kończy się błędem, więc digna się nie uruchamia, a repozytorium nie da się
+    zaktualizować. Sprawdź nową licencję, zanim przejdziesz dalej:
 
     ```bash
     ./digna license check
@@ -15634,9 +15624,7 @@ sudo apachectl restart
 2. Otwórz dashboard digna i sprawdź, czy interfejs ładuje się poprawnie.
 3. Sprawdź dane wyjściowe serwera oraz pliki w katalogu `logs` pod kątem błędów.
 4. Przetestuj połączenia z bazami danych — zobacz
-   [Testowanie połączenia](../../../databases/overview.md#testing-a-connection). Po aktualizacji
-   z wydania wcześniejszego niż 2026.06 najpierw przestaw na ODBC każde połączenie, które jeszcze
-   z niego nie korzystało.
+   [Testowanie połączenia](../../../databases/overview.md#testing-a-connection).
 
 Aby zacząć pracę z nowymi modułami, zobacz [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Podłączanie agenta AI](../../../platform/agentic/connect_ai_agent.md) w przypadku digna MCP Server oraz

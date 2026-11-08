@@ -1139,10 +1139,9 @@ enumeradas en **Unknown keys** y vuelve a ejecutar el comando antes de continuar
 
 #### Paso 7: Sustituir el archivo de licencia {: #step-7-replace-the-license-file }
 
-Normalmente, un archivo de licencia sigue sirviendo de una versión a la siguiente. La Release 2026.11 es una
-excepción: añade dos módulos con licencia, digna Data Reconciliation y digna Agentic, y una licencia
-emitida antes de la 2026.11 no los contiene. Copia el `license.toml` que el equipo de digna te
-proporcionó para la Release 2026.11 en el directorio de instalación, sustituyendo el anterior:
+Un archivo de licencia emitido para una versión anterior no funciona con la Release 2026.11. Copia
+el `license.toml` que el equipo de digna te proporcionó para la Release 2026.11 en el directorio de
+instalación, sustituyendo el anterior:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1150,10 +1149,9 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "No conserves la licencia anterior"
 
-    Con la licencia anterior, digna sigue arrancando, pero digna Data Reconciliation y el digna
-    MCP Server permanecen desactivados. Todos los comandos que comprueban la licencia —`user`,
-    `inspection`, `repo`— se interrumpen antes de tocar el repositorio si la comprobación falla.
-    Verifica la nueva licencia antes de continuar:
+    Con la licencia anterior, todos los comandos que comprueban la licencia —`serve`, `user`,
+    `inspection`, `repo`— fallan, por lo que digna no arranca y el repositorio no se puede
+    actualizar. Verifica la nueva licencia antes de continuar:
 
     ```bash
     ./digna license check
@@ -1229,9 +1227,7 @@ sudo apachectl restart
 2. Accede al dashboard de digna y verifica que la interfaz carga correctamente.
 3. Revisa la salida del servidor y los archivos del directorio `logs` por si hay errores.
 4. Prueba tus conexiones de base de datos: consulta
-   [Probar una conexión](../../../databases/overview.md#testing-a-connection). Tras una actualización
-   desde una versión anterior a la 2026.06, convierte primero a ODBC todas las conexiones que aún no lo
-   usaran.
+   [Probar una conexión](../../../databases/overview.md#testing-a-connection).
 
 Para empezar con los nuevos módulos, consulta [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Conectar un agente de IA](../../../platform/agentic/connect_ai_agent.md) para el digna MCP Server y

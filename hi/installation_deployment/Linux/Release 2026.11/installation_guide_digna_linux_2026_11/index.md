@@ -1287,10 +1287,8 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 #### चरण 7: लाइसेंस फ़ाइल बदलें {: #step-7-replace-the-license-file }
 
-सामान्यतः लाइसेंस फ़ाइल एक रिलीज़ से अगली रिलीज़ में भी काम करती रहती है। रिलीज़ 2026.11 इसका अपवाद है: यह
-दो लाइसेंस वाले मॉड्यूल जोड़ती है, digna Data Reconciliation और digna Agentic, और 2026.11 से पहले जारी किए गए
-लाइसेंस में ये शामिल नहीं हैं। digna टीम द्वारा रिलीज़ 2026.11 के लिए दी गई `license.toml` को
-इंस्टॉलेशन डायरेक्टरी में कॉपी करें, जिससे पुरानी फ़ाइल बदल जाए:
+किसी पिछली रिलीज़ के लिए जारी की गई लाइसेंस फ़ाइल रिलीज़ 2026.11 के साथ काम नहीं करती। digna टीम द्वारा रिलीज़
+2026.11 के लिए दी गई `license.toml` को इंस्टॉलेशन डायरेक्टरी में कॉपी करें, जिससे पुरानी फ़ाइल बदल जाए:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1298,10 +1296,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "पिछला लाइसेंस न रखें"
 
-    पिछले लाइसेंस के साथ digna फिर भी शुरू होता है, लेकिन digna Data Reconciliation और digna
-    MCP Server बंद रहते हैं। लाइसेंस की जाँच करने वाला हर कमांड — `user`,
-    `inspection`, `repo` — जाँच विफल होने पर रिपॉज़िटरी को छूने से पहले ही रुक जाता है। आगे बढ़ने से
-    पहले नए लाइसेंस को सत्यापित करें:
+    पिछले लाइसेंस के साथ, लाइसेंस की जाँच करने वाला हर कमांड — `serve`, `user`,
+    `inspection`, `repo` — विफल हो जाता है, इसलिए digna शुरू नहीं होता और रिपॉज़िटरी को अपग्रेड नहीं
+    किया जा सकता। आगे बढ़ने से पहले नए लाइसेंस को सत्यापित करें:
 
     ```bash
     ./digna license check
@@ -1388,8 +1385,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. अपने डेटाबेस कनेक्शनों का परीक्षण करें — देखें
-   [कनेक्शन का परीक्षण](../../../databases/overview.md#testing-a-connection)। रिलीज़ 2026.06 से पहले की रिलीज़
-   से अपग्रेड के बाद, पहले हर उस कनेक्शन को ODBC में बदलें जो अभी तक ODBC का उपयोग नहीं करता था।
+   [कनेक्शन का परीक्षण](../../../databases/overview.md#testing-a-connection)।
 
 नए मॉड्यूल के साथ शुरुआत करने के लिए देखें [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 digna MCP Server के लिए [AI एजेंट कनेक्ट करना](../../../platform/agentic/connect_ai_agent.md), और

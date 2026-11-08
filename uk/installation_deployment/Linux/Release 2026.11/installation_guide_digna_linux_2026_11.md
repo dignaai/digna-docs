@@ -1289,10 +1289,9 @@ Release 2026.11 не потребує змін у `config.toml`: файл, як�
 
 #### Крок 7: Замініть файл ліцензії {: #step-7-replace-the-license-file }
 
-Файл ліцензії зазвичай переходить з одного випуску в наступний. Release 2026.11 — виняток:
-він додає два ліцензовані модулі, digna Data Reconciliation і digna Agentic, а ліцензія,
-видана до 2026.11, їх не містить. Скопіюйте `license.toml`, який команда digna надала
-для Release 2026.11, до каталогу встановлення, замінивши старий:
+Файл ліцензії, виданий для попереднього випуску, не працює з Release 2026.11. Скопіюйте
+`license.toml`, який команда digna надала для Release 2026.11, до каталогу встановлення,
+замінивши старий:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1300,10 +1299,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Не залишайте попередню ліцензію"
 
-    З попередньою ліцензією digna запускається, але digna Data Reconciliation і digna
-    MCP Server залишаються вимкненими. Кожна команда, що перевіряє ліцензію, — `user`,
-    `inspection`, `repo` — завершується, не торкаючись репозиторію, якщо перевірка не пройдена. Перевірте
-    нову ліцензію, перш ніж продовжувати:
+    З попередньою ліцензією кожна команда, що перевіряє ліцензію, — `serve`, `user`,
+    `inspection`, `repo` — завершується з помилкою, тож digna не запускається, а репозиторій
+    неможливо оновити. Перевірте нову ліцензію, перш ніж продовжувати:
 
     ```bash
     ./digna license check
@@ -1390,9 +1388,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Перевірте свої підключення до баз даних — див.
-   [Перевірка підключення](../../../databases/overview.md#testing-a-connection). Після оновлення
-   з випуску, старішого за 2026.06, спершу переведіть на ODBC кожне підключення, яке його ще не
-   використовувало.
+   [Перевірка підключення](../../../databases/overview.md#testing-a-connection).
 
 Щоб почати роботу з новими модулями, див. [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Підключення AI-агента](../../../platform/agentic/connect_ai_agent.md) для digna MCP Server і

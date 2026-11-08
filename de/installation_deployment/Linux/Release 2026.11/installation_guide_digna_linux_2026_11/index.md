@@ -1295,11 +1295,9 @@ unter **Unknown keys** aufgeführten Schlüssel und führen Sie den Befehl erneu
 
 #### Schritt 7: Lizenzdatei ersetzen {: #step-7-replace-the-license-file }
 
-Eine Lizenzdatei gilt normalerweise von einem Release zum nächsten weiter. Release 2026.11 ist eine
-Ausnahme: Es fügt zwei lizenzierte Module hinzu, digna Data Reconciliation und digna Agentic, und
-eine vor 2026.11 ausgestellte Lizenz enthält sie nicht. Kopieren Sie die `license.toml`, die das
-digna-Team für Release 2026.11 bereitgestellt hat, in das Installationsverzeichnis und ersetzen Sie
-damit die alte:
+Eine für ein früheres Release ausgestellte Lizenzdatei funktioniert mit Release 2026.11 nicht.
+Kopieren Sie die `license.toml`, die das digna-Team für Release 2026.11 bereitgestellt hat, in das
+Installationsverzeichnis und ersetzen Sie damit die alte:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1307,10 +1305,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Behalten Sie die bisherige Lizenz nicht"
 
-    Mit der bisherigen Lizenz startet digna zwar, aber digna Data Reconciliation und der digna MCP
-    Server bleiben abgeschaltet. Jeder Befehl, der die Lizenz prüft — `user`, `inspection`,
-    `repo` — bricht ab, bevor er das Repository verändert, wenn die Prüfung fehlschlägt. Prüfen
-    Sie die neue Lizenz, bevor Sie fortfahren:
+    Mit der bisherigen Lizenz schlägt jeder Befehl fehl, der die Lizenz prüft — `serve`, `user`,
+    `inspection`, `repo` —, sodass digna nicht startet und kein Upgrade des Repositorys möglich ist.
+    Prüfen Sie die neue Lizenz, bevor Sie fortfahren:
 
     ```bash
     ./digna license check
@@ -1399,9 +1396,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Testen Sie Ihre Datenbankverbindungen — siehe
-   [Verbindung testen](../../../databases/overview.md#testing-a-connection). Nach einem Upgrade
-   von einem Release vor 2026.06 stellen Sie zuvor jede Verbindung, die noch kein ODBC verwendet
-   hat, auf ODBC um.
+   [Verbindung testen](../../../databases/overview.md#testing-a-connection).
 
 Für den Einstieg in die neuen Module siehe [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [KI-Agenten verbinden](../../../platform/agentic/connect_ai_agent.md) für den digna MCP Server und

@@ -1286,10 +1286,8 @@ Iga sektsioon peab teatama OK. Parandage kõik, millest teatatakse FAILED, eemal
 
 #### Samm 7: Asendage litsentsifail {: #step-7-replace-the-license-file }
 
-Litsentsifail kandub tavaliselt ühest väljalaskest järgmisse üle. Release 2026.11 on erand: see
-lisab kaks litsentsitavat moodulit, digna Data Reconciliation ja digna Agentic, ning enne 2026.11
-väljastatud litsents neid ei sisalda. Kopeerige digna meeskonna poolt Release 2026.11 jaoks antud
-`license.toml` paigalduskataloogi, asendades vana faili:
+Varasema väljalaske jaoks väljastatud litsentsifail ei tööta Release 2026.11-ga. Kopeerige digna
+meeskonna poolt Release 2026.11 jaoks antud `license.toml` paigalduskataloogi, asendades vana faili:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1297,10 +1295,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Ärge jätke alles eelmist litsentsi"
 
-    Eelmise litsentsiga digna küll käivitub, kuid digna Data Reconciliation ja digna MCP Server
-    jäävad välja lülitatuks. Iga käsk, mis litsentsi kontrollib — `user`, `inspection`, `repo` —
-    katkeb enne hoidla puudutamist, kui kontroll ebaõnnestub. Kontrollige uut litsentsi enne
-    jätkamist:
+    Eelmise litsentsiga ebaõnnestub iga käsk, mis litsentsi kontrollib — `serve`, `user`,
+    `inspection`, `repo` —, seega digna ei käivitu ja hoidlat ei saa uuendada. Kontrollige uut
+    litsentsi enne jätkamist:
 
     ```bash
     ./digna license check
@@ -1387,8 +1384,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Testige oma andmebaasiühendusi — vaadake
-   [Ühenduse testimine](../../../databases/overview.md#testing-a-connection). Pärast uuendamist
-   väljalaskest, mis on vanem kui 2026.06, viige esmalt ODBC-le üle iga ühendus, mis seda veel ei kasutanud.
+   [Ühenduse testimine](../../../databases/overview.md#testing-a-connection).
 
 Uute moodulitega alustamiseks vaadake [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 digna MCP Serveri kohta [AI-agendi ühendamine](../../../platform/agentic/connect_ai_agent.md) ja

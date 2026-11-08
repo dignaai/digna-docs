@@ -10970,10 +10970,8 @@ sudo cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 #### 7단계: 라이선스 파일 교체 {: #step-7-replace-the-license-file }
 
-라이선스 파일은 보통 한 릴리스에서 다음 릴리스로 그대로 이어집니다. 릴리스 2026.11은 예외입니다. 이 릴리스는
-라이선스가 필요한 두 모듈, digna Data Reconciliation과 digna Agentic을 추가하며, 2026.11 이전에 발급된
-라이선스에는 이 모듈들이 포함되어 있지 않습니다. digna 팀이 릴리스 2026.11용으로 제공한 `license.toml`을
-설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
+이전 릴리스용으로 발급된 라이선스 파일은 릴리스 2026.11에서 작동하지 않습니다. digna 팀이 릴리스 2026.11용으로
+제공한 `license.toml`을 설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -10981,9 +10979,8 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "이전 라이선스를 유지하지 마십시오"
 
-    이전 라이선스로도 digna는 시작되지만, digna Data Reconciliation과 digna MCP Server는 비활성화된 상태로 남습니다.
-    라이선스를 확인하는 모든 명령(`user`, `inspection`, `repo`)은 확인에 실패하면 리포지터리를 건드리기 전에
-    중단됩니다. 다음 단계로 넘어가기 전에 새 라이선스를 확인하십시오:
+    이전 라이선스로는 라이선스를 확인하는 모든 명령(`serve`, `user`, `inspection`, `repo`)이 실패하므로
+    digna가 시작되지 않고 리포지터리도 업그레이드할 수 없습니다. 다음 단계로 넘어가기 전에 새 라이선스를 확인하십시오:
 
     ```bash
     ./digna license check
@@ -11069,8 +11066,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. 데이터베이스 연결을 테스트합니다. 참조:
-   [연결 테스트](../../../databases/overview.md#testing-a-connection). 릴리스 2026.06 이전 릴리스에서
-   업그레이드한 경우 먼저 아직 ODBC를 사용하지 않던 모든 연결을 ODBC로 전환하십시오.
+   [연결 테스트](../../../databases/overview.md#testing-a-connection).
 
 새 모듈을 시작하려면 [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 digna MCP Server에 대해서는 [AI 에이전트 연결](../../../platform/agentic/connect_ai_agent.md),
@@ -12923,10 +12919,8 @@ digna config check
 
 #### 7단계: 라이선스 파일 교체 {: #step-7-replace-the-license-file }
 
-라이선스 파일은 보통 한 릴리스에서 다음 릴리스로 그대로 이어집니다. 릴리스 2026.11은 예외입니다. 이 릴리스는
-라이선스가 필요한 두 모듈, digna Data Reconciliation과 digna Agentic을 추가하며, 2026.11 이전에 발급된
-라이선스에는 이 모듈들이 포함되어 있지 않습니다. digna 팀이 릴리스 2026.11용으로 제공한 `license.toml`을
-설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
+이전 릴리스용으로 발급된 라이선스 파일은 릴리스 2026.11에서 작동하지 않습니다. digna 팀이 릴리스 2026.11용으로
+제공한 `license.toml`을 설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
 
 ```bash
 copy /Y C:\path\to\new\license.toml license.toml
@@ -12934,9 +12928,8 @@ copy /Y C:\path\to\new\license.toml license.toml
 
 !!! warning "이전 라이선스를 유지하지 마십시오"
 
-    이전 라이선스로도 digna는 시작되지만, digna Data Reconciliation과 digna MCP Server는 비활성화된 상태로 남습니다.
-    라이선스를 확인하는 모든 명령(`user`, `inspection`, `repo`)은 확인에 실패하면 리포지터리를 건드리기 전에
-    중단됩니다. 다음 단계로 넘어가기 전에 새 라이선스를 확인하십시오:
+    이전 라이선스로는 라이선스를 확인하는 모든 명령(`serve`, `user`, `inspection`, `repo`)이 실패하므로
+    digna가 시작되지 않고 리포지터리도 업그레이드할 수 없습니다. 다음 단계로 넘어가기 전에 새 라이선스를 확인하십시오:
 
     ```bash
     digna license check
@@ -13003,8 +12996,7 @@ IIS 또는 Tomcat을 사용하는 경우 해당 웹 서버를 재시작하십시
 2. digna 대시보드에 접속하여 인터페이스가 올바르게 로드되는지 확인합니다.
 3. 설치 디렉터리의 `logs` 디렉터리에 있는 파일에 오류가 있는지 확인합니다.
 4. 데이터베이스 연결을 테스트합니다. 참조:
-   [연결 테스트](../../../databases/overview.md#testing-a-connection). 릴리스 2026.06 이전 릴리스에서
-   업그레이드한 경우 먼저 아직 ODBC를 사용하지 않던 모든 연결을 ODBC로 전환하십시오.
+   [연결 테스트](../../../databases/overview.md#testing-a-connection).
 
 새 모듈을 시작하려면 [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 digna MCP Server에 대해서는 [AI 에이전트 연결](../../../platform/agentic/connect_ai_agent.md),
@@ -15306,10 +15298,8 @@ cp dashboard_old/dashboard_config.toml dashboard/dashboard_config.toml
 
 #### 7단계: 라이선스 파일 교체 {: #step-7-replace-the-license-file }
 
-라이선스 파일은 보통 한 릴리스에서 다음 릴리스로 그대로 이어집니다. 릴리스 2026.11은 예외입니다. 이 릴리스는
-라이선스가 필요한 두 모듈, digna Data Reconciliation과 digna Agentic을 추가하며, 2026.11 이전에 발급된
-라이선스에는 이 모듈들이 포함되어 있지 않습니다. digna 팀이 릴리스 2026.11용으로 제공한 `license.toml`을
-설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
+이전 릴리스용으로 발급된 라이선스 파일은 릴리스 2026.11에서 작동하지 않습니다. digna 팀이 릴리스 2026.11용으로
+제공한 `license.toml`을 설치 디렉터리에 복사하여 기존 파일을 교체하십시오:
 
 ```bash
 cp /path/to/new/license.toml /opt/digna/license.toml
@@ -15317,9 +15307,8 @@ cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "이전 라이선스를 유지하지 마십시오"
 
-    이전 라이선스로도 digna는 시작되지만, digna Data Reconciliation과 digna MCP Server는 비활성화된 상태로 남습니다.
-    라이선스를 확인하는 모든 명령(`user`, `inspection`, `repo`)은 확인에 실패하면 리포지터리를 건드리기 전에
-    중단됩니다. 다음 단계로 넘어가기 전에 새 라이선스를 확인하십시오:
+    이전 라이선스로는 라이선스를 확인하는 모든 명령(`serve`, `user`, `inspection`, `repo`)이 실패하므로
+    digna가 시작되지 않고 리포지터리도 업그레이드할 수 없습니다. 다음 단계로 넘어가기 전에 새 라이선스를 확인하십시오:
 
     ```bash
     ./digna license check
@@ -15394,8 +15383,7 @@ sudo apachectl restart
 2. digna 대시보드에 접속하여 인터페이스가 올바르게 로드되는지 확인합니다.
 3. 서버 출력과 `logs` 디렉터리의 파일에 오류가 있는지 확인합니다.
 4. 데이터베이스 연결을 테스트합니다. 참조:
-   [연결 테스트](../../../databases/overview.md#testing-a-connection). 릴리스 2026.06 이전 릴리스에서
-   업그레이드한 경우 먼저 아직 ODBC를 사용하지 않던 모든 연결을 ODBC로 전환하십시오.
+   [연결 테스트](../../../databases/overview.md#testing-a-connection).
 
 새 모듈을 시작하려면 [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 digna MCP Server에 대해서는 [AI 에이전트 연결](../../../platform/agentic/connect_ai_agent.md),
