@@ -776,7 +776,11 @@ digna serveris tagad vairs nav reģistrēts kā Windows serviss.
 
 ## Jaunināšana uz jaunu izlaidumu {: #upgrading-to-a-new-release }
 
-Šajā sadaļā aprakstīta Release 2026.06 instalācijas jaunināšana uz Release 2026.11. Ja jūsu instalācija ir vecāka, vispirms izlasiet [Jaunināšana no laidiena, kas vecāks par 2026.06](#upgrading-from-a-release-before-2026-06).
+Šajā sadaļā aprakstīts, kā atjaunināt Release 2026.06 instalāciju uz Release 2026.11.
+
+!!! warning "Atjaunināšana no versijas, kas vecāka par 2026.06"
+
+    Vispirms izpildiet Release 2026.06 atjaunināšanas darbības: [Jaunināšana uz jaunu izlaidumu](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Pēc tam turpiniet ar tālāk norādītajām darbībām.
 
 ### Pirms jaunināšanas
 
@@ -787,16 +791,6 @@ Pirms digna jaunināšanas veiciet rezerves kopiju sava repozitorija (PostgreSQL
 **Licences faila pieprasīšana Release 2026.11**
 
 Release 2026.11 nepieciešams jauns `license.toml`. Pieprasiet to digna komandai pirms darba sākšanas un sagatavojiet to [7. solim](#step-7-replace-the-license-file).
-
-### Jaunināšana no laidiena, kas vecāks par 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 ieviesa trīs izmaiņas, kas joprojām ir spēkā, ja vecāku instalāciju jaunina tieši uz 2026.11:
-
-- **Tikai ODBC.** digna katru avota tehnoloģiju sasniedz caur ODBC. Katrs datubāzes savienojums, kas vēl neizmanto ODBC, pēc jaunināšanas jāpārceļ uz ODBC; automātiskas konvertēšanas nav. Iepriekš instalējiet ODBC draiverus digna resursdatorā, skatiet [ODBC draivera instalēšana digna resursdatorā](../../../databases/overview.md#install-the-driver), un sagatavojiet katra savienojuma īpašības no [tehnoloģiju rokasgrāmatām](../../../databases/overview.md#technology-guides). Databricks Legacy savienotājs vairs nepastāv; pārceliet šos savienojumus uz [Databricks](../../../databases/databricks_connector_guide.md) savienotāju.
-- **Viens izpildāmais fails.** `dignabackend` un `dignacli` aizstāj viens izpildāmais fails `digna`, kas apvieno backend un CLI.
-- **config.toml.** Sadaļa `[encryption]` ir obligāta, un `DIGNA_APP_HOST` un `DIGNA_APP_PORT` vairs netiek nolasīti: adresi un portu serveris iegūst no `digna serve`. Salīdziniet savu failu ar sadaļu [Backend konfigurācija](#backend-configuration).
-
-Tālāk aprakstītajos soļos ir norādīts, kur vecākai instalācijai jārīkojas citādi. Repozitorija jaunināšana 8. solī jebkura agrāka laidiena repozitoriju jaunina tieši uz 2026.11.
 
 ### Jaunināšanas process
 
@@ -813,18 +807,6 @@ Serviss paliek reģistrēts. Jaunais izpildāmais fails aizstāj veco tajā paš
 
 Ja digna darbojas priekšplānā, tā Command Prompt logā nospiediet ++ctrl+c++.
 
-!!! warning "Jaunināšana no laidiena, kas vecāks par 2026.06"
-
-    Laidieni pirms 2026.06 reģistrēja servisu ar batch failiem. Apturiet un atreģistrējiet to ar pašreizējās instalācijas batch failiem, **pirms** 2. solī kaut ko pārdēvējat:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Pierakstiet kontu, ar kuru serviss darbojās, kā arī adresi un portu, kurā tas apkalpoja. Servisu jūs no jauna reģistrēsiet 9. solī.
-
 #### 2. solis: Izveidojiet pašreizējās instalācijas dublējumu {: #step-2-backup-current-installation }
 
 Savā digna instalācijas direktorijā pārdēvējiet pašreizējās instalācijas izpildāmo failu un paneļa mapi, lai jauno laidienu varētu izvietot tiem līdzās:
@@ -836,10 +818,6 @@ ren dashboard dashboard_old
 ```
 
 Saglabājiet `digna_old.exe`, līdz esat pārbaudījis jaunināšanu, un `dashboard_old`, līdz esat no tās atjaunojis savus konfigurācijas failus (skatiet 4. soli). Pēc tam abus varat izdzēst.
-
-!!! info "Jaunināšana no laidiena, kas vecāks par 2026.06"
-
-    Izpildāmā faila vietā pārdēvējiet mapes `dignabackend` un `dignacli`: `ren dignabackend dignabackend_old` un `ren dignacli dignacli_old`. Release 2026.11 neizmanto ne vienu, ne otru mapi, nedz arī batch failu mapi `bin`.
 
 #### 3. solis: Izpakot un izvietot jauno versiju {: #step-3-extract-and-deploy-new-version }
 
@@ -948,16 +926,6 @@ Ja digna darbojas kā Windows serviss, palaidiet to vēlreiz:
 cd C:\path\to\digna
 digna windows start
 ```
-
-Ja jauninājāt no laidiena, kas vecāks par 2026.06, un 1. solī atreģistrējāt servisu, vispirms reģistrējiet to no jauna ar izpildāmo failu `digna`:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-Norādiet `--address` un `--port` vērtības, kurās apkalpoja vecais serviss, ja vien nevēlaties noklusējuma vērtības `127.0.0.1` un `8000`. Pievienojiet `--account` un `--password`, ja vecais serviss darbojās ar domēna kontu. Pilnu opciju sarakstu skatiet sadaļā [digna palaide kā Windows serviss](#running-digna-as-a-windows-service).
 
 Ja darbināt manuāli, restartējiet serveri:
 

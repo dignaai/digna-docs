@@ -988,7 +988,11 @@ launchd は実行ファイルの絶対パスを保存するため、インスト
 
 ## 新しいリリースへのアップグレード {: #upgrading-to-a-new-release }
 
-このセクションでは、リリース 2026.06 のインストールをリリース 2026.11 にアップグレードします。それより古いインストールの場合は、先に [リリース 2026.06 より前のリリースからのアップグレード](#upgrading-from-a-release-before-2026-06)をお読みください。
+このセクションでは、リリース 2026.06 のインストールをリリース 2026.11 にアップグレードします。
+
+!!! warning "2026.06 より前のリリースからのアップグレード"
+
+    まずリリース 2026.06 のアップグレード手順を実行してください： [新しいリリースへのアップグレード](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release)。その後、以下の手順に進んでください。
 
 ### アップグレード前に
 
@@ -1005,16 +1009,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 **リリース 2026.11 用のライセンスファイルを依頼する**
 
 リリース 2026.11 には新しい `license.toml` が必要です。作業を始める前に digna チームに依頼し、[ステップ 7](#step-7-replace-the-license-file) で使えるよう準備しておいてください。
-
-### リリース 2026.06 より前のリリースからのアップグレード {: #upgrading-from-a-release-before-2026-06 }
-
-リリース 2026.06 では 3 つの変更が導入されました。古いインストールを 2026.11 に直接アップグレードする場合にも、これらは引き続き適用されます:
-
-- **ODBC のみ。** digna はすべてのソース技術に ODBC 経由で接続します。まだ ODBC を使用していないデータベース接続は、アップグレード後にすべて ODBC に変更する必要があります。自動変換はありません。事前に digna ホストに ODBC ドライバーをインストールし（参照: [digna ホストへの ODBC ドライバーのインストール](../../../databases/overview.md#install-the-driver)）、[技術別ガイド](../../../databases/overview.md#technology-guides) を参考に各接続のプロパティを用意しておいてください。Databricks Legacy コネクタは廃止されました。該当する接続は [Databricks](../../../databases/databricks_connector_guide.md) コネクタへ移行してください。
-- **単一の実行ファイル。** `dignabackend` と `dignacli` は、バックエンドと CLI を統合した単一の実行ファイル `digna` に置き換えられました。
-- **config.toml。** `[encryption]` セクションが必須となり、`DIGNA_APP_HOST` と `DIGNA_APP_PORT` は読み取られなくなりました。サーバーのアドレスとポートは `digna serve` から渡されます。ご自身のファイルを [バックエンド構成](#backend-configuration)と比較してください。
-
-以下の手順では、古いインストールで異なる作業が必要な箇所を示します。ステップ 8 のリポジトリのアップグレードにより、以前のどのリリースのリポジトリも直接 2026.11 に更新されます。
 
 ### アップグレード手順
 
@@ -1040,11 +1034,6 @@ mv dashboard dashboard_old
 ```
 
 `digna_old` はアップグレードを確認するまで、`dashboard_old` はそこから設定ファイルを復元するまで残してください（ステップ 4 を参照）。その後は両方とも削除してかまいません。
-
-!!! info "リリース 2026.06 より前のリリースからアップグレードする場合"
-
-    実行ファイルの代わりに、`dignabackend` と `dignacli` のフォルダー名を変更します:
-    `mv dignabackend dignabackend_old` と `mv dignacli dignacli_old`。どちらもリリース 2026.11 では使用されません。
 
 #### ステップ 3: 新バージョンの展開とデプロイ {: #step-3-extract-and-deploy-new-version }
 

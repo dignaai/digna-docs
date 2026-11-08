@@ -10951,8 +10951,11 @@ Digna server je nyní odregistrován z systemd.
 
 ## Aktualizace na nové vydání {: #upgrading-to-a-new-release }
 
-Tato sekce popisuje upgrade instalace Release 2026.06 na Release 2026.11. Pokud je vaše
-instalace starší, přečtěte si nejprve [Upgrade z verze starší než 2026.06](#upgrading-from-a-release-before-2026-06).
+Tato část popisuje upgrade instalace z Release 2026.06 na Release 2026.11.
+
+!!! warning "Upgrade z verze starší než 2026.06"
+
+    Nejprve proveďte kroky upgradu na Release 2026.06: [Aktualizace na nové vydání](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Poté pokračujte následujícími kroky.
 
 ### Před aktualizací
 
@@ -10971,28 +10974,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 vyžaduje nový soubor `license.toml`. Vyžádejte si jej od týmu digna ještě před
 zahájením a mějte jej připravený pro [krok 7](#step-7-replace-the-license-file).
-
-### Upgrade z verze starší než 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 přinesl tři změny, které platí i tehdy, když starší instalaci upgradujete
-přímo na 2026.11:
-
-- **Pouze ODBC.** digna přistupuje ke každé zdrojové technologii přes ODBC. Každé databázové
-  připojení, které ODBC dosud nepoužívá, musí být po upgradu převedeno na ODBC; automatický
-  převod neexistuje. Předem nainstalujte ovladače ODBC na hostitele digna, viz
-  [Instalace ovladače ODBC na hostitele digna](../../../databases/overview.md#install-the-driver),
-  a mějte připravené vlastnosti každého připojení z
-  [příruček k jednotlivým technologiím](../../../databases/overview.md#technology-guides). Konektor
-  Databricks Legacy už neexistuje; převeďte tato připojení na konektor
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Jeden spustitelný soubor.** `dignabackend` a `dignacli` jsou nahrazeny jediným spustitelným
-  souborem `digna`, který spojuje backend a CLI.
-- **config.toml.** Sekce `[encryption]` je povinná a `DIGNA_APP_HOST` a `DIGNA_APP_PORT` se již
-  nenačítají: server si adresu a port bere z `digna serve`. Porovnejte svůj soubor s částí
-  [Konfigurace backendu](#backend-configuration).
-
-Následující kroky upozorňují na místa, kde starší instalace vyžaduje jiný postup. Upgrade
-repozitáře v kroku 8 převede repozitář jakékoli dřívější verze přímo na 2026.11.
 
 ### Postup aktualizace
 
@@ -11020,11 +11001,6 @@ sudo mv dashboard dashboard_old
 
 Soubor `digna_old` si ponechte, dokud upgrade neověříte, a složku `dashboard_old`, dokud z ní
 neobnovíte své konfigurační soubory (viz krok 4). Poté můžete obojí smazat.
-
-!!! info "Upgrade z verze starší než 2026.06"
-
-    Místo spustitelného souboru přejmenujte složky `dignabackend` a `dignacli`:
-    `sudo mv dignabackend dignabackend_old` a `sudo mv dignacli dignacli_old`. Release 2026.11 nepoužívá žádnou z nich.
 
 #### Krok 3: Rozbalte a nasaďte novou verzi {: #step-3-extract-and-deploy-new-version }
 
@@ -12958,8 +12934,11 @@ Server digna je nyní odregistrován jako služba Windows.
 
 ## Upgrade na nové vydání {: #upgrading-to-a-new-release }
 
-Tato sekce popisuje upgrade instalace Release 2026.06 na Release 2026.11. Pokud je vaše
-instalace starší, přečtěte si nejprve [Upgrade z verze starší než 2026.06](#upgrading-from-a-release-before-2026-06).
+Tato část popisuje upgrade instalace z Release 2026.06 na Release 2026.11.
+
+!!! warning "Upgrade z verze starší než 2026.06"
+
+    Nejprve proveďte kroky upgradu na Release 2026.06: [Upgrade na nové vydání](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Poté pokračujte následujícími kroky.
 
 ### Před upgradem
 
@@ -12972,28 +12951,6 @@ Záloha vám umožní obnovit data, pokud by během upgradu nastaly neočekávan
 
 Release 2026.11 vyžaduje nový soubor `license.toml`. Vyžádejte si jej od týmu digna ještě před
 zahájením a mějte jej připravený pro [krok 7](#step-7-replace-the-license-file).
-
-### Upgrade z verze starší než 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 přinesl tři změny, které platí i tehdy, když starší instalaci upgradujete
-přímo na 2026.11:
-
-- **Pouze ODBC.** digna přistupuje ke každé zdrojové technologii přes ODBC. Každé databázové
-  připojení, které ODBC dosud nepoužívá, musí být po upgradu převedeno na ODBC; automatický
-  převod neexistuje. Předem nainstalujte ovladače ODBC na hostitele digna, viz
-  [Instalace ovladače ODBC na hostitele digna](../../../databases/overview.md#install-the-driver),
-  a mějte připravené vlastnosti každého připojení z
-  [příruček k jednotlivým technologiím](../../../databases/overview.md#technology-guides). Konektor
-  Databricks Legacy už neexistuje; převeďte tato připojení na konektor
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Jeden spustitelný soubor.** `dignabackend` a `dignacli` jsou nahrazeny jediným spustitelným
-  souborem `digna`, který spojuje backend a CLI.
-- **config.toml.** Sekce `[encryption]` je povinná a `DIGNA_APP_HOST` a `DIGNA_APP_PORT` se již
-  nenačítají: server si adresu a port bere z `digna serve`. Porovnejte svůj soubor s částí
-  [Konfigurace backendu](#backend-configuration).
-
-Následující kroky upozorňují na místa, kde starší instalace vyžaduje jiný postup. Upgrade
-repozitáře v kroku 8 převede repozitář jakékoli dřívější verze přímo na 2026.11.
 
 ### Proces upgradu
 
@@ -13012,20 +12969,6 @@ takže registrace bude dál odkazovat na správný soubor.
 
 Pokud digna běží v popředí, stiskněte v jejím okně Příkazového řádku ++ctrl+c++.
 
-!!! warning "Upgrade z verze starší než 2026.06"
-
-    Verze starší než 2026.06 registrovaly službu pomocí batch souborů. Zastavte a odregistrujte ji
-    pomocí batch souborů vaší stávající instalace, a to **dříve**, než v kroku 2 cokoli přejmenujete:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Poznamenejte si účet, pod kterým služba běžela, a adresu a port, na kterých poskytovala
-    služby. Službu znovu zaregistrujete v kroku 9.
-
 #### Krok 2: Zálohujte stávající instalaci {: #step-2-backup-current-installation }
 
 V instalačním adresáři digna přejmenujte spustitelný soubor a složku dashboardu stávající
@@ -13039,11 +12982,6 @@ ren dashboard dashboard_old
 
 Soubor `digna_old.exe` si ponechte, dokud upgrade neověříte, a složku `dashboard_old`, dokud z ní
 neobnovíte své konfigurační soubory (viz krok 4). Poté můžete obojí smazat.
-
-!!! info "Upgrade z verze starší než 2026.06"
-
-    Místo spustitelného souboru přejmenujte složky `dignabackend` a `dignacli`:
-    `ren dignabackend dignabackend_old` a `ren dignacli dignacli_old`. Release 2026.11 nepoužívá žádnou z těchto složek ani složku `bin` s batch soubory.
 
 #### Krok 3: Rozbalte a nasaďte novou verzi {: #step-3-extract-and-deploy-new-version }
 
@@ -13182,20 +13120,6 @@ Pokud digna běží jako služba Windows, znovu ji spusťte:
 cd C:\path\to\digna
 digna windows start
 ```
-
-Pokud jste upgradovali z verze starší než 2026.06 a v kroku 1 jste službu odregistrovali,
-nejprve ji znovu zaregistrujte pomocí spustitelného souboru `digna`:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-Pro `--address` a `--port` zadejte hodnoty, na kterých poskytovala služby stará služba, pokud
-nechcete výchozí hodnoty `127.0.0.1` a `8000`. Pokud stará služba běžela pod doménovým účtem,
-přidejte `--account` a `--password`. Úplný seznam voleb najdete v části
-[Spuštění digna jako služby Windows](#running-digna-as-a-windows-service).
 
 Pokud digna spouštíte ručně, restartujte server:
 
@@ -15401,8 +15325,11 @@ Digna server je nyní odregistrován z launchd.
 
 ## Upgrade na novou verzi {: #upgrading-to-a-new-release }
 
-Tato sekce popisuje upgrade instalace Release 2026.06 na Release 2026.11. Pokud je vaše
-instalace starší, přečtěte si nejprve [Upgrade z verze starší než 2026.06](#upgrading-from-a-release-before-2026-06).
+Tato část popisuje upgrade instalace z Release 2026.06 na Release 2026.11.
+
+!!! warning "Upgrade z verze starší než 2026.06"
+
+    Nejprve proveďte kroky upgradu na Release 2026.06: [Upgrade na novou verzi](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Poté pokračujte následujícími kroky.
 
 ### Před upgradem
 
@@ -15421,28 +15348,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 vyžaduje nový soubor `license.toml`. Vyžádejte si jej od týmu digna ještě před
 zahájením a mějte jej připravený pro [krok 7](#step-7-replace-the-license-file).
-
-### Upgrade z verze starší než 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 přinesl tři změny, které platí i tehdy, když starší instalaci upgradujete
-přímo na 2026.11:
-
-- **Pouze ODBC.** digna přistupuje ke každé zdrojové technologii přes ODBC. Každé databázové
-  připojení, které ODBC dosud nepoužívá, musí být po upgradu převedeno na ODBC; automatický
-  převod neexistuje. Předem nainstalujte ovladače ODBC na hostitele digna, viz
-  [Instalace ovladače ODBC na hostitele digna](../../../databases/overview.md#install-the-driver),
-  a mějte připravené vlastnosti každého připojení z
-  [příruček k jednotlivým technologiím](../../../databases/overview.md#technology-guides). Konektor
-  Databricks Legacy už neexistuje; převeďte tato připojení na konektor
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Jeden spustitelný soubor.** `dignabackend` a `dignacli` jsou nahrazeny jediným spustitelným
-  souborem `digna`, který spojuje backend a CLI.
-- **config.toml.** Sekce `[encryption]` je povinná a `DIGNA_APP_HOST` a `DIGNA_APP_PORT` se již
-  nenačítají: server si adresu a port bere z `digna serve`. Porovnejte svůj soubor s částí
-  [Konfigurace backendu](#backend-configuration).
-
-Následující kroky upozorňují na místa, kde starší instalace vyžaduje jiný postup. Upgrade
-repozitáře v kroku 8 převede repozitář jakékoli dřívější verze přímo na 2026.11.
 
 ### Postup upgradu
 
@@ -15470,11 +15375,6 @@ mv dashboard dashboard_old
 
 Soubor `digna_old` si ponechte, dokud upgrade neověříte, a složku `dashboard_old`, dokud z ní
 neobnovíte své konfigurační soubory (viz krok 4). Poté můžete obojí smazat.
-
-!!! info "Upgrade z verze starší než 2026.06"
-
-    Místo spustitelného souboru přejmenujte složky `dignabackend` a `dignacli`:
-    `mv dignabackend dignabackend_old` a `mv dignacli dignacli_old`. Release 2026.11 nepoužívá žádnou z nich.
 
 #### Krok 3: Rozbalte a nasaďte novou verzi {: #step-3-extract-and-deploy-new-version }
 

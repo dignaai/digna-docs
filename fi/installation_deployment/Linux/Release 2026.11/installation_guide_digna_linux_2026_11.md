@@ -1155,8 +1155,11 @@ digna-palvelin on nyt poistettu systemd:stä.
 
 ## Päivitys uuteen julkaisuun {: #upgrading-to-a-new-release }
 
-Tämä osio päivittää Release 2026.06 -asennuksen versioon Release 2026.11. Jos asennuksesi on
-vanhempi, lue ensin [Päivitys julkaisua 2026.06 vanhemmasta versiosta](#upgrading-from-a-release-before-2026-06).
+Tämä osio päivittää Release 2026.06 -asennuksen Release 2026.11 -versioon.
+
+!!! warning "Päivitys 2026.06:ta vanhemmasta julkaisusta"
+
+    Suorita ensin Release 2026.06:n päivitysvaiheet: [Päivitys uuteen julkaisuun](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Jatka sitten alla olevista vaiheista.
 
 ### Ennen päivitystä
 
@@ -1175,28 +1178,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 vaatii uuden `license.toml`-tiedoston. Pyydä se digna-tiimiltä ennen aloittamista ja
 pidä se valmiina [vaihetta 7](#step-7-replace-the-license-file) varten.
-
-### Päivitys julkaisua 2026.06 vanhemmasta versiosta {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 toi kolme muutosta, jotka ovat yhä voimassa, kun päivität vanhemman asennuksen
-suoraan versioon 2026.11:
-
-- **Vain ODBC.** digna tavoittaa jokaisen lähdeteknologian ODBC:n kautta. Jokainen tietokantayhteys, joka
-  ei vielä käytä ODBC:tä, on muutettava ODBC:ksi päivityksen jälkeen; automaattista
-  muunnosta ei ole. Asenna ODBC-ajurit digna-isäntään etukäteen, katso
-  [ODBC-ajurin asentaminen digna-isäntään](../../../databases/overview.md#install-the-driver),
-  ja pidä kunkin yhteyden ominaisuudet valmiina
-  [teknologiaoppaista](../../../databases/overview.md#technology-guides). Databricks Legacy -liitintä
-  ei enää ole; siirrä nämä yhteydet
-  [Databricks](../../../databases/databricks_connector_guide.md)-liittimeen.
-- **Yksi suoritettava tiedosto.** `dignabackend` ja `dignacli` on korvattu yhdellä suoritettavalla tiedostolla `digna`,
-  joka yhdistää backendin ja CLI:n.
-- **config.toml.** `[encryption]`-osio on pakollinen, eikä `DIGNA_APP_HOST`- ja
-  `DIGNA_APP_PORT`-asetuksia enää lueta: palvelin saa osoitteensa ja porttinsa komennolta `digna serve`.
-  Vertaa tiedostoasi kohtaan [Backendin määritys](#backend-configuration).
-
-Alla olevat vaiheet kertovat, missä vanhempi asennus vaatii jotain muuta. Vaiheen 8 repositorion
-päivitys tuo minkä tahansa aiemman julkaisun repositorion suoraan versioon 2026.11.
 
 ### Päivitysprosessi
 
@@ -1224,11 +1205,6 @@ sudo mv dashboard dashboard_old
 
 Säilytä `digna_old`, kunnes olet varmistanut päivityksen, ja `dashboard_old`, kunnes olet palauttanut
 siitä konfiguraatiotiedostosi (katso vaihe 4). Sen jälkeen voit poistaa molemmat.
-
-!!! info "Päivitys julkaisua 2026.06 vanhemmasta versiosta"
-
-    Nimeä suoritettavan tiedoston sijaan uudelleen kansiot `dignabackend` ja `dignacli`:
-    `sudo mv dignabackend dignabackend_old` ja `sudo mv dignacli dignacli_old`. Release 2026.11 ei käytä kumpaakaan.
 
 #### Vaihe 3: Pura ja ota uusi versio käyttöön {: #step-3-extract-and-deploy-new-version }
 

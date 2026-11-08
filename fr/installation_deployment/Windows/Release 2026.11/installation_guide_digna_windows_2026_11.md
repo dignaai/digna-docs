@@ -779,9 +779,11 @@ Le serveur digna est maintenant désenregistré en tant que service Windows.
 
 ## Mise à niveau vers une nouvelle version {: #upgrading-to-a-new-release }
 
-Cette section décrit la mise à niveau d'une installation de la Release 2026.06 vers la Release
-2026.11. Si votre installation est plus ancienne, lisez d'abord
-[Mise à niveau depuis une release antérieure à 2026.06](#upgrading-from-a-release-before-2026-06).
+Cette section met à niveau une installation de la Release 2026.06 vers la Release 2026.11.
+
+!!! warning "Mise à niveau depuis une release antérieure à 2026.06"
+
+    Effectuez d'abord les étapes de mise à niveau de la Release 2026.06 : [Mise à niveau vers une nouvelle version](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Poursuivez ensuite avec les étapes ci-dessous.
 
 ### Avant de mettre à niveau
 
@@ -794,29 +796,6 @@ Une sauvegarde vous permet de restaurer en cas de problème inattendu pendant la
 
 La Release 2026.11 nécessite un nouveau `license.toml`. Demandez-le à l'équipe digna avant de
 commencer, et gardez-le à portée de main pour l'[étape 7](#step-7-replace-the-license-file).
-
-### Mise à niveau depuis une release antérieure à 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-La Release 2026.06 a apporté trois changements qui s'appliquent toujours lorsque vous mettez à
-niveau une installation plus ancienne directement vers la 2026.11 :
-
-- **ODBC uniquement.** digna atteint chaque technologie source via ODBC. Toute connexion de base de
-  données qui n'utilise pas encore ODBC doit être convertie à ODBC après la mise à niveau ; il n'y
-  a pas de conversion automatique. Installez au préalable les pilotes ODBC sur l'hôte digna, voir
-  [Installer le pilote ODBC sur l'hôte digna](../../../databases/overview.md#install-the-driver),
-  et préparez les propriétés de chaque connexion à partir des
-  [guides par technologie](../../../databases/overview.md#technology-guides). Le connecteur
-  Databricks Legacy n'existe plus ; migrez ces connexions vers le connecteur
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Un seul exécutable.** `dignabackend` et `dignacli` sont remplacés par l'exécutable unique
-  `digna`, qui réunit le backend et la CLI.
-- **config.toml.** La section `[encryption]` est obligatoire, et `DIGNA_APP_HOST` et
-  `DIGNA_APP_PORT` ne sont plus lus : le serveur tire son adresse et son port de `digna serve`.
-  Comparez votre fichier avec [Configuration du backend](#backend-configuration).
-
-Les étapes ci-dessous signalent les points où une installation plus ancienne demande une démarche
-différente. La mise à niveau du référentiel à l'étape 8 amène directement un référentiel de
-n'importe quelle release antérieure à la 2026.11.
 
 ### Processus de mise à niveau
 
@@ -835,21 +814,6 @@ répertoire, de sorte que l'enregistrement continue de pointer vers le bon fichi
 
 Si digna s'exécute au premier plan, appuyez sur ++ctrl+c++ dans sa fenêtre Invite de commandes.
 
-!!! warning "Mise à niveau depuis une release antérieure à 2026.06"
-
-    Les releases antérieures à 2026.06 enregistraient le service à l'aide de fichiers batch.
-    Arrêtez-le et désenregistrez-le avec les fichiers batch de votre installation actuelle,
-    **avant** de renommer quoi que ce soit à l'étape 2 :
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Notez le compte sous lequel le service s'exécutait, ainsi que l'adresse et le port sur lesquels
-    il servait. Vous enregistrerez à nouveau le service à l'étape 9.
-
 #### Étape 2 : Sauvegarder l'installation actuelle {: #step-2-backup-current-installation }
 
 Dans votre répertoire d'installation digna, renommez l'exécutable et le dossier du tableau de bord
@@ -864,11 +828,6 @@ ren dashboard dashboard_old
 Conservez `digna_old.exe` jusqu'à ce que vous ayez vérifié la mise à niveau, et `dashboard_old` jusqu'à
 ce que vous en ayez restauré vos fichiers de configuration (voir l'étape 4). Vous pourrez ensuite
 supprimer les deux.
-
-!!! info "Mise à niveau depuis une release antérieure à 2026.06"
-
-    Renommez les dossiers `dignabackend` et `dignacli` au lieu de l'exécutable :
-    `ren dignabackend dignabackend_old` et `ren dignacli dignacli_old`. La Release 2026.11 n'utilise aucun de ces dossiers, ni le dossier `bin` des fichiers batch.
 
 #### Étape 3 : Extraire et déployer la nouvelle version {: #step-3-extract-and-deploy-new-version }
 
@@ -1011,21 +970,6 @@ Si digna s'exécute en tant que service Windows, redémarrez-le :
 cd C:\path\to\digna
 digna windows start
 ```
-
-Si vous avez mis à niveau depuis une release antérieure à 2026.06 et désenregistré le service à
-l'étape 1, enregistrez-le d'abord à nouveau avec l'exécutable `digna` :
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-Donnez à `--address` et `--port` les valeurs sur lesquelles servait l'ancien service, sauf si vous
-souhaitez les valeurs par défaut `127.0.0.1` et `8000`. Ajoutez `--account` et `--password` si
-l'ancien service s'exécutait sous un compte de domaine. Voir
-[Exécuter digna en tant que service Windows](#running-digna-as-a-windows-service) pour la liste
-complète des options.
 
 Si vous l'exécutez manuellement, redémarrez le serveur :
 

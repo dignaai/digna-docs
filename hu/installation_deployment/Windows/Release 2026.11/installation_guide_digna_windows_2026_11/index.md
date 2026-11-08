@@ -791,9 +791,11 @@ A digna szerver mostantól nincs regisztrálva Windows szolgáltatásként.
 
 ## Frissítés új kiadásra {: #upgrading-to-a-new-release }
 
-Ez a szakasz egy Release 2026.06 telepítés Release 2026.11-re történő frissítését írja le. Ha a
-telepítésed régebbi, először olvasd el a [Frissítés 2026.06-nál régebbi kiadásról](#upgrading-from-a-release-before-2026-06)
-című részt.
+Ez a szakasz egy Release 2026.06 telepítés frissítését írja le Release 2026.11-re.
+
+!!! warning "Frissítés 2026.06-nál régebbi kiadásról"
+
+    Először a Release 2026.06 frissítési lépéseit kell végrehajtani: [Frissítés új kiadásra](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Ezután az alábbi lépésekkel lehet folytatni.
 
 ### Mielőtt frissítenél
 
@@ -807,28 +809,6 @@ probléma lép fel.
 
 A Release 2026.11 új `license.toml` fájlt igényel. Kérd el a digna csapattól még a kezdés előtt, és
 tartsd készenlétben a [7. lépéshez](#step-7-replace-the-license-file).
-
-### Frissítés 2026.06-nál régebbi kiadásról {: #upgrading-from-a-release-before-2026-06 }
-
-A Release 2026.06 három olyan változást hozott, amely akkor is érvényes, ha egy régebbi telepítést
-közvetlenül 2026.11-re frissítesz:
-
-- **Csak ODBC.** A digna minden forrástechnológiát ODBC-n keresztül ér el. Minden olyan
-  adatbázis-kapcsolatot, amely még nem ODBC-t használ, a frissítés után át kell állítani ODBC-re;
-  automatikus átalakítás nincs. Előzetesen telepítsd az ODBC-illesztőprogramokat a digna
-  gazdagépre, lásd: [Az ODBC-illesztőprogram telepítése a digna gazdagépre](../../../databases/overview.md#install-the-driver),
-  és készítsd elő minden kapcsolat tulajdonságait a
-  [technológiai útmutatók](../../../databases/overview.md#technology-guides) alapján. A Databricks Legacy
-  csatlakozó már nem létezik; költöztesd át ezeket a kapcsolatokat a
-  [Databricks](../../../databases/databricks_connector_guide.md) csatlakozóra.
-- **Egyetlen futtatható fájl.** A `dignabackend` és a `dignacli` helyét az egyetlen `digna` futtatható
-  fájl veszi át, amely egyesíti a backendet és a CLI-t.
-- **config.toml.** Az `[encryption]` szekció kötelező, a `DIGNA_APP_HOST` és a `DIGNA_APP_PORT`
-  beállítást pedig a digna már nem olvassa be: a szerver a címét és a portját a `digna serve`
-  parancstól kapja. Vesd össze a fájlodat a [Backend konfiguráció](#backend-configuration) résszel.
-
-Az alábbi lépések jelzik, hol igényel egy régebbi telepítés eltérő eljárást. A 8. lépésben
-az adattár frissítése bármely korábbi kiadás adattárát közvetlenül 2026.11-re hozza.
 
 ### Frissítési folyamat
 
@@ -847,21 +827,6 @@ helyét, így a regisztráció továbbra is a megfelelő fájlra mutat.
 
 Ha a digna előtérben fut, nyomd meg a ++ctrl+c++ billentyűket a Parancssor ablakában.
 
-!!! warning "Frissítés 2026.06-nál régebbi kiadásról"
-
-    A 2026.06-nál régebbi kiadások batch fájlokkal regisztrálták a szolgáltatást. Állítsd le, és töröld
-    a regisztrációját a jelenlegi telepítésed batch fájljaival, **mielőtt** a 2. lépésben bármit
-    átneveznél:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Jegyezd fel, milyen fiók alatt futott a szolgáltatás, valamint milyen címen és porton szolgált ki.
-    A 9. lépésben újra regisztrálni fogod a szolgáltatást.
-
 #### 2. lépés: Mentse a jelenlegi telepítést {: #step-2-backup-current-installation }
 
 A digna telepítési könyvtárában nevezd át a jelenlegi telepítés futtatható fájlját és dashboard
@@ -876,11 +841,6 @@ ren dashboard dashboard_old
 A `digna_old.exe` fájlt tartsd meg, amíg nem ellenőrizted a frissítést, a `dashboard_old` mappát
 pedig addig, amíg vissza nem állítottad belőle a konfigurációs fájljaidat (lásd a 4. lépést).
 Utána mindkettő törölhető.
-
-!!! info "Frissítés 2026.06-nál régebbi kiadásról"
-
-    A futtatható fájl helyett a `dignabackend` és a `dignacli` mappát nevezd át:
-    `ren dignabackend dignabackend_old` és `ren dignacli dignacli_old`. A Release 2026.11 egyik mappát sem használja, és a batch fájlokat tartalmazó `bin` mappát sem.
 
 #### 3. lépés: Csomagold ki és telepítsd az új verziót {: #step-3-extract-and-deploy-new-version }
 
@@ -1021,20 +981,6 @@ Ha a digna Windows-szolgáltatásként fut, indítsd el újra:
 cd C:\path\to\digna
 digna windows start
 ```
-
-Ha 2026.06-nál régebbi kiadásról frissítettél, és az 1. lépésben törölted a szolgáltatás
-regisztrációját, előbb regisztráld újra a `digna` futtatható fájllal:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-A `--address` és a `--port` kapcsolónak add meg azokat az értékeket, amelyeken a régi szolgáltatás
-kiszolgált, hacsak nem a `127.0.0.1` és `8000` alapértelmezett értékeket szeretnéd. Ha a régi
-szolgáltatás tartományi fiók alatt futott, add hozzá a `--account` és `--password` kapcsolót. A teljes
-opciólistát lásd: [digna futtatása Windows szolgáltatásként](#running-digna-as-a-windows-service).
 
 Ha manuálisan futtatod, indítsd újra a szervert:
 

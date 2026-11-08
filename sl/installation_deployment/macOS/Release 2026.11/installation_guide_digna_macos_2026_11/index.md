@@ -991,7 +991,11 @@ digna strežnik je sedaj odregistriran pri launchd.
 
 ## Nadgradnja na novo izdajo {: #upgrading-to-a-new-release }
 
-Ta razdelek nadgradi namestitev izdaje 2026.06 na izdajo 2026.11. Če je vaša namestitev starejša, najprej preberite [Nadgradnja z izdaje pred 2026.06](#upgrading-from-a-release-before-2026-06).
+Ta razdelek opisuje nadgradnjo namestitve izdaje 2026.06 na izdajo 2026.11.
+
+!!! warning "Nadgradnja z izdaje, starejše od 2026.06"
+
+    Najprej izvedite korake nadgradnje izdaje 2026.06: [Nadgradnja na novo izdajo](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Nato nadaljujte s spodnjimi koraki.
 
 ### Pred nadgradnjo
 
@@ -1008,16 +1012,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 **Pridobitev licenčne datoteke za izdajo 2026.11**
 
 Izdaja 2026.11 potrebuje novo datoteko `license.toml`. Pred začetkom jo zahtevajte od ekipe digna in jo imejte pripravljeno za [korak 7](#step-7-replace-the-license-file).
-
-### Nadgradnja z izdaje pred 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Izdaja 2026.06 je prinesla tri spremembe, ki še vedno veljajo, kadar starejšo namestitev nadgradite neposredno na 2026.11:
-
-- **Samo ODBC.** digna do vsake izvorne tehnologije dostopa prek ODBC. Vsako podatkovno povezavo, ki še ne uporablja ODBC, je treba po nadgradnji preklopiti na ODBC; samodejne pretvorbe ni. Gonilnike ODBC na gostitelja digna namestite vnaprej, glejte [Namestitev gonilnika ODBC na gostitelja digna](../../../databases/overview.md#install-the-driver), lastnosti vsake povezave pa imejte pripravljene iz [vodnikov po tehnologijah](../../../databases/overview.md#technology-guides). Konektor Databricks Legacy ne obstaja več; te povezave preselite na konektor [Databricks](../../../databases/databricks_connector_guide.md).
-- **Ena izvršljiva datoteka.** `dignabackend` in `dignacli` nadomešča ena sama izvršljiva datoteka `digna`, ki združuje backend in CLI.
-- **config.toml.** Sekcija `[encryption]` je obvezna, `DIGNA_APP_HOST` in `DIGNA_APP_PORT` pa se ne bereta več: naslov in vrata strežnik dobi iz `digna serve`. Svojo datoteko primerjajte z razdelkom [Konfiguracija backend‑a](#backend-configuration).
-
-Spodnji koraki opozarjajo, kje starejša namestitev potrebuje kaj drugačnega. Nadgradnja repozitorija v koraku 8 repozitorij katere koli prejšnje izdaje pripelje neposredno na 2026.11.
 
 ### Postopek nadgradnje
 
@@ -1043,10 +1037,6 @@ mv dashboard dashboard_old
 ```
 
 `digna_old` obdržite, dokler ne preverite nadgradnje, `dashboard_old` pa, dokler iz nje ne obnovite svojih konfiguracijskih datotek (glejte korak 4). Nato lahko oboje izbrišete.
-
-!!! info "Nadgradnja z izdaje pred 2026.06"
-
-    Namesto izvršljive datoteke preimenujte mapi `dignabackend` in `dignacli`: `mv dignabackend dignabackend_old` in `mv dignacli dignacli_old`. Izdaja 2026.11 ne uporablja nobene od njiju.
 
 #### Korak 3: Razpakirajte in razmestite novo različico {: #step-3-extract-and-deploy-new-version }
 

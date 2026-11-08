@@ -1159,9 +1159,11 @@ Serverul digna nu mai este acum înregistrat în systemd.
 
 ## Actualizarea la o versiune nouă {: #upgrading-to-a-new-release }
 
-Această secțiune actualizează o instalare Release 2026.06 la Release 2026.11. Dacă instalarea
-dumneavoastră este mai veche, citiți mai întâi
-[Actualizarea de la o versiune mai veche decât 2026.06](#upgrading-from-a-release-before-2026-06).
+Această secțiune descrie actualizarea unei instalări Release 2026.06 la Release 2026.11.
+
+!!! warning "Actualizare de la o versiune anterioară 2026.06"
+
+    Efectuați mai întâi pașii de actualizare la Release 2026.06: [Actualizarea la o versiune nouă](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Apoi continuați cu pașii de mai jos.
 
 ### Înainte de actualizare
 
@@ -1180,28 +1182,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 necesită un nou `license.toml`. Solicitați-l echipei digna înainte de a începe și
 pregătiți-l pentru [Pasul 7](#step-7-replace-the-license-file).
-
-### Actualizarea de la o versiune mai veche decât 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 a adus trei schimbări care se aplică în continuare atunci când actualizați o
-instalare mai veche direct la 2026.11:
-
-- **Doar ODBC.** digna accesează fiecare tehnologie sursă prin ODBC. Fiecare conexiune la baze de
-  date care nu folosește încă ODBC trebuie trecută pe ODBC după actualizare; nu există conversie
-  automată. Instalați în prealabil driverele ODBC pe gazda digna, consultați
-  [Instalarea driverului ODBC pe gazda digna](../../../databases/overview.md#install-the-driver),
-  și pregătiți proprietățile fiecărei conexiuni din
-  [ghidurile pe tehnologii](../../../databases/overview.md#technology-guides). Conectorul
-  Databricks Legacy nu mai există; mutați acele conexiuni pe conectorul
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Un singur executabil.** `dignabackend` și `dignacli` sunt înlocuite de executabilul unic
-  `digna`, care reunește backend-ul și CLI-ul.
-- **config.toml.** Secțiunea `[encryption]` este obligatorie, iar `DIGNA_APP_HOST` și
-  `DIGNA_APP_PORT` nu mai sunt citite: serverul își preia adresa și portul din `digna serve`.
-  Comparați fișierul dumneavoastră cu [Configurarea backend-ului](#backend-configuration).
-
-Pașii de mai jos indică unde o instalare mai veche necesită altceva. Actualizarea repository-ului
-de la Pasul 8 aduce un repository din orice versiune anterioară direct la 2026.11.
 
 ### Procesul de actualizare
 
@@ -1229,11 +1209,6 @@ sudo mv dashboard dashboard_old
 
 Păstrați `digna_old` până când ați verificat actualizarea, iar `dashboard_old` până când v-ați
 restaurat din el fișierele de configurare (consultați Pasul 4). După aceea le puteți șterge pe amândouă.
-
-!!! info "Actualizarea de la o versiune mai veche decât 2026.06"
-
-    Redenumiți folderele `dignabackend` și `dignacli` în locul executabilului:
-    `sudo mv dignabackend dignabackend_old` și `sudo mv dignacli dignacli_old`. Niciunul nu mai este folosit de Release 2026.11.
 
 #### Pasul 3: Extrageți și implementați noua versiune {: #step-3-extract-and-deploy-new-version }
 

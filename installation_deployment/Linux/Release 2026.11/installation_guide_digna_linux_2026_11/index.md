@@ -1156,9 +1156,11 @@ The digna server is now unregistered from systemd.
 
 ## Upgrading to a New Release {: #upgrading-to-a-new-release }
 
-This section upgrades an installation of Release 2026.06 to Release 2026.11. If your
-installation is older, read [Upgrading From a Release Before 2026.06](#upgrading-from-a-release-before-2026-06)
-first.
+This section upgrades an installation of Release 2026.06 to Release 2026.11.
+
+!!! warning "Upgrading from a release before 2026.06"
+
+    First carry out the upgrade steps of Release 2026.06: [Upgrading to a New Release](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Then continue with the steps below.
 
 ### Before You Upgrade
 
@@ -1177,28 +1179,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 needs a new `license.toml`. Request it from the digna team before you start, and
 have it ready for [Step 7](#step-7-replace-the-license-file).
-
-### Upgrading From a Release Before 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 brought three changes that still apply when you upgrade an older installation
-straight to 2026.11:
-
-- **ODBC only.** digna reaches every source technology over ODBC. Every database connection that
-  does not use ODBC yet must be changed to ODBC after the upgrade; there is no automatic
-  conversion. Install the ODBC drivers on the digna host beforehand, see
-  [Install the ODBC Driver on the digna Host](../../../databases/overview.md#install-the-driver),
-  and have the properties of each connection ready from the
-  [technology guides](../../../databases/overview.md#technology-guides). The Databricks Legacy
-  connector no longer exists; move those connections to the
-  [Databricks](../../../databases/databricks_connector_guide.md) connector.
-- **One executable.** `dignabackend` and `dignacli` are replaced by the single `digna` executable,
-  which combines the backend and the CLI.
-- **config.toml.** The `[encryption]` section is required, and `DIGNA_APP_HOST` and
-  `DIGNA_APP_PORT` are no longer read: the server takes its address and port from `digna serve`.
-  Compare your file with [Backend Configuration](#backend-configuration).
-
-The steps below point out where an older installation needs something different. The repository
-upgrade in Step 8 brings a repository of any earlier release straight to 2026.11.
 
 ### Upgrade Process
 
@@ -1226,11 +1206,6 @@ sudo mv dashboard dashboard_old
 
 Keep `digna_old` until you have verified the upgrade, and `dashboard_old` until you have restored
 your configuration files from it (see Step 4). Afterwards you can delete both.
-
-!!! info "Upgrading from a release before 2026.06"
-
-    Rename the `dignabackend` and `dignacli` folders instead of the executable:
-    `sudo mv dignabackend dignabackend_old` and `sudo mv dignacli dignacli_old`. Neither is used by Release 2026.11.
 
 #### Step 3: Extract and Deploy New Version {: #step-3-extract-and-deploy-new-version }
 
@@ -1314,10 +1289,9 @@ Every section must report OK. Fix anything reported as FAILED, remove the keys l
 
 #### Step 7: Replace the License File {: #step-7-replace-the-license-file }
 
-A license file normally carries over from one release to the next. Release 2026.11 is an
-exception: it adds two licensed modules, digna Data Reconciliation and digna Agentic, and a
-license issued before 2026.11 does not contain them. Copy the `license.toml` that the digna team
-provided for Release 2026.11 into the installation directory, replacing the old one:
+A license file issued for an earlier release does not work with Release 2026.11. Copy the
+`license.toml` that the digna team provided for Release 2026.11 into the installation directory,
+replacing the old one:
 
 ```bash
 sudo cp /path/to/new/license.toml /opt/digna/license.toml
@@ -1325,10 +1299,9 @@ sudo cp /path/to/new/license.toml /opt/digna/license.toml
 
 !!! warning "Do not keep the previous license"
 
-    With the previous license, digna still starts, but digna Data Reconciliation and the digna
-    MCP Server stay switched off. Every command that checks the license — `user`,
-    `inspection`, `repo` — aborts before touching the repository when the check fails. Verify
-    the new license before going further:
+    With the previous license, every command that checks the license — `serve`, `user`,
+    `inspection`, `repo` — fails, so digna does not start and the repository cannot be upgraded.
+    Verify the new license before going further:
 
     ```bash
     ./digna license check
@@ -1415,9 +1388,7 @@ sudo restorecon -Rv /opt/digna/dashboard
     ```
 
 4. Test your database connections — see
-   [Testing a Connection](../../../databases/overview.md#testing-a-connection). After an upgrade
-   from a release before 2026.06, change every connection that did not already use ODBC over to
-   ODBC first.
+   [Testing a Connection](../../../databases/overview.md#testing-a-connection).
 
 To start with the new modules, see [digna Data Reconciliation](../../../platform/data_reconciliation/Introduction.md),
 [Connect an AI Agent](../../../platform/agentic/connect_ai_agent.md) for the digna MCP Server, and

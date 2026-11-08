@@ -1144,7 +1144,11 @@ De digna-server is nu van systemd losgekoppeld.
 
 ## Upgraden naar een nieuwe release {: #upgrading-to-a-new-release }
 
-Deze sectie beschrijft de upgrade van een installatie van Release 2026.06 naar Release 2026.11. Is uw installatie ouder, lees dan eerst [Upgraden vanaf een release vóór 2026.06](#upgrading-from-a-release-before-2026-06).
+Deze sectie upgradet een installatie van Release 2026.06 naar Release 2026.11.
+
+!!! warning "Upgraden vanaf een release ouder dan 2026.06"
+
+    Voer eerst de upgradestappen van Release 2026.06 uit: [Upgraden naar een nieuwe release](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Ga daarna verder met de stappen hieronder.
 
 ### Voordat u gaat upgraden
 
@@ -1161,16 +1165,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 **Het licentiebestand voor Release 2026.11 aanvragen**
 
 Release 2026.11 heeft een nieuw `license.toml` nodig. Vraag het bij het digna-team aan voordat u begint, en houd het gereed voor [Stap 7](#step-7-replace-the-license-file).
-
-### Upgraden vanaf een release vóór 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 bracht drie wijzigingen die nog steeds gelden wanneer u een oudere installatie rechtstreeks naar 2026.11 upgradet:
-
-- **Alleen ODBC.** digna benadert elke brontechnologie via ODBC. Elke databaseverbinding die nog geen ODBC gebruikt, moet na de upgrade naar ODBC worden omgezet; er is geen automatische conversie. Installeer vooraf de ODBC-stuurprogramma's op de digna-host, zie [Het ODBC-stuurprogramma op de digna-host installeren](../../../databases/overview.md#install-the-driver), en houd de eigenschappen van elke verbinding gereed aan de hand van de [technologiehandleidingen](../../../databases/overview.md#technology-guides). De Databricks Legacy-connector bestaat niet meer; zet die verbindingen over naar de [Databricks](../../../databases/databricks_connector_guide.md)-connector.
-- **Eén uitvoerbaar bestand.** `dignabackend` en `dignacli` zijn vervangen door het enkele uitvoerbare bestand `digna`, dat de backend en de CLI combineert.
-- **config.toml.** De sectie `[encryption]` is verplicht, en `DIGNA_APP_HOST` en `DIGNA_APP_PORT` worden niet meer gelezen: de server haalt zijn adres en poort uit `digna serve`. Vergelijk uw bestand met [Backendconfiguratie](#backend-configuration).
-
-De onderstaande stappen geven aan waar een oudere installatie iets anders nodig heeft. De repository-upgrade in Stap 8 brengt een repository van elke eerdere release rechtstreeks naar 2026.11.
 
 ### Upgradeproces
 
@@ -1196,10 +1190,6 @@ sudo mv dashboard dashboard_old
 ```
 
 Bewaar `digna_old` totdat u de upgrade hebt geverifieerd, en `dashboard_old` totdat u uw configuratiebestanden eruit hebt teruggezet (zie Stap 4). Daarna kunt u beide verwijderen.
-
-!!! info "Upgraden vanaf een release vóór 2026.06"
-
-    Hernoem in plaats van het uitvoerbare bestand de mappen `dignabackend` en `dignacli`: `sudo mv dignabackend dignabackend_old` en `sudo mv dignacli dignacli_old`. Geen van beide wordt door Release 2026.11 gebruikt.
 
 #### Stap 3: Pak de nieuwe versie uit en deploy {: #step-3-extract-and-deploy-new-version }
 

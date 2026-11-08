@@ -788,8 +788,11 @@ Serwer digna jest teraz wyrejestrowany jako usługa Windows.
 
 ## Aktualizacja do nowego wydania {: #upgrading-to-a-new-release }
 
-Ta sekcja opisuje aktualizację instalacji wydania 2026.06 do wydania 2026.11. Jeśli Twoja
-instalacja jest starsza, najpierw przeczytaj [Aktualizacja z wydania wcześniejszego niż 2026.06](#upgrading-from-a-release-before-2026-06).
+Ta sekcja opisuje aktualizację instalacji z wydania 2026.06 do wydania 2026.11.
+
+!!! warning "Aktualizacja z wydania starszego niż 2026.06"
+
+    Najpierw wykonaj kroki aktualizacji do wydania 2026.06: [Aktualizacja do nowego wydania](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Następnie przejdź do poniższych kroków.
 
 ### Przed aktualizacją
 
@@ -802,28 +805,6 @@ Kopia zapasowa pozwoli przywrócić stan w razie napotkania problemów podczas a
 
 Wydanie 2026.11 wymaga nowego pliku `license.toml`. Poproś o niego zespół digna przed rozpoczęciem
 i przygotuj go na [krok 7](#step-7-replace-the-license-file).
-
-### Aktualizacja z wydania wcześniejszego niż 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Wydanie 2026.06 wprowadziło trzy zmiany, które nadal obowiązują, gdy aktualizujesz starszą instalację
-bezpośrednio do wydania 2026.11:
-
-- **Tylko ODBC.** digna łączy się z każdą technologią źródłową przez ODBC. Każde połączenie z bazą danych, które
-  nie korzysta jeszcze z ODBC, trzeba po aktualizacji przestawić na ODBC; nie ma automatycznej
-  konwersji. Wcześniej zainstaluj sterowniki ODBC na hoście digna, zobacz
-  [Instalacja sterownika ODBC na hoście digna](../../../databases/overview.md#install-the-driver),
-  i przygotuj właściwości każdego połączenia na podstawie
-  [przewodników technologicznych](../../../databases/overview.md#technology-guides). Łącznik Databricks Legacy
-  już nie istnieje; przenieś te połączenia na łącznik
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Jeden plik wykonywalny.** `dignabackend` i `dignacli` zostały zastąpione pojedynczym plikiem wykonywalnym `digna`,
-  który łączy backend i CLI.
-- **config.toml.** Sekcja `[encryption]` jest wymagana, a `DIGNA_APP_HOST` i
-  `DIGNA_APP_PORT` nie są już odczytywane: adres i port serwer pobiera z `digna serve`.
-  Porównaj swój plik z [Konfiguracją backendu](#backend-configuration).
-
-Poniższe kroki wskazują, w których miejscach starsza instalacja wymaga innego postępowania. Aktualizacja
-repozytorium w kroku 8 przenosi repozytorium z dowolnego wcześniejszego wydania bezpośrednio do wydania 2026.11.
 
 ### Proces aktualizacji
 
@@ -842,20 +823,6 @@ katalogu, więc rejestracja nadal wskazuje właściwy plik.
 
 Jeśli digna działa na pierwszym planie, naciśnij ++ctrl+c++ w jej oknie Wiersza poleceń.
 
-!!! warning "Aktualizacja z wydania wcześniejszego niż 2026.06"
-
-    Wydania wcześniejsze niż 2026.06 rejestrowały usługę za pomocą plików wsadowych. Zatrzymaj i wyrejestruj ją
-    plikami wsadowymi bieżącej instalacji, **zanim** w kroku 2 zmienisz nazwę czegokolwiek:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Zanotuj konto, na którym działała usługa, oraz adres i port, na których nasłuchiwała. Usługę
-    zarejestrujesz ponownie w kroku 9.
-
 #### Krok 2: Wykonaj kopię bieżącej instalacji {: #step-2-backup-current-installation }
 
 W katalogu instalacyjnym digna zmień nazwy pliku wykonywalnego i folderu dashboardu bieżącej
@@ -869,11 +836,6 @@ ren dashboard dashboard_old
 
 Zachowaj `digna_old.exe` do czasu zweryfikowania aktualizacji, a `dashboard_old`, dopóki nie odtworzysz
 z niego swoich plików konfiguracyjnych (patrz krok 4). Potem możesz usunąć oba.
-
-!!! info "Aktualizacja z wydania wcześniejszego niż 2026.06"
-
-    Zamiast pliku wykonywalnego zmień nazwy folderów `dignabackend` i `dignacli`:
-    `ren dignabackend dignabackend_old` i `ren dignacli dignacli_old`. Wydanie 2026.11 nie używa żadnego z tych folderów ani folderu `bin` z plikami wsadowymi.
 
 #### Krok 3: Rozpakuj i wdróż nową wersję {: #step-3-extract-and-deploy-new-version }
 
@@ -1010,20 +972,6 @@ Jeśli digna działa jako usługa Windows, uruchom ją ponownie:
 cd C:\path\to\digna
 digna windows start
 ```
-
-Jeśli aktualizujesz z wydania wcześniejszego niż 2026.06 i w kroku 1 wyrejestrowałeś usługę, najpierw
-zarejestruj ją ponownie za pomocą pliku wykonywalnego `digna`:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-Podaj w `--address` i `--port` wartości, na których nasłuchiwała stara usługa, chyba że chcesz użyć
-wartości domyślnych `127.0.0.1` i `8000`. Dodaj `--account` i `--password`, jeśli stara usługa działała
-na koncie domenowym. Pełną listę opcji znajdziesz w sekcji
-[Uruchamianie digna jako usługi Windows](#running-digna-as-a-windows-service).
 
 Jeśli uruchamiasz ręcznie, zrestartuj serwer:
 

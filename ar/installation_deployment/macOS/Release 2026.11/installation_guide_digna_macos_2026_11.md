@@ -1005,8 +1005,11 @@ sudo launchctl list | grep digna
 
 ## الترقية إلى إصدار جديد {: #upgrading-to-a-new-release }
 
-يرقّي هذا القسم تثبيتًا من الإصدار 2026.06 إلى الإصدار 2026.11. إذا كان تثبيتك
-أقدم، فاقرأ أولًا [الترقية من إصدار سابق لـ 2026.06](#upgrading-from-a-release-before-2026-06).
+يشرح هذا القسم ترقية تثبيت الإصدار 2026.06 إلى الإصدار 2026.11.
+
+!!! warning "الترقية من إصدار أقدم من 2026.06"
+
+    نفّذ أولًا خطوات الترقية إلى الإصدار 2026.06: [الترقية إلى إصدار جديد](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). ثم تابع بالخطوات أدناه.
 
 ### قبل الترقية
 
@@ -1025,28 +1028,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 يحتاج الإصدار 2026.11 إلى ملف `license.toml` جديد. اطلبه من فريق digna قبل أن تبدأ، واجعله
 جاهزًا لـ [الخطوة 7](#step-7-replace-the-license-file).
-
-### الترقية من إصدار سابق لـ 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-جلب الإصدار 2026.06 ثلاثة تغييرات لا تزال سارية عندما ترقّي تثبيتًا أقدم مباشرةً
-إلى 2026.11:
-
-- **ODBC فقط.** يصل digna إلى كل تقنية مصدر عبر ODBC. كل اتصال بقاعدة بيانات لا يستخدم ODBC بعد
-  يجب تحويله إلى ODBC بعد الترقية؛ لا يوجد تحويل تلقائي. ثبّت برامج تشغيل ODBC على مضيف digna
-  مسبقًا، انظر
-  [تثبيت برنامج تشغيل ODBC على مضيف digna](../../../databases/overview.md#install-the-driver)،
-  وجهّز خصائص كل اتصال من
-  [أدلة التقنيات](../../../databases/overview.md#technology-guides). لم يعد موصل Databricks Legacy
-  موجودًا؛ انقل تلك الاتصالات إلى موصل
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **ملف تنفيذي واحد.** يحل الملف التنفيذي الواحد `digna`، الذي يجمع الواجهة الخلفية وواجهة سطر
-  الأوامر (CLI)، محل `dignabackend` و`dignacli`.
-- **config.toml.** القسم `[encryption]` إلزامي، ولم يعد `DIGNA_APP_HOST` و
-  `DIGNA_APP_PORT` يُقرآن: يأخذ الخادم عنوانه ومنفذه من `digna serve`.
-  قارن ملفك بقسم [تكوين الخلفية (Backend)](#backend-configuration).
-
-تشير الخطوات أدناه إلى المواضع التي يحتاج فيها التثبيت الأقدم إلى إجراء مختلف. ترقية المستودع
-في الخطوة 8 تنقل مستودع أي إصدار سابق مباشرةً إلى 2026.11.
 
 ### عملية الترقية
 
@@ -1074,11 +1055,6 @@ mv dashboard dashboard_old
 
 احتفظ بـ `digna_old` حتى تتحقق من الترقية، وبـ `dashboard_old` حتى تستعيد منه ملفات التهيئة
 الخاصة بك (انظر الخطوة 4). بعد ذلك يمكنك حذفهما.
-
-!!! info "الترقية من إصدار سابق لـ 2026.06"
-
-    أعد تسمية مجلدَي `dignabackend` و`dignacli` بدلًا من الملف التنفيذي:
-    `mv dignabackend dignabackend_old` و`mv dignacli dignacli_old`. لا يستخدم الإصدار 2026.11 أيًّا منهما.
 
 #### الخطوة 3: فك ونشر النسخة الجديدة {: #step-3-extract-and-deploy-new-version }
 

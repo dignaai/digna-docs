@@ -10990,9 +10990,11 @@ digna sunucusunun systemd kaydı artık kaldırılmıştır.
 
 ## Yeni Bir Sürüme Yükseltme {: #upgrading-to-a-new-release }
 
-Bu bölüm, Sürüm 2026.06 kurulumunu Sürüm 2026.11'e yükseltir. Kurulumunuz daha eskiyse önce
-[2026.06'dan Önceki Bir Sürümden Yükseltme](#upgrading-from-a-release-before-2026-06)
-bölümünü okuyun.
+Bu bölüm, Sürüm 2026.06 kurulumunun Sürüm 2026.11'e yükseltilmesini anlatır.
+
+!!! warning "2026.06'dan Eski Bir Sürümden Yükseltme"
+
+    Önce Sürüm 2026.06'nın yükseltme adımlarını uygulayın: [Yeni Bir Sürüme Yükseltme](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Ardından aşağıdaki adımlarla devam edin.
 
 ### Yükseltme Öncesi
 
@@ -11011,28 +11013,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Sürüm 2026.11 yeni bir `license.toml` gerektirir. Başlamadan önce bu dosyayı digna ekibinden talep
 edin ve [Adım 7](#step-7-replace-the-license-file) için hazır bulundurun.
-
-### 2026.06'dan Önceki Bir Sürümden Yükseltme {: #upgrading-from-a-release-before-2026-06 }
-
-Sürüm 2026.06, eski bir kurulumu doğrudan 2026.11'e yükselttiğinizde hâlâ geçerli olan üç
-değişiklik getirdi:
-
-- **Yalnızca ODBC.** digna her kaynak teknolojisine ODBC üzerinden erişir. Henüz ODBC kullanmayan
-  her veritabanı bağlantısı yükseltmeden sonra ODBC'ye taşınmalıdır; otomatik dönüştürme yoktur.
-  ODBC sürücülerini önceden digna ana bilgisayarına kurun, bkz.
-  [ODBC Sürücüsünü digna Ana Bilgisayarına Kurma](../../../databases/overview.md#install-the-driver),
-  ve her bağlantının özelliklerini
-  [teknoloji kılavuzlarından](../../../databases/overview.md#technology-guides) alarak hazır
-  bulundurun. Databricks Legacy bağlayıcısı artık yoktur; bu bağlantıları
-  [Databricks](../../../databases/databricks_connector_guide.md) bağlayıcısına taşıyın.
-- **Tek yürütülebilir dosya.** `dignabackend` ve `dignacli`, backend ile CLI'yi birleştiren tek
-  `digna` yürütülebilir dosyasıyla değiştirilmiştir.
-- **config.toml.** `[encryption]` bölümü zorunludur; `DIGNA_APP_HOST` ve `DIGNA_APP_PORT` ise artık
-  okunmaz: sunucu adresini ve portunu `digna serve` komutundan alır. Dosyanızı
-  [Backend Yapılandırması](#backend-configuration) ile karşılaştırın.
-
-Aşağıdaki adımlar, eski bir kurulumun nerede farklı bir işlem gerektirdiğini belirtir. Adım 8'deki
-repository yükseltmesi, önceki herhangi bir sürümün repository'sini doğrudan 2026.11'e getirir.
 
 ### Yükseltme Süreci
 
@@ -11060,11 +11040,6 @@ sudo mv dashboard dashboard_old
 
 `digna_old` dosyasını yükseltmeyi doğrulayana kadar, `dashboard_old` klasörünü ise yapılandırma
 dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. Adım 4). Sonrasında ikisini de silebilirsiniz.
-
-!!! info "2026.06'dan önceki bir sürümden yükseltme"
-
-    Yürütülebilir dosya yerine `dignabackend` ve `dignacli` klasörlerini yeniden adlandırın:
-    `sudo mv dignabackend dignabackend_old` ve `sudo mv dignacli dignacli_old`. Sürüm 2026.11 bunların hiçbirini kullanmaz.
 
 #### Adım 3: Yeni Sürümü Çıkarın ve Dağıtın {: #step-3-extract-and-deploy-new-version }
 
@@ -12996,9 +12971,11 @@ digna sunucusu artık Windows hizmeti olarak kayıtlı olmayacaktır.
 
 ## Yeni Bir Sürüme Yükseltme {: #upgrading-to-a-new-release }
 
-Bu bölüm, Sürüm 2026.06 kurulumunu Sürüm 2026.11'e yükseltir. Kurulumunuz daha eskiyse önce
-[2026.06'dan Önceki Bir Sürümden Yükseltme](#upgrading-from-a-release-before-2026-06)
-bölümünü okuyun.
+Bu bölüm, Sürüm 2026.06 kurulumunun Sürüm 2026.11'e yükseltilmesini anlatır.
+
+!!! warning "2026.06'dan Eski Bir Sürümden Yükseltme"
+
+    Önce Sürüm 2026.06'nın yükseltme adımlarını uygulayın: [Yeni Bir Sürüme Yükseltme](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Ardından aşağıdaki adımlarla devam edin.
 
 ### Yükseltme Öncesi
 
@@ -13011,28 +12988,6 @@ Bir yedek, yükseltme sırasında beklenmeyen sorunlar çıkarsa geri dönüş y
 
 Sürüm 2026.11 yeni bir `license.toml` gerektirir. Başlamadan önce bu dosyayı digna ekibinden talep
 edin ve [Adım 7](#step-7-replace-the-license-file) için hazır bulundurun.
-
-### 2026.06'dan Önceki Bir Sürümden Yükseltme {: #upgrading-from-a-release-before-2026-06 }
-
-Sürüm 2026.06, eski bir kurulumu doğrudan 2026.11'e yükselttiğinizde hâlâ geçerli olan üç
-değişiklik getirdi:
-
-- **Yalnızca ODBC.** digna her kaynak teknolojisine ODBC üzerinden erişir. Henüz ODBC kullanmayan
-  her veritabanı bağlantısı yükseltmeden sonra ODBC'ye taşınmalıdır; otomatik dönüştürme yoktur.
-  ODBC sürücülerini önceden digna ana bilgisayarına kurun, bkz.
-  [ODBC Sürücüsünü digna Ana Bilgisayarına Kurma](../../../databases/overview.md#install-the-driver),
-  ve her bağlantının özelliklerini
-  [teknoloji kılavuzlarından](../../../databases/overview.md#technology-guides) alarak hazır
-  bulundurun. Databricks Legacy bağlayıcısı artık yoktur; bu bağlantıları
-  [Databricks](../../../databases/databricks_connector_guide.md) bağlayıcısına taşıyın.
-- **Tek yürütülebilir dosya.** `dignabackend` ve `dignacli`, backend ile CLI'yi birleştiren tek
-  `digna` yürütülebilir dosyasıyla değiştirilmiştir.
-- **config.toml.** `[encryption]` bölümü zorunludur; `DIGNA_APP_HOST` ve `DIGNA_APP_PORT` ise artık
-  okunmaz: sunucu adresini ve portunu `digna serve` komutundan alır. Dosyanızı
-  [Backend Yapılandırması](#backend-configuration) ile karşılaştırın.
-
-Aşağıdaki adımlar, eski bir kurulumun nerede farklı bir işlem gerektirdiğini belirtir. Adım 8'deki
-repository yükseltmesi, önceki herhangi bir sürümün repository'sini doğrudan 2026.11'e getirir.
 
 ### Yükseltme Süreci
 
@@ -13051,21 +13006,6 @@ doğru dosyayı göstermeye devam eder.
 
 digna ön planda çalışıyorsa, Komut İstemi penceresinde ++ctrl+c++ tuşlarına basın.
 
-!!! warning "2026.06'dan önceki bir sürümden yükseltme"
-
-    2026.06'dan önceki sürümler hizmeti batch dosyalarıyla kaydediyordu. Adım 2'de herhangi bir şeyi
-    yeniden adlandırmadan **önce**, hizmeti mevcut kurulumunuzun batch dosyalarıyla durdurun ve
-    kaydını kaldırın:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Hizmetin çalıştığı hesabı ve hizmet verdiği adres ile portu not edin. Hizmeti Adım 9'da yeniden
-    kaydedeceksiniz.
-
 #### Adım 2: Mevcut Kurulumu Yedekleyin {: #step-2-backup-current-installation }
 
 digna kurulum dizininizde, yeni sürümün yanına dağıtılabilmesi için mevcut kurulumunuzun
@@ -13079,11 +13019,6 @@ ren dashboard dashboard_old
 
 `digna_old.exe` dosyasını yükseltmeyi doğrulayana kadar, `dashboard_old` klasörünü ise yapılandırma
 dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. Adım 4). Sonrasında ikisini de silebilirsiniz.
-
-!!! info "2026.06'dan önceki bir sürümden yükseltme"
-
-    Yürütülebilir dosya yerine `dignabackend` ve `dignacli` klasörlerini yeniden adlandırın:
-    `ren dignabackend dignabackend_old` ve `ren dignacli dignacli_old`. Sürüm 2026.11 bu klasörlerin hiçbirini, batch dosyalarını içeren `bin` klasörünü de kullanmaz.
 
 #### Adım 3: Yeni Sürümü Çıkarın ve Dağıtın {: #step-3-extract-and-deploy-new-version }
 
@@ -13220,20 +13155,6 @@ digna bir Windows hizmeti olarak çalışıyorsa hizmeti tekrar başlatın:
 cd C:\path\to\digna
 digna windows start
 ```
-
-2026.06'dan önceki bir sürümden yükselttiyseniz ve Adım 1'de hizmetin kaydını kaldırdıysanız, önce
-hizmeti `digna` yürütülebilir dosyasıyla yeniden kaydedin:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-`127.0.0.1` ve `8000` varsayılanlarını istemiyorsanız `--address` ve `--port` için eski hizmetin
-hizmet verdiği değerleri verin. Eski hizmet bir etki alanı hesabıyla çalışıyorsa `--account` ve
-`--password` ekleyin. Seçeneklerin tam listesi için bkz.
-[digna'yı Windows Hizmeti Olarak Çalıştırma](#running-digna-as-a-windows-service).
 
 Manuel olarak çalıştırıyorsanız, sunucuyu yeniden başlatın:
 
@@ -15436,9 +15357,11 @@ digna sunucusunun launchd kaydı artık kaldırılmıştır.
 
 ## Yeni Bir Sürüme Yükseltme {: #upgrading-to-a-new-release }
 
-Bu bölüm, Sürüm 2026.06 kurulumunu Sürüm 2026.11'e yükseltir. Kurulumunuz daha eskiyse önce
-[2026.06'dan Önceki Bir Sürümden Yükseltme](#upgrading-from-a-release-before-2026-06)
-bölümünü okuyun.
+Bu bölüm, Sürüm 2026.06 kurulumunun Sürüm 2026.11'e yükseltilmesini anlatır.
+
+!!! warning "2026.06'dan Eski Bir Sürümden Yükseltme"
+
+    Önce Sürüm 2026.06'nın yükseltme adımlarını uygulayın: [Yeni Bir Sürüme Yükseltme](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Ardından aşağıdaki adımlarla devam edin.
 
 ### Yükseltme Öncesi
 
@@ -15457,28 +15380,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Sürüm 2026.11 yeni bir `license.toml` gerektirir. Başlamadan önce bu dosyayı digna ekibinden talep
 edin ve [Adım 7](#step-7-replace-the-license-file) için hazır bulundurun.
-
-### 2026.06'dan Önceki Bir Sürümden Yükseltme {: #upgrading-from-a-release-before-2026-06 }
-
-Sürüm 2026.06, eski bir kurulumu doğrudan 2026.11'e yükselttiğinizde hâlâ geçerli olan üç
-değişiklik getirdi:
-
-- **Yalnızca ODBC.** digna her kaynak teknolojisine ODBC üzerinden erişir. Henüz ODBC kullanmayan
-  her veritabanı bağlantısı yükseltmeden sonra ODBC'ye taşınmalıdır; otomatik dönüştürme yoktur.
-  ODBC sürücülerini önceden digna ana bilgisayarına kurun, bkz.
-  [ODBC Sürücüsünü digna Ana Bilgisayarına Kurma](../../../databases/overview.md#install-the-driver),
-  ve her bağlantının özelliklerini
-  [teknoloji kılavuzlarından](../../../databases/overview.md#technology-guides) alarak hazır
-  bulundurun. Databricks Legacy bağlayıcısı artık yoktur; bu bağlantıları
-  [Databricks](../../../databases/databricks_connector_guide.md) bağlayıcısına taşıyın.
-- **Tek yürütülebilir dosya.** `dignabackend` ve `dignacli`, backend ile CLI'yi birleştiren tek
-  `digna` yürütülebilir dosyasıyla değiştirilmiştir.
-- **config.toml.** `[encryption]` bölümü zorunludur; `DIGNA_APP_HOST` ve `DIGNA_APP_PORT` ise artık
-  okunmaz: sunucu adresini ve portunu `digna serve` komutundan alır. Dosyanızı
-  [Backend Yapılandırması](#backend-configuration) ile karşılaştırın.
-
-Aşağıdaki adımlar, eski bir kurulumun nerede farklı bir işlem gerektirdiğini belirtir. Adım 8'deki
-repository yükseltmesi, önceki herhangi bir sürümün repository'sini doğrudan 2026.11'e getirir.
 
 ### Yükseltme Süreci
 
@@ -15506,11 +15407,6 @@ mv dashboard dashboard_old
 
 `digna_old` dosyasını yükseltmeyi doğrulayana kadar, `dashboard_old` klasörünü ise yapılandırma
 dosyalarınızı oradan geri yükleyene kadar saklayın (bkz. Adım 4). Sonrasında ikisini de silebilirsiniz.
-
-!!! info "2026.06'dan önceki bir sürümden yükseltme"
-
-    Yürütülebilir dosya yerine `dignabackend` ve `dignacli` klasörlerini yeniden adlandırın:
-    `mv dignabackend dignabackend_old` ve `mv dignacli dignacli_old`. Sürüm 2026.11 bunların hiçbirini kullanmaz.
 
 #### Adım 3: Yeni Sürümü Çıkarın ve Dağıtın {: #step-3-extract-and-deploy-new-version }
 

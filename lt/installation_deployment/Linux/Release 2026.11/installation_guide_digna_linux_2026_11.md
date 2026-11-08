@@ -1155,8 +1155,11 @@ digna serveris dabar neberegistruotas systemd.
 
 ## Atnaujinimas į naują leidimą {: #upgrading-to-a-new-release }
 
-Šiame skyriuje aprašoma, kaip atnaujinti Release 2026.06 diegimą į Release 2026.11. Jei jūsų
-diegimas senesnis, pirmiausia perskaitykite [Atnaujinimas iš senesnio nei 2026.06 leidimo](#upgrading-from-a-release-before-2026-06).
+Šiame skyriuje aprašomas Release 2026.06 diegimo atnaujinimas į Release 2026.11.
+
+!!! warning "Atnaujinimas iš senesnės nei 2026.06 versijos"
+
+    Pirmiausia atlikite Release 2026.06 atnaujinimo veiksmus: [Atnaujinimas į naują leidimą](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Tada tęskite toliau pateiktais veiksmais.
 
 ### Prieš atnaujinant
 
@@ -1175,28 +1178,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 reikia naujo `license.toml`. Prieš pradėdami paprašykite jo digna komandos ir
 turėkite jį paruoštą [7 žingsniui](#step-7-replace-the-license-file).
-
-### Atnaujinimas iš senesnio nei 2026.06 leidimo {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 atnešė tris pakeitimus, kurie vis dar galioja, kai senesnį diegimą atnaujinate
-tiesiai į 2026.11:
-
-- **Tik ODBC.** digna kiekvieną šaltinio technologiją pasiekia per ODBC. Kiekvieną duomenų bazės
-  ryšį, kuris dar nenaudoja ODBC, po atnaujinimo reikia perkelti į ODBC; automatinio konvertavimo
-  nėra. Iš anksto įdiekite ODBC tvarkykles digna pagrindiniame kompiuteryje, žr.
-  [ODBC tvarkyklės diegimas digna pagrindiniame kompiuteryje](../../../databases/overview.md#install-the-driver),
-  ir turėkite paruoštas kiekvieno ryšio savybes iš
-  [technologijų vadovų](../../../databases/overview.md#technology-guides). Databricks Legacy
-  jungties nebėra; perkelkite tuos ryšius į
-  [Databricks](../../../databases/databricks_connector_guide.md) jungtį.
-- **Vienas vykdomasis failas.** `dignabackend` ir `dignacli` pakeisti vienu vykdomuoju failu
-  `digna`, kuris sujungia backend ir CLI.
-- **config.toml.** `[encryption]` skyrius yra privalomas, o `DIGNA_APP_HOST` ir `DIGNA_APP_PORT`
-  nebeskaitomi: adresą ir prievadą serveris gauna iš `digna serve`. Palyginkite savo failą su
-  skyriumi [Backend konfigūracija](#backend-configuration).
-
-Toliau pateiktuose žingsniuose nurodyta, kur senesniam diegimui reikia ko nors kito. Saugyklos
-atnaujinimas 8 žingsnyje bet kurio ankstesnio leidimo saugyklą perkelia tiesiai į 2026.11.
 
 ### Atnaujinimo procesas
 
@@ -1224,11 +1205,6 @@ sudo mv dashboard dashboard_old
 
 `digna_old` laikykite, kol patikrinsite atnaujinimą, o `dashboard_old` – kol iš jo atkursite savo
 konfigūracijos failus (žr. 4 žingsnį). Po to abu galite ištrinti.
-
-!!! info "Atnaujinimas iš senesnio nei 2026.06 leidimo"
-
-    Vietoj vykdomojo failo pervadinkite aplankus `dignabackend` ir `dignacli`:
-    `sudo mv dignabackend dignabackend_old` ir `sudo mv dignacli dignacli_old`. Release 2026.11 nė vieno iš jų nenaudoja.
 
 #### 3 žingsnis: išarchyvuokite ir įdiekite naują versiją {: #step-3-extract-and-deploy-new-version }
 
