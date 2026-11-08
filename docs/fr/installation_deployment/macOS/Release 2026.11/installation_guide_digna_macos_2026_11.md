@@ -1013,9 +1013,11 @@ Le serveur digna est maintenant désenregistré de launchd.
 
 ## Mise à niveau vers une nouvelle version {: #upgrading-to-a-new-release }
 
-Cette section décrit la mise à niveau d'une installation de la Release 2026.06 vers la Release
-2026.11. Si votre installation est plus ancienne, lisez d'abord
-[Mise à niveau depuis une release antérieure à 2026.06](#upgrading-from-a-release-before-2026-06).
+Cette section met à niveau une installation de la Release 2026.06 vers la Release 2026.11.
+
+!!! warning "Mise à niveau depuis une release antérieure à 2026.06"
+
+    Effectuez d'abord les étapes de mise à niveau de la Release 2026.06 : [Mise à niveau vers une nouvelle version](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Poursuivez ensuite avec les étapes ci-dessous.
 
 ### Avant de mettre à niveau
 
@@ -1034,29 +1036,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 La Release 2026.11 nécessite un nouveau `license.toml`. Demandez-le à l'équipe digna avant de
 commencer, et gardez-le à portée de main pour l'[étape 7](#step-7-replace-the-license-file).
-
-### Mise à niveau depuis une release antérieure à 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-La Release 2026.06 a apporté trois changements qui s'appliquent toujours lorsque vous mettez à
-niveau une installation plus ancienne directement vers la 2026.11 :
-
-- **ODBC uniquement.** digna atteint chaque technologie source via ODBC. Toute connexion de base de
-  données qui n'utilise pas encore ODBC doit être convertie à ODBC après la mise à niveau ; il n'y
-  a pas de conversion automatique. Installez au préalable les pilotes ODBC sur l'hôte digna, voir
-  [Installer le pilote ODBC sur l'hôte digna](../../../databases/overview.md#install-the-driver),
-  et préparez les propriétés de chaque connexion à partir des
-  [guides par technologie](../../../databases/overview.md#technology-guides). Le connecteur
-  Databricks Legacy n'existe plus ; migrez ces connexions vers le connecteur
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Un seul exécutable.** `dignabackend` et `dignacli` sont remplacés par l'exécutable unique
-  `digna`, qui réunit le backend et la CLI.
-- **config.toml.** La section `[encryption]` est obligatoire, et `DIGNA_APP_HOST` et
-  `DIGNA_APP_PORT` ne sont plus lus : le serveur tire son adresse et son port de `digna serve`.
-  Comparez votre fichier avec [Configuration du backend](#backend-configuration).
-
-Les étapes ci-dessous signalent les points où une installation plus ancienne demande une démarche
-différente. La mise à niveau du référentiel à l'étape 8 amène directement un référentiel de
-n'importe quelle release antérieure à la 2026.11.
 
 ### Processus de mise à niveau
 
@@ -1085,11 +1064,6 @@ mv dashboard dashboard_old
 Conservez `digna_old` jusqu'à ce que vous ayez vérifié la mise à niveau, et `dashboard_old` jusqu'à
 ce que vous en ayez restauré vos fichiers de configuration (voir l'étape 4). Vous pourrez ensuite
 supprimer les deux.
-
-!!! info "Mise à niveau depuis une release antérieure à 2026.06"
-
-    Renommez les dossiers `dignabackend` et `dignacli` au lieu de l'exécutable :
-    `mv dignabackend dignabackend_old` et `mv dignacli dignacli_old`. Aucun des deux n'est utilisé par la Release 2026.11.
 
 #### Étape 3 : Extraire et déployer la nouvelle version {: #step-3-extract-and-deploy-new-version }
 

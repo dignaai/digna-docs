@@ -1013,8 +1013,11 @@ digna server on nüüd launchd-st eemaldatud.
 
 ## Uuendamine uuele versioonile {: #upgrading-to-a-new-release }
 
-See jaotis uuendab Release 2026.06 paigalduse versioonile Release 2026.11. Kui teie paigaldus
-on vanem, lugege kõigepealt jaotist [Uuendamine väljalaskest, mis on vanem kui 2026.06](#upgrading-from-a-release-before-2026-06).
+See jaotis uuendab Release 2026.06 paigalduse Release 2026.11-le.
+
+!!! warning "Uuendamine 2026.06-st vanemast väljalaskest"
+
+    Tee esmalt läbi Release 2026.06 uuendamise sammud: [Uuendamine uuele versioonile](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Seejärel jätka allolevate sammudega.
 
 ### Enne uuendamist
 
@@ -1033,28 +1036,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 vajab uut faili `license.toml`. Taotlege see digna meeskonnalt enne alustamist ja
 hoidke see [sammu 7](#step-7-replace-the-license-file) jaoks valmis.
-
-### Uuendamine väljalaskest, mis on vanem kui 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 tõi kolm muudatust, mis kehtivad endiselt, kui uuendate vanema paigalduse otse
-versioonile 2026.11:
-
-- **Ainult ODBC.** digna jõuab iga lähtetehnoloogiani ODBC kaudu. Iga andmebaasiühendus, mis veel
-  ODBC-d ei kasuta, tuleb pärast uuendamist ODBC-le üle viia; automaatset teisendust ei ole.
-  Paigaldage ODBC draiverid digna hostile eelnevalt, vt
-  [ODBC draiveri paigaldamine digna hostile](../../../databases/overview.md#install-the-driver),
-  ning hoidke iga ühenduse omadused
-  [tehnoloogiajuhenditest](../../../databases/overview.md#technology-guides) valmis. Databricks Legacy
-  konnektorit enam ei ole; viige need ühendused üle
-  [Databricks](../../../databases/databricks_connector_guide.md) konnektorile.
-- **Üks käivitatav fail.** `dignabackend` ja `dignacli` on asendatud üheainsa käivitatava failiga
-  `digna`, mis ühendab backendi ja CLI.
-- **config.toml.** Sektsioon `[encryption]` on kohustuslik ning `DIGNA_APP_HOST` ja
-  `DIGNA_APP_PORT` enam ei loeta: server võtab oma aadressi ja pordi käsult `digna serve`.
-  Võrrelge oma faili jaotisega [Backendi konfiguratsioon](#backend-configuration).
-
-Allolevad sammud toovad välja, kus vanem paigaldus vajab midagi muud. Sammu 8 hoidla uuendus viib
-mis tahes varasema väljalaske hoidla otse versioonile 2026.11.
 
 ### Uuenduse protsess
 
@@ -1082,11 +1063,6 @@ mv dashboard dashboard_old
 
 Hoidke `digna_old` alles, kuni olete uuenduse kontrollinud, ja `dashboard_old`, kuni olete sellest
 oma konfiguratsioonifailid taastanud (vt samm 4). Seejärel võite mõlemad kustutada.
-
-!!! info "Uuendamine väljalaskest, mis on vanem kui 2026.06"
-
-    Nimetage käivitatava faili asemel ümber kaustad `dignabackend` ja `dignacli`:
-    `mv dignabackend dignabackend_old` ja `mv dignacli dignacli_old`. Release 2026.11 ei kasuta kumbagi.
 
 #### Samm 3: Pakige lahti ja juurutage uus versioon {: #step-3-extract-and-deploy-new-version }
 

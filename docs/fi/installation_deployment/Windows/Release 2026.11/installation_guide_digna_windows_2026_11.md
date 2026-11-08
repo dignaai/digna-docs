@@ -795,8 +795,11 @@ digna-palvelin on nyt poistettu Windows-palveluna rekisteristä.
 
 ## Päivitys uuteen julkaisuun {: #upgrading-to-a-new-release }
 
-Tämä osio päivittää Release 2026.06 -asennuksen versioon Release 2026.11. Jos asennuksesi on
-vanhempi, lue ensin [Päivitys julkaisua 2026.06 vanhemmasta versiosta](#upgrading-from-a-release-before-2026-06).
+Tämä osio päivittää Release 2026.06 -asennuksen Release 2026.11 -versioon.
+
+!!! warning "Päivitys 2026.06:ta vanhemmasta julkaisusta"
+
+    Suorita ensin Release 2026.06:n päivitysvaiheet: [Päivitys uuteen julkaisuun](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Jatka sitten alla olevista vaiheista.
 
 ### Ennen päivitystä
 
@@ -808,28 +811,6 @@ Ennen dignan päivittämistä tee varmuuskopio repositoriostasi (PostgreSQL) suo
 
 Release 2026.11 vaatii uuden `license.toml`-tiedoston. Pyydä se digna-tiimiltä ennen aloittamista ja
 pidä se valmiina [vaihetta 7](#step-7-replace-the-license-file) varten.
-
-### Päivitys julkaisua 2026.06 vanhemmasta versiosta {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 toi kolme muutosta, jotka ovat yhä voimassa, kun päivität vanhemman asennuksen
-suoraan versioon 2026.11:
-
-- **Vain ODBC.** digna tavoittaa jokaisen lähdeteknologian ODBC:n kautta. Jokainen tietokantayhteys, joka
-  ei vielä käytä ODBC:tä, on muutettava ODBC:ksi päivityksen jälkeen; automaattista
-  muunnosta ei ole. Asenna ODBC-ajurit digna-isäntään etukäteen, katso
-  [ODBC-ajurin asentaminen digna-isäntään](../../../databases/overview.md#install-the-driver),
-  ja pidä kunkin yhteyden ominaisuudet valmiina
-  [teknologiaoppaista](../../../databases/overview.md#technology-guides). Databricks Legacy -liitintä
-  ei enää ole; siirrä nämä yhteydet
-  [Databricks](../../../databases/databricks_connector_guide.md)-liittimeen.
-- **Yksi suoritettava tiedosto.** `dignabackend` ja `dignacli` on korvattu yhdellä suoritettavalla tiedostolla `digna`,
-  joka yhdistää backendin ja CLI:n.
-- **config.toml.** `[encryption]`-osio on pakollinen, eikä `DIGNA_APP_HOST`- ja
-  `DIGNA_APP_PORT`-asetuksia enää lueta: palvelin saa osoitteensa ja porttinsa komennolta `digna serve`.
-  Vertaa tiedostoasi kohtaan [Backendin määritys](#backend-configuration).
-
-Alla olevat vaiheet kertovat, missä vanhempi asennus vaatii jotain muuta. Vaiheen 8 repositorion
-päivitys tuo minkä tahansa aiemman julkaisun repositorion suoraan versioon 2026.11.
 
 ### Päivitysprosessi
 
@@ -848,20 +829,6 @@ rekisteröinti osoittaa edelleen oikeaan tiedostoon.
 
 Jos digna on käynnissä etualalla, paina ++ctrl+c++ sen komentokehoteikkunassa.
 
-!!! warning "Päivitys julkaisua 2026.06 vanhemmasta versiosta"
-
-    Julkaisua 2026.06 vanhemmat versiot rekisteröivät palvelun bat-tiedostoilla. Pysäytä palvelu ja poista
-    sen rekisteröinti nykyisen asennuksesi bat-tiedostoilla, **ennen** kuin nimeät mitään uudelleen vaiheessa 2:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Kirjaa muistiin tili, jolla palvelu suoritettiin, sekä osoite ja portti, joissa se palveli. Rekisteröit
-    palvelun uudelleen vaiheessa 9.
-
 #### Vaihe 2: Varmuuskopioi nykyinen asennus {: #step-2-backup-current-installation }
 
 Nimeä digna-asennushakemistossa nykyisen asennuksen suoritettava tiedosto ja dashboard-kansio uudelleen,
@@ -875,11 +842,6 @@ ren dashboard dashboard_old
 
 Säilytä `digna_old.exe`, kunnes olet varmistanut päivityksen, ja `dashboard_old`, kunnes olet palauttanut
 siitä konfiguraatiotiedostosi (katso vaihe 4). Sen jälkeen voit poistaa molemmat.
-
-!!! info "Päivitys julkaisua 2026.06 vanhemmasta versiosta"
-
-    Nimeä suoritettavan tiedoston sijaan uudelleen kansiot `dignabackend` ja `dignacli`:
-    `ren dignabackend dignabackend_old` ja `ren dignacli dignacli_old`. Release 2026.11 ei käytä kumpaakaan kansiota eikä bat-tiedostojen `bin`-kansiota.
 
 #### Vaihe 3: Pura ja ota käyttöön uusi versio {: #step-3-extract-and-deploy-new-version }
 
@@ -1015,20 +977,6 @@ Jos digna toimii Windows-palveluna, käynnistä se uudelleen:
 cd C:\path\to\digna
 digna windows start
 ```
-
-Jos päivitit julkaisua 2026.06 vanhemmasta versiosta ja poistit palvelun rekisteröinnin vaiheessa 1,
-rekisteröi se ensin uudelleen `digna`-suoritustiedostolla:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-Anna valitsimille `--address` ja `--port` arvot, joissa vanha palvelu palveli, ellet halua
-oletusarvoja `127.0.0.1` ja `8000`. Lisää `--account` ja `--password`, jos vanha palvelu suoritettiin
-toimialuetilillä. Katso täydellinen valitsinluettelo kohdasta
-[dignan ajaminen Windows-palveluna](#running-digna-as-a-windows-service).
 
 Jos ajat palvelinta manuaalisesti, käynnistä se uudelleen:
 

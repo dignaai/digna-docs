@@ -1015,9 +1015,11 @@ A digna szerver most eltávolításra került a launchd regisztrációból.
 
 ## Frissítés új kiadásra {: #upgrading-to-a-new-release }
 
-Ez a szakasz egy Release 2026.06 telepítés Release 2026.11-re történő frissítését írja le. Ha a
-telepítése régebbi, először olvassa el a [Frissítés 2026.06-nál régebbi kiadásról](#upgrading-from-a-release-before-2026-06)
-című részt.
+Ez a szakasz egy Release 2026.06 telepítés frissítését írja le Release 2026.11-re.
+
+!!! warning "Frissítés 2026.06-nál régebbi kiadásról"
+
+    Először a Release 2026.06 frissítési lépéseit kell végrehajtani: [Frissítés új kiadásra](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Ezután az alábbi lépésekkel lehet folytatni.
 
 ### Mielőtt frissítene
 
@@ -1037,28 +1039,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 A Release 2026.11 új `license.toml` fájlt igényel. Kérje el a digna csapattól még a kezdés előtt, és
 tartsa készenlétben a [7. lépéshez](#step-7-replace-the-license-file).
-
-### Frissítés 2026.06-nál régebbi kiadásról {: #upgrading-from-a-release-before-2026-06 }
-
-A Release 2026.06 három olyan változást hozott, amely akkor is érvényes, ha egy régebbi telepítést
-közvetlenül 2026.11-re frissít:
-
-- **Csak ODBC.** A digna minden forrástechnológiát ODBC-n keresztül ér el. Minden olyan
-  adatbázis-kapcsolatot, amely még nem ODBC-t használ, a frissítés után át kell állítani ODBC-re;
-  automatikus átalakítás nincs. Előzetesen telepítse az ODBC-illesztőprogramokat a digna
-  gazdagépre, lásd: [Az ODBC-illesztőprogram telepítése a digna gazdagépre](../../../databases/overview.md#install-the-driver),
-  és készítse elő minden kapcsolat tulajdonságait a
-  [technológiai útmutatók](../../../databases/overview.md#technology-guides) alapján. A Databricks Legacy
-  csatlakozó már nem létezik; költöztesse át ezeket a kapcsolatokat a
-  [Databricks](../../../databases/databricks_connector_guide.md) csatlakozóra.
-- **Egyetlen futtatható fájl.** A `dignabackend` és a `dignacli` helyét az egyetlen `digna` futtatható
-  fájl veszi át, amely egyesíti a backendet és a CLI-t.
-- **config.toml.** Az `[encryption]` szekció kötelező, a `DIGNA_APP_HOST` és a `DIGNA_APP_PORT`
-  beállítást pedig a digna már nem olvassa be: a szerver a címét és a portját a `digna serve`
-  parancstól kapja. Vesse össze a fájlját a [Backend konfiguráció](#backend-configuration) résszel.
-
-Az alábbi lépések jelzik, hol igényel egy régebbi telepítés eltérő eljárást. A 8. lépésben
-a repó frissítése bármely korábbi kiadás repóját közvetlenül 2026.11-re hozza.
 
 ### Frissítési folyamat
 
@@ -1087,11 +1067,6 @@ mv dashboard dashboard_old
 A `digna_old` fájlt tartsa meg, amíg nem ellenőrizte a frissítést, a `dashboard_old` mappát
 pedig addig, amíg vissza nem állította belőle a konfigurációs fájljait (lásd a 4. lépést).
 Utána mindkettő törölhető.
-
-!!! info "Frissítés 2026.06-nál régebbi kiadásról"
-
-    A futtatható fájl helyett a `dignabackend` és a `dignacli` mappát nevezze át:
-    `mv dignabackend dignabackend_old` és `mv dignacli dignacli_old`. A Release 2026.11 egyiket sem használja.
 
 #### 3. lépés: Csomagolja ki és telepítse az új verziót {: #step-3-extract-and-deploy-new-version }
 

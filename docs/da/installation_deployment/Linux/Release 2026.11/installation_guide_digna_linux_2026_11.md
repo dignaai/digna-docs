@@ -1162,8 +1162,11 @@ Digna-serveren er nu afregistreret fra systemd.
 
 ## Opgradering til en ny release {: #upgrading-to-a-new-release }
 
-Dette afsnit opgraderer en installation af Release 2026.06 til Release 2026.11. Hvis din
-installation er ældre, så læs først [Opgradering fra en release før 2026.06](#upgrading-from-a-release-before-2026-06).
+Dette afsnit opgraderer en installation af Release 2026.06 til Release 2026.11.
+
+!!! warning "Opgradering fra en udgivelse før 2026.06"
+
+    Udfør først opgraderingstrinnene for Release 2026.06: [Opgradering til en ny release](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Fortsæt derefter med trinnene nedenfor.
 
 ### Før du opgraderer
 
@@ -1182,28 +1185,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 Release 2026.11 kræver en ny `license.toml`. Anmod digna-teamet om den, før du starter, og hav
 den klar til [Trin 7](#step-7-replace-the-license-file).
-
-### Opgradering fra en release før 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 bragte tre ændringer, som stadig gælder, når du opgraderer en ældre installation
-direkte til 2026.11:
-
-- **Kun ODBC.** digna når hver kildeteknologi via ODBC. Hver databaseforbindelse, der endnu ikke
-  bruger ODBC, skal lægges om til ODBC efter opgraderingen; der er ingen automatisk
-  konvertering. Installér ODBC-driverne på digna-værten på forhånd, se
-  [Installér ODBC-driveren på digna-værten](../../../databases/overview.md#install-the-driver),
-  og hav egenskaberne for hver forbindelse klar fra
-  [teknologivejledningerne](../../../databases/overview.md#technology-guides). Databricks Legacy-connectoren
-  findes ikke længere; flyt disse forbindelser til
-  [Databricks](../../../databases/databricks_connector_guide.md)-connectoren.
-- **Én eksekverbar fil.** `dignabackend` og `dignacli` er erstattet af den enkelte eksekverbare fil `digna`,
-  som samler backend og CLI.
-- **config.toml.** Sektionen `[encryption]` er påkrævet, og `DIGNA_APP_HOST` og
-  `DIGNA_APP_PORT` læses ikke længere: serveren henter sin adresse og port fra `digna serve`.
-  Sammenlign din fil med [Backend-konfiguration](#backend-configuration).
-
-Trinene nedenfor angiver, hvor en ældre installation kræver noget andet. Opgraderingen af
-repositoriet i Trin 8 bringer et repository fra enhver tidligere release direkte til 2026.11.
 
 ### Opgraderingsproces
 
@@ -1231,11 +1212,6 @@ sudo mv dashboard dashboard_old
 
 Behold `digna_old`, indtil du har verificeret opgraderingen, og `dashboard_old`, indtil du har gendannet
 dine konfigurationsfiler fra den (se Trin 4). Derefter kan du slette begge.
-
-!!! info "Opgradering fra en release før 2026.06"
-
-    Omdøb mapperne `dignabackend` og `dignacli` i stedet for den eksekverbare fil:
-    `sudo mv dignabackend dignabackend_old` og `sudo mv dignacli dignacli_old`. Ingen af dem bruges af Release 2026.11.
 
 #### Trin 3: Udpak og deploy ny version {: #step-3-extract-and-deploy-new-version }
 

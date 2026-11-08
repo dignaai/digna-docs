@@ -791,8 +791,11 @@ digna 설치 위치를 이동해야 하는 경우:
 
 ## 새 릴리스로 업그레이드하기 {: #upgrading-to-a-new-release }
 
-이 섹션에서는 릴리스 2026.06 설치를 릴리스 2026.11로 업그레이드합니다. 설치가 그보다 오래된 경우 먼저
-[릴리스 2026.06 이전 릴리스에서 업그레이드](#upgrading-from-a-release-before-2026-06)를 읽으십시오.
+이 섹션에서는 릴리스 2026.06 설치를 릴리스 2026.11로 업그레이드합니다.
+
+!!! warning "2026.06 이전 릴리스에서 업그레이드"
+
+    먼저 릴리스 2026.06의 업그레이드 단계를 수행하십시오: [새 릴리스로 업그레이드하기](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). 그런 다음 아래 단계를 계속 진행하십시오.
 
 ### 업그레이드 전에
 
@@ -805,26 +808,6 @@ digna를 업그레이드하기 전에 저장소(PostgreSQL)를 백업하여 데�
 
 릴리스 2026.11에는 새 `license.toml`이 필요합니다. 시작하기 전에 digna 팀에 요청하고,
 [7단계](#step-7-replace-the-license-file)에서 사용할 수 있도록 준비해 두십시오.
-
-### 릴리스 2026.06 이전 릴리스에서 업그레이드 {: #upgrading-from-a-release-before-2026-06 }
-
-릴리스 2026.06에서는 세 가지 변경 사항이 도입되었으며, 이전 설치를 2026.11로 바로 업그레이드할 때에도
-여전히 적용됩니다:
-
-- **ODBC 전용.** digna는 모든 소스 기술에 ODBC로 접근합니다. 아직 ODBC를 사용하지 않는 모든 데이터베이스 연결은
-  업그레이드 후 ODBC로 변경해야 하며, 자동 변환은 없습니다. 미리 digna 호스트에 ODBC 드라이버를 설치하고(참조:
-  [digna 호스트에 ODBC 드라이버 설치](../../../databases/overview.md#install-the-driver)),
-  [기술별 안내서](../../../databases/overview.md#technology-guides)를 참고해 각 연결의 속성을 준비해 두십시오.
-  Databricks Legacy 커넥터는 더 이상 존재하지 않습니다. 해당 연결은
-  [Databricks](../../../databases/databricks_connector_guide.md) 커넥터로 이전하십시오.
-- **단일 실행 파일.** `dignabackend`와 `dignacli`는 백엔드와 CLI를 통합한 단일 실행 파일 `digna`로
-  대체되었습니다.
-- **config.toml.** `[encryption]` 섹션이 필수이며, `DIGNA_APP_HOST`와 `DIGNA_APP_PORT`는 더 이상 읽지 않습니다.
-  서버는 주소와 포트를 `digna serve`에서 받습니다. 사용 중인 파일을 [백엔드 구성](#backend-configuration)과
-  비교하십시오.
-
-아래 단계에서는 이전 설치에서 다른 작업이 필요한 부분을 알려 줍니다. 8단계의 저장소 업그레이드는 이전 어느 릴리스의
-저장소든 바로 2026.11로 업그레이드합니다.
 
 ### 업그레이드 절차
 
@@ -842,20 +825,6 @@ digna windows stop
 
 digna가 포그라운드에서 실행 중이면 해당 명령 프롬프트 창에서 ++ctrl+c++를 누르십시오.
 
-!!! warning "릴리스 2026.06 이전 릴리스에서 업그레이드하는 경우"
-
-    릴리스 2026.06 이전에는 서비스가 배치 파일로 등록되었습니다. 2단계에서 이름을 변경하기 **전에** 현재 설치의
-    배치 파일로 서비스를 중지하고 등록을 해제하십시오:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    서비스가 실행되던 계정과 서비스가 사용하던 주소 및 포트를 기록해 두십시오. 9단계에서 서비스를 다시
-    등록합니다.
-
 #### 2단계: 현재 설치 백업 {: #step-2-backup-current-installation }
 
 digna 설치 디렉터리에서 현재 설치의 실행 파일과 대시보드 폴더 이름을 변경하여, 새 릴리스를 나란히 배포할 수
@@ -869,11 +838,6 @@ ren dashboard dashboard_old
 
 `digna_old.exe`는 업그레이드를 확인할 때까지, `dashboard_old`는 거기에서 구성 파일을 복원할 때까지 보관하십시오
 (4단계 참조). 그 후에는 둘 다 삭제해도 됩니다.
-
-!!! info "릴리스 2026.06 이전 릴리스에서 업그레이드하는 경우"
-
-    실행 파일 대신 `dignabackend`와 `dignacli` 폴더의 이름을 변경하십시오:
-    `ren dignabackend dignabackend_old` 및 `ren dignacli dignacli_old`. 릴리스 2026.11은 두 폴더도, 배치 파일이 들어 있는 `bin` 폴더도 사용하지 않습니다.
 
 #### 3단계: 새 버전 압축 해제 및 배포 {: #step-3-extract-and-deploy-new-version }
 
@@ -1003,19 +967,6 @@ digna가 Windows 서비스로 실행되는 경우 다시 시작하십시오:
 cd C:\path\to\digna
 digna windows start
 ```
-
-릴리스 2026.06 이전 릴리스에서 업그레이드하면서 1단계에서 서비스 등록을 해제했다면, 먼저 `digna` 실행 파일로
-서비스를 다시 등록하십시오:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-기본값인 `127.0.0.1`과 `8000`을 사용하려는 경우가 아니라면 `--address`와 `--port`에 이전 서비스가 사용하던 값을
-지정하십시오. 이전 서비스가 도메인 계정으로 실행되었다면 `--account`와 `--password`를 추가하십시오. 전체 옵션
-목록은 [digna를 Windows 서비스로 실행하기](#running-digna-as-a-windows-service)를 참조하십시오.
 
 수동으로 실행 중인 경우 서버를 재시작하십시오:
 

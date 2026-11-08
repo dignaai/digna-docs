@@ -1147,7 +1147,11 @@ digna serveris tagad vairs nav reģistrēts sistēmā systemd.
 
 ## Jaunināšana uz jaunu izlaidumu {: #upgrading-to-a-new-release }
 
-Šajā sadaļā aprakstīta Release 2026.06 instalācijas jaunināšana uz Release 2026.11. Ja jūsu instalācija ir vecāka, vispirms izlasiet [Jaunināšana no laidiena, kas vecāks par 2026.06](#upgrading-from-a-release-before-2026-06).
+Šajā sadaļā aprakstīts, kā atjaunināt Release 2026.06 instalāciju uz Release 2026.11.
+
+!!! warning "Atjaunināšana no versijas, kas vecāka par 2026.06"
+
+    Vispirms izpildiet Release 2026.06 atjaunināšanas darbības: [Jaunināšana uz jaunu izlaidumu](../Release%202026.06/installation_guide_digna_linux_2026_06.md#upgrading-to-a-new-release). Pēc tam turpiniet ar tālāk norādītajām darbībām.
 
 ### Pirms jaunināšanas
 
@@ -1164,16 +1168,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 **Licences faila pieprasīšana Release 2026.11**
 
 Release 2026.11 nepieciešams jauns `license.toml`. Pieprasiet to digna komandai pirms darba sākšanas un sagatavojiet to [7. solim](#step-7-replace-the-license-file).
-
-### Jaunināšana no laidiena, kas vecāks par 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 ieviesa trīs izmaiņas, kas joprojām ir spēkā, ja vecāku instalāciju jaunina tieši uz 2026.11:
-
-- **Tikai ODBC.** digna katru avota tehnoloģiju sasniedz caur ODBC. Katrs datubāzes savienojums, kas vēl neizmanto ODBC, pēc jaunināšanas jāpārceļ uz ODBC; automātiskas konvertēšanas nav. Iepriekš instalējiet ODBC draiverus digna resursdatorā, skatiet [ODBC draivera instalēšana digna resursdatorā](../../../databases/overview.md#install-the-driver), un sagatavojiet katra savienojuma īpašības no [tehnoloģiju rokasgrāmatām](../../../databases/overview.md#technology-guides). Databricks Legacy savienotājs vairs nepastāv; pārceliet šos savienojumus uz [Databricks](../../../databases/databricks_connector_guide.md) savienotāju.
-- **Viens izpildāmais fails.** `dignabackend` un `dignacli` aizstāj viens izpildāmais fails `digna`, kas apvieno backend un CLI.
-- **config.toml.** Sadaļa `[encryption]` ir obligāta, un `DIGNA_APP_HOST` un `DIGNA_APP_PORT` vairs netiek nolasīti: adresi un portu serveris iegūst no `digna serve`. Salīdziniet savu failu ar sadaļu [Backend konfigurācija](#backend-configuration).
-
-Tālāk aprakstītajos soļos ir norādīts, kur vecākai instalācijai jārīkojas citādi. Repozitorija jaunināšana 8. solī jebkura agrāka laidiena repozitoriju jaunina tieši uz 2026.11.
 
 ### Jaunināšanas process
 
@@ -1199,10 +1193,6 @@ sudo mv dashboard dashboard_old
 ```
 
 Saglabājiet `digna_old`, līdz esat pārbaudījis jaunināšanu, un `dashboard_old`, līdz esat no tās atjaunojis savus konfigurācijas failus (skatiet 4. soli). Pēc tam abus varat izdzēst.
-
-!!! info "Jaunināšana no laidiena, kas vecāks par 2026.06"
-
-    Izpildāmā faila vietā pārdēvējiet mapes `dignabackend` un `dignacli`: `sudo mv dignabackend dignabackend_old` un `sudo mv dignacli dignacli_old`. Release 2026.11 neizmanto nevienu no tām.
 
 #### 3. solis: Izpakot un izvietot jauno versiju {: #step-3-extract-and-deploy-new-version }
 

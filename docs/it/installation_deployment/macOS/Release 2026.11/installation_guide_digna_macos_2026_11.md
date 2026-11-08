@@ -1013,8 +1013,11 @@ Il server digna è ora rimosso dalla registrazione in launchd.
 
 ## Aggiornamento a una nuova release {: #upgrading-to-a-new-release }
 
-Questa sezione aggiorna un'installazione della Release 2026.06 alla Release 2026.11. Se la vostra
-installazione è più vecchia, leggete prima [Aggiornamento da una release precedente alla 2026.06](#upgrading-from-a-release-before-2026-06).
+Questa sezione aggiorna un'installazione della Release 2026.06 alla Release 2026.11.
+
+!!! warning "Aggiornamento da una release precedente alla 2026.06"
+
+    Eseguite prima i passaggi di aggiornamento della Release 2026.06: [Aggiornamento a una nuova release](../Release%202026.06/installation_guide_digna_macos_2026_06.md#upgrading-to-a-new-release). Poi proseguite con i passaggi seguenti.
 
 ### Prima di aggiornare
 
@@ -1033,28 +1036,6 @@ pg_dump -h localhost -p 5432 -U digna_user -n dignarepo postgres > digna_repo_ba
 
 La Release 2026.11 richiede un nuovo `license.toml`. Richiedetelo al team digna prima di iniziare e
 tenetelo pronto per il [passo 7](#step-7-replace-the-license-file).
-
-### Aggiornamento da una release precedente alla 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-La Release 2026.06 ha introdotto tre modifiche che valgono ancora quando aggiornate un'installazione
-più vecchia direttamente alla 2026.11:
-
-- **Solo ODBC.** digna accede a ogni tecnologia di origine tramite ODBC. Ogni connessione al database che
-  non usa ancora ODBC deve essere convertita a ODBC dopo l'aggiornamento; non esiste una conversione
-  automatica. Installate prima i driver ODBC sull'host di digna (vedi
-  [Installare il driver ODBC sull'host digna](../../../databases/overview.md#install-the-driver))
-  e tenete pronte le proprietà di ogni connessione, prendendole dalle
-  [guide per tecnologia](../../../databases/overview.md#technology-guides). Il connettore Databricks Legacy
-  non esiste più; spostate quelle connessioni al connettore
-  [Databricks](../../../databases/databricks_connector_guide.md).
-- **Un unico eseguibile.** `dignabackend` e `dignacli` sono sostituiti dall'unico eseguibile `digna`,
-  che unisce backend e CLI.
-- **config.toml.** La sezione `[encryption]` è obbligatoria, e `DIGNA_APP_HOST` e
-  `DIGNA_APP_PORT` non vengono più letti: il server prende indirizzo e porta da `digna serve`.
-  Confrontate il vostro file con [Configurazione del backend](#backend-configuration).
-
-I passi seguenti indicano dove un'installazione più vecchia richiede qualcosa di diverso. L'aggiornamento
-del repository nel passo 8 porta un repository di qualsiasi release precedente direttamente alla 2026.11.
 
 ### Processo di aggiornamento
 
@@ -1082,11 +1063,6 @@ mv dashboard dashboard_old
 
 Conservate `digna_old` finché non avete verificato l'aggiornamento, e `dashboard_old` finché non avete
 ripristinato da essa i vostri file di configurazione (vedi passo 4). Dopo potete eliminarli entrambi.
-
-!!! info "Aggiornamento da una release precedente alla 2026.06"
-
-    Rinominate le cartelle `dignabackend` e `dignacli` invece dell'eseguibile:
-    `mv dignabackend dignabackend_old` e `mv dignacli dignacli_old`. Nessuna delle due è usata dalla Release 2026.11.
 
 #### Passo 3: Estrarre e distribuire la nuova versione {: #step-3-extract-and-deploy-new-version }
 

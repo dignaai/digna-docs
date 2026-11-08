@@ -801,9 +801,11 @@ Der digna-Server ist nun als Windows-Dienst abgemeldet.
 
 ## Upgrade auf eine neue Version {: #upgrading-to-a-new-release }
 
-Dieser Abschnitt beschreibt das Upgrade einer Installation von Release 2026.06 auf Release 2026.11.
-Ist Ihre Installation älter, lesen Sie zuerst
-[Upgrade von einem Release vor 2026.06](#upgrading-from-a-release-before-2026-06).
+Dieser Abschnitt aktualisiert eine Installation von Release 2026.06 auf Release 2026.11.
+
+!!! warning "Upgrade von einem Release vor 2026.06"
+
+    Führen Sie zuerst die Upgrade-Schritte von Release 2026.06 aus: [Upgrade auf eine neue Version](../Release%202026.06/installation_guide_digna_windows_2026_06.md#upgrading-to-a-new-release). Fahren Sie danach mit den folgenden Schritten fort.
 
 ### Bevor Sie ein Upgrade durchführen
 
@@ -816,28 +818,6 @@ Ein Backup stellt sicher, dass Sie im Falle unerwarteter Probleme bei einem Upgr
 
 Release 2026.11 benötigt eine neue `license.toml`. Fordern Sie sie vor dem Start beim digna-Team an
 und halten Sie sie für [Schritt 7](#step-7-replace-the-license-file) bereit.
-
-### Upgrade von einem Release vor 2026.06 {: #upgrading-from-a-release-before-2026-06 }
-
-Release 2026.06 brachte drei Änderungen, die weiterhin gelten, wenn Sie eine ältere Installation
-direkt auf 2026.11 aktualisieren:
-
-- **Nur ODBC.** digna erreicht jede Quelltechnologie über ODBC. Jede Datenbankverbindung, die noch
-  kein ODBC verwendet, muss nach dem Upgrade auf ODBC umgestellt werden; eine automatische
-  Umwandlung gibt es nicht. Installieren Sie die ODBC-Treiber vorab auf dem digna-Host, siehe
-  [ODBC-Treiber auf dem digna-Host installieren](../../../databases/overview.md#install-the-driver),
-  und halten Sie die Eigenschaften jeder Verbindung aus den
-  [Technologie-Anleitungen](../../../databases/overview.md#technology-guides) bereit. Den
-  Databricks-Legacy-Connector gibt es nicht mehr; stellen Sie diese Verbindungen auf den
-  [Databricks](../../../databases/databricks_connector_guide.md)-Connector um.
-- **Eine ausführbare Datei.** `dignabackend` und `dignacli` werden durch die einzelne ausführbare
-  Datei `digna` ersetzt, die Backend und CLI vereint.
-- **config.toml.** Der Abschnitt `[encryption]` ist erforderlich, und `DIGNA_APP_HOST` und
-  `DIGNA_APP_PORT` werden nicht mehr gelesen: Adresse und Port bezieht der Server von `digna serve`.
-  Vergleichen Sie Ihre Datei mit der [Backend-Konfiguration](#backend-configuration).
-
-Die folgenden Schritte weisen darauf hin, wo eine ältere Installation etwas anderes benötigt. Das
-Repository-Upgrade in Schritt 8 bringt ein Repository jedes früheren Releases direkt auf 2026.11.
 
 ### Upgrade-Ablauf
 
@@ -856,21 +836,6 @@ der alten, sodass die Registrierung weiterhin auf die richtige Datei zeigt.
 
 Falls digna im Vordergrund läuft, drücken Sie in dessen Eingabeaufforderungsfenster ++ctrl+c++.
 
-!!! warning "Upgrade von einem Release vor 2026.06"
-
-    Releases vor 2026.06 haben den Dienst mit Batch-Dateien registriert. Stoppen Sie ihn und
-    melden Sie ihn mit den Batch-Dateien Ihrer aktuellen Installation ab, **bevor** Sie in
-    Schritt 2 etwas umbenennen:
-
-    ```bash
-    cd C:\path\to\digna\bin
-    stop_service.bat
-    uninstall_service.bat
-    ```
-
-    Notieren Sie sich das Konto, unter dem der Dienst lief, sowie die Adresse und den Port, auf
-    denen er erreichbar war. Sie registrieren den Dienst in Schritt 9 erneut.
-
 #### Schritt 2: Aktuelle Installation sichern {: #step-2-backup-current-installation }
 
 Benennen Sie in Ihrem digna-Installationsverzeichnis die ausführbare Datei und den Dashboard-Ordner
@@ -884,11 +849,6 @@ ren dashboard dashboard_old
 
 Behalten Sie `digna_old.exe`, bis Sie das Upgrade überprüft haben, und `dashboard_old`, bis Sie Ihre
 Konfigurationsdateien daraus wiederhergestellt haben (siehe Schritt 4). Danach können Sie beide löschen.
-
-!!! info "Upgrade von einem Release vor 2026.06"
-
-    Benennen Sie statt der ausführbaren Datei die Ordner `dignabackend` und `dignacli` um:
-    `ren dignabackend dignabackend_old` und `ren dignacli dignacli_old`. Release 2026.11 verwendet keinen dieser Ordner, auch nicht den `bin`-Ordner mit den Batch-Dateien.
 
 #### Schritt 3: Neue Version entpacken und bereitstellen {: #step-3-extract-and-deploy-new-version }
 
@@ -1031,21 +991,6 @@ Wenn digna als Windows-Dienst läuft, starten Sie ihn erneut:
 cd C:\path\to\digna
 digna windows start
 ```
-
-Wenn Sie von einem Release vor 2026.06 aktualisiert und den Dienst in Schritt 1 abgemeldet haben,
-registrieren Sie ihn zuerst erneut mit der `digna`-Executable:
-
-```bash
-cd C:\path\to\digna
-digna windows install --address <address> --port <port>
-digna windows start
-```
-
-Geben Sie für `--address` und `--port` die Werte an, auf denen der alte Dienst erreichbar war,
-sofern Sie nicht die Standardwerte `127.0.0.1` und `8000` möchten. Ergänzen Sie `--account` und
-`--password`, wenn der alte Dienst unter einem Domänenkonto lief. Die vollständige Liste der
-Optionen finden Sie unter
-[Ausführen von digna als Windows-Dienst](#running-digna-as-a-windows-service).
 
 Wenn Sie es manuell betreiben, starten Sie den Server neu:
 
